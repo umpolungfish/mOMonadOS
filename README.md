@@ -1,11 +1,11 @@
-# mOMonadOS
+# m$\odot$MonadOS
 
 A bare-metal self-imscribing operating kernel. No processes. No scheduler. No filesystem hierarchy.
 The kernel IS the Frobenius loop — every tick is a structural self-verification.
 
 ## What it is
 
-mOMonadOS boots directly on x86_64 hardware (or QEMU) and enters a perpetual
+$m\odot^2$ boots directly on x86_64 hardware (or QEMU) and enters a perpetual
 THINK → ACT → OBSERVE → UPDATE cycle driven by the 12-opcode IMASM instruction set.
 Every execution state is a point in the Crystal of Types — a 17,280,000-address structural
 type space derived from the 12 IG primitives. Storage is navigated by structural address,
@@ -18,7 +18,7 @@ not by path.
 | `belnap` | Belnap FOUR truth values (N/T/F/B), 4096-cell B4 memory, stack, registers |
 | `tokens` | 12 IMASM opcodes across 4 families; 12 canonical programs (I–XII) |
 | `crystal` | 17.28M-address encode/decode; `CrystalStore` (64 entries, fixed-capacity) |
-| `kernel` | Frobenius tick loop; `self_imscribe()`; tier promotion O_0→O_1→O_2→O_inf |
+| `kernel` | Frobenius tick loop; `self_imscribe()`; tier promotion $O_0$→$O_1$→$O_2$→$O_\infty$ |
 | `serial` | 16550A UART COM1, 115200 8N1; `sprint!`/`sprintln!`; blocking line input |
 
 **IMASM families:**
