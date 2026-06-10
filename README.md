@@ -6,7 +6,7 @@ The kernel IS the Frobenius loop — every tick is a structural self-verificatio
 ## What it is
 
 $m\odot^2$ boots directly on x86_64 hardware (or QEMU) and enters a perpetual
-THINK → ACT → OBSERVE → UPDATE cycle driven by the 12-opcode IMASM instruction set.
+`THINK` → `ACT` → `OBSERVE` → `UPDATE` cycle driven by the 12-opcode IMASM instruction set.
 Every execution state is a point in the Crystal of Types — a 17,280,000-address structural
 type space derived from the 12 IG primitives. Storage is navigated by structural address,
 not by path.
