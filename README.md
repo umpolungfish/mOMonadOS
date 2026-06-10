@@ -18,7 +18,7 @@ not by path.
 | `belnap` | Belnap FOUR truth values (N/T/F/B), 4096-cell B4 memory, stack, registers |
 | `tokens` | 12 IMASM opcodes across 4 families; 12 canonical programs (I–XII) |
 | `crystal` | 17.28M-address encode/decode; `CrystalStore` (64 entries, fixed-capacity) |
-| `kernel` | Frobenius tick loop; `self_imscribe()`; tier promotion $O_0$→$O_1$→$O_2$→$O_\infty$ |
+| `kernel` | Frobenius tick loop; `self_imscribe()`; tier promotion $O_0$ → $O_1$ → $O_2$ → $O_\infty$ |
 | `serial` | 16550A UART COM1, 115200 8N1; `sprint!`/`sprintln!`; blocking line input |
 
 **IMASM families:**
