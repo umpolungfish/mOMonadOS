@@ -72,15 +72,54 @@ fn print_banner() {
     sprintln!();
 }
 
+// ─── History ──────────────────────────────────────────────────
+
+const HISTORY_CAP: usize = 32;
+
+struct History {
+    bufs: [[u8; 256]; HISTORY_CAP],
+    lens: [usize; HISTORY_CAP],
+    write_idx: usize,
+    count: usize,
+}
+
+impl History {
+    const fn new() -> Self {
+        Self {
+            bufs: [[0u8; 256]; HISTORY_CAP],
+            lens: [0usize; HISTORY_CAP],
+            write_idx: 0,
+            count: 0,
+        }
+    }
+
+    fn push(&mut self, line: &[u8]) {
+        if line.is_empty() { return; }
+        let n = line.len().min(255);
+        self.bufs[self.write_idx][..n].copy_from_slice(&line[..n]);
+        self.lens[self.write_idx] = n;
+        self.write_idx = (self.write_idx + 1) % HISTORY_CAP;
+        if self.count < HISTORY_CAP { self.count += 1; }
+    }
+
+    // back=1 → most recent, back=2 → one before that, etc.
+    fn get(&self, back: usize) -> Option<(&[u8], usize)> {
+        if back == 0 || back > self.count { return None; }
+        let idx = (self.write_idx + HISTORY_CAP - back) % HISTORY_CAP;
+        Some((&self.bufs[idx], self.lens[idx]))
+    }
+}
+
 // ─── REPL ─────────────────────────────────────────────────────
 
 fn repl(k: &mut Kernel) {
     let mut cfs = CrystalStore::new();
     let mut line_buf = [0u8; 256];
+    let mut history = History::new();
 
     loop {
         serial::write_str("⊙> ");
-        let line = read_line(&mut line_buf);
+        let line = read_line(&mut line_buf, &mut history);
         if line.is_empty() { continue; }
 
         let mut parts = line.splitn(4, ' ');
@@ -249,22 +288,54 @@ fn crystal_store_current(
 
 // ─── Input ────────────────────────────────────────────────────
 
-fn read_line<'a>(buf: &'a mut [u8; 256]) -> &'a str {
+fn read_line<'a>(buf: &'a mut [u8; 256], history: &mut History) -> &'a str {
     let mut len = 0usize;
+    let mut hist_pos = 0usize; // 0 = current input; N = Nth entry back
+
     loop {
         let b = serial::read_byte();
         match b {
+            0x1b => {
+                // Escape sequence: expect '[' then code
+                if serial::read_byte() != b'[' { continue; }
+                match serial::read_byte() {
+                    b'A' => { // up arrow — go back in history
+                        let next = (hist_pos + 1).min(history.count);
+                        if next != hist_pos {
+                            hist_pos = next;
+                            if let Some((bytes, n)) = history.get(hist_pos) {
+                                redraw_input(len, bytes, n, buf);
+                                len = n;
+                            }
+                        }
+                    }
+                    b'B' => { // down arrow — go forward in history
+                        if hist_pos > 0 {
+                            hist_pos -= 1;
+                            if hist_pos == 0 {
+                                redraw_input(len, &[], 0, buf);
+                                len = 0;
+                            } else if let Some((bytes, n)) = history.get(hist_pos) {
+                                redraw_input(len, bytes, n, buf);
+                                len = n;
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
             b'\r' | b'\n' => {
                 serial::write_str("\n");
+                history.push(&buf[..len]);
                 break;
             }
-            0x7f | 0x08 => { // backspace
+            0x7f | 0x08 => {
                 if len > 0 {
                     len -= 1;
                     serial::write_str("\x08 \x08");
                 }
             }
-            0x03 => { // Ctrl-C
+            0x03 => {
                 sprintln!();
                 len = 0;
                 break;
@@ -273,7 +344,7 @@ fn read_line<'a>(buf: &'a mut [u8; 256]) -> &'a str {
                 if len < buf.len() - 1 {
                     buf[len] = b;
                     len += 1;
-                    serial::write_byte(b); // echo
+                    serial::write_byte(b);
                 }
             }
             _ => {}
@@ -281,6 +352,18 @@ fn read_line<'a>(buf: &'a mut [u8; 256]) -> &'a str {
     }
     buf[len] = 0;
     core::str::from_utf8(&buf[..len]).unwrap_or("")
+}
+
+// Erase current input and redraw with new content.
+// Uses \r\x1b[K (CR + erase to end) then reprints prompt + new line.
+fn redraw_input(old_len: usize, src: &[u8], src_len: usize, buf: &mut [u8; 256]) {
+    let _ = old_len; // terminal erase handles any length
+    serial::write_str("\r\x1b[K⊙> ");
+    let n = src_len.min(255);
+    buf[..n].copy_from_slice(&src[..n]);
+    if let Ok(s) = core::str::from_utf8(&buf[..n]) {
+        serial::write_str(s);
+    }
 }
 
 // ─── Helpers ──────────────────────────────────────────────────
