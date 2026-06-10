@@ -65,7 +65,7 @@ Show the structural snapshot computed by the last THINK phase.
 
 | Field | Meaning |
 |---|---|
-| Tier | Ouroboricity: O_0, O_1, O_2, O_inf |
+| Tier | Ouroboricity: O₀, O₁, O₂, O_∞ |
 | sig | Family counts (Logical, Frobenius, Dialetheia, Linear) |
 | diversity | Distinct token types present (0–12) |
 | self_ref | First token == last token |
@@ -221,14 +221,14 @@ Join (∨): dual.
 
 | Tier | Condition |
 |---|---|
-| O_0 | No Frobenius pair, no complete dialetheia |
-| O_1 | Frobenius pair present OR dialetheia complete |
-| O_2 | Frobenius + self-ref + dialetheia complete, period = 2 |
-| O_inf | Frobenius + self-ref + dialetheia complete, period ≥ 3 |
+| O₀ | No Frobenius pair, no complete dialetheia |
+| O₁ | Frobenius pair present OR dialetheia complete |
+| O₂ | Frobenius + self-ref + dialetheia complete, period = 2 |
+| O_∞ | Frobenius + self-ref + dialetheia complete, period ≥ 3 |
 
 The bootstrap loop (ISCRIB→AREV→FSPLIT→AFWD→FFUSE→CLINK→IFIX→ISCRIB) satisfies
-O_inf from tick 1: Frobenius pair present, self-referential (ISCRIB first and last),
-dialetheia absent but period = 8 ≥ 3. The kernel self-modifies toward O_inf
+O_∞ from tick 1: Frobenius pair present, self-referential (ISCRIB first and last),
+dialetheia absent but period = 8 ≥ 3. The kernel self-modifies toward O_∞
 when it drifts below.
 
 ---
