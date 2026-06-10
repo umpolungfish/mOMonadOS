@@ -1,24 +1,11 @@
+remove dead code: try_read, b4_complement, Token::from_u8, Program::is_empty
+
+Zero warnings, nothing suppressed.
+
+---
+
 mOMonadOS (momonados): rename + QEMU toolchain
 
 Renamed from omonad_metal → mOMonadOS. Binary: momonados. CLI: momos.
-
-New files:
-  build_bootimage.sh — build UEFI disk image (mirrors exOS pattern):
-    1. cargo build --release → kernel ELF
-    2. bootloader-x86_64-uefi built with KERNEL env → BOOTX64.EFI
-    3. FAT32 ESP image (mcopy) → target/release/momonados.img
-  run.sh             — find OVMF, boot in QEMU; default stdio serial REPL
-  Makefile           — build / release / image / run / serial / clean
-  ~/.local/bin/momos — launcher: momos [build|release|image|run|serial|clean]
-                       default (no arg): build image + boot serial REPL
-
-Changes:
-  Cargo.toml    — name = "momonados"; [[bin]] name = "momonados"
-  src/main.rs   — boot banner updated to mOMonadOS
-
-Usage:
-  momos         # build + boot serial REPL
-  momos build   # dev build only
-  momos release # release build only
-  momos image   # release + FAT32 UEFI disk image
-  momos clean   # wipe build artifacts
+build_bootimage.sh + run.sh + Makefile + ~/.local/bin/momos launcher.
+momos [build|release|image|run|serial|clean]; default = image + serial REPL.
