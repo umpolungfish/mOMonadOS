@@ -1,4 +1,4 @@
-# $m \odot \text{MonadOS}$
+# $m\odot^2$
 
 A bare-metal self-imscribing operating kernel. No processes. No scheduler. No filesystem hierarchy.
 The kernel IS the Frobenius loop — every tick is a structural self-verification.
