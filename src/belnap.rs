@@ -26,10 +26,6 @@ pub fn b4_join(a: B4, b: B4) -> B4 {
     B4::from_u8((a as u8) | (b as u8))
 }
 
-pub fn b4_complement(a: B4) -> B4 {
-    match a { B4::T => B4::F, B4::F => B4::T, x => x }
-}
-
 /// 4096-cell B4 memory, 2 bits per cell packed into a byte array.
 pub struct B4Memory {
     data: [u8; 1024], // 4096 cells × 2 bits = 1024 bytes

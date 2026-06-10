@@ -17,18 +17,6 @@ pub enum Token {
 }
 
 impl Token {
-    pub fn from_u8(v: u8) -> Option<Self> {
-        match v {
-            0 => Some(Token::VINIT),  1 => Some(Token::TANCH),
-            2 => Some(Token::AFWD),   3 => Some(Token::AREV),
-            4 => Some(Token::CLINK),  5 => Some(Token::ISCRIB),
-            6 => Some(Token::FSPLIT), 7 => Some(Token::FFUSE),
-            8 => Some(Token::EVALT),  9 => Some(Token::EVALF),
-            10 => Some(Token::ENGAGR), 11 => Some(Token::IFIX),
-            _ => None,
-        }
-    }
-
     pub fn name(self) -> &'static str {
         match self {
             Token::VINIT  => "VINIT",  Token::TANCH  => "TANCH",
@@ -80,8 +68,6 @@ impl Program {
     }
 
     pub fn len(&self) -> usize { self.len }
-
-    pub fn is_empty(&self) -> bool { self.len == 0 }
 
     pub fn as_slice(&self) -> &[Token] { &self.buf[..self.len] }
 

@@ -35,14 +35,6 @@ pub fn read_byte() -> u8 {
     unsafe { Port::<u8>::new(COM1).read() }
 }
 
-pub fn try_read() -> Option<u8> {
-    if rx_ready() {
-        Some(unsafe { Port::<u8>::new(COM1).read() })
-    } else {
-        None
-    }
-}
-
 pub fn write_str(s: &str) {
     for b in s.bytes() {
         if b == b'\n' { write_byte(b'\r'); }
