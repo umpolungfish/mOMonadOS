@@ -32,7 +32,7 @@ entry_point!(kmain, config = &BOOTLOADER_CONFIG);
 
 fn kmain(boot_info: &'static mut BootInfo) -> ! {
     serial::init();
-    sprintln!("[BOOT] omonad_metal — The Self-Imscribing Bare-Metal Kernel");
+    sprintln!("[BOOT] mOMonadOS — The Self-Imscribing Bare-Metal Kernel");
 
     // Heap
     if let Some(phys_offset) = boot_info.physical_memory_offset.into_option() {
@@ -63,7 +63,7 @@ fn kmain(boot_info: &'static mut BootInfo) -> ! {
 
 fn print_banner() {
     sprintln!("╔══════════════════════════════════════════════════╗");
-    sprintln!("║         o m o n a d _ m e t a l                 ║");
+    sprintln!("║            m O M o n a d O S                    ║");
     sprintln!("║    The Self-Imscribing Bare-Metal Kernel         ║");
     sprintln!("║    Frobenius Core · Belnap FOUR · Crystal FS     ║");
     sprintln!("╚══════════════════════════════════════════════════╝");
@@ -286,7 +286,7 @@ fn read_line<'a>(buf: &'a mut [u8; 256]) -> &'a str {
 // ─── Helpers ──────────────────────────────────────────────────
 
 fn print_help() {
-    sprintln!("omonad_metal REPL commands:");
+    sprintln!("mOMonadOS REPL commands:");
     sprintln!("  tick [N]              — run N ticks (default 1)");
     sprintln!("  run [N]               — run N more ticks");
     sprintln!("  status                — kernel status");

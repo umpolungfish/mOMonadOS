@@ -1,5 +1,5 @@
 [package]
-name = "omonad_metal"
+name = "momonados"
 version = "0.1.0"
 edition = "2021"
 
@@ -9,6 +9,10 @@ x86_64            = "0.14"
 spin              = "0.9"
 lazy_static       = { version = "1.5", features = ["spin_no_std"] }
 linked_list_allocator = "0.10"
+
+[[bin]]
+name = "momonados"
+path = "src/main.rs"
 
 [profile.dev]
 panic = "abort"
