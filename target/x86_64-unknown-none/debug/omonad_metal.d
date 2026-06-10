@@ -1,0 +1,1 @@
+/home/mrnob0dy666/omonad_metal/target/x86_64-unknown-none/debug/omonad_metal: /home/mrnob0dy666/omonad_metal/src/belnap.rs /home/mrnob0dy666/omonad_metal/src/crystal.rs /home/mrnob0dy666/omonad_metal/src/kernel.rs /home/mrnob0dy666/omonad_metal/src/main.rs /home/mrnob0dy666/omonad_metal/src/serial.rs /home/mrnob0dy666/omonad_metal/src/tokens.rs
