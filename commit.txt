@@ -1,0 +1,37 @@
+omonad_metal: bare-metal Frobenius kernel — initial build
+
+x86_64-unknown-none, bootloader_api 0.11 entry, COM1 115200 serial REPL,
+linked_list_allocator 4MB heap from BootInfo physical memory map.
+
+Modules:
+  src/belnap.rs   — B4 enum (N/T/F/B), B4Memory (4096 cells, 2-bit packed,
+                    1024-byte array), B4Stack (256-deep), B4Registers (8×B4),
+                    b4_meet / b4_join / b4_complement
+  src/tokens.rs   — Token enum (12 opcodes, values 0x0–0xB), Program (64-cap
+                    fixed array, inject()), bootstrap_loop(), canonical(0–11),
+                    signature(), period()
+  src/crystal.rs  — TOTAL=17_280_000, STRIDES computed at const eval,
+                    encode() / decode() (pure arithmetic, no_std),
+                    indices_from_snapshot() (12 live structural properties,
+                    zero hardcoding), CrystalStore (64-entry fixed array)
+  src/kernel.rs   — Kernel: THINK→ACT→OBSERVE→UPDATE loop, self_imscribe(),
+                    compute_tier() (O_0/O_1/O_2/O_inf), run() counts elapsed
+                    ticks, try_self_modify() (stack overflow guard)
+  src/serial.rs   — 16550A UART init, write_byte/write_str/read_byte/try_read,
+                    sprint!/sprintln! macros via core::fmt::Write
+  src/main.rs     — bootloader_api entry_point!, heap init, boot banner,
+                    full serial REPL: tick / run / status / program / snapshot /
+                    canonical (I–XII) / crystal store+name+find+addr /
+                    memory / registers / stack / halt
+
+crystal store: FNV-1a hash(name) → canonical index → load → tick
+               → derive address from live snapshot (no fallback)
+               same name deterministically maps to same crystal address
+
+To build:
+  cargo build
+  cargo build --release
+
+To run in QEMU (requires bootloader-x86_64-uefi disk image tool):
+  cargo build --release
+  # wrap EFI binary with bootloader disk image, boot with QEMU OVMF
