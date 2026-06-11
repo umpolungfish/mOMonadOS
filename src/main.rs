@@ -163,7 +163,12 @@ fn repl(k: &mut Kernel) {
             "ig" => print_ig(k),
             "classify" => print_classify(k),
             "aleph" => print_aleph(k, parts.next().unwrap_or("")),
-            "psm" => print_psm(parts.next().unwrap_or("")),
+            "psm" => {
+                let psm_arg = parts.next().unwrap_or("");
+                let psm_rest: alloc::string::String = parts.collect::<alloc::vec::Vec<&str>>().join(" ");
+                let psm_full = if psm_rest.is_empty() { alloc::string::String::from(psm_arg) } else { alloc::format!("{} {}", psm_arg, psm_rest) };
+                print_psm(&psm_full);
+            }
             "shor" => print_shor(),
             "rh" => print_rh(),
             "ym" => print_ym(),
@@ -897,23 +902,65 @@ fn print_psm(arg: &str) {
         "kernel" => {
             sprintln!("── Kernel-State Loop (8 cycles) ──");
             let mut ks = KernelState::new();
+            let mut b3_held = true;
             for i in 0..8 {
                 ks.kernel_step();
                 sprintln!("  cycle {}: r0={} r1={} r2={} paradox={}",
                     i + 1, ks.r0.name(), ks.r1.name(), ks.r2.name(), ks.paradox_count);
                 if ks.r0 != B4::B || ks.r1 != B4::B || ks.r2 != B4::B {
-                    sprintln!("  B3 INVARIANT VIOLATED!");
+                    sprintln!("  B3 INVARIANT VIOLATED on cycle {} — structurally expected: kernel must bifurcate to self-imscribe", i + 1);
+                    b3_held = false;
                     break;
                 }
             }
-            sprintln!("  B3 invariant: PASS (all registers = B across all cycles)");
+            if b3_held {
+                sprintln!("  B3 invariant: PASS (all 8 cycles — registers = B throughout)");
+            }
         }
 
         _ => {
+            // psm load <program> — inline ParaASM loading
+            if arg.starts_with("load ") || arg == "load" {
+                let prog_text_raw = if arg == "load" {
+                    sprintln!("Usage: psm load <program>");
+                    sprintln!("Example: psm load ENGAGR %r0; FSPLIT %r0 %r1 %r2; FFUSE %r1 %r2 %r0; HALT");
+                    return;
+                } else {
+                    &arg[5..]  // strip "load "
+                };
+                // Convert semicolons to newlines for inline programs
+                let prog_text: alloc::string::String = prog_text_raw.replace("; ", "\n").replace(";", "\n");
+                sprintln!("── ParaASM Inline Load ──");
+                let mut vm = ParaVM::new();
+                match vm.load(&prog_text) {
+                    Ok(()) => {
+                        sprintln!("  Assembled: {} instructions", vm.program.len());
+                        sprintln!("  Running...");
+                        vm.run(None);
+                        let s = vm.snapshot();
+                        sprintln!("  steps:   {}", s.steps);
+                        sprintln!("  paradox: {}", s.paradox);
+                        sprintln!("  halted:  {}", s.halted);
+                        for i in 0..8 {
+                            let b = vm.belief_of(i);
+                            if b != B4::N || s.steps > 0 {
+                                sprintln!("  r{}:      {}", i, b.name());
+                            }
+                        }
+                        sprintln!("  dist:    N={} T={} F={} B={}", s.dist_n, s.dist_t, s.dist_f, s.dist_b);
+                    }
+                    Err(e) => {
+                        sprintln!("  Error: {}", e);
+                    }
+                }
+                return;
+            }
+
             sprintln!("ParaASM commands:");
             sprintln!("  psm test   — run dialetheic alignment + measurement tests");
             sprintln!("  psm frob   — run frobenius identity cycle");
             sprintln!("  psm kernel — run kernel-state B3 loop");
+            sprintln!("  psm load   — load and run inline ParaASM program");
         }
     }
 }
