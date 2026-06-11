@@ -138,39 +138,36 @@ pub const HUD_HEIGHT: u16 = 9;
 /// Draw the full HUD. Occupies rows 1–9. Content starts at row 10.
 pub fn draw_hud(k: &Kernel, program_name: &str, width: u16) {
     let w = width as usize;
+
+    // ── Row 1: top bar ──
     cursor_goto(1, 1);
     clear_line();
-
-    // ── Row 1: title bar ──
     styled(BOLD_WHITE, "╔");
     hr("═", width - 2);
     styled(BOLD_WHITE, "╗");
 
     // ── Row 2: program name + tick + tier ──
     cursor_goto(2, 1); clear_line();
-    styled(BOLD_WHITE, "║  ");
+    serial::write_str("  ");
     styled(BOLD_CYAN, "mOMonadOS · ");
     serial::write_str(program_name);
 
     // Right-justify tick count + tier
     {
         let tier = k.snapshot.map(|s| s.tier).unwrap_or(0);
-        // Write spaces to right-align
-        let used = 16 + program_name.len(); // "║  mOMonadOS · " + name
-        let right_info = 24; // "Tick: 00000000  Tier: O_inf  ║"
+        let used = 16 + program_name.len(); // "  mOMonadOS · " + name
+        let right_info = 24; // "Tick: 00000000  Tier: O_inf"
         let pad = if w > used + right_info { w - used - right_info } else { 0 };
         for _ in 0..pad { serial::write_byte(b' '); }
         serial::write_str("Tick: ");
         write_u64(k.tick_count);
         serial::write_str("  Tier: ");
         styled(tier_color(tier), tier_label(tier));
-        serial::write_str("  ");
     }
-    styled(BOLD_WHITE, "║");
 
     // ── Row 3: phase, IP, current token, halted ──
     cursor_goto(3, 1); clear_line();
-    styled(BOLD_WHITE, "║  ");
+    serial::write_str("  ");
     styled(DIM, "Phase: "); serial::write_str(phase_label(k));
     serial::write_str("  ");
     styled(DIM, "IP: "); write_usize(k.ip); serial::write_str("/"); write_usize(k.program.len());
@@ -182,18 +179,18 @@ pub fn draw_hud(k: &Kernel, program_name: &str, width: u16) {
     } else { serial::write_str("—"); }
     // Right side
     {
-        let used = 28; // approximate
-        let right = if k.halted { "HALTED" } else { "" };
-        let pad = if w > used + right.len() + 3 { w - used - right.len() - 3 } else { 0 };
-        for _ in 0..pad { serial::write_byte(b' '); }
-        if k.halted { styled(BOLD_RED, "HALTED"); }
-        serial::write_str("  ");
+        if k.halted {
+            let used = 28;
+            let right = "HALTED";
+            let pad = if w > used + right.len() { w - used - right.len() } else { 0 };
+            for _ in 0..pad { serial::write_byte(b' '); }
+            styled(BOLD_RED, "HALTED");
+        }
     }
-    styled(BOLD_WHITE, "║");
 
     // ── Row 4: counters ──
     cursor_goto(4, 1); clear_line();
-    styled(BOLD_WHITE, "║  ");
+    serial::write_str("  ");
     styled(DIM, "Frob: "); write_u64(k.frob_checks - k.frob_open);
     serial::write_str("/"); write_u64(k.frob_checks);
     serial::write_str("  ");
@@ -205,11 +202,10 @@ pub fn draw_hud(k: &Kernel, program_name: &str, width: u16) {
     serial::write_str("  ");
     styled(DIM, "Val-p: ");
     if let Some(s) = k.snapshot { write_usize(s.value_period); } else { serial::write_str("0"); }
-    styled(BOLD_WHITE, " ║");
 
     // ── Row 5: structural snapshot ──
     cursor_goto(5, 1); clear_line();
-    styled(BOLD_WHITE, "║  ");
+    serial::write_str("  ");
     if let Some(snap) = k.snapshot {
         styled(DIM, "Sig:(");
         write_usize(snap.sig.0); serial::write_str(",");
@@ -228,11 +224,10 @@ pub fn draw_hud(k: &Kernel, program_name: &str, width: u16) {
         serial::write_str(" ");
         styled(DIM, "Per:"); write_usize(snap.period);
     }
-    styled(BOLD_WHITE, " ║");
 
     // ── Row 6: stack + fork ──
     cursor_goto(6, 1); clear_line();
-    styled(BOLD_WHITE, "║  ");
+    serial::write_str("  ");
     styled(DIM, "Stack["); write_usize(k.stack.depth()); serial::write_str("]: ");
     let depth = k.stack.depth();
     let show = if depth > 10 { 10 } else { depth };
@@ -243,22 +238,20 @@ pub fn draw_hud(k: &Kernel, program_name: &str, width: u16) {
     }
     if depth > 10 { serial::write_str("… "); }
     styled(DIM, "Fork:"); write_usize(k.fork_depth());
-    styled(BOLD_WHITE, " ║");
 
     // ── Row 7: registers ──
     cursor_goto(7, 1); clear_line();
-    styled(BOLD_WHITE, "║  ");
+    serial::write_str("  ");
     styled(DIM, "R0-R7: ");
     for i in 0..8 {
         let v = k.registers.read(i);
         styled(b4_style(v), v.name());
         serial::write_str(" ");
     }
-    styled(BOLD_WHITE, "║");
 
     // ── Row 8: token trace ──
     cursor_goto(8, 1); clear_line();
-    styled(BOLD_WHITE, "║  ");
+    serial::write_str("  ");
     styled(DIM, "Trace: ");
     let n = k.program.len();
     let show_start = if k.ip > 6 { k.ip - 6 } else { 0 };
@@ -276,7 +269,6 @@ pub fn draw_hud(k: &Kernel, program_name: &str, width: u16) {
         if i < show_end - 1 { serial::write_str(" "); }
     }
     if show_end < n { serial::write_str(" …"); }
-    styled(BOLD_WHITE, " ║");
 
     // ── Row 9: bottom bar ──
     cursor_goto(9, 1); clear_line();
