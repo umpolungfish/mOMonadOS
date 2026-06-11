@@ -130,7 +130,7 @@ See [NOVEL_PROGRAMS.md](NOVEL_PROGRAMS.md) for details on the novel programs.
 | `temp` | Temporal logic operators: □ (always), ◇ (eventually), ○ (next), U (until); B as temporal fixed point | `para_temporal.rs` |
 | `cat` | Category theory: N=initial, T=terminal, B=zero object, Frobenius algebra, dagger compact closed | `para_category.rs` |
 | `algebra <dist\|meet\|join\|tensor>` | IG lattice algebra: Hamming / weighted distance, meet, join, tensor with ZFC baseline | `algebra.rs` |
-| `zfc <promotions\|entry>` | ZFCₜ navigator: 6 promotion channels, entry lookup (zfc, zfc_t, schrodinger, einstein, etc.) | `zfc_t.rs` |
+| `cl8nk <promotions\|entry>` | CL8NK navigator: ZFC→ZFCₜ→ZFCfe→CLINK L8 ladder, 6 promotion channels, entry lookup (zfc, zfc_t, clink_l8, einstein, IUG, etc.) | `cl8nk.rs` |
 | `cscore` | Consciousness score: dual-gate (⊙ + K≤𐑧) evaluation with per-component breakdown | `consciousness.rs` |
 ## Project structure
 

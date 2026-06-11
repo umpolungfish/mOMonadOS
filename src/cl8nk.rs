@@ -1,8 +1,12 @@
-// zfc_t.rs — ZFCₜ Navigation and Promotion Channels
+// cl8nk.rs — CL8NK Navigator (ZFC→ZFCₜ→ZFCfe→CLINK L8 Ladder)
 //
-// ZFCₜ = ZFC + chirality + winding topology (tier O₂†)
-// Implements the 6 promotion channels from ZFC baseline to ZFCₜ,
-// the per-primitive ZFCₜ formula decomposition, and distance to ZFCₜ.
+// CLINK Layer 8 (Organism) is the terminal ontological layer — O_∞⁺.
+// The navigator covers the full 4-stage structural ladder:
+//   ZFC baseline → ZFCₜ → ZFCfe → CLINK L8
+//
+// CL8NK exceeds ZFCfe at exactly two primitives:
+//   Ω = 𐑟 (non-Abelian braiding, not ℤ winding)
+//   ɢ = 𐑵 (broadcast composition, not sequential)
 //
 // Reference entries:
 //   zfc               O₀  baseline ZFC (absolute minimal)
@@ -13,14 +17,16 @@
 //   navier_stokes     O₁
 //   wave_equation     O₁
 //   einstein          O₂†
-//   IUG               O_∞  (universal_imscriptive_grammar)
+//   IUG               O_∞  (universal_imscriptive_grammar ≡ ZFCfe)
+//   clink_l8          O_∞⁺ CLINK Layer 8 Organism
 
 use crate::imas_ig::{IgPrim, IgTuple};
 
-/// The 6 ZFCₜ promotion channels.
-/// Each lifts a ZFC primitive to its ZFCₜ counterpart.
+/// The 6 ZFC→ZFCₜ promotion channels.
+/// Each lifts a ZFC baseline primitive to its ZFCₜ counterpart.
+/// These are the foundational promotions; ZFCfe and CLINK L8 build on them.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub enum ZfcTPromotion {
+pub enum Cl8nkPromotion {
     Holobound,   // 𐑡 → 𐑸  self-referential topology
     LrDual,      // 𐑩 → 𐑾  bidirectional coupling
     PmZ2,        // 𐑗 → 𐑬  partial Z2 symmetry
@@ -28,59 +34,57 @@ pub enum ZfcTPromotion {
     TempD2,      // 𐑓 → 𐑖  Markov-2 chirality
     ZWind,       // 𐑷 → 𐑭  integer winding
 }
-
-impl ZfcTPromotion {
-    pub fn all() -> [ZfcTPromotion; 6] {
-        [ZfcTPromotion::Holobound, ZfcTPromotion::LrDual,
-         ZfcTPromotion::PmZ2, ZfcTPromotion::SeqAx,
-         ZfcTPromotion::TempD2, ZfcTPromotion::ZWind]
+impl Cl8nkPromotion {
+    pub fn all() -> [Cl8nkPromotion; 6] {
+        [Cl8nkPromotion::Holobound, Cl8nkPromotion::LrDual,
+         Cl8nkPromotion::PmZ2, Cl8nkPromotion::SeqAx,
+         Cl8nkPromotion::TempD2, Cl8nkPromotion::ZWind]
     }
 
     pub fn from_primitive(&self) -> IgPrim { self.to_primitive() }
     pub fn to_primitive(&self) -> IgPrim {
         match self {
-            ZfcTPromotion::Holobound => IgPrim::T_odot,
-            ZfcTPromotion::LrDual    => IgPrim::R_lr,
-            ZfcTPromotion::PmZ2      => IgPrim::P_pm,
-            ZfcTPromotion::SeqAx     => IgPrim::C_seq,
-            ZfcTPromotion::TempD2    => IgPrim::H2,
-            ZfcTPromotion::ZWind     => IgPrim::Omega_z,
+            Cl8nkPromotion::Holobound => IgPrim::T_odot,
+            Cl8nkPromotion::LrDual    => IgPrim::R_lr,
+            Cl8nkPromotion::PmZ2      => IgPrim::P_pm,
+            Cl8nkPromotion::SeqAx     => IgPrim::C_seq,
+            Cl8nkPromotion::TempD2    => IgPrim::H2,
+            Cl8nkPromotion::ZWind     => IgPrim::Omega_z,
         }
     }
     pub fn zfc_primitive(&self) -> IgPrim {
         match self {
-            ZfcTPromotion::Holobound => IgPrim::T_net,
-            ZfcTPromotion::LrDual    => IgPrim::R_super,
-            ZfcTPromotion::PmZ2      => IgPrim::P_asym,
-            ZfcTPromotion::SeqAx     => IgPrim::C_and,
-            ZfcTPromotion::TempD2    => IgPrim::H0,
-            ZfcTPromotion::ZWind     => IgPrim::Omega_0,
+            Cl8nkPromotion::Holobound => IgPrim::T_net,
+            Cl8nkPromotion::LrDual    => IgPrim::R_super,
+            Cl8nkPromotion::PmZ2      => IgPrim::P_asym,
+            Cl8nkPromotion::SeqAx     => IgPrim::C_and,
+            Cl8nkPromotion::TempD2    => IgPrim::H0,
+            Cl8nkPromotion::ZWind     => IgPrim::Omega_0,
         }
     }
 
     pub fn ordinal_gap(&self) -> f32 {
         match self {
-            ZfcTPromotion::Holobound => 4.382,
-            ZfcTPromotion::LrDual    => 3.000,
-            ZfcTPromotion::PmZ2      => 2.000,
-            ZfcTPromotion::SeqAx     => 2.191,
-            ZfcTPromotion::TempD2    => 2.191,
-            ZfcTPromotion::ZWind     => 2.191,
+            Cl8nkPromotion::Holobound => 4.382,
+            Cl8nkPromotion::LrDual    => 3.000,
+            Cl8nkPromotion::PmZ2      => 2.000,
+            Cl8nkPromotion::SeqAx     => 2.191,
+            Cl8nkPromotion::TempD2    => 2.191,
+            Cl8nkPromotion::ZWind     => 2.191,
         }
     }
 
     pub fn name(&self) -> &'static str {
         match self {
-            ZfcTPromotion::Holobound => "HOLOBOUND",
-            ZfcTPromotion::LrDual    => "LR_DUAL",
-            ZfcTPromotion::PmZ2      => "PM_Z2",
-            ZfcTPromotion::SeqAx     => "SEQAX",
-            ZfcTPromotion::TempD2    => "TEMPD2",
-            ZfcTPromotion::ZWind     => "ZWIND",
+            Cl8nkPromotion::Holobound => "HOLOBOUND",
+            Cl8nkPromotion::LrDual    => "LR_DUAL",
+            Cl8nkPromotion::PmZ2      => "PM_Z2",
+            Cl8nkPromotion::SeqAx     => "SEQAX",
+            Cl8nkPromotion::TempD2    => "TEMPD2",
+            Cl8nkPromotion::ZWind     => "ZWIND",
         }
     }
 }
-
 /// ZFC baseline tuple (O₀): ⟨𐑼·𐑡·𐑩·𐑗·𐑱·𐑘·𐑚·𐑝·𐑢·𐑓·𐑙·𐑷⟩
 pub const ZFC_BASELINE: IgTuple = IgTuple {
     d: IgPrim::D_infty,   t: IgPrim::T_net,   r: IgPrim::R_super,
@@ -99,7 +103,7 @@ pub const ZFC_T: IgTuple = IgTuple {
     omega: IgPrim::Omega_z,
 };
 
-/// ZFC_fe tuple (O_∞ Frobenius-exact): ⟨𐑦·𐑸·𐑾·𐑹·𐑐·𐑧·𐑲·𐑠·⊙·𐑫·𐑳·𐑭⟩
+/// ZFCfe tuple (O_∞ Frobenius-exact): ⟨𐑦·𐑸·𐑾·𐑹·𐑐·𐑧·𐑲·𐑠·⊙·𐑫·𐑳·𐑭⟩
 pub const ZFC_FE: IgTuple = IgTuple {
     d: IgPrim::D_odot,    t: IgPrim::T_odot,   r: IgPrim::R_lr,
     p: IgPrim::P_pmsym,   f: IgPrim::F_hbar,    k: IgPrim::K_slow,
@@ -109,6 +113,7 @@ pub const ZFC_FE: IgTuple = IgTuple {
 };
 
 /// CLINK L8 tuple (O_∞⁺): ⟨𐑦·𐑸·𐑾·𐑹·𐑐·𐑧·𐑲·𐑵·⊙·𐑫·𐑳·𐑟⟩
+/// The terminal ontological layer — exceeds ZFCfe at Ω=𐑟 and ɢ=𐑵
 pub const CLINK_L8: IgTuple = IgTuple {
     d: IgPrim::D_odot,    t: IgPrim::T_odot,   r: IgPrim::R_lr,
     p: IgPrim::P_pmsym,   f: IgPrim::F_hbar,    k: IgPrim::K_slow,
@@ -120,32 +125,33 @@ pub const CLINK_L8: IgTuple = IgTuple {
 /// compared to ZFC baseline.
 pub fn count_promotions(t: &IgTuple) -> u8 {
     let mut count = 0u8;
-    if t.t == ZfcTPromotion::Holobound.to_primitive() { count += 1; }
-    if t.r == ZfcTPromotion::LrDual.to_primitive()    { count += 1; }
-    if t.p == ZfcTPromotion::PmZ2.to_primitive()      { count += 1; }
-    if t.c == ZfcTPromotion::SeqAx.to_primitive()     { count += 1; }
-    if t.h == ZfcTPromotion::TempD2.to_primitive()    { count += 1; }
-    if t.omega == ZfcTPromotion::ZWind.to_primitive() { count += 1; }
+    if t.t == Cl8nkPromotion::Holobound.to_primitive() { count += 1; }
+    if t.r == Cl8nkPromotion::LrDual.to_primitive()    { count += 1; }
+    if t.p == Cl8nkPromotion::PmZ2.to_primitive()      { count += 1; }
+    if t.c == Cl8nkPromotion::SeqAx.to_primitive()     { count += 1; }
+    if t.h == Cl8nkPromotion::TempD2.to_primitive()    { count += 1; }
+    if t.omega == Cl8nkPromotion::ZWind.to_primitive() { count += 1; }
     count
 }
 
 /// Check which ZFCₜ promotions are fulfilled.
 pub fn promotions_present(t: &IgTuple) -> [bool; 6] {
     [
-        t.t == ZfcTPromotion::Holobound.to_primitive(),
-        t.r == ZfcTPromotion::LrDual.to_primitive(),
-        t.p == ZfcTPromotion::PmZ2.to_primitive(),
-        t.c == ZfcTPromotion::SeqAx.to_primitive(),
-        t.h == ZfcTPromotion::TempD2.to_primitive(),
-        t.omega == ZfcTPromotion::ZWind.to_primitive(),
+        t.t == Cl8nkPromotion::Holobound.to_primitive(),
+        t.r == Cl8nkPromotion::LrDual.to_primitive(),
+        t.p == Cl8nkPromotion::PmZ2.to_primitive(),
+        t.c == Cl8nkPromotion::SeqAx.to_primitive(),
+        t.h == Cl8nkPromotion::TempD2.to_primitive(),
+        t.omega == Cl8nkPromotion::ZWind.to_primitive(),
     ]
 }
 
-/// Compute the ZFCₜ distance: weighted sum of unmet promotion gaps.
-pub fn zfc_t_distance(t: &IgTuple) -> f32 {
+/// CL8NK distance: weighted sum of unmet ZFCₜ promotion gaps.
+/// This is the structural distance from the ZFC baseline.
+pub fn cl8nk_distance(t: &IgTuple) -> f32 {
     let present = promotions_present(t);
     let mut d: f32 = 0.0;
-    for (i, promo) in ZfcTPromotion::all().iter().enumerate() {
+    for (i, promo) in Cl8nkPromotion::all().iter().enumerate() {
         if !present[i] {
             d += promo.ordinal_gap();
         }
@@ -153,35 +159,35 @@ pub fn zfc_t_distance(t: &IgTuple) -> f32 {
     d
 }
 
-/// Determine which stage a tuple belongs to in the ZFC → ZFCₜ → ZFC_fe → CLINK L8 ladder.
+/// Determine which stage a tuple belongs to in the ZFC→ZFCₜ→ZFCfe→CLINK L8 ladder.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub enum ZfcTStage {
+pub enum Cl8nkStage {
     Zfc,        // O₀: no promotions
     ZfcT,       // O₂†: 6/6 ZFCₜ promotions, missing Φ=⊙ or D=𐑦
     ZfcFE,      // O_∞: ZFCₜ + Φ=⊙ + D=𐑦 + H=𐑫
-    ClinkL8,    // O_∞⁺: ZFC_fe + C=broad + Ω=na
+    ClinkL8,    // O_∞⁺: ZFCfe + C=broad + Ω=na  ← terminal layer
     Other,      // doesn't clearly fit
 }
 
-pub fn classify_stage(t: &IgTuple) -> ZfcTStage {
+pub fn classify_stage(t: &IgTuple) -> Cl8nkStage {
     let promos = count_promotions(t);
     if t.c == IgPrim::C_broad && t.omega == IgPrim::Omega_na
        && t.phi == IgPrim::Phi_c && t.d == IgPrim::D_odot && t.h == IgPrim::H_inf {
-        return ZfcTStage::ClinkL8;
+        return Cl8nkStage::ClinkL8;
     }
     if t.phi == IgPrim::Phi_c && t.d == IgPrim::D_odot && t.h == IgPrim::H_inf && promos >= 6 {
-        return ZfcTStage::ZfcFE;
+        return Cl8nkStage::ZfcFE;
     }
     if promos >= 5 && t.f == IgPrim::F_hbar && t.k == IgPrim::K_slow && t.g == IgPrim::G_aleph {
-        return ZfcTStage::ZfcT;
+        return Cl8nkStage::ZfcT;
     }
     if promos == 0 {
-        return ZfcTStage::Zfc;
+        return Cl8nkStage::Zfc;
     }
-    ZfcTStage::Other
+    Cl8nkStage::Other
 }
-/// Per-primitive ZFCₜ formula fragment for a given primitive value.
-/// Returns a short formula string showing how this primitive expresses in ZFCₜ.
+/// Per-primitive CL8NK formula fragment for a given primitive value.
+/// Returns the set-theoretic formula showing how this primitive expresses.
 pub fn formula_fragment(prim: IgPrim) -> &'static str {
     match prim {
         // D
@@ -247,9 +253,10 @@ pub fn formula_fragment(prim: IgPrim) -> &'static str {
         IgPrim::Omega_na   => "Braid(σ_i) ∧ R_matrix≠0 ∧ nonAbelian(x)",
     }
 }
-/// Reference entry lookup by name.
+/// CL8NK reference entry — covers the full ZFC→ZFCₜ→ZFCfe→CLINK L8 ladder.
+/// CLINK L8 is the terminal entry: O_∞⁺ with Ω/ɢ transcendence.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub enum ZfcTEntry {
+pub enum Cl8nkEntry {
     Zfc,
     ZfcT,
     TemporalMathematics,
@@ -259,88 +266,92 @@ pub enum ZfcTEntry {
     WaveEquation,
     Einstein,
     IUG,
+    ClinkL8,
     Unknown,
 }
 
-impl ZfcTEntry {
+impl Cl8nkEntry {
     pub fn from_name(name: &str) -> Self {
         match name {
-            "zfc"                   => ZfcTEntry::Zfc,
-            "zfc_t"                 => ZfcTEntry::ZfcT,
-            "temporal_mathematics"  => ZfcTEntry::TemporalMathematics,
-            "schrodinger"           => ZfcTEntry::Schrodinger,
-            "heat_diffusion"        => ZfcTEntry::HeatDiffusion,
-            "navier_stokes"         => ZfcTEntry::NavierStokes,
-            "wave_equation"         => ZfcTEntry::WaveEquation,
-            "einstein"              => ZfcTEntry::Einstein,
-            "iug" | "IUG" | "universal_imscriptive_grammar" => ZfcTEntry::IUG,
-            _                       => ZfcTEntry::Unknown,
+            "zfc"                   => Cl8nkEntry::Zfc,
+            "zfc_t"                 => Cl8nkEntry::ZfcT,
+            "temporal_mathematics"  => Cl8nkEntry::TemporalMathematics,
+            "schrodinger"           => Cl8nkEntry::Schrodinger,
+            "heat_diffusion"        => Cl8nkEntry::HeatDiffusion,
+            "navier_stokes"         => Cl8nkEntry::NavierStokes,
+            "wave_equation"         => Cl8nkEntry::WaveEquation,
+            "einstein"              => Cl8nkEntry::Einstein,
+            "iug" | "IUG" | "universal_imscriptive_grammar" => Cl8nkEntry::IUG,
+            "clink" | "clink_l8" | "cl8nk" | "clink_layer8" => Cl8nkEntry::ClinkL8,
+            _                       => Cl8nkEntry::Unknown,
         }
     }
 
     pub fn tuple(&self) -> IgTuple {
         match self {
-            ZfcTEntry::Zfc                  => ZFC_BASELINE,
-            ZfcTEntry::ZfcT                 => ZFC_T,
-            ZfcTEntry::TemporalMathematics  => IgTuple {
+            Cl8nkEntry::Zfc                  => ZFC_BASELINE,
+            Cl8nkEntry::ZfcT                 => ZFC_T,
+            Cl8nkEntry::ClinkL8              => CLINK_L8,
+            Cl8nkEntry::TemporalMathematics  => IgTuple {
                 d: IgPrim::D_infty, t: IgPrim::T_bowtie, r: IgPrim::R_lr,
                 p: IgPrim::P_pm,    f: IgPrim::F_hbar,   k: IgPrim::K_slow,
                 g: IgPrim::G_aleph,  c: IgPrim::C_seq,
                 phi: IgPrim::Phi_c_complex, h: IgPrim::H2, s: IgPrim::S_nm,
                 omega: IgPrim::Omega_z,
             },
-            ZfcTEntry::Schrodinger           => IgTuple {
+            Cl8nkEntry::Schrodinger           => IgTuple {
                 d: IgPrim::D_infty, t: IgPrim::T_net, r: IgPrim::R_lr,
                 p: IgPrim::P_psi,   f: IgPrim::F_hbar,   k: IgPrim::K_mod,
                 g: IgPrim::G_beth,  c: IgPrim::C_seq,
                 phi: IgPrim::Phi_sub, h: IgPrim::H1, s: IgPrim::S_nn,
                 omega: IgPrim::Omega_z2,
             },
-            ZfcTEntry::HeatDiffusion         => IgTuple {
+            Cl8nkEntry::HeatDiffusion         => IgTuple {
                 d: IgPrim::D_infty, t: IgPrim::T_net, r: IgPrim::R_super,
                 p: IgPrim::P_asym,  f: IgPrim::F_eth,  k: IgPrim::K_mod,
                 g: IgPrim::G_gimel, c: IgPrim::C_and,
                 phi: IgPrim::Phi_sub, h: IgPrim::H0, s: IgPrim::S_nn,
                 omega: IgPrim::Omega_0,
             },
-            ZfcTEntry::NavierStokes          => IgTuple {
+            Cl8nkEntry::NavierStokes          => IgTuple {
                 d: IgPrim::D_infty, t: IgPrim::T_bowtie, r: IgPrim::R_lr,
                 p: IgPrim::P_asym,  f: IgPrim::F_ell,    k: IgPrim::K_fast,
                 g: IgPrim::G_gimel, c: IgPrim::C_seq,
                 phi: IgPrim::Phi_super, h: IgPrim::H1, s: IgPrim::S_nm,
                 omega: IgPrim::Omega_0,
             },
-            ZfcTEntry::WaveEquation           => IgTuple {
+            Cl8nkEntry::WaveEquation           => IgTuple {
                 d: IgPrim::D_infty, t: IgPrim::T_net, r: IgPrim::R_lr,
                 p: IgPrim::P_sym,   f: IgPrim::F_hbar,  k: IgPrim::K_mod,
                 g: IgPrim::G_aleph,  c: IgPrim::C_seq,
                 phi: IgPrim::Phi_sub, h: IgPrim::H1, s: IgPrim::S_nn,
                 omega: IgPrim::Omega_z2,
             },
-            ZfcTEntry::Einstein              => IgTuple {
+            Cl8nkEntry::Einstein              => IgTuple {
                 d: IgPrim::D_infty, t: IgPrim::T_odot, r: IgPrim::R_lr,
                 p: IgPrim::P_sym,   f: IgPrim::F_hbar,  k: IgPrim::K_slow,
                 g: IgPrim::G_aleph,  c: IgPrim::C_seq,
                 phi: IgPrim::Phi_c_complex, h: IgPrim::H2, s: IgPrim::S_nm,
                 omega: IgPrim::Omega_z,
             },
-            ZfcTEntry::IUG                   => ZFC_FE,
-            ZfcTEntry::Unknown               => ZFC_BASELINE,
+            Cl8nkEntry::IUG                   => ZFC_FE,
+            Cl8nkEntry::Unknown               => ZFC_BASELINE,
         }
     }
 
     pub fn name(&self) -> &'static str {
         match self {
-            ZfcTEntry::Zfc                  => "zfc",
-            ZfcTEntry::ZfcT                 => "zfc_t",
-            ZfcTEntry::TemporalMathematics  => "temporal_mathematics",
-            ZfcTEntry::Schrodinger           => "schrodinger",
-            ZfcTEntry::HeatDiffusion         => "heat_diffusion",
-            ZfcTEntry::NavierStokes          => "navier_stokes",
-            ZfcTEntry::WaveEquation          => "wave_equation",
-            ZfcTEntry::Einstein              => "einstein",
-            ZfcTEntry::IUG                   => "IUG",
-            ZfcTEntry::Unknown               => "unknown",
+            Cl8nkEntry::Zfc                  => "zfc",
+            Cl8nkEntry::ZfcT                 => "zfc_t",
+            Cl8nkEntry::ClinkL8              => "clink_l8",
+            Cl8nkEntry::TemporalMathematics  => "temporal_mathematics",
+            Cl8nkEntry::Schrodinger           => "schrodinger",
+            Cl8nkEntry::HeatDiffusion         => "heat_diffusion",
+            Cl8nkEntry::NavierStokes          => "navier_stokes",
+            Cl8nkEntry::WaveEquation          => "wave_equation",
+            Cl8nkEntry::Einstein              => "einstein",
+            Cl8nkEntry::IUG                   => "IUG",
+            Cl8nkEntry::Unknown               => "unknown",
         }
     }
 }

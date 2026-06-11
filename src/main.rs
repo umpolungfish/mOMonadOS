@@ -25,7 +25,7 @@ mod para_ym;
 mod para_temporal;
 mod para_category;
 mod algebra;
-mod zfc_t;
+mod cl8nk;
 mod consciousness;
 
 use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT};
@@ -175,7 +175,7 @@ fn repl(k: &mut Kernel) {
             "temp" => print_temporal(),
             "cat" => print_cat(),
             "algebra" => print_algebra(k, parts.next().unwrap_or("")),
-            "zfc" => print_zfc(parts.next().unwrap_or("")),
+            "cl8nk" => print_cl8nk(parts.next().unwrap_or("")),
             "cscore" => print_cscore(k),
             "tick" => {
                 let n: u64 = parts.next().and_then(|s| s.trim().parse().ok()).unwrap_or(1);
@@ -582,38 +582,63 @@ fn redraw_input(old_len: usize, src: &[u8], src_len: usize, buf: &mut [u8; 256])
 // ─── Helpers ──────────────────────────────────────────────────
 
 fn print_help() {
-    sprintln!("mOMonadOS REPL commands (graph execution — 12 tokens, 0 control opcodes):");
+    sprintln!("mOMonadOS REPL commands:");
+    sprintln!();
+    sprintln!("══ Execution ══");
     sprintln!("  tick [N]              — run N manual ticks (default 1)");
     sprintln!("  run [N]               — run N ticks; no arg = continuous (ESC to stop)");
     sprintln!("  watch [N]             — live terminal HUD, refresh every N ticks (ESC to stop)");
-    sprintln!("  graph                 — ASCII-art token graph with nesting"); 
-    sprintln!("  heatmap [start] [n]   — B4 memory heatmap with color blocks");
     sprintln!("  timer [N]             — run N ticks, one per PIT interrupt (ESC to stop)");
-    sprintln!("  boot <I–XIX>           — load any program + run continuously");
-    sprintln!("  load <I–XIX>           — load any program by Roman numeral");
-    sprintln!("  status                — kernel status");
+    sprintln!("  boot <I–XIX>          — load any program + run continuously");
+    sprintln!("  load <I–XIX>          — load any program by Roman numeral");
+    sprintln!();
+    sprintln!("══ Status ══");
+    sprintln!("  status                — kernel status (tick, IP, stack, fork, frob, halted)");
     sprintln!("  program               — show loaded program + fork depth");
-    sprintln!("  snapshot              — structural snapshot (sig, tier, period, ...)");
-    sprintln!("  canonical <I–XII>      — load canonical program");
-    sprintln!("  continuous <1–4>       — load continuous program");
-    sprintln!("  novel <1–3>            — load novel program (XVII–XIX)");
-    sprintln!("  list                  — list all programs");
-    sprintln!("  crystal <addr>        — decode address");
-    sprintln!("  crystal store <n> [d] — store entry");
-    sprintln!("  crystal name <n>      — retrieve by name");
-    sprintln!("  crystal find          — list stored entries");
+    sprintln!("  snapshot              — structural snapshot (sig, tier, period, dialeth, ...)");
+    sprintln!("  graph                 — ASCII-art token graph with nesting");
+    sprintln!("  heatmap [start] [n]   — B4 memory heatmap with color blocks");
     sprintln!("  memory [start] [n]    — dump B4 memory");
     sprintln!("  registers             — show R0-R7");
     sprintln!("  stack                 — stack depth");
-    sprintln!("  halt/quit             — exit");
     sprintln!();
-    sprintln!("Control flow is token-graph-native:");
-    sprintln!("  FSPLIT (1->2) = fork     FFUSE (2->1) = join");
-    sprintln!("  EVALT/EVALF (1->1) = branch gates");
-    sprintln!("  TANCH (1->0) = halt       VINIT (0->1) = source");
-    sprintln!("  IMSCRIB (1->1) = self-loop  End-of-program = cycle");
+    sprintln!("══ Program Loading ══");
+    sprintln!("  list                  — list all programs (I–XIX)");
+    sprintln!("  canonical <I–XII>     — load canonical program");
+    sprintln!("  continuous <1–4>      — load continuous program");
+    sprintln!("  novel <1–3>           — load novel program (XVII–XIX)");
+    sprintln!();
+    sprintln!("══ Crystal FS ══");
+    sprintln!("  crystal <addr>        — decode address to 12-tuple");
+    sprintln!("  crystal store <n> [d] — store entry");
+    sprintln!("  crystal name <n>      — retrieve by name");
+    sprintln!("  crystal find          — list stored entries");
+    sprintln!();
+    sprintln!("══ Grammar Bridges ══");
+    sprintln!("  ig                    — IG tuple + crystal address");
+    sprintln!("  classify              — nearest-catalog classification");
+    sprintln!("  frob                  — Frobenius harness status (closed/open ratio)");
+    sprintln!("  aleph <Hebrew word>   — Hebrew glyph encoding + gematria");
+    sprintln!("  shor                  — Belnap Shor pipeline (N=15, N=21)");
+    sprintln!("  rh                    — Riemann Hypothesis bridge");
+    sprintln!("  ym                    — Yang-Mills mass gap bridge");
+    sprintln!("  temp                  — Temporal logic bridge");
+    sprintln!("  cat                   — Category theory bridge");
+    sprintln!("  algebra <op>          — distance|meet|join|tensor vs ZFC baseline");
+    sprintln!("  cl8nk <op>              — promotions|entry|clink_l8|<ZFC reference>");
+    sprintln!("  cscore                — consciousness score (dual-gate)");
+    sprintln!();
+    sprintln!("══ ParaASM ══");
+    sprintln!("  psm test              — dialetheic alignment + measurement tests");
+    sprintln!("  psm frob              — Frobenius identity cycle (ENGAGR→FSPLIT→FFUSE→HALT)");
+    sprintln!("  psm kernel            — kernel-state B3 invariant loop");
+    sprintln!("  psm load <prog>       — inline ParaASM program (; separator)");
+    sprintln!();
+    sprintln!("  halt/quit             — exit (μ∘δ=id)");
+    sprintln!();
+    sprintln!("Control flow: FSPLIT=fork  FFUSE=join  EVALT/EVALF=branch");
+    sprintln!("              TANCH=halt  VINIT=source  IMSCRIB=self-loop");
 }
-
 fn print_status(k: &Kernel) {
     let tier = k.snapshot.map(|s| s.tier_name()).unwrap_or("?");
     sprintln!("╔══════════════════════════════════════╗");
@@ -975,22 +1000,22 @@ fn print_algebra(k: &Kernel, arg: &str) {
         let ig = IgTuple::from_snapshot(&snap);
         match arg {
             "distance" | "dist" => {
-                let zfc = crate::zfc_t::ZFC_BASELINE;
+                let zfc = crate::cl8nk::ZFC_BASELINE;
                 sprintln!("Hamming mismatches: {}/12", primitive_mismatches(&ig, &zfc));
                 sprintln!("Weighted distance:  {:.2}", tuple_distance(&ig, &zfc));
             }
             "meet" => {
-                let zfc = crate::zfc_t::ZFC_BASELINE;
+                let zfc = crate::cl8nk::ZFC_BASELINE;
                 let r = meet(&ig, &zfc);
                 sprintln!("{}", r);
             }
             "join" => {
-                let zfc = crate::zfc_t::ZFC_BASELINE;
+                let zfc = crate::cl8nk::ZFC_BASELINE;
                 let r = join(&ig, &zfc);
                 sprintln!("{}", r);
             }
             "tensor" => {
-                let zfc = crate::zfc_t::ZFC_BASELINE;
+                let zfc = crate::cl8nk::ZFC_BASELINE;
                 let t = tensor(&ig, &zfc);
                 sprintln!("tensor: {}", t.display_shavian());
             }
@@ -1004,37 +1029,37 @@ fn print_algebra(k: &Kernel, arg: &str) {
     }
 }
 
-fn print_zfc(arg: &str) {
-    use crate::zfc_t::*;
+fn print_cl8nk(arg: &str) {
+    use crate::cl8nk::*;
     match arg {
         "promotions" | "promo" => {
-            sprintln!("══ ZFCₜ Promotion Channels ══");
+            sprintln!("══ CL8NK Promotion Channels (ZFC→ZFCₜ) ══");
             let mut total = 0.0f32;
-            for p in ZfcTPromotion::all().iter() {
+            for p in Cl8nkPromotion::all().iter() {
                 let from = p.zfc_primitive();
                 let to = p.to_primitive();
                 sprintln!("  {}  {} -> {}  gap={:.3}",
                     p.name(), from.glyph(), to.glyph(), p.ordinal_gap());
                 total += p.ordinal_gap();
             }
-            sprintln!("  d(ZFC, ZFCₜ) = {:.4}", total);
+            sprintln!("  d(ZFC, ZFCₜ) via 6 promotion channels = {:.4}", total);
             sprintln!("  6 simultaneous promotions");
-            sprintln!("  ZFCₜ tier: O_∞ (⊙ + 𐑹 + 𐑭 — Frobenius gate open)");
+            sprintln!("  CL8NK ladder: ZFC→ZFCₜ→ZFCfe→CLINK L8 (terminal O_∞⁺)");
         }
         "" | "entry" => {
             let name = if arg.is_empty() { "zfc" } else { arg };
-            let entry = ZfcTEntry::from_name(name);
+            let entry = Cl8nkEntry::from_name(name);
             let t = entry.tuple();
             let stage = classify_stage(&t);
-            let dist = zfc_t_distance(&t);
-            sprintln!("══ ZFCₜ Entry: {} ══", entry.name());
+            let dist = cl8nk_distance(&t);
+            sprintln!("══ CL8NK Entry: {} ══", entry.name());
             sprintln!("  Tier stage: {:?}", stage);
-            sprintln!("  ZFCₜ distance: {:.4}", dist);
+            sprintln!("  CL8NK distance: {:.4}", dist);
             sprintln!("  Promotions: {}/6", count_promotions(&t));
             sprintln!("  Tuple: {}", t.display_shavian());
         }
         _ => {
-            sprintln!("zfc <promotions|entry|zfc|zfc_t|temporal_mathematics|schrodinger|heat_diffusion|navier_stokes|wave_equation|einstein|IUG>");
+            sprintln!("cl8nk <promotions|entry|zfc|zfc_t|clink_l8|temporal_mathematics|schrodinger|heat_diffusion|navier_stokes|wave_equation|einstein|IUG>");
         }
     }
 }
