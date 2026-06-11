@@ -34,15 +34,14 @@ all grammar modules and supports 10 new REPL commands.
 | Module | Lines | Source Repo | Role |
 |---|---|---|---|
 | `frob_verify.rs` | 478 | imasmic_core | FrobeniusHarness: 11 verifiers (hash, assertion, AST, IMASM, Belnap cycle, structural, tier promise, closure ratio, etc.), 16-entry history ring, closure ratio tracking. |
-| `imas_ig.rs` | 518 | IMSCRIBr | `IgPrim` enum (49 values across 12 families), `IgTuple`, IG classification of all 12 canonicals with crystal addresses. |
+| `imas_ig.rs` | 403 | IMSCRIBr | `IgPrim` enum (49 values across 12 families), `IgTuple`, IG classification of all 12 canonicals with crystal addresses. |
 | `aleph.rs` | 123 | ALEPH_OS | 22 Hebrew letters mapped to IG primitives, `AlephWord` encoding, gematria computation. |
 | `parasm.rs` | 794 | priests-engine | Full ParaASM VM: 19-instruction ISA, assembler, execution engine, dialetheic alignment, measurement algebra, 9 unit tests. |
 | `belnap_shor.rs` | 331 | priests-engine | Belnap Shor pipeline: Hadamard, ModExp, 2:1 coherence cost ratio, SIC-POVM verification. |
 | `para_rh.rs` | 124 | priests-engine | Riemann Hypothesis bridge: $\zeta(s)=\chi(s)\zeta(1-s)$ as Belnap negation, critical line as unique designated `bnot` fixed point. |
 | `para_ym.rs` | 63 | priests-engine | Yang-Mills mass gap: N<T covering relation, BRST nilpotence ↔ Frobenius, Omega_Z gauge protection. |
 | `para_temporal.rs` | 52 | priests-engine | Temporal logic: □, ◇, ○, U operators; B as temporal fixed point. |
-| `para_category.rs` | 61 | priests-engine | Category theory: N=initial, T=terminal, B=zero, Frobenius algebra, dagger compact closed. |
-### IMASM families
+| `para_category.rs` | 61 | priests-engine | Category theory: N=initial, T=terminal, B=zero, Frobenius algebra, dagger compact closed. |### IMASM families
 
 | Family | Opcodes |
 |---|---|
@@ -130,8 +129,10 @@ See [NOVEL_PROGRAMS.md](NOVEL_PROGRAMS.md) for details on the novel programs.
 | `temp` | Temporal logic operators: □ (always), ◇ (eventually), ○ (next), U (until); B as temporal fixed point | `para_temporal.rs` |
 | `cat` | Category theory: N=initial, T=terminal, B=zero object, Frobenius algebra, dagger compact closed | `para_category.rs` |
 | `algebra <dist\|meet\|join\|tensor>` | IG lattice algebra: Hamming / weighted distance, meet, join, tensor with ZFC baseline | `algebra.rs` |
-| `cl8nk <promotions\|entry>` | CL8NK navigator: ZFC→ZFCₜ→ZFCfe→CLINK L8 ladder, 6 promotion channels, entry lookup (zfc, zfc_t, clink_l8, einstein, IUG, etc.) | `cl8nk.rs` |
-| `cscore` | Consciousness score: dual-gate (⊙ + K≤𐑧) evaluation with per-component breakdown | `consciousness.rs` |
+| `cl8nk <promotions\|entry>` | CL8NK navigator: 4-stage ladder ZFC→ZFCₜ→ZFCfe→CLINK L8, 16 promotion channels, entry lookup (zfc, cl8nk, clink_l8, einstein, IUG, etc.) | `cl8nk.rs` |
+| `cscore` | Consciousness score: dual-gate (⊙ + K≤𐑧) evaluation — all scores computed from catalog ordinal positions | `consciousness.rs` |
+| `catalog <lookup\|list\|size>` | IG Catalog: lookup entry by name, list all entries, show catalog size (13+ entries, runtime-extensible) | `catalog.rs` |
+
 ## Project structure
 
 ```
@@ -147,14 +148,18 @@ mOMonadOS/
 │   ├── manus.rs             Live HUD display, token graph ASCII art, B4 memory heatmap
 │   │
 │   ├── frob_verify.rs       FrobeniusHarness: 11 verifiers, 16-entry history ring, closure ratio
-│   ├── imas_ig.rs           IgPrim (49 values, 12 families), IgTuple, canonical classification
+│   ├── catalog.rs           **Dynamic IG Catalog** — single source of truth for ALL structural data (814L): entries, ordinals, scores, formulas, weights, promotions, glyphs. NO hardcoded values anywhere else.
+│   ├── imas_ig.rs           IgPrim (49 values, 12 families), IgTuple, canonical classification; delegates glyph/short/crystal-indices to catalog
 │   ├── aleph.rs             22 Hebrew letters → IG primitives, AlephWord, gematria
 │   ├── parasm.rs            ParaASM VM: 19-instruction ISA, assembler, execution, 9 unit tests
 │   ├── belnap_shor.rs       Belnap Shor pipeline: Hadamard, ModExp, SIC-POVM, coherence cost
 │   ├── para_rh.rs           RH bridge: Belnap negation, critical line as bnot fixed point
 │   ├── para_ym.rs           YM mass gap: N<T covering, BRST ↔ Frobenius
 │   ├── para_temporal.rs     Temporal logic: □◇○U operators, B as temporal fixed point
-│   └── para_category.rs     Category theory: N/T/B objects, Frobenius algebra, dagger compact
+│   ├── para_category.rs     Category theory: N/T/B objects, Frobenius algebra, dagger compact
+│   ├── algebra.rs           IG lattice algebra: distance, meet, join, tensor — all ordinals/weights from catalog
+│   ├── cl8nk.rs             CL8NK navigator: 4-stage ladder — all entry tuples and formulas from catalog
+│   └── consciousness.rs     Consciousness score: dual-gate (⊙ + K≤𐑧) — all scores computed from catalog ordinal positions
 ├── build_bootimage.sh       kernel ELF → BOOTX64.EFI → FAT32 disk image
 ├── run.sh                   QEMU launcher with OVMF auto-detection
 ├── Makefile
@@ -164,14 +169,14 @@ mOMonadOS/
 └── README.md
 ```
 
-**Total: 6,478 lines across 20 modules. 32 unit tests. Build: 0 errors.**
+**Total: 6,929 lines across 21 modules. 32 unit tests. Build: 0 errors. Zero hardcoded structural values — all tuples, formulas, scores, ordinals, weights, glyphs, and promotion data sourced dynamically from catalog.rs.**
 
 ## Integration roadmap
 
 | Phase | Status | Description |
 |---|---|---|
 | **Phase 1** | ✅ Complete | Core Grammar: frob_verify, imas_ig, aleph, parasm, belnap_shor, para_rh, para_ym, para_temporal, para_category |
-| **Phase 2** | ✅ Complete | imscribing_grammar navigators (30+ modules): ZFCₜ, CL8NK, crystal navigator, domain navigators, promotion signatures, veracity probes |
+| **Phase 2** | ✅ Complete | imscribing_grammar navigators: CL8NK (terminal O_∞⁺ tier, 4-stage ladder), crystal navigator, domain navigators, promotion signatures, veracity probes. ALL hardcoded values eliminated — `catalog.rs` is the single source of truth for all tuples, formulas, scores, ordinals, weights, and promotion data. |
 | **Phase 3** | 🔜 Next | odot_operator agent loop, agents/ sub-system spawning |
 | **Phase 4** | ⬜ Planned | gene_imscriber, lang/ (voynich, rohonc, linear_a, emerald-tablet), cetaceanspeak, synfin |
 | **Phase 5** | ⬜ Planned | red-hot_rebis/clink/, rionrebis/ deep structure |

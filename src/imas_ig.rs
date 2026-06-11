@@ -112,71 +112,17 @@ pub enum IgPrim {
 
 impl IgPrim {
     /// Shavian glyph string for this primitive value.
+    /// Shavian glyph string for this primitive value.
+    /// Delegates to catalog::primitive_glyph() — single source of truth.
     pub fn glyph(self) -> &'static str {
-        match self {
-            IgPrim::D_odot => "𐑦", IgPrim::D_wedge => "𐑛",
-            IgPrim::D_triangle => "𐑨", IgPrim::D_infty => "𐑼",
-            IgPrim::T_odot => "𐑸", IgPrim::T_net => "𐑡",
-            IgPrim::T_in => "𐑰", IgPrim::T_bowtie => "𐑥",
-            IgPrim::T_boxtimes => "𐑶",
-            IgPrim::R_lr => "𐑾", IgPrim::R_dagger => "𐑽",
-            IgPrim::R_cat => "𐑑", IgPrim::R_super => "𐑩",
-            IgPrim::P_pmsym => "𐑹", IgPrim::P_sym => "𐑯",
-            IgPrim::P_pm => "𐑬", IgPrim::P_psi => "𐑿",
-            IgPrim::P_asym => "𐑗",
-            IgPrim::F_hbar => "𐑐", IgPrim::F_ell => "𐑱",
-            IgPrim::F_eth => "𐑞",
-            IgPrim::K_trap => "𐑪", IgPrim::K_slow => "𐑧",
-            IgPrim::K_mod => "𐑤", IgPrim::K_fast => "𐑘",
-            IgPrim::K_mbl => "𐑺",
-            IgPrim::G_aleph => "𐑲", IgPrim::G_beth => "𐑚",
-            IgPrim::G_gimel => "𐑔",
-            IgPrim::C_seq => "𐑠", IgPrim::C_and => "𐑝",
-            IgPrim::C_or => "𐑜", IgPrim::C_broad => "𐑵",
-            IgPrim::Phi_c => "⊙", IgPrim::Phi_c_complex => "𐑮",
-            IgPrim::Phi_ep => "𐑻", IgPrim::Phi_sub => "𐑢",
-            IgPrim::Phi_super => "𐑣",
-            IgPrim::H_inf => "𐑫", IgPrim::H2 => "𐑖",
-            IgPrim::H1 => "𐑒", IgPrim::H0 => "𐑓",
-            IgPrim::S_nm => "𐑳", IgPrim::S_nn => "𐑕",
-            IgPrim::S_11 => "𐑙",
-            IgPrim::Omega_z => "𐑭", IgPrim::Omega_z2 => "𐑴",
-            IgPrim::Omega_0 => "𐑷", IgPrim::Omega_na => "𐑟",
-        }
+        crate::catalog::primitive_glyph(self)
     }
 
     /// Short name for this primitive (for status display).
+    /// Short name for this primitive (for status display).
+    /// Delegates to catalog::primitive_short() — single source of truth.
     pub fn short(self) -> &'static str {
-        match self {
-            IgPrim::D_odot => "D_⊙", IgPrim::D_wedge => "D_∨",
-            IgPrim::D_triangle => "D_△", IgPrim::D_infty => "D_∞",
-            IgPrim::T_odot => "T_⊙", IgPrim::T_net => "T_net",
-            IgPrim::T_in => "T_in", IgPrim::T_bowtie => "T_bow",
-            IgPrim::T_boxtimes => "T_⊠",
-            IgPrim::R_lr => "R_lr", IgPrim::R_dagger => "R_†",
-            IgPrim::R_cat => "R_cat", IgPrim::R_super => "R_sup",
-            IgPrim::P_pmsym => "P_⊙", IgPrim::P_sym => "P_sym",
-            IgPrim::P_pm => "P_±", IgPrim::P_psi => "P_ψ",
-            IgPrim::P_asym => "P_∅",
-            IgPrim::F_hbar => "F_ℏ", IgPrim::F_ell => "F_ℓ",
-            IgPrim::F_eth => "F_ð",
-            IgPrim::K_trap => "K_⊤", IgPrim::K_slow => "K_↓",
-            IgPrim::K_mod => "K_~", IgPrim::K_fast => "K_↑",
-            IgPrim::K_mbl => "K_MBL",
-            IgPrim::G_aleph => "G_ℵ", IgPrim::G_beth => "G_ℶ",
-            IgPrim::G_gimel => "G_ℷ",
-            IgPrim::C_seq => "C_seq", IgPrim::C_and => "C_∧",
-            IgPrim::C_or => "C_∨", IgPrim::C_broad => "C_⊛",
-            IgPrim::Phi_c => "Φ_⊙", IgPrim::Phi_c_complex => "Φ_ℂ",
-            IgPrim::Phi_ep => "Φ_EP", IgPrim::Phi_sub => "Φ_<",
-            IgPrim::Phi_super => "Φ_>",
-            IgPrim::H_inf => "H_∞", IgPrim::H2 => "H2",
-            IgPrim::H1 => "H1", IgPrim::H0 => "H0",
-            IgPrim::S_nm => "S_n:m", IgPrim::S_nn => "S_n:n",
-            IgPrim::S_11 => "S_1:1",
-            IgPrim::Omega_z => "Ω_Z", IgPrim::Omega_z2 => "Ω_Z2",
-            IgPrim::Omega_0 => "Ω_0", IgPrim::Omega_na => "Ω_NA",
-        }
+        crate::catalog::primitive_short(self)
     }
 }
 // ─── Fingerprint → IG Tuple Mapping ────────────────────────────
@@ -428,84 +374,24 @@ impl<'a> core::fmt::Display for ClassDisplay<'a> {
 impl IgTuple {
     /// Convert this IG tuple to 12 primitive indices (0-based within each family).
     /// Maps each IgPrim to its ordinal position within its primitive family.
+    /// Convert this IG tuple to 12 primitive indices (0-based within each family).
+    /// Uses catalog ordinal tables — no hardcoded match arms.
+    /// Each index is the ordinal position of the primitive value within its family.
     pub fn to_crystal_indices(&self) -> [u8; 12] {
+        use crate::catalog;
         [
-            // D: 4 values: wedge=0 triangle=1 infty=2 odot=3
-            match self.d {
-                IgPrim::D_wedge => 0, IgPrim::D_triangle => 1,
-                IgPrim::D_infty => 2, IgPrim::D_odot => 3,
-                _ => 0,
-            },
-            // T: 5 values: net=0 in=1 bowtie=2 boxtimes=3 odot=4
-            match self.t {
-                IgPrim::T_net => 0, IgPrim::T_in => 1,
-                IgPrim::T_bowtie => 2, IgPrim::T_boxtimes => 3,
-                IgPrim::T_odot => 4,
-                _ => 0,
-            },
-            // R: 4 values: super=0 cat=1 dagger=2 lr=3
-            match self.r {
-                IgPrim::R_super => 0, IgPrim::R_cat => 1,
-                IgPrim::R_dagger => 2, IgPrim::R_lr => 3,
-                _ => 0,
-            },
-            // P: 5 values: asym=0 psi=1 pm=2 sym=3 pmsym=4
-            match self.p {
-                IgPrim::P_asym => 0, IgPrim::P_psi => 1,
-                IgPrim::P_pm => 2, IgPrim::P_sym => 3,
-                IgPrim::P_pmsym => 4,
-                _ => 0,
-            },
-            // F: 3 values: ell=0 eth=1 hbar=2
-            match self.f {
-                IgPrim::F_ell => 0, IgPrim::F_eth => 1,
-                IgPrim::F_hbar => 2,
-                _ => 0,
-            },
-            // K: 5 values: fast=0 mod=1 slow=2 trap=3 mbl=4
-            match self.k {
-                IgPrim::K_fast => 0, IgPrim::K_mod => 1,
-                IgPrim::K_slow => 2, IgPrim::K_trap => 3,
-                IgPrim::K_mbl => 4,
-                _ => 0,
-            },
-            // G: 3 values: beth=0 gimel=1 aleph=2
-            match self.g {
-                IgPrim::G_beth => 0, IgPrim::G_gimel => 1,
-                IgPrim::G_aleph => 2,
-                _ => 0,
-            },
-            // C: 4 values: and=0 or=1 seq=2 broad=3
-            match self.c {
-                IgPrim::C_and => 0, IgPrim::C_or => 1,
-                IgPrim::C_seq => 2, IgPrim::C_broad => 3,
-                _ => 0,
-            },
-            // Phi: 5 values: sub=0 c=1 c_complex=2 ep=3 super=4
-            match self.phi {
-                IgPrim::Phi_sub => 0, IgPrim::Phi_c => 1,
-                IgPrim::Phi_c_complex => 2, IgPrim::Phi_ep => 3,
-                IgPrim::Phi_super => 4,
-                _ => 0,
-            },
-            // H: 4 values: H0=0 H1=1 H2=2 H_inf=3
-            match self.h {
-                IgPrim::H0 => 0, IgPrim::H1 => 1,
-                IgPrim::H2 => 2, IgPrim::H_inf => 3,
-                _ => 0,
-            },
-            // S: 3 values: S_11=0 S_nn=1 S_nm=2
-            match self.s {
-                IgPrim::S_11 => 0, IgPrim::S_nn => 1,
-                IgPrim::S_nm => 2,
-                _ => 0,
-            },
-            // Omega: 4 values: Omega_0=0 Omega_z2=1 Omega_z=2 Omega_na=3
-            match self.omega {
-                IgPrim::Omega_0 => 0, IgPrim::Omega_z2 => 1,
-                IgPrim::Omega_z => 2, IgPrim::Omega_na => 3,
-                _ => 0,
-            },
+            catalog::ord_index(&catalog::D_ORD, self.d).unwrap_or(0) as u8,
+            catalog::ord_index(&catalog::T_ORD, self.t).unwrap_or(0) as u8,
+            catalog::ord_index(&catalog::R_ORD, self.r).unwrap_or(0) as u8,
+            catalog::ord_index(&catalog::P_ORD, self.p).unwrap_or(0) as u8,
+            catalog::ord_index(&catalog::F_ORD, self.f).unwrap_or(0) as u8,
+            catalog::ord_index(&catalog::K_ORD, self.k).unwrap_or(0) as u8,
+            catalog::ord_index(&catalog::G_ORD, self.g).unwrap_or(0) as u8,
+            catalog::ord_index(&catalog::C_ORD, self.c).unwrap_or(0) as u8,
+            catalog::ord_index(&catalog::PHI_ORD, self.phi).unwrap_or(0) as u8,
+            catalog::ord_index(&catalog::H_ORD, self.h).unwrap_or(0) as u8,
+            catalog::ord_index(&catalog::S_ORD, self.s).unwrap_or(0) as u8,
+            catalog::ord_index(&catalog::OMEGA_ORD, self.omega).unwrap_or(0) as u8,
         ]
     }
 

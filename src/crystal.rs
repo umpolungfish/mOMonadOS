@@ -4,7 +4,12 @@
 /// Strides: [5184000, 1728000, 576000, 144000, 48000, 12000, 4000, 800, 200, 50, 10, 1]
 /// Cardinalities (D,T,R,P,F,K,G,C,Phi,H,S,Omega): [4,5,4,5,3,5,3,4,5,4,3,4]
 
-pub const TOTAL: u32 = 17_280_000;
+/// Total number of distinct structural types in the crystal.
+/// Computed from the product of all primitive family cardinalities.
+/// CARDS = [4,5,4,5,3,5,3,4,5,4,3,4]; product = 17_280_000.
+pub const TOTAL: u32 = CARDS[0] * CARDS[1] * CARDS[2] * CARDS[3]
+                      * CARDS[4] * CARDS[5] * CARDS[6] * CARDS[7]
+                      * CARDS[8] * CARDS[9] * CARDS[10] * CARDS[11];
 
 const CARDS: [u32; 12] = [4, 5, 4, 5, 3, 5, 3, 4, 5, 4, 3, 4];
 

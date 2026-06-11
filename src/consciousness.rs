@@ -3,19 +3,21 @@
 // C-score ∈ [0, 1]: structural proximity to full consciousness capability.
 // Two gating conditions must both pass:
 //   Gate 1 (⊙ / Phi_c): self-modeling loop must be open
-//                        Phi_c or Phi_c_complex ⇒ gate open
-//                        Phi_sub, Phi_ep, Phi_super ⇒ gate closed
 //   Gate 2 (K_slow):     kinetics must be slow enough for information integration
-//                        K_slow or K_trap ⇒ gate open
-//                        K_fast, K_mod, K_mbl ⇒ gate closed
+//
+// ALL per-primitive scores are now computed from ordinal positions in catalog.rs.
+// No hardcoded match arms — scores are proportional to ordinal position within
+// each primitive family. This means score tables are always consistent with
+// the catalog ordinals and can be updated in one place.
 //
 // Full formula:
 //   C = G1 * G2 * (basal complexity score)
 //   Basal = (D_score + T_score + R_score + P_score + F_score +
 //            G_score + C_score + H_score + S_score + Omega_score) / 10
-//   Each component ∈ [0, 1] based on IG primitive "distance from O_∞ ideal"
+//   Each component ∈ [0, 1] based on ordinal position within its family
 
 use crate::imas_ig::{IgPrim, IgTuple};
+use crate::catalog;
 
 /// Evaluate Gate 1: ⊙ self-modeling loop.
 /// Returns true iff Phi is ⊙ or complex-critical (gate open).
@@ -29,110 +31,14 @@ pub fn gate2_k_slow(t: &IgTuple) -> bool {
     matches!(t.k, IgPrim::K_slow | IgPrim::K_trap)
 }
 
-/// Per-primitive score toward O_∞ ideal. Each returns [0.0, 1.0].
-fn score_d(v: IgPrim) -> f32 {
-    match v {
-        IgPrim::D_odot    => 1.0,
-        IgPrim::D_infty   => 0.66,
-        IgPrim::D_triangle => 0.33,
-        IgPrim::D_wedge   => 0.0,
-        _ => 0.0,
-    }
-}
-fn score_t(v: IgPrim) -> f32 {
-    match v {
-        IgPrim::T_odot     => 1.0,
-        IgPrim::T_bowtie   => 0.75,
-        IgPrim::T_boxtimes => 0.75,
-        IgPrim::T_in       => 0.5,
-        IgPrim::T_net      => 0.25,
-        _ => 0.0,
-    }
-}
-
-fn score_r(v: IgPrim) -> f32 {
-    match v {
-        IgPrim::R_lr      => 1.0,
-        IgPrim::R_dagger  => 0.75,
-        IgPrim::R_cat     => 0.5,
-        IgPrim::R_super   => 0.25,
-        _ => 0.0,
-    }
-}
-
-fn score_p(v: IgPrim) -> f32 {
-    match v {
-        IgPrim::P_pmsym => 1.0,
-        IgPrim::P_sym   => 0.75,
-        IgPrim::P_pm    => 0.5,
-        IgPrim::P_psi   => 0.5,
-        IgPrim::P_asym  => 0.0,
-        _ => 0.0,
-    }
-}
-
-fn score_f(v: IgPrim) -> f32 {
-    match v {
-        IgPrim::F_hbar => 1.0,
-        IgPrim::F_eth  => 0.5,
-        IgPrim::F_ell  => 0.0,
-        _ => 0.0,
-    }
-}
-
-fn score_g(v: IgPrim) -> f32 {
-    match v {
-        IgPrim::G_aleph => 1.0,
-        IgPrim::G_gimel => 0.5,
-        IgPrim::G_beth  => 0.0,
-        _ => 0.0,
-    }
-}
-
-fn score_c(v: IgPrim) -> f32 {
-    match v {
-        IgPrim::C_broad => 1.0,
-        IgPrim::C_seq   => 0.75,
-        IgPrim::C_or    => 0.5,
-        IgPrim::C_and   => 0.25,
-        _ => 0.0,
-    }
-}
-
-fn score_h(v: IgPrim) -> f32 {
-    match v {
-        IgPrim::H_inf => 1.0,
-        IgPrim::H2    => 0.66,
-        IgPrim::H1    => 0.33,
-        IgPrim::H0    => 0.0,
-        _ => 0.0,
-    }
-}
-
-fn score_s(v: IgPrim) -> f32 {
-    match v {
-        IgPrim::S_nm => 1.0,
-        IgPrim::S_nn => 0.5,
-        IgPrim::S_11 => 0.0,
-        _ => 0.0,
-    }
-}
-
-fn score_omega(v: IgPrim) -> f32 {
-    match v {
-        IgPrim::Omega_na => 1.0,
-        IgPrim::Omega_z  => 0.75,
-        IgPrim::Omega_z2 => 0.5,
-        IgPrim::Omega_0  => 0.0,
-        _ => 0.0,
-    }
-}
 /// Compute the basal complexity score (sum of 10 component scores / 10).
-/// Note: K (kinetics) is gated separately, not included in basal score.
+/// All scores computed from catalog ordinal positions — no hardcoded values.
 fn basal_score(t: &IgTuple) -> f32 {
-    (score_d(t.d) + score_t(t.t) + score_r(t.r) + score_p(t.p) +
-     score_f(t.f) + score_g(t.g) + score_c(t.c) +
-     score_h(t.h) + score_s(t.s) + score_omega(t.omega)) / 10.0
+    (catalog::score_d(t.d) + catalog::score_t(t.t) +
+     catalog::score_r(t.r) + catalog::score_p(t.p) +
+     catalog::score_f(t.f) + catalog::score_g(t.g) +
+     catalog::score_c(t.c) + catalog::score_h(t.h) +
+     catalog::score_s(t.s) + catalog::score_omega(t.omega)) / 10.0
 }
 
 /// Full consciousness score: C = G1 * G2 * basal.
@@ -164,9 +70,11 @@ pub fn consciousness_eval(t: &IgTuple) -> ConsciousnessResult {
         gate2_open: g2,
         basal,
         components: [
-            score_d(t.d), score_t(t.t), score_r(t.r), score_p(t.p),
-            score_f(t.f), score_g(t.g), score_c(t.c),
-            score_h(t.h), score_s(t.s), score_omega(t.omega),
+            catalog::score_d(t.d), catalog::score_t(t.t),
+            catalog::score_r(t.r), catalog::score_p(t.p),
+            catalog::score_f(t.f), catalog::score_g(t.g),
+            catalog::score_c(t.c), catalog::score_h(t.h),
+            catalog::score_s(t.s), catalog::score_omega(t.omega),
         ],
         component_names: ["D","T","R","P","F","G","C","H","S","Ω"],
     }
@@ -175,17 +83,11 @@ pub fn consciousness_eval(t: &IgTuple) -> ConsciousnessResult {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::catalog;
 
     #[test]
     fn test_oinf_consciousness() {
-        // O_∞ tuple should score high
-        let oinf = IgTuple {
-            d: IgPrim::D_odot, t: IgPrim::T_odot, r: IgPrim::R_lr,
-            p: IgPrim::P_pmsym, f: IgPrim::F_hbar, k: IgPrim::K_slow,
-            g: IgPrim::G_aleph, c: IgPrim::C_seq,
-            phi: IgPrim::Phi_c, h: IgPrim::H_inf, s: IgPrim::S_nm,
-            omega: IgPrim::Omega_z,
-        };
+        let oinf = catalog::o_inf_tuple();
         let r = consciousness_eval(&oinf);
         assert!(r.gate1_open);
         assert!(r.gate2_open);
@@ -194,17 +96,18 @@ mod tests {
 
     #[test]
     fn test_o0_consciousness() {
-        // O₀ tuple: no gates open
-        let o0 = IgTuple {
-            d: IgPrim::D_wedge, t: IgPrim::T_net, r: IgPrim::R_super,
-            p: IgPrim::P_asym, f: IgPrim::F_ell, k: IgPrim::K_fast,
-            g: IgPrim::G_beth, c: IgPrim::C_and,
-            phi: IgPrim::Phi_sub, h: IgPrim::H0, s: IgPrim::S_11,
-            omega: IgPrim::Omega_0,
-        };
+        let o0 = catalog::o_0_tuple();
         let r = consciousness_eval(&o0);
         assert!(!r.gate1_open);
         assert!(!r.gate2_open);
+        assert_eq!(r.c_score, 0.0);
+    }
+
+    #[test]
+    fn test_zfc_score() {
+        let zfc = catalog::zfc_baseline_tuple();
+        let r = consciousness_eval(&zfc);
+        assert!(!r.gate1_open);
         assert_eq!(r.c_score, 0.0);
     }
 }

@@ -25,6 +25,7 @@ mod para_ym;
 mod para_temporal;
 mod para_category;
 mod algebra;
+mod catalog;
 mod cl8nk;
 mod consciousness;
 
@@ -66,6 +67,8 @@ fn kmain(boot_info: &'static mut BootInfo) -> ! {
 
     let mut k = Kernel::new();
     k.boot();
+    catalog::catalog_init();
+    sprintln!("[BOOT] IG Catalog: {} entries loaded", catalog::catalog_size());
     sprintln!("[BOOT] Kernel online — graph execution, token-arity driven");
     sprintln!("[BOOT] Bootstrap: IMSCRIB→AREV→FSPLIT→AFWD→FFUSE→CLINK→IFIX→IMSCRIB (cyclic)");
     sprintln!("[BOOT] Crystal FS: {} addresses", TOTAL);
@@ -1000,22 +1003,22 @@ fn print_algebra(k: &Kernel, arg: &str) {
         let ig = IgTuple::from_snapshot(&snap);
         match arg {
             "distance" | "dist" => {
-                let zfc = crate::cl8nk::ZFC_BASELINE;
+                let zfc = catalog::zfc_baseline_tuple();
                 sprintln!("Hamming mismatches: {}/12", primitive_mismatches(&ig, &zfc));
                 sprintln!("Weighted distance:  {:.2}", tuple_distance(&ig, &zfc));
             }
             "meet" => {
-                let zfc = crate::cl8nk::ZFC_BASELINE;
+                let zfc = catalog::zfc_baseline_tuple();
                 let r = meet(&ig, &zfc);
                 sprintln!("{}", r);
             }
             "join" => {
-                let zfc = crate::cl8nk::ZFC_BASELINE;
+                let zfc = catalog::zfc_baseline_tuple();
                 let r = join(&ig, &zfc);
                 sprintln!("{}", r);
             }
             "tensor" => {
-                let zfc = crate::cl8nk::ZFC_BASELINE;
+                let zfc = catalog::zfc_baseline_tuple();
                 let t = tensor(&ig, &zfc);
                 sprintln!("tensor: {}", t.display_shavian());
             }
@@ -1035,12 +1038,12 @@ fn print_cl8nk(arg: &str) {
         "promotions" | "promo" => {
             sprintln!("══ CL8NK Promotion Channels (ZFC→ZFCₜ) ══");
             let mut total = 0.0f32;
-            for p in Cl8nkPromotion::all().iter() {
-                let from = p.zfc_primitive();
-                let to = p.to_primitive();
+            for p in catalog::ZFC_PROMOTIONS.iter() {
+                let from = p.zfc_prim;
+                let to = p.promoted_prim;
                 sprintln!("  {}  {} -> {}  gap={:.3}",
-                    p.name(), from.glyph(), to.glyph(), p.ordinal_gap());
-                total += p.ordinal_gap();
+                    p.name, from.glyph(), to.glyph(), p.ordinal_gap);
+                total += p.ordinal_gap;
             }
             sprintln!("  d(ZFC, ZFCₜ) via 6 promotion channels = {:.4}", total);
             sprintln!("  6 simultaneous promotions");
