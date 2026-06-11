@@ -69,7 +69,6 @@ impl B4 {
 
 // Convenience aliases matching Python b4_* conventions.
 pub type Belnap = B4;
-pub use B4::{N, T, F, B};
 
 pub fn meet(a: B4, b: B4) -> B4 { a.meet(b) }
 pub fn join(a: B4, b: B4) -> B4 { a.join(b) }

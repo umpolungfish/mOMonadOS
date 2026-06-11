@@ -644,8 +644,8 @@ fn print_frob(k: &Kernel) {
 }
 
 
-fn print_aleph(k: &Kernel, word: &str) {
-    use crate::aleph::{AlephWord, AlephLetter, ALEPH_LETTERS};
+fn print_aleph(_k: &Kernel, word: &str) {
+    use crate::aleph::{AlephWord, AlephLetter};
     if word.is_empty() {
         sprintln!("Usage: aleph <Hebrew word>");
         sprintln!("  22 letters: Aleph Mem Shin Bet Gimel Dalet Kaf Pe Resh Tav He Vav Zayin Chet Tet Yod Lamed Nun Samekh Ayin Tzadi Qof");

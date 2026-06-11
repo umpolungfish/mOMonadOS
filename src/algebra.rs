@@ -150,7 +150,7 @@ fn lattice_op(a: &IgTuple, b: &IgTuple, is_meet: bool) -> LatticeResult {
     let op_name = if is_meet { "meet" } else { "join" };
     
     // Phi_c absorption: ⊙ is absorbing under both meet and join
-    let phi = if a.phi == IgPrim::Phi_c {
+    let _phi = if a.phi == IgPrim::Phi_c {
         b.phi  // a is critical → b absorbed? No: ⊙ absorbs others
     } else if b.phi == IgPrim::Phi_c {
         a.phi
@@ -258,7 +258,7 @@ use core::fmt;
 
 impl IgTuple {
     /// Display as ⟨d·t·r·p·f·k·g·c·phi·h·s·omega⟩ using Shavian glyphs.
-    pub fn display_shavian(&self) -> ShavianDisplay {
+    pub fn display_shavian(&self) -> ShavianDisplay<'_> {
         ShavianDisplay { tuple: self }
     }
 }

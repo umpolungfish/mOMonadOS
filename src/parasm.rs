@@ -6,9 +6,8 @@
 use alloc::collections::BTreeMap;
 use alloc::format;
 use alloc::string::String;
-use alloc::vec;
 use alloc::vec::Vec;
-use crate::belnap::{B4, band, bor, bnot, dialetheic, designated, approx_le, to_wh2, from_wh2};
+use crate::belnap::B4;
 
 // ── ParaASM instruction set ─────────────────────────────────────────
 

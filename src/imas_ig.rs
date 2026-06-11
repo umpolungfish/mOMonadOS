@@ -10,7 +10,6 @@
 //   - Compute primitive distances to catalog entries
 
 use crate::kernel::Snapshot;
-use crate::tokens::{Token, signature, CANONICAL_COUNT};
 
 /// A 12-tuple of IG primitive values as Shavian glyph name constants.
 /// Each field corresponds to a primitive family:
@@ -395,7 +394,7 @@ impl Classification {
     }
 
     /// Display the classification result.
-    pub fn display(&self) -> ClassDisplay {
+    pub fn display(&self) -> ClassDisplay<'_> {
         ClassDisplay { c: self }
     }
 }
