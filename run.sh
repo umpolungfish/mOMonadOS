@@ -41,24 +41,22 @@ fi
 
 SERIAL_MODE="${1:-}"
 
+# Common QEMU flags — isa-debug-exit lets the kernel exit QEMU gracefully
+# by writing 0x10 to port 0xf4 (guest-initiated shutdown, no more Ctrl+C).
+QEMU_FLAGS=(
+    -drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE"
+    -drive if=pflash,format=raw,file="$OVMF_VARS"
+    -drive format=raw,file="$IMG"
+    -m 256M
+    -display none
+    -no-reboot
+    -device isa-debug-exit,iobase=0xf4,iosize=4
+)
+
 if [ "$SERIAL_MODE" = "--serial" ]; then
-    echo "mOMonadOS booting — serial mode (Ctrl-A X to quit)"
-    qemu-system-x86_64 \
-        -drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE" \
-        -drive if=pflash,format=raw,file="$OVMF_VARS" \
-        -drive format=raw,file="$IMG" \
-        -m 256M \
-        -display none \
-        -no-reboot \
-        -serial stdio
+    echo "mOMonadOS booting — serial mode (type 'quit' to exit cleanly)"
+    qemu-system-x86_64 "${QEMU_FLAGS[@]}" -serial stdio
 else
-    echo "mOMonadOS booting — serial on pty, display off (use --serial for stdio)"
-    qemu-system-x86_64 \
-        -drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE" \
-        -drive if=pflash,format=raw,file="$OVMF_VARS" \
-        -drive format=raw,file="$IMG" \
-        -m 256M \
-        -display none \
-        -no-reboot \
-        -serial stdio
+    echo "mOMonadOS booting — serial on stdio (type 'quit' to exit cleanly)"
+    qemu-system-x86_64 "${QEMU_FLAGS[@]}" -serial stdio
 fi

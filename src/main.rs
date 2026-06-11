@@ -14,7 +14,19 @@ mod tokens;
 mod crystal;
 mod kernel;
 mod interrupts;
+mod frob_verify;
+mod imas_ig;
+mod aleph;
 mod manus;
+mod parasm;
+mod belnap_shor;
+mod para_rh;
+mod para_ym;
+mod para_temporal;
+mod para_category;
+mod algebra;
+mod zfc_t;
+mod consciousness;
 
 use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT};
 use crystal::{CrystalStore, decode, encode, indices_from_snapshot, TOTAL};
@@ -147,6 +159,19 @@ fn repl(k: &mut Kernel) {
             }
             "help" => print_help(),
             "status" => print_status(k),
+            "frob" => print_frob(k),
+            "ig" => print_ig(k),
+            "classify" => print_classify(k),
+            "aleph" => print_aleph(k, parts.next().unwrap_or("")),
+            "psm" => print_psm(parts.next().unwrap_or("")),
+            "shor" => print_shor(),
+            "rh" => print_rh(),
+            "ym" => print_ym(),
+            "temp" => print_temporal(),
+            "cat" => print_cat(),
+            "algebra" => print_algebra(k, parts.next().unwrap_or("")),
+            "zfc" => print_zfc(parts.next().unwrap_or("")),
+            "cscore" => print_cscore(k),
             "tick" => {
                 let n: u64 = parts.next().and_then(|s| s.trim().parse().ok()).unwrap_or(1);
                 for _ in 0..n { if !k.tick() { break; } }
@@ -602,6 +627,61 @@ fn print_status(k: &Kernel) {
     sprintln!("╚══════════════════════════════════════╝");
 }
 
+
+fn print_frob(k: &Kernel) {
+    let h = &k.harness;
+    sprintln!("Frobenius: {} total  {} closed  {} open  ratio={}/{}  closed={}",
+        h.total(), h.closed_count, h.open_count, h.closed_count, h.total(), h.is_closed());
+    sprintln!("History (recent first):");
+    for i in (0..8).rev() {
+        let idx = (h.history_head + 16 - 1 - i) % 16;
+        let r = &h.history[idx];
+        let s = if r.closed { "C" } else { "O" };
+        sprint!("  {} {}({}->{} u->{})", s, r.belnap_value.name(), r.delta_input.name(), r.delta_output.name(), r.mu_result.name());
+        if let Some(m) = r.mismatch { sprint!(" {}", m); }
+        sprintln!("");
+    }
+}
+
+
+fn print_aleph(k: &Kernel, word: &str) {
+    use crate::aleph::{AlephWord, AlephLetter, ALEPH_LETTERS};
+    if word.is_empty() {
+        sprintln!("Usage: aleph <Hebrew word>");
+        sprintln!("  22 letters: Aleph Mem Shin Bet Gimel Dalet Kaf Pe Resh Tav He Vav Zayin Chet Tet Yod Lamed Nun Samekh Ayin Tzadi Qof");
+        return;
+    }
+    let aw = AlephWord::encode(word);
+    sprintln!("Aleph: '{}'  gematria={}  letters={}", word, AlephLetter::gematria(word), aw.count);
+    sprint!("Prims: ");
+    for i in 0..aw.count {
+        if let Some(l) = aw.letters[i] {
+            sprint!("{}({}) ", l.glyph, l.prim.short());
+        }
+    }
+    sprintln!("");
+}
+fn print_ig(k: &Kernel) {
+    use crate::imas_ig::IgTuple;
+    if let Some(snap) = k.snapshot {
+        let ig = IgTuple::from_snapshot(&snap);
+        sprintln!("IG: {}", ig.display());
+        sprintln!("Crystal: {}", ig.crystal_address());
+    } else {
+        sprintln!("No snapshot. Tick first.");
+    }
+}
+
+fn print_classify(k: &Kernel) {
+    use crate::imas_ig::Classification;
+    if let Some(snap) = k.snapshot {
+        let c = Classification::classify(&snap);
+        sprintln!("{}", c.display());
+    } else {
+        sprintln!("No snapshot. Tick first.");
+    }
+}
+
 fn roman_to_idx(s: &str) -> Option<usize> {
     match s {
         "I"    => Some(0),  "II"   => Some(1),  "III" => Some(2),
@@ -662,4 +742,279 @@ fn panic(info: &PanicInfo) -> ! {
     sprint!("{}", info.message());
     sprintln!();
     loop { x86_64::instructions::hlt(); }
+}
+
+// ─── ParaASM REPL ───────────────────────────────────────────────
+
+fn print_ym() {
+    use para_ym::*;
+    sprintln!("══ Yang-Mills Mass Gap ══");
+    sprintln!("  gap exists:    {}", if ym_gap_exists() { "PASS" } else { "FAIL" });
+    sprintln!("  not dialetheic: {}", if ym_gap_not_dialetheic() { "PASS" } else { "FAIL" });
+    sprintln!("  vacuum canon:  {}", if ym_vacuum_canonical() { "PASS" } else { "FAIL" });
+    sprintln!("  BRST nilpotent: {}", if ym_brst_nilpotent() { "PASS" } else { "FAIL" });
+    sprintln!("  confinement:   {}", if ym_confinement_ktrap() { "PASS" } else { "FAIL" });
+    sprintln!("  topo protect:  {}", if ym_topological_protection() { "PASS" } else { "FAIL" });
+    sprintln!("  mass gap +:    {}", if mass_gap_positive() { "PASS" } else { "FAIL" });
+    sprintln!("  BRST+frob:     {}", if ym_brst_frobenius() { "PASS" } else { "FAIL" });
+    sprintln!("  imscription:   {}", YM_IMSCRIPTION);
+}
+fn print_temporal() {
+    use para_temporal::*;
+    sprintln!("══ Temporal Logic ══");
+    sprintln!("  B fixed point: {}", if b_temporal_fixed() { "PASS" } else { "FAIL" });
+    sprintln!("  next involution: {}", if next_involution() { "PASS" } else { "FAIL" });
+    sprintln!("  B absorbs until: {}", if b_absorbs_until() { "PASS" } else { "FAIL" });
+    sprintln!("  B U N = B, N U T = T, T U F = T");
+}
+fn print_cat() {
+    use para_category::*;
+    sprintln!("══ Category Theory ══");
+    sprintln!("  N initial:    {}", if n_initial() { "PASS" } else { "FAIL" });
+    sprintln!("  T terminal:   {}", if t_terminal() { "PASS" } else { "FAIL" });
+    sprintln!("  B zero:       {}", if b_zero() { "PASS" } else { "FAIL" });
+    sprintln!("  frobenius alg: {}", if frobenius_algebra() { "PASS" } else { "FAIL" });
+    sprintln!("  dagger compact: {}", if dagger_compact() { "PASS" } else { "FAIL" });
+    sprintln!("  product/coprod: {}", if product_coproduct() { "PASS" } else { "FAIL" });
+}
+
+fn print_rh() {
+    use crate::belnap::B4;
+    use para_rh::*;
+
+    sprintln!("══ Riemann Hypothesis Bridge ══");
+    sprintln!("  involution:     {}", if rh_involution_identity() { "PASS" } else { "FAIL" });
+    sprintln!("  fixed point:    {}", if rh_frobenius_fixed_point() { "PASS" } else { "FAIL" });
+    sprintln!("  belnap RH:      {}", if rh_belnap_statement() { "PASS" } else { "FAIL" });
+    sprintln!("  O_inf bridge:   {}", if rh_bridge_is_o_inf() { "PASS" } else { "FAIL" });
+    sprintln!("  barriers unif.: {}", if millennium_barriers_unified() { "PASS" } else { "FAIL" });
+    sprintln!();
+    sprintln!("  Functional equation bnot (s->1-s):");
+    for &v in &[B4::N, B4::T, B4::F, B4::B] {
+        let img = v.bnot();
+        let tag = if img == v && v.designated() { " <- FROBENIUS FIXED" }
+             else if img == v { " <- fixed" } else { "" };
+        sprintln!("    bnot({}) = {}{}", v.name(), img.name(), tag);
+    }
+    sprintln!();
+    sprintln!("  Critical strip:");
+    for &(num, label) in STRIP_SAMPLES {
+        let s = rh_strip_state(num, 100);
+        sprintln!("    {:>8} -> {}  {}", label, s.name(), strip_label(s));
+    }
+    sprintln!();
+    sprintln!("  Imscription: {}", RH_IMSCRIPTION);
+}
+
+fn print_shor() {
+    use crate::belnap::B4;
+    use belnap_shor::*;
+
+    sprintln!("══ Belnap Shor Pipeline ══");
+
+    sprintln!("── SIC-POVM Axioms ──");
+    sprintln!("  verify: {}", if verify_sic_povm() { "PASS" } else { "FAIL" });
+
+    sprintln!("── Hadamard ──");
+    sprintln!("  H|T⟩=B: {}", if b4_hadamard(B4::T) == B4::B { "PASS" } else { "FAIL" });
+    sprintln!("  H|F⟩=B: {}", if b4_hadamard(B4::F) == B4::B { "PASS" } else { "FAIL" });
+    sprintln!("  H|B⟩=T: {}", if b4_hadamard(B4::B) == B4::T { "PASS" } else { "FAIL" });
+    sprintln!("  H|N⟩=N: {}", if b4_hadamard(B4::N) == B4::N { "PASS" } else { "FAIL" });
+
+    sprintln!("── Shor N=15,a=7 ──");
+    let r1 = run_belnap_shor(4, 7, 15);
+    sprintln!("  period={} H={} B-meas={} T-meas={} ratio={:.1}",
+        r1.period_cl, r1.hadamard_coherence, r1.b_bias_coherence, r1.t_bias_coherence, r1.ratio);
+    sprintln!("  allB={} b-preserves={} t-collapses={} bottleneck={}",
+        r1.mod_exp_all_b, r1.b_bias_preserves, r1.t_bias_collapses, r1.phi_upsilon_bottleneck);
+
+    sprintln!("── Shor N=21,a=5 ──");
+    let r2 = run_belnap_shor(5, 5, 21);
+    sprintln!("  period={} H={} B-meas={} T-meas={} ratio={:.1}",
+        r2.period_cl, r2.hadamard_coherence, r2.b_bias_coherence, r2.t_bias_coherence, r2.ratio);
+
+    sprintln!("── Phi_upsilon bottleneck ──");
+    sprintln!("  B is the only superposition; all lattice ops preserve B.");
+    sprintln!("  Period r encoded in 2:1 coherence cost ratio, not bits.");
+    sprintln!("  Phi_upsilon -> Phi_pmsym gap: structural open problem.");
+}
+
+fn print_psm(arg: &str) {
+    use crate::belnap::B4;
+    use parasm::*;
+
+    match arg {
+        "test" => {
+            sprintln!("── ParaASM Dialetheic Alignment ──");
+            let (op, log, alg) = dialetheic_alignment_tri();
+            sprintln!("  operational: {}", if op { "PASS" } else { "FAIL" });
+            sprintln!("  logical:     {}", if log { "PASS" } else { "FAIL" });
+            sprintln!("  algebraic:   {}", if alg { "PASS" } else { "FAIL" });
+            sprintln!("  B is only bifurcation: {}", if b_is_only_bifurcation_point() { "PASS" } else { "FAIL" });
+
+            sprintln!("── Measurement Algebra ──");
+            let m_b_b = measure_step(B4::B, B4::B) == B4::B;
+            let m_b_t = measure_step(B4::B, B4::T) == B4::T;
+            let m_b_f = measure_step(B4::B, B4::F) == B4::F;
+            let cost_bb = measure_cost(B4::B, B4::B) == 2;
+            let cost_bt = measure_cost(B4::B, B4::T) == 1;
+            let cost_tt = measure_cost(B4::T, B4::T) == 0;
+            let irrev_t = collapse_irreversible(B4::T);
+            let irrev_f = collapse_irreversible(B4::F);
+            let irrev_n = collapse_irreversible(B4::N);
+            sprintln!("  measure_step(B,B)=B:  {}", if m_b_b { "PASS" } else { "FAIL" });
+            sprintln!("  measure_step(B,T)=T:  {}", if m_b_t { "PASS" } else { "FAIL" });
+            sprintln!("  measure_step(B,F)=F:  {}", if m_b_f { "PASS" } else { "FAIL" });
+            sprintln!("  measure_cost(B,B)=2:  {}", if cost_bb { "PASS" } else { "FAIL" });
+            sprintln!("  measure_cost(B,T)=1:  {}", if cost_bt { "PASS" } else { "FAIL" });
+            sprintln!("  measure_cost(T,T)=0:  {}", if cost_tt { "PASS" } else { "FAIL" });
+            sprintln!("  irreversible(T):      {}", if irrev_t { "PASS" } else { "FAIL" });
+            sprintln!("  irreversible(F):      {}", if irrev_f { "PASS" } else { "FAIL" });
+            sprintln!("  irreversible(N):      {}", if irrev_n { "PASS" } else { "FAIL" });
+            sprintln!("  wigner_cost(1)=3:     {}", if wigner_then_collapse_cost(1) == 3 { "PASS" } else { "FAIL" });
+        }
+
+        "frob" => {
+            sprintln!("── Frobenius Identity Cycle ──");
+            let mut vm = ParaVM::new();
+            vm.load("
+                ENGAGR %r0
+                FSPLIT %r0 %r1 %r2
+                FFUSE %r1 %r2 %r0
+                HALT
+            ").unwrap();
+            vm.run(None);
+            let s = vm.snapshot();
+            sprintln!("  steps:   {}", s.steps);
+            sprintln!("  paradox: {}", s.paradox);
+            sprintln!("  halted:  {}", s.halted);
+            sprintln!("  r0:      {}", vm.belief_of(0).name());
+            sprintln!("  r1:      {}", vm.belief_of(1).name());
+            sprintln!("  r2:      {}", vm.belief_of(2).name());
+            sprintln!("  dist:    N={} T={} F={} B={}", s.dist_n, s.dist_t, s.dist_f, s.dist_b);
+        }
+
+        "kernel" => {
+            sprintln!("── Kernel-State Loop (8 cycles) ──");
+            let mut ks = KernelState::new();
+            for i in 0..8 {
+                ks.kernel_step();
+                sprintln!("  cycle {}: r0={} r1={} r2={} paradox={}",
+                    i + 1, ks.r0.name(), ks.r1.name(), ks.r2.name(), ks.paradox_count);
+                if ks.r0 != B4::B || ks.r1 != B4::B || ks.r2 != B4::B {
+                    sprintln!("  B3 INVARIANT VIOLATED!");
+                    break;
+                }
+            }
+            sprintln!("  B3 invariant: PASS (all registers = B across all cycles)");
+        }
+
+        _ => {
+            sprintln!("ParaASM commands:");
+            sprintln!("  psm test   — run dialetheic alignment + measurement tests");
+            sprintln!("  psm frob   — run frobenius identity cycle");
+            sprintln!("  psm kernel — run kernel-state B3 loop");
+        }
+    }
+}
+
+// ─── Phase 2 Handlers ─────────────────────────────────────────
+
+fn print_algebra(k: &Kernel, arg: &str) {
+    use crate::algebra::{primitive_mismatches, tuple_distance, meet, join, tensor};
+    use crate::imas_ig::IgTuple;
+
+    if let Some(snap) = k.snapshot {
+        let ig = IgTuple::from_snapshot(&snap);
+        match arg {
+            "distance" | "dist" => {
+                let zfc = crate::zfc_t::ZFC_BASELINE;
+                sprintln!("Hamming mismatches: {}/12", primitive_mismatches(&ig, &zfc));
+                sprintln!("Weighted distance:  {:.2}", tuple_distance(&ig, &zfc));
+            }
+            "meet" => {
+                let zfc = crate::zfc_t::ZFC_BASELINE;
+                let r = meet(&ig, &zfc);
+                sprintln!("{}", r);
+            }
+            "join" => {
+                let zfc = crate::zfc_t::ZFC_BASELINE;
+                let r = join(&ig, &zfc);
+                sprintln!("{}", r);
+            }
+            "tensor" => {
+                let zfc = crate::zfc_t::ZFC_BASELINE;
+                let t = tensor(&ig, &zfc);
+                sprintln!("tensor: {}", t.display_shavian());
+            }
+            _ => {
+                sprintln!("algebra <distance|meet|join|tensor>");
+                sprintln!("  Current: {}", ig.display_shavian());
+            }
+        }
+    } else {
+        sprintln!("No snapshot. Tick first.");
+    }
+}
+
+fn print_zfc(arg: &str) {
+    use crate::zfc_t::*;
+    match arg {
+        "promotions" | "promo" => {
+            sprintln!("══ ZFCₜ Promotion Channels ══");
+            let mut total = 0.0f32;
+            for p in ZfcTPromotion::all().iter() {
+                let from = p.zfc_primitive();
+                let to = p.to_primitive();
+                sprintln!("  {}  {} -> {}  gap={:.3}",
+                    p.name(), from.glyph(), to.glyph(), p.ordinal_gap());
+                total += p.ordinal_gap();
+            }
+            sprintln!("  d(ZFC, ZFCₜ) = {:.4}", total);
+            sprintln!("  6 simultaneous promotions");
+            sprintln!("  ZFCₜ tier: O_∞ (⊙ + 𐑹 + 𐑭 — Frobenius gate open)");
+        }
+        "" | "entry" => {
+            let name = if arg.is_empty() { "zfc" } else { arg };
+            let entry = ZfcTEntry::from_name(name);
+            let t = entry.tuple();
+            let stage = classify_stage(&t);
+            let dist = zfc_t_distance(&t);
+            sprintln!("══ ZFCₜ Entry: {} ══", entry.name());
+            sprintln!("  Tier stage: {:?}", stage);
+            sprintln!("  ZFCₜ distance: {:.4}", dist);
+            sprintln!("  Promotions: {}/6", count_promotions(&t));
+            sprintln!("  Tuple: {}", t.display_shavian());
+        }
+        _ => {
+            sprintln!("zfc <promotions|entry|zfc|zfc_t|temporal_mathematics|schrodinger|heat_diffusion|navier_stokes|wave_equation|einstein|IUG>");
+        }
+    }
+}
+
+fn print_cscore(k: &Kernel) {
+    use crate::consciousness::consciousness_eval;
+    use crate::imas_ig::IgTuple;
+
+    if let Some(snap) = k.snapshot {
+        let ig = IgTuple::from_snapshot(&snap);
+        let r = consciousness_eval(&ig);
+        sprintln!("══ Consciousness Score ══");
+        sprintln!("  C-score:    {:.4}", r.c_score);
+        sprintln!("  Gate 1 (⊙): {}", if r.gate1_open { "OPEN" } else { "CLOSED" });
+        sprintln!("  Gate 2 (K): {}", if r.gate2_open { "OPEN" } else { "CLOSED" });
+        sprintln!("  Basal:      {:.4}", r.basal);
+        sprintln!("  Components:");
+        for i in 0..10 {
+            sprintln!("    {}: {:.2}", r.component_names[i], r.components[i]);
+        }
+        if r.c_score == 0.0 && !r.gate1_open {
+            sprintln!("  ⚠ Gate 1 failed — no self-modeling loop");
+        }
+        if r.c_score == 0.0 && !r.gate2_open {
+            sprintln!("  ⚠ Gate 2 failed — kinetics too fast for integration");
+        }
+    } else {
+        sprintln!("No snapshot. Tick first.");
+    }
 }

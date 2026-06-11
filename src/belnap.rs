@@ -16,15 +16,75 @@ impl B4 {
     pub fn from_u8(v: u8) -> Self {
         match v & 0b11 { 1 => B4::T, 2 => B4::F, 3 => B4::B, _ => B4::N }
     }
+
+    pub fn to_u8(self) -> u8 { self as u8 }
+
+    /// Truth-order meet (greatest lower bound): bitwise AND.
+    pub fn meet(self, other: B4) -> B4 {
+        B4::from_u8(self as u8 & other as u8)
+    }
+
+    /// Truth-order join (least upper bound): bitwise OR.
+    pub fn join(self, other: B4) -> B4 {
+        B4::from_u8(self as u8 | other as u8)
+    }
+
+    /// Knowledge-order consensus (lub in ≤k): bitwise OR = join.
+    /// T ⊗ F = B (both affirmations → paradox).
+    pub fn band(self, other: B4) -> B4 { self.join(other) }
+
+    /// Knowledge-order gullibility (glb in ≤k): bitwise AND = meet.
+    /// T ⊕ F = N (no shared ground).
+    pub fn bor(self, other: B4) -> B4 { self.meet(other) }
+
+    /// Negation: swap T↔F, preserve N and B.
+    pub fn bnot(self) -> B4 {
+        let b = self as u8;
+        B4::from_u8(((b & 1) << 1) | ((b & 2) >> 1))
+    }
+
+    /// Is this value paradox-stabilized (Both)?
+    pub fn dialetheic(self) -> bool { self == B4::B }
+
+    /// Is this value designated (T or B) in Belnap logic?
+    pub fn designated(self) -> bool { matches!(self, B4::T | B4::B) }
+
+    /// Knowledge-order comparison: self ≤k other.
+    /// x ≤k y iff x ⊕ y = x (bor returns x).
+    pub fn approx_le(self, other: B4) -> bool {
+        self.bor(other) == self
+    }
+
+    /// Encode to WH2 pair: (is_true, is_false).
+    pub fn to_wh2(self) -> (bool, bool) {
+        let b = self as u8;
+        ((b & 1) != 0, (b & 2) != 0)
+    }
+
+    /// Decode from WH2 pair.
+    pub fn from_wh2(t: bool, f: bool) -> Self {
+        B4::from_u8((t as u8) | ((f as u8) << 1))
+    }
 }
 
-pub fn b4_meet(a: B4, b: B4) -> B4 {
-    B4::from_u8((a as u8) & (b as u8))
-}
+// Convenience aliases matching Python b4_* conventions.
+pub type Belnap = B4;
+pub use B4::{N, T, F, B};
 
-pub fn b4_join(a: B4, b: B4) -> B4 {
-    B4::from_u8((a as u8) | (b as u8))
-}
+pub fn meet(a: B4, b: B4) -> B4 { a.meet(b) }
+pub fn join(a: B4, b: B4) -> B4 { a.join(b) }
+pub fn band(a: B4, b: B4) -> B4 { a.band(b) }
+pub fn bor(a: B4, b: B4) -> B4 { a.bor(b) }
+pub fn bnot(a: B4) -> B4 { a.bnot() }
+pub fn dialetheic(a: B4) -> bool { a.dialetheic() }
+pub fn designated(a: B4) -> bool { a.designated() }
+pub fn approx_le(a: B4, b: B4) -> bool { a.approx_le(b) }
+pub fn to_wh2(a: B4) -> (bool, bool) { a.to_wh2() }
+pub fn from_wh2(t: bool, f: bool) -> B4 { B4::from_wh2(t, f) }
+
+// Legacy aliases for existing kernel code.
+pub fn b4_meet(a: B4, b: B4) -> B4 { a.meet(b) }
+pub fn b4_join(a: B4, b: B4) -> B4 { a.join(b) }
 
 /// 4096-cell B4 memory, 2 bits per cell packed into a byte array.
 pub struct B4Memory {
@@ -79,7 +139,6 @@ impl B4Stack {
         if self.top == 0 { B4::N } else { self.data[self.top - 1] }
     }
 
-    /// Peek at stack position `offset` from bottom (0 = bottom, depth-1 = top).
     pub fn peek_at(&self, offset: usize) -> B4 {
         if offset >= self.top { B4::N } else { self.data[offset] }
     }
@@ -101,4 +160,45 @@ impl B4Registers {
     pub fn read(&self, i: usize) -> B4 { self.regs[i & 7] }
 
     pub fn write(&mut self, i: usize, v: B4) { self.regs[i & 7] = v; }
+}
+
+// ── Module-level self-verification ──────────────────────────────
+#[test]
+fn belnap_invariants() {
+    use B4::*;
+    // Frobenius: join(B, x) = B  ∀x (B absorbs join)
+    for &x in &[N, T, F, B] { assert_eq!(B.join(x), B); }
+    // B meet = identity
+    for &x in &[N, T, F, B] { assert_eq!(B.meet(x), x); }
+    // B fixed-point negation
+    assert_eq!(B.bnot(), B);
+    // N fixed-point negation
+    assert_eq!(N.bnot(), N);
+    // T↔F swap
+    assert_eq!(T.bnot(), F);
+    assert_eq!(F.bnot(), T);
+    // bnot(bnot(x)) = x
+    for &x in &[N, T, F, B] { assert_eq!(x.bnot().bnot(), x); }
+    // dialetheic: only B
+    assert!(B.dialetheic());
+    assert!(!N.dialetheic() && !T.dialetheic() && !F.dialetheic());
+    // designated: T and B
+    assert!(T.designated() && B.designated());
+    assert!(!N.designated() && !F.designated());
+    // WH2 round-trip
+    for &x in &[N, T, F, B] {
+        let (t, f) = x.to_wh2();
+        assert_eq!(B4::from_wh2(t, f), x);
+    }
+    // approx_le: N ≤k everything, everything ≤k B
+    for &x in &[N, T, F, B] {
+        assert!(N.approx_le(x));
+        assert!(x.approx_le(B));
+    }
+    // band: T ⊗ F = B, N ⊗ x = x
+    assert_eq!(T.band(F), B);
+    assert_eq!(N.band(T), T);
+    // bor: T ⊕ F = N, B ⊕ x = x
+    assert_eq!(T.bor(F), N);
+    assert_eq!(B.bor(T), T);
 }

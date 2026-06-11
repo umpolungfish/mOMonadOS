@@ -1,5 +1,6 @@
 use crate::belnap::*;
 use crate::tokens::*;
+use crate::frob_verify::FrobeniusHarness;
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum Phase { Boot, Think, Act, Observe, Update, Halt }
@@ -55,6 +56,7 @@ pub struct Kernel {
     pub snapshot:    Option<Snapshot>,
     pub frob_checks: u64,
     pub frob_open:   u64,
+    pub harness:     FrobeniusHarness,
     fork_stack:      [ForkFrame; 16],
     fork_depth:      usize,
     pub halted:      bool,
@@ -78,6 +80,7 @@ impl Kernel {
             snapshot:    None,
             frob_checks: 0,
             frob_open:   0,
+            harness:     FrobeniusHarness::new("mOMonadOS"),
             fork_stack:  [ForkFrame { resume_ip: 0, right_val: B4::N, right_set: false }; 16],
             fork_depth:  0,
             halted:      false,
@@ -263,6 +266,13 @@ impl Kernel {
         // OBSERVE
         self.phase = Phase::Observe;
         self.frob_checks += 1;
+        // ── Frobenius harness verification ──
+        { use crate::frob_verify::{verify_program_structure, verify_frobenius_identity}; 
+          let _ = self.harness.check(verify_program_structure(&self.program)); 
+          let v = self.stack.peek(); 
+          let _ = self.harness.check(verify_frobenius_identity(v)); 
+          self.frob_checks = self.harness.total(); 
+          self.frob_open   = self.harness.open_count; }
 
         // UPDATE
         self.phase = Phase::Update;
