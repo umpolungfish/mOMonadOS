@@ -77,10 +77,10 @@ fn kmain(boot_info: &'static mut BootInfo) -> ! {
 
 fn print_banner() {
     sprintln!("╔══════════════════════════════════════════════════╗");
-    sprintln!("║            m O M o n a d O S                    ║");
-    sprintln!("║    The Self-Imscribing Bare-Metal Kernel         ║");
-    sprintln!("║    Frobenius Core · Belnap FOUR · Crystal FS     ║");
-    sprintln!("║    Graph Execution — Token Arity as Topology     ║");
+    sprintln!("             m O M o n a d O S                    ");
+    sprintln!("     The Self-Imscribing Bare-Metal Kernel         ");
+    sprintln!("     Frobenius Core · Belnap FOUR · Crystal FS     ");
+    sprintln!("     Graph Execution — Token Arity as Topology     ");
     sprintln!("╚══════════════════════════════════════════════════╝");
     sprintln!();
     sprintln!("Type 'help' for commands.");
@@ -395,26 +395,26 @@ Stopped after {} ticks.", ran);
             }
             "list" => {
                 sprintln!("╔══════════════════════════════════════════════════════════╗");
-                sprintln!("║  ALL PROGRAMS  —  12 tokens · 0 control opcodes          ║");
-                sprintln!("╠══════════════════════════════════════════════════════════╣");
-                sprintln!("║  ▸ CANONICAL (I–XII)  — cyclic graph, 12 core patterns   ║");
-                sprintln!("╟──────────────────────────────────────────────────────────╢");
+                sprintln!("   ALL PROGRAMS  —  12 tokens · 0 control opcodes          ");
+                sprintln!("────────────────────────────────────────────────────────────");
+                sprintln!("   ▸ CANONICAL (I–XII)  — cyclic graph, 12 core patterns   ");
+                sprintln!("────────────────────────────────────────────────────────────");
                 for i in 0..CANONICAL_COUNT {
-                    sprintln!("║  {:>4}.  {:<48} ║", idx_to_roman(i), canonical_name(i));
+                    sprintln!("   {:>4}.  {:<48} ", idx_to_roman(i), canonical_name(i));
                 }
-                sprintln!("╟──────────────────────────────────────────────────────────╢");
-                sprintln!("║  ▸ CONTINUOUS (XIII–XVI)  — token-graph-native loops     ║");
-                sprintln!("╟──────────────────────────────────────────────────────────╢");
+                sprintln!("────────────────────────────────────────────────────────────");
+                sprintln!("   ▸ CONTINUOUS (XIII–XVI)  — token-graph-native loops     ");
+                sprintln!("────────────────────────────────────────────────────────────");
                 for i in 0..CONTINUOUS_COUNT {
                     let ri = CANONICAL_COUNT + i;
-                    sprintln!("║  {:>4}.  {:<48} ║", idx_to_roman(ri), continuous_name(i));
+                    sprintln!("   {:>4}.  {:<48} ", idx_to_roman(ri), continuous_name(i));
                 }
-                sprintln!("╟──────────────────────────────────────────────────────────╢");
-                sprintln!("║  ▸ NOVEL (XVII–XIX)  — control-flow reconstructions      ║");
-                sprintln!("╟──────────────────────────────────────────────────────────╢");
+                sprintln!("────────────────────────────────────────────────────────────");
+                sprintln!("   ▸ NOVEL (XVII–XIX)  — control-flow reconstructions      ");
+                sprintln!("────────────────────────────────────────────────────────────");
                 for i in 0..NOVEL_COUNT {
                     let ri = CANONICAL_COUNT + CONTINUOUS_COUNT + i;
-                    sprintln!("║  {:>4}.  {:<48} ║", idx_to_roman(ri), novel_name(i));
+                    sprintln!("   {:>4}.  {:<48} ", idx_to_roman(ri), novel_name(i));
                 }
                 sprintln!("╚══════════════════════════════════════════════════════════╝");
                 sprintln!("Use 'load <I–XIX>' to load any program by Roman numeral.");
@@ -587,18 +587,18 @@ fn print_help() {
 fn print_status(k: &Kernel) {
     let tier = k.snapshot.map(|s| s.tier_name()).unwrap_or("?");
     sprintln!("╔══════════════════════════════════════╗");
-    sprint!(  "║  Tick: {:8}  Tier: {:<8}        ║\n", k.tick_count, tier);
-    sprint!(  "║  IP: {:8}    Stack: {:6}          ║\n", k.ip, k.stack.depth());
-    sprint!(  "║  Fork: {:6}   Frob: {}/{}           ║\n",
+    sprint!(  "   Tick: {:8}  Tier: {:<8}        \n", k.tick_count, tier);
+    sprint!(  "   IP: {:8}    Stack: {:6}          \n", k.ip, k.stack.depth());
+    sprint!(  "   Fork: {:6}   Frob: {}/{}           \n",
         k.fork_depth(), k.frob_checks - k.frob_open, k.frob_checks);
-    sprint!(  "║  Halted: {:<6}                      ║\n",
+    sprint!(  "   Halted: {:<6}                      \n",
         if k.halted { "YES" } else { "no" });
-    serial::write_str("║  R0-R7: ");
+    serial::write_str("   R0-R7: ");
     for i in 0..8 {
         serial::write_str(k.registers.read(i).name());
         serial::write_str(" ");
     }
-    sprintln!("     ║");
+    sprintln!("     ");
     sprintln!("╚══════════════════════════════════════╝");
 }
 
