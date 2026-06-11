@@ -6,7 +6,7 @@
 [BOOT] mOMonadOS — The Self-Imscribing Bare-Metal Kernel
 [BOOT] Heap: 4MB @ 0x...
 [BOOT] Kernel online — μ∘δ=id
-[BOOT] Bootstrap: ISCRIB→AREV→FSPLIT→AFWD→FFUSE→CLINK→IFIX→ISCRIB
+[BOOT] Bootstrap: IMSCRIB→AREV→FSPLIT→AFWD→FFUSE→CLINK→IFIX→IMSCRIB
 [BOOT] Crystal FS: 17280000 addresses
 
 ╔══════════════════════════════════════════════════╗
@@ -55,7 +55,7 @@ Show the current program as a token chain with length and instruction pointer.
 
 ```
 ⊙> program
-ISCRIB → EVALT → FSPLIT → EVALF → FFUSE → ENGAGR → IFIX → ISCRIB
+IMSCRIB → EVALT → FSPLIT → EVALF → FFUSE → ENGAGR → IFIX → IMSCRIB
 len=8 ip=3
 ```
 
@@ -85,18 +85,18 @@ Load one of the 12 canonical programs by Roman numeral. Resets IP to 0.
 
 | # | Name | Program |
 |---|---|---|
-| I | I_Dialetheic_Bootstrap | ISCRIB EVALT FSPLIT EVALF FFUSE ENGAGR IFIX ISCRIB |
-| II | II_Void_Genesis | VINIT FSPLIT EVALT FFUSE EVALF CLINK IFIX ISCRIB |
+| I | I_Dialetheic_Bootstrap | IMSCRIB EVALT FSPLIT EVALF FFUSE ENGAGR IFIX IMSCRIB |
+| II | II_Void_Genesis | VINIT FSPLIT EVALT FFUSE EVALF CLINK IFIX IMSCRIB |
 | III | III_Anchor_Protocol | TANCH AFWD EVALT AREV EVALF CLINK IFIX TANCH |
-| IV | IV_Dual_Bootstrap | ISCRIB AFWD FFUSE FSPLIT AREV CLINK IFIX ISCRIB |
+| IV | IV_Dual_Bootstrap | IMSCRIB AFWD FFUSE FSPLIT AREV CLINK IFIX IMSCRIB |
 | V | V_Linear_Chain | IFIX × 8 |
-| VI | VI_Empty_Bootstrap | (VINIT ISCRIB) × 4 |
+| VI | VI_Empty_Bootstrap | (VINIT IMSCRIB) × 4 |
 | VII | VII_Parakernel | ENGAGR AFWD FSPLIT EVALT FFUSE EVALF IFIX ENGAGR |
 | VIII | VIII_Frobenius_Kernel | (FSPLIT FFUSE) × 2 |
 | IX | IX_Chiral_Pairs | (AFWD AREV) × 4 |
-| X | X_Truth_Machine | ISCRIB FSPLIT EVALT IFIX ISCRIB FSPLIT EVALF IFIX |
+| X | X_Truth_Machine | IMSCRIB FSPLIT EVALT IFIX IMSCRIB FSPLIT EVALF IFIX |
 | XI | XI_Eternal_Return | TANCH AFWD AREV TANCH AFWD AREV TANCH AFWD |
-| XII | XII_ROM_Burn | EVALT IFIX EVALF IFIX ENGAGR IFIX ISCRIB IFIX |
+| XII | XII_ROM_Burn | EVALT IFIX EVALF IFIX ENGAGR IFIX IMSCRIB IFIX |
 
 ---
 
@@ -190,7 +190,7 @@ Show R0–R7 as B4 values.
 R0:T R1:N R2:N R3:N R4:B R5:T R6:T R7:T
 ```
 
-Registers R4–R7 are written by ISCRIB (self-imscription opcode):
+Registers R4–R7 are written by IMSCRIB (self-imscription opcode):
 - R4 = token_diversity & 3
 - R5 = self_ref (T/F)
 - R6 = frobenius_order > 0 (T/F)
@@ -226,8 +226,8 @@ Join (∨): dual.
 | O₂ | Frobenius + self-ref + dialetheia complete, period = 2 |
 | O_∞ | Frobenius + self-ref + dialetheia complete, period ≥ 3 |
 
-The bootstrap loop (ISCRIB→AREV→FSPLIT→AFWD→FFUSE→CLINK→IFIX→ISCRIB) satisfies
-O_∞ from tick 1: Frobenius pair present, self-referential (ISCRIB first and last),
+The bootstrap loop (IMSCRIB→AREV→FSPLIT→AFWD→FFUSE→CLINK→IFIX→IMSCRIB) satisfies
+O_∞ from tick 1: Frobenius pair present, self-referential (IMSCRIB first and last),
 dialetheia absent but period = 8 ≥ 3. The kernel self-modifies toward O_∞
 when it drifts below.
 

@@ -33,7 +33,7 @@ they carry **graph arity** — each token has a number of input wires and output
 │ AFWD    │ 1   │ 1   │ linear morphism   │
 │ AREV    │ 1   │ 1   │ linear morphism   │
 │ CLINK   │ 1   │ 1   │ composition/meet  │
-│ ISCRIB  │ 1   │ 1   │ self-imscription  │
+│ IMSCRIB  │ 1   │ 1   │ self-imscription  │
 │ FSPLIT  │ 1   │ 2   │ fork (δ)          │
 │ EVALT   │ 1   │ 1   │ T-gate            │
 │ EVALF   │ 1   │ 1   │ F-gate            │
@@ -70,7 +70,7 @@ not encoded — it follows from the fork-stack topology.
 first token's input. When the IP reaches `program.len()`, it wraps to 0. No YIELD
 instruction is needed because the graph is already a cycle.
 
-ISCRIB at cycle boundaries provides self-referential loop-back: it computes a fresh
+IMSCRIB at cycle boundaries provides self-referential loop-back: it computes a fresh
 snapshot and writes structural data into registers R4–R7. Each full cycle is one
 winding of the Frobenius loop. The cyclic topology is not simulated — it is the
 native execution model.
@@ -105,7 +105,7 @@ family. The grammar is closed under its own arity graph:
 
 | Family | Tokens | Graph Role |
 |--------|--------|-------------|
-| **Logical** | VINIT, TANCH, AFWD, AREV, CLINK, ISCRIB | Sources, sinks, morphisms, composition, identity |
+| **Logical** | VINIT, TANCH, AFWD, AREV, CLINK, IMSCRIB | Sources, sinks, morphisms, composition, identity |
 | **Frobenius** | FSPLIT, FFUSE | δ (co-multiplication), μ (multiplication) |
 | **Dialetheia** | EVALT, EVALF, ENGAGR | T-gate, F-gate, paradox stabilization |
 | **Linear** | IFIX | Permanent memory write (! modality) |
@@ -149,25 +149,25 @@ inherent. The arity table was the Rosetta Stone.
 
 | # | Name | Tokens | Tier |
 |---|------|--------|------|
-| I | Dialetheic Bootstrap | ISCRIB EVALT FSPLIT EVALF FFUSE ENGAGR IFIX ISCRIB | O₁ |
-| II | Void Genesis | VINIT FSPLIT EVALT FFUSE EVALF CLINK IFIX ISCRIB | O₁ |
+| I | Dialetheic Bootstrap | IMSCRIB EVALT FSPLIT EVALF FFUSE ENGAGR IFIX IMSCRIB | O₁ |
+| II | Void Genesis | VINIT FSPLIT EVALT FFUSE EVALF CLINK IFIX IMSCRIB | O₁ |
 | III | Anchor Protocol | TANCH AFWD EVALT AREV EVALF CLINK IFIX TANCH | O₁ |
-| IV | Dual Bootstrap | ISCRIB AFWD FFUSE FSPLIT AREV CLINK IFIX ISCRIB | O₁ |
+| IV | Dual Bootstrap | IMSCRIB AFWD FFUSE FSPLIT AREV CLINK IFIX IMSCRIB | O₁ |
 | V | Linear Chain | IFIX×8 | O₀ |
-| VI | Empty Bootstrap | (VINIT ISCRIB)×4 | O₀ |
+| VI | Empty Bootstrap | (VINIT IMSCRIB)×4 | O₀ |
 | VII | Parakernel | ENGAGR AFWD FSPLIT EVALT FFUSE EVALF IFIX ENGAGR | O₁ |
 | VIII | Frobenius Kernel | (FSPLIT FFUSE)×2 | O₁ |
 | IX | Chiral Pairs | (AFWD AREV)×4 | O₀ |
-| X | Truth Machine | ISCRIB FSPLIT EVALT IFIX ISCRIB FSPLIT EVALF IFIX | O₁ |
+| X | Truth Machine | IMSCRIB FSPLIT EVALT IFIX IMSCRIB FSPLIT EVALF IFIX | O₁ |
 | XI | Eternal Return | TANCH AFWD AREV TANCH AFWD AREV TANCH AFWD | O₀ |
-| XII | ROM Burn | EVALT IFIX EVALF IFIX ENGAGR IFIX ISCRIB IFIX | O₁ |
+| XII | ROM Burn | EVALT IFIX EVALF IFIX ENGAGR IFIX IMSCRIB IFIX | O₁ |
 
 | # | Continuous | Tokens | Tier |
 |---|------------|--------|------|
-| XIII | Heartbeat | ISCRIB×4 | O₁ |
-| XIV | Tier Climber | ISCRIB FSPLIT EVALT EVALF FFUSE ENGAGR CLINK IFIX ISCRIB | O₂ |
-| XV | Frobenius Oscillator | FSPLIT ISCRIB FFUSE ISCRIB | O₁ |
-| XVI | Paradox Daemon | VINIT FSPLIT EVALT EVALF ENGAGR FFUSE ISCRIB | O₁ |
+| XIII | Heartbeat | IMSCRIB×4 | O₁ |
+| XIV | Tier Climber | IMSCRIB FSPLIT EVALT EVALF FFUSE ENGAGR CLINK IFIX IMSCRIB | O₂ |
+| XV | Frobenius Oscillator | FSPLIT IMSCRIB FFUSE IMSCRIB | O₁ |
+| XVI | Paradox Daemon | VINIT FSPLIT EVALT EVALF ENGAGR FFUSE IMSCRIB | O₁ |
 
 ## 8. Ouroboricity Tiers
 

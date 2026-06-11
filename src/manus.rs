@@ -116,20 +116,13 @@ fn b4_style(v: B4) -> &'static str {
 fn token_style(t: Token) -> &'static str {
     match t {
         Token::VINIT => CYAN,  Token::TANCH => RED,    Token::AFWD => GREEN,
-        Token::AREV => YELLOW, Token::CLINK => BLUE,    Token::ISCRIB => MAGENTA,
+        Token::AREV => YELLOW, Token::CLINK => BLUE,    Token::IMSCRIB => MAGENTA,
         Token::FSPLIT => BOLD_CYAN, Token::FFUSE => BOLD_CYAN,
         Token::EVALT => BOLD_GREEN, Token::EVALF => BOLD_RED,
         Token::ENGAGR => BOLD_WHITE, Token::IFIX => DIM,
     }
 }
 
-fn phase_label(k: &Kernel) -> &'static str {
-    match k.phase {
-        crate::kernel::Phase::Boot => "BOOT",   crate::kernel::Phase::Think => "THINK",
-        crate::kernel::Phase::Act => "ACT",     crate::kernel::Phase::Observe => "OBSERVE",
-        crate::kernel::Phase::Update => "UPDATE", crate::kernel::Phase::Halt => "HALT",
-    }
-}
 
 // ─── HUD (Heads-Up Display) ───────────────────────────────────
 
@@ -168,7 +161,10 @@ pub fn draw_hud(k: &Kernel, program_name: &str, width: u16) {
     // ── Row 3: phase, IP, current token, halted ──
     cursor_goto(3, 1); clear_line();
     serial::write_str("  ");
-    styled(DIM, "Phase: "); serial::write_str(phase_label(k));
+    styled(DIM, "Phase: ");
+    let phases = ["THINK", "ACT", "OBSERVE", "UPDATE"];
+    let idx = (k.tick_count as usize) % 4;
+    serial::write_str(phases[idx]);
     serial::write_str("  ");
     styled(DIM, "IP: "); write_usize(k.ip); serial::write_str("/"); write_usize(k.program.len());
     serial::write_str("  ");
@@ -219,8 +215,9 @@ pub fn draw_hud(k: &Kernel, program_name: &str, width: u16) {
         styled(DIM, "Frob-ord:"); write_usize(snap.frobenius_order as usize);
         serial::write_str(" ");
         styled(DIM, "Dialeth:");
-        styled(if snap.dialetheia_complete { GREEN } else { DIM },
-               if snap.dialetheia_complete { "YES" } else { "no" });
+        let eff_dial = snap.dialetheia_complete || snap.b_live_ticks > 0;
+        styled(if eff_dial { GREEN } else { DIM },
+               if eff_dial { "YES" } else { "no" });
         serial::write_str(" ");
         styled(DIM, "Per:"); write_usize(snap.period);
     }
@@ -290,11 +287,11 @@ pub fn display_init(k: &Kernel, program_name: &str, width: u16) {
     draw_hud(k, program_name, width);
 }
 
-/// Shutdown display: show cursor, move to clean area.
+/// Shutdown display: exit alt screen, show cursor.
+/// Terminal restores its original screen and cursor position naturally.
 pub fn display_shutdown() {
-    cursor_show();
     exit_alt_screen();
-    cursor_goto(HUD_HEIGHT + 2, 1);
+    cursor_show();
 }
 
 /// Refresh HUD only (no full clear — faster).
@@ -316,7 +313,7 @@ pub fn run_with_display<F: FnMut() -> bool>(
     mut should_stop: F,
 ) -> u64 {
     let start = k.tick_count;
-    let mut since_refresh = 0u64;
+    let mut since_refresh = refresh_every.saturating_sub(1);
 
     while !k.halted && !should_stop() {
         k.tick();

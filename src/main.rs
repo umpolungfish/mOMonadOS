@@ -55,15 +55,23 @@ fn kmain(boot_info: &'static mut BootInfo) -> ! {
     let mut k = Kernel::new();
     k.boot();
     sprintln!("[BOOT] Kernel online — graph execution, token-arity driven");
-    sprintln!("[BOOT] Bootstrap: ISCRIB→AREV→FSPLIT→AFWD→FFUSE→CLINK→IFIX→ISCRIB (cyclic)");
+    sprintln!("[BOOT] Bootstrap: IMSCRIB→AREV→FSPLIT→AFWD→FFUSE→CLINK→IFIX→IMSCRIB (cyclic)");
     sprintln!("[BOOT] Crystal FS: {} addresses", TOTAL);
-    sprintln!("[BOOT] 12 canonicals + {} continuous programs (12 tokens, 0 control opcodes)",
-        CONTINUOUS_COUNT);
+    sprintln!("[BOOT] {} total programs (I–XIX): 12 canonical + {} continuous + {} novel",
+        CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT,
+        CONTINUOUS_COUNT, NOVEL_COUNT);
     sprintln!();
 
     print_banner();
     repl(&mut k);
 
+    // ── Shutdown: write to QEMU isa-debug-exit port (0xf4).
+    // Value 0x10 → QEMU exits with status 0.
+    // On real hardware or without the device, falls through to HLT.
+    sprintln!("[SHUTDOWN] μ∘δ=id. Goodbye.");
+    unsafe {
+        x86_64::instructions::port::PortWrite::write_to_port(0xf4, 0x10u32);
+    }
     loop { x86_64::instructions::hlt(); }
 }
 
@@ -176,55 +184,31 @@ fn repl(k: &mut Kernel) {
                 print_status(k);
             }
             "boot" => {
-                let sub = parts.next().unwrap_or("").trim();
-                match sub {
-                    "canonical" | "canon" => {
-                        let arg = parts.next().unwrap_or("").trim();
-                        let idx = roman_to_idx(arg)
-                            .or_else(|| arg.parse::<usize>().ok().map(|n| n.saturating_sub(1)));
-                        if let Some(i) = idx {
-                            if i < CANONICAL_COUNT {
-                                k.load_canonical(i);
-                                sprintln!("Booting canonical {}: {}", i + 1, canonical_name(i));
-                                sprintln!("Running (ESC to stop)...");
-                                let ran = k.run_continuous(|| interrupts::escape_pressed());
-                                sprintln!("\nStopped after {} ticks.", ran);
-                                print_status(k);
-                            } else {
-                                sprintln!("Canonical index {} out of range (max {}).",
-                                    i + 1, CANONICAL_COUNT);
-                            }
+                let arg = parts.next().unwrap_or("").trim();
+                // Try Roman numeral first; fall back to decimal
+                let idx = roman_to_idx(arg)
+                    .or_else(|| arg.parse::<usize>().ok().map(|n| n.saturating_sub(1)));
+                if let Some(i) = idx {
+                    if i >= CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT {
+                        sprintln!("Program {} out of range (max XIX/{}).",
+                            arg, CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT);
+                    } else if load_by_roman(k, arg) {
+                        let name: &str = if i < CANONICAL_COUNT {
+                            canonical_name(i)
+                        } else if i < CANONICAL_COUNT + CONTINUOUS_COUNT {
+                            continuous_name(i - CANONICAL_COUNT)
                         } else {
-                            sprintln!("Usage: boot canonical <I-XII|1-12>");
-                        }
+                            novel_name(i - CANONICAL_COUNT - CONTINUOUS_COUNT)
+                        };
+                        sprintln!("Booting {}: {}", arg, name);
+                        sprintln!("Running (ESC to stop)...");
+                        let ran = k.run_continuous(|| interrupts::escape_pressed());
+                        sprintln!("\nStopped after {} ticks.", ran);
+                        print_status(k);
                     }
-                    "continuous" | "cont" => {
-                        let arg = parts.next().unwrap_or("").trim();
-                        if let Ok(i) = arg.parse::<usize>() {
-                            let idx = i.saturating_sub(1);
-                            if idx < CONTINUOUS_COUNT {
-                                k.load_continuous(idx);
-                                sprintln!("Booting continuous {}: {}", i, continuous_name(idx));
-                                sprintln!("Running (ESC to stop)...");
-                                let ran = k.run_continuous(|| interrupts::escape_pressed());
-                                sprintln!("\nStopped after {} ticks.", ran);
-                                print_status(k);
-                            } else {
-                                sprintln!("Continuous index {} out of range (max {}).",
-                                    i, CONTINUOUS_COUNT);
-                            }
-                        } else {
-                            sprintln!("Usage: boot continuous <1-{}>", CONTINUOUS_COUNT);
-                        }
-                    }
-                    _ => {
-                        sprintln!("Usage: boot canonical <I-XII> | boot continuous <1-{}>",
-                            CONTINUOUS_COUNT);
-                        sprintln!("Continuous programs:");
-                        for i in 0..CONTINUOUS_COUNT {
-                            sprintln!("  {}. {}", i + 1, continuous_name(i));
-                        }
-                    }
+                } else {
+                    sprintln!("Usage: boot <I–XIX>");
+                    sprintln!("Use 'list' to see all programs.");
                 }
             }
             "novel" => {
@@ -249,7 +233,7 @@ Stopped after {} ticks.", ran);
             }
                         "watch" => {
                 let arg = parts.next().unwrap_or("").trim();
-                let refresh: u64 = arg.parse().ok().unwrap_or(100);
+                let refresh: u64 = arg.parse().ok().unwrap_or(10);
                 let name = if k.snapshot.is_some() { "current" } else { "(none)" };
                 let width: u16 = 80;
                 manus::display_init(&k, name, width);
@@ -288,7 +272,8 @@ Stopped after {} ticks.", ran);
                     sprintln!("diversity:{}/12", snap.token_diversity);
                     sprintln!("self_ref: {}", snap.self_ref);
                     sprintln!("frob_ord: {}", snap.frobenius_order);
-                    sprintln!("dialeth:  {}", snap.dialetheia_complete);
+                    let eff_dial = snap.dialetheia_complete || snap.b_live_ticks > 0;
+                    sprintln!("dialeth:  {} (b_live_ticks={})", eff_dial, snap.b_live_ticks);
                     sprintln!("period:   {}", snap.period);
                 } else {
                     sprintln!("No snapshot — tick first.");
@@ -409,17 +394,51 @@ Stopped after {} ticks.", ran);
                 sprintln!("Depth: {}", k.stack.depth());
             }
             "list" => {
-                sprintln!("Canonical programs (I–XII) — 12 tokens, cyclic graph execution:");
+                sprintln!("╔══════════════════════════════════════════════════════════╗");
+                sprintln!("║  ALL PROGRAMS  —  12 tokens · 0 control opcodes          ║");
+                sprintln!("╠══════════════════════════════════════════════════════════╣");
+                sprintln!("║  ▸ CANONICAL (I–XII)  — cyclic graph, 12 core patterns   ║");
+                sprintln!("╟──────────────────────────────────────────────────────────╢");
                 for i in 0..CANONICAL_COUNT {
-                    sprintln!("  {:2}. {}", i + 1, canonical_name(i));
+                    sprintln!("║  {:>4}.  {:<48} ║", idx_to_roman(i), canonical_name(i));
                 }
-                sprintln!("Continuous programs (XIII–XVI) — token-graph-native:");
+                sprintln!("╟──────────────────────────────────────────────────────────╢");
+                sprintln!("║  ▸ CONTINUOUS (XIII–XVI)  — token-graph-native loops     ║");
+                sprintln!("╟──────────────────────────────────────────────────────────╢");
                 for i in 0..CONTINUOUS_COUNT {
-                    sprintln!("  {:2}. {}", i + 13, continuous_name(i));
+                    let ri = CANONICAL_COUNT + i;
+                    sprintln!("║  {:>4}.  {:<48} ║", idx_to_roman(ri), continuous_name(i));
                 }
-                sprintln!("Novel programs (XVII–XIX) — new control-flow features:");
+                sprintln!("╟──────────────────────────────────────────────────────────╢");
+                sprintln!("║  ▸ NOVEL (XVII–XIX)  — control-flow reconstructions      ║");
+                sprintln!("╟──────────────────────────────────────────────────────────╢");
                 for i in 0..NOVEL_COUNT {
-                    sprintln!("  {:2}. {}", i + 17, novel_name(i));
+                    let ri = CANONICAL_COUNT + CONTINUOUS_COUNT + i;
+                    sprintln!("║  {:>4}.  {:<48} ║", idx_to_roman(ri), novel_name(i));
+                }
+                sprintln!("╚══════════════════════════════════════════════════════════╝");
+                sprintln!("Use 'load <I–XIX>' to load any program by Roman numeral.");
+            }
+            "load" => {
+                let arg = parts.next().unwrap_or("").trim();
+                if load_by_roman(k, arg) {
+                    let idx = roman_to_idx(arg).unwrap();
+                    let name: &str = if idx < CANONICAL_COUNT {
+                        canonical_name(idx)
+                    } else if idx < CANONICAL_COUNT + CONTINUOUS_COUNT {
+                        continuous_name(idx - CANONICAL_COUNT)
+                    } else {
+                        novel_name(idx - CANONICAL_COUNT - CONTINUOUS_COUNT)
+                    };
+                    sprintln!("Loaded {}: {}", arg, name);
+                    serial::write_str("Program: ");
+                    for (j, t) in k.program.as_slice().iter().enumerate() {
+                        if j > 0 { serial::write_str(" → "); }
+                        serial::write_str(t.name());
+                    }
+                    sprintln!();
+                } else {
+                    sprintln!("Unknown program: {}. Use 'list' to see I–XIX.", arg);
                 }
             }
             "" => {}
@@ -540,15 +559,14 @@ fn print_help() {
     sprintln!("  graph                 — ASCII-art token graph with nesting"); 
     sprintln!("  heatmap [start] [n]   — B4 memory heatmap with color blocks");
     sprintln!("  timer [N]             — run N ticks, one per PIT interrupt (ESC to stop)");
-    sprintln!("  boot canonical <idx>  — load canonical + run continuously");
-    sprintln!("  boot continuous <idx> — load continuous program + run continuously");
-    sprintln!("  novel <1-3>           — load novel program (XVII–XIX)");
+    sprintln!("  boot <I–XIX>           — load any program + run continuously");
+    sprintln!("  load <I–XIX>           — load any program by Roman numeral");
     sprintln!("  status                — kernel status");
     sprintln!("  program               — show loaded program + fork depth");
     sprintln!("  snapshot              — structural snapshot (sig, tier, period, ...)");
-    sprintln!("  canonical <I-XII>     — load canonical program");
-    sprintln!("  continuous <1-4>      — load continuous program");
-    sprintln!("  novel <1-3>           — load novel program (XVII–XIX)");
+    sprintln!("  canonical <I–XII>      — load canonical program");
+    sprintln!("  continuous <1–4>       — load continuous program");
+    sprintln!("  novel <1–3>            — load novel program (XVII–XIX)");
     sprintln!("  list                  — list all programs");
     sprintln!("  crystal <addr>        — decode address");
     sprintln!("  crystal store <n> [d] — store entry");
@@ -563,7 +581,7 @@ fn print_help() {
     sprintln!("  FSPLIT (1->2) = fork     FFUSE (2->1) = join");
     sprintln!("  EVALT/EVALF (1->1) = branch gates");
     sprintln!("  TANCH (1->0) = halt       VINIT (0->1) = source");
-    sprintln!("  ISCRIB (1->1) = self-loop  End-of-program = cycle");
+    sprintln!("  IMSCRIB (1->1) = self-loop  End-of-program = cycle");
 }
 
 fn print_status(k: &Kernel) {
@@ -590,7 +608,40 @@ fn roman_to_idx(s: &str) -> Option<usize> {
         "IV"   => Some(3),  "V"    => Some(4),  "VI"  => Some(5),
         "VII"  => Some(6),  "VIII" => Some(7),  "IX"  => Some(8),
         "X"    => Some(9),  "XI"   => Some(10), "XII" => Some(11),
+        "XIII" => Some(12), "XIV"  => Some(13), "XV"  => Some(14),
+        "XVI"  => Some(15), "XVII" => Some(16), "XVIII" => Some(17),
+        "XIX"  => Some(18),
         _ => None,
+    }
+}
+
+fn idx_to_roman(i: usize) -> &'static str {
+    match i {
+        0  => "I",    1  => "II",   2  => "III",
+        3  => "IV",   4  => "V",    5  => "VI",
+        6  => "VII",  7  => "VIII", 8  => "IX",
+        9  => "X",    10 => "XI",   11 => "XII",
+        12 => "XIII", 13 => "XIV",  14 => "XV",
+        15 => "XVI",  16 => "XVII", 17 => "XVIII",
+        18 => "XIX",
+        _  => "?",
+    }
+}
+
+fn load_by_roman(k: &mut Kernel, roman: &str) -> bool {
+    if let Some(idx) = roman_to_idx(roman) {
+        if idx < CANONICAL_COUNT {
+            k.load_canonical(idx);
+            true
+        } else if idx < CANONICAL_COUNT + CONTINUOUS_COUNT {
+            k.load_continuous(idx - CANONICAL_COUNT)
+        } else if idx < CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT {
+            k.load_novel(idx - CANONICAL_COUNT - CONTINUOUS_COUNT)
+        } else {
+            false
+        }
+    } else {
+        false
     }
 }
 

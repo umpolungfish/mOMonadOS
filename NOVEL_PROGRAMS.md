@@ -12,7 +12,7 @@ control-flow primitives, built entirely from token graph arity:
 |---------|---------------------|----------|------|--------|
 | **XVII — Nested Fork Labyrinth** | Deeply nested FSPLIT/FFUSE | JNZ / JZ | O₁ | 11 |
 | **XVIII — Terminal Sink Protocol** | TANCH at root depth halt | HALT | O₀ | 8 |
-| **XIX — Mirrorgram** | ISCRIB cyclic self-imscription | YIELD | O_∞ | 9 |
+| **XIX — Mirrorgram** | IMSCRIB cyclic self-imscription | YIELD | O_∞ | 9 |
 
 ---
 
@@ -80,7 +80,7 @@ of nested forking; combining it with dialetheia would elevate it to O₂ or O_�
 
 ### Token Sequence
 ```
-VINIT → AFWD → AFWD → AREV → ISCRIB → CLINK → AFWD → TANCH
+VINIT → AFWD → AFWD → AREV → IMSCRIB → CLINK → AFWD → TANCH
 ```
 
 ### What It Demonstrates
@@ -102,7 +102,7 @@ become terminal.
 | 1 | AFWD | [N] | 1 | R0++ |
 | 2 | AFWD | [N] | 2 | R0++ |
 | 3 | AREV | [N] | 1 | R0-- |
-| 4 | ISCRIB | [N] | 1 | Snapshot → R4-R7 |
+| 4 | IMSCRIB | [N] | 1 | Snapshot → R4-R7 |
 | 5 | CLINK | [N] | 1 | R3 = meet(R1,R2) |
 | 6 | AFWD | [N] | 2 | R0++ |
 | 7 | TANCH | [] | 2 | Pop N → mem[R0=2]; root → **HALT** |
@@ -122,7 +122,7 @@ Period:        8
 ```
 
 **Why O₀:** This is a purely linear program — all tokens are in the Logical
-family (VINIT, AFWD, AREV, ISCRIB, CLINK, TANCH). No Frobenius pair, no
+family (VINIT, AFWD, AREV, IMSCRIB, CLINK, TANCH). No Frobenius pair, no
 dialetheia. It does one pass of computation and terminates. The tier reflects
 its simplicity; the *mechanism* it demonstrates (TANCH→halt) is the key insight.
 
@@ -132,17 +132,17 @@ its simplicity; the *mechanism* it demonstrates (TANCH→halt) is the key insigh
 
 ### Token Sequence
 ```
-ISCRIB → FSPLIT → EVALT → EVALF → FFUSE → ENGAGR → CLINK → IFIX → ISCRIB
+IMSCRIB → FSPLIT → EVALT → EVALF → FFUSE → ENGAGR → CLINK → IFIX → IMSCRIB
 ```
 
 ### What It Demonstrates
 
 **Cyclic looping without YIELD.** The program is a closed loop: it begins and
-ends with ISCRIB. The cyclic topology of the execution graph means that after the
-final ISCRIB, execution wraps naturally to the first ISCRIB. No explicit loop
+ends with IMSCRIB. The cyclic topology of the execution graph means that after the
+final IMSCRIB, execution wraps naturally to the first IMSCRIB. No explicit loop
 instruction is needed — the program *is* the loop.
 
-The ISCRIB at each cycle boundary reads the program's structural snapshot into
+The IMSCRIB at each cycle boundary reads the program's structural snapshot into
 registers R4–R7, making the program **self-aware** of its own tier, signature,
 frobenius order, and dialetheia status. This self-imscription is what elevates
 it to O_∞.
@@ -151,7 +151,7 @@ it to O_∞.
 
 | IP | Token | Stack | Action |
 |----|-------|-------|--------|
-| 0 | ISCRIB | [N] | Snapshot → R4(token_div), R5(self_ref), R6(frob), R7(dialeth) |
+| 0 | IMSCRIB | [N] | Snapshot → R4(token_div), R5(self_ref), R6(frob), R7(dialeth) |
 | 1 | FSPLIT | [N,N] | Fork depth 1; right=N; matching FFUSE at 4; resume=5 |
 | 2 | EVALT | [N,N] | N≠T → N (gate closed) |
 | 3 | EVALF | [N,N] | N≠F → N (gate closed) |
@@ -159,7 +159,7 @@ it to O_∞.
 | 5 | ENGAGR | [N,B] | Push B (Both — paradox stabilized) |
 | 6 | CLINK | [N,B] | R3 = meet(R1,R2) |
 | 7 | IFIX | [B] | Write B → mem[R0] (permanent brand) |
-| 8 | ISCRIB | [B] | Snapshot → R4-R7; wrap to IP=0 |
+| 8 | IMSCRIB | [B] | Snapshot → R4-R7; wrap to IP=0 |
 
 The ENGAGR at position 5 injects B (Both) into the stack each cycle. The IFIX at
 position 7 brands it into memory. Over successive cycles, the memory accumulates
@@ -172,7 +172,7 @@ influence or prior state).
 Tier:          O_∞
 Signature:     (L=3, F=2, D=3, X=1)
 Diversity:     8/12
-Self-ref:      True   ← ISCRIB bookends
+Self-ref:      True   ← IMSCRIB bookends
 Frob-order:    1      ← FSPLIT before FFUSE
 Dialeth:       True   ← EVALT + EVALF + ENGAGR
 Period:        9
@@ -180,7 +180,7 @@ Period:        9
 
 **Why O_∞:** All three criteria are met:
 1. **Dialetheia complete** — EVALT (affirmation), EVALF (negation), ENGAGR (both)
-2. **Self-reference** — ISCRIB at both ends: the program reads itself
+2. **Self-reference** — IMSCRIB at both ends: the program reads itself
 3. **Frobenius order > 0** — FSPLIT/FFUSE pair
 4. **Period ≥ 3** — period 9, no shorter repeating sub-pattern
 
@@ -219,16 +219,16 @@ are no other branches, so consuming the wire empties the frontier and the kernel
 halts. Inside a fork, TANCH is just a memory write — the other branch may still
 produce output.
 
-### 3. Looping (YIELD → Cyclic Topology + ISCRIB)
+### 3. Looping (YIELD → Cyclic Topology + IMSCRIB)
 
 ```
-ISCRIB → ... → ISCRIB → (wrap to start)
+IMSCRIB → ... → IMSCRIB → (wrap to start)
    ↑                            │
    └────── cyclic graph ────────┘
 ```
 
 Programs are inherently cyclic — the last token's output wire connects to the
-first token's input. No explicit loop instruction is needed. ISCRIB at cycle
+first token's input. No explicit loop instruction is needed. IMSCRIB at cycle
 boundaries provides the self-referential observation (THINK phase) that makes
 the loop self-aware.
 
@@ -246,7 +246,7 @@ redundant. The token graph arity table is a complete basis for control flow:
 | AFWD | 1 | 1 | forward morphism | Linear advance |
 | AREV | 1 | 1 | contravariant | Reverse / undo |
 | CLINK | 1 | 1 | composition | Value meet |
-| ISCRIB | 1 | 1 | identity | **Loop-back** (at cycle boundaries) |
+| IMSCRIB | 1 | 1 | identity | **Loop-back** (at cycle boundaries) |
 | FSPLIT | 1 | 2 | co-multiplication δ | **Fork** (creates branch) |
 | FFUSE | 2 | 1 | multiplication μ | **Join** (merges branches) |
 | EVALT | 1 | 1 | T-gate | **Conditional filter** (pass T) |
@@ -288,7 +288,7 @@ In the mOMonadOS REPL:
 |-------------------|---------------|--------------------------|-----------------|
 | Conditional branch | JNZ (0xE), JZ (0xF) | FSPLIT + EVALT/EVALF + FFUSE + fork-stack | **XVII** (depth 3 nesting) |
 | Halt | HALT (0xC) | TANCH at root depth (1→0 sink) | **XVIII** (clean termination) |
-| Loop | YIELD (0xD) | Cyclic topology + ISCRIB self-imscription | **XIX** (O_∞ continuous) |
+| Loop | YIELD (0xD) | Cyclic topology + IMSCRIB self-imscription | **XIX** (O_∞ continuous) |
 
 The user was correct: the 12 grammar tokens' graph arity was always a complete
 basis. The 4 control opcodes were redundant — they were flat interpretations of

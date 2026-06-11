@@ -16,7 +16,7 @@ struct ForkFrame {
     right_set: bool,
 }
 
-/// Structural snapshot computed by ISCRIB.
+/// Structural snapshot computed by IMSCRIB.
 /// Dynamic fields (b_live_ticks, gate_discriminations, value_period) are
 /// overlaid from runtime accumulators after the static classification.
 #[derive(Copy, Clone)]
@@ -195,7 +195,7 @@ impl Kernel {
                 let b = self.registers.read(2);
                 self.registers.write(3, b4_meet(a, b));
             }
-            Token::ISCRIB => {
+            Token::IMSCRIB => {
                 if let Some(snap) = self.snapshot {
                     self.registers.write(4, B4::from_u8(snap.token_diversity as u8 & 3));
                     self.registers.write(5, if snap.self_ref           { B4::T } else { B4::F });
@@ -399,12 +399,13 @@ pub fn self_imscribe(prog: &Program) -> Snapshot {
         }
     };
 
-    // ── Dialetheia complete: presence check AND linear-order check ──
+    // ── Dialetheia complete: presence check AND cyclic-order check ──
     // For each ENGAGR, there must be at least one EVALT or EVALF that
-    // follows it in the current cycle before the next ENGAGR.
-    // Scan is LINEAR (no wrap) — the kernel is an exact isomorphism of how
-    // reality does it: B pushed by ENGAGR can only reach a gate that appears
-    // forward in the token listing before the program wraps.
+    // follows it before the next ENGAGR.
+    // Scan WRAPS (cyclic) — programs are cyclic graphs; B pushed by ENGAGR
+    // persists across the cycle boundary and can reach gates on the next
+    // iteration. The scan respects this: for each ENGAGR, we search forward
+    // modulo n until we hit the next ENGAGR or exhaust the program.
     let dialetheia_complete = {
         let slice = prog.as_slice();
         let has_evalt  = slice.iter().any(|t| *t == Token::EVALT);
@@ -421,7 +422,8 @@ pub fn self_imscribe(prog: &Program) -> Snapshot {
                     // Scan forward linearly — do NOT wrap.
                     // The gate must appear after this ENGAGR and before
                     // the next ENGAGR (or end-of-program) in the current cycle.
-                    for j in (i + 1)..n {
+                    for offset in 1..n {
+                        let j = (i + offset) % n;
                         if slice[j] == Token::ENGAGR {
                             break; // reached next ENGAGR — no gate in between
                         }

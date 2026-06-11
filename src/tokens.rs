@@ -8,7 +8,7 @@
 ///   AFWD    1   1     forward morphism
 ///   AREV    1   1     contravariant inversion
 ///   CLINK   1   1     composition / meet
-///   ISCRIB  1   1     identity / self-imscription (loop-back)
+///   IMSCRIB  1   1     identity / self-imscription (loop-back)
 ///   FSPLIT  1   2     fork — bifurcation (→ conditional)
 ///   EVALT   1   1     T-gate — passes T, blocks non-T
 ///   EVALF   1   1     F-gate — passes F, blocks non-F
@@ -27,7 +27,7 @@ pub enum Token {
     AFWD   = 0x2, // Forward morphism → — directed transition
     AREV   = 0x3, // Contravariant inversion ← — reversal
     CLINK  = 0x4, // Composition ∘ — linkage (meet R1∧R2→R3)
-    ISCRIB = 0x5, // Identity id — self-imscription
+    IMSCRIB = 0x5, // Identity id — self-imscription
     FSPLIT = 0x6, // Co-multiplication δ — bifurcation (1→2 fork)
     FFUSE  = 0x7, // Multiplication μ — recombination (2→1 join)
     EVALT  = 0x8, // True — affirmation; T-gate
@@ -41,7 +41,7 @@ impl Token {
         match self {
             Token::VINIT  => "VINIT",  Token::TANCH  => "TANCH",
             Token::AFWD   => "AFWD",   Token::AREV   => "AREV",
-            Token::CLINK  => "CLINK",  Token::ISCRIB => "ISCRIB",
+            Token::CLINK  => "CLINK",  Token::IMSCRIB => "IMSCRIB",
             Token::FSPLIT => "FSPLIT", Token::FFUSE  => "FFUSE",
             Token::EVALT  => "EVALT",  Token::EVALF  => "EVALF",
             Token::ENGAGR => "ENGAGR", Token::IFIX   => "IFIX",
@@ -51,7 +51,7 @@ impl Token {
     pub fn family(self) -> Family {
         match self {
             Token::VINIT | Token::TANCH | Token::AFWD |
-            Token::AREV  | Token::CLINK | Token::ISCRIB => Family::Logical,
+            Token::AREV  | Token::CLINK | Token::IMSCRIB => Family::Logical,
             Token::FSPLIT | Token::FFUSE                => Family::Frobenius,
             Token::EVALT  | Token::EVALF | Token::ENGAGR => Family::Dialetheia,
             Token::IFIX                                 => Family::Linear,
@@ -128,10 +128,10 @@ impl Program {
 
 pub fn bootstrap_loop() -> Program {
     let mut p = Program::empty();
-    // ISCRIB→AREV→FSPLIT→AFWD→FFUSE→CLINK→IFIX→ISCRIB (cyclic)
-    for t in [Token::ISCRIB, Token::AREV, Token::FSPLIT,
+    // IMSCRIB→AREV→FSPLIT→AFWD→FFUSE→CLINK→IFIX→IMSCRIB (cyclic)
+    for t in [Token::IMSCRIB, Token::AREV, Token::FSPLIT,
               Token::AFWD, Token::FFUSE, Token::CLINK,
-              Token::IFIX, Token::ISCRIB] {
+              Token::IFIX, Token::IMSCRIB] {
         p.push(t);
     }
     p
@@ -161,14 +161,14 @@ pub fn canonical(i: usize) -> Option<Program> {
     let mut p = Program::empty();
     match i {
         0 => { // I_Dialetheic_Bootstrap — full dialetheia cycle, self-imscribing
-            for t in [Token::ISCRIB, Token::EVALT, Token::FSPLIT,
+            for t in [Token::IMSCRIB, Token::EVALT, Token::FSPLIT,
                       Token::EVALF, Token::FFUSE, Token::ENGAGR,
-                      Token::IFIX,  Token::ISCRIB] { p.push(t); }
+                      Token::IFIX,  Token::IMSCRIB] { p.push(t); }
         }
         1 => { // II_Void_Genesis — from void through fork to self-knowledge
             for t in [Token::VINIT, Token::FSPLIT, Token::EVALT,
                       Token::FFUSE, Token::EVALF,  Token::CLINK,
-                      Token::IFIX,  Token::ISCRIB] { p.push(t); }
+                      Token::IFIX,  Token::IMSCRIB] { p.push(t); }
         }
         2 => { // III_Anchor_Protocol — terminal→forward→reverse cycles
             for t in [Token::TANCH, Token::AFWD,  Token::EVALT,
@@ -176,15 +176,15 @@ pub fn canonical(i: usize) -> Option<Program> {
                       Token::IFIX,  Token::TANCH] { p.push(t); }
         }
         3 => { // IV_Dual_Bootstrap — fuse-then-split, reverse frobenius
-            for t in [Token::ISCRIB, Token::AFWD,  Token::FFUSE,
+            for t in [Token::IMSCRIB, Token::AFWD,  Token::FFUSE,
                       Token::FSPLIT, Token::AREV,  Token::CLINK,
-                      Token::IFIX,   Token::ISCRIB] { p.push(t); }
+                      Token::IFIX,   Token::IMSCRIB] { p.push(t); }
         }
         4 => { // V_Linear_Chain — pure linear !-exponential
             for _ in 0..8 { p.push(Token::IFIX); }
         }
         5 => { // VI_Empty_Bootstrap — void/self oscillations
-            for _ in 0..4 { p.push(Token::VINIT); p.push(Token::ISCRIB); }
+            for _ in 0..4 { p.push(Token::VINIT); p.push(Token::IMSCRIB); }
         }
         6 => { // VII_Parakernel — paradox-anchored dialetheia
             for t in [Token::ENGAGR, Token::AFWD,  Token::FSPLIT,
@@ -198,8 +198,8 @@ pub fn canonical(i: usize) -> Option<Program> {
             for _ in 0..4 { p.push(Token::AFWD); p.push(Token::AREV); }
         }
         9 => { // X_Truth_Machine — nested conditional
-            for t in [Token::ISCRIB, Token::FSPLIT, Token::EVALT,
-                      Token::IFIX,   Token::ISCRIB, Token::FSPLIT,
+            for t in [Token::IMSCRIB, Token::FSPLIT, Token::EVALT,
+                      Token::IFIX,   Token::IMSCRIB, Token::FSPLIT,
                       Token::EVALF,  Token::IFIX] { p.push(t); }
         }
         10 => { // XI_Eternal_Return — TANCH→AFWD→AREV cycle
@@ -210,7 +210,7 @@ pub fn canonical(i: usize) -> Option<Program> {
         11 => { // XII_ROM_Burn — truth values→permanent brand
             for t in [Token::EVALT,  Token::IFIX, Token::EVALF,
                       Token::IFIX,   Token::ENGAGR, Token::IFIX,
-                      Token::ISCRIB, Token::IFIX] { p.push(t); }
+                      Token::IMSCRIB, Token::IFIX] { p.push(t); }
         }
         _ => return None,
     }
@@ -241,24 +241,24 @@ pub fn continuous_program(i: usize) -> Option<Program> {
     match i {
         0 => {
             // XIII_Heartbeat — minimal self-imscription loop
-            // ISCRIB self-imscribes, stack gets snapshot→R4-R7, cycle repeats
-            // Natural cycle: ISCRIB→ISCRIB→...
-            for _ in 0..4 { p.push(Token::ISCRIB); }
+            // IMSCRIB self-imscribes, stack gets snapshot→R4-R7, cycle repeats
+            // Natural cycle: IMSCRIB→IMSCRIB→...
+            for _ in 0..4 { p.push(Token::IMSCRIB); }
         }
         1 => {
             // XIV_Tier_Climber — dialetheia+frobenius cycle for tier promotion
             // Uses FSPLIT/FFUSE to create fork-join: evaluates both T and F branches
-            for t in [Token::ISCRIB, Token::FSPLIT,
+            for t in [Token::IMSCRIB, Token::FSPLIT,
                       Token::EVALT, Token::EVALF,
                       Token::FFUSE, Token::ENGAGR,
                       Token::CLINK, Token::IFIX,
-                      Token::ISCRIB] { p.push(t); }
+                      Token::IMSCRIB] { p.push(t); }
         }
         2 => {
             // XV_Frobenius_Oscillator — δ→observe→μ→observe oscillation
-            // FSPLIT forks, ISCRIB observes, FFUSE joins, ISCRIB observes
-            for t in [Token::FSPLIT, Token::ISCRIB, Token::FFUSE,
-                      Token::ISCRIB] { p.push(t); }
+            // FSPLIT forks, IMSCRIB observes, FFUSE joins, IMSCRIB observes
+            for t in [Token::FSPLIT, Token::IMSCRIB, Token::FFUSE,
+                      Token::IMSCRIB] { p.push(t); }
         }
         3 => {
             // XVI_Paradox_Daemon — sustained paradox computation
@@ -267,7 +267,7 @@ pub fn continuous_program(i: usize) -> Option<Program> {
             for t in [Token::VINIT, Token::FSPLIT,
                       Token::EVALT, Token::EVALF,
                       Token::ENGAGR, Token::FFUSE,
-                      Token::ISCRIB] { p.push(t); }
+                      Token::IMSCRIB] { p.push(t); }
         }
         _ => return None,
     }
@@ -304,7 +304,7 @@ pub fn period(prog: &Program) -> usize {
 // Demonstrate the three reconstructed control-flow features:
 //   XVII  — Nested FSPLIT/FFUSE (JNZ/JZ replacement, fork depth 3)
 //   XVIII — TANCH root-depth halt (HALT replacement)
-//   XIX   — ISCRIB cyclic self-imscription (YIELD replacement)
+//   XIX   — IMSCRIB cyclic self-imscription (YIELD replacement)
 
 pub const NOVEL_COUNT: usize = 3;
 
@@ -335,22 +335,22 @@ pub fn novel_program(i: usize) -> Option<Program> {
             // XVIII — Terminal Sink Protocol (TANCH at root halts)
             // Runs computation then cleanly terminates via TANCH at root depth.
             for t in [Token::VINIT, Token::AFWD, Token::AFWD,
-                      Token::AREV, Token::ISCRIB, Token::CLINK,
+                      Token::AREV, Token::IMSCRIB, Token::CLINK,
                       Token::AFWD, Token::TANCH] {
                 p.push(t);
             }
         }
         2 => {
             // XIX — Mirrorgram (cyclic self-imscription, no explicit halt)
-            // ISCRIB bookends create self-ref closure → O_∞ tier.
-            // Loops via cyclic topology. ISCRIB at both cycle boundaries
+            // IMSCRIB bookends create self-ref closure → O_∞ tier.
+            // Loops via cyclic topology. IMSCRIB at both cycle boundaries
             // reads own snapshot into R4-R7 each wrap. FSPLIT/FFUSE + gates
             // structure the dialetheia cycle. ENGAGR stabilizes paradox.
             // IFIX brands memory. No TANCH at root → runs continuously
-            // (YIELD replacement). Self-ref closure: first==last==ISCRIB.
-            for t in [Token::ISCRIB, Token::FSPLIT, Token::EVALT,
+            // (YIELD replacement). Self-ref closure: first==last==IMSCRIB.
+            for t in [Token::IMSCRIB, Token::FSPLIT, Token::EVALT,
                       Token::EVALF, Token::FFUSE, Token::ENGAGR,
-                      Token::CLINK, Token::IFIX, Token::ISCRIB] {
+                      Token::CLINK, Token::IFIX, Token::IMSCRIB] {
                 p.push(t);
             }
         }
