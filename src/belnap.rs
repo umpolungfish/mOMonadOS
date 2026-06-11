@@ -79,6 +79,11 @@ impl B4Stack {
         if self.top == 0 { B4::N } else { self.data[self.top - 1] }
     }
 
+    /// Peek at stack position `offset` from bottom (0 = bottom, depth-1 = top).
+    pub fn peek_at(&self, offset: usize) -> B4 {
+        if offset >= self.top { B4::N } else { self.data[offset] }
+    }
+
     pub fn depth(&self) -> usize { self.top }
 }
 

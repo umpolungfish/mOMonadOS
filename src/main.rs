@@ -14,6 +14,7 @@ mod tokens;
 mod crystal;
 mod kernel;
 mod interrupts;
+mod manus;
 
 use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT};
 use crystal::{CrystalStore, decode, encode, indices_from_snapshot, TOTAL};
@@ -245,6 +246,30 @@ Stopped after {} ticks.", ran);
                 } else {
                     sprintln!("Usage: boot novel <1-{}>", NOVEL_COUNT);
                 }
+            }
+                        "watch" => {
+                let arg = parts.next().unwrap_or("").trim();
+                let refresh: u64 = arg.parse().ok().unwrap_or(100);
+                let name = if k.snapshot.is_some() { "current" } else { "(none)" };
+                let width: u16 = 80;
+                manus::display_init(&k, name, width);
+                sprintln!("Watching. ESC to stop (refresh every {} ticks)...", refresh);
+                let ran = manus::run_with_display(k, name, width, refresh,
+                    || interrupts::escape_pressed());
+                manus::display_shutdown();
+                sprintln!();
+                sprintln!("Stopped after {} ticks.", ran);
+                print_status(k);
+            }
+                        "graph" => {
+                manus::draw_token_graph(&k);
+                sprintln!();
+            }
+            "heatmap" => {
+                let start: usize = parts.next().and_then(|s| s.trim().parse().ok()).unwrap_or(0);
+                let count: usize = parts.next().and_then(|s| s.trim().parse().ok()).unwrap_or(64);
+                manus::draw_memory_heatmap(&k, start, count, 80);
+                sprintln!();
             }
             "program" => {
                 for (i, t) in k.program.as_slice().iter().enumerate() {
@@ -511,6 +536,9 @@ fn print_help() {
     sprintln!("mOMonadOS REPL commands (graph execution — 12 tokens, 0 control opcodes):");
     sprintln!("  tick [N]              — run N manual ticks (default 1)");
     sprintln!("  run [N]               — run N ticks; no arg = continuous (ESC to stop)");
+    sprintln!("  watch [N]             — live terminal HUD, refresh every N ticks (ESC to stop)");
+    sprintln!("  graph                 — ASCII-art token graph with nesting"); 
+    sprintln!("  heatmap [start] [n]   — B4 memory heatmap with color blocks");
     sprintln!("  timer [N]             — run N ticks, one per PIT interrupt (ESC to stop)");
     sprintln!("  boot canonical <idx>  — load canonical + run continuously");
     sprintln!("  boot continuous <idx> — load continuous program + run continuously");

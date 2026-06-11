@@ -25,6 +25,7 @@ pub fn rx_ready() -> bool {
     unsafe { Port::<u8>::new(COM1 + 5).read() & 0x01 != 0 }
 }
 
+/// Write a single byte, spin-waiting for TX ready.
 pub fn write_byte(b: u8) {
     while !tx_ready() {}
     unsafe { Port::<u8>::new(COM1).write(b); }
@@ -35,11 +36,40 @@ pub fn read_byte() -> u8 {
     unsafe { Port::<u8>::new(COM1).read() }
 }
 
+/// FIFO-burst write: fill the 14-byte FIFO before re-checking TX ready.
+/// Dramatically reduces spin-wait overhead for display output.
+/// 14-byte threshold set in init() — we batch up to 14 bytes per burst.
 pub fn write_str(s: &str) {
+    let mut buf: [u8; 14] = [0; 14];
+    let mut fill: usize = 0;
+
+    let flush = |buf: &mut [u8; 14], fill: &mut usize| {
+        if *fill == 0 { return; }
+        // Wait once for TX ready, then burst the batch
+        while !tx_ready() {}
+        unsafe {
+            let mut port = Port::<u8>::new(COM1);
+            for i in 0..*fill {
+                port.write(buf[i]);
+            }
+        }
+        *fill = 0;
+    };
+
     for b in s.bytes() {
-        if b == b'\n' { write_byte(b'\r'); }
-        write_byte(b);
+        if b == b'\n' {
+            flush(&mut buf, &mut fill);
+            write_byte(b'\r');
+            write_byte(b'\n');
+            continue;
+        }
+        buf[fill] = b;
+        fill += 1;
+        if fill >= 14 {
+            flush(&mut buf, &mut fill);
+        }
     }
+    flush(&mut buf, &mut fill);
 }
 
 pub struct Writer;

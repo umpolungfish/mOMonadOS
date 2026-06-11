@@ -125,7 +125,7 @@ impl Kernel {
     }
 
     /// Find matching FFUSE for FSPLIT at split_ip via balanced parenthesis scan.
-    fn find_matching_ffuse(&self, split_ip: usize) -> usize {
+    pub fn find_matching_ffuse(&self, split_ip: usize) -> usize {
         let mut depth = 1u32;
         let n = self.program.len();
         if n == 0 { return 0; }
