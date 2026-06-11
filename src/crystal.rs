@@ -40,27 +40,27 @@ pub fn decode(mut addr: u32) -> [u8; 12] {
 
 /// Derive crystal indices from kernel structural snapshot.
 ///
-/// Mapping (no hardcoding — every dimension is a live structural property):
+/// Mapping:
 ///   D(4)     ← frobenius_order
 ///   T(5)     ← period % 5
-///   R(4)     ← sig.logical % 4
-///   P(5)     ← sig.frobenius % 5
-///   F(3)     ← sig.dialetheia % 3
-///   K(5)     ← sig.linear % 5
+///   R(4)     ← sig.0 (Logical) % 4
+///   P(5)     ← sig.1 (Frobenius) % 5
+///   F(3)     ← sig.2 (Dialetheia) % 3
+///   K(5)     ← sig.3 (Linear) % 5
 ///   G(3)     ← token_diversity % 3
 ///   C(4)     ← (self_ref<<1 | dialetheia_complete) % 4
-///   Phi(5)   ← tier index (O_0=0 O_1=1 O_2=2 O_inf=3) % 5
+///   Phi(5)   ← tier
 ///   H(4)     ← program_len % 4
 ///   S(3)     ← sig_sum % 3
 ///   Omega(4) ← (period + frobenius_order) % 4
 pub fn indices_from_snapshot(
     frobenius_order: u8,
     period: usize,
-    sig: (usize, usize, usize, usize),
+    sig: (usize, usize, usize, usize), // (L, F, D, X)
     token_diversity: usize,
     self_ref: bool,
     dialetheia_complete: bool,
-    tier: u8, // 0=O_0 1=O_1 2=O_2 3=O_inf
+    tier: u8,
     program_len: usize,
 ) -> [u8; 12] {
     let sig_sum = (sig.0 + sig.1 + sig.2 + sig.3) as u8;
@@ -89,8 +89,8 @@ pub struct CrystalStore {
 #[derive(Clone, Copy)]
 pub struct CrystalEntry {
     pub address: u32,
-    pub name: [u8; 32],  // null-terminated
-    pub data: [u8; 64],  // null-terminated payload
+    pub name: [u8; 32],
+    pub data: [u8; 64],
     pub canonical_idx: u8,
 }
 
@@ -112,7 +112,6 @@ impl CrystalStore {
     }
 
     pub fn store(&mut self, name: &str, data: &str, address: u32, canonical_idx: u8) -> u32 {
-        // overwrite existing entry at same address
         for slot in self.entries.iter_mut() {
             if let Some(e) = slot {
                 if e.address == address {
@@ -125,7 +124,6 @@ impl CrystalStore {
                 }
             }
         }
-        // new slot
         if self.count < 64 {
             let mut entry = CrystalEntry {
                 address,

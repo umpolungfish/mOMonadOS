@@ -13,8 +13,9 @@ mod belnap;
 mod tokens;
 mod crystal;
 mod kernel;
+mod interrupts;
 
-use tokens::{canonical_name, CANONICAL_COUNT};
+use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT};
 use crystal::{CrystalStore, decode, encode, indices_from_snapshot, TOTAL};
 use kernel::Kernel;
 
@@ -24,7 +25,7 @@ static ALLOCATOR: LockedHeap = LockedHeap::empty();
 const BOOTLOADER_CONFIG: BootloaderConfig = {
     let mut config = BootloaderConfig::new_default();
     config.mappings.physical_memory = Some(Mapping::Dynamic);
-    config.kernel_stack_size = 0x40000; // 256 KB
+    config.kernel_stack_size = 0x40000;
     config
 };
 
@@ -34,7 +35,9 @@ fn kmain(boot_info: &'static mut BootInfo) -> ! {
     serial::init();
     sprintln!("[BOOT] mOMonadOS — The Self-Imscribing Bare-Metal Kernel");
 
-    // Heap
+    interrupts::init(100);
+    sprintln!("[BOOT] Interrupts online — PIT 100Hz, PIC remapped");
+
     if let Some(phys_offset) = boot_info.physical_memory_offset.into_option() {
         if let Some(region) = boot_info.memory_regions.iter().find(|r| {
             matches!(r.kind, bootloader_api::info::MemoryRegionKind::Usable)
@@ -50,9 +53,11 @@ fn kmain(boot_info: &'static mut BootInfo) -> ! {
 
     let mut k = Kernel::new();
     k.boot();
-    sprintln!("[BOOT] Kernel online — μ∘δ=id");
-    sprintln!("[BOOT] Bootstrap: ISCRIB→AREV→FSPLIT→AFWD→FFUSE→CLINK→IFIX→ISCRIB");
+    sprintln!("[BOOT] Kernel online — graph execution, token-arity driven");
+    sprintln!("[BOOT] Bootstrap: ISCRIB→AREV→FSPLIT→AFWD→FFUSE→CLINK→IFIX→ISCRIB (cyclic)");
     sprintln!("[BOOT] Crystal FS: {} addresses", TOTAL);
+    sprintln!("[BOOT] 12 canonicals + {} continuous programs (12 tokens, 0 control opcodes)",
+        CONTINUOUS_COUNT);
     sprintln!();
 
     print_banner();
@@ -66,6 +71,7 @@ fn print_banner() {
     sprintln!("║            m O M o n a d O S                    ║");
     sprintln!("║    The Self-Imscribing Bare-Metal Kernel         ║");
     sprintln!("║    Frobenius Core · Belnap FOUR · Crystal FS     ║");
+    sprintln!("║    Graph Execution — Token Arity as Topology     ║");
     sprintln!("╚══════════════════════════════════════════════════╝");
     sprintln!();
     sprintln!("Type 'help' for commands.");
@@ -102,7 +108,6 @@ impl History {
         if self.count < HISTORY_CAP { self.count += 1; }
     }
 
-    // back=1 → most recent, back=2 → one before that, etc.
     fn get(&self, back: usize) -> Option<(&[u8], usize)> {
         if back == 0 || back > self.count { return None; }
         let idx = (self.write_idx + HISTORY_CAP - back) % HISTORY_CAP;
@@ -139,9 +144,107 @@ fn repl(k: &mut Kernel) {
                 print_status(k);
             }
             "run" => {
-                let n: u64 = parts.next().and_then(|s| s.trim().parse().ok()).unwrap_or(1);
-                k.run(n);
+                let arg = parts.next().unwrap_or("").trim();
+                if let Ok(n) = arg.parse::<u64>() {
+                    k.run(n);
+                    print_status(k);
+                } else {
+                    sprintln!("Running continuously (press ESC to stop)...");
+                    let ran = k.run_continuous(|| interrupts::escape_pressed());
+                    sprintln!();
+                    sprintln!("Stopped after {} ticks.", ran);
+                    print_status(k);
+                }
+            }
+            "timer" => {
+                let n: u64 = parts.next().and_then(|s| s.trim().parse().ok()).unwrap_or(10);
+                sprintln!("Timer-driven: {} ticks (ESC to stop early)...", n);
+                let mut ran = 0u64;
+                while ran < n {
+                    while !interrupts::timer_ready() {
+                        if interrupts::escape_pressed() { break; }
+                        x86_64::instructions::hlt();
+                    }
+                    if interrupts::escape_pressed() { break; }
+                    interrupts::pending_ticks();
+                    if !k.tick() { break; }
+                    ran += 1;
+                }
+                sprintln!();
+                sprintln!("Timer ran {} ticks.", ran);
                 print_status(k);
+            }
+            "boot" => {
+                let sub = parts.next().unwrap_or("").trim();
+                match sub {
+                    "canonical" | "canon" => {
+                        let arg = parts.next().unwrap_or("").trim();
+                        let idx = roman_to_idx(arg)
+                            .or_else(|| arg.parse::<usize>().ok().map(|n| n.saturating_sub(1)));
+                        if let Some(i) = idx {
+                            if i < CANONICAL_COUNT {
+                                k.load_canonical(i);
+                                sprintln!("Booting canonical {}: {}", i + 1, canonical_name(i));
+                                sprintln!("Running (ESC to stop)...");
+                                let ran = k.run_continuous(|| interrupts::escape_pressed());
+                                sprintln!("\nStopped after {} ticks.", ran);
+                                print_status(k);
+                            } else {
+                                sprintln!("Canonical index {} out of range (max {}).",
+                                    i + 1, CANONICAL_COUNT);
+                            }
+                        } else {
+                            sprintln!("Usage: boot canonical <I-XII|1-12>");
+                        }
+                    }
+                    "continuous" | "cont" => {
+                        let arg = parts.next().unwrap_or("").trim();
+                        if let Ok(i) = arg.parse::<usize>() {
+                            let idx = i.saturating_sub(1);
+                            if idx < CONTINUOUS_COUNT {
+                                k.load_continuous(idx);
+                                sprintln!("Booting continuous {}: {}", i, continuous_name(idx));
+                                sprintln!("Running (ESC to stop)...");
+                                let ran = k.run_continuous(|| interrupts::escape_pressed());
+                                sprintln!("\nStopped after {} ticks.", ran);
+                                print_status(k);
+                            } else {
+                                sprintln!("Continuous index {} out of range (max {}).",
+                                    i, CONTINUOUS_COUNT);
+                            }
+                        } else {
+                            sprintln!("Usage: boot continuous <1-{}>", CONTINUOUS_COUNT);
+                        }
+                    }
+                    _ => {
+                        sprintln!("Usage: boot canonical <I-XII> | boot continuous <1-{}>",
+                            CONTINUOUS_COUNT);
+                        sprintln!("Continuous programs:");
+                        for i in 0..CONTINUOUS_COUNT {
+                            sprintln!("  {}. {}", i + 1, continuous_name(i));
+                        }
+                    }
+                }
+            }
+            "novel" => {
+                let arg = parts.next().unwrap_or("").trim();
+                if let Ok(i) = arg.parse::<usize>() {
+                    let idx = i.saturating_sub(1);
+                    if idx < NOVEL_COUNT {
+                        k.load_novel(idx);
+                        sprintln!("Booting novel {}: {}", i, novel_name(idx));
+                        sprintln!("Running (ESC to stop)...");
+                        let ran = k.run_continuous(|| interrupts::escape_pressed());
+                        sprintln!("
+Stopped after {} ticks.", ran);
+                        print_status(k);
+                    } else {
+                        sprintln!("Novel index {} out of range (max {}).",
+                            i, NOVEL_COUNT);
+                    }
+                } else {
+                    sprintln!("Usage: boot novel <1-{}>", NOVEL_COUNT);
+                }
             }
             "program" => {
                 for (i, t) in k.program.as_slice().iter().enumerate() {
@@ -149,12 +252,14 @@ fn repl(k: &mut Kernel) {
                     serial::write_str(t.name());
                 }
                 sprintln!();
-                sprintln!("len={} ip={}", k.program.len(), k.ip);
+                sprintln!("len={} ip={} fork_depth={}",
+                    k.program.len(), k.ip, k.fork_depth());
             }
             "snapshot" => {
                 if let Some(snap) = k.snapshot {
                     sprintln!("Tier:     {}", snap.tier_name());
-                    sprintln!("sig:      ({},{},{},{})", snap.sig.0, snap.sig.1, snap.sig.2, snap.sig.3);
+                    sprintln!("sig:      ({},{},{},{})  [L,F,D,X]",
+                        snap.sig.0, snap.sig.1, snap.sig.2, snap.sig.3);
                     sprintln!("diversity:{}/12", snap.token_diversity);
                     sprintln!("self_ref: {}", snap.self_ref);
                     sprintln!("frob_ord: {}", snap.frobenius_order);
@@ -166,7 +271,8 @@ fn repl(k: &mut Kernel) {
             }
             "canonical" => {
                 let arg = parts.next().unwrap_or("").trim();
-                let idx = roman_to_idx(arg).or_else(|| arg.parse::<usize>().ok().map(|n| n.saturating_sub(1)));
+                let idx = roman_to_idx(arg)
+                    .or_else(|| arg.parse::<usize>().ok().map(|n| n.saturating_sub(1)));
                 if let Some(i) = idx {
                     k.load_canonical(i);
                     sprintln!("Loaded {}: {}", i + 1, canonical_name(i));
@@ -180,6 +286,29 @@ fn repl(k: &mut Kernel) {
                     sprintln!("Usage: canonical <I-XII>");
                 }
             }
+            "continuous" => {
+                let arg = parts.next().unwrap_or("").trim();
+                if let Ok(i) = arg.parse::<usize>() {
+                    let idx = i.saturating_sub(1);
+                    if k.load_continuous(idx) {
+                        sprintln!("Loaded {}: {}", i, continuous_name(idx));
+                        serial::write_str("Program: ");
+                        for (j, t) in k.program.as_slice().iter().enumerate() {
+                            if j > 0 { serial::write_str(" → "); }
+                            serial::write_str(t.name());
+                        }
+                        sprintln!();
+                    } else {
+                        sprintln!("Continuous program {} not found.", i);
+                    }
+                } else {
+                    sprintln!("Continuous programs:");
+                    for i in 0..CONTINUOUS_COUNT {
+                        sprintln!("  {}. {}", i + 1, continuous_name(i));
+                    }
+                    sprintln!("Usage: continuous <1-{}>", CONTINUOUS_COUNT);
+                }
+            }
             "crystal" => {
                 let sub = parts.next().unwrap_or("").trim();
                 match sub {
@@ -189,12 +318,11 @@ fn repl(k: &mut Kernel) {
                         if name.is_empty() {
                             sprintln!("Usage: crystal store <name> [data]");
                         } else {
-                            // hash name → canonical, load, tick, store
                             let idx = name_hash(name) % CANONICAL_COUNT;
                             k.load_canonical(idx);
                             k.tick();
                             let addr = crystal_store_current(k, &mut cfs, name, data, idx as u8);
-                            sprintln!("  ↻ [{}] → tick {}", canonical_name(idx), k.tick_count);
+                            sprintln!("  -> [{}] tick {}", canonical_name(idx), k.tick_count);
                             sprintln!("Stored '{}' at address {}", name, addr);
                             let decoded = decode(addr);
                             serial::write_str("  Tuple: [");
@@ -229,7 +357,7 @@ fn repl(k: &mut Kernel) {
                             let pnames = ["D","T","R","P","F","K","G","C","Phi","H","S","Omega"];
                             for i in 0..12 { sprintln!("  {}: {}", pnames[i], dec[i]); }
                             if let Some(e) = cfs.read_by_addr(addr) {
-                                sprintln!("  Stored: '{}' → '{}'", e.name_str(), e.data_str());
+                                sprintln!("  Stored: '{}' -> '{}'", e.name_str(), e.data_str());
                             }
                         } else {
                             sprintln!("Usage: crystal <addr> | store | name | find");
@@ -254,6 +382,20 @@ fn repl(k: &mut Kernel) {
             }
             "stack" => {
                 sprintln!("Depth: {}", k.stack.depth());
+            }
+            "list" => {
+                sprintln!("Canonical programs (I–XII) — 12 tokens, cyclic graph execution:");
+                for i in 0..CANONICAL_COUNT {
+                    sprintln!("  {:2}. {}", i + 1, canonical_name(i));
+                }
+                sprintln!("Continuous programs (XIII–XVI) — token-graph-native:");
+                for i in 0..CONTINUOUS_COUNT {
+                    sprintln!("  {:2}. {}", i + 13, continuous_name(i));
+                }
+                sprintln!("Novel programs (XVII–XIX) — new control-flow features:");
+                for i in 0..NOVEL_COUNT {
+                    sprintln!("  {:2}. {}", i + 17, novel_name(i));
+                }
             }
             "" => {}
             _ => sprintln!("Unknown: {}. Type 'help'.", cmd),
@@ -290,16 +432,15 @@ fn crystal_store_current(
 
 fn read_line<'a>(buf: &'a mut [u8; 256], history: &mut History) -> &'a str {
     let mut len = 0usize;
-    let mut hist_pos = 0usize; // 0 = current input; N = Nth entry back
+    let mut hist_pos = 0usize;
 
     loop {
         let b = serial::read_byte();
         match b {
             0x1b => {
-                // Escape sequence: expect '[' then code
                 if serial::read_byte() != b'[' { continue; }
                 match serial::read_byte() {
-                    b'A' => { // up arrow — go back in history
+                    b'A' => {
                         let next = (hist_pos + 1).min(history.count);
                         if next != hist_pos {
                             hist_pos = next;
@@ -309,7 +450,7 @@ fn read_line<'a>(buf: &'a mut [u8; 256], history: &mut History) -> &'a str {
                             }
                         }
                     }
-                    b'B' => { // down arrow — go forward in history
+                    b'B' => {
                         if hist_pos > 0 {
                             hist_pos -= 1;
                             if hist_pos == 0 {
@@ -354,10 +495,8 @@ fn read_line<'a>(buf: &'a mut [u8; 256], history: &mut History) -> &'a str {
     core::str::from_utf8(&buf[..len]).unwrap_or("")
 }
 
-// Erase current input and redraw with new content.
-// Uses \r\x1b[K (CR + erase to end) then reprints prompt + new line.
 fn redraw_input(old_len: usize, src: &[u8], src_len: usize, buf: &mut [u8; 256]) {
-    let _ = old_len; // terminal erase handles any length
+    let _ = old_len;
     serial::write_str("\r\x1b[K⊙> ");
     let n = src_len.min(255);
     buf[..n].copy_from_slice(&src[..n]);
@@ -369,30 +508,45 @@ fn redraw_input(old_len: usize, src: &[u8], src_len: usize, buf: &mut [u8; 256])
 // ─── Helpers ──────────────────────────────────────────────────
 
 fn print_help() {
-    sprintln!("mOMonadOS REPL commands:");
-    sprintln!("  tick [N]              — run N ticks (default 1)");
-    sprintln!("  run [N]               — run N more ticks");
+    sprintln!("mOMonadOS REPL commands (graph execution — 12 tokens, 0 control opcodes):");
+    sprintln!("  tick [N]              — run N manual ticks (default 1)");
+    sprintln!("  run [N]               — run N ticks; no arg = continuous (ESC to stop)");
+    sprintln!("  timer [N]             — run N ticks, one per PIT interrupt (ESC to stop)");
+    sprintln!("  boot canonical <idx>  — load canonical + run continuously");
+    sprintln!("  boot continuous <idx> — load continuous program + run continuously");
+    sprintln!("  novel <1-3>           — load novel program (XVII–XIX)");
     sprintln!("  status                — kernel status");
-    sprintln!("  program               — show program");
-    sprintln!("  snapshot              — structural snapshot");
+    sprintln!("  program               — show loaded program + fork depth");
+    sprintln!("  snapshot              — structural snapshot (sig, tier, period, ...)");
     sprintln!("  canonical <I-XII>     — load canonical program");
+    sprintln!("  continuous <1-4>      — load continuous program");
+    sprintln!("  novel <1-3>           — load novel program (XVII–XIX)");
+    sprintln!("  list                  — list all programs");
     sprintln!("  crystal <addr>        — decode address");
-    sprintln!("  crystal store <n> [d] — store entry (auto seq-swap+tick)");
+    sprintln!("  crystal store <n> [d] — store entry");
     sprintln!("  crystal name <n>      — retrieve by name");
-    sprintln!("  crystal find          — list all stored entries");
+    sprintln!("  crystal find          — list stored entries");
     sprintln!("  memory [start] [n]    — dump B4 memory");
     sprintln!("  registers             — show R0-R7");
     sprintln!("  stack                 — stack depth");
     sprintln!("  halt/quit             — exit");
+    sprintln!();
+    sprintln!("Control flow is token-graph-native:");
+    sprintln!("  FSPLIT (1->2) = fork     FFUSE (2->1) = join");
+    sprintln!("  EVALT/EVALF (1->1) = branch gates");
+    sprintln!("  TANCH (1->0) = halt       VINIT (0->1) = source");
+    sprintln!("  ISCRIB (1->1) = self-loop  End-of-program = cycle");
 }
 
 fn print_status(k: &Kernel) {
     let tier = k.snapshot.map(|s| s.tier_name()).unwrap_or("?");
     sprintln!("╔══════════════════════════════════════╗");
-    sprint!(  "║  Tick: {:8}  Cycle: {:8}    ║\n", k.tick_count, k.cycle_count);
-    sprint!(  "║  Tier: {:<8}  IP: {:8}      ║\n", tier, k.ip);
-    sprint!(  "║  Stack: {:6}   Frob: {}/{}        ║\n",
-        k.stack.depth(), k.frob_checks - k.frob_open, k.frob_checks);
+    sprint!(  "║  Tick: {:8}  Tier: {:<8}        ║\n", k.tick_count, tier);
+    sprint!(  "║  IP: {:8}    Stack: {:6}          ║\n", k.ip, k.stack.depth());
+    sprint!(  "║  Fork: {:6}   Frob: {}/{}           ║\n",
+        k.fork_depth(), k.frob_checks - k.frob_open, k.frob_checks);
+    sprint!(  "║  Halted: {:<6}                      ║\n",
+        if k.halted { "YES" } else { "no" });
     serial::write_str("║  R0-R7: ");
     for i in 0..8 {
         serial::write_str(k.registers.read(i).name());
@@ -413,7 +567,6 @@ fn roman_to_idx(s: &str) -> Option<usize> {
 }
 
 fn name_hash(name: &str) -> usize {
-    // FNV-1a, good enough for canonical selection
     let mut h: u32 = 2_166_136_261;
     for b in name.bytes() {
         h ^= b as u32;
