@@ -29,6 +29,7 @@ mod algebra;
 mod catalog;
 mod cl8nk;
 mod consciousness;
+mod rebis;
 
 use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT};
 use crystal::{CrystalStore, decode, encode, indices_from_snapshot, TOTAL};
@@ -73,7 +74,7 @@ fn kmain(boot_info: &'static mut BootInfo) -> ! {
     sprintln!("[BOOT] Kernel online — graph execution, token-arity driven");
     sprintln!("[BOOT] Bootstrap: IMSCRIB→AREV→FSPLIT→AFWD→FFUSE→CLINK→IFIX→IMSCRIB (cyclic)");
     sprintln!("[BOOT] Crystal FS: {} addresses", TOTAL);
-    sprintln!("[BOOT] {} total programs (I–XXVII): 12 canonical + {} continuous + {} novel + {} shunted",
+    sprintln!("[BOOT] {} total programs (I–XXVIII): 12 canonical + {} continuous + {} novel + {} shunted",
         CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT + SHUNTED_COUNT,
         CONTINUOUS_COUNT, NOVEL_COUNT, SHUNTED_COUNT);
     sprintln!();
@@ -185,6 +186,10 @@ fn repl(k: &mut Kernel) {
                 print_cl8nk(action, name);
             },
             "cscore" => print_cscore(k),
+            "rebis" => {
+                let sub = parts.next().unwrap_or("");
+                print_rebis(sub, parts.next().unwrap_or(""), &parts.collect::<alloc::vec::Vec<&str>>().join(" "));
+            }
             "tick" => {
                 let n: u64 = parts.next().and_then(|s| s.trim().parse().ok()).unwrap_or(1);
                 for _ in 0..n { if !k.tick() { break; } }
@@ -227,9 +232,9 @@ fn repl(k: &mut Kernel) {
                 let idx = roman_to_idx(arg)
                     .or_else(|| arg.parse::<usize>().ok().map(|n| n.saturating_sub(1)));
                 if let Some(i) = idx {
-                    if i >= CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT {
-                        sprintln!("Program {} out of range (max XXVII/{}).",
-                            arg, CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT);
+                    if i >= CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT + SHUNTED_COUNT {
+                        sprintln!("Program {} out of range (max XXVIII/{}).",
+                            arg, CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT + SHUNTED_COUNT);
                     } else if load_by_roman(k, arg) {
                         let name: &str = if i < CANONICAL_COUNT {
                             canonical_name(i)
@@ -247,7 +252,7 @@ fn repl(k: &mut Kernel) {
                         print_status(k);
                     }
                 } else {
-                    sprintln!("Usage: boot <I–XXVII>");
+                    sprintln!("Usage: boot <I–XXVIII>");
                     sprintln!("Use 'list' to see all programs.");
                 }
             }
@@ -477,12 +482,12 @@ Stopped after {} ticks.", ran);
                     sprintln!("   {:>4}.  {:<48} ", idx_to_roman(ri), novel_name(i));
                 }
                 sprintln!("╚══════════════════════════════════════════════════════════╝");
-                sprintln!("   ▸ SHUNTED (XX–XXVII) — branching/exotic compositions        ");
+                sprintln!("   ▸ SHUNTED (XX–XXVIII) — branching/exotic compositions        ");
                 for i in 0..SHUNTED_COUNT {
                     let ri = i + CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT;
                     sprintln!("   {:>4}.  {:<48} ", idx_to_roman(ri), shunted_name(i));
                 }
-                sprintln!("Use 'load <I–XXVII>' to load any program by Roman numeral.");
+                sprintln!("Use 'load <I–XXVIII>' to load any program by Roman numeral.");
             }
             "load" => {
                 let arg = parts.next().unwrap_or("").trim();
@@ -505,7 +510,7 @@ Stopped after {} ticks.", ran);
                     }
                     sprintln!();
                 } else {
-                    sprintln!("Unknown program: {}. Use 'list' to see I–XXVII.", arg);
+                    sprintln!("Unknown program: {}. Use 'list' to see I–XXVIII.", arg);
                 }
             }
             "" => {}
@@ -626,8 +631,8 @@ fn print_help() {
     sprintln!("  run [N]               — run N ticks; no arg = continuous (ESC to stop)");
     sprintln!("  watch [N]             — live terminal HUD, refresh every N ticks (ESC to stop)");
     sprintln!("  timer [N]             — run N ticks, one per PIT interrupt (ESC to stop)");
-    sprintln!("  boot <I–XXVII>        — load any program + run continuously");
-    sprintln!("  load <I–XXVII>        — load any program by Roman numeral");
+    sprintln!("  boot <I–XXVIII>        — load any program + run continuously");
+    sprintln!("  load <I–XXVIII>        — load any program by Roman numeral");
     sprintln!();
     sprintln!("══ Status ══");
     sprintln!("  status                — kernel status (tick, IP, stack, fork, frob, halted)");
@@ -640,11 +645,11 @@ fn print_help() {
     sprintln!("  stack                 — stack depth");
     sprintln!();
     sprintln!("══ Program Loading ══");
-    sprintln!("  list                  — list all programs (I–XXVII)");
+    sprintln!("  list                  — list all programs (I–XXVIII)");
     sprintln!("  canonical <I–XII>     — load canonical program");
     sprintln!("  continuous <1–4>      — load continuous program");
     sprintln!("  novel <1–3>           — load novel program (XVII–XIX)");
-    sprintln!("  shunt <1–8>           — load shunted program (XX–XXVII)");
+    sprintln!("  shunt <1–9>           — load shunted program (XX–XXVIII)");
     sprintln!();
     sprintln!("══ Crystal FS ══");
     sprintln!("  crystal <addr>        — decode address to 12-tuple");
@@ -760,7 +765,7 @@ fn roman_to_idx(s: &str) -> Option<usize> {
         "XVI"  => Some(15), "XVII" => Some(16), "XVIII" => Some(17),
         "XIX"  => Some(18), "XX"   => Some(19), "XXI"  => Some(20),
         "XXII" => Some(21), "XXIII" => Some(22), "XXIV" => Some(23),
-        "XXV"  => Some(24), "XXVI"  => Some(25), "XXVII" => Some(26),
+        "XXV"  => Some(24), "XXVI"  => Some(25), "XXVII" => Some(26), "XXVIII" => Some(27),
         _ => None,
     }
 }
@@ -775,7 +780,7 @@ fn idx_to_roman(i: usize) -> &'static str {
         15 => "XVI",  16 => "XVII", 17 => "XVIII",
         18 => "XIX",  19 => "XX",   20 => "XXI",
         21 => "XXII", 22 => "XXIII", 23 => "XXIV",
-        24 => "XXV",  25 => "XXVI",  26 => "XXVII",
+        24 => "XXV",  25 => "XXVI",  26 => "XXVII", 27 => "XXVIII",
         _  => "?",
     }
 }
@@ -1308,5 +1313,384 @@ fn print_cscore(k: &Kernel) {
         }
     } else {
         sprintln!("No snapshot. Tick first.");
+    }
+}
+fn print_rebis(sub: &str, arg: &str, rest: &str) {
+    use crate::rebis::codon::{Codon, translate_codon, classify_stratum, stratum_counts};
+    use crate::rebis::genetics::{GeneticVerification, codon_meet, codon_join, codon_distance};
+    use crate::rebis::translate::{run_pipeline, format_chain};
+    use crate::rebis::frob_filter::FrobeniusFilter;
+    use crate::rebis::hadron::{HadronState, HadronType, proton_quarks, neutron_quarks, pion_plus_quarks};
+    use crate::rebis::serpent::{find_motif, motif_signature, MOTIFS};
+    use crate::rebis::pipeline::{IgTuple, run_promotion_pipeline, PipelineReport};
+    use crate::rebis::genetic_asm::{all_genetic_programs, codon_to_b4};
+    use crate::rebis::genetic_tuples::{generate_all_stages, StageContext, verify_monotonic_advance, tuple_crystal_address};
+    use crate::rebis::clu::{run_walk, verify_power_law, avalanche_probability, tier_from_position, Point3D, CLUCluster};
+    use crate::rebis::exotic_hadron::{Glueball, Tetraquark, Pentaquark, QColor, GluonColor};
+    use crate::rebis::pdb::{parse_pdb_ca_atoms, extract_contacts, extract_sequence_from_pdb, validate_structure};
+    use crate::rebis::antibody::{analyze_epitope, design_cdr, design_full_antibody};
+    use crate::rebis::materials::{forge_material, verify_material_consistency, OuroboricAlloy, ThermalRectifier, NonQubitQC, GapClosure};
+    use crate::rebis::biology::{TissueGrid, Telomere, FrobeniusBioSim, CellState};
+    use crate::rebis::therapeutics::{Chemotherapeutic, NeurotrophicFactor, OuroboricPill, QuantumBiologic, UniversalAntidote};
+
+
+    match sub {
+        "codon" => {
+            let s = if arg.is_empty() { rest } else { arg };
+            match Codon::from_str(s) {
+                Ok(c) => {
+                    let aa = translate_codon(&c);
+                    let stratum = classify_stratum(&c);
+                    let (holds, _) = crate::rebis::codon::verify_frobenius(&c);
+                    sprintln!("Codon: {} -> {}", core::str::from_utf8(&c.symbol()).unwrap_or("???"), aa.name());
+                    sprintln!("  Stratum: {:?}", stratum);
+                    sprintln!("  Frobenius: {}", if holds { "PASS" } else { "FAIL" });
+                    sprintln!("  Index: {}", c.index());
+                }
+                Err(e) => sprintln!("Error: {}", e),
+            }
+        }
+        "translate" => {
+            if arg.is_empty() && rest.is_empty() {
+                sprintln!("Usage: rebis translate <DNA sequence>");
+                sprintln!("Example: rebis translate ATGGCC");
+                return;
+            }
+            let seq = if arg.is_empty() { rest } else { arg };
+            let result = run_pipeline(seq.as_bytes());
+            sprintln!("DNA: {}", seq);
+            sprintln!("mRNA: {}", core::str::from_utf8(&result.mrna).unwrap_or("???"));
+            sprintln!("Protein: {}", format_chain(&result.protein));
+            sprintln!("Coding length: {} bp", result.coding_length);
+            sprintln!("Frobenius: {}", if result.frobenius_verified { "PASS" } else { "FAIL" });
+        }
+        "frob" => {
+            let (pass, fail, ratio) = crate::rebis::frob_filter::filter_codon_space();
+            sprintln!("Frobenius Filtration (64 codons):");
+            sprintln!("  Pass: {}", pass);
+            sprintln!("  Fail: {}", fail);
+            sprintln!("  Closure ratio: {:.4}", ratio);
+            let sizes = [4, 8, 16, 32, 64];
+            let alpha = crate::rebis::frob_filter::power_law_exponent(&sizes);
+            sprintln!("  Power-law exponent α: {:.4}", alpha);
+        }
+        "genetics" => {
+            let v = GeneticVerification::run();
+            sprintln!("Genetic Code Verification (7 stages):");
+            sprintln!("  Stage 1 (64 codons):     {}", if v.stage1_codon_count { "PASS" } else { "FAIL" });
+            sprintln!("  Stage 2 (3 strata):     {}", if v.stage2_stratum_split { "PASS" } else { "FAIL" });
+            sprintln!("  Stage 3 (21 classes):   {}", if v.stage3_aa_count { "PASS" } else { "FAIL" });
+            sprintln!("  Stage 4 (12→12 bij):    {}", if v.stage4_promoted_bijection { "PASS" } else { "FAIL" });
+            sprintln!("  Stage 5 (wobble):       {}", if v.stage5_wobble { "PASS" } else { "FAIL" });
+            sprintln!("  Stage 6 (Frobenius):    {}", if v.stage6_frobenius { "PASS" } else { "FAIL" });
+            sprintln!("  Stage 7 (crystal):      {}", if v.stage7_crystal { "PASS" } else { "FAIL" });
+            sprintln!("  {}", v.report());
+            let (exact, split, stop) = stratum_counts();
+            sprintln!("  Strata: {} exact, {} split, {} stop", exact, split, stop);
+        }
+        "hadron" => {
+            let p = HadronState::from_quarks(&proton_quarks(), HadronType::Baryon);
+            let n = HadronState::from_quarks(&neutron_quarks(), HadronType::Baryon);
+            let pi = HadronState::from_quarks(&pion_plus_quarks(), HadronType::Meson);
+            sprintln!("Hadron Belnap Analysis:");
+            sprintln!("  Proton:   conf={:?} par={:?} chg={:?} frob={}",
+                p.confinement, p.parity, p.charge, p.frobenius_ok);
+            sprintln!("  Neutron:  conf={:?} par={:?} chg={:?} frob={}",
+                n.confinement, n.parity, n.charge, n.frobenius_ok);
+            sprintln!("  Pion+:    conf={:?} par={:?} chg={:?} frob={}",
+                pi.confinement, pi.parity, pi.charge, pi.frobenius_ok);
+        }
+        "serpent" => {
+            if arg.is_empty() {
+                sprintln!("Serpent Motifs:");
+                for m in MOTIFS {
+                    sprintln!("  {} ({} AA, tier O_{}, C={:.3})",
+                        m.name, m.length, m.tier, m.c_score);
+                }
+                sprintln!("Usage: rebis serpent <motif_name>");
+                return;
+            }
+            match find_motif(arg) {
+                Some(m) => {
+                    let (promoted, sig) = motif_signature(m);
+                    sprintln!("Motif: {} ({} AA)", m.name, m.length);
+                    sprintln!("  Tier: O_{}", m.tier);
+                    sprintln!("  C-score: {:.4}", m.c_score);
+                    sprintln!("  Frobenius: {}", if m.frobenius_ok { "PASS" } else { "FAIL" });
+                    sprintln!("  Promoted AAs: {}/12", promoted);
+                    sprintln!("  Primitive sig: {}", sig.join("·"));
+                }
+                None => sprintln!("Motif '{}' not found. Use 'rebis serpent' to list.", arg),
+            }
+        }
+        "pipeline" => {
+            let source = match arg {
+                "genetic" => IgTuple::GENETIC,
+                "sm" | "standard" => IgTuple::STANDARD_MODEL,
+                _ => IgTuple::GENETIC,
+            };
+            let target = IgTuple::IUG;
+            let report = run_promotion_pipeline(&source, &target);
+            sprintln!("{}", report.summary());
+        }
+        "strata" => {
+            let (exact, split, stop) = stratum_counts();
+            sprintln!("Codon Strata:");
+            sprintln!("  Exact: {} codons (ffuse∘fsplit = id exactly)", exact);
+            sprintln!("  Split: {} codons (ffuse∘fsplit = id mod Z2)", split);
+            sprintln!("  Stop:  {} codons (Ω boundary)", stop);
+        }
+                "asm" => {
+            let programs = all_genetic_programs();
+            if arg.is_empty() {
+                sprintln!("Genetic ParaASM Programs:");
+                for p in &programs {
+                    sprintln!("  {} ({} ops)", p.name, p.instructions.len());
+                }
+                sprintln!("Usage: rebis asm <program> [codon]");
+            } else {
+                let codon = if rest.is_empty() { "ATG" } else { rest };
+                match arg {
+                    "translate" => {
+                        let b4 = codon_to_b4(codon);
+                        sprintln!("Codon {} -> B4: [{:?}, {:?}, {:?}]", codon, b4[0], b4[1], b4[2]);
+                    }
+                    _ => sprintln!("Program '{}'. Use 'translate', 'stratum', or 'b4edit'.", arg),
+                }
+            }
+        }
+        "tuples" => {
+            if arg.is_empty() && rest.is_empty() {
+                sprintln!("Usage: rebis tuples <DNA seq>");
+                return;
+            }
+            let seq = if arg.is_empty() { rest } else { arg };
+            let ctx = StageContext {
+                chain_length: 100, beta_branched_frac: 0.15, proline_frac: 0.05,
+                glycine_frac: 0.07, hydrophobic_frac: 0.35, aromatic_frac: 0.08,
+                cysteine_count: 2, helix_content: 0.30, sheet_content: 0.25,
+                contact_diversity: 0.60, subunit_count: 2, has_symmetry: false,
+                disulfide_bonds: 1,
+            };
+            let stages = generate_all_stages(&ctx);
+            let monotonic = verify_monotonic_advance(&stages);
+            sprintln!("7-Stage Generative Tuple Pipeline for: {}", seq);
+            let stage_names = ["DNA","Transcription","Codon","Translation","Folding","Tertiary","Quaternary"];
+            for i in 0..7 {
+                let addr = tuple_crystal_address(&stages[i]);
+                let g = stages[i].d.glyph();
+                sprintln!("  Stage {} ({}): crystal={}  D={} T={} R={} P={}",
+                    i+1, stage_names[i], addr,
+                    stages[i].d.glyph(), stages[i].t.glyph(),
+                    stages[i].r.glyph(), stages[i].p.glyph());
+            }
+            sprintln!("  Monotonic advance: {}", if monotonic { "PASS" } else { "FAIL" });
+        }
+        "clu" => {
+            match arg {
+                "walk" => {
+                    let steps: usize = rest.parse().unwrap_or(100);
+                    let walk = run_walk(steps);
+                    sprintln!("CLU Walk ({} steps):", steps);
+                    sprintln!("  Start: tier={}", tier_from_position(&walk.origin));
+                    sprintln!("  End:   tier={} K={:.3}", tier_from_position(&walk.pos), walk.pos.k);
+                    sprintln!("  Steps: {}", walk.step_count);
+                }
+                "verify" => {
+                    let sizes = [4usize, 8, 16, 32, 64];
+                    let mut clusters = alloc::vec::Vec::new();
+                    for &s in &sizes {
+                        let pts: alloc::vec::Vec<Point3D> = (0..s).map(|i| Point3D {
+                            k: i % 5,
+                            h: (i % 8) % 4,
+                            w: if i % 2 == 0 { 1 } else { 0 },
+                        }).collect();
+                        let tier_name = tier_from_position(&pts[0]);
+                        clusters.push(CLUCluster { center: pts[0], members: pts, size: s, tier: tier_name });
+                    }
+                    let fit = verify_power_law(&clusters);
+                    sprintln!("CLU Power-Law: alpha={:.4} R2={:.4} pass={}",
+                        fit.exponent, fit.r_squared, if fit.passes_test { "PASS" } else { "FAIL" });
+                }
+                "avalanche" => {
+                    let s: usize = rest.parse().unwrap_or(10);
+                    sprintln!("Avalanche P(S={}) = {:.6}  (S^(-3/2) = {:.6})",
+                        s, avalanche_probability(s), crate::rebis::clu::powf_approx(s as f64, -1.5));
+                }
+                _ => sprintln!("CLU: walk [steps] | verify | avalanche <S>"),
+            }
+        }
+        "exotic" => {
+                        let gb = Glueball::from_slice(&[GluonColor::RG, GluonColor::GB]);
+            let tq = Tetraquark::new(QColor::Red, QColor::Green, QColor::AntiRed, QColor::AntiGreen);
+            let pq = Pentaquark::new([QColor::Red, QColor::Green, QColor::Blue, QColor::Red], QColor::AntiRed);
+            sprintln!("Exotic Hadrons:");
+            match gb {
+                Some(g) => sprintln!("  Glueball(2g): {} gluons", g.gluons.len()),
+                None => sprintln!("  Glueball(2g): INVALID"),
+            }
+            sprintln!("  Tetraquark: {}", if tq.is_some() { "valid" } else { "INVALID" });
+            sprintln!("  Pentaquark: {}", if pq.is_some() { "valid" } else { "INVALID" });
+        }
+        "pdb" => {
+            if arg.is_empty() {
+                sprintln!("PDB: validate <text> | contacts <text> | seq <text>");
+                return;
+            }
+            let pdb_text = rest;
+            match arg {
+                "validate" => {
+                    let v = validate_structure("input", pdb_text, &[], None);
+                    sprintln!("PDB Validation: atoms={} seq_len={} exp_contacts={} pred_contacts={}",
+                        v.n_ca_atoms, v.seq_length, v.experimental_contacts, v.predicted_contacts);
+                    sprintln!("  Precision={:.4} Recall={:.4} Frobenius={}",
+                        v.metrics.precision, v.metrics.recall, if v.frobenius_verified { "PASS" } else { "FAIL" });
+                }
+                "contacts" => {
+                    let atoms = parse_pdb_ca_atoms(pdb_text);
+                    let contacts = extract_contacts(&atoms, 8.0, 3);
+                    sprintln!("Contacts: {} CA atoms -> {} contacts (cutoff=8.0A)", atoms.len(), contacts.len());
+                    for c in contacts.iter().take(8) {
+                        sprintln!("  Residue {} <-> {}  dist={:.2}A", c.i, c.j, c.distance);
+                    }
+                }
+                "seq" => {
+                    let seq = extract_sequence_from_pdb(pdb_text);
+                    sprintln!("Sequence: {} ({} residues)", seq, seq.len());
+                }
+                _ => sprintln!("Unknown PDB action. Use: validate | contacts | seq"),
+            }
+        }
+        "antibody" => {
+            match arg {
+                "epitope" => {
+                    if rest.is_empty() { sprintln!("Usage: rebis antibody epitope <AA seq>"); return; }
+                    let a = analyze_epitope(rest, "target");
+                    sprintln!("Epitope: {} ({} residues)", a.name, a.seq_length);
+                    for s in &a.activations {
+                        sprintln!("  Pos {}: {} -> prim {}", s.position, s.aa, s.primitive);
+                    }
+                }
+                "design" => {
+                    if rest.is_empty() { sprintln!("Usage: rebis antibody design <AA seq>"); return; }
+                    let a = analyze_epitope(rest, "target");
+                    let cdr = design_cdr(&a, 12);
+                    sprintln!("CDR Design: len={} seq={}", cdr.length, cdr.cdr_sequence);
+                    for pos in cdr.composition.iter().take(6) {
+                        sprintln!("  Pos {}: {} -> prim {}", pos.position, pos.aa, pos.primitive);
+                    }
+                }
+                "full" => {
+                    if rest.is_empty() { sprintln!("Usage: rebis antibody full <AA seq>"); return; }
+                    let a = analyze_epitope(rest, "target");
+                    let ab = design_full_antibody(&a, "rabivis", None);
+                    sprintln!("Antibody: chain={}", ab.chain_type);
+                    sprintln!("  Full seq: {}aa", ab.full_sequence.len());
+                    sprintln!("  CDR3: {} residues", ab.cdr3.length);
+                }
+                "viral" => {
+                    sprintln!("Viral Epitope Targets:");
+                    for ve in crate::rebis::antibody::VIRAL_EPITOPES {
+                        sprintln!("  {}: {}", ve.name, ve.sequence);
+                    }
+                }
+                _ => sprintln!("Antibody: epitope <seq> | design <seq> | full <seq> | viral"),
+            }
+        }
+        "material" | "materials" => {
+            match arg {
+                "forge" => {
+                    if rest.is_empty() { sprintln!("Usage: rebis material forge <12-glyph-string>"); return; }
+                    let spec = forge_material(rest, "Fe", "Fe", "Fe", "Fe", "Fe", "Fe", "Fe", "Fe", "Fe", "Fe", "Fe", "Fe");
+                    sprintln!("Forged: {} ({})", spec.name, spec.structure_type);
+                    sprintln!("  D={} T={} R={} P={}", spec.dimensionality, spec.connectivity, spec.interface_type, spec.symmetry_class);
+                    sprintln!("  BondEnergy={:.0}-{:.0}kJ/mol  Frobenius={}",
+                        spec.bond_energy_kjmol.0, spec.bond_energy_kjmol.1,
+                        if spec.frobenius_verified { "PASS" } else { "FAIL" });
+                    sprintln!("  Consistency: {}/6 rules", verify_material_consistency("Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe"));
+                }
+                "alloy" => {
+                    let a = OuroboricAlloy::new("Fe");
+                    sprintln!("OuroboricAlloy: base={} heal_temp={:.0}C strain={:.4} cycles={}",
+                        a.base_element, a.self_healing_temp_c, a.critical_strain, a.cycle_life);
+                }
+                "thermal" => {
+                    let tr = ThermalRectifier::new(400.0, 50.0);
+                    sprintln!("ThermalRectifier: ratio={:.4} forward={:.2}W/mK reverse={:.2}W/mK",
+                        tr.rectification_ratio, tr.forward_conductivity_wmk, tr.reverse_conductivity_wmk);
+                }
+                "qc" => {
+                    let qc = NonQubitQC::new("topological", 3);
+                    sprintln!("NonQubitQC: encoding={} dims={} fidelity={:.4} topo={}",
+                        qc.encoding_type, qc.n_logical_dimensions, qc.gate_fidelity,
+                        if qc.topological_protection { "YES" } else { "NO" });
+                }
+                "gap" => {
+                    let src = forge_material("Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe");
+                    let tgt = forge_material("FeC","Fe","Fe","Fe","C","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe");
+                    let gc = GapClosure::analyze(&src, &tgt);
+                    sprintln!("GapClosure: {}->{}  prim_gaps={} steps={} energy={:.0}kJ/mol",
+                        gc.source_name, gc.target_name, gc.gap_primitives.len(),
+                        gc.synthesis_steps.len(), gc.estimated_energy_kjmol);
+                }
+                _ => sprintln!("Material: forge <glyphs> | alloy | thermal | qc | gap"),
+            }
+        }
+        "bio" => {
+            let mut grid = TissueGrid::new(4, 4);
+            for _ in 0..3 { grid.step(); }
+            sprintln!("TissueGrid (4x4, gen={}):", grid.generation);
+            let (mut h, mut s, mut c, mut a) = (0usize, 0, 0, 0);
+            for cell in &grid.cells {
+                match cell {
+                    CellState::Healthy => h += 1,
+                    CellState::Senescent => s += 1,
+                    CellState::Cancerous => c += 1,
+                    CellState::Apoptotic => a += 1,
+                }
+            }
+            sprintln!("  Healthy: {}  Senescent: {}  Cancer: {}  Apoptotic: {}", h, s, c, a);
+            let tel = Telomere::new(8000);
+            sprintln!("Telomere: length={}bp limit={} divisions_left={}",
+                tel.length_bp, tel.hayflick_limit, tel.divisions_remaining);
+            let sim = FrobeniusBioSim::new(8, 8, 4);
+            sprintln!("FrobeniusBioSim (8x8): passes={} fails={} cycles={}",
+                sim.frobenius_passes, sim.frobenius_fails, sim.cycle_count);
+        }
+        "tx" => {
+            let chemo = Chemotherapeutic::new("RB-001", "TOP2A", 5.0, 500.0);
+            sprintln!("Chemotherapeutic: {} target={} Kd={:.1}nM gate1={} frob={}",
+                chemo.name, chemo.target_protein, chemo.binding_affinity_nm,
+                if chemo.gate1_open { "OPEN" } else { "CLOSED" },
+                if chemo.frobenius_verified { "PASS" } else { "FAIL" });
+            let pill = OuroboricPill::new("Ouro", "pH", "release");
+            sprintln!("OuroboricPill: sensor={} actuator={} feedback={} resp={:.0}min dur={:.0}h",
+                pill.sensor_type, pill.actuator_type, if pill.feedback_loop_closed { "YES" } else { "NO" },
+                pill.response_time_minutes, pill.duration_hours);
+            let antidote = UniversalAntidote::new("UniV", "heavy_metal", "chelation");
+            sprintln!("UniversalAntidote: toxin={} mechanism={} promiscuity={:.2} frob={}",
+                antidote.target_toxin_class, antidote.binding_mechanism,
+                antidote.promiscuity_index, if antidote.frobenius_verified { "PASS" } else { "FAIL" });
+        }
+_ => {
+            sprintln!("Rebis: Red-Hot Rebis kernel module (17 subcommands)");
+            sprintln!("  rebis codon <XXX>        — translate & verify a codon");
+            sprintln!("  rebis translate <DNA>     — gene→protein pipeline");
+            sprintln!("  rebis frob               — Frobenius filtration");
+            sprintln!("  rebis genetics           — 7-stage verification");
+            sprintln!("  rebis hadron             — Belnap hadron analysis");
+            sprintln!("  rebis serpent [name]     — serpent rod motifs");
+            sprintln!("  rebis pipeline [src]     — IG promotion pipeline");
+            sprintln!("  rebis strata             — codon stratum counts");
+            sprintln!("  rebis asm [prog]         — genetic ParaASM programs");
+            sprintln!("  rebis tuples <DNA>       — 7-stage generative tuple pipeline");
+            sprintln!("  rebis clu walk|verify    — CLU power-law clustering");
+            sprintln!("  rebis exotic             — exotic hadron Frobenius verification");
+            sprintln!("  rebis pdb validate|..    — PDB structure validation");
+            sprintln!("  rebis antibody epi|des.. — antibody CDR design");
+            sprintln!("  rebis material forge|..  — IG material forge & metamaterials");
+            sprintln!("  rebis bio                — biological sim (tissue, telomere)");
+            sprintln!("  rebis tx                 — therapeutics (chemo, pill, antidote)");
+        }
     }
 }

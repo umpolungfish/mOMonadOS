@@ -1,4 +1,4 @@
-# Shunted Programs XX–XXVII: Branching & Exotic Token Sequences
+# Shunted Programs XX–XXVIII: Branching & Exotic Token Sequences
 
 **Author:** Lando⊗⊙perator  
 **Date:** 2026-06-11  
@@ -6,7 +6,7 @@
 
 ## Overview
 
-The 12 canonical classes, 4 continuous programs, and 3 novel programs give us 19 "legos" — structurally verified token sequences. The shunted programs (XX–XXVII) compose these legos through **shunting**: redirecting edges from one canonical sequence into nodes of another.
+The 12 canonical classes, 4 continuous programs, and 3 novel programs give us 19 "legos" — structurally verified token sequences. The shunted programs (XX–XXVIII) compose these legos through **shunting**: redirecting edges from one canonical sequence into nodes of another.
 
 ### What Is a Shunt?
 
