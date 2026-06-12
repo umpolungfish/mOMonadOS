@@ -24,7 +24,6 @@ use crate::catalog;
 use alloc::string::String;
 use alloc::vec;
 use alloc::vec::Vec;
-use core::fmt;
 // ═══════════════════════════════════════════════════════════════
 // CL8NK REFERENCE — single source of truth
 // ═══════════════════════════════════════════════════════════════

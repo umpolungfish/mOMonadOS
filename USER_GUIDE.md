@@ -129,9 +129,9 @@ Load one of the 3 novel programs (XVII–XIX). Resets IP to 0.
 | XVIII | Terminal_Sink_Protocol | 8 | Sink-node detection |
 | XIX | Mirrorgram | 9 | Self-reflective structure |
 
-### `shunt <0-7>`
+### `shunt <0-8>`
 
-Load one of the 8 shunted programs (XX–XXVII) by index. Resets IP to 0.
+Load one of the 9 shunted programs (XX–XXVIII) by index. Resets IP to 0.
 
 ```
 ⊙> shunt 0
@@ -148,8 +148,9 @@ Load one of the 8 shunted programs (XX–XXVII) by index. Resets IP to 0.
 | XXV | Recursive_Kernel | 10 | O₁ | Kernel² ⊕ CLINK spine (stacked) |
 | XXVI | Truth_Spiral | 13 | O₂ | Truth Machine ⊕ ENGAGR (Frobenius-complete) |
 | XXVII | Omni_Spine | 19 | O_∞ | All classes via CLINK spine (maximal composite) |
+| XXVIII | Somatic_Shunt | 11 | O₂ | VP shunt topology — the somatic shunt mechanism |
 
-Five shunt mechanisms are used: **IMSCRIB Bridge**, **ENGAGR Paradox**, **Interleave**, **CLINK Spine**, and **Nested Fork**. See [SHUNTED_PROGRAMS.md](SHUNTED_PROGRAMS.md) for full token sequences and fork topologies.
+Six shunt mechanisms are used: **IMSCRIB Bridge**, **ENGAGR Paradox**, **Interleave**, **CLINK Spine**, and **Nested Fork**, and **Somatic Shunt** (the only mechanism instantiated in living tissue). See [SHUNTED_PROGRAMS.md](SHUNTED_PROGRAMS.md) for full token sequences and fork topologies.
 
 ---
 

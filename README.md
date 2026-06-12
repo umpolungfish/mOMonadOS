@@ -30,7 +30,7 @@ The kernel now runs **50 unit tests** across all grammar modules and supports **
 | Module | Source | Role |
 |---|---|---|
 | `belnap.rs` (203L) | native | Belnap FOUR truth values (N/T/F/B), 4096-cell B4 memory, 256-deep stack, 8 registers. Extended with `band`, `bor`, `bnot`, `dialetheic`, `designated`, `approx_le`, `to_wh2`, `from_wh2`. |
-| `tokens.rs` (569L) | native | 12 IMASM opcodes across 4 families; 12 canonical (I–XII), 4 continuous (XIII–XVI), 3 novel (XVII–XIX), 8 shunted (XX–XXVII). |
+| `tokens.rs` (637L) | native | 12 IMASM opcodes across 4 families; 12 canonical (I–XII), 4 continuous (XIII–XVI), 3 novel (XVII–XIX), 9 shunted (XX–XXVIII). |
 | `crystal.rs` (167L) | native | 17.28M-address encode/decode; `CrystalStore` (64 entries, fixed-capacity). |
 | `kernel.rs` (542L) | native | Frobenius tick loop; `self_imscribe()`; `dynamic_imscribe()`; tier promotion $O_0$ → $O_1$ → $O_2$ → $O_\infty$. Now wired to `FrobeniusHarness`. |
 | `serial.rs` (96L) | native | 16550A UART COM1, 115200 8N1; `sprint!`/`sprintln!`; blocking line input. |
@@ -77,7 +77,7 @@ Control flow is token-graph-native — no JNZ/JZ/YIELD/HALT opcodes:
 
 ## Program catalog
 
-All 27 programs (12 canonical, 4 continuous, 3 novel, 8 shunted). Structural tuples are classified dynamically by `imas_ig.rs` (delegating to `catalog.rs` for glyph resolution) — no hardcoded IgTuple values in the program definitions.
+All 28 programs (12 canonical, 4 continuous, 3 novel, 9 shunted). Structural tuples are classified dynamically by `imas_ig.rs` (delegating to `catalog.rs` for glyph resolution) — no hardcoded IgTuple values in the program definitions.
 
 | # | Name | Type | IgTuple |
 |---|---|---|---|
@@ -111,6 +111,7 @@ All 27 programs (12 canonical, 4 continuous, 3 novel, 8 shunted). Structural tup
 | XXV | Recursive_Kernel | Shunted | 10-token O₁ stacked Frobenius Kernels |
 | XXVI | Truth_Spiral | Shunted | 13-token O₂ Frobenius-complete Truth Machine spiral |
 | XXVII | Omni_Spine | Shunted | 19-token O_∞ maximal spinal composite |
+| XXVIII | Somatic_Shunt | Shunted | 11-token O₂ VP shunt topology — the somatic shunt mechanism |
 
 See [NOVEL_PROGRAMS.md](NOVEL_PROGRAMS.md) for details on the novel programs.
 See [SHUNTED_PROGRAMS.md](SHUNTED_PROGRAMS.md) for details on the shunted programs.
@@ -130,7 +131,7 @@ See [SHUNTED_PROGRAMS.md](SHUNTED_PROGRAMS.md) for details on the shunted progra
 | `boot canonical <idx>` | Load canonical + run continuously |
 | `boot continuous <idx>` | Load continuous program + run continuously |
 | `novel <1-3>` | Load novel program (XVII–XIX) |
-| `shunt <0-7>` | Load shunted program (XX–XXVII) |
+| `shunt <0-8>` | Load shunted program (XX–XXVII) |
 | `status` | Kernel status (tick, tier, IP, stack, fork, frob, registers) |
 | `program` | Show loaded program + fork depth |
 | `snapshot` | Structural snapshot (sig, tier, period, dialetheia, frob_ord) |
@@ -177,7 +178,7 @@ mOMonadOS/
 ├── src/
 │   ├── main.rs              UEFI entry, heap init, serial REPL, command dispatch, history (1095L)
 │   ├── kernel.rs            Frobenius tick loop, self_imscribe(), dynamic_imscribe(), tier promotion (542L)
-│   ├── tokens.rs            Token enum, Program, 12 canonicals, 4 continuous, 3 novel, 8 shunted, signature(), period() (569L)
+│   ├── tokens.rs            Token enum, Program, 12 canonicals, 4 continuous, 3 novel, 9 shunted, signature(), period() (637L)
 │   ├── belnap.rs            B4, B4Memory (4096 cells), B4Stack (256 deep), B4Registers (8) (203L)
 │   ├── crystal.rs           encode/decode, indices_from_snapshot(), CrystalStore (64 entries) (167L)
 │   ├── serial.rs            UART driver, sprint!/sprintln!, read_byte() (96L)
@@ -213,7 +214,7 @@ mOMonadOS/
 └── README.md
 ```
 
-**Total: 8,049 lines across 22 modules. 50 unit tests. Build: 0 errors, 123 warnings. Zero hardcoded structural values — all tuples, formulas, scores, ordinals, weights, glyphs, and promotion data sourced dynamically from `catalog.rs`.**
+**Total: 8,116 lines across 22 modules. 50 unit tests. Build: 0 errors, 123 warnings. Zero hardcoded structural values — all tuples, formulas, scores, ordinals, weights, glyphs, and promotion data sourced dynamically from `catalog.rs`.**
 
 ## Zero-Hardcode Architecture
 

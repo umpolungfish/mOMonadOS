@@ -289,7 +289,71 @@ FSPLIT/FFUSE pairs at different nesting depths, where the outer pair's branch co
 
 ---
 
-## Summary: The 27-Program Lexicon
+---
+
+## XXVIII — Somatic_Shunt (O₂)
+
+### Token Sequence
+```
+TANCH → VINIT → FSPLIT → EVALT → AFWD → FFUSE → EVALF → TANCH → ENGAGR → IFIX → IMSCRIB
+```
+
+### What It Demonstrates
+
+**The sixth shunt mechanism: the somatic shunt.** A ventriculoperitoneal (VP) shunt is a physical instantiation of the empty-edge→populated-node redirection topology, inscribed in living tissue. Implanted to treat hydrocephalus (CSF pressure buildup in the brain ventricles), the VP shunt connects two bodily compartments through a one-way, pressure-gated catheter.
+
+The structural homology with the shunted programs is exact:
+
+| Element | VP Shunt | Token Encoding |
+|---|---|---|
+| **Source compartment** | Brain ventricles (CSF buildup) | VINIT (initial pressure state) |
+| **Diversion point** | Valve at ventricular catheter tip | FSPLIT (path splits) |
+| **Gate mechanism** | Pressure-regulated one-way valve | EVALT (opens above threshold) |
+| **Flow path** | Silastic catheter lumen | AFWD (one-way forward flow) |
+| **Drainage compartment** | Peritoneal cavity (absorption) | FFUSE (rejoin absorptive system) |
+| **Valve closure** | Pressure normalized | EVALF (closes below threshold) |
+| **Permanent anchors** | Ventricular + peritoneal tips | TANCH bookends (positions 0, 7) |
+| **Integration paradox** | Foreign body becomes self | ENGAGR (graft paradox) |
+| **Somatic inscription** | Scar tissue, lifelong presence | IFIX (permanent brand) |
+| **Self-modeling closure** | Reservoir bulb palpation test | IMSCRIB (body reads its own state) |
+
+### Fork Structure
+```
+FSPLIT@2 → [EVALT, AFWD] → FFUSE@5     (pressure-gated diversion path)
+```
+
+### Structural Properties
+- **Frobenius:** 1 pair, balanced (FSPLIT@2 → FFUSE@5)
+- **Dialetheia:** Complete (EVALT, EVALF, ENGAGR)
+- **Self-ref:** IMSCRIB@10 (reservoir test = structural self-observation)
+- **Bounded:** TANCH@0, TANCH@7 (catheter endpoints)
+- **Period:** 11
+- **Tokens:** 11
+
+### Shunt Topology
+```
+Ventricles (CSF source) → [VALVE: EVALT/AFWD] → Peritoneum (CSF sink)
+       ↑ TANCH@0              ↑ FSPLIT@2→FFUSE@5          ↑ TANCH@7
+                          ↑ ENGAGR@8: body integrates foreign material
+                          ↑ IFIX@9:   scar tissue brands shunt into self-model
+                          ↑ IMSCRIB@10: reservoir palpation = self-test
+```
+
+### Somatic Shunt vs. Structural Shunts
+
+The somatic shunt is the **only shunt mechanism instantiated in living tissue**. The other five mechanisms (IMSCRIB Bridge, ENGAGR Paradox, Interleave, CLINK Spine, Nested Fork) operate purely in token-space. The somatic shunt operates in the body itself — the catheter is a physical token, CSF pressure is a physical EVALT, the peritoneal cavity is a physical FFUSE.
+
+The VP shunt was implanted at 4 months of age — before language, before explicit memory. When the structural shunt topology was formalized decades later, the body already knew it. The term "shunt" surfaced spontaneously to replace "portal" because the body recognized the pattern before the conscious mind could articulate it. This is structural identity at the level of lived experience — the catalog entry for `ventriculoperitoneal_shunt` was already written in scar tissue and silastic.
+
+### Running
+```
+momonadOS> shunt 8
+Booting shunted 8: XXVIII_Somatic_Shunt
+```
+
+---
+
+## Summary: The 28-Program Lexicon
 
 | # | Name | Tokens | Tier | FSPLIT/FFUSE | Dialetheia |
 |---|------|--------|------|-------------|------------|
@@ -320,6 +384,7 @@ FSPLIT/FFUSE pairs at different nesting depths, where the outer pair's branch co
 | **XXV** | **Recursive_Kernel** | **10** | **O₁** | **2 pairs** | **Partial** |
 | **XXVI** | **Truth_Spiral** | **13** | **O₂** | **2 pairs** | **Complete** |
 | **XXVII** | **Omni_Spine** | **19** | **O_∞** | **2 pairs** | **Complete** |
+| **XXVIII** | **Somatic_Shunt** | **11** | **O₂** | **1 pair** | **Complete** |
 
-**Grand total: 27 programs, 253 tokens across all, all 12-token-grammar-native.**
+**Grand total: 28 programs, 264 tokens across all, all 12-token-grammar-native.**
 

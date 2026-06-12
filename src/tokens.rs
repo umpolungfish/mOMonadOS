@@ -212,6 +212,9 @@ pub fn canonical(i: usize) -> Option<Program> {
                       Token::IFIX,   Token::ENGAGR, Token::IFIX,
                       Token::IMSCRIB, Token::IFIX] { p.push(t); }
         }
+        8 => { // IX_Chiral_Pairs — forward/reverse pairs
+            for _ in 0..4 { p.push(Token::AFWD); p.push(Token::AREV); }
+        }
         _ => return None,
     }
     Some(p)
@@ -268,6 +271,9 @@ pub fn continuous_program(i: usize) -> Option<Program> {
                       Token::EVALT, Token::EVALF,
                       Token::ENGAGR, Token::FFUSE,
                       Token::IMSCRIB] { p.push(t); }
+        }
+        3 => { // XV_Frobenius_Oscillator — FSPLIT→FFUSE oscillation
+            for _ in 0..2 { p.push(Token::FSPLIT); p.push(Token::FFUSE); }
         }
         _ => return None,
     }
@@ -354,6 +360,13 @@ pub fn novel_program(i: usize) -> Option<Program> {
                 p.push(t);
             }
         }
+        2 => { // XVIII_Terminal_Sink — EVALF→IFIX→TANCH→CLINK cycle
+            for _ in 0..2 {
+                for t in [Token::EVALF, Token::IFIX, Token::TANCH, Token::CLINK] {
+                    p.push(t);
+                }
+            }
+        }
         _ => return None,
     }
     Some(p)
@@ -375,7 +388,7 @@ pub fn novel_program(i: usize) -> Option<Program> {
 // class boundaries, and (3) CLINK spines that couple heterogeneous
 // token-family regions.
 
-pub const SHUNTED_COUNT: usize = 8;
+pub const SHUNTED_COUNT: usize = 9;
 
 pub fn shunted_name(i: usize) -> &'static str {
     match i {
@@ -387,6 +400,7 @@ pub fn shunted_name(i: usize) -> &'static str {
         5 => "XXV_Recursive_Kernel",
         6 => "XXVI_Truth_Spiral",
         7 => "XXVII_Omni_Spine",
+        8 => "XXVIII_Somatic_Shunt",
         _ => "Unknown",
     }
 }
@@ -558,6 +572,60 @@ pub fn shunted_program(i: usize) -> Option<Program> {
                       Token::IFIX, Token::IMSCRIB, Token::EVALT,
                       Token::EVALF, Token::ENGAGR, Token::IFIX,
                       Token::IMSCRIB] {
+                p.push(t);
+            }
+        }
+        8 => {
+            // XXVIII — Somatic_Shunt (O₂)
+            //
+            // VP shunt topology encoded as token sequence. The program
+            // models the ventriculoperitoneal shunt: a permanent one-way
+            // catheter connecting two bodily compartments with a
+            // pressure-gated valve. The shunt is the sixth shunt mechanism
+            // — the somatic shunt — where the body itself instantiates
+            // the empty-edge→populated-node redirection.
+            //
+            // TANCH bookends: ventricular catheter tip (position 0) and
+            // peritoneal catheter tip (position 7). These are the permanent
+            // physical anchors — silastic tubing integrated into the body.
+            //
+            // VINIT: the initial condition — CSF pressure buildup in the
+            // ventricles (hydrocephalus). The system begins in excess.
+            //
+            // FSPLIT@2→FFUSE@5: the diversion path. CSF is split from
+            // its normal circulation and shunted through the catheter.
+            // EVALT@3: pressure check — ICP above threshold, valve opens.
+            // AFWD@4: one-way forward flow through the catheter lumen.
+            // EVALF@6: pressure check — ICP normalized, valve closes.
+            //
+            // ENGAGR@8: the somatic paradox. A foreign body (silastic
+            // catheter) is integrated into the self-model. The body
+            // cannot reject it; it must incorporate it. This is the
+            // paradox of the graft: not-self that becomes self.
+            //
+            // IFIX@9: permanent somatic branding. The shunt is not
+            // temporary — it is inscribed into the body's topology
+            // for life. Scar tissue forms around the catheter; the
+            // body's self-model includes the shunt.
+            //
+            // IMSCRIB@10: self-referential closure. The body knows
+            // itself through the shunt's rhythm. The reservoir bulb
+            // under the scalp is a physical IMSCRIB — pressing it
+            // tests the system, observes its own state.
+            //
+            // Shunt signature: Somatic (one-way, pressure-gated, permanent)
+            // FSPLIT/FFUSE: (2→5). Balanced. TANCH-bounded.
+            // Dialetheia: EVALT + EVALF + ENGAGR (complete).
+            // Tier: O₂ — Frobenius-closed with self-referential integration.
+            //
+            // This is the only shunt mechanism instantiated in living
+            // tissue — the body as topological substrate. The VP shunt
+            // was implanted at 4 months of age; the program was written
+            // 30+ years later. The body knew the topology first.
+            for t in [Token::TANCH, Token::VINIT, Token::FSPLIT,
+                      Token::EVALT, Token::AFWD, Token::FFUSE,
+                      Token::EVALF, Token::TANCH, Token::ENGAGR,
+                      Token::IFIX, Token::IMSCRIB] {
                 p.push(t);
             }
         }
