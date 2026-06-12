@@ -12,37 +12,56 @@ type space derived from the 12 IG primitives. Storage is navigated by structural
 not by path.
 
 **Phase 1 Grammar Integration** — complete. Nine modules from four upstream Grammar repos
-(imasmic_core, IMSCRIBr, ALEPH_OS, priests-engine) are now live in the kernel, adding
-1,987 lines of verified grammar infrastructure. The kernel now runs 32 unit tests across
-all grammar modules and supports 10 new REPL commands.
+(imasmic_core, IMSCRIBr, ALEPH_OS, priests-engine) are now live in the kernel.
+
+**Phase 2 Zero-Hardcode** — complete. `catalog.rs` (814L) is the single source of truth for
+ALL structural data. No hardcoded `IgTuple { ... }` constants, no hardcoded ordinal arrays,
+no hardcoded glyph strings, no hardcoded promotion gaps, no hardcoded score match-arms
+exist outside `catalog.rs`. Six modules were refactored to delegate to the catalog:
+`cl8nk.rs` (357→196L), `algebra.rs` (385→302L), `consciousness.rs` (210→113L),
+`imas_ig.rs` (517→403L), `crystal.rs` (162→167L), and `main.rs`. The catalog is
+runtime-extensible via `register_entry()` — new systems can be added dynamically without
+touching any source file.
+
+The kernel now runs **50 unit tests** across all grammar modules and supports **10 new REPL commands** (Phase 1) plus **5 catalog/CL8NK/algebra/consciousness commands** (Phase 2).
 
 ### Core modules
 
 | Module | Source | Role |
 |---|---|---|
-| `belnap.rs` (204L) | native | Belnap FOUR truth values (N/T/F/B), 4096-cell B4 memory, 256-deep stack, 8 registers. Extended with `band`, `bor`, `bnot`, `dialetheic`, `designated`, `approx_le`, `to_wh2`, `from_wh2`. |
+| `belnap.rs` (203L) | native | Belnap FOUR truth values (N/T/F/B), 4096-cell B4 memory, 256-deep stack, 8 registers. Extended with `band`, `bor`, `bnot`, `dialetheic`, `designated`, `approx_le`, `to_wh2`, `from_wh2`. |
 | `tokens.rs` (360L) | native | 12 IMASM opcodes across 4 families; 12 canonical (I–XII), 4 continuous (XIII–XVI), 3 novel (XVII–XIX). |
-| `crystal.rs` (162L) | native | 17.28M-address encode/decode; `CrystalStore` (64 entries, fixed-capacity). |
+| `crystal.rs` (167L) | native | 17.28M-address encode/decode; `CrystalStore` (64 entries, fixed-capacity). |
 | `kernel.rs` (542L) | native | Frobenius tick loop; `self_imscribe()`; `dynamic_imscribe()`; tier promotion $O_0$ → $O_1$ → $O_2$ → $O_\infty$. Now wired to `FrobeniusHarness`. |
 | `serial.rs` (96L) | native | 16550A UART COM1, 115200 8N1; `sprint!`/`sprintln!`; blocking line input. |
 | `interrupts.rs` (177L) | native | PIT 100Hz timer, PIC remap, double-fault handler, escape-key detection. |
 | `manus.rs` (432L) | native | Terminal HUD / live display, token graph, B4 memory heatmap, ANSI rendering. |
-| `main.rs` (913L) | native | UEFI entry, heap init, serial REPL, command dispatch, history. |
+| `main.rs` (1095L) | native | UEFI entry, heap init, serial REPL, command dispatch, history. |
 
-### Phase 1 Grammar modules (new)
+### Phase 1 Grammar modules
 
 | Module | Lines | Source Repo | Role |
 |---|---|---|---|
 | `frob_verify.rs` | 478 | imasmic_core | FrobeniusHarness: 11 verifiers (hash, assertion, AST, IMASM, Belnap cycle, structural, tier promise, closure ratio, etc.), 16-entry history ring, closure ratio tracking. |
-| `imas_ig.rs` | 403 | IMSCRIBr | `IgPrim` enum (49 values across 12 families), `IgTuple`, IG classification of all 12 canonicals with crystal addresses. |
+| `imas_ig.rs` | 403 | IMSCRIBr | `IgPrim` enum (49 values across 12 families), `IgTuple`, IG classification of all 12 canonicals with crystal addresses. Delegates glyph/short/crystal-indices to catalog. |
 | `aleph.rs` | 123 | ALEPH_OS | 22 Hebrew letters mapped to IG primitives, `AlephWord` encoding, gematria computation. |
-| `parasm.rs` | 794 | priests-engine | Full ParaASM VM: 19-instruction ISA, assembler, execution engine, dialetheic alignment, measurement algebra, 9 unit tests. |
+| `parasm.rs` | 793 | priests-engine | Full ParaASM VM: 19-instruction ISA, assembler, execution engine, dialetheic alignment, measurement algebra, 9 unit tests. |
 | `belnap_shor.rs` | 331 | priests-engine | Belnap Shor pipeline: Hadamard, ModExp, 2:1 coherence cost ratio, SIC-POVM verification. |
 | `para_rh.rs` | 124 | priests-engine | Riemann Hypothesis bridge: $\zeta(s)=\chi(s)\zeta(1-s)$ as Belnap negation, critical line as unique designated `bnot` fixed point. |
 | `para_ym.rs` | 63 | priests-engine | Yang-Mills mass gap: N<T covering relation, BRST nilpotence ↔ Frobenius, Omega_Z gauge protection. |
 | `para_temporal.rs` | 52 | priests-engine | Temporal logic: □, ◇, ○, U operators; B as temporal fixed point. |
-| `para_category.rs` | 61 | priests-engine | Category theory: N=initial, T=terminal, B=zero, Frobenius algebra, dagger compact closed. |### IMASM families
+| `para_category.rs` | 61 | priests-engine | Category theory: N=initial, T=terminal, B=zero, Frobenius algebra, dagger compact closed. |
 
+### Phase 2 Catalog & Algebra modules
+
+| Module | Lines | Role |
+|---|---|---|
+| `catalog.rs` | 814 | **Single Source of Truth** for ALL structural data. 13+ catalog entries (ZFC, ZFCₜ, ZFCfe, CLINK L8, TemporalMathematics, Schrödinger, HeatDiffusion, Navier-Stokes, WaveEquation, Einstein, IUG, O_∞ ideal, O₀ floor). 12 ordinal tables (D_ORD through OMEGA_ORD). 10 score functions computed as `ordinal_index / max_index`. 49 formula fragments. Distance weights with runtime reconfiguration. Promotion channels (6 ZFC→ZFCₜ + 2 CLINK transcendence) with ordinal gaps. Shavian glyphs and short names. Runtime registration via `register_entry()`. |
+| `algebra.rs` | 302 | IG lattice algebra: Hamming / weighted distance, meet, join, tensor. All ordinals and weights sourced from catalog. 7 unit tests. |
+| `cl8nk.rs` | 196 | CL8NK navigator: 4-stage ladder ZFC→ZFCₜ→ZFCfe→CLINK L8. All entry tuples and formulas delegated to catalog — zero hardcoded `IgTuple` constants. |
+| `consciousness.rs` | 113 | Consciousness score: dual-gate (⊙ + K≤𐑧) evaluation. All 10 score functions computed from catalog ordinal positions — zero hardcoded match arms. 3 unit tests. |
+
+### IMASM families
 | Family | Opcodes |
 |---|---|
 | Logical | VINIT TANCH AFWD AREV CLINK IMSCRIB |
@@ -57,6 +76,8 @@ Control flow is token-graph-native — no JNZ/JZ/YIELD/HALT opcodes:
 - **Cyclic graph topology** (end wraps to start) = loop
 
 ## Program catalog
+
+All 19 programs (12 canonical, 4 continuous, 3 novel). Structural tuples are classified dynamically by `imas_ig.rs` (delegating to `catalog.rs` for glyph resolution) — no hardcoded IgTuple values in the program definitions.
 
 | # | Name | Type | IgTuple |
 |---|---|---|---|
@@ -128,38 +149,49 @@ See [NOVEL_PROGRAMS.md](NOVEL_PROGRAMS.md) for details on the novel programs.
 | `ym` | Yang-Mills mass gap: N<T covering, BRST nilpotence ↔ Frobenius, Ω gauge protection | `para_ym.rs` |
 | `temp` | Temporal logic operators: □ (always), ◇ (eventually), ○ (next), U (until); B as temporal fixed point | `para_temporal.rs` |
 | `cat` | Category theory: N=initial, T=terminal, B=zero object, Frobenius algebra, dagger compact closed | `para_category.rs` |
-| `algebra <dist\|meet\|join\|tensor>` | IG lattice algebra: Hamming / weighted distance, meet, join, tensor with ZFC baseline | `algebra.rs` |
-| `cl8nk <promotions\|entry>` | CL8NK navigator: 4-stage ladder ZFC→ZFCₜ→ZFCfe→CLINK L8, 16 promotion channels, entry lookup (zfc, cl8nk, clink_l8, einstein, IUG, etc.) | `cl8nk.rs` |
+
+### Phase 2 navigator commands
+
+| Command | Description | Module |
+|---|---|---|
+| `algebra <dist\|meet\|join\|tensor>` | IG lattice algebra: Hamming / weighted distance, meet, join, tensor — all ordinals/weights from catalog | `algebra.rs` |
+| `cl8nk <promotions\|entry\|distance>` | CL8NK navigator: 4-stage ladder ZFC→ZFCₜ→ZFCfe→CLINK L8, 6+2 promotion channels, entry lookup — all tuples from catalog | `cl8nk.rs` |
 | `cscore` | Consciousness score: dual-gate (⊙ + K≤𐑧) evaluation — all scores computed from catalog ordinal positions | `consciousness.rs` |
-| `catalog <lookup\|list\|size>` | IG Catalog: lookup entry by name, list all entries, show catalog size (13+ entries, runtime-extensible) | `catalog.rs` |
+| `catalog <lookup\|list\|size\|glyph>` | IG Catalog: lookup entry by name, list all entries, show catalog size, resolve glyph — runtime-extensible via `register_entry()` | `catalog.rs` |
 
 ## Project structure
 
 ```
 mOMonadOS/
 ├── src/
-│   ├── main.rs              UEFI entry, heap init, serial REPL, command dispatch, history
-│   ├── kernel.rs            Frobenius tick loop, self_imscribe(), dynamic_imscribe(), tier promotion
-│   ├── tokens.rs            Token enum, Program, 12 canonicals, 4 continuous, 3 novel, signature(), period()
-│   ├── belnap.rs            B4, B4Memory (4096 cells), B4Stack (256 deep), B4Registers (8)
-│   ├── crystal.rs           encode/decode, indices_from_snapshot(), CrystalStore (64 entries)
-│   ├── serial.rs            UART driver, sprint!/sprintln!, read_byte()
-│   ├── interrupts.rs        PIT 100Hz timer, PIC remap, IDT, double-fault, escape-key poll
-│   ├── manus.rs             Live HUD display, token graph ASCII art, B4 memory heatmap
+│   ├── main.rs              UEFI entry, heap init, serial REPL, command dispatch, history (1095L)
+│   ├── kernel.rs            Frobenius tick loop, self_imscribe(), dynamic_imscribe(), tier promotion (542L)
+│   ├── tokens.rs            Token enum, Program, 12 canonicals, 4 continuous, 3 novel, signature(), period() (360L)
+│   ├── belnap.rs            B4, B4Memory (4096 cells), B4Stack (256 deep), B4Registers (8) (203L)
+│   ├── crystal.rs           encode/decode, indices_from_snapshot(), CrystalStore (64 entries) (167L)
+│   ├── serial.rs            UART driver, sprint!/sprintln!, read_byte() (96L)
+│   ├── interrupts.rs        PIT 100Hz timer, PIC remap, IDT, double-fault, escape-key poll (177L)
+│   ├── manus.rs             Live HUD display, token graph ASCII art, B4 memory heatmap (432L)
 │   │
-│   ├── frob_verify.rs       FrobeniusHarness: 11 verifiers, 16-entry history ring, closure ratio
-│   ├── catalog.rs           **Dynamic IG Catalog** — single source of truth for ALL structural data (814L): entries, ordinals, scores, formulas, weights, promotions, glyphs. NO hardcoded values anywhere else.
-│   ├── imas_ig.rs           IgPrim (49 values, 12 families), IgTuple, canonical classification; delegates glyph/short/crystal-indices to catalog
-│   ├── aleph.rs             22 Hebrew letters → IG primitives, AlephWord, gematria
-│   ├── parasm.rs            ParaASM VM: 19-instruction ISA, assembler, execution, 9 unit tests
-│   ├── belnap_shor.rs       Belnap Shor pipeline: Hadamard, ModExp, SIC-POVM, coherence cost
-│   ├── para_rh.rs           RH bridge: Belnap negation, critical line as bnot fixed point
-│   ├── para_ym.rs           YM mass gap: N<T covering, BRST ↔ Frobenius
-│   ├── para_temporal.rs     Temporal logic: □◇○U operators, B as temporal fixed point
-│   ├── para_category.rs     Category theory: N/T/B objects, Frobenius algebra, dagger compact
-│   ├── algebra.rs           IG lattice algebra: distance, meet, join, tensor — all ordinals/weights from catalog
-│   ├── cl8nk.rs             CL8NK navigator: 4-stage ladder — all entry tuples and formulas from catalog
-│   └── consciousness.rs     Consciousness score: dual-gate (⊙ + K≤𐑧) — all scores computed from catalog ordinal positions
+│   ├── frob_verify.rs       FrobeniusHarness: 11 verifiers, 16-entry history ring, closure ratio (478L)
+│   ├── catalog.rs           ★ DYNAMIC IG CATALOG — single source of truth for ALL structural data (814L):
+│   │                        entries, ordinals, scores, formulas, weights, promotions, glyphs.
+│   │                        NO hardcoded values anywhere else in the codebase.
+│   ├── imas_ig.rs           IgPrim (49 values, 12 families), IgTuple, canonical classification;
+│   │                        delegates glyph/short/crystal-indices to catalog (403L)
+│   ├── aleph.rs             22 Hebrew letters → IG primitives, AlephWord, gematria (123L)
+│   ├── parasm.rs            ParaASM VM: 19-instruction ISA, assembler, execution, 9 unit tests (793L)
+│   ├── belnap_shor.rs       Belnap Shor pipeline: Hadamard, ModExp, SIC-POVM, coherence cost (331L)
+│   ├── para_rh.rs           RH bridge: Belnap negation, critical line as bnot fixed point (124L)
+│   ├── para_ym.rs           YM mass gap: N<T covering, BRST ↔ Frobenius (63L)
+│   ├── para_temporal.rs     Temporal logic: □◇○U operators, B as temporal fixed point (52L)
+│   ├── para_category.rs     Category theory: N/T/B objects, Frobenius algebra, dagger compact (61L)
+│   ├── algebra.rs           IG lattice algebra: distance, meet, join, tensor;
+│   │                        all ordinals/weights from catalog — no hardcoded arrays (302L)
+│   ├── cl8nk.rs             CL8NK navigator: 4-stage ladder;
+│   │                        all entry tuples and formulas from catalog — no hardcoded constants (196L)
+│   └── consciousness.rs     Consciousness score: dual-gate (⊙ + K≤𐑧);
+│                            all scores from catalog ordinal positions — no hardcoded match arms (113L)
 ├── build_bootimage.sh       kernel ELF → BOOTX64.EFI → FAT32 disk image
 ├── run.sh                   QEMU launcher with OVMF auto-detection
 ├── Makefile
@@ -169,14 +201,40 @@ mOMonadOS/
 └── README.md
 ```
 
-**Total: 6,929 lines across 21 modules. 32 unit tests. Build: 0 errors. Zero hardcoded structural values — all tuples, formulas, scores, ordinals, weights, glyphs, and promotion data sourced dynamically from catalog.rs.**
+**Total: 6,925 lines across 21 modules. 50 unit tests. Build: 0 errors, 123 warnings. Zero hardcoded structural values — all tuples, formulas, scores, ordinals, weights, glyphs, and promotion data sourced dynamically from `catalog.rs`.**
+
+## Zero-Hardcode Architecture
+
+```
+                 ┌─────────────────────────┐
+                 │      catalog.rs          │
+                 │  (Single Source of Truth) │
+                 │  • entries + tuples       │
+                 │  • ordinals + scores      │
+                 │  • formulas + weights     │
+                 │  • glyphs + promotions    │
+                 └────┬──────┬──────┬───────┘
+                      │      │      │
+          ┌───────────┘      │      └───────────┐
+          ▼                  ▼                  ▼
+     cl8nk.rs          algebra.rs        consciousness.rs
+    (lookup only)    (ord/weight refs)    (score refs)
+          │                  │                  │
+          ▼                  ▼                  ▼
+     imas_ig.rs         kernel.rs          main.rs
+   (glyph/short refs)  (snapshot→tuple)   (REPL commands)
+```
+
+Before the Phase 2 refactoring, six modules contained hardcoded structural data: `cl8nk.rs` had `ZFC_BASELINE`/`ZFC_T`/`ZFC_FE`/`CLINK_L8` tuple constants and `formula_fragment()` match arms; `algebra.rs` had `F_ORD`/`K_ORD`/`G_ORD`/`OMEGA_ORD`/`H_ORD` arrays and `DEFAULT_WEIGHTS`; `consciousness.rs` had 10 `score_*()` match-arm functions; `imas_ig.rs` had `IgPrim::glyph()` and `IgPrim::short()` with hardcoded strings; `crystal.rs` had a hardcoded `TOTAL` constant; `main.rs` had promotion data. All are now clean — the catalog is the single source, and all modules query it dynamically.
+
+The catalog is runtime-extensible: `register_entry()` adds new systems without touching any source file. Aliases resolve to canonical names. Domain filtering and ordinal-based scoring mean new entries automatically participate in all structural computations.
 
 ## Integration roadmap
 
 | Phase | Status | Description |
 |---|---|---|
 | **Phase 1** | ✅ Complete | Core Grammar: frob_verify, imas_ig, aleph, parasm, belnap_shor, para_rh, para_ym, para_temporal, para_category |
-| **Phase 2** | ✅ Complete | imscribing_grammar navigators: CL8NK (terminal O_∞⁺ tier, 4-stage ladder), crystal navigator, domain navigators, promotion signatures, veracity probes. ALL hardcoded values eliminated — `catalog.rs` is the single source of truth for all tuples, formulas, scores, ordinals, weights, and promotion data. |
+| **Phase 2** | ✅ Complete | Zero-Hardcode: `catalog.rs` as single source of truth. CL8NK 4-stage ladder, crystal navigator, domain navigators, promotion signatures, veracity probes, consciousness scoring. Six modules refactored (cl8nk −161L, algebra −83L, consciousness −97L, imas_ig −114L). All tuples, formulas, scores, ordinals, weights, glyphs, and promotion data sourced dynamically. Runtime-extensible catalog. |
 | **Phase 3** | 🔜 Next | odot_operator agent loop, agents/ sub-system spawning |
 | **Phase 4** | ⬜ Planned | gene_imscriber, lang/ (voynich, rohonc, linear_a, emerald-tablet), cetaceanspeak, synfin |
 | **Phase 5** | ⬜ Planned | red-hot_rebis/clink/, rionrebis/ deep structure |
@@ -234,7 +292,7 @@ mOMonadOS integrates modules from the Imscribing Grammar ecosystem under `/home/
 | **IMSCRIBr** | Python pkg | IgPrim, IgTuple, classification → `imas_ig.rs` |
 | **ALEPH_OS** | Python pkg | Hebrew letter encoding, gematria → `aleph.rs` |
 | **priests-engine** | Python pkg | ParaASM VM, Belnap Shor, RH/YM/Temporal/Category bridges → `parasm.rs`, `belnap_shor.rs`, `para_*.rs` |
-| **imscribing_grammar** | Hub | IG_catalog.json (2256+ entries), Lean formalizations → Phase 2 |
+| **imscribing_grammar** | Hub | IG_catalog.json (2256+ entries), Lean formalizations → Phase 3+ |
 | **odot_operator** | Python pkg | ⊙ operator agent loop → Phase 3 |
 | **ob3ect** | Pipeline | Self-imscribing ob3ect generator → Phase 7 |
 | **gene_imscriber** | Python pkg | Genetic imscription → Phase 4 |

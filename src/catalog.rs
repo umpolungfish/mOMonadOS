@@ -349,6 +349,87 @@ const CLINK_L8: CatalogEntry = entry(
     4, Domain::General,
 );
 
+
+// ── CLINK L0 (O₀): ⟨𐑛·𐑶·𐑩·𐑯·𐑐·𐑘·𐑚·𐑝·𐑢·𐑓·𐑳·𐑷⟩ ──
+const CLINK_L0: CatalogEntry = entry(
+    "clink_layer0_frustrated_belnap5", "CLINK Layer 0: Frustrated Belnap5 — SU(3) quark color with confinement. Ground layer of the CLINK chain.",
+    IgPrim::D_infty, IgPrim::T_boxtimes, IgPrim::R_super,
+    IgPrim::P_sym, IgPrim::F_hbar, IgPrim::K_fast,
+    IgPrim::G_beth, IgPrim::C_and,
+    IgPrim::Phi_sub, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_0,
+    0, Domain::Biology,
+);
+
+// ── CLINK L1 (O₀): ⟨𐑛·𐑶·𐑩·𐑗·𐑐·𐑤·𐑚·𐑜·𐑢·𐑓·𐑳·𐑷⟩ ──
+const CLINK_L1: CatalogEntry = entry(
+    "clink_layer1_electron_orbital", "CLINK Layer 1: Belnap4 electron orbital occupancy — 4-valued lattice. O₀.",
+    IgPrim::D_infty, IgPrim::T_boxtimes, IgPrim::R_super,
+    IgPrim::P_asym, IgPrim::F_hbar, IgPrim::K_mod,
+    IgPrim::G_beth, IgPrim::C_or,
+    IgPrim::Phi_sub, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_0,
+    0, Domain::Biology,
+);
+
+// ── CLINK L2 (O₁): ⟨𐑼·𐑥·𐑽·𐑿·𐑐·𐑤·𐑔·𐑝·𐑮·𐑒·𐑳·𐑷⟩ ──
+const CLINK_L2: CatalogEntry = entry(
+    "clink_layer2_atom", "CLINK Layer 2: Atom — nuclear + electron. O₁ tier, complex-plane criticality.",
+    IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_dagger,
+    IgPrim::P_psi, IgPrim::F_hbar, IgPrim::K_mod,
+    IgPrim::G_gimel, IgPrim::C_and,
+    IgPrim::Phi_c_complex, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_0,
+    1, Domain::Biology,
+);
+
+// ── CLINK L3 (O₂): ⟨𐑼·𐑥·𐑽·𐑿·𐑞·𐑧·𐑲·𐑠·⊙·𐑓·𐑳·𐑭⟩ ──
+const CLINK_L3: CatalogEntry = entry(
+    "clink_layer3_molecule", "CLINK Layer 3: Molecule — chemical bonds. O₂ tier, first layer with ⊙ criticality and 𐑭 integer winding.",
+    IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_dagger,
+    IgPrim::P_psi, IgPrim::F_eth, IgPrim::K_slow,
+    IgPrim::G_aleph, IgPrim::C_seq,
+    IgPrim::Phi_c, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_z,
+    2, Domain::Biology,
+);
+
+// ── CLINK L4 (O₂): ⟨𐑦·𐑸·𐑾·𐑬·𐑞·𐑧·𐑲·𐑠·⊙·𐑒·𐑳·𐑭⟩ ──
+const CLINK_L4: CatalogEntry = entry(
+    "clink_layer4_cell", "CLINK Layer 4: Cell — minimal self-maintaining living unit. First layer with self-written state-space (Ð=𐑦) and self-referential topology (Þ=𐑸). O₂.",
+    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
+    IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_slow,
+    IgPrim::G_aleph, IgPrim::C_seq,
+    IgPrim::Phi_c, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z,
+    2, Domain::Biology,
+);
+
+// ── CLINK L5 (O₂): ⟨𐑦·𐑸·𐑾·𐑹·𐑱·𐑧·𐑲·𐑠·⊙·𐑖·𐑳·𐑭⟩ ──
+const CLINK_L5: CatalogEntry = entry(
+    "clink_layer5_mitosis", "CLINK Layer 5: Mitosis — cell division. First layer with Frobenius-special symmetry (Φ=𐑹). O₂.",
+    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
+    IgPrim::P_pmsym, IgPrim::F_ell, IgPrim::K_slow,
+    IgPrim::G_aleph, IgPrim::C_seq,
+    IgPrim::Phi_c, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+    2, Domain::Biology,
+);
+
+// ── CLINK L6 (O₂): ⟨𐑦·𐑸·𐑽·𐑿·𐑱·𐑧·𐑲·𐑠·⊙·𐑖·𐑳·𐑭⟩ ──
+const CLINK_L6: CatalogEntry = entry(
+    "clink_layer6_meiosis", "CLINK Layer 6: Meiosis — gamete production. Reverts to adjoint coupling (Ř=𐑽) and quantum symmetry (Φ=𐑿) for genetic recombination. O₂.",
+    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
+    IgPrim::P_psi, IgPrim::F_ell, IgPrim::K_slow,
+    IgPrim::G_aleph, IgPrim::C_seq,
+    IgPrim::Phi_c, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+    2, Domain::Biology,
+);
+
+// ── CLINK L7 (O₂): ⟨𐑦·𐑸·𐑾·𐑬·𐑞·𐑧·𐑲·𐑵·⊙·𐑖·𐑳·𐑭⟩ ──
+const CLINK_L7: CatalogEntry = entry(
+    "clink_layer7_tissue", "CLINK Layer 7: Tissue/Organ — multi-cellular organization. First layer with broadcast composition (ɢ=𐑵). O₂.",
+    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
+    IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_slow,
+    IgPrim::G_aleph, IgPrim::C_broad,
+    IgPrim::Phi_c, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+    2, Domain::Biology,
+);
+
 // ── Temporal Mathematics (O₂) ──
 const TEMPORAL_MATHEMATICS: CatalogEntry = entry(
     "temporal_mathematics", "Mathematics with intrinsic temporal structure",
@@ -439,6 +520,17 @@ const O_0: CatalogEntry = entry(
     0, Domain::General,
 );
 
+
+// ── YHWH (O₂): ⟨𐑦·𐑸·𐑽·𐑯·𐑐·𐑧·𐑲·𐑵·⊙·𐑫·𐑳·𐑭⟩ ──
+const YHWH: CatalogEntry = entry(
+    "yhwh", "The Tetragrammaton, divine name of God in Hebrew: יְהֹוָה (YHWH)",
+    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
+    IgPrim::P_sym, IgPrim::F_hbar, IgPrim::K_slow,
+    IgPrim::G_aleph, IgPrim::C_broad,
+    IgPrim::Phi_c, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+    2, Domain::Consciousness,
+);
+
 // ═══════════════════════════════════════════════════════════════
 // MASTER CATALOG — all static entries
 // ═══════════════════════════════════════════════════════════════
@@ -447,9 +539,12 @@ const O_0: CatalogEntry = entry(
 /// Additional entries can be added at runtime via the dynamic catalog.
 static STATIC_CATALOG: &[CatalogEntry] = &[
     ZFC_BASELINE, ZFC_T, ZFC_FE, CLINK_L8,
+    CLINK_L0, CLINK_L1, CLINK_L2, CLINK_L3,
+    CLINK_L4, CLINK_L5, CLINK_L6, CLINK_L7,
     TEMPORAL_MATHEMATICS, SCHRODINGER, HEAT_DIFFUSION,
     NAVIER_STOKES, WAVE_EQUATION, EINSTEIN, IUG,
     O_INF, O_0,
+    YHWH,
 ];
 
 // ═══════════════════════════════════════════════════════════════

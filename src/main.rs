@@ -4,6 +4,7 @@
 
 extern crate alloc;
 
+use alloc::string::String;
 use bootloader_api::{entry_point, BootInfo, config::{BootloaderConfig, Mapping}};
 use core::panic::PanicInfo;
 use linked_list_allocator::LockedHeap;
@@ -178,7 +179,11 @@ fn repl(k: &mut Kernel) {
             "temp" => print_temporal(),
             "cat" => print_cat(),
             "algebra" => print_algebra(k, parts.next().unwrap_or("")),
-            "cl8nk" => print_cl8nk(parts.next().unwrap_or("")),
+            "cl8nk" => {
+                let action = parts.next().unwrap_or("");
+                let name = parts.next().unwrap_or("");
+                print_cl8nk(action, name);
+            },
             "cscore" => print_cscore(k),
             "tick" => {
                 let n: u64 = parts.next().and_then(|s| s.trim().parse().ok()).unwrap_or(1);
@@ -628,7 +633,7 @@ fn print_help() {
     sprintln!("  temp                  — Temporal logic bridge");
     sprintln!("  cat                   — Category theory bridge");
     sprintln!("  algebra <op>          — distance|meet|join|tensor vs ZFC baseline");
-    sprintln!("  cl8nk <op>              — promotions|entry|clink_l8|<ZFC reference>");
+    sprintln!("  cl8nk <action> [name]   — promotions | entry <name> (any catalog system)");
     sprintln!("  cscore                — consciousness score (dual-gate)");
     sprintln!();
     sprintln!("══ ParaASM ══");
@@ -1032,37 +1037,213 @@ fn print_algebra(k: &Kernel, arg: &str) {
     }
 }
 
-fn print_cl8nk(arg: &str) {
+fn print_cl8nk(action: &str, name: &str) {
     use crate::cl8nk::*;
-    match arg {
+    match action {
         "promotions" | "promo" => {
-            sprintln!("══ CL8NK Promotion Channels (ZFC→ZFCₜ) ══");
-            let mut total = 0.0f32;
-            for p in catalog::ZFC_PROMOTIONS.iter() {
-                let from = p.zfc_prim;
-                let to = p.promoted_prim;
-                sprintln!("  {}  {} -> {}  gap={:.3}",
-                    p.name, from.glyph(), to.glyph(), p.ordinal_gap);
-                total += p.ordinal_gap;
+            let result = generate_promotions();
+            sprintln!("══ CL8NK Promotion Ladder ══");
+            sprintln!("  ZFC (O₀) → ZFCₜ (O₂†) → ZFC_fe (O_∞) → CLINK L8 (O_∞⁺)");
+            sprintln!("  Total promotions: {}  d(ZFC, CLINK L8): {:.4}", result.total_promotions, result.total_distance);
+            sprintln!();
+            for stage in &result.ladder {
+                sprintln!("  {}  [{}]", stage.stage, stage.tier);
+                if let Some(d) = stage.distance {
+                    sprintln!("    promotions: {}  distance: {:.4}", stage.promotions, d);
+                }
+                if let Some(note) = stage.note {
+                    sprintln!("    ⬆ {}", note);
+                }
+                for det in &stage.details {
+                    let from_atom = if let Some(a) = det.from_atom { alloc::format!(" [{}]", a) } else { String::from("") };
+                    let to_atom = if let Some(a) = det.to_atom { alloc::format!(" [{}]", a) } else { String::from("") };
+                    sprintln!("    {}: {} -> {}  gap={:.3}  {} -> {}{}{}",
+                        det.primitive, det.from_glyph, det.to_glyph, det.ordinal_gap,
+                        det.from_fragment, det.to_fragment, from_atom, to_atom);
+                }
+                sprintln!();
             }
-            sprintln!("  d(ZFC, ZFCₜ) via 6 promotion channels = {:.4}", total);
-            sprintln!("  6 simultaneous promotions");
-            sprintln!("  CL8NK ladder: ZFC→ZFCₜ→ZFCfe→CLINK L8 (terminal O_∞⁺)");
         }
         "" | "entry" => {
-            let name = if arg.is_empty() { "zfc" } else { arg };
-            let entry = Cl8nkEntry::from_name(name);
-            let t = entry.tuple();
-            let stage = classify_stage(&t);
-            let dist = cl8nk_distance(&t);
-            sprintln!("══ CL8NK Entry: {} ══", entry.name());
-            sprintln!("  Tier stage: {:?}", stage);
-            sprintln!("  CL8NK distance: {:.4}", dist);
-            sprintln!("  Promotions: {}/6", count_promotions(&t));
-            sprintln!("  Tuple: {}", t.display_shavian());
+            let lookup_name = if name.is_empty() { "clink_l8" } else { name };
+            let t;
+            let dname: String;
+            let desc: String;
+            if let Some(cat_entry) = catalog::lookup(lookup_name) {
+                t = cat_entry.tuple;
+                dname = String::from(cat_entry.name);
+                desc = String::from(cat_entry.description);
+            } else {
+                sprintln!("[CL8NK] System '{}' not found in catalog.", lookup_name);
+                return;
+            }
+            let result = generate_entry_formula(&dname, &desc, &t);
+            sprintln!();
+            sprintln!("══════════════════════════════════════════════════════════════");
+            sprintln!("  CL8NK Entry: {}", result.system_name);
+            sprintln!("  {}", result.description);
+            sprintln!("  Reference: CLINK L8 (Organism) — ⟨𐑦⋅𐑸⋅𐑾⋅𐑹⋅𐑐⋅𐑧⋅𐑲⋅𐑵⋅⊙⋅𐑫⋅𐑳⋅𐑟⟩");
+            sprintln!("══════════════════════════════════════════════════════════════");
+            sprintln!();
+            sprintln!("  Prim   Value   CLINK fragment");
+            sprintln!("  ─────  ──────  ────────────────────────────────────────────────");
+            for frag in &result.fragments {
+                let atom_tag = if let Some(a) = frag.promoted_atom { alloc::format!("[{}]", a) } else { String::from("") };
+                sprintln!("  {:<6} {:<7} {} {}",
+                    frag.primitive, frag.value_glyph, frag.clink_fragment, atom_tag);
+            }
+            if !result.promoted_atoms.is_empty() {
+                sprintln!();
+                for ad in &result.atom_details {
+                    sprintln!("  [{}] {}", ad.atom, atom_desc(ad.atom));
+                }
+            }
+            sprintln!();
+            sprintln!("  tier: {}   d(CLINK L8): {:.4}   match:{} close:{} distant:{}",
+                result.tier, result.distance, result.match_count, result.close_count, result.distant_count);
+            if !result.promoted_atoms.is_empty() {
+                sprintln!("  promoted atoms: {}", result.promoted_atoms.join(", "));
+            }
+            if result.has_transcendence {
+                sprintln!("  ⬆ TRANSCENDENCE primitives: {}", result.transcendence_keys.join(", "));
+            }
+            if !result.promotions_needed.is_empty() {
+                sprintln!();
+                sprintln!("  Promotions needed to reach CLINK L8 ({}):", result.promotions_count);
+                for p in &result.promotions_needed {
+                    sprintln!("    {}: {} -> {}  (gap: {:.3})", p.primitive, p.from_glyph, p.to_glyph, p.gap);
+                }
+            }
+        }
+        "distance" => {
+            let lookup_name = if name.is_empty() { "zfc" } else { name };
+            if let Some(cat_entry) = catalog::lookup(lookup_name) {
+                let cl8 = cl8nk_ref();
+                let (d, conflicts) = tuple_distance_cl8nk(&cat_entry.tuple, &cl8);
+                let tier = assess_tier(&cat_entry.tuple);
+                sprintln!("══ CL8NK Distance ══");
+                sprintln!("  System: {}  →  CLINK L8", cat_entry.name);
+                sprintln!("  d = {:.4}  tier: {}", d, tier);
+                sprintln!("  Conflicts ({}):", conflicts.len());
+                for c in &conflicts {
+                    sprintln!("    {}: {} vs {}  delta={:.3}",
+                        c.primitive,
+                        catalog::primitive_glyph(c.sys_val),
+                        catalog::primitive_glyph(c.cl8nk_val),
+                        c.delta);
+                }
+            } else {
+                sprintln!("[CL8NK] System '{}' not found in catalog.", lookup_name);
+            }
+        }
+        "transcendence" => {
+            let tr = compute_transcendence();
+            sprintln!("══ The Ω/ɢ Transcendence — CLINK L8 beyond ZFC_fe ══");
+            sprintln!("  d(ZFC_fe, CLINK L8) = {:.4}", tr.d_zfcfe_to_cl8nk);
+            sprintln!();
+            sprintln!("  Ω: {} → {}",
+                catalog::primitive_glyph(tr.omega_zfcfe),
+                catalog::primitive_glyph(tr.omega_cl8nk));
+            sprintln!("    ZFC_fe: {}", tr.omega_zfcfe_frag);
+            sprintln!("    CL8NK:  {}", tr.omega_cl8nk_frag);
+            sprintln!("    → Integer winding (Abelian anyons) → braid group (non-Abelian anyons)");
+            sprintln!();
+            sprintln!("  C (ɢ): {} → {}",
+                catalog::primitive_glyph(tr.grammar_zfcfe),
+                catalog::primitive_glyph(tr.grammar_cl8nk));
+            sprintln!("    ZFC_fe: {}", tr.grammar_zfcfe_frag);
+            sprintln!("    CL8NK:  {}", tr.grammar_cl8nk_frag);
+            sprintln!("    → Sequential stepwise → simultaneous broadcast composition");
+            sprintln!();
+            sprintln!("  tensor(ZFC_fe, CLINK L8) = {}",
+                if tr.tensor_absorbed { "CLINK L8 — foundation fully absorbed" }
+                else { "composite — NOT fully absorbed" });
+        }
+        "tensor" => {
+            let lookup_name = if name.is_empty() { "zfc" } else { name };
+            if let Some(cat_entry) = catalog::lookup(lookup_name) {
+                let tr = compute_tensor_op(&cat_entry.tuple);
+                sprintln!("══ CLINK L8 ⊗ {} ══", cat_entry.name);
+                sprintln!("  tensor: {}", tr.tuple.display_shavian());
+                sprintln!("  d(CLINK L8): {:.4}  absorbed: {}", tr.distance_from_cl8nk, tr.absorbed);
+                sprintln!("  {}", tr.interpretation);
+            } else {
+                sprintln!("[CL8NK] System '{}' not found in catalog.", lookup_name);
+            }
+        }
+        "meet" => {
+            let lookup_name = if name.is_empty() { "zfc" } else { name };
+            if let Some(cat_entry) = catalog::lookup(lookup_name) {
+                let mr = compute_meet_op(&cat_entry.tuple);
+                sprintln!("══ CLINK L8 ⊓ {} ══", cat_entry.name);
+                sprintln!("  meet: {}", mr.tuple.display_shavian());
+                sprintln!("  d(CLINK L8): {:.4}  d(system): {:.4}", mr.d_from_cl8nk, mr.d_from_system);
+            } else {
+                sprintln!("[CL8NK] System '{}' not found in catalog.", lookup_name);
+            }
+        }
+        "join" => {
+            let lookup_name = if name.is_empty() { "zfc" } else { name };
+            if let Some(cat_entry) = catalog::lookup(lookup_name) {
+                let jr = compute_join_op(&cat_entry.tuple);
+                sprintln!("══ CLINK L8 ⊔ {} ══", cat_entry.name);
+                sprintln!("  join: {}", jr.tuple.display_shavian());
+                sprintln!("  d(CLINK L8): {:.4}  d(system): {:.4}", jr.d_from_cl8nk, jr.d_from_system);
+            } else {
+                sprintln!("[CL8NK] System '{}' not found in catalog.", lookup_name);
+            }
+        }
+        "tier" => {
+            let lookup_name = if name.is_empty() { "clink_l8" } else { name };
+            if let Some(cat_entry) = catalog::lookup(lookup_name) {
+                let tier = assess_tier(&cat_entry.tuple);
+                let cl8 = cl8nk_ref();
+                let (d, _) = tuple_distance_cl8nk(&cat_entry.tuple, &cl8);
+                sprintln!("══ CL8NK Tier ══");
+                sprintln!("  System: {}  tier: {}  d(CLINK L8): {:.4}", cat_entry.name, tier, d);
+            } else {
+                sprintln!("[CL8NK] System '{}' not found in catalog.", lookup_name);
+            }
+        }
+        "chain" => {
+            let layers = chain_analysis();
+            sprintln!("══ CLINK Chain — Distance Ladder from CLINK L8 ══");
+            sprintln!("  {} layers discovered in catalog", layers.len());
+            sprintln!();
+            for layer in &layers {
+                sprintln!("  {:<24}  d={:.4}  tier={}  conflicts={}",
+                    layer.name, layer.distance_from_l8, layer.tier, layer.conflicts_count);
+            }
+        }
+        "systems" => {
+            let systems = catalog_systems();
+            sprintln!("══ CL8NK — Catalog Systems ══");
+            sprintln!("  {} entries", systems.len());
+            for s in &systems {
+                sprintln!("    {}", s);
+            }
+        }
+        "stats" => {
+            let (count, cl8_found, zfcfe_found) = catalog_stats();
+            sprintln!("══ CL8NK — Catalog Statistics ══");
+            sprintln!("  Total entries: {}", count);
+            sprintln!("  CLINK L8 found: {}", cl8_found);
+            sprintln!("  ZFC_fe found: {}", zfcfe_found);
         }
         _ => {
-            sprintln!("cl8nk <promotions|entry|zfc|zfc_t|clink_l8|temporal_mathematics|schrodinger|heat_diffusion|navier_stokes|wave_equation|einstein|IUG>");
+            sprintln!("CL8NK Navigator — CLINK Layer 8 (Organism)");
+            sprintln!("Actions:");
+            sprintln!("  entry  <name>    — Full CL8NK formula decomposition");
+            sprintln!("  promotions        — 3-stage ladder: ZFC→ZFCₜ→ZFC_fe→CLINK L8");
+            sprintln!("  distance <name>   — d(name, CLINK L8)");
+            sprintln!("  transcendence     — Ω/ɢ transcendence analysis");
+            sprintln!("  tensor  <name>    — CLINK L8 ⊗ name (absorption test)");
+            sprintln!("  meet    <name>    — CLINK L8 ⊓ name");
+            sprintln!("  join    <name>    — CLINK L8 ⊔ name");
+            sprintln!("  tier    <name>    — Ouroboricity tier assessment");
+            sprintln!("  chain             — Full CLINK chain L0→L8 distance ladder");
+            sprintln!("  systems           — All catalog systems");
+            sprintln!("  stats             — Catalog statistics + reference tuples");
         }
     }
 }
