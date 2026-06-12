@@ -6,7 +6,6 @@
 //! sequence extraction, and Frobenius verification.
 
 use alloc::collections::BTreeSet;
-use alloc::string::String;
 use alloc::vec::Vec;
 
 // ── 3-letter → 1-letter AA code ────────────────────────────────────────

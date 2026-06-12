@@ -10,9 +10,8 @@
 //! its complement to form a structural contact.
 
 use alloc::collections::BTreeSet;
-use alloc::string::String;
 use alloc::vec::Vec;
-use super::genetic_tuples::{aa_activation, AAActivation};
+use super::genetic_tuples::aa_activation;
 
 // ── 12↔12 Primitive Bijection ──────────────────────────────────────────
 

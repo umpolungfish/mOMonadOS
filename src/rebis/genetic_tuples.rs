@@ -16,8 +16,6 @@
 //!   3. Monotonic advance — Ω_z constraint on trajectory through the crystal
 
 use alloc::collections::BTreeMap;
-use alloc::string::String;
-use alloc::vec::Vec;
 
 // ── Pipeline string → IG primitive Unicode values ──────────────────────
 

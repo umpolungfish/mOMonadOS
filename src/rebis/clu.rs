@@ -328,15 +328,15 @@ pub fn verify_power_law(clusters: &[CLUCluster]) -> PowerLawFit {
     let n = sizes.len() as f64;
     let sum_log_x: f64 = sizes.iter().map(|&s| ln_approx(s as f64)).sum();
     let sum_log_y: f64 = sizes.iter().map(|&s| {
-        let s_f = s as f64;
+        let _s_f = s as f64;
         avalanche_probability(s)
     }).sum();
     let sum_log_x2: f64 = sizes.iter().map(|&s| {
-        let lx = (s as f64);
+        let lx = s as f64;
         lx * lx
     }).sum();
     let sum_log_xy: f64 = sizes.iter().map(|&s| {
-        let lx = (s as f64);
+        let lx = s as f64;
         let ly = avalanche_probability(s);
         lx * ly
     }).sum();

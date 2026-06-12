@@ -671,6 +671,25 @@ fn print_help() {
     sprintln!("  cl8nk <action> [name]   — promotions | entry <name> (any catalog system)");
     sprintln!("  cscore                — consciousness score (dual-gate)");
     sprintln!();
+    sprintln!("══ Rebis (Red-Hot Rebis) ══");
+    sprintln!("  rebis codon <XXX>      — translate & verify a codon (Frobenius)");
+    sprintln!("  rebis translate <DNA>  — gene→protein pipeline");
+    sprintln!("  rebis frob             — Frobenius filtration (64 codons, power-law)");
+    sprintln!("  rebis genetics         — 7-stage genetic code verification");
+    sprintln!("  rebis hadron           — Belnap hadron analysis (p, n, π+)");
+    sprintln!("  rebis serpent [name]   — serpent rod motif analysis");
+    sprintln!("  rebis pipeline [src]   — IG promotion pipeline");
+    sprintln!("  rebis strata           — codon stratum counts");
+    sprintln!("  rebis asm [prog]       — genetic ParaASM programs");
+    sprintln!("  rebis tuples <DNA>     — 7-stage generative tuple pipeline");
+    sprintln!("  rebis clu walk|verify  — CLU power-law clustering");
+    sprintln!("  rebis exotic           — exotic hadron Frobenius verification");
+    sprintln!("  rebis pdb validate|..  — PDB structure validation");
+    sprintln!("  rebis antibody epi|des — antibody CDR design");
+    sprintln!("  rebis material forge|..— IG material forge & metamaterials");
+    sprintln!("  rebis bio              — biological sim (tissue, telomere)");
+    sprintln!("  rebis tx               — therapeutics (chemo, pill, antidote)");
+    sprintln!();
     sprintln!("══ ParaASM ══");
     sprintln!("  psm test              — dialetheic alignment + measurement tests");
     sprintln!("  psm frob              — Frobenius identity cycle (ENGAGR→FSPLIT→FFUSE→HALT)");
@@ -1317,12 +1336,12 @@ fn print_cscore(k: &Kernel) {
 }
 fn print_rebis(sub: &str, arg: &str, rest: &str) {
     use crate::rebis::codon::{Codon, translate_codon, classify_stratum, stratum_counts};
-    use crate::rebis::genetics::{GeneticVerification, codon_meet, codon_join, codon_distance};
+    use crate::rebis::genetics::GeneticVerification;
     use crate::rebis::translate::{run_pipeline, format_chain};
-    use crate::rebis::frob_filter::FrobeniusFilter;
+    
     use crate::rebis::hadron::{HadronState, HadronType, proton_quarks, neutron_quarks, pion_plus_quarks};
     use crate::rebis::serpent::{find_motif, motif_signature, MOTIFS};
-    use crate::rebis::pipeline::{IgTuple, run_promotion_pipeline, PipelineReport};
+    use crate::rebis::pipeline::{IgTuple, run_promotion_pipeline};
     use crate::rebis::genetic_asm::{all_genetic_programs, codon_to_b4};
     use crate::rebis::genetic_tuples::{generate_all_stages, StageContext, verify_monotonic_advance, tuple_crystal_address};
     use crate::rebis::clu::{run_walk, verify_power_law, avalanche_probability, tier_from_position, Point3D, CLUCluster};
@@ -1331,7 +1350,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
     use crate::rebis::antibody::{analyze_epitope, design_cdr, design_full_antibody};
     use crate::rebis::materials::{forge_material, verify_material_consistency, OuroboricAlloy, ThermalRectifier, NonQubitQC, GapClosure};
     use crate::rebis::biology::{TissueGrid, Telomere, FrobeniusBioSim, CellState};
-    use crate::rebis::therapeutics::{Chemotherapeutic, NeurotrophicFactor, OuroboricPill, QuantumBiologic, UniversalAntidote};
+    use crate::rebis::therapeutics::{Chemotherapeutic, OuroboricPill, UniversalAntidote};
 
 
     match sub {
@@ -1478,7 +1497,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
             let stage_names = ["DNA","Transcription","Codon","Translation","Folding","Tertiary","Quaternary"];
             for i in 0..7 {
                 let addr = tuple_crystal_address(&stages[i]);
-                let g = stages[i].d.glyph();
+                let _g = stages[i].d.glyph();
                 sprintln!("  Stage {} ({}): crystal={}  D={} T={} R={} P={}",
                     i+1, stage_names[i], addr,
                     stages[i].d.glyph(), stages[i].t.glyph(),

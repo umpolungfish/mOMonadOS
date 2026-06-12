@@ -10,8 +10,6 @@
 //! All exotic hadrons satisfy μ∘δ=id via depair∘pair = id.
 
 use alloc::collections::BTreeSet;
-use alloc::string::String;
-use alloc::vec::Vec;
 use crate::belnap::B4;
 
 // ── Gluon color states ─────────────────────────────────────────────────
@@ -211,7 +209,7 @@ pub struct Pentaquark {
 impl Pentaquark {
     /// Create a pentaquark. Must be overall color-white.
     pub fn new(quarks: [QColor; 4], antiquark: QColor) -> Option<Self> {
-        let mut all = alloc::vec![quarks[0], quarks[1], quarks[2], quarks[3], antiquark];
+        let all = alloc::vec![quarks[0], quarks[1], quarks[2], quarks[3], antiquark];
         let total = QColor::join_all(&all);
         if total != QColor::White { return None; }
         Some(Pentaquark { quarks, antiquark })

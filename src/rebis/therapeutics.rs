@@ -5,8 +5,6 @@
 //! Maps IG structural types to therapeutic design constraints:
 //! dosing kinetics, delivery mechanism, target specificity, and Frobenius verification.
 
-use alloc::string::String;
-use alloc::vec::Vec;
 
 // ── Frobenius Chemotherapeutic ─────────────────────────────────────────
 

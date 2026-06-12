@@ -8,8 +8,6 @@
 //! and Frobenius-verified biological cycles.
 
 use alloc::collections::BTreeMap;
-use alloc::string::String;
-use alloc::vec::Vec;
 use crate::belnap::B4;
 
 // ── Biological Cell State ──────────────────────────────────────────────

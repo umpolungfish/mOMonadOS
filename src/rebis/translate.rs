@@ -4,9 +4,8 @@
 // Full gene-to-protein translation with Frobenius verification
 // at every step: DNA→mRNA→codon→amino acid→protein chain.
 
-use crate::belnap::B4;
-use crate::rebis::codon::{Codon, translate_codon, wc_complement, nucleotide_to_b4, b4_to_nucleotide};
-use crate::rebis::{AminoAcid, RebisResult};
+use crate::rebis::codon::{Codon, translate_codon, b4_to_nucleotide};
+use crate::rebis::AminoAcid;
 
 /// Transcription: DNA → mRNA (T→U, complement strand).
 /// Returns the mRNA sequence.
@@ -100,7 +99,7 @@ pub fn run_pipeline(dna: &[u8]) -> TranslationResult {
         .filter(|&&aa| aa != AminoAcid::Stop)
         .copied()
         .collect();
-    let back_mrna = reverse_translate(&non_stop);
+    let _back_mrna = reverse_translate(&non_stop);
     let frobenius_ok = if let Some(s) = start {
         s + coding_len <= mrna.len() && !protein.is_empty()
     } else {

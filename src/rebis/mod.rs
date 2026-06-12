@@ -41,7 +41,6 @@ pub mod materials;
 pub mod biology;
 pub mod therapeutics;
 
-use crate::belnap::B4;
 
 /// The 12 IG primitives as Shavian glyphs — used for promotion tables
 /// and structural mapping between the genetic code and the grammar.

@@ -4,7 +4,7 @@
 // B₄ lattice operations on codons, Frobenius stratum classification,
 // and the 12-primitive ↔ 20 amino acid structural mapping.
 
-use crate::belnap::{B4, meet, join, bnot};
+use crate::belnap::{B4, meet, join};
 use crate::rebis::codon::{Codon, Stratum, classify_stratum, translate_codon, wc_complement};
 use crate::rebis::AminoAcid;
 

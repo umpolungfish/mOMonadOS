@@ -7,8 +7,6 @@
 //! Maps 12-primitive IG tuple to concrete material properties:
 //! composition, structure, processing, and predicted behaviors.
 
-use alloc::collections::BTreeMap;
-use alloc::string::String;
 use alloc::vec::Vec;
 
 // ── Material Property structs ──────────────────────────────────────────

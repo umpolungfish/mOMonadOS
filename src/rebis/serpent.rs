@@ -5,7 +5,6 @@
 // structural motif that bridges B4 lattice genetics with
 // IG grammar promotions.
 
-use crate::belnap::B4;
 use crate::rebis::AminoAcid;
 
 /// A serpent rod motif: a protein segment with structural properties.
