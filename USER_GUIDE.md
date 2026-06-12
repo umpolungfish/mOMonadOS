@@ -98,6 +98,59 @@ Load one of the 12 canonical programs by Roman numeral. Resets IP to 0.
 | XI | XI_Eternal_Return | TANCH AFWD AREV TANCH AFWD AREV TANCH AFWD |
 | XII | XII_ROM_Burn | EVALT IFIX EVALF IFIX ENGAGR IFIX IMSCRIB IFIX |
 
+### `continuous <1-4>`
+
+Load one of the 4 continuous programs (XIII–XVI). Resets IP to 0.
+
+```
+⊙> continuous 1
+⊙> continuous 4
+```
+
+| # | Name | Tok | Signature |
+|---|---|-----|-----------|
+| XIII | Heartbeat | 4 | ◊ pulse |
+| XIV | Tier_Climber | 9 | O₀→O₁ promotion |
+| XV | Frobenius_Oscillator | 4 | μ∘δ oscillation |
+| XVI | Paradox_Daemon | 7 | B-stabilized paradox |
+
+### `novel <1-3>`
+
+Load one of the 3 novel programs (XVII–XIX). Resets IP to 0.
+
+```
+⊙> novel 1
+⊙> novel 3
+```
+
+| # | Name | Tok | Description |
+|---|---|-----|-------------|
+| XVII | Nested_Fork_Labyrinth | 11 | Deep fork nesting |
+| XVIII | Terminal_Sink_Protocol | 8 | Sink-node detection |
+| XIX | Mirrorgram | 9 | Self-reflective structure |
+
+### `shunt <0-7>`
+
+Load one of the 8 shunted programs (XX–XXVII) by index. Resets IP to 0.
+
+```
+⊙> shunt 0
+⊙> shunt 7
+```
+
+| # | Name | Tok | Tier | Description |
+|---|---|-----|------|-------------|
+| XX | Shunt_Bridge | 14 | O_∞ | Void Genesis ⊕ IMSCRIB ⊕ Dialetheic Bootstrap |
+| XXI | Anchor_Paradox | 11 | O₂ | Anchor Protocol ⊕ ENGAGR ⊕ Parakernel |
+| XXII | Chiral_ROM | 12 | O₂ | Chiral Pairs ⊗ ROM Burn interleave |
+| XXIII | Dual_Kernel_Shunt | 13 | O_∞ | Dual Bootstrap ⊕ CLINK ⊕ Kernel (nested) |
+| XXIV | Heartbeat_Paradox | 8 | O₁ | Empty Bootstrap ⊗ Paradox Daemon |
+| XXV | Recursive_Kernel | 10 | O₁ | Kernel² ⊕ CLINK spine (stacked) |
+| XXVI | Truth_Spiral | 13 | O₂ | Truth Machine ⊕ ENGAGR (Frobenius-complete) |
+| XXVII | Omni_Spine | 19 | O_∞ | All classes via CLINK spine (maximal composite) |
+
+Five shunt mechanisms are used: **IMSCRIB Bridge**, **ENGAGR Paradox**, **Interleave**, **CLINK Spine**, and **Nested Fork**. See [SHUNTED_PROGRAMS.md](SHUNTED_PROGRAMS.md) for full token sequences and fork topologies.
+
 ---
 
 ## Crystal FS

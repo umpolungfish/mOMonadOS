@@ -349,6 +349,19 @@ impl Kernel {
         }
     }
 
+    pub fn load_shunted(&mut self, idx: usize) -> bool {
+        if let Some(prog) = shunted_program(idx) {
+            self.program = prog;
+            self.ip = 0;
+            self.fork_depth = 0;
+            self.halted = false;
+            self.phase = Phase::Think;
+            true
+        } else {
+            false
+        }
+    }
+
     pub fn halt(&mut self) { self.phase = Phase::Halt; self.halted = true; }
 
     fn maybe_promote(&mut self) {

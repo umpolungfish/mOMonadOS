@@ -30,7 +30,7 @@ mod catalog;
 mod cl8nk;
 mod consciousness;
 
-use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT};
+use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT};
 use crystal::{CrystalStore, decode, encode, indices_from_snapshot, TOTAL};
 use kernel::Kernel;
 
@@ -73,9 +73,9 @@ fn kmain(boot_info: &'static mut BootInfo) -> ! {
     sprintln!("[BOOT] Kernel online — graph execution, token-arity driven");
     sprintln!("[BOOT] Bootstrap: IMSCRIB→AREV→FSPLIT→AFWD→FFUSE→CLINK→IFIX→IMSCRIB (cyclic)");
     sprintln!("[BOOT] Crystal FS: {} addresses", TOTAL);
-    sprintln!("[BOOT] {} total programs (I–XIX): 12 canonical + {} continuous + {} novel",
-        CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT,
-        CONTINUOUS_COUNT, NOVEL_COUNT);
+    sprintln!("[BOOT] {} total programs (I–XXVII): 12 canonical + {} continuous + {} novel + {} shunted",
+        CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT + SHUNTED_COUNT,
+        CONTINUOUS_COUNT, NOVEL_COUNT, SHUNTED_COUNT);
     sprintln!();
 
     print_banner();
@@ -228,15 +228,17 @@ fn repl(k: &mut Kernel) {
                     .or_else(|| arg.parse::<usize>().ok().map(|n| n.saturating_sub(1)));
                 if let Some(i) = idx {
                     if i >= CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT {
-                        sprintln!("Program {} out of range (max XIX/{}).",
+                        sprintln!("Program {} out of range (max XXVII/{}).",
                             arg, CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT);
                     } else if load_by_roman(k, arg) {
                         let name: &str = if i < CANONICAL_COUNT {
                             canonical_name(i)
                         } else if i < CANONICAL_COUNT + CONTINUOUS_COUNT {
                             continuous_name(i - CANONICAL_COUNT)
-                        } else {
+                        } else if i < CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT {
                             novel_name(i - CANONICAL_COUNT - CONTINUOUS_COUNT)
+                        } else {
+                            shunted_name(i - CANONICAL_COUNT - CONTINUOUS_COUNT - NOVEL_COUNT)
                         };
                         sprintln!("Booting {}: {}", arg, name);
                         sprintln!("Running (ESC to stop)...");
@@ -245,7 +247,7 @@ fn repl(k: &mut Kernel) {
                         print_status(k);
                     }
                 } else {
-                    sprintln!("Usage: boot <I–XIX>");
+                    sprintln!("Usage: boot <I–XXVII>");
                     sprintln!("Use 'list' to see all programs.");
                 }
             }
@@ -267,6 +269,26 @@ Stopped after {} ticks.", ran);
                     }
                 } else {
                     sprintln!("Usage: boot novel <1-{}>", NOVEL_COUNT);
+                }
+            }
+            "shunt" => {
+                let arg = parts.next().unwrap_or("").trim();
+                if let Ok(i) = arg.parse::<usize>() {
+                    let idx = i.saturating_sub(1);
+                    if idx < SHUNTED_COUNT {
+                        k.load_shunted(idx);
+                        sprintln!("Booting shunted {}: {}", i, shunted_name(idx));
+                        sprintln!("Running (ESC to stop)...");
+                        let ran = k.run_continuous(|| interrupts::escape_pressed());
+                        sprintln!("
+Stopped after {} ticks.", ran);
+                        print_status(k);
+                    } else {
+                        sprintln!("Shunted index {} out of range (max {}).",
+                            i, SHUNTED_COUNT);
+                    }
+                } else {
+                    sprintln!("Usage: boot shunt <1-{}>", SHUNTED_COUNT);
                 }
             }
                         "watch" => {
@@ -455,7 +477,12 @@ Stopped after {} ticks.", ran);
                     sprintln!("   {:>4}.  {:<48} ", idx_to_roman(ri), novel_name(i));
                 }
                 sprintln!("╚══════════════════════════════════════════════════════════╝");
-                sprintln!("Use 'load <I–XIX>' to load any program by Roman numeral.");
+                sprintln!("   ▸ SHUNTED (XX–XXVII) — branching/exotic compositions        ");
+                for i in 0..SHUNTED_COUNT {
+                    let ri = i + CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT;
+                    sprintln!("   {:>4}.  {:<48} ", idx_to_roman(ri), shunted_name(i));
+                }
+                sprintln!("Use 'load <I–XXVII>' to load any program by Roman numeral.");
             }
             "load" => {
                 let arg = parts.next().unwrap_or("").trim();
@@ -465,8 +492,10 @@ Stopped after {} ticks.", ran);
                         canonical_name(idx)
                     } else if idx < CANONICAL_COUNT + CONTINUOUS_COUNT {
                         continuous_name(idx - CANONICAL_COUNT)
-                    } else {
+                    } else if idx < CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT {
                         novel_name(idx - CANONICAL_COUNT - CONTINUOUS_COUNT)
+                    } else {
+                        shunted_name(idx - CANONICAL_COUNT - CONTINUOUS_COUNT - NOVEL_COUNT)
                     };
                     sprintln!("Loaded {}: {}", arg, name);
                     serial::write_str("Program: ");
@@ -476,7 +505,7 @@ Stopped after {} ticks.", ran);
                     }
                     sprintln!();
                 } else {
-                    sprintln!("Unknown program: {}. Use 'list' to see I–XIX.", arg);
+                    sprintln!("Unknown program: {}. Use 'list' to see I–XXVII.", arg);
                 }
             }
             "" => {}
@@ -597,8 +626,8 @@ fn print_help() {
     sprintln!("  run [N]               — run N ticks; no arg = continuous (ESC to stop)");
     sprintln!("  watch [N]             — live terminal HUD, refresh every N ticks (ESC to stop)");
     sprintln!("  timer [N]             — run N ticks, one per PIT interrupt (ESC to stop)");
-    sprintln!("  boot <I–XIX>          — load any program + run continuously");
-    sprintln!("  load <I–XIX>          — load any program by Roman numeral");
+    sprintln!("  boot <I–XXVII>        — load any program + run continuously");
+    sprintln!("  load <I–XXVII>        — load any program by Roman numeral");
     sprintln!();
     sprintln!("══ Status ══");
     sprintln!("  status                — kernel status (tick, IP, stack, fork, frob, halted)");
@@ -611,10 +640,11 @@ fn print_help() {
     sprintln!("  stack                 — stack depth");
     sprintln!();
     sprintln!("══ Program Loading ══");
-    sprintln!("  list                  — list all programs (I–XIX)");
+    sprintln!("  list                  — list all programs (I–XXVII)");
     sprintln!("  canonical <I–XII>     — load canonical program");
     sprintln!("  continuous <1–4>      — load continuous program");
     sprintln!("  novel <1–3>           — load novel program (XVII–XIX)");
+    sprintln!("  shunt <1–8>           — load shunted program (XX–XXVII)");
     sprintln!();
     sprintln!("══ Crystal FS ══");
     sprintln!("  crystal <addr>        — decode address to 12-tuple");
@@ -728,7 +758,9 @@ fn roman_to_idx(s: &str) -> Option<usize> {
         "X"    => Some(9),  "XI"   => Some(10), "XII" => Some(11),
         "XIII" => Some(12), "XIV"  => Some(13), "XV"  => Some(14),
         "XVI"  => Some(15), "XVII" => Some(16), "XVIII" => Some(17),
-        "XIX"  => Some(18),
+        "XIX"  => Some(18), "XX"   => Some(19), "XXI"  => Some(20),
+        "XXII" => Some(21), "XXIII" => Some(22), "XXIV" => Some(23),
+        "XXV"  => Some(24), "XXVI"  => Some(25), "XXVII" => Some(26),
         _ => None,
     }
 }
@@ -741,7 +773,9 @@ fn idx_to_roman(i: usize) -> &'static str {
         9  => "X",    10 => "XI",   11 => "XII",
         12 => "XIII", 13 => "XIV",  14 => "XV",
         15 => "XVI",  16 => "XVII", 17 => "XVIII",
-        18 => "XIX",
+        18 => "XIX",  19 => "XX",   20 => "XXI",
+        21 => "XXII", 22 => "XXIII", 23 => "XXIV",
+        24 => "XXV",  25 => "XXVI",  26 => "XXVII",
         _  => "?",
     }
 }
@@ -755,6 +789,8 @@ fn load_by_roman(k: &mut Kernel, roman: &str) -> bool {
             k.load_continuous(idx - CANONICAL_COUNT)
         } else if idx < CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT {
             k.load_novel(idx - CANONICAL_COUNT - CONTINUOUS_COUNT)
+        } else if idx < CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT + SHUNTED_COUNT {
+            k.load_shunted(idx - CANONICAL_COUNT - CONTINUOUS_COUNT - NOVEL_COUNT)
         } else {
             false
         }

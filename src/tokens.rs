@@ -358,3 +358,212 @@ pub fn novel_program(i: usize) -> Option<Program> {
     }
     Some(p)
 }
+// ─── Shunted programs (XX–XXVII) ──────────────────────────────────
+//
+// These programs compose multiple canonical sequences via "shunting":
+// redirecting empty edges (FSPLIT right-branch value-carriers) to
+// populated nodes from other canonical classes. The shunt is the
+// structural operation of connecting two distinct topological regions
+// through their edge types — empty edges become populated, and
+// populated edges can shunt to unpopulated nodes to create novel
+// composite topologies.
+//
+// All programs use only the 12 grammar tokens. No control-flow opcodes.
+// Shunting is expressed through: (1) FSPLIT/FFUSE nesting that
+// interleaves subsequences from different canonical classes,
+// (2) IMSCRIB bridges that create self-referential closures across
+// class boundaries, and (3) CLINK spines that couple heterogeneous
+// token-family regions.
+
+pub const SHUNTED_COUNT: usize = 8;
+
+pub fn shunted_name(i: usize) -> &'static str {
+    match i {
+        0 => "XX_Shunt_Bridge",
+        1 => "XXI_Anchor_Paradox",
+        2 => "XXII_Chiral_ROM",
+        3 => "XXIII_Dual_Kernel_Shunt",
+        4 => "XXIV_Heartbeat_Paradox",
+        5 => "XXV_Recursive_Kernel",
+        6 => "XXVI_Truth_Spiral",
+        7 => "XXVII_Omni_Spine",
+        _ => "Unknown",
+    }
+}
+
+pub fn shunted_program(i: usize) -> Option<Program> {
+    let mut p = Program::empty();
+    match i {
+        0 => {
+            // XX — Shunt_Bridge (O_∞)
+            //
+            // Void Genesis prefix shunted into Dialetheic Bootstrap core
+            // via IMSCRIB bridge. The shunt: position 6 IMSCRIB connects
+            // the Void-constructed world (VINIT→FSPLIT→EVALT→FFUSE→EVALF→CLINK)
+            // to the Dialetheic world (EVALT→FSPLIT→EVALF→FFUSE→ENGAGR→IFIX).
+            // Two FSPLIT/FFUSE pairs: the first from Void Genesis, the second
+            // from Dialetheic Bootstrap. IMSCRIB at the seam provides
+            // self-referential observation unifying both regions.
+            //
+            // Shunt signature: Void Genesis(L5,F2,D1,X0) ⊕ IMSCRIB ⊕ Dialetheic Bootstrap(L2,F2,D3,X1)
+            // FSPLIT/FFUSE: (1→3) and (8→10). Cyclic: wraps to VINIT.
+            for t in [Token::VINIT, Token::FSPLIT, Token::EVALT,
+                      Token::FFUSE, Token::EVALF, Token::CLINK,
+                      Token::IMSCRIB, Token::EVALT, Token::FSPLIT,
+                      Token::EVALF, Token::FFUSE, Token::ENGAGR,
+                      Token::IFIX, Token::IMSCRIB] {
+                p.push(t);
+            }
+        }
+        1 => {
+            // XXI — Anchor_Paradox (O₂)
+            //
+            // Anchor Protocol (TANCH→AFWD→AREV) shunted into Parakernel
+            // dialetheia core (ENGAGR→FSPLIT→EVALT→FFUSE→EVALF→IFIX→ENGAGR).
+            // The shunt: ENGAGR at position 3 connects the Anchor's rhythmic
+            // oscillation (TANCH→AFWD→AREV cycle) to the Parakernel's
+            // truth-engram path. TANCH bookends create a bounded container
+            // that halts at root depth after one complete pass.
+            //
+            // Shunt signature: Anchor(L3,F0,D0,X0) ⊕ ENGAGR ⊕ Parakernel(L1,F2,D2,X1)
+            // FSPLIT/FFUSE: (4→6). TANCH-bounded → self-terminating.
+            for t in [Token::TANCH, Token::AFWD, Token::AREV,
+                      Token::ENGAGR, Token::FSPLIT, Token::EVALT,
+                      Token::FFUSE, Token::EVALF, Token::IFIX,
+                      Token::ENGAGR, Token::TANCH] {
+                p.push(t);
+            }
+        }
+        2 => {
+            // XXII — Chiral_ROM (O₂)
+            //
+            // Chiral Pairs (AFWD→AREV oscillation) interleaved with
+            // ROM Burn (truth→IFIX recording). Pattern: each Chiral
+            // AFWD→AREV pair is followed by a truth-value burn.
+            // First pair burns T, second burns F, third burns B (paradox).
+            // No FSPLIT/FFUSE — pure oscillation + recording.
+            //
+            // Shunt signature: Chiral(L8,F0,D0,X0) ⊗ ROM(L1,F0,D3,X4)
+            // Interleave pattern: (AFWD,AREV,EVALT,IFIX)² + (AFWD,ENGAGR,IFIX,AREV)
+            // Dialetheia: EVALT + EVALF + ENGAGR (complete).
+            for t in [Token::AFWD, Token::AREV, Token::EVALT,
+                      Token::IFIX, Token::AFWD, Token::AREV,
+                      Token::EVALF, Token::IFIX, Token::AFWD,
+                      Token::ENGAGR, Token::IFIX, Token::AREV] {
+                p.push(t);
+            }
+        }
+        3 => {
+            // XXIII — Dual_Kernel_Shunt (O_∞)
+            //
+            // Dual Bootstrap inverted Frobenius shunted into canonical
+            // Frobenius Kernel via CLINK spine. The shunt: CLINK at
+            // position 4 couples the reversed Frobenius world to the
+            // canonical Frobenius world. Two FSPLIT/FFUSE pairs:
+            // FSPLIT@2→FFUSE@9 (outer, wraps around CLINK + nested kernel),
+            // FSPLIT@5→FFUSE@7 (inner, canonical kernel core).
+            // Both satisfy μ∘δ=id. Self-ref: IMSCRIB bookends.
+            //
+            // Shunt signature: Dual_Bootstrap ⊕ CLINK ⊕ Kernel
+            // FSPLIT/FFUSE: (2→9) and (5→7). Balanced. 13 tokens.
+            for t in [Token::IMSCRIB, Token::AFWD, Token::FSPLIT,
+                      Token::AREV, Token::CLINK, Token::FSPLIT,
+                      Token::EVALT, Token::FFUSE, Token::EVALF,
+                      Token::ENGAGR, Token::FFUSE, Token::IFIX,
+                      Token::IMSCRIB] {
+                p.push(t);
+            }
+        }
+        4 => {
+            // XXIV — Heartbeat_Paradox (O₁)
+            //
+            // Empty Bootstrap (VINIT→IMSCRIB oscillation) interleaved
+            // with Paradox Daemon's ENGAGR injection. Pattern:
+            // (VINIT→IMSCRIB→ENGAGR)² + (VINIT→IMSCRIB).
+            // Each void→identity oscillation is followed by paradox
+            // stabilization. No Frobenius pair — pure oscillation
+            // with Dialetheia seeding.
+            //
+            // Shunt signature: Empty_Bootstrap(L8,F0,D0,X0) ⊗ Paradox_Daemon
+            // No FSPLIT/FFUSE. Period: 8 (structurally unique).
+            for t in [Token::VINIT, Token::IMSCRIB, Token::ENGAGR,
+                      Token::VINIT, Token::IMSCRIB, Token::ENGAGR,
+                      Token::VINIT, Token::IMSCRIB] {
+                p.push(t);
+            }
+        }
+        5 => {
+            // XXV — Recursive_Kernel (O₁)
+            //
+            // Two Frobenius Kernels (VINIT→FSPLIT→FFUSE) stacked and
+            // coupled via CLINK. The shunt: CLINK at positions 3 and 7
+            // couple successive kernel cycles, creating a recursive
+            // verification structure. Each kernel verifies μ∘δ=id
+            // independently, then CLINK meets their results.
+            // ENGAGR at position 8 injects paradox; IMSCRIB closes.
+            //
+            // Shunt signature: Kernel(L0,F2,D0,X0)² ⊕ CLINK spine
+            // FSPLIT/FFUSE: (1→2) and (5→6). Self-contained verification chain.
+            for t in [Token::VINIT, Token::FSPLIT, Token::FFUSE,
+                      Token::CLINK, Token::VINIT, Token::FSPLIT,
+                      Token::FFUSE, Token::CLINK, Token::ENGAGR,
+                      Token::IMSCRIB] {
+                p.push(t);
+            }
+        }
+        6 => {
+            // XXVI — Truth_Spiral (O₂)
+            //
+            // Truth Machine (two parallel classification paths) with
+            // dialetheia completion. Each path: IMSCRIB→FSPLIT→EVAL*→IFIX→FFUSE.
+            // Path 1 classifies T; Path 2 classifies F. After both paths,
+            // ENGAGR injects paradox and IFIX brands it. IMSCRIB closes
+            // the spiral. Unlike the base Truth Machine (which lacks FFUSE),
+            // this version includes Frobenius closure on each path.
+            //
+            // Shunt signature: Truth_Machine(L2,F2,D2,X2) ⊕ ENGAGR spiral
+            // FSPLIT/FFUSE: (1→4) and (6→9). Both balanced.
+            // Dialetheia: EVALT + EVALF + ENGAGR (complete). Self-ref: IMSCRIB bookends.
+            for t in [Token::IMSCRIB, Token::FSPLIT, Token::EVALT,
+                      Token::IFIX, Token::FFUSE, Token::IMSCRIB,
+                      Token::FSPLIT, Token::EVALF, Token::IFIX,
+                      Token::FFUSE, Token::ENGAGR, Token::IFIX,
+                      Token::IMSCRIB] {
+                p.push(t);
+            }
+        }
+        7 => {
+            // XXVII — Omni_Spine (O_∞)
+            //
+            // All canonical classes connected via CLINK spine and IMSCRIB
+            // bridges. The sequence composes: Void Genesis prefix →
+            // CLINK → Chiral oscillation → ENGAGR paradox shunt →
+            // Frobenius Kernel → IFIX brand → IMSCRIB bridge →
+            // Dialetheic Bootstrap closure.
+            //
+            // Structural census: Logical(7), Frobenius(4), Dialetheia(5), Linear(3) = 19 tokens.
+            // FSPLIT/FFUSE: (2→4) and (10→11). Both balanced.
+            // Dialetheia: EVALT×2, EVALF×2, ENGAGR×2 (doubly complete).
+            // Self-ref: IMSCRIB at 0, 13, 18 — triple self-referential closure.
+            // Period: 19 — prime, no shorter repeating sub-pattern.
+            //
+            // This is the maximal spinal composite: every token family
+            // appears, every canonical class contributes at least one
+            // token subsequence, and the CLINK spine couples
+            // heterogeneous regions into a single O_∞ structure.
+            for t in [Token::IMSCRIB, Token::VINIT, Token::FSPLIT,
+                      Token::EVALT, Token::FFUSE, Token::EVALF,
+                      Token::CLINK, Token::AFWD, Token::AREV,
+                      Token::ENGAGR, Token::FSPLIT, Token::FFUSE,
+                      Token::IFIX, Token::IMSCRIB, Token::EVALT,
+                      Token::EVALF, Token::ENGAGR, Token::IFIX,
+                      Token::IMSCRIB] {
+                p.push(t);
+            }
+        }
+        _ => return None,
+    }
+    Some(p)
+}
+
+
