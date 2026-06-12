@@ -104,12 +104,16 @@ impl Codon {
     }
 
     /// Encode codon as a 6-bit index: p1<<4 | p2<<2 | p3.
-    /// B4 values: B=3, T=2, F=1, N=0.
+    /// p1: N(U)=0, F(A)=1, T(C)=2, B(G)=3 (table row order: U,A,C,G)
+    /// p2,p3: N(U)=0, T(C)=1, F(A)=2, B(G)=3 (standard: U,C,A,G)
     pub fn index(&self) -> usize {
-        let v = |b: B4| -> usize {
-            match b { B4::B => 3, B4::T => 2, B4::F => 1, B4::N => 0 }
+        let v1 = |b: B4| -> usize {
+            match b { B4::N => 0, B4::F => 1, B4::T => 2, B4::B => 3 }
         };
-        v(self.p1) * 16 + v(self.p2) * 4 + v(self.p3)
+        let v23 = |b: B4| -> usize {
+            match b { B4::N => 0, B4::T => 1, B4::F => 2, B4::B => 3 }
+        };
+        v1(self.p1) * 16 + v23(self.p2) * 4 + v23(self.p3)
     }
 
     /// Symbol string for display.
@@ -121,7 +125,8 @@ impl Codon {
 // ── 64-Codon → Amino Acid Static Table ──────────────────────────
 //
 // The table is indexed by Codon::index() (0..64).
-// U=0, A=1, C=2, G=3  →  index = p1*16 + p2*4 + p3
+// Row order (p1): U, A, C, G   Sub-row (p2): U, C, A, G   p3: U, C, A, G
+// index = v1(p1)*16 + v23(p2)*4 + v23(p3)
 
 static CODON_TABLE: [AminoAcid; 64] = [
     // UUU UUC UUA UUG  UCU UCC UCA UCG  UAU UAC UAA UAG  UGU UGC UGA UGG
