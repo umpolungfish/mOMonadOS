@@ -20,10 +20,6 @@ use crate::catalog;
 
 /// Re-export: the 6 ZFC→ZFCₜ promotion channels from the catalog.
 pub use catalog::ZFC_PROMOTIONS;
-/// Re-export: the 2 CLINK transcendence channels from the catalog.
-pub use catalog::CLINK_TRANSCENDENCE;
-/// Re-export: PromotionChannel type.
-pub use catalog::PromotionChannel;
 
 /// Count how many of the 6 ZFCₜ promotions are present in a tuple
 /// compared to ZFC baseline. Delegates to catalog.
