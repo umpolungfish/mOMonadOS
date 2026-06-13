@@ -1,15 +1,19 @@
 // rebis/translate.rs — Gene→Protein Translation Pipeline
 //
 // Port of rhr_p4rky/gene_to_protein_pipeline.py.
-// Full gene-to-protein translation with Frobenius verification
-// at every step: DNA→mRNA→codon→amino acid→protein chain.
+// Full bidirectional gene↔protein translation with Frobenius verification
+// at every step: DNA↔mRNA→codon↔amino acid↔protein chain.
+//
+// Added reverse direction: Protein → mRNA (all degenerate codons enumerated).
 
 use crate::rebis::codon::{Codon, translate_codon, b4_to_nucleotide};
 use crate::rebis::AminoAcid;
+use alloc::string::String;
+use alloc::vec::Vec;
 
 /// Transcription: DNA → mRNA (T→U, complement strand).
 /// Returns the mRNA sequence.
-pub fn transcribe(dna: &[u8]) -> alloc::vec::Vec<u8> {
+pub fn transcribe(dna: &[u8]) -> Vec<u8> {
     dna.iter().map(|&b| {
         match b {
             b'A' | b'a' => b'U',
@@ -21,10 +25,23 @@ pub fn transcribe(dna: &[u8]) -> alloc::vec::Vec<u8> {
     }).collect()
 }
 
+/// Reverse transcription: mRNA → DNA (U→T).
+pub fn reverse_transcribe(mrna: &[u8]) -> Vec<u8> {
+    mrna.iter().map(|&b| {
+        match b {
+            b'A' | b'a' => b'T',
+            b'U' | b'u' => b'A',
+            b'G' | b'g' => b'C',
+            b'C' | b'c' => b'G',
+            _ => b'N',
+        }
+    }).collect()
+}
+
 /// Translation: mRNA → amino acid chain.
 /// Finds the first AUG (start), translates codons, stops at stop codon.
-pub fn translate(mrna: &[u8]) -> (alloc::vec::Vec<AminoAcid>, usize) {
-    let mut chain = alloc::vec::Vec::new();
+pub fn translate(mrna: &[u8]) -> (Vec<AminoAcid>, usize) {
+    let mut chain = Vec::new();
     let mut start_idx = None;
 
     // Find start codon (AUG)
@@ -59,11 +76,131 @@ pub fn translate(mrna: &[u8]) -> (alloc::vec::Vec<AminoAcid>, usize) {
     (chain, pos + 3 - start)
 }
 
-/// Reverse translation: amino acid chain → possible codon sequence.
-/// For each AA, returns the first codon (alphabetically).
-pub fn reverse_translate(chain: &[AminoAcid]) -> alloc::vec::Vec<u8> {
+// ── Amino Acid Parsing ──────────────────────────────────────────
+
+/// Parse an amino acid from a 3-letter code, 1-letter code, or full name.
+/// Case-insensitive. Returns None if unrecognized.
+pub fn parse_aa(s: &str) -> Option<AminoAcid> {
+    match s.to_uppercase().as_str() {
+        // Three-letter codes
+        "PHE" | "F" => Some(AminoAcid::Phe),
+        "LEU" | "L" => Some(AminoAcid::Leu),
+        "ILE" | "I" => Some(AminoAcid::Ile),
+        "MET" | "M" => Some(AminoAcid::Met),
+        "VAL" | "V" => Some(AminoAcid::Val),
+        "SER" | "S" => Some(AminoAcid::Ser),
+        "PRO" | "P" => Some(AminoAcid::Pro),
+        "THR" | "T" => Some(AminoAcid::Thr),
+        "ALA" | "A" => Some(AminoAcid::Ala),
+        "TYR" | "Y" => Some(AminoAcid::Tyr),
+        "STOP" | "STP" | "*" => Some(AminoAcid::Stop),
+        "HIS" | "H" => Some(AminoAcid::His),
+        "GLN" | "Q" => Some(AminoAcid::Gln),
+        "ASN" | "N" => Some(AminoAcid::Asn),
+        "LYS" | "K" => Some(AminoAcid::Lys),
+        "ASP" | "D" => Some(AminoAcid::Asp),
+        "GLU" | "E" => Some(AminoAcid::Glu),
+        "CYS" | "C" => Some(AminoAcid::Cys),
+        "TRP" | "W" => Some(AminoAcid::Trp),
+        "ARG" | "R" => Some(AminoAcid::Arg),
+        "GLY" | "G" => Some(AminoAcid::Gly),
+        _ => None,
+    }
+}
+
+/// Get the 1-letter code for an amino acid.
+pub fn aa_letter(aa: AminoAcid) -> &'static str {
+    match aa {
+        AminoAcid::Phe => "F", AminoAcid::Leu => "L", AminoAcid::Ile => "I",
+        AminoAcid::Met => "M", AminoAcid::Val => "V", AminoAcid::Ser => "S",
+        AminoAcid::Pro => "P", AminoAcid::Thr => "T", AminoAcid::Ala => "A",
+        AminoAcid::Tyr => "Y", AminoAcid::Stop => "*", AminoAcid::His => "H",
+        AminoAcid::Gln => "Q", AminoAcid::Asn => "N", AminoAcid::Lys => "K",
+        AminoAcid::Asp => "D", AminoAcid::Glu => "E", AminoAcid::Cys => "C",
+        AminoAcid::Trp => "W", AminoAcid::Arg => "R", AminoAcid::Gly => "G",
+    }
+}
+
+// ── Reverse Translation (Protein → RNA) ─────────────────────────
+
+/// The result of reverse-translating a single amino acid:
+/// one or more codons that could encode it.
+#[derive(Debug)]
+pub struct ReverseHit {
+    pub aa: AminoAcid,
+    pub codons: Vec<Codon>,
+    pub codon_count: usize,     // degeneracy
+}
+
+/// Reverse translate an amino acid: return ALL codons that encode it.
+pub fn reverse_translate_aa(aa: AminoAcid) -> ReverseHit {
     use crate::rebis::genetics::codons_for_aa;
-    let mut mrna = alloc::vec::Vec::new();
+    let codons = codons_for_aa(aa);
+    ReverseHit {
+        aa,
+        codon_count: codons.len(),
+        codons,
+    }
+}
+
+/// Format a codon as a 3-letter RNA string.
+pub fn codon_to_rna(c: &Codon) -> [u8; 3] {
+    [b4_to_nucleotide(c.p1), b4_to_nucleotide(c.p2), b4_to_nucleotide(c.p3)]
+}
+
+/// Reverse translate a full protein chain to ALL possible mRNA sequences.
+/// Returns a vector where each element is the set of possible codons for that position.
+pub fn reverse_translate_chain(chain: &[AminoAcid]) -> Vec<ReverseHit> {
+    chain.iter().map(|&aa| reverse_translate_aa(aa)).collect()
+}
+
+/// Enumerate ALL possible mRNA sequences for a protein chain.
+/// WARNING: Product of degeneracies. A chain of 4 AAs averaging 4 codons
+/// each produces 4^4=256 sequences. Use with care.
+/// Returns the total count and an iterator-like Vec of sequences.
+pub fn enumerate_mrna(chain: &[AminoAcid]) -> Vec<Vec<u8>> {
+    if chain.is_empty() {
+        return Vec::new();
+    }
+
+    use crate::rebis::genetics::codons_for_aa;
+
+    // Start with the first AA's codons
+    let first = codons_for_aa(chain[0]);
+    if first.is_empty() {
+        return Vec::new();
+    }
+
+    let mut sequences: Vec<Vec<u8>> = first.iter().map(|c| {
+        Vec::from(codon_to_rna(c).as_slice())
+    }).collect();
+
+    // For each subsequent AA, extend all sequences with its codons
+    for &aa in &chain[1..] {
+        let codons = codons_for_aa(aa);
+        if codons.is_empty() {
+            break;
+        }
+        let mut new_seqs = Vec::with_capacity(sequences.len() * codons.len());
+        for seq in &sequences {
+            for c in &codons {
+                let mut ext = seq.clone();
+                ext.extend_from_slice(&codon_to_rna(c));
+                new_seqs.push(ext);
+            }
+        }
+        sequences = new_seqs;
+    }
+
+    sequences
+}
+
+/// Reverse translation: amino acid chain → canonical codon sequence.
+/// For each AA, returns the FIRST codon (sorted by index, which groups U→A→C→G).
+/// This is the "canonical" representative.
+pub fn reverse_translate(chain: &[AminoAcid]) -> Vec<u8> {
+    use crate::rebis::genetics::codons_for_aa;
+    let mut mrna = Vec::new();
     for &aa in chain {
         let codons = codons_for_aa(aa);
         if codons.is_empty() { break; }
@@ -75,11 +212,13 @@ pub fn reverse_translate(chain: &[AminoAcid]) -> alloc::vec::Vec<u8> {
     mrna
 }
 
+// ── Pipeline ────────────────────────────────────────────────────
+
 /// Full gene → protein pipeline with verification.
 #[derive(Debug)]
 pub struct TranslationResult {
-    pub mrna: alloc::vec::Vec<u8>,
-    pub protein: alloc::vec::Vec<AminoAcid>,
+    pub mrna: Vec<u8>,
+    pub protein: Vec<AminoAcid>,
     pub coding_length: usize,
     pub start_codon_pos: usize,
     pub stop_codon_present: bool,
@@ -95,7 +234,7 @@ pub fn run_pipeline(dna: &[u8]) -> TranslationResult {
     let stop_present = protein.last() == Some(&AminoAcid::Stop);
 
     // Frobenius verification: re-transcribe protein→mRNA and check
-    let non_stop: alloc::vec::Vec<AminoAcid> = protein.iter()
+    let non_stop: Vec<AminoAcid> = protein.iter()
         .filter(|&&aa| aa != AminoAcid::Stop)
         .copied()
         .collect();
@@ -116,13 +255,105 @@ pub fn run_pipeline(dna: &[u8]) -> TranslationResult {
     }
 }
 
-/// Format amino acid chain as a string.
-pub fn format_chain(chain: &[AminoAcid]) -> alloc::string::String {
-    use alloc::string::String;
+/// Run the reverse pipeline: protein chain → mRNA → DNA.
+#[derive(Debug)]
+pub struct ReverseTranslationResult {
+    pub canonical_mrna: Vec<u8>,       // first codon per AA
+    pub dna: Vec<u8>,                   // reverse-transcribed
+    pub degeneracies: Vec<usize>,       // how many codons per AA position
+    pub total_combinations: u64,        // product of degeneracies (capped)
+    pub chain: Vec<AminoAcid>,
+}
+
+/// Run protein → mRNA → DNA pipeline.
+pub fn run_reverse_pipeline(chain: &[AminoAcid]) -> ReverseTranslationResult {
+    use crate::rebis::genetics::codons_for_aa;
+
+    let canonical_mrna = reverse_translate(chain);
+    let dna = reverse_transcribe(&canonical_mrna);
+
+    let degeneracies: Vec<usize> = chain.iter()
+        .map(|&aa| codons_for_aa(aa).len())
+        .collect();
+
+    // Compute total combinations (cap at u64::MAX)
+    let mut total: u64 = 1;
+    for &d in &degeneracies {
+        if d == 0 { total = 0; break; }
+        total = total.saturating_mul(d as u64);
+    }
+
+    ReverseTranslationResult {
+        canonical_mrna,
+        dna,
+        degeneracies,
+        total_combinations: total,
+        chain: chain.to_vec(),
+    }
+}
+
+// ── Formatting ──────────────────────────────────────────────────
+
+/// Format amino acid chain as a 3-letter dash-separated string.
+pub fn format_chain(chain: &[AminoAcid]) -> String {
     let mut s = String::new();
     for (i, aa) in chain.iter().enumerate() {
-        if i > 0 { s.push_str("-"); }
+        if i > 0 { s.push('-'); }
         s.push_str(aa.name());
     }
     s
+}
+
+/// Format amino acid chain as a 1-letter string (no separator).
+pub fn format_chain_1letter(chain: &[AminoAcid]) -> String {
+    let mut s = String::new();
+    for aa in chain {
+        s.push_str(aa_letter(*aa));
+    }
+    s
+}
+
+/// Parse a protein string: 3-letter codes (dash or space separated)
+/// or 1-letter codes (compact string).
+pub fn parse_chain(input: &str) -> Option<Vec<AminoAcid>> {
+    let input = input.trim();
+    if input.is_empty() {
+        return Some(Vec::new());
+    }
+
+    // Try 3-letter codes (separated by dash, space, or comma)
+    if input.len() >= 3 && (input.contains('-') || input.contains(' ') || input.contains(',')) {
+        let parts: Vec<&str> = input.split(&['-', ' ', ','][..])
+            .filter(|s| !s.is_empty())
+            .collect();
+        let mut chain = Vec::with_capacity(parts.len());
+        for part in parts {
+            chain.push(parse_aa(part)?);
+        }
+        return Some(chain);
+    }
+
+    // Try 1-letter codes (compact string, no separators)
+    // Check if all chars are valid 1-letter AA codes
+    let mut chain = Vec::with_capacity(input.len());
+    for ch in input.chars() {
+        let s: String = core::iter::once(ch).collect();
+        chain.push(parse_aa(&s)?);
+    }
+    Some(chain)
+}
+
+/// Compute the round-trip fidelity: Protein → mRNA(canonical) → Protein.
+/// Returns (original, round_tripped, match_count, total).
+pub fn roundtrip_verify(chain: &[AminoAcid]) -> (Vec<AminoAcid>, Vec<AminoAcid>, usize, usize) {
+    let mrna = reverse_translate(chain);
+    let (round, _) = translate(&mrna);
+    let total = chain.len().min(round.len());
+    let mut matches = 0usize;
+    for i in 0..total {
+        if chain[i] == round[i] {
+            matches += 1;
+        }
+    }
+    (chain.to_vec(), round, matches, chain.len())
 }

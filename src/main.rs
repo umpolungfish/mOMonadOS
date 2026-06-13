@@ -672,8 +672,9 @@ fn print_help() {
     sprintln!("  cscore                — consciousness score (dual-gate)");
     sprintln!();
     sprintln!("══ Rebis (Red-Hot Rebis) ══");
-    sprintln!("  rebis codon <XXX>      — translate & verify a codon (Frobenius)");
-    sprintln!("  rebis translate <DNA>  — gene→protein pipeline");
+    sprintln!("  rebis codon <XXX|AA>    — codon→AA or AA→codons (bidirectional)");
+    sprintln!("  rebis translate <DNA>  — gene→protein pipeline (DNA→mRNA→AA)
+  rebis reverse <Prot>   — protein→mRNA→DNA (reverse pipeline)");
     sprintln!("  rebis frob             — Frobenius filtration (64 codons, power-law)");
     sprintln!("  rebis genetics         — 7-stage genetic code verification");
     sprintln!("  rebis hadron           — Belnap hadron analysis (p, n, π+)");
@@ -1337,7 +1338,7 @@ fn print_cscore(k: &Kernel) {
 fn print_rebis(sub: &str, arg: &str, rest: &str) {
     use crate::rebis::codon::{Codon, translate_codon, classify_stratum, stratum_counts};
     use crate::rebis::genetics::GeneticVerification;
-    use crate::rebis::translate::{run_pipeline, format_chain};
+    use crate::rebis::translate::{run_pipeline, run_reverse_pipeline, format_chain, format_chain_1letter, parse_aa, aa_letter, parse_chain, reverse_translate_aa, codon_to_rna, enumerate_mrna, roundtrip_verify, reverse_translate};
     
     use crate::rebis::hadron::{HadronState, HadronType, proton_quarks, neutron_quarks, pion_plus_quarks};
     use crate::rebis::serpent::{find_motif, motif_signature, MOTIFS};
@@ -1356,17 +1357,33 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
     match sub {
         "codon" => {
             let s = if arg.is_empty() { rest } else { arg };
-            match Codon::from_str(s) {
-                Ok(c) => {
-                    let aa = translate_codon(&c);
-                    let stratum = classify_stratum(&c);
-                    let (holds, _) = crate::rebis::codon::verify_frobenius(&c);
-                    sprintln!("Codon: {} -> {}", core::str::from_utf8(&c.symbol()).unwrap_or("???"), aa.name());
-                    sprintln!("  Stratum: {:?}", stratum);
-                    sprintln!("  Frobenius: {}", if holds { "PASS" } else { "FAIL" });
-                    sprintln!("  Index: {}", c.index());
+            // Try codon (3 nucleotides) first
+            if let Ok(c) = Codon::from_str(s) {
+                let aa = translate_codon(&c);
+                let stratum = classify_stratum(&c);
+                let (holds, _) = crate::rebis::codon::verify_frobenius(&c);
+                sprintln!("Codon: {} -> {}", core::str::from_utf8(&c.symbol()).unwrap_or("???"), aa.name());
+                sprintln!("  Stratum: {:?}", stratum);
+                sprintln!("  Frobenius: {}", if holds { "PASS" } else { "FAIL" });
+                sprintln!("  Index: {}", c.index());
+            }
+            // Try amino acid name/code → all codons
+            else if let Some(aa) = parse_aa(s) {
+                let hit = reverse_translate_aa(aa);
+                sprintln!("AA: {} ({}) [{}]", aa.name(), aa_letter(aa), aa.to_primitive().map_or("—", |p| p.glyph()));
+                sprintln!("  Degeneracy: {}", hit.codon_count);
+                sprintln!("  Codons:");
+                for c in &hit.codons {
+                    let sym = codon_to_rna(c);
+                    let strat = classify_stratum(c);
+                    sprintln!("    {}{}{}  idx={:2}  stratum={:?}",
+                        sym[0] as char, sym[1] as char, sym[2] as char,
+                        c.index(), strat);
                 }
-                Err(e) => sprintln!("Error: {}", e),
+            }
+            else {
+                sprintln!("Error: '{}' is not a valid codon (3 nt) or amino acid (3-letter, 1-letter, or name)", s);
+                sprintln!("Codons: AUG, UUU, GCA...  |  Amino acids: Phe/F, Leu/L, Met/M, Lys/K, Gly/G, Stop/*...");
             }
         }
         "translate" => {
@@ -1382,6 +1399,71 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
             sprintln!("Protein: {}", format_chain(&result.protein));
             sprintln!("Coding length: {} bp", result.coding_length);
             sprintln!("Frobenius: {}", if result.frobenius_verified { "PASS" } else { "FAIL" });
+        }
+
+        "reverse" => {
+            if arg.is_empty() && rest.is_empty() {
+                sprintln!("Usage: rebis reverse <protein sequence>");
+                sprintln!("  Protein → mRNA → DNA (reverse translation)");
+                sprintln!("Examples:");
+                sprintln!("  rebis reverse Met-Ala-Gly    (3-letter codes, dash-separated)");
+                sprintln!("  rebis reverse MAG            (1-letter codes)");
+                sprintln!("  rebis reverse M A G          (1-letter codes, space-separated)");
+                return;
+            }
+            let input = if arg.is_empty() { String::from(rest) } else {
+                if rest.is_empty() { String::from(arg) }
+                else { alloc::format!("{} {}", arg, rest) }
+            };
+            match parse_chain(&input) {
+                Some(chain) if !chain.is_empty() => {
+                    let result = run_reverse_pipeline(&chain);
+                    sprintln!("Protein → RNA → DNA (reverse translation)");
+                    sprintln!("  Input:     {}", format_chain(&chain));
+                    sprintln!("  1-letter:  {}", format_chain_1letter(&chain));
+                    sprintln!("  Length:    {} AA", chain.len());
+                    sprintln!("  Canonical mRNA: {}", core::str::from_utf8(&result.canonical_mrna).unwrap_or("???"));
+                    sprintln!("  DNA:       {}", core::str::from_utf8(&result.dna).unwrap_or("???"));
+                    sprintln!("  Degeneracy per position:");
+                    for (i, (&aa, &deg)) in chain.iter().zip(result.degeneracies.iter()).enumerate() {
+                        sprintln!("    [{}] {} ({}) — {} codon{}",
+                            i+1, aa.name(), aa_letter(aa), deg, if deg==1 { "" } else { "s" });
+                    }
+                    sprintln!("  Total possible mRNA sequences: {} (degeneracy product)", result.total_combinations);
+
+                    // Round-trip verify: Protein→mRNA→Protein
+                    let (_orig, _round, matches, total) = roundtrip_verify(&chain);
+                    sprintln!("  Round-trip (canonical): {}/{} AA match", matches, total);
+
+                    // If total combinations ≤ 256, enumerate all
+                    if result.total_combinations > 0 && result.total_combinations <= 256 {
+                        let all = enumerate_mrna(&chain);
+                        sprintln!("  All {} possible mRNA sequences:", all.len());
+                        for (i, seq) in all.iter().enumerate() {
+                            sprintln!("    {:3}: {}", i+1, core::str::from_utf8(seq).unwrap_or("???"));
+                        }
+                    } else if result.total_combinations > 256 {
+                        sprintln!("  ({} total combinations — too many to enumerate; use shorter chain)", result.total_combinations);
+                    }
+
+                    // Per-AA detail
+                    sprintln!("  Per-position codon table:");
+                    for (i, &aa) in chain.iter().enumerate() {
+                        let hit = reverse_translate_aa(aa);
+                        let mut cstr = String::new();
+                        for (j, c) in hit.codons.iter().enumerate() {
+                            if j > 0 { cstr.push_str(", "); }
+                            let sym = codon_to_rna(c);
+                            cstr.push(sym[0] as char);
+                            cstr.push(sym[1] as char);
+                            cstr.push(sym[2] as char);
+                        }
+                        sprintln!("    {}: {} → [{}]", aa.name(), aa_letter(aa), cstr);
+                    }
+                }
+                Some(_) => sprintln!("Error: empty protein chain"),
+                None => sprintln!("Error: could not parse '{}' as amino acid sequence. Use 3-letter (Met-Ala) or 1-letter (MA) codes.", input),
+            }
         }
         "frob" => {
             let (pass, fail, ratio) = crate::rebis::frob_filter::filter_codon_space();
@@ -1693,8 +1775,9 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
         }
 _ => {
             sprintln!("Rebis: Red-Hot Rebis kernel module (17 subcommands)");
-            sprintln!("  rebis codon <XXX>        — translate & verify a codon");
-            sprintln!("  rebis translate <DNA>     — gene→protein pipeline");
+            sprintln!("  rebis codon <XXX|AA>      — codon→AA or AA→codons (bidirectional)");
+            sprintln!("  rebis translate <DNA>     — gene→protein pipeline (DNA→mRNA→AA)
+  rebis reverse <Prot>     — protein→mRNA→DNA (reverse pipeline)");
             sprintln!("  rebis frob               — Frobenius filtration");
             sprintln!("  rebis genetics           — 7-stage verification");
             sprintln!("  rebis hadron             — Belnap hadron analysis");
