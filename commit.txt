@@ -1,3 +1,12 @@
+Moved ancillary documents to ig-docs (2026-06-14)
+
+3 files moved: NOVEL_PROGRAMS.md → applications/os-kernel/,
+SHUNTED_PROGRAMS.md → applications/os-kernel/, REVIEW.md → applications/os-kernel/.
+Kept: README.md, USER_GUIDE.md, all source code.
+(REBIS_INTEGRATION.md left in repo — judgement call.)
+
+---
+
 remove dead code: try_read, b4_complement, Token::from_u8, Program::is_empty
 
 Zero warnings, nothing suppressed.
