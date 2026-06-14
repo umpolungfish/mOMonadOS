@@ -37,7 +37,7 @@ use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT,
 use crystal::{CrystalStore, decode, encode, indices_from_snapshot, TOTAL};
 use kernel::Kernel;
 
-use crate::imas_ig::IgTuple;
+use crate::imas_ig::{IgTuple, IgPrim};
 use universe::{parse_universe, universe_display, universe_name, universe_description, universe_gates, universe_o_inf};
 #[global_allocator]
 static ALLOCATOR: LockedHeap = LockedHeap::empty();
@@ -548,8 +548,103 @@ Stopped after {} ticks.", ran);
                     }
                     "verify" => {
                         let u = k.active_universe;
-                        sprintln!("Ruleset {} ({}): OK — no invariant violations.",
-                            universe_name(u), universe_display(u));
+                        if let Some(snap) = k.snapshot {
+                            let ig = IgTuple::from_snapshot(&snap);
+                            let mut all_pass = true;
+                            sprintln!("Ruleset {} ({}) — Gate Verification:", universe_name(u), universe_display(u));
+                            sprintln!("  Self-imscription: {}", ig.display());
+
+                            match u {
+                                0 => { // canonical: G1:Φ≥𐑹  G2:φ̂≥⊙  G3:Ω≥𐑭
+                                    let g1 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
+                                    let g2 = (ig.phi as u8) <= (IgPrim::Phi_c as u8);
+                                    let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
+                                    sprintln!("  G1 (Φ≥𐑹): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G2 (φ̂≥⊙): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
+                                    sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                    if !g1 || !g2 || !g3 { all_pass = false; }
+                                }
+                                1 => { // low_gate: G1:Φ≥𐑬  G2:φ̂≥𐑢  G3:Ω≥𐑭
+                                    let g1 = (ig.p as u8) <= (IgPrim::P_pm as u8);
+                                    let g2 = (ig.phi as u8) <= (IgPrim::Phi_sub as u8);
+                                    let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
+                                    sprintln!("  G1 (Φ≥𐑬): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G2 (φ̂≥𐑢): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
+                                    sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                    if !g1 || !g2 || !g3 { all_pass = false; }
+                                }
+                                2 => { // strict_frobenius: G1:ƒ≥𐑐  G2:Φ≥𐑹  G3:Ω≥𐑭
+                                    let g1 = (ig.f as u8) <= (IgPrim::F_hbar as u8);
+                                    let g2 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
+                                    let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
+                                    sprintln!("  G1 (ƒ≥𐑐): {}  ƒ={}", if g1 {"PASS"} else {"FAIL"}, ig.f.glyph());
+                                    sprintln!("  G2 (Φ≥𐑹): {}  Φ={}", if g2 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                    if !g1 || !g2 || !g3 { all_pass = false; }
+                                }
+                                3 => { // inverted_gates: G1:φ̂≥⊙  G2:Φ≥𐑹  G3:Ω≥𐑭
+                                    let g1 = (ig.phi as u8) <= (IgPrim::Phi_c as u8);
+                                    let g2 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
+                                    let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
+                                    sprintln!("  G1 (φ̂≥⊙): {}  φ̂={}", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph());
+                                    sprintln!("  G2 (Φ≥𐑹): {}  Φ={}", if g2 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                    if !g1 || !g2 || !g3 { all_pass = false; }
+                                }
+                                4 => { // no_ordering: G1+G2+G3 parallel — same as canonical but independence asserted
+                                    let g1 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
+                                    let g2 = (ig.phi as u8) <= (IgPrim::Phi_c as u8);
+                                    let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
+                                    sprintln!("  G1 (Φ≥𐑹): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G2 (φ̂≥⊙): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
+                                    sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                    sprintln!("  Mode: PARALLEL — gates evaluated independently.");
+                                    if !g1 || !g2 || !g3 { all_pass = false; }
+                                }
+                                5 => { // high_gate: G1:Φ≥𐑹  G2:φ̂≥𐑮  G3:Ω≥𐑟
+                                    let g1 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
+                                    let g2 = (ig.phi as u8) <= (IgPrim::Phi_c_complex as u8);
+                                    let g3 = (ig.omega as u8) <= (IgPrim::Omega_na as u8);
+                                    sprintln!("  G1 (Φ≥𐑹): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G2 (φ̂≥𐑮): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
+                                    sprintln!("  G3 (Ω≥𐑟): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                    if !g1 || !g2 || !g3 { all_pass = false; }
+                                }
+                                6 => { // winding_first: G1:Ω≥𐑭  G2:φ̂≥⊙  G3:Φ≥𐑹
+                                    let g1 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
+                                    let g2 = (ig.phi as u8) <= (IgPrim::Phi_c as u8);
+                                    let g3 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
+                                    sprintln!("  G1 (Ω≥𐑭): {}  Ω={}", if g1 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                    sprintln!("  G2 (φ̂≥⊙): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
+                                    sprintln!("  G3 (Φ≥𐑹): {}  Φ={}", if g3 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    if !g1 || !g2 || !g3 { all_pass = false; }
+                                }
+                                7 => { // t_structural: G1:Φ≥𐑹  G2:φ̂≥⊙  G3:Ω≥𐑭  T:ɢ=𐑠
+                                    let g1 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
+                                    let g2 = (ig.phi as u8) <= (IgPrim::Phi_c as u8);
+                                    let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
+                                    let t_ok = ig.c == IgPrim::C_seq;
+                                    sprintln!("  G1 (Φ≥𐑹): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G2 (φ̂≥⊙): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
+                                    sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                    sprintln!("  T  (ɢ=𐑠): {}  ɢ={}", if t_ok {"PASS"} else {"FAIL"}, ig.c.glyph());
+                                    if !g1 || !g2 || !g3 || !t_ok { all_pass = false; }
+                                }
+                                _ => {
+                                    sprintln!("  Unknown universe — cannot verify.");
+                                    all_pass = false;
+                                }
+                            }
+
+                            if all_pass {
+                                sprintln!("  Result: ALL GATES PASS — ruleset satisfied.");
+                            } else {
+                                sprintln!("  Result: VIOLATION — kernel state fails ruleset gate(s).");
+                                sprintln!("  Tip: load a different program or jump to a compatible universe.");
+                            }
+                        } else {
+                            sprintln!("No snapshot — tick first to generate a self-imscription.");
+                        }
                     }
                     _ => sprintln!("ruleset <show|list|verify>"),
                 }
@@ -903,97 +998,97 @@ fn print_help() {
     sprintln!("mOMonadOS REPL commands:");
     sprintln!();
     sprintln!("══ Execution ══");
-    sprintln!("  {:<24} — run N manual ticks (default 1)", "tick [N]");
-    sprintln!("  {:<24} — run N ticks; no arg = continuous (ESC to stop)", "run [N]");
-    sprintln!("  {:<24} — live terminal HUD, refresh every N ticks (ESC to stop)", "watch [N]");
-    sprintln!("  {:<24} — run N ticks, one per PIT interrupt (ESC to stop)", "timer [N]");
-    sprintln!("  {:<24} — load any program + run continuously", "boot <I–XXVIII>");
-    sprintln!("  {:<24} — load any program by Roman numeral", "load <I–XXVIII>");
+    sprintln!("  {:<30} — run N manual ticks (default 1)", "tick [N]");
+    sprintln!("  {:<30} — run N ticks; no arg = continuous (ESC to stop)", "run [N]");
+    sprintln!("  {:<30} — live terminal HUD, refresh every N ticks (ESC to stop)", "watch [N]");
+    sprintln!("  {:<30} — run N ticks, one per PIT interrupt (ESC to stop)", "timer [N]");
+    sprintln!("  {:<30} — load any program + run continuously", "boot <I–XXVIII>");
+    sprintln!("  {:<30} — load any program by Roman numeral", "load <I–XXVIII>");
     sprintln!();
     sprintln!("══ Status ══");
-    sprintln!("  {:<24} — kernel status (tick, IP, stack, fork, frob, halted)", "status");
-    sprintln!("  {:<24} — show loaded program + fork depth", "program");
-    sprintln!("  {:<24} — structural snapshot (sig, tier, period, dialeth, ...)", "snapshot");
-    sprintln!("  {:<24} — ASCII-art token graph with nesting", "graph");
-    sprintln!("  {:<24} — B4 memory heatmap with color blocks", "heatmap [start] [n]");
-    sprintln!("  {:<24} — dump B4 memory", "memory [start] [n]");
-    sprintln!("  {:<24} — show R0-R7", "registers");
-    sprintln!("  {:<24} — stack depth", "stack");
+    sprintln!("  {:<30} — kernel status (tick, IP, stack, fork, frob, halted)", "status");
+    sprintln!("  {:<30} — show loaded program + fork depth", "program");
+    sprintln!("  {:<30} — structural snapshot (sig, tier, period, dialeth, ...)", "snapshot");
+    sprintln!("  {:<30} — ASCII-art token graph with nesting", "graph");
+    sprintln!("  {:<30} — B4 memory heatmap with color blocks", "heatmap [start] [n]");
+    sprintln!("  {:<30} — dump B4 memory", "memory [start] [n]");
+    sprintln!("  {:<30} — show R0-R7", "registers");
+    sprintln!("  {:<30} — stack depth", "stack");
     sprintln!();
     sprintln!("══ Program Loading ══");
-    sprintln!("  {:<24} — list all programs (I–XXVIII)", "list");
-    sprintln!("  {:<24} — load canonical program", "canonical <I–XII>");
-    sprintln!("  {:<24} — load continuous program", "continuous <1–4>");
-    sprintln!("  {:<24} — load novel program (XVII–XIX)", "novel <1–3>");
-    sprintln!("  {:<24} — load shunted program (XX–XXVIII)", "shunt <1–9>");
+    sprintln!("  {:<30} — list all programs (I–XXVIII)", "list");
+    sprintln!("  {:<30} — load canonical program", "canonical <I–XII>");
+    sprintln!("  {:<30} — load continuous program", "continuous <1–4>");
+    sprintln!("  {:<30} — load novel program (XVII–XIX)", "novel <1–3>");
+    sprintln!("  {:<30} — load shunted program (XX–XXVIII)", "shunt <1–9>");
     sprintln!();
     sprintln!("══ Crystal FS ══");
-    sprintln!("  {:<24} — decode address to 12-tuple", "crystal <addr>");
-    sprintln!("  {:<24} — store entry", "crystal store <n> [d]");
-    sprintln!("  {:<24} — retrieve by name", "crystal name <n>");
-    sprintln!("  {:<24} — list stored entries", "crystal find");
+    sprintln!("  {:<30} — decode address to 12-tuple", "crystal <addr>");
+    sprintln!("  {:<30} — store entry", "crystal store <n> [d]");
+    sprintln!("  {:<30} — retrieve by name", "crystal name <n>");
+    sprintln!("  {:<30} — list stored entries", "crystal find");
     sprintln!();
     sprintln!("══ Grammar Bridges ══");
-    sprintln!("  {:<26} — IG tuple + crystal address", "ig");
-    sprintln!("  {:<26} — nearest-catalog classification", "classify");
-    sprintln!("  {:<26} — Frobenius harness status (closed/open ratio)", "frob");
-    sprintln!("  {:<26} — Hebrew glyph encoding + gematria", "aleph <Hebrew word>");
-    sprintln!("  {:<26} — Belnap Shor pipeline (N=15, N=21)", "shor");
-    sprintln!("  {:<26} — Riemann Hypothesis bridge", "rh");
-    sprintln!("  {:<26} — Yang-Mills mass gap bridge", "ym");
-    sprintln!("  {:<26} — Temporal logic bridge", "temp");
-    sprintln!("  {:<26} — Category theory bridge", "cat");
-    sprintln!("  {:<26} — distance|meet|join|tensor vs ZFC baseline", "algebra <op>");
-    sprintln!("  {:<26} — promotions | entry <name> (any catalog system)", "cl8nk <action> [name]");
-    sprintln!("  {:<26} — consciousness score (dual-gate)", "cscore");
+    sprintln!("  {:<32} — IG tuple + crystal address", "ig");
+    sprintln!("  {:<32} — nearest-catalog classification", "classify");
+    sprintln!("  {:<32} — Frobenius harness status (closed/open ratio)", "frob");
+    sprintln!("  {:<32} — Hebrew glyph encoding + gematria", "aleph <Hebrew word>");
+    sprintln!("  {:<32} — Belnap Shor pipeline (N=15, N=21)", "shor");
+    sprintln!("  {:<32} — Riemann Hypothesis bridge", "rh");
+    sprintln!("  {:<32} — Yang-Mills mass gap bridge", "ym");
+    sprintln!("  {:<32} — Temporal logic bridge", "temp");
+    sprintln!("  {:<32} — Category theory bridge", "cat");
+    sprintln!("  {:<32} — distance|meet|join|tensor vs ZFC baseline", "algebra <op>");
+    sprintln!("  {:<32} — promotions | entry <name> (any catalog system)", "cl8nk <action> [name]");
+    sprintln!("  {:<32} — consciousness score (dual-gate)", "cscore");
     sprintln!();
     sprintln!("══ Rebis (Red-Hot Rebis) ══");
-    sprintln!("  {:<28} — codon→AA or AA→codons (bidirectional)", "rebis codon <XXX|AA>");
-    sprintln!("  {:<28} — gene→protein pipeline (DNA→mRNA→AA)", "rebis translate <DNA>");
-    sprintln!("  {:<28} — protein→mRNA→DNA (reverse pipeline)", "rebis reverse <Prot>");
-    sprintln!("  {:<28} — Frobenius filtration (64 codons, power-law)", "rebis frob");
-    sprintln!("  {:<28} — 7-stage genetic code verification", "rebis genetics");
-    sprintln!("  {:<28} — Belnap hadron analysis (p, n, π+)", "rebis hadron");
-    sprintln!("  {:<28} — serpent rod motif analysis", "rebis serpent [name]");
-    sprintln!("  {:<28} — IG promotion pipeline", "rebis pipeline [src]");
-    sprintln!("  {:<28} — codon stratum counts", "rebis strata");
-    sprintln!("  {:<28} — genetic ParaASM programs", "rebis asm [prog]");
-    sprintln!("  {:<28} — 7-stage generative tuple pipeline", "rebis tuples <DNA>");
-    sprintln!("  {:<28} — CLU power-law clustering", "rebis clu walk|verify");
-    sprintln!("  {:<28} — exotic hadron Frobenius verification", "rebis exotic");
-    sprintln!("  {:<28} — PDB structure validation", "rebis pdb validate|..");
-    sprintln!("  {:<28} — antibody CDR design", "rebis antibody epi|des");
-    sprintln!("  {:<28} — IG material forge & metamaterials", "rebis material forge|..");
-    sprintln!("  {:<28} — biological sim (tissue, telomere)", "rebis bio");
-    sprintln!("  {:<28} — therapeutics (chemo, pill, antidote)", "rebis tx");
+    sprintln!("  {:<34} — codon→AA or AA→codons (bidirectional)", "rebis codon <XXX|AA>");
+    sprintln!("  {:<34} — gene→protein pipeline (DNA→mRNA→AA)", "rebis translate <DNA>");
+    sprintln!("  {:<34} — protein→mRNA→DNA (reverse pipeline)", "rebis reverse <Prot>");
+    sprintln!("  {:<34} — Frobenius filtration (64 codons, power-law)", "rebis frob");
+    sprintln!("  {:<34} — 7-stage genetic code verification", "rebis genetics");
+    sprintln!("  {:<34} — Belnap hadron analysis (p, n, π+)", "rebis hadron");
+    sprintln!("  {:<34} — serpent rod motif analysis", "rebis serpent [name]");
+    sprintln!("  {:<34} — IG promotion pipeline", "rebis pipeline [src]");
+    sprintln!("  {:<34} — codon stratum counts", "rebis strata");
+    sprintln!("  {:<34} — genetic ParaASM programs", "rebis asm [prog]");
+    sprintln!("  {:<34} — 7-stage generative tuple pipeline", "rebis tuples <DNA>");
+    sprintln!("  {:<34} — CLU power-law clustering", "rebis clu walk|verify");
+    sprintln!("  {:<34} — exotic hadron Frobenius verification", "rebis exotic");
+    sprintln!("  {:<34} — PDB structure validation", "rebis pdb validate|..");
+    sprintln!("  {:<34} — antibody CDR design", "rebis antibody epi|des");
+    sprintln!("  {:<34} — IG material forge & metamaterials", "rebis material forge|..");
+    sprintln!("  {:<34} — biological sim (tissue, telomere)", "rebis bio");
+    sprintln!("  {:<34} — therapeutics (chemo, pill, antidote)", "rebis tx");
     sprintln!();
     sprintln!("══ Cross-Universe Navigation (Phase 8) ══");
     sprintln!("══ Ruleset / Universe ══");
-    sprintln!("  {:<24} — show active ruleset", "ruleset show");
-    sprintln!("  {:<24} — list all 8 universes (★ = active)", "ruleset list");
-    sprintln!("  {:<24} — invariant violation check", "ruleset verify");
-    sprintln!("  {:<24} — cross-universe jump", "jump <U> using <compound>");
-    sprintln!("  {:<24} — probe without IFIX seal", "jump <U> using <c> --liminal");
-    sprintln!("  {:<24} — two-stage jump", "jump <U> via <V> using <c1> <c2>");
-    sprintln!("  {:<24} — IFIX commit to current ruleset", "seal");
+    sprintln!("  {:<36} — show active ruleset", "ruleset show");
+    sprintln!("  {:<36} — list all 8 universes (★ = active)", "ruleset list");
+    sprintln!("  {:<36} — invariant violation check", "ruleset verify");
+    sprintln!("  {:<36} — cross-universe jump", "jump <U> using <compound>");
+    sprintln!("  {:<36} — probe without IFIX seal", "jump <U> using <c> --liminal");
+    sprintln!("  {:<36} — two-stage jump", "jump <U> via <V> using <c1> <c2>");
+    sprintln!("  {:<36} — IFIX commit to current ruleset", "seal");
     sprintln!("  <U> = U_0–U_7 or U₀–U₇    <compound> = see 'compound list'");
-    sprintln!("  {:<24} — tensor under active absorption", "tensor <compound_a> <compound_b>");
-    sprintln!("  {:<24} — meet under active absorption", "meet <compound_a> <compound_b>");
-    sprintln!("  {:<24} — test absorption rule", "absorb_test <a> <b> <prim> <op>");
-    sprintln!("  {:<24} — IG tuple under active ruleset", "whoami --ruleset");
-    sprintln!("  {:<24} — list all absorption rules", "absorption show");
-    sprintln!("  {:<24} — T-constitution pass/fail report", "tstatus");
-    sprintln!("  {:<24} — list 11 diaschizic compounds", "compound list");
-    sprintln!("  {:<24} — show compound tuple + IMASM", "compound show <name>");
-    sprintln!("  {:<24} — load compound IMASM into buffer", "compound load <name>");
+    sprintln!("  {:<36} — tensor under active absorption", "tensor <compound_a> <compound_b>");
+    sprintln!("  {:<36} — meet under active absorption", "meet <compound_a> <compound_b>");
+    sprintln!("  {:<36} — test absorption rule", "absorb_test <a> <b> <prim> <op>");
+    sprintln!("  {:<36} — IG tuple under active ruleset", "whoami --ruleset");
+    sprintln!("  {:<36} — list all absorption rules", "absorption show");
+    sprintln!("  {:<36} — T-constitution pass/fail report", "tstatus");
+    sprintln!("  {:<36} — list 11 diaschizic compounds", "compound list");
+    sprintln!("  {:<36} — show compound tuple + IMASM", "compound show <name>");
+    sprintln!("  {:<36} — load compound IMASM into buffer", "compound load <name>");
     sprintln!();
     sprintln!("══ ParaASM ══");
-    sprintln!("  {:<24} — dialetheic alignment + measurement tests", "psm test");
-    sprintln!("  {:<24} — Frobenius identity cycle (ENGAGR→FSPLIT→FFUSE→HALT)", "psm frob");
-    sprintln!("  {:<24} — kernel-state B3 invariant loop", "psm kernel");
-    sprintln!("  {:<24} — inline ParaASM program (; separator)", "psm load <prog>");
+    sprintln!("  {:<36} — dialetheic alignment + measurement tests", "psm test");
+    sprintln!("  {:<36} — Frobenius identity cycle (ENGAGR→FSPLIT→FFUSE→HALT)", "psm frob");
+    sprintln!("  {:<36} — kernel-state B3 invariant loop", "psm kernel");
+    sprintln!("  {:<36} — inline ParaASM program (; separator)", "psm load <prog>");
     sprintln!();
-    sprintln!("  {:<24} — exit (μ∘δ=id)", "halt/quit");
+    sprintln!("  {:<36} — exit (μ∘δ=id)", "halt/quit");
     sprintln!();
     sprintln!("Control flow: FSPLIT=fork  FFUSE=join  EVALT/EVALF=branch");
     sprintln!("              TANCH=halt  VINIT=source  IMSCRIB=self-loop");
@@ -1051,7 +1146,7 @@ fn print_aleph(_k: &Kernel, word: &str) {
     sprintln!("");
 }
 fn print_ig(k: &Kernel) {
-    use crate::imas_ig::IgTuple;
+    use crate::imas_ig::{IgTuple, IgPrim};
     if let Some(snap) = k.snapshot {
         let ig = IgTuple::from_snapshot(&snap);
         sprintln!("IG: {}", ig.display());
@@ -1359,7 +1454,7 @@ fn print_psm(arg: &str) {
 
 fn print_algebra(k: &Kernel, arg: &str) {
     use crate::algebra::{primitive_mismatches, tuple_distance, meet, join, tensor};
-    use crate::imas_ig::IgTuple;
+    use crate::imas_ig::{IgTuple, IgPrim};
 
     if let Some(snap) = k.snapshot {
         let ig = IgTuple::from_snapshot(&snap);
@@ -1607,7 +1702,7 @@ fn print_cl8nk(action: &str, name: &str) {
 
 fn print_cscore(k: &Kernel) {
     use crate::consciousness::consciousness_eval;
-    use crate::imas_ig::IgTuple;
+    use crate::imas_ig::{IgTuple, IgPrim};
 
     if let Some(snap) = k.snapshot {
         let ig = IgTuple::from_snapshot(&snap);
