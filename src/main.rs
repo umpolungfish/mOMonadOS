@@ -35,6 +35,7 @@ use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT,
 use crystal::{CrystalStore, decode, encode, indices_from_snapshot, TOTAL};
 use kernel::Kernel;
 
+use crate::imas_ig::IgTuple;
 #[global_allocator]
 static ALLOCATOR: LockedHeap = LockedHeap::empty();
 
@@ -553,7 +554,7 @@ Stopped after {} ticks.", ran);
                 if flag == "--ruleset" {
                     if let Some(snap) = k.snapshot {
                         let ig = IgTuple::from_snapshot(&snap);
-                        sprintln!("Self-imscription (canonical U₀): {}", ig.display_shavian());
+                        sprintln!("Self-imscription (canonical U₀): {}", ig.display());
                     } else {
                         sprintln!("No snapshot — tick first.");
                     }
@@ -1196,7 +1197,7 @@ fn print_algebra(k: &Kernel, arg: &str) {
             }
             _ => {
                 sprintln!("algebra <distance|meet|join|tensor>");
-                sprintln!("  Current: {}", ig.display_shavian());
+                sprintln!("  Current: {}", ig.display());
             }
         }
     } else {
