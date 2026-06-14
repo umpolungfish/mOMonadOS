@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 // algebra.rs — IG Lattice Algebra: distance, meet, join, tensor
 //
 // ALL ordinal tables, weights, and operations now delegate to catalog.rs.

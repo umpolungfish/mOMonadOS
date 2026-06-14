@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 // manus.rs — Dynamic terminal displays for mOMonadOS
 //
 // Provides ANSI-terminal visual output for the bare-metal kernel:

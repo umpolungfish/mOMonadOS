@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 // imas_ig.rs — IMASM → IG Structural Bridge
 //
 // Ported from IMSCRIBr/imas_ig_bridge.py (Author: Lando⊗⊙perator)
@@ -34,6 +35,7 @@ pub struct IgTuple {
 
 /// IG primitive values as a compact enum.
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
+#[allow(non_camel_case_types)]
 #[repr(u8)]
 pub enum IgPrim {
     // D (Dimensionality)

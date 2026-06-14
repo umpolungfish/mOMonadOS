@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 //! ParaASM — Practical Paraconsistent Universal Engine
 //! Port of priests-engine/para_vm.py + imscribing_grammar/para/para_vm.py
 //! Belnap FOUR VM with 19-instruction ISA, assembler, dialetheic alignment,

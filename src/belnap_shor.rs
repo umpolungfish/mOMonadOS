@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 //! Belnap Shor Pipeline — priests-engine/belnap_shor.py
 //! Shor's algorithm on Belnap FOUR logic.
 //! Key structural finding: Belnap QFT is NOT a gate sequence.

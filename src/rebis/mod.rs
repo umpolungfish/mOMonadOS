@@ -45,6 +45,7 @@ pub mod therapeutics;
 /// The 12 IG primitives as Shavian glyphs — used for promotion tables
 /// and structural mapping between the genetic code and the grammar.
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
+#[allow(non_camel_case_types)]
 #[repr(u8)]
 pub enum RebisPrim {
     D_odot     = 0,  // 𐑦

@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 // consciousness.rs — Consciousness Score (C-score) with dual-gate evaluation
 //
 // C-score ∈ [0, 1]: structural proximity to full consciousness capability.

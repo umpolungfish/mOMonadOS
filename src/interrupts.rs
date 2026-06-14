@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+#![allow(static_mut_refs)]
 // Interrupt subsystem: IDT, PIC remap, PIT timer.
 // Drives continuous kernel execution with a programmable heartbeat.
 

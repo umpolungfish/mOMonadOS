@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 // aleph.rs — Hebrew Letter → IG Primitive Mapping
 //
 // Bridges ALEPH_OS aleph encoding into the mOMonadOS kernel.

@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 /// Belnap FOUR truth values.
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 #[repr(u8)]

@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 //! Yang-Mills Mass Gap Bridge — priests-engine/para_ym.py
 //! Mass gap Δ>0 = covering relation N<T in Belnap approximation order.
 //! BRST nilpotence Q²=0 ↔ ENGAGR B-stability. Omega_Z gauge protection.

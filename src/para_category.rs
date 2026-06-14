@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 //! Category Theory Bridge — priests-engine/para_category.py
 //! B4 as an internal Hom-object: N=initial, T=terminal, F=co-terminal, B=zero.
 //! Frobenius fsplit/ffuse = product/coproduct duality.

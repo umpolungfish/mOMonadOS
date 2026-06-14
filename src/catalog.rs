@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+#![allow(static_mut_refs)]
 // catalog.rs — Dynamic IG Catalog
 //
 // ALL data that was previously hardcoded across mOMonadOS now lives here.
@@ -718,7 +720,6 @@ pub fn formula_fragment(prim: IgPrim) -> &'static str {
         IgPrim::Omega_z    => "∮_γ A = 2πn ∧ n∈ℤ ∧ wind(γ)≠0",
         IgPrim::Omega_z2   => "∮_γ A = πn ∧ n∈ℤ₂",
         IgPrim::Omega_na   => "Braid(σ_i) ∧ R_matrix≠0 ∧ nonAbelian(x)",
-        _ => "?",
     }
 }
 
@@ -839,7 +840,6 @@ pub fn primitive_glyph(prim: IgPrim) -> &'static str {
         IgPrim::S_11 => "𐑙",
         IgPrim::Omega_z => "𐑭", IgPrim::Omega_z2 => "𐑴",
         IgPrim::Omega_0 => "𐑷", IgPrim::Omega_na => "𐑟",
-        _ => "?",
     }
 }
 
@@ -874,7 +874,6 @@ pub fn primitive_short(prim: IgPrim) -> &'static str {
         IgPrim::S_11 => "S_1:1",
         IgPrim::Omega_z => "Ω_Z", IgPrim::Omega_z2 => "Ω_Z2",
         IgPrim::Omega_0 => "Ω_0", IgPrim::Omega_na => "Ω_NA",
-        _ => "?",
     }
 }
 
@@ -893,7 +892,6 @@ pub fn primitive_family(prim: IgPrim) -> &'static str {
         IgPrim::H_inf | IgPrim::H2 | IgPrim::H1 | IgPrim::H0 => "H",
         IgPrim::S_nm | IgPrim::S_nn | IgPrim::S_11 => "S",
         IgPrim::Omega_z | IgPrim::Omega_z2 | IgPrim::Omega_0 | IgPrim::Omega_na => "Ω",
-        _ => "?",
     }
 }
 

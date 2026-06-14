@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 // cl8nk.rs — Full CL8NK Navigator (CLINK Layer 8 — Organism)
 //
 // CATALOG-NATIVE: All structural data sourced from catalog.rs.

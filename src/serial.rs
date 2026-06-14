@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use x86_64::instructions::port::Port;
 use core::fmt;
 

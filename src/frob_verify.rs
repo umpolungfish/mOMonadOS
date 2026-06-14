@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 // frob_verify.rs — Frobenius Verification Harness
 //
 // Ported from imasmic_core/frobenius_verify.py (Author: Lando⊗⊙perator)

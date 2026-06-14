@@ -36,6 +36,7 @@ pub enum Token {
     IFIX   = 0xB, // Permanent brand — linear ! exponential
 }
 
+#[allow(dead_code)]
 impl Token {
     pub fn name(self) -> &'static str {
         match self {
@@ -212,9 +213,6 @@ pub fn canonical(i: usize) -> Option<Program> {
                       Token::IFIX,   Token::ENGAGR, Token::IFIX,
                       Token::IMSCRIB, Token::IFIX] { p.push(t); }
         }
-        8 => { // IX_Chiral_Pairs — forward/reverse pairs
-            for _ in 0..4 { p.push(Token::AFWD); p.push(Token::AREV); }
-        }
         _ => return None,
     }
     Some(p)
@@ -271,9 +269,6 @@ pub fn continuous_program(i: usize) -> Option<Program> {
                       Token::EVALT, Token::EVALF,
                       Token::ENGAGR, Token::FFUSE,
                       Token::IMSCRIB] { p.push(t); }
-        }
-        3 => { // XV_Frobenius_Oscillator — FSPLIT→FFUSE oscillation
-            for _ in 0..2 { p.push(Token::FSPLIT); p.push(Token::FFUSE); }
         }
         _ => return None,
     }
@@ -358,13 +353,6 @@ pub fn novel_program(i: usize) -> Option<Program> {
                       Token::EVALF, Token::FFUSE, Token::ENGAGR,
                       Token::CLINK, Token::IFIX, Token::IMSCRIB] {
                 p.push(t);
-            }
-        }
-        2 => { // XVIII_Terminal_Sink — EVALF→IFIX→TANCH→CLINK cycle
-            for _ in 0..2 {
-                for t in [Token::EVALF, Token::IFIX, Token::TANCH, Token::CLINK] {
-                    p.push(t);
-                }
             }
         }
         _ => return None,

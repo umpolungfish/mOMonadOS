@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 /// Crystal of Types — 17,280,000-address structural type space.
 ///
 /// Address = Σᵢ (primitive_index[i] × STRIDE[i])

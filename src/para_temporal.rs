@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 //! Temporal Logic Bridge — priests-engine/para_temporal.py
 //! B4 temporal operators: always(□), eventually(◇), until(U).
 //! B is the temporal fixed point — always-and-never simultaneously.
