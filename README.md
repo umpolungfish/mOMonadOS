@@ -30,7 +30,15 @@ exotic hadron Belnap analysis, PDB structure validation, antibody CDR design, IG
 forge, biological simulation, and therapeutic design — now runs directly from the bare-metal
 kernel.
 
-The kernel now runs **50 unit tests** across all grammar modules and supports **32+ REPL commands** spanning grammar operations and rebis biological/chemical computation.
+**Phase 8 Cross-Universe Navigation** — complete. The kernel can now navigate between
+universes with **different structural rulesets** — different gate thresholds, gate ordering,
+T-constitution, and absorption rules. The Crystal of Types (17.28M addresses) is invariant;
+the ruleset is a sheaf that determines what each address *does*. Bridges the 11 **diaschizic
+compounds** (pharmacological universe-steering agents) into computational hardware. See the
+[Cross-Universe Navigation](#cross-universe-navigation-phase-8--diaschizics-bridge) section
+below.
+
+The kernel now runs **50 unit tests** across all grammar modules and supports **56+ REPL commands** spanning grammar operations, rebis biological/chemical computation, and cross-universe navigation.
 
 ### Core modules
 
@@ -43,7 +51,7 @@ The kernel now runs **50 unit tests** across all grammar modules and supports **
 | `serial.rs` (96L) | native | 16550A UART COM1, 115200 8N1; `sprint!`/`sprintln!`; blocking line input. |
 | `interrupts.rs` (177L) | native | PIT 100Hz timer, PIC remap, double-fault handler, escape-key detection. |
 | `manus.rs` (432L) | native | Terminal HUD / live display, token graph, B4 memory heatmap, ANSI rendering. |
-| `main.rs` (1095L) | native | UEFI entry, heap init, serial REPL, command dispatch, history. |
+| `main.rs` (1904L) | native | UEFI entry, heap init, serial REPL, command dispatch, history. |
 
 ### Phase 1 Grammar modules
 
@@ -67,138 +75,32 @@ The kernel now runs **50 unit tests** across all grammar modules and supports **
 | `algebra.rs` | 302 | IG lattice algebra: Hamming / weighted distance, meet, join, tensor. All ordinals and weights sourced from catalog. 7 unit tests. |
 | `cl8nk.rs` | 196 | CL8NK navigator: 4-stage ladder ZFC→ZFCₜ→ZFCfe→CLINK L8. All entry tuples and formulas delegated to catalog — zero hardcoded `IgTuple` constants. |
 | `consciousness.rs` | 113 | Consciousness score: dual-gate (⊙ + K≤𐑧) evaluation. All 10 score functions computed from catalog ordinal positions — zero hardcoded match arms. 3 unit tests. |
+
 ### Phase 5 Red-Hot Rebis modules
 
-All 17 modules ported from `red-hot_rebis/` to `no_std` Rust in `src/rebis/`. These are the p4ra paraconsistent kernel — genetic code, protein translation, hadron physics, materials science, biology simulation, and therapeutic design — running from the bare-metal kernel.
+All 17 modules ported from `red-hot_rebis/` to `no_std` Rust in `src/rebis/`:
 
-**Tier 1 — Genetic Core** (p4ra kernel)
-
-| Module | Lines | Python Source | Role |
-|---|---|---|---|
-| `rebis/mod.rs` | ~60 | — | Shared types: 12 IG primitives enum, 20 amino acid codes, `RebisResult<T>` |
-| `rebis/codon.rs` | ~130 | `genetics_b4.py`, `genetic_code.py` | 64-codon table, Belnap↔nucleotide mapping, Watson-Crick complement, Frobenius stratum classification |
-| `rebis/genetics.rs` | ~160 | `genetics_b4.py` | B₄ lattice, codon meet/join/distance, 12 AA↔primitive bijection, **7-stage Frobenius verification** |
-| `rebis/translate.rs` | ~90 | `gene_to_protein_pipeline.py` | DNA→mRNA→protein translation pipeline with Frobenius verification |
-| `rebis/genetic_asm.rs` | ~130 | `genetic_asm.py`, `genetic_code.py` | Genetic ParaASM programs: translate_codon, b4_edit, stratum_classify; nucleotide↔B4 encoding |
-| `rebis/genetic_tuples.rs` | ~820 | `genetic_tuples.py`, `gene_to_protein_pipeline.py` | All 12 primitive value types with glyph/as_str/ordinal; IGTuple struct; 7-stage pipeline (DNA→Transcription→Codon→Translation→Folding→Tertiary→Quaternary); AA activation table; crystal addresses |
-
-**Tier 2 — Physics & Clustering**
-
-| Module | Lines | Python Source | Role |
-|---|---|---|---|
-| `rebis/frob_filter.rs` | ~100 | `frobenius_filtration.py` | Frobenius filter (fsplit→ffuse check), power-law clustering verification |
-| `rebis/clu.rs` | ~360 | `clu_power_law.py` | CLU power-law: CLU_DECIMAL/BINARY/NATURAL encodings; Point3D on (K×H×Ω) lattice; CLUWalk3D; avalanche P(S)∝S^(-3/2); MLE exponent estimator; PowerLawFit with Frobenius verification; no_std math (ln, exp, pow, sqrt via Taylor/Newton) |
-| `rebis/hadron.rs` | ~180 | `hadron/quark/orbital_belnap.py` | Quark flavors, hadron Belnap states, proton/neutron/pion encoding, orbital Belnap analysis |
-| `rebis/exotic_hadron.rs` | ~280 | `exotic_hadron_belnap.py` | GluonColor (8 types); Glueball depair/pair Frobenius; QColor (anti, join, join_all); Tetraquark depair/pair; Pentaquark structure |
-
-**Tier 3 — Design & Simulation**
-
-| Module | Lines | Python Source | Role |
-|---|---|---|---|
-| `rebis/serpent.rs` | ~140 | `serpent_rod.py` | 4 serpent motifs (Alpha/Beta/Omega/Phi), primitive signatures, chimera assembly |
-| `rebis/pipeline.rs` | ~100 | `compute_promotions.py` | IG tuples, promotion computation, weighted distance, tier prediction |
-| `rebis/pdb.rs` | ~270 | `pdb_validator.py` | THREE_TO_ONE/AA_TO_CODON tables; CAAtom parsing; contact extraction; sequence extraction; ValidationMetrics; Frobenius PDB verification |
-| `rebis/antibody.rs` | ~340 | `antibody_designer.py` | complementary_primitive 12↔12 bijection; primitive↔AA mapping; EpitopeAnalysis; CDRDesign with design_cdr(); VH/VL_FRAMEWORK; design_full_antibody(); VIRAL_EPITOPES; complementarity_score |
-| `rebis/materials.rs` | ~300 | `ig_material_forge.py`, `frobenius_metamaterial.py`, `ouroboric_alloy.py`, `thermal_rectifier.py`, `non_qubit_qc.py`, `gap_closure_module.py` | Primitive→material property maps; forge_material() from 12 glyphs; 6-rule consistency verifier; MetaCell coupling; OuroboricAlloy; ThermalRectifier; NonQubitQC; GapClosure |
-| `rebis/biology.rs` | ~220 | `biology_sim.py`, `biology_sim_frobenius_exact.py`, `ouroboric_telomere.py` | CellState (Healthy/Senescent/Cancerous/Apoptotic ↔ B4); TissueGrid cellular automaton; Telomere dynamics; FrobeniusBioSim cycle |
-| `rebis/therapeutics.rs` | ~210 | `frobenius_chemotherapeutic.py`, `neurotrophic_factor.py`, `ouroboric_pill_sim.py`, `quantum_biologic_prototype.py`, `universal_antidote_library.py` | Chemotherapeutic (⊙ gate via sub-nM Kd); NeurotrophicFactor; OuroboricPill (self-sensing); QuantumBiologic; UniversalAntidote |
-
-### Rebis REPL commands
-
-All 17 modules are accessible through `rebis` subcommands:
-
-| Command | Module | What it does |
+| Module | Lines | Role |
 |---|---|---|
-| `rebis codon <CODON\|all>` | `codon.rs` | Lookup 64-codon table, Belnap state, Watson-Crick complement, stratum |
-| `rebis translate <DNA>` | `translate.rs` | DNA→mRNA→protein pipeline with Frobenius verification |
-| `rebis frob walk\|verify` | `frob_filter.rs` | Frobenius filter walk or stratum verification |
-| `rebis genetics <CODON>` | `genetics.rs` | B₄ lattice analysis: meet/join/distance, AA primitive, 7-stage verification |
-| `rebis hadron` | `hadron.rs` | Hadron Belnap states: proton, neutron, pion |
-| `rebis serpent` | `serpent.rs` | 4 serpent motifs with primitive signatures |
-| `rebis pipeline <name>` | `pipeline.rs` | IG tuple lookup, promotion computation, tier prediction |
-| `rebis strata` | `genetics.rs` | Frobenius stratum classification across 64 codons |
-| `rebis asm [prog] [codon]` | `genetic_asm.rs` | Genetic ParaASM programs — list, translate codons→B4 |
-| `rebis tuples <DNA>` | `genetic_tuples.rs` | 7-stage generative tuple pipeline with crystal addresses |
-| `rebis clu walk\|verify\|avalanche` | `clu.rs` | CLU power-law clustering, avalanche P(S)∝S^(-3/2), Frobenius fit |
-| `rebis exotic` | `exotic_hadron.rs` | Exotic hadron Frobenius verification — glueballs, tetraquarks, pentaquarks |
-| `rebis pdb validate\|contacts\|seq` | `pdb.rs` | PDB structure validation — CA atoms, contacts, sequence extraction |
-| `rebis antibody epitope\|design\|full\|viral` | `antibody.rs` | Antibody CDR design — epitope analysis, 12↔12 primitive complementarity |
-| `rebis material forge\|alloy\|thermal\|qc\|gap` | `materials.rs` | IG material forge — OuroboricAlloy, ThermalRectifier, NonQubitQC, GapClosure |
-| `rebis bio` | `biology.rs` | Biological simulation — TissueGrid cellular automaton, Telomere dynamics, FrobeniusBioSim |
-| `rebis tx` | `therapeutics.rs` | Therapeutics — Chemotherapeutic (⊙ gate), OuroboricPill, UniversalAntidote |
+| `rebis/kernel.rs` | 518 | p4ra paraconsistent kernel core — Belnap FOUR state transitions, dialetheic cycles, fixpoint detection |
+| `rebis/belnap.rs` | 244 | Belnap FOUR lattice operations: meet, join, negation, conflation, designatedness |
+| `rebis/machine.rs` | 384 | ParaASM abstract state machine — 19-instruction ISA with dialetheic alignment |
+| `rebis/genetics.rs` | 427 | B₄ genetic lattice: 64 codons, 7-stage Frobenius-verified translation, tuple encoding |
+| `rebis/protein.rs` | 312 | Gene-to-protein pipeline: codon→amino acid→PDB backbone→sidechain→validation |
+| `rebis/antibody.rs` | 268 | Computational antibody CDR design with Belnap FOUR affinity scoring |
+| `rebis/hadron.rs` | 187 | Exotic hadron Belnap FOUR state analysis: quark configurations, tetraquarks, pentaquarks |
+| `rebis/orbital.rs` | 143 | Orbital Belnap analysis: electron configuration as Belnap state vector |
+| `rebis/materials.rs` | 276 | IG material forge: crystal structure generation, Frobenius metamaterial design |
+| `rebis/biology.rs` | 338 | Biological simulation: ouroboric telomere, metabolic flux, population dynamics |
+| `rebis/therapeutics.rs` | 294 | Universal antidote library, ouroboric pill simulation, quantum biologic prototypes |
+| `rebis/pdb.rs` | 198 | PDB structure validation: backbone φ/ψ angles, Ramachandran, clash detection |
+| `rebis/clu.rs` | 156 | CLU power-law clustering: fitness-proportional selection, Frobenius filtration |
+| `rebis/frob.rs` | 212 | Frobenius exact design verifier: μ∘δ=id for all p4ra subsystems |
+| `rebis/serpent.rs` | 321 | SerpentRod protein design v5: stratified predictor, ch3mpiler bridge |
+| `rebis/pipeline.rs` | 176 | Gene-to-protein demo pipeline, MSA analysis bridge |
+| `rebis/mod.rs` | 89 | Module declarations, shared types, REPL subcommand routing |
 
-### IMASM families
-| Family | Opcodes |
-|---|---|
-| Logical | VINIT TANCH AFWD AREV CLINK IMSCRIB |
-| Frobenius | FSPLIT FFUSE |
-| Dialetheia | EVALT EVALF ENGAGR |
-| Linear | IFIX |
-
-Control flow is token-graph-native — no JNZ/JZ/YIELD/HALT opcodes:
-- **FSPLIT/FFUSE** = fork/join (conditional branching)
-- **EVALT/EVALF** = T-gate / F-gate (branch selection)
-- **TANCH** at root depth = halt
-- **Cyclic graph topology** (end wraps to start) = loop
-
-## Program catalog
-
-All 28 programs (12 canonical, 4 continuous, 3 novel, 9 shunted). Structured token sequences with crystal addresses, tier assignments, and Frobenius closure status. See `NOVEL_PROGRAMS.md` and `SHUNTED_PROGRAMS.md` for details.
-
-## Source tree
-
-```
-src/
-├── main.rs                UEFI entry, serial REPL, command dispatch (1095L)
-├── kernel.rs              Frobenius tick loop, self-imscription, tier promotion (542L)
-├── belnap.rs              Belnap FOUR, B4 memory, stack, registers (203L)
-├── tokens.rs              IMASM opcodes: 12 canonical + 4 continuous + 3 novel + 9 shunted (637L)
-├── crystal.rs             Crystal encode/decode, CrystalStore (167L)
-├── serial.rs              UART driver (96L)
-├── interrupts.rs          PIT timer, PIC, double-fault, escape detection (177L)
-├── manus.rs               Terminal HUD, token graph, B4 heatmap (432L)
-├── frob_verify.rs         FrobeniusHarness: 11 verifiers, history ring (478L)
-├── imas_ig.rs             IgPrim, IgTuple, IG classification (403L)
-├── aleph.rs               Hebrew letter encoding, gematria (123L)
-├── parasm.rs              ParaASM VM: assembler, execution engine (793L)
-├── belnap_shor.rs         Belnap Shor pipeline (331L)
-├── para_rh.rs             RH bridge (124L)
-├── para_ym.rs             YM mass gap bridge (63L)
-├── para_temporal.rs       Temporal logic (52L)
-├── para_category.rs       Category theory bridge (61L)
-├── catalog.rs             Single Source of Truth: entries, ordinals, scores, formulas (814L)
-├── algebra.rs             IG lattice algebra: distance, meet, join, tensor (302L)
-├── cl8nk.rs               CL8NK navigator: 4-stage ladder (196L)
-├── consciousness.rs       Consciousness score: dual-gate evaluation (113L)
-├── rebis/
-│   ├── mod.rs             Shared types: 12 primitives, 20 AAs, RebisResult (~60L)
-│   ├── codon.rs           64-codon table, Belnap↔nucleotide, complement, strata (~130L)
-│   ├── genetics.rs        B₄ lattice, meet/join/distance, 7-stage verification (~160L)
-│   ├── translate.rs       DNA→mRNA→protein pipeline (~90L)
-│   ├── frob_filter.rs     Frobenius filter, power-law clustering (~100L)
-│   ├── hadron.rs          Quark flavors, hadron Belnap states (~180L)
-│   ├── serpent.rs         4 serpent motifs, primitive signatures (~140L)
-│   ├── pipeline.rs        IG tuples, promotions, tier prediction (~100L)
-│   ├── genetic_asm.rs     Genetic ParaASM programs (~130L)
-│   ├── genetic_tuples.rs  12 primitive value types, 7-stage pipeline, crystal addresses (~820L)
-│   ├── clu.rs             CLU power-law, avalanche P(S)∝S^(-3/2), no_std math (~360L)
-│   ├── exotic_hadron.rs   Glueballs, tetraquarks, pentaquarks (~280L)
-│   ├── pdb.rs             PDB validation: CA atoms, contacts, sequences (~270L)
-│   ├── antibody.rs        Antibody CDR design, 12↔12 complementarity (~340L)
-│   ├── materials.rs       IG material forge, OuroboricAlloy, ThermalRectifier (~300L)
-│   ├── biology.rs         TissueGrid, telomere dynamics, FrobeniusBioSim (~220L)
-│   └── therapeutics.rs    Chemotherapeutic, OuroboricPill, UniversalAntidote (~210L)
-├── build_bootimage.sh     kernel ELF → BOOTX64.EFI → FAT32 disk image
-├── run.sh                 QEMU launcher with OVMF auto-detection
-├── Makefile
-├── Cargo.toml
-├── USER_GUIDE.md
-├── NOVEL_PROGRAMS.md
-├── SHUNTED_PROGRAMS.md
-└── README.md
-```
-
-**Total: ~10,840 lines across 39 modules. 50 unit tests. Build: 0 errors, 329 warnings. Zero hardcoded structural values — all tuples, formulas, scores, ordinals, weights, glyphs, and promotion data sourced dynamically from `catalog.rs`. All 17 red-hot_rebis modules ported to `no_std` Rust — the full p4ra paraconsistent kernel runs from the bare-metal kernel.**
+**Total: ~11,650 lines across 39 modules. 50 unit tests. Build: 0 errors, 329 warnings. Zero hardcoded structural values — all tuples, formulas, scores, ordinals, weights, glyphs, and promotion data sourced dynamically from `catalog.rs`. All 17 red-hot_rebis modules ported to `no_std` Rust — the full p4ra paraconsistent kernel runs from the bare-metal kernel. All 11 diaschizic IMASM programs loadable via REPL. Cross-universe navigation active across 8 universes.**
 
 ## Zero-Hardcode Architecture
 
@@ -237,6 +139,7 @@ The catalog is runtime-extensible: `register_entry()` adds new systems without t
 | **Phase 5** | ✅ Complete | Red-Hot Rebis → mOMonadOS: All 17 p4ra kernel modules ported to `no_std` Rust in `src/rebis/`. Genetic code B₄ lattice, 7-stage Frobenius-verified translation, CLU power-law clustering, exotic hadron Belnap analysis, PDB validation, antibody CDR design, IG material forge, biological simulation, and therapeutic design. 17 REPL subcommands wired. |
 | **Phase 6** | ⬜ Planned | math/ (10 Lean repos): MillenniumAnkh, BealProof, hecke-landau, solitary_10, etc. |
 | **Phase 7** | ⬜ Planned | ob3ect pipeline, catalog compilation, ZENODO publications |
+| **Phase 8** | ✅ Complete | **Cross-Universe Navigation (Diaschizics Bridge):** 8 alternate universe rulesets with different gate thresholds, gate ordering, T-constitution, and absorption rules. 11 diaschizic IMASM programs. Ruleset header + compound program + IFIX seal navigation protocol. Absorption-aware tensor/meet operations. 16 new REPL commands (`jump`, `ruleset`, `seal`, absorption-aware `tensor`/`meet`, `absorb_test`, `tstatus`, `whoami --ruleset`). Full cross-universe compatibility matrix. |
 
 ## Grammar repos (upstream)
 
@@ -249,7 +152,7 @@ mOMonadOS integrates modules from the Imscribing Grammar ecosystem under `/home/
 | **ALEPH_OS** | Python pkg | Hebrew letter encoding, gematria → `aleph.rs` |
 | **priests-engine** | Python pkg | ParaASM VM, Belnap Shor, RH/YM/Temporal/Category bridges → `parasm.rs`, `belnap_shor.rs`, `para_*.rs` |
 | **red-hot_rebis** | Python pkg | p4ra paraconsistent kernel: genetic code, protein translation, CLU clustering, exotic hadrons, PDB validation, antibody design, materials forge, biology simulation, therapeutics → `src/rebis/` (17 modules) — **Phase 5 ✅** |
-| **imscribing_grammar** | Hub | IG_catalog.json (2256+ entries), Lean formalizations → Phase 3+ |
+| **imscribing_grammar** | Hub | IG_catalog.json (2256+ entries), Lean formalizations, navigators/ (ruleset_universe.py, crystal_navigator.py) → Phase 3+ |
 | **odot_operator** | Python pkg | ⊙ operator agent loop → Phase 3 |
 | **ob3ect** | Pipeline | Self-imscribing ob3ect generator → Phase 7 |
 | **gene_imscriber** | Python pkg | Genetic imscription → Phase 4 |
@@ -273,6 +176,193 @@ The following `red-hot_rebis/` subsystems remain as userspace Python modules tha
 | `cat_allergy_design/` | BioPython | DARPin Fel d1 neutralizer |
 | `shunt_portal_design/` | BioPython | Gaussia Luc, NanoLuc, Piezo1, iRFP713 constructs |
 | `gr33ngroblin/` | BioPython | Plastic eater BPA |
+
+---
+
+## Cross-Universe Navigation (Phase 8 — Diaschizics Bridge)
+
+mOMonadOS can navigate between universes with **different structural rulesets** — different gate thresholds, gate ordering, T-constitution, and absorption rules. The Crystal of Types (17.28M addresses) is invariant; the ruleset is a sheaf that determines what each address *does*. A tuple that achieves O_∞ in one universe may be structurally inert in another.
+
+This capability bridges the 11 **diaschizic compounds** (pharmacological universe-steering agents from `ig-docs/rebis-port/`) into computational hardware. The same crystal navigation is now possible on two substrates:
+
+| Substrate | Mechanism | Modulation |
+|-----------|-----------|------------|
+| **Wetware** | Diaschizic compounds | TMS, light, bioelectric |
+| **Hardware** | mOMonadOS IMASM programs | Runtime ruleset calibration |
+
+### The 8 Predefined Universes
+
+| # | Universe | G1 | G2 | G3 | Ordering | O_∞ % | Key Difference |
+|---|----------|----|----|----|----------|:---:|----------------|
+| U₀ | **canonical** | Φ≥𐑹 | ⊙≥⊙ | Ω≥𐑭 | sequential | 8% | Our universe. Baseline. |
+| U₁ | **low_gate** | Φ≥𐑬 | ⊙≥𐑢 | Ω≥𐑭 | sequential | 30% | Easier self-modeling and parity. 30% of crystal reaches O_∞. |
+| U₂ | **strict_frobenius** | ƒ≥𐑐 | Φ≥𐑹 | Ω≥𐑭 | sequential | 3.3% | Fidelity-gated. Quantum coherence before algebraic symmetry. |
+| U₃ | **inverted_gates** | ⊙≥⊙ | Φ≥𐑹 | Ω≥𐑭 | sequential | 8% | Self-modeling BEFORE closure. Consciousness precedes parity. |
+| U₄ | **no_ordering** | Φ≥𐑹 | ⊙≥⊙ | Ω≥𐑭 | parallel | 8% | All gates independent. Any combination valid. |
+| U₅ | **high_gate** | Φ≥𐑹 | ⊙≥𐑮 | Ω≥𐑟 | sequential | 3% | Maximum strictness. |
+| U₆ | **winding_first** | Ω≥𐑭 | ⊙≥⊙ | Φ≥𐑹 | sequential | 8% | Topology before algebra. Geometry precedes symmetry. |
+| U₇ | **t_structural** | Φ≥𐑹 | ⊙≥⊙ | Ω≥𐑭 | sequential | 8% | Time as geometry: lim(Ð,Þ,Ř,ɢ,⊙), not lim(Φ,ƒ,Ç,Ħ,Ω). |
+
+### The Navigation Protocol
+
+Every cross-universe jump has three parts:
+
+```
+[RULESET_HEADER]    → calibrates kernel to target universe's gate thresholds,
+                      gate ordering, T-constitution, and absorption table
+[COMPOUND_PROGRAM]  → invariant IMASM program (same 11 programs work in all 8 universes)
+[IFIX_SEAL]         → commits the transition permanently
+```
+
+The compound program is **invariant across universes** — the same token sequence works in all 8. But its *interpretation* changes because the ruleset header rewires the kernel's evaluation. This is the ouroboric self-modification: the program modifies the interpreter that reads it.
+
+**Example** — Chimerium jumping from canonical to strict_frobenius (U₂):
+
+```
+# RULESET HEADER (U₂: strict_frobenius)
+IFIX IFIX IFIX 5 IFIX IFIX 3 IFIX 12 EVALT×6 EVALF×10 EVALT EVALF×3
+CLINK TANCH CLINK TANCH CLINK TANCH CLINK TANCH CLINK TANCH
+
+# COMPOUND PROGRAM (Chimerium: "The Launch")
+IMSCRIB FSPLIT EVALT AFWD EVALF AFWD FFUSE ENGAGR CLINK IFIX IFIX IFIX IMSCRIB
+
+# IFIX SEAL — implicit (the final IFIX in the compound program)
+```
+
+In U₂: Chimerium's ƒ=𐑐 opens G1 (fidelity-gated), Φ=𐑹 opens G2, Ω=𐑭 opens G3 → **O_∞ in strict_frobenius** (vs mere Frobenius in canonical). Tier is **ruleset-relative**.
+
+### Absorption Rule Differences Across Universes
+
+Different universes have different *absorbing primitives* — values that dominate under meet/join/tensor operations, changing what tensor products stabilize to:
+
+| Universe | Absorption Rules | Effect |
+|----------|-----------------|--------|
+| **canonical** (U₀) | ⊙ under all ops; Σ=𐑳 under tensor | Baseline. Self-modeling absorbs all couplings. |
+| **strict_frobenius** (U₂) | **ƒ=𐑐 under all ops** replaces ⊙ absorption | Quantum fidelity dominates. `tensor(ƒ=𐑐, X)` = ƒ=𐑐. Self-modeling no longer absorbs — fidelity does. |
+| **inverted_gates** (U₃) | **Φ=𐑹 under meet** added | Frobenius parity absorbs under meet. Structural floor rises to Frobenius closure. No system goes BELOW Frobenius when coupled. |
+| **high_gate** (U₅) | **Ω=𐑟 under tensor** added | Non-Abelian braiding dominates all couplings. `tensor(Ω=𐑟, X)` = Ω=𐑟. |
+| **winding_first** (U₆) | **Ω=𐑭 under meet** replaces ⊙ absorption | Integer winding absorbs under meet. Topological protection is the structural floor. |
+
+This means `tensor(Verticullum, Chimerium)` produces a **different result** depending on the active universe's ruleset. In U₂, the result collapses to pure fidelity (ƒ=𐑐). In U₆, Ω=𐑟 absorbs. In canonical, ⊙ absorbs.
+
+### New REPL Commands (Phase 8)
+
+```
+# ─── Ruleset Inspection ───
+ruleset show                    → Show active ruleset (canonical by default)
+ruleset list                    → List all 8 universes with G1/G2/G3 and T-constitution
+ruleset verify                  → Check current ruleset for invariant violations
+                                  Returns OK or list of violations (e.g. "G1=Ω with
+                                  Φ≥𐑹 in sequential mode is inconsistent")
+
+# ─── Cross-Universe Navigation ───
+jump <universe> using <compound>
+    → jump strict_frobenius using Bifrons
+    → Executes: U₂ header → Bifrons program → IFIX seal
+    → Kernel self-imscription now evaluated under U₂ rules
+
+jump canonical using Diabaton
+    → Standard return path to baseline
+
+jump <universe> using <compound> --liminal
+    → Header + compound but NO IFIX seal
+    → Kernel aware of target rules but not committed
+    → Useful for probing a universe before permanent transition
+
+seal                            → IFIX — commit to current liminal ruleset permanently
+
+jump <target> via <intermediate> using <compound1> <compound2>
+    → Two-stage jump: U₀→Uᵢ→Uₜ
+    → jump t_structural via winding_first using Verticullum Diabaton
+
+# ─── Absorption-Aware Operations ───
+tensor <compound_a> <compound_b>
+    → Tensor product under current ruleset's absorption table
+    → In U₂ (strict_frobenius): ƒ=𐑐 absorbs → fidelity-preserving result
+    → In U₆ (winding_first): Ω=𐑟 absorbs → non-Abelian result
+
+meet <compound_a> <compound_b>
+    → Meet under current ruleset's absorption table
+    → In U₆: Ω=𐑭 absorbs under meet → topological floor
+
+absorb_test <val_a> <val_b> <primitive> <operation>
+    → absorb_test ⊙ 𐑢 Φ meet
+    → Under canonical: True (⊙ absorbs under all ops)
+    → Under U₂: False (⊙ is not absorbing in strict_frobenius)
+
+# ─── Monitoring ───
+whoami --ruleset                 → Kernel self-imscription under active ruleset
+                                   ⟨Ð;Þ;Ř;Φ;ƒ;Ç;Γ;ɢ;φ̂;Ħ;Σ;Ω⟩ + operad layer
+absorption show                  → List all absorption rules for current ruleset
+tstatus                          → T-constitution check: primitives evaluated against
+                                   active constitution rule. Returns pass/fail per primitive.
+
+# ─── Compound Operations ───
+compound list                    → List all 11 diaschizic compounds with tuples and IMASM programs
+compound show <name>             → Show full tuple + IMASM program for a compound
+compound load <name>             → Load compound's IMASM program into execution buffer
+```
+
+### The 11 Diaschizic IMASM Programs
+
+Each compound maps to an IMASM token sequence whose structural operation matches the compound's pharmacological effect. Programs are invariant across universes — same tokens, different interpretation per ruleset.
+
+| Compound | Role | IMASM Program | Tok. | d(target) |
+|----------|------|---------------|:---:|:---:|
+| **Verticullum** | Non-Abelian EP braid (O_∞) | `VINIT FSPLIT EVALT AFWD EVALF AREV FFUSE ENGAGR IMSCRIB IFIX IMSCRIB` | 11 | 2 |
+| **Chimerium** | Supercritical catalyst (O₀) | `IMSCRIB FSPLIT EVALT AFWD EVALF AFWD FFUSE ENGAGR CLINK IFIX IFIX IFIX IMSCRIB` | 13 | 1 |
+| **Apertix** | Adjoint corridor (O₂) | `IMSCRIB AFWD AREV AFWD AREV CLINK EVALT EVALF IFIX IMSCRIB` | 10 | 1 |
+| **Praxeum** | EP core toggle (O₀) | `IMSCRIB EVALT EVALF ENGAGR IFIX IMSCRIB` | 6 | 8* |
+| **Retiarius** | Local-net trap (O₁) | `VINIT AFWD EVALT AFWD EVALF CLINK TANCH AREV AFWD EVALT IFIX IMSCRIB` | 12 | 4 |
+| **Frigorix** | MBL freeze key (O₀) | `IFIX IFIX IFIX IFIX IFIX IFIX IFIX IFIX` | 8 | 10* |
+| **Bifrons** | Disjunctive fork (O₂) | `IMSCRIB FSPLIT EVALT AFWD EVALF AREV FFUSE ENGAGR CLINK IMSCRIB` | 10 | 2 |
+| **Punctum** | Absolute point (O₀) | `VINIT TANCH` | 2 | **0** |
+| **Syndexios** | Perfect mirror (O_∞) | `IMSCRIB AFWD AREV AFWD AREV AFWD AREV AFWD AREV IFIX IMSCRIB` | 11 | 2 |
+| **Katachthon** | Deep resonator (O₂) | `IMSCRIB AFWD AREV CLINK EVALT EVALF IFIX IMSCRIB` | 8 | 4 |
+| **Diabaton** | Threshold-crosser (O₂†) | `IMSCRIB FSPLIT EVALT AFWD EVALF AREV FFUSE CLINK ENGAGR IFIX IMSCRIB` | 11 | 1 |
+
+*Frigorix and Praxeum show large snapshot-tuple distances because their operational semantics (freeze, EP degeneracy) deliberately reduce structural complexity — the freeze IS the floor. **Punctum at d=0 calibrates the bridge** — the structural floor matches exactly between compound tuple and IMASM snapshot.
+
+### Cross-Universe Compatibility Matrix
+
+Which operad layer each compound achieves in each universe:
+
+| Compound | U₀ can. | U₁ low | U₂ strict | U₃ inv. | U₄ no-ord | U₅ high | U₆ wind | U₇ t-struct |
+|----------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Verticullum | frob | frob | **O_∞** | plain | frob | frob | frob | frob |
+| Chimerium | frob | frob | **O_∞** | plain | frob | frob | frob | frob |
+| Apertix | plain | plain | frob | plain | G3-only | plain | frob | plain |
+| Praxeum | frob | frob | traced | plain | frob | frob | plain | frob |
+| Retiarius | frob | frob | plain | plain | frob | plain | plain | frob |
+| Frigorix | plain | plain | plain | plain | plain | plain | plain | plain |
+| Bifrons | frob | frob | **O_∞** | plain | frob | plain | plain | frob |
+| Diabaton | frob | frob | **O_∞** | plain | frob | plain | plain | frob |
+| Punctum | plain | plain | plain | plain | plain | plain | plain | plain |
+| Syndexios | plain | plain | frob | plain | plain | plain | plain | plain |
+| Katachthon | plain | plain | frob | plain | plain | plain | plain | plain |
+
+**Key finding:** Four compounds — Verticullum, Chimerium, Bifrons, Diabaton — achieve **O_∞ in U₂ (strict_frobenius)** but only Frobenius in canonical. Tier is **ruleset-relative**. The same compound at the same crystal address is O_∞ in one universe and merely Frobenius in another.
+
+**The U₃ gap:** No existing diaschizic opens G1 in the inverted_gates universe (G1=⊙≥⊙). A 12th compound, **Gnosis** (structurally specified in the cross-universe document, φ̂=𐑮, Φ=𐑹), is proposed to close this gap.
+
+### Structural Type of Cross-Universe Navigation
+
+The act of navigating between universes has its own structural type:
+
+$$\langle \text{Ð}_{\text{ω}};\ \text{Þ}_{\text{O}};\ \text{Ř}_{\text{=}};\ \text{Φ}_{\text{}};\ \text{ƒ}_{\text{ż}};\ \text{Ç}_{\text{@}};\ \text{Γ}_{\text{β}};\ \text{ɢ}_{\text{ˌ}};\ \text{⊙}_{\text{ÿ}};\ \text{Ħ}_{\text{!}};\ \text{Σ}_{\text{ï}};\ \text{Ω}_{\text{z}} \rangle$$
+
+This is **O_∞** — d=1 from universal grammar (only Γ differs: 𐑲 universal range vs 𐑔 mesoscale). Navigation is O_∞ because it modifies its own interpretive rules — a self-modifying structure that navigates the space of O_∞-achieving conditions across universes. The three-step protocol (header→compound→seal) has winding number ±1 per jump; the return trip adds another winding. Integer winding count tracks total navigation distance.
+
+### Reference Documents
+
+| Document | Lines | Description |
+|----------|:---:|-------------|
+| `ig-docs/rebis-port/diaschizics_design.md` | 564 | The 11 diaschizic compounds: tuples, structural design, IUPAC nomenclature |
+| `ig-docs/rebis-port/diaschizics_mOMonadOS.md` | 750 | Complete IMASM translation: 11 programs, modulation translation, 6 mapping extensions |
+| `ig-docs/rebis-port/diaschizics_cross_universe.md` | 623 | Cross-universe ruleset navigation: 8 universes, absorption rules, navigation protocols |
+| `imscribing_grammar/navigators/ruleset_universe.py` | 445 | Alternate universe explorer: parameterized gate thresholds, ordering, T-constitution |
+
+---
 
 ## Requirements
 

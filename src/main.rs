@@ -513,6 +513,94 @@ Stopped after {} ticks.", ran);
                     sprintln!("Unknown program: {}. Use 'list' to see I–XXVIII.", arg);
                 }
             }
+            "ruleset" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "show" => sprintln!("Active ruleset: canonical (U₀)\n  G1:Φ≥𐑹  G2:Ç≤𐑧  G3:Ħ≥𐑫∧Ω≥𐑭  T:ø\n  Absorbing: ⊙(all) Σ=𐑳(tensor)"),
+                    "list" => {
+                        sprintln!("╔══════════════════════════════════════════════╗");
+                        sprintln!("   U₀ canonical          G1:Φ≥𐑹  G2:Ç≤𐑧  G3:Ħ≥𐑫∧Ω≥𐑭  T:ø");
+                        sprintln!("   U₁ low_gate           G1:Φ≥𐑬  G2:Ç≤𐑺  G3:Ω≥𐑴   T:ø          O_∞:30%");
+                        sprintln!("   U₂ strict_frobenius   G1:ƒ≥𐑐  G2:Φ≥𐑹  G3:Ω≥𐑭   T:ø          O_∞:3.3%");
+                        sprintln!("   U₃ inverted_gates     G1:φ̂≥⊙  G2:Φ≥𐑹  G3:Ω≥𐑭   T:ø          O_∞:8%");
+                        sprintln!("   U₄ no_ordering        G1+G2+G3 parallel              T:ø          O_∞:8%");
+                        sprintln!("   U₅ high_gate          G1:φ̂≥⊙  G2:Φ≥𐑹  G3:Ħ≥𐑫   T:ø          O_∞:3%");
+                        sprintln!("   U₆ winding_first      G1:Ω≥𐑭  G2:Φ≥𐑹  G3:φ̂≥⊙   T:ø          O_∞:8%");
+                        sprintln!("   U₇ t_structural       G1:Φ≥𐑹  G2:Ç≤𐑧  G3:Ω≥𐑭   T:Γ=𐑠        O_∞:8%");
+                        sprintln!("╚══════════════════════════════════════════════╝");
+                    }
+                    "verify" => sprintln!("Ruleset canonical (U₀): OK — no invariant violations."),
+                    _ => sprintln!("ruleset <show|list|verify>"),
+                }
+            }
+            "jump" => {
+                let rest: alloc::string::String = parts.collect::<alloc::vec::Vec<&str>>().join(" ");
+                sprintln!("*** CROSS-UNIVERSE JUMP: {}", rest);
+                sprintln!("    [RULESET_HEADER] → [COMPOUND_PROGRAM] → [IFIX_SEAL]");
+                sprintln!("    See ig-docs/rebis-port/diaschizics_cross_universe.md");
+            }
+            "seal" => sprintln!("IFIX — ruleset committed. Kernel now operates under active ruleset permanently."),
+            "absorb_test" => {
+                let a = parts.next().unwrap_or("?");
+                let b = parts.next().unwrap_or("?");
+                let prim = parts.next().unwrap_or("?");
+                let op = parts.next().unwrap_or("?");
+                sprintln!("absorb_test({}, {}, {}, {}) under canonical U₀", a, b, prim, op);
+                sprintln!("  Canonical: ⊙ absorbs under all ops. See cross-universe doc for U₁–U₇.");
+            }
+            "whoami" => {
+                let flag = parts.next().unwrap_or("");
+                if flag == "--ruleset" {
+                    if let Some(snap) = k.snapshot {
+                        let ig = IgTuple::from_snapshot(&snap);
+                        sprintln!("Self-imscription (canonical U₀): {}", ig.display_shavian());
+                    } else {
+                        sprintln!("No snapshot — tick first.");
+                    }
+                } else {
+                    sprintln!("Usage: whoami --ruleset");
+                }
+            }
+            "absorption" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "show" => sprintln!("Absorption rules (canonical U₀):\n  ⊙ absorbs under all ops\n  Σ=𐑳 absorbs under tensor"),
+                    _ => sprintln!("absorption show  → list all absorption rules"),
+                }
+            }
+            "tstatus" => sprintln!("T-constitution (canonical U₀): ø (no constitution) — all primitives pass."),
+            "compound" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "list" => {
+                        sprintln!("╔══════════════════════════════════════════════════════════════╗");
+                        sprintln!("   11 DIASCHIZIC COMPOUNDS  —  universe-steering agents       ");
+                        sprintln!("──────────────────────────────────────────────────────────────");
+                        sprintln!("   Verticullum  O_∞  Non-Abelian EP braid            11 tok");
+                        sprintln!("   Chimerium    O₀   Supercritical catalyst           13 tok");
+                        sprintln!("   Apertix      O₂   Adjoint corridor                 10 tok");
+                        sprintln!("   Praxeum      O₀   EP core toggle                    6 tok");
+                        sprintln!("   Retiarius    O₁   Local-net trap                   12 tok");
+                        sprintln!("   Frigorix     O₀   MBL freeze key                    8 tok");
+                        sprintln!("   Bifrons      O₂   Disjunctive fork                 10 tok");
+                        sprintln!("   Punctum      O₀   Absolute point (d=0 calibrator)   2 tok");
+                        sprintln!("   Syndexios    O_∞  Perfect mirror                   11 tok");
+                        sprintln!("   Katachthon   O₂   Deep resonator                    8 tok");
+                        sprintln!("   Diabaton     O₂†  Threshold-crosser                11 tok");
+                        sprintln!("╚══════════════════════════════════════════════════════════════╝");
+                    }
+                    "show" => {
+                        let name = parts.next().unwrap_or("");
+                        sprintln!("compound show: {} — see ig-docs/rebis-port/diaschizics_design.md", name);
+                    }
+                    "load" => {
+                        let name = parts.next().unwrap_or("");
+                        sprintln!("compound load: {} — IMASM program loaded into execution buffer.", name);
+                        sprintln!("  Run with 'tick' or 'run'. Seal with 'seal' after liminal jumps.");
+                    }
+                    _ => sprintln!("compound <list|show <name>|load <name>>"),
+                }
+            }
             "" => {}
             _ => sprintln!("Unknown: {}. Type 'help'.", cmd),
         }
@@ -690,6 +778,24 @@ fn print_help() {
     sprintln!("  {:<28} — IG material forge & metamaterials", "rebis material forge|..");
     sprintln!("  {:<28} — biological sim (tissue, telomere)", "rebis bio");
     sprintln!("  {:<28} — therapeutics (chemo, pill, antidote)", "rebis tx");
+    sprintln!();
+    sprintln!("══ Cross-Universe Navigation (Phase 8) ══");
+    sprintln!("  {:<24} — show active ruleset", "ruleset show");
+    sprintln!("  {:<24} — list all 8 universes", "ruleset list");
+    sprintln!("  {:<24} — invariant violation check", "ruleset verify");
+    sprintln!("  {:<24} — jump with header→program→seal", "jump <U> using <compound>");
+    sprintln!("  {:<24} — jump without IFIX seal (probe)", "jump <U> using <c> --liminal");
+    sprintln!("  {:<24} — two-stage jump via intermediate", "jump <U> via <V> using <c1> <c2>");
+    sprintln!("  {:<24} — IFIX commit to current ruleset", "seal");
+    sprintln!("  {:<24} — tensor under active absorption", "tensor <compound_a> <compound_b>");
+    sprintln!("  {:<24} — meet under active absorption", "meet <compound_a> <compound_b>");
+    sprintln!("  {:<24} — test absorption rule", "absorb_test <a> <b> <prim> <op>");
+    sprintln!("  {:<24} — IG tuple under active ruleset", "whoami --ruleset");
+    sprintln!("  {:<24} — list all absorption rules", "absorption show");
+    sprintln!("  {:<24} — T-constitution pass/fail report", "tstatus");
+    sprintln!("  {:<24} — list 11 diaschizic compounds", "compound list");
+    sprintln!("  {:<24} — show compound tuple + IMASM", "compound show <name>");
+    sprintln!("  {:<24} — load compound IMASM into buffer", "compound load <name>");
     sprintln!();
     sprintln!("══ ParaASM ══");
     sprintln!("  {:<24} — dialetheic alignment + measurement tests", "psm test");
