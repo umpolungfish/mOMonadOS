@@ -61,6 +61,10 @@ pub struct Kernel {
     fork_stack:      [ForkFrame; 16],
     fork_depth:      usize,
     pub halted:      bool,
+    // ── Cross-universe ruleset state ──
+    pub active_universe: u8,        // 0-7, current active ruleset (default 0 = canonical)
+    pub liminal_target: Option<u8>, // universe jumped to, pending IFIX seal
+    pub liminal_compound: Option<u8>,   // compound index (0-10) used for liminal jump
     // ── Runtime accumulators for dynamic snapshot fields ──
     b_live_count:             u64,
     gate_discrimination_count: u64,
@@ -85,6 +89,9 @@ impl Kernel {
             fork_stack:  [ForkFrame { resume_ip: 0, right_val: B4::N, right_set: false }; 16],
             fork_depth:  0,
             halted:      false,
+            active_universe:      0,
+            liminal_target:       None,
+            liminal_compound:     None,
             b_live_count:             0,
             gate_discrimination_count: 0,
             value_trace:              [B4::N; 16],
@@ -352,6 +359,19 @@ impl Kernel {
 
     pub fn load_shunted(&mut self, idx: usize) -> bool {
         if let Some(prog) = shunted_program(idx) {
+            self.program = prog;
+            self.ip = 0;
+            self.fork_depth = 0;
+            self.halted = false;
+            self.phase = Phase::Think;
+            true
+        } else {
+            false
+        }
+    }
+
+    pub fn load_compound(&mut self, idx: usize) -> bool {
+        if let Some(prog) = compound_program(idx) {
             self.program = prog;
             self.ip = 0;
             self.fork_depth = 0;

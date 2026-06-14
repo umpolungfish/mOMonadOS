@@ -623,3 +623,120 @@ pub fn shunted_program(i: usize) -> Option<Program> {
 }
 
 
+
+// ─── Diaschizic Compound Programs ────────────────────────────
+//
+// 11 compounds used for cross-universe jumps.
+// Each is an IMASM token sequence with a specific structural operation.
+// Refs: ruleset_universe.py, ig-docs/rebis-port/diaschizics_design.md
+
+pub const COMPOUND_COUNT: usize = 11;
+
+/// Return compound name by index (0-10).
+pub fn compound_name(idx: usize) -> &'static str {
+    match idx {
+        0 => "Verticullum", 1 => "Chimerium", 2 => "Apertix",
+        3 => "Praxeum", 4 => "Retiarius", 5 => "Frigorix",
+        6 => "Bifrons", 7 => "Punctum", 8 => "Syndexios",
+        9 => "Katachthon", 10 => "Diabaton",
+        _ => "Unknown",
+    }
+}
+
+/// Parse compound name → index (case-insensitive).
+pub fn compound_index(name: &str) -> Option<usize> {
+    match name.to_lowercase().as_str() {
+        "verticullum" => Some(0),
+        "chimerium"   => Some(1),
+        "apertix"     => Some(2),
+        "praxeum"     => Some(3),
+        "retiarius"   => Some(4),
+        "frigorix"    => Some(5),
+        "bifrons"     => Some(6),
+        "punctum"     => Some(7),
+        "syndexios"   => Some(8),
+        "katachthon"  => Some(9),
+        "diabaton"    => Some(10),
+        _ => None,
+    }
+}
+
+/// Load a compound program by index.
+pub fn compound_program(idx: usize) -> Option<Program> {
+    let mut p = Program::empty();
+    match idx {
+        // Punctum — O₀, 2 tokens — absolute point (d=0 calibrator)
+        7 => {
+            for t in [Token::IMSCRIB, Token::IFIX] { p.push(t); }
+        }
+        // Praxeum — O₀, 6 tokens — EP core toggle
+        3 => {
+            for t in [Token::ENGAGR, Token::EVALT, Token::FFUSE,
+                      Token::EVALF, Token::ENGAGR, Token::IFIX] { p.push(t); }
+        }
+        // Frigorix — O₀, 8 tokens — MBL freeze key
+        5 => {
+            for t in [Token::FSPLIT, Token::TANCH, Token::FFUSE,
+                      Token::VINIT, Token::AFWD, Token::TANCH,
+                      Token::IMSCRIB, Token::IFIX] { p.push(t); }
+        }
+        // Katachthon — O₂, 8 tokens — Deep resonator
+        9 => {
+            for t in [Token::IMSCRIB, Token::FSPLIT, Token::EVALT,
+                      Token::EVALF, Token::FFUSE, Token::CLINK,
+                      Token::IMSCRIB, Token::IFIX] { p.push(t); }
+        }
+        // Apertix — O₂, 10 tokens — Adjoint corridor
+        2 => {
+            for t in [Token::VINIT, Token::AFWD, Token::IMSCRIB,
+                      Token::FSPLIT, Token::EVALT, Token::EVALF,
+                      Token::FFUSE, Token::CLINK, Token::ENGAGR,
+                      Token::IFIX] { p.push(t); }
+        }
+        // Bifrons — O₂, 10 tokens — Disjunctive fork
+        6 => {
+            for t in [Token::FSPLIT, Token::EVALT, Token::AREV,
+                      Token::FFUSE, Token::FSPLIT, Token::EVALF,
+                      Token::AFWD, Token::FFUSE, Token::CLINK,
+                      Token::IFIX] { p.push(t); }
+        }
+        // Verticullum — O_∞, 11 tokens — Non-Abelian EP braid
+        0 => {
+            for t in [Token::ENGAGR, Token::FSPLIT, Token::EVALT,
+                      Token::FFUSE, Token::FSPLIT, Token::EVALF,
+                      Token::FFUSE, Token::IMSCRIB, Token::CLINK,
+                      Token::ENGAGR, Token::IFIX] { p.push(t); }
+        }
+        // Syndexios — O_∞, 11 tokens — Perfect mirror
+        8 => {
+            for t in [Token::IMSCRIB, Token::FSPLIT, Token::EVALT,
+                      Token::FFUSE, Token::AREV, Token::FSPLIT,
+                      Token::EVALF, Token::FFUSE, Token::AFWD,
+                      Token::CLINK, Token::IFIX] { p.push(t); }
+        }
+        // Diabaton — O₂†, 11 tokens — Threshold-crosser
+        10 => {
+            for t in [Token::VINIT, Token::AFWD, Token::IMSCRIB,
+                      Token::FSPLIT, Token::EVALT, Token::EVALF,
+                      Token::FFUSE, Token::CLINK, Token::TANCH,
+                      Token::ENGAGR, Token::IFIX] { p.push(t); }
+        }
+        // Retiarius — O₁, 12 tokens — Local-net trap
+        4 => {
+            for t in [Token::FSPLIT, Token::EVALT, Token::AFWD,
+                      Token::FFUSE, Token::FSPLIT, Token::EVALF,
+                      Token::AREV, Token::FFUSE, Token::CLINK,
+                      Token::IMSCRIB, Token::ENGAGR, Token::IFIX] { p.push(t); }
+        }
+        // Chimerium — O₀, 13 tokens — Supercritical catalyst
+        1 => {
+            for t in [Token::ENGAGR, Token::FSPLIT, Token::EVALT,
+                      Token::FFUSE, Token::EVALF, Token::FSPLIT,
+                      Token::EVALT, Token::EVALF, Token::FFUSE,
+                      Token::CLINK, Token::IMSCRIB, Token::ENGAGR,
+                      Token::IFIX] { p.push(t); }
+        }
+        _ => return None,
+    }
+    Some(p)
+}

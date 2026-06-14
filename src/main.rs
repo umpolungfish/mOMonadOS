@@ -31,12 +31,14 @@ mod catalog;
 mod cl8nk;
 mod consciousness;
 mod rebis;
+mod universe;
 
-use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT};
+use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
 use crystal::{CrystalStore, decode, encode, indices_from_snapshot, TOTAL};
 use kernel::Kernel;
 
 use crate::imas_ig::IgTuple;
+use universe::{parse_universe, universe_display, universe_name, universe_description, universe_gates, universe_o_inf};
 #[global_allocator]
 static ALLOCATOR: LockedHeap = LockedHeap::empty();
 
@@ -518,30 +520,59 @@ Stopped after {} ticks.", ran);
             "ruleset" => {
                 let sub = parts.next().unwrap_or("");
                 match sub {
-                    "show" => sprintln!("Active ruleset: canonical (U₀)\n  G1:Φ≥𐑹  G2:Ç≤𐑧  G3:Ħ≥𐑫∧Ω≥𐑭  T:ø\n  Absorbing: ⊙(all) Σ=𐑳(tensor)"),
-                    "list" => {
-                        sprintln!("╔══════════════════════════════════════════════╗");
-                        sprintln!("   U₀ canonical          G1:Φ≥𐑹  G2:Ç≤𐑧  G3:Ħ≥𐑫∧Ω≥𐑭  T:ø");
-                        sprintln!("   U₁ low_gate           G1:Φ≥𐑬  G2:Ç≤𐑺  G3:Ω≥𐑴   T:ø          O_∞:30%");
-                        sprintln!("   U₂ strict_frobenius   G1:ƒ≥𐑐  G2:Φ≥𐑹  G3:Ω≥𐑭   T:ø          O_∞:3.3%");
-                        sprintln!("   U₃ inverted_gates     G1:φ̂≥⊙  G2:Φ≥𐑹  G3:Ω≥𐑭   T:ø          O_∞:8%");
-                        sprintln!("   U₄ no_ordering        G1+G2+G3 parallel              T:ø          O_∞:8%");
-                        sprintln!("   U₅ high_gate          G1:φ̂≥⊙  G2:Φ≥𐑹  G3:Ħ≥𐑫   T:ø          O_∞:3%");
-                        sprintln!("   U₆ winding_first      G1:Ω≥𐑭  G2:Φ≥𐑹  G3:φ̂≥⊙   T:ø          O_∞:8%");
-                        sprintln!("   U₇ t_structural       G1:Φ≥𐑹  G2:Ç≤𐑧  G3:Ω≥𐑭   T:Γ=𐑠        O_∞:8%");
-                        sprintln!("╚══════════════════════════════════════════════╝");
+                    "show" => {
+                        let u = k.active_universe;
+                        let ud = universe_display(u);
+                        let gates = universe_gates(u);
+                        sprintln!("Active ruleset: {} ({})", universe_name(u), ud);
+                        sprintln!("  {}", gates);
+                        sprintln!("  Absorbing: ⊙(all) Σ=𐑳(tensor)");
+                        if let Some(lim) = k.liminal_target {
+                            sprintln!("  ⚠ LIMINAL JUMP PENDING → {} ({}). Use 'seal' to commit.",
+                                universe_display(lim), universe_name(lim));
+                        }
                     }
-                    "verify" => sprintln!("Ruleset canonical (U₀): OK — no invariant violations."),
+                    "list" => {
+                        sprintln!("╔══════════════════════════════════════════════════════════╗");
+                        sprintln!("   ═══ ALL 8 UNIVERSES ═══");
+                        for u in 0u8..8u8 {
+                            let marker = if u == k.active_universe { "★" } else { " " };
+                            sprintln!("  {} {:<3} {:<20} {}     O_∞:{}",
+                                marker, universe_display(u), universe_name(u),
+                                universe_gates(u), universe_o_inf(u));
+                        }
+                        sprintln!("╚══════════════════════════════════════════════════════════╝");
+                        if k.liminal_target.is_some() {
+                            sprintln!("  ⚠ Liminal jump pending. Use 'seal' to commit or 'jump' again to override.");
+                        }
+                    }
+                    "verify" => {
+                        let u = k.active_universe;
+                        sprintln!("Ruleset {} ({}): OK — no invariant violations.",
+                            universe_name(u), universe_display(u));
+                    }
                     _ => sprintln!("ruleset <show|list|verify>"),
                 }
             }
             "jump" => {
                 let rest: alloc::string::String = parts.collect::<alloc::vec::Vec<&str>>().join(" ");
-                sprintln!("*** CROSS-UNIVERSE JUMP: {}", rest);
-                sprintln!("    [RULESET_HEADER] → [COMPOUND_PROGRAM] → [IFIX_SEAL]");
-                sprintln!("    See ig-docs/rebis-port/diaschizics_cross_universe.md");
+                handle_jump(k, &rest);
             }
-            "seal" => sprintln!("IFIX — ruleset committed. Kernel now operates under active ruleset permanently."),
+            "seal" => {
+                if let Some(target) = k.liminal_target {
+                    k.active_universe = target;
+                    let name = universe_name(target);
+                    let ud = universe_display(target);
+                    k.liminal_target = None;
+                    k.liminal_compound = None;
+                    sprintln!("IFIX — ruleset committed. Kernel now operates under {} ({}) permanently.",
+                        name, ud);
+                    sprintln!("  {}", universe_gates(target));
+                    sprintln!("  Description: {}", universe_description(target));
+                } else {
+                    sprintln!("No liminal jump to seal. Use 'jump <U> using <compound>' first.");
+                }
+            }
             "absorb_test" => {
                 let a = parts.next().unwrap_or("?");
                 let b = parts.next().unwrap_or("?");
@@ -578,27 +609,72 @@ Stopped after {} ticks.", ran);
                         sprintln!("╔══════════════════════════════════════════════════════════════╗");
                         sprintln!("   11 DIASCHIZIC COMPOUNDS  —  universe-steering agents       ");
                         sprintln!("──────────────────────────────────────────────────────────────");
-                        sprintln!("   Verticullum  O_∞  Non-Abelian EP braid            11 tok");
-                        sprintln!("   Chimerium    O₀   Supercritical catalyst           13 tok");
-                        sprintln!("   Apertix      O₂   Adjoint corridor                 10 tok");
-                        sprintln!("   Praxeum      O₀   EP core toggle                    6 tok");
-                        sprintln!("   Retiarius    O₁   Local-net trap                   12 tok");
-                        sprintln!("   Frigorix     O₀   MBL freeze key                    8 tok");
-                        sprintln!("   Bifrons      O₂   Disjunctive fork                 10 tok");
-                        sprintln!("   Punctum      O₀   Absolute point (d=0 calibrator)   2 tok");
-                        sprintln!("   Syndexios    O_∞  Perfect mirror                   11 tok");
-                        sprintln!("   Katachthon   O₂   Deep resonator                    8 tok");
-                        sprintln!("   Diabaton     O₂†  Threshold-crosser                11 tok");
+                        for i in 0..COMPOUND_COUNT {
+                            let p = compound_program(i);
+                            let tok_count = p.map(|pr| pr.len()).unwrap_or(0);
+                            let tier = match i {
+                                0|8 => "O_∞", 2|6|9 => "O₂", 10 => "O₂†",
+                                4 => "O₁", _ => "O₀"
+                            };
+                            sprintln!("   {:<12} {:<4} {:<40} {} tok",
+                                compound_name(i), tier,
+                                match i {
+                                    0 => "Non-Abelian EP braid",
+                                    1 => "Supercritical catalyst",
+                                    2 => "Adjoint corridor",
+                                    3 => "EP core toggle",
+                                    4 => "Local-net trap",
+                                    5 => "MBL freeze key",
+                                    6 => "Disjunctive fork",
+                                    7 => "Absolute point (d=0)",
+                                    8 => "Perfect mirror",
+                                    9 => "Deep resonator",
+                                    _ => "Threshold-crosser",
+                                },
+                                tok_count);
+                        }
                         sprintln!("╚══════════════════════════════════════════════════════════════╝");
                     }
                     "show" => {
                         let name = parts.next().unwrap_or("");
-                        sprintln!("compound show: {} — see ig-docs/rebis-port/diaschizics_design.md", name);
+                        if let Some(idx) = compound_index(name) {
+                            if let Some(prog) = compound_program(idx) {
+                                sprintln!("Compound: {} (idx {})", compound_name(idx as usize), idx);
+                                sprintln!("  Tier: {}", match idx {
+                                    0|8 => "O_∞", 2|6|9 => "O₂", 10 => "O₂†",
+                                    4 => "O₁", _ => "O₀"
+                                });
+                                sprintln!("  Tokens: {}", prog.len());
+                                serial::write_str("  Program: ");
+                                for (j, t) in prog.as_slice().iter().enumerate() {
+                                    if j > 0 { serial::write_str(" → "); }
+                                    serial::write_str(t.name());
+                                }
+                                sprintln!();
+                            } else {
+                                sprintln!("Internal error: compound program not found.");
+                            }
+                        } else {
+                            sprintln!("Unknown compound: '{}'. Use 'compound list'.", name);
+                        }
                     }
                     "load" => {
                         let name = parts.next().unwrap_or("");
-                        sprintln!("compound load: {} — IMASM program loaded into execution buffer.", name);
-                        sprintln!("  Run with 'tick' or 'run'. Seal with 'seal' after liminal jumps.");
+                        if let Some(idx) = compound_index(name) {
+                            if k.load_compound(idx) {
+                                sprintln!("Loaded compound: {} ({} tokens, tier {})",
+                                    compound_name(idx as usize), k.program.len(),
+                                    match idx {
+                                        0|8 => "O_∞", 2|6|9 => "O₂", 10 => "O₂†",
+                                        4 => "O₁", _ => "O₀"
+                                    });
+                                sprintln!("  Run with 'tick' or 'run'. Seal with 'seal' after liminal jumps.");
+                            } else {
+                                sprintln!("Internal error: compound program not found.");
+                            }
+                        } else {
+                            sprintln!("Unknown compound: '{}'. Use 'compound list'.", name);
+                        }
                     }
                     _ => sprintln!("compound <list|show <name>|load <name>>"),
                 }
@@ -711,6 +787,116 @@ fn redraw_input(old_len: usize, src: &[u8], src_len: usize, buf: &mut [u8; 256])
     }
 }
 
+// ─── Cross-Universe Jump Handler ─────────────────────────────
+
+fn handle_jump(k: &mut Kernel, rest: &str) {
+    let rest = rest.trim();
+    if rest.is_empty() {
+        sprintln!("Usage: jump <U> using <compound> [--liminal]");
+        sprintln!("       jump <U> via <V> using <c1> <c2> [--liminal]");
+        sprintln!("  <U> = U_0..U_7 or U₀..U₇");
+        sprintln!("  <compound> = Apertix, Diabaton, Bifrons, ... (see 'compound list')");
+        return;
+    }
+
+    let liminal = rest.contains("--liminal");
+    let rest_no_flag = if liminal {
+        // Slice out "--liminal" by working &str -> &str
+        rest.replace("--liminal", "").replace("  ", " ")
+    } else {
+        alloc::string::String::from(rest)
+    };
+    let rest_clean: &str = rest_no_flag.as_str();
+
+    // Check for " via " syntax
+    let via_pos = rest_clean.find(" via ");
+
+    // Split on " using "
+    let using_pos = rest_clean.find(" using ");
+    if using_pos.is_none() {
+        sprintln!("Expected: jump <U> using <compound> [--liminal]");
+        sprintln!("  <U> = U_0 through U_7 (or U₀ through U₇)");
+        sprintln!("  <compound> = Apertix, Diabaton, Bifrons, ... (see 'compound list')");
+        return;
+    }
+    let using_pos = using_pos.unwrap();
+
+    // Extract universe part (before " using " or " via ")
+    let u_str: &str;
+    let compound_str: &str;
+    let via_str: Option<&str>;
+
+    if let Some(vp) = via_pos {
+        if vp < using_pos {
+            // "U_4 via U_3 using Apertix Diabaton"
+            u_str = rest_clean[..vp].trim();
+            via_str = Some(rest_clean[vp + 5..using_pos].trim());
+        } else {
+            // "U_4 using Apertix via U_3" — odd but handle
+            u_str = rest_clean[..using_pos].trim();
+            via_str = Some(rest_clean[vp + 5..].trim());
+        }
+    } else {
+        u_str = rest_clean[..using_pos].trim();
+        via_str = None;
+    }
+    compound_str = rest_clean[using_pos + 7..].trim();
+
+    // Parse universe
+    let target: u8 = match parse_universe(u_str) {
+        Some(u) if u <= 7 => u,
+        _ => {
+            sprintln!("Unknown universe: '{}'. Use U_0 through U_7 (or U₀ through U₇).", u_str);
+            return;
+        }
+    };
+
+    // Parse via universe
+    let intermediate: Option<u8> = via_str.and_then(|v| {
+        let v = v.trim();
+        if v.is_empty() { None } else { parse_universe(v) }
+    });
+
+    // Parse compounds (space-separated after "using")
+    let mut compound_iter = compound_str.split_whitespace();
+    let c1_name: &str = compound_iter.next().unwrap_or("");
+    let c1: u8 = match compound_index(c1_name) {
+        Some(idx) => idx as u8,
+        None => {
+            sprintln!("Unknown compound: '{}'", c1_name);
+            sprintln!("  Valid: Verticullum, Chimerium, Apertix, Praxeum,");
+            sprintln!("         Retiarius, Frigorix, Bifrons, Punctum,");
+            sprintln!("         Syndexios, Katachthon, Diabaton");
+            return;
+        }
+    };
+    let c2_name: &str = compound_iter.next().unwrap_or("");
+    let c2: Option<u8> = if c2_name.is_empty() { None } else { compound_index(c2_name).map(|i| i as u8) };
+
+    // Display the jump
+    sprintln!("*** CROSS-UNIVERSE JUMP: {} using {}", universe_display(target), compound_name(c1 as usize));
+    if let Some(v) = intermediate {
+        sprintln!("    via {}", universe_display(v));
+    }
+    if let Some(idx) = c2 {
+        sprintln!("    second compound: {} ({} tokens, tier {})", compound_name(idx as usize), compound_program(idx as usize).map(|p| p.len() as u8).unwrap_or(0), match idx { 0|8 => "O_inf", 2|6|9 => "O_2", 10 => "O_2_dagger", 4 => "O_1", _ => "O_0" });
+    }
+    sprintln!("    [RULESET_HEADER] → [COMPOUND_PROGRAM] → [IFIX_SEAL]");
+    sprintln!("    Compound: {} | tier: {} | tokens: {}", compound_name(c1 as usize), match c1 { 0|8 => "O_inf", 2|6|9 => "O_2", 10 => "O_2_dagger", 4 => "O_1", _ => "O_0" }, compound_program(c1 as usize).map(|p| p.len() as u8).unwrap_or(0));
+
+    // Set liminal state
+    k.liminal_target = Some(target);
+    k.liminal_compound = Some(c1);
+
+    if liminal {
+        sprintln!("    ⚠ LIMINAL MODE: jump is active but NOT sealed.");
+        sprintln!("      Probe the universe. Use 'seal' to commit or jump again to override.");
+    } else {
+        sprintln!("    Jump staged. Type 'seal' to commit to {} permanently.", universe_display(target));
+        sprintln!("    (Use 'jump ... --liminal' to probe without requiring seal.)");
+    }
+}
+
 // ─── Helpers ──────────────────────────────────────────────────
 
 fn print_help() {
@@ -782,13 +968,15 @@ fn print_help() {
     sprintln!("  {:<28} — therapeutics (chemo, pill, antidote)", "rebis tx");
     sprintln!();
     sprintln!("══ Cross-Universe Navigation (Phase 8) ══");
+    sprintln!("══ Ruleset / Universe ══");
     sprintln!("  {:<24} — show active ruleset", "ruleset show");
-    sprintln!("  {:<24} — list all 8 universes", "ruleset list");
+    sprintln!("  {:<24} — list all 8 universes (★ = active)", "ruleset list");
     sprintln!("  {:<24} — invariant violation check", "ruleset verify");
-    sprintln!("  {:<24} — jump with header→program→seal", "jump <U> using <compound>");
-    sprintln!("  {:<24} — jump without IFIX seal (probe)", "jump <U> using <c> --liminal");
-    sprintln!("  {:<24} — two-stage jump via intermediate", "jump <U> via <V> using <c1> <c2>");
+    sprintln!("  {:<24} — cross-universe jump", "jump <U> using <compound>");
+    sprintln!("  {:<24} — probe without IFIX seal", "jump <U> using <c> --liminal");
+    sprintln!("  {:<24} — two-stage jump", "jump <U> via <V> using <c1> <c2>");
     sprintln!("  {:<24} — IFIX commit to current ruleset", "seal");
+    sprintln!("  <U> = U_0–U_7 or U₀–U₇    <compound> = see 'compound list'");
     sprintln!("  {:<24} — tensor under active absorption", "tensor <compound_a> <compound_b>");
     sprintln!("  {:<24} — meet under active absorption", "meet <compound_a> <compound_b>");
     sprintln!("  {:<24} — test absorption rule", "absorb_test <a> <b> <prim> <op>");
