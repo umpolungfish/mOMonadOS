@@ -32,6 +32,7 @@ mod cl8nk;
 mod consciousness;
 mod rebis;
 mod universe;
+mod menu;
 
 use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
 use crystal::{CrystalStore, decode, encode, indices_from_snapshot, TOTAL};
@@ -39,6 +40,7 @@ use kernel::Kernel;
 
 use crate::imas_ig::{IgTuple, IgPrim};
 use universe::{parse_universe, universe_display, universe_name, universe_description, universe_gates, universe_o_inf};
+use menu::{ContextStack, render_menu_bar, menu_hint, tab_complete, print_help_topic, search_commands, enter_context, fkey_to_category, render_prompt};
 #[global_allocator]
 static ALLOCATOR: LockedHeap = LockedHeap::empty();
 
@@ -151,14 +153,70 @@ fn repl(k: &mut Kernel) {
     let mut cfs = CrystalStore::new();
     let mut line_buf = [0u8; 256];
     let mut history = History::new();
+    let mut ctx_stack = ContextStack::new();
+
+    sprintln!("Type '?' for menu, 'help' for categories, Tab to complete.");
+    sprintln!();
 
     loop {
-        serial::write_str("⊙> ");
-        let line = read_line(&mut line_buf, &mut history);
+        render_prompt(&ctx_stack);
+        let line = read_line(&mut line_buf, &mut history, &ctx_stack);
         if line.is_empty() { continue; }
 
         let mut parts = line.splitn(4, ' ');
         let cmd = parts.next().unwrap_or("");
+
+        // ── Menu Navigation ────────────────────────────────
+        match cmd {
+            // Exit sub-context
+            ".." | "back" => {
+                if ctx_stack.depth > 0 {
+                    let popped = ctx_stack.pop();
+                    sprintln!("← returned from {}", popped.map(|c| c.name).unwrap_or("?"));
+                } else {
+                    sprintln!("Already at top level.");
+                }
+                continue;
+            }
+            // Menu bar
+            "?" if parts.clone().next().is_none() => {
+                render_menu_bar();
+                menu_hint();
+                continue;
+            }
+            // Search commands
+            "?" => {
+                let keyword = parts.next().unwrap_or("");
+                sprintln!("Searching: '{}'", keyword);
+                search_commands(keyword);
+                continue;
+            }
+            // Menu shortcuts (:1 through :9)
+            cmd if cmd.starts_with(":") => {
+                if let Ok(n) = cmd[1..].parse::<u8>() {
+                    if let Some(cat) = fkey_to_category(n) {
+                        if enter_context(&mut ctx_stack, cat) {
+                            if let Some(ctx) = ctx_stack.current() {
+                                print_help_topic(ctx.name);
+                            }
+                        }
+                    } else {
+                        sprintln!("Invalid category: :{} (use :1–:9)", n);
+                    }
+                }
+                continue;
+            }
+            // Enter category by shortcut (names that don't conflict with commands)
+            "exec" | "programs" | "grammar" | "universe" | "parasm" => {
+                if enter_context(&mut ctx_stack, cmd) {
+                    if let Some(ctx) = ctx_stack.current() {
+                        print_help_topic(ctx.name);
+                    }
+                }
+                continue;
+            }
+            _ => {}
+        }
 
         match cmd {
             "quit" | "exit" | "halt" => {
@@ -166,7 +224,10 @@ fn repl(k: &mut Kernel) {
                 k.halt();
                 break;
             }
-            "help" => print_help(),
+            "help" => {
+                let topic = parts.next().unwrap_or("");
+                print_help_topic(topic);
+            },
             "status" => print_status(k),
             "frob" => print_frob(k),
             "ig" => print_ig(k),
@@ -807,15 +868,47 @@ fn crystal_store_current(
 
 // ─── Input ────────────────────────────────────────────────────
 
-fn read_line<'a>(buf: &'a mut [u8; 256], history: &mut History) -> &'a str {
+fn read_line<'a>(buf: &'a mut [u8; 256], history: &mut History, ctx: &ContextStack) -> &'a str {
     let mut len = 0usize;
     let mut hist_pos = 0usize;
+    let _tab_hits: [u8; 16] = [0; 16];  // cycling completions
 
     loop {
         let b = serial::read_byte();
         match b {
+            // Tab completion
+            0x09 => {
+                if len == 0 { continue; }
+                // Get current word
+                let line_str = core::str::from_utf8(&buf[..len]).unwrap_or("");
+                if let Some(completion) = tab_complete(line_str, ctx) {
+                    // Replace buffer with completion
+                    let comp_bytes = completion.as_bytes();
+                    let n = comp_bytes.len().min(255);
+                    buf[..n].copy_from_slice(&comp_bytes[..n]);
+                    len = n;
+                    // Redraw
+                    serial::write_str("\r\x1b[K");
+                    render_prompt(ctx);
+                    if let Ok(s) = core::str::from_utf8(&buf[..n]) {
+                        serial::write_str(s);
+                    }
+                }
+            }
             0x1b => {
-                if serial::read_byte() != b'[' { continue; }
+                let b2 = serial::read_byte();
+                if b2 == b'O' {
+                    // F1-F4: OP, OQ, OR, OS
+                    match serial::read_byte() {
+                        b'P' => { buf[0] = b':'; buf[1] = b'1'; len = 2; break; }
+                        b'Q' => { buf[0] = b':'; buf[1] = b'2'; len = 2; break; }
+                        b'R' => { buf[0] = b':'; buf[1] = b'3'; len = 2; break; }
+                        b'S' => { buf[0] = b':'; buf[1] = b'4'; len = 2; break; }
+                        _ => {}
+                    }
+                    continue;
+                }
+                if b2 != b'[' { continue; }
                 match serial::read_byte() {
                     b'A' => {
                         let next = (hist_pos + 1).min(history.count);
@@ -874,7 +967,7 @@ fn read_line<'a>(buf: &'a mut [u8; 256], history: &mut History) -> &'a str {
 
 fn redraw_input(old_len: usize, src: &[u8], src_len: usize, buf: &mut [u8; 256]) {
     let _ = old_len;
-    serial::write_str("\r\x1b[K⊙> ");
+                    serial::write_str("\r\x1b[K");
     let n = src_len.min(255);
     buf[..n].copy_from_slice(&src[..n]);
     if let Ok(s) = core::str::from_utf8(&buf[..n]) {
@@ -1146,7 +1239,7 @@ fn print_aleph(_k: &Kernel, word: &str) {
     sprintln!("");
 }
 fn print_ig(k: &Kernel) {
-    use crate::imas_ig::{IgTuple, IgPrim};
+    use crate::imas_ig::IgTuple;
     if let Some(snap) = k.snapshot {
         let ig = IgTuple::from_snapshot(&snap);
         sprintln!("IG: {}", ig.display());
@@ -1454,7 +1547,7 @@ fn print_psm(arg: &str) {
 
 fn print_algebra(k: &Kernel, arg: &str) {
     use crate::algebra::{primitive_mismatches, tuple_distance, meet, join, tensor};
-    use crate::imas_ig::{IgTuple, IgPrim};
+    use crate::imas_ig::IgTuple;
 
     if let Some(snap) = k.snapshot {
         let ig = IgTuple::from_snapshot(&snap);
@@ -1702,7 +1795,7 @@ fn print_cl8nk(action: &str, name: &str) {
 
 fn print_cscore(k: &Kernel) {
     use crate::consciousness::consciousness_eval;
-    use crate::imas_ig::{IgTuple, IgPrim};
+    use crate::imas_ig::IgTuple;
 
     if let Some(snap) = k.snapshot {
         let ig = IgTuple::from_snapshot(&snap);
