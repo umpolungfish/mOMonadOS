@@ -206,9 +206,13 @@ fn repl(k: &mut Kernel) {
                 }
                 continue;
             }
-            // Enter category by shortcut (names that don't conflict with commands)
-            "exec" | "programs" | "grammar" | "universe" | "parasm" => {
-                if enter_context(&mut ctx_stack, cmd) {
+            // Enter category by shortcut (case-insensitive, names that don't conflict with commands)
+            s if {
+                let lower = s.to_lowercase();
+                lower == "exec" || lower == "status" || lower == "programs" || lower == "crystal"
+                    || lower == "grammar" || lower == "rebis" || lower == "universe" || lower == "parasm"
+            } => {
+                if enter_context(&mut ctx_stack, &cmd.to_lowercase()) {
                     if let Some(ctx) = ctx_stack.current() {
                         print_help_topic(ctx.name);
                     }
@@ -909,30 +913,60 @@ fn read_line<'a>(buf: &'a mut [u8; 256], history: &mut History, ctx: &ContextSta
                     continue;
                 }
                 if b2 != b'[' { continue; }
-                match serial::read_byte() {
-                    b'A' => {
-                        let next = (hist_pos + 1).min(history.count);
-                        if next != hist_pos {
-                            hist_pos = next;
-                            if let Some((bytes, n)) = history.get(hist_pos) {
-                                redraw_input(len, bytes, n, buf);
-                                len = n;
-                            }
+                let b3 = serial::read_byte();
+                // Arrow keys: ESC [ A / ESC [ B
+                if b3 == b'A' {
+                    let next = (hist_pos + 1).min(history.count);
+                    if next != hist_pos {
+                        hist_pos = next;
+                        if let Some((bytes, n)) = history.get(hist_pos) {
+                            redraw_input(len, bytes, n, buf);
+                            len = n;
                         }
                     }
-                    b'B' => {
-                        if hist_pos > 0 {
-                            hist_pos -= 1;
-                            if hist_pos == 0 {
-                                redraw_input(len, &[], 0, buf);
-                                len = 0;
-                            } else if let Some((bytes, n)) = history.get(hist_pos) {
-                                redraw_input(len, bytes, n, buf);
-                                len = n;
-                            }
+                } else if b3 == b'B' {
+                    if hist_pos > 0 {
+                        hist_pos -= 1;
+                        if hist_pos == 0 {
+                            redraw_input(len, &[], 0, buf);
+                            len = 0;
+                        } else if let Some((bytes, n)) = history.get(hist_pos) {
+                            redraw_input(len, bytes, n, buf);
+                            len = n;
                         }
                     }
-                    _ => {}
+                } else if b3 == b'1' || b3 == b'2' || b3 == b'3' || b3 == b'4' {
+                    // F-keys: ESC [ nn~  (e.g. F7 = ESC [ 1 8 ~)
+                    let b4 = serial::read_byte();
+                    if b4 == b'~' {
+                        // Single digit: ESC [ 1~ = Home, 2~ = Insert, 3~ = Delete, 4~ = End
+                    } else {
+                        let b5 = serial::read_byte();
+                        if b5 == b'~' {
+                            // Two-digit sequence: ESC [ nn ~
+                            let fkey = (b3 - b'0') * 10 + (b4 - b'0');
+                            let cat: u8 = match fkey {
+                                11..=14 => fkey - 10,  // F1-F4: 1-4
+                                15 => 5,   // F5
+                                17 => 6,   // F6
+                                18 => 7,   // F7
+                                19 => 8,   // F8
+                                20 => 9,   // F9
+                                21 => 10,  // F10
+                                23 => 11,  // F11
+                                24 => 12,  // F12
+                                _ => 0,
+                            };
+                            if cat >= 1 && cat <= 9 {
+                                buf[0] = b':';
+                                buf[1] = b'0' + cat;
+                                len = 2;
+                                break;
+                            }
+                        }
+                        // Three-digit sequences (ESC [ 2 4 ~ = F12 etc.) already covered above;
+                        // if a third digit appears, consume until ~
+                    }
                 }
             }
             b'\r' | b'\n' => {
