@@ -126,6 +126,51 @@ impl IgPrim {
     pub fn short(self) -> &'static str {
         crate::catalog::primitive_short(self)
     }
+
+    /// True ordinal value, sourced from the Python catalog's
+    /// imscrbgrmr.canonical_primitives.ORDINALS table (live, 2026-06-16).
+    ///
+    /// IMPORTANT: this is NOT the same as `self as u8`. For most families
+    /// the enum discriminant happens to be the exact inverse of the ordinal
+    /// (lower discriminant = higher ordinal), and existing gate-verify code
+    /// elsewhere in this kernel exploits that via `(x as u8) <= (thresh as u8)`.
+    /// That trick silently breaks for three families that carry a
+    /// non-monotonic extra value: Ç (Kinetics: K_mbl=4.5 sits between
+    /// K_trap=4 and K_fast=1, not below K_fast), ⊙/Phi (Criticality:
+    /// Phi_c_complex=2.33 and Phi_ep=2.67 sit between Phi_c=2 and
+    /// Phi_super=3, not below Phi_sub=1), and Ω (Winding: Omega_na=4 sits
+    /// above Omega_z=3, not below Omega_0=1). Any new gate logic should
+    /// compare `ordinal()` directly rather than raw discriminants.
+    pub fn ordinal(self) -> f32 {
+        use IgPrim::*;
+        match self {
+            // Ð Dimensionality
+            D_wedge => 1.0, D_triangle => 2.0, D_infty => 3.0, D_odot => 4.0,
+            // Þ Topology
+            T_net => 1.0, T_in => 2.0, T_bowtie => 3.0, T_boxtimes => 4.0, T_odot => 5.0,
+            // Ř Recognition
+            R_super => 1.0, R_cat => 2.0, R_dagger => 3.0, R_lr => 4.0,
+            // Φ Parity
+            P_asym => 1.0, P_psi => 2.0, P_pm => 3.0, P_sym => 4.0, P_pmsym => 5.0,
+            // ƒ Fidelity
+            F_ell => 1.0, F_eth => 2.0, F_hbar => 3.0,
+            // Ç Kinetics — non-monotonic: K_mbl is *above* K_trap, not below K_fast.
+            K_fast => 1.0, K_mod => 2.0, K_slow => 3.0, K_trap => 4.0, K_mbl => 4.5,
+            // Γ Granularity
+            G_beth => 1.0, G_gimel => 2.0, G_aleph => 3.0,
+            // ɢ Coupling
+            C_and => 1.0, C_or => 2.0, C_seq => 3.0, C_broad => 4.0,
+            // ⊙ Criticality — non-monotonic: Phi_c_complex/Phi_ep sit between
+            // Phi_c and Phi_super, not below Phi_sub.
+            Phi_sub => 1.0, Phi_c => 2.0, Phi_c_complex => 2.33, Phi_ep => 2.67, Phi_super => 3.0,
+            // Ħ Chirality
+            H0 => 1.0, H1 => 2.0, H2 => 3.0, H_inf => 4.0,
+            // Σ Stoichiometry
+            S_11 => 1.0, S_nn => 2.0, S_nm => 3.0,
+            // Ω Winding — non-monotonic: Omega_na sits above Omega_z, not below Omega_0.
+            Omega_0 => 1.0, Omega_z2 => 2.0, Omega_z => 3.0, Omega_na => 4.0,
+        }
+    }
 }
 // ─── Fingerprint → IG Tuple Mapping ────────────────────────────
 

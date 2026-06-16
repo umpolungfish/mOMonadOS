@@ -599,8 +599,8 @@ Stopped after {} ticks.", ran);
                     }
                     "list" => {
                         sprintln!("╔══════════════════════════════════════════════════════════╗");
-                        sprintln!("   ═══ ALL 8 UNIVERSES ═══");
-                        for u in 0u8..8u8 {
+                        sprintln!("   ═══ ALL 10 UNIVERSES ═══");
+                        for u in 0u8..10u8 {
                             let marker = if u == k.active_universe { "★" } else { " " };
                             sprintln!("  {} {:<3} {:<20} {}     O_∞:{}",
                                 marker, universe_display(u), universe_name(u),
@@ -613,11 +613,34 @@ Stopped after {} ticks.", ran);
                     }
                     "verify" => {
                         let u = k.active_universe;
-                        if let Some(snap) = k.snapshot {
-                            let ig = IgTuple::from_snapshot(&snap);
+                        // Optional catalog name: "ruleset verify birch_swinnerton_dyer"
+                        // checks a named catalog entry's *static* structural tuple instead
+                        // of the kernel's own live execution snapshot. Added 2026-06-16
+                        // alongside U8 so externally-defined structural types (e.g. the
+                        // Clay Millennium problems) can be checked directly, not just
+                        // whatever program the kernel happens to be running.
+                        let name_arg = parts.next().unwrap_or("").trim();
+                        let named_tuple: Option<IgTuple> = if !name_arg.is_empty() {
+                            crate::catalog::lookup(name_arg).map(|e| e.tuple)
+                        } else {
+                            None
+                        };
+                        let ig_opt: Option<IgTuple> = if !name_arg.is_empty() {
+                            if named_tuple.is_none() {
+                                sprintln!("Unknown catalog entry: '{}'.", name_arg);
+                            }
+                            named_tuple
+                        } else {
+                            k.snapshot.map(|snap| IgTuple::from_snapshot(&snap))
+                        };
+                        if let Some(ig) = ig_opt {
                             let mut all_pass = true;
                             sprintln!("Ruleset {} ({}) — Gate Verification:", universe_name(u), universe_display(u));
-                            sprintln!("  Self-imscription: {}", ig.display());
+                            if !name_arg.is_empty() {
+                                sprintln!("  Catalog entry: {}  tuple: {}", name_arg, ig.display());
+                            } else {
+                                sprintln!("  Self-imscription: {}", ig.display());
+                            }
 
                             match u {
                                 0 => { // canonical: G1:Φ≥𐑹  G2:φ̂≥⊙  G3:Ω≥𐑭
@@ -695,6 +718,31 @@ Stopped after {} ticks.", ran);
                                     sprintln!("  T  (ɢ=𐑠): {}  ɢ={}", if t_ok {"PASS"} else {"FAIL"}, ig.c.glyph());
                                     if !g1 || !g2 || !g3 || !t_ok { all_pass = false; }
                                 }
+                                8 => { // chirality_first: G1:Ħ>=H2  G2:criticality>=Phi_c  G3:Ω>=Omega_z
+                                       // T: T_CEILING — see manuscripts/clay_cross_universe_closure.md.
+                                       // Uses IgPrim::ordinal(), NOT raw discriminant comparison — the
+                                       // discriminant trick used in arms 0-7 is invalid for the criticality
+                                       // family (Phi_c_complex/Phi_ep are non-monotonic in discriminant order).
+                                    let g1 = ig.h.ordinal() >= IgPrim::H2.ordinal();
+                                    let g2 = ig.phi.ordinal() >= IgPrim::Phi_c.ordinal();
+                                    let g3 = ig.omega.ordinal() >= IgPrim::Omega_z.ordinal();
+                                    sprintln!("  G1 (Ħ>=H2): {}  Ħ={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.h.glyph(), ig.h.ordinal());
+                                    sprintln!("  G2 (crit>=Phi_c): {}  crit={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
+                                    sprintln!("  G3 (Ω>=Omega_z): {}  Ω={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
+                                    if !g1 || !g2 || !g3 { all_pass = false; }
+                                    if !t_ceiling_check(&ig) { all_pass = false; }
+                                }
+                                9 => { // scope_universe: G1:Γ>=G_aleph(maximal scope)  G2:criticality>=Phi_c  G3:Ω>=Omega_z
+                                       // T: T_CEILING — same generalization as U8, paired with a different gate spec.
+                                    let g1 = ig.g.ordinal() >= IgPrim::G_aleph.ordinal();
+                                    let g2 = ig.phi.ordinal() >= IgPrim::Phi_c.ordinal();
+                                    let g3 = ig.omega.ordinal() >= IgPrim::Omega_z.ordinal();
+                                    sprintln!("  G1 (Γ>=G_aleph): {}  Γ={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.g.glyph(), ig.g.ordinal());
+                                    sprintln!("  G2 (crit>=Phi_c): {}  crit={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
+                                    sprintln!("  G3 (Ω>=Omega_z): {}  Ω={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
+                                    if !g1 || !g2 || !g3 { all_pass = false; }
+                                    if !t_ceiling_check(&ig) { all_pass = false; }
+                                }
                                 _ => {
                                     sprintln!("  Unknown universe — cannot verify.");
                                     all_pass = false;
@@ -704,14 +752,88 @@ Stopped after {} ticks.", ran);
                             if all_pass {
                                 sprintln!("  Result: ALL GATES PASS — ruleset satisfied.");
                             } else {
-                                sprintln!("  Result: VIOLATION — kernel state fails ruleset gate(s).");
-                                sprintln!("  Tip: load a different program or jump to a compatible universe.");
+                                sprintln!("  Result: VIOLATION — fails ruleset gate(s).");
+                                sprintln!("  Tip: load a different program/entry or jump to a compatible universe.");
                             }
-                        } else {
+                        } else if name_arg.is_empty() {
                             sprintln!("No snapshot — tick first to generate a self-imscription.");
+                            sprintln!("  (or: 'ruleset verify <catalog_name>' to check a named entry instead)");
                         }
                     }
-                    _ => sprintln!("ruleset <show|list|verify>"),
+                    "dialetheic" => {
+                        // ruleset dialetheic <name> <alt_universe>
+                        // Feeds the two REAL, already-computed conflicting verdicts —
+                        // F under canonical (U0), T under the given closing universe —
+                        // through the kernel's actual FFUSE primitive (Belnap join),
+                        // instead of reporting a flat F. join(T,F)=B: designated,
+                        // dialetheic, not flatly false. See
+                        // manuscripts/clay_cross_universe_closure.md for what this is
+                        // and is not — it does NOT make the entry true under canonical.
+                        use crate::belnap::B4;
+                        use parasm::ParaVM;
+
+                        let dname = parts.next().unwrap_or("").trim();
+                        let alt_str = parts.next().unwrap_or("").trim();
+                        let alt: u8 = match alt_str.parse() {
+                            Ok(v) => v,
+                            _ => {
+                                sprintln!("Usage: ruleset dialetheic <catalog_name> <alt_universe 8|9>");
+                                return;
+                            }
+                        };
+                        let entry = match crate::catalog::lookup(dname) {
+                            Some(e) => e,
+                            None => { sprintln!("Unknown catalog entry: '{}'.", dname); return; }
+                        };
+                        let ig = entry.tuple;
+
+                        // Canonical (U0) gate-only verdict, ordinal-correct.
+                        let canon_pass =
+                            ig.p.ordinal()     >= IgPrim::P_pmsym.ordinal()
+                            && ig.phi.ordinal() >= IgPrim::Phi_c.ordinal()
+                            && ig.omega.ordinal() >= IgPrim::Omega_z.ordinal();
+
+                        // Alt-universe verdict: only U8/U9 are wired up so far.
+                        let alt_pass = match alt {
+                            8 => ig.h.ordinal() >= IgPrim::H2.ordinal()
+                                && ig.phi.ordinal() >= IgPrim::Phi_c.ordinal()
+                                && ig.omega.ordinal() >= IgPrim::Omega_z.ordinal()
+                                && t_ceiling_check_silent(&ig),
+                            9 => ig.g.ordinal() >= IgPrim::G_aleph.ordinal()
+                                && ig.phi.ordinal() >= IgPrim::Phi_c.ordinal()
+                                && ig.omega.ordinal() >= IgPrim::Omega_z.ordinal()
+                                && t_ceiling_check_silent(&ig),
+                            _ => {
+                                sprintln!("Only U8 and U9 have a known closing verdict so far.");
+                                return;
+                            }
+                        };
+
+                        let canon_b4 = if canon_pass { B4::T } else { B4::F };
+                        let alt_b4   = if alt_pass   { B4::T } else { B4::F };
+
+                        let mut vm = ParaVM::new();
+                        vm.set_belief(1, alt_b4);
+                        vm.set_belief(2, canon_b4);
+                        vm.load("FFUSE %r1 %r2 %r0\nHALT").unwrap();
+                        vm.run(None);
+                        let fused = vm.belief_of(0);
+
+                        sprintln!("Dialetheic bridge: {} — U₀ (canonical) vs U{} ", dname, alt);
+                        sprintln!("  Canonical (U₀) closure: {}  ({})", canon_b4.name(), if canon_pass {"PASS"} else {"FAIL"});
+                        sprintln!("  U{} closure:             {}  ({})", alt, alt_b4.name(), if alt_pass {"PASS"} else {"FAIL"});
+                        sprintln!("  FFUSE(U{}, U₀) -> r0:    {}", alt, fused.name());
+                        if fused == B4::B {
+                            sprintln!("  Designated (B is T|B-designated): dialetheic, NOT flatly false.");
+                            sprintln!("  This is not a proof under canonical — it is a structural record");
+                            sprintln!("  that canonical's F-verdict conflicts with real T-evidence from U{}.", alt);
+                        } else if fused == B4::T {
+                            sprintln!("  No conflict — closes everywhere checked.");
+                        } else {
+                            sprintln!("  No conflict — fails everywhere checked, no dialetheic upgrade available.");
+                        }
+                    }
+                    _ => sprintln!("ruleset <show|list|verify|dialetheic> [catalog_name] [alt_universe]"),
                 }
             }
             "jump" => {
@@ -1009,6 +1131,36 @@ fn redraw_input(old_len: usize, src: &[u8], src_len: usize, buf: &mut [u8; 256])
     }
 }
 
+// ─── T_CEILING — shared T-constitution check for U8/U9 ─────────
+//
+// Ceiling-generalizes canonical's existing Ç-only ceiling rule to all five
+// dynamics primitives, same anchors: Φ<=𐑹 ƒ<=𐑐 Ç<=𐑧 Ħ<=𐑫 Ω<=𐑭.
+// See manuscripts/clay_cross_universe_closure.md for the derivation. Uses
+// IgPrim::ordinal(), not raw discriminant comparison.
+fn t_ceiling_check_silent(ig: &IgTuple) -> bool {
+    let t_phi = ig.p.ordinal()     <= IgPrim::P_pmsym.ordinal();
+    let t_f   = ig.f.ordinal()     <= IgPrim::F_hbar.ordinal();
+    let t_k   = ig.k.ordinal()     <= IgPrim::K_slow.ordinal();
+    let t_h   = ig.h.ordinal()     <= IgPrim::H_inf.ordinal();
+    let t_om  = ig.omega.ordinal() <= IgPrim::Omega_z.ordinal();
+    t_phi && t_f && t_k && t_h && t_om
+}
+
+fn t_ceiling_check(ig: &IgTuple) -> bool {
+    let t_phi = ig.p.ordinal()     <= IgPrim::P_pmsym.ordinal();
+    let t_f   = ig.f.ordinal()     <= IgPrim::F_hbar.ordinal();
+    let t_k   = ig.k.ordinal()     <= IgPrim::K_slow.ordinal();
+    let t_h   = ig.h.ordinal()     <= IgPrim::H_inf.ordinal();
+    let t_om  = ig.omega.ordinal() <= IgPrim::Omega_z.ordinal();
+    let t_ok = t_phi && t_f && t_k && t_h && t_om;
+    sprintln!("  T_CEILING Φ<=𐑹: {}  ƒ<=𐑐: {}  Ç<=𐑧: {}  Ħ<=𐑫: {}  Ω<=𐑭: {}",
+        if t_phi {"PASS"} else {"FAIL"}, if t_f {"PASS"} else {"FAIL"},
+        if t_k {"PASS"} else {"FAIL"}, if t_h {"PASS"} else {"FAIL"},
+        if t_om {"PASS"} else {"FAIL"});
+    sprintln!("  T_CEILING overall: {}", if t_ok {"PASS"} else {"FAIL"});
+    t_ok
+}
+
 // ─── Cross-Universe Jump Handler ─────────────────────────────
 
 fn handle_jump(k: &mut Kernel, rest: &str) {
@@ -1016,7 +1168,7 @@ fn handle_jump(k: &mut Kernel, rest: &str) {
     if rest.is_empty() {
         sprintln!("Usage: jump <U> using <compound> [--liminal]");
         sprintln!("       jump <U> via <V> using <c1> <c2> [--liminal]");
-        sprintln!("  <U> = U_0..U_7 or U₀..U₇");
+        sprintln!("  <U> = U_0..U_9 or U₀..U₉");
         sprintln!("  <compound> = Apertix, Diabaton, Bifrons, ... (see 'compound list')");
         return;
     }
@@ -1037,7 +1189,7 @@ fn handle_jump(k: &mut Kernel, rest: &str) {
     let using_pos = rest_clean.find(" using ");
     if using_pos.is_none() {
         sprintln!("Expected: jump <U> using <compound> [--liminal]");
-        sprintln!("  <U> = U_0 through U_7 (or U₀ through U₇)");
+        sprintln!("  <U> = U_0 through U_9 (or U₀ through U₉)");
         sprintln!("  <compound> = Apertix, Diabaton, Bifrons, ... (see 'compound list')");
         return;
     }
@@ -1066,9 +1218,9 @@ fn handle_jump(k: &mut Kernel, rest: &str) {
 
     // Parse universe
     let target: u8 = match parse_universe(u_str) {
-        Some(u) if u <= 7 => u,
+        Some(u) if u <= 9 => u,
         _ => {
-            sprintln!("Unknown universe: '{}'. Use U_0 through U_7 (or U₀ through U₇).", u_str);
+            sprintln!("Unknown universe: '{}'. Use U_0 through U_9 (or U₀ through U₉).", u_str);
             return;
         }
     };
@@ -1192,13 +1344,14 @@ fn print_help() {
     sprintln!("══ Cross-Universe Navigation (Phase 8) ══");
     sprintln!("══ Ruleset / Universe ══");
     sprintln!("  {:<36} — show active ruleset", "ruleset show");
-    sprintln!("  {:<36} — list all 8 universes (★ = active)", "ruleset list");
-    sprintln!("  {:<36} — invariant violation check", "ruleset verify");
+    sprintln!("  {:<36} — list all 10 universes (★ = active)", "ruleset list");
+    sprintln!("  {:<36} — invariant check (live snapshot)", "ruleset verify");
+    sprintln!("  {:<36} — invariant check (named catalog entry)", "ruleset verify <name>");
     sprintln!("  {:<36} — cross-universe jump", "jump <U> using <compound>");
     sprintln!("  {:<36} — probe without IFIX seal", "jump <U> using <c> --liminal");
     sprintln!("  {:<36} — two-stage jump", "jump <U> via <V> using <c1> <c2>");
     sprintln!("  {:<36} — IFIX commit to current ruleset", "seal");
-    sprintln!("  <U> = U_0–U_7 or U₀–U₇    <compound> = see 'compound list'");
+    sprintln!("  <U> = U_0–U_9 or U₀–U₉    <compound> = see 'compound list'");
     sprintln!("  {:<36} — tensor under active absorption", "tensor <compound_a> <compound_b>");
     sprintln!("  {:<36} — meet under active absorption", "meet <compound_a> <compound_b>");
     sprintln!("  {:<36} — test absorption rule", "absorb_test <a> <b> <prim> <op>");

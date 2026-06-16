@@ -472,6 +472,34 @@ const NAVIER_STOKES: CatalogEntry = entry(
     1, Domain::Physics,
 );
 
+// ── Birch–Swinnerton-Dyer Conjecture (O₂†) ──
+// Tuple sourced directly from the live Python IG_catalog.json
+// (imscribing_grammar/imscrbgrmr), 2026-06-16 — NOT the same convention
+// as the generic NAVIER_STOKES entry above, which predates the Clay-7
+// catalog import and is known to disagree with it (see commit.txt /
+// manuscripts/clay_cross_universe_closure.md for the cross-system drift
+// this already surfaced).
+const BIRCH_SWINNERTON_DYER: CatalogEntry = entry(
+    "birch_swinnerton_dyer", "Clay Millennium Problem — BSD conjecture",
+    IgPrim::D_odot, IgPrim::T_bowtie, IgPrim::R_lr,
+    IgPrim::P_psi, IgPrim::F_eth, IgPrim::K_slow,
+    IgPrim::G_aleph, IgPrim::C_and,
+    IgPrim::Phi_c_complex, IgPrim::H2, IgPrim::S_11, IgPrim::Omega_z,
+    3, Domain::Mathematics,
+);
+
+// ── Hodge Conjecture (O₂†) ──
+// Tuple sourced directly from the live Python IG_catalog.json, 2026-06-16.
+// Same provenance note as BIRCH_SWINNERTON_DYER above.
+const HODGE_CONJECTURE: CatalogEntry = entry(
+    "hodge_conjecture", "Clay Millennium Problem — Hodge conjecture",
+    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
+    IgPrim::P_psi, IgPrim::F_ell, IgPrim::K_slow,
+    IgPrim::G_aleph, IgPrim::C_and,
+    IgPrim::Phi_c_complex, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_z,
+    3, Domain::Mathematics,
+);
+
 // ── Wave Equation (O₁) ──
 const WAVE_EQUATION: CatalogEntry = entry(
     "wave_equation", "Classical wave equation — reversible propagation",
@@ -547,6 +575,8 @@ static STATIC_CATALOG: &[CatalogEntry] = &[
     NAVIER_STOKES, WAVE_EQUATION, EINSTEIN, IUG,
     O_INF, O_0,
     YHWH,
+    BIRCH_SWINNERTON_DYER,
+    HODGE_CONJECTURE,
 ];
 
 // ═══════════════════════════════════════════════════════════════
