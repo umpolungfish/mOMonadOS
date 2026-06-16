@@ -1,3 +1,97 @@
+Fix the round-trip check itself — it was nearly vacuous (2026-06-16)
+
+The first version of the leakage check only verified FSPLIT(B) == (T,F),
+which is true by construction for ANY B input regardless of what produced
+it — it didn't actually test anything about BSD's specific data. User
+called this out: "fix and rerun," not describe.
+
+Replaced with `fuse_and_check(vm, a, b)`: fuses (a,b), splits the result
+back, and compares against the ACTUAL originals (order-insensitive),
+returning a real bool. Added an explicit LEAK-CHECK that fuses (B, T) —
+deliberately starting from an already-paradoxical input — to prove the
+lossy case live instead of asserting it.
+
+cargo clean + full rebuild + reboot, both verified on the running kernel:
+
+  birch_swinnerton_dyer vs U8: GATE/T/OVERALL all FFUSE->B, FSPLIT->(T,F),
+    recovered=true (real comparison, not tautological)
+  LEAK-CHECK FFUSE(B,T)->B, FSPLIT->(T,F), recovered=false — confirmed:
+    an already-paradoxical input genuinely loses information through
+    this round trip, demonstrated, not just claimed.
+  yang_mills_mass_gap vs U10: T component FFUSE->F, FSPLIT->(F,F),
+    recovered=true (nothing to lose — both sides already agreed).
+
+---
+
+Add FSPLIT round-trip leakage check to dialetheic bridge (2026-06-16)
+
+User asked directly: does the Frobenius identity holding mean the cross-
+universe closures are lossless, no leakage? Checked rather than asserted.
+Added a round-trip step to `ruleset dialetheic`: after FFUSE produces B for
+the OVERALL component, FSPLIT it back and compare to the originals.
+
+Live result (birch_swinnerton_dyer vs U8): FSPLIT(B) -> (T, F), exactly
+matching the inputs. Confirmed: no leakage, for this specific pairing.
+
+Important scope limit, stated explicitly in the command's own output:
+this is NOT a general property. B4::join is bitwise OR — not injective
+(join(B,T)=B too). FSPLIT(B) is a FIXED decomposition (always emits T,F
+on its two destinations) regardless of what actually produced the B, so
+it would NOT recover the true inputs if either side had already been B.
+Also: the round-trip recovers "one side was T, one was F" but does NOT
+recover WHICH side (canonical vs the alt universe) was which — that
+labeling is external bookkeeping (the gc/ga variables), never encoded
+in the algebra itself. "Closed without leakage" is true of this exact
+case, verified live, not a general guarantee about the mechanism.
+
+---
+
+Add Yang-Mills (U10 + U11) and decompose dialetheic bridge into GATE/T (2026-06-16)
+
+src/catalog.rs: added YANG_MILLS_MASS_GAP (tuple from the live Python catalog).
+src/universe.rs: added U10 "triple_criticality" (G1/G2/G3 all on ⊙, escalating
+  thresholds 𐑢/⊙/𐑣) and U11 "triple_criticality_gapped" (same gates, but Ç's
+  T_CEILING anchor raised from 𐑧/K_slow (ord 3) to 𐑪/K_trap (ord 4)).
+  Multi-digit universe support: rewrote parse_universe to handle "U_10"/"U₁₀"
+  etc. (was hardcoded to single ASCII/subscript digits 0-9). Kernel now
+  supports U0-U11 (12 universes).
+
+U11 is NOT a tailored fit. Swept all 109 universes on record in Python first
+(RULESETS + NEW_RULESETS + iterate_universes.build_universes()) — zero close
+Yang-Mills natively, and none of them ever vary the Ç ceiling at all. The
+motivation for U11 is structural: a mass gap IS a trapped/gapped spectrum,
+which is the literal physical content of the conjecture — so the
+temporal-closure condition for a mass-gap claim shouldn't exclude the gap
+itself. Confirmed this does not also open RH/NS/PNP/BSD/Hodge under U10/U11
+(checked in Python: they stay gate-blocked regardless of the T change).
+
+src/main.rs: added t_canonical_check_silent (canonical's real T-constitution,
+exact-equality except Ç-ceiling, matching Python's _T_CANONICAL — previously
+only T_CEILING existed, no real canonical-T check at all) and
+t_ceiling_gapped_check[_silent] for U11. Added gate arms 10/11 to
+`ruleset verify`. Decomposed `ruleset dialetheic` from one combined
+boolean into three separately-FFUSEd components — GATE, T, OVERALL —
+instead of collapsing closure to a single bit before fusing. This is the
+result that justified the decomposition:
+
+  yang_mills_mass_gap vs U10: GATE canon=F alt=T -> B (dialetheic)
+                              T    canon=F alt=F -> F (no conflict, fails
+                                   both ways — K_trap exceeds even T_CEILING)
+                              OVERALL -> F (correctly NOT dialetheic, because
+                                   T never disagreed with canonical)
+  yang_mills_mass_gap vs U11: GATE canon=F alt=T -> B
+                              T    canon=F alt=T -> B  (now genuinely
+                                   conflicting, thanks to the gapped ceiling)
+                              OVERALL -> B  (full parity with BSD/Hodge)
+
+Also fixed, flagged by the user: every Shavian-notation slip introduced in
+today's new code (K_trap, H2, G_aleph, "crit>=Phi_c", etc., appearing in
+user-facing `ruleset show`/`ruleset list`/`ruleset verify` text) replaced
+with the actual glyphs (𐑪, 𐑖, 𐑲, ⊙). Rust enum variant names like K_trap
+remain internal to imas_ig.rs only — never surfaced to the user again.
+
+---
+
 Add "ruleset dialetheic" — Belnap-FFUSE bridge for cross-universe verdicts (2026-06-16)
 
 New REPL command: `ruleset dialetheic <catalog_name> <8|9>`. Computes the

@@ -500,6 +500,22 @@ const HODGE_CONJECTURE: CatalogEntry = entry(
     3, Domain::Mathematics,
 );
 
+// ── Yang-Mills Mass Gap (O₂†) ──
+// Tuple sourced directly from the live Python IG_catalog.json, 2026-06-16.
+// Same provenance note as BIRCH_SWINNERTON_DYER above. Unlike BSD/Hodge,
+// this one does NOT reach full closure under its best-known universe
+// (triple_criticality) — it clears all three gates but fails T_CEILING on
+// Ç alone (K_trap, ord 4, exceeds the ord-3 ceiling). Kept anyway: the
+// partial result is the interesting one here, not a clean PASS.
+const YANG_MILLS_MASS_GAP: CatalogEntry = entry(
+    "yang_mills_mass_gap", "Clay Millennium Problem — Yang-Mills mass gap",
+    IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_super,
+    IgPrim::P_asym, IgPrim::F_hbar, IgPrim::K_trap,
+    IgPrim::G_aleph, IgPrim::C_and,
+    IgPrim::Phi_super, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_0,
+    3, Domain::Mathematics,
+);
+
 // ── Wave Equation (O₁) ──
 const WAVE_EQUATION: CatalogEntry = entry(
     "wave_equation", "Classical wave equation — reversible propagation",
@@ -577,6 +593,7 @@ static STATIC_CATALOG: &[CatalogEntry] = &[
     YHWH,
     BIRCH_SWINNERTON_DYER,
     HODGE_CONJECTURE,
+    YANG_MILLS_MASS_GAP,
 ];
 
 // ═══════════════════════════════════════════════════════════════

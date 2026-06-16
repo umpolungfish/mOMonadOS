@@ -599,8 +599,8 @@ Stopped after {} ticks.", ran);
                     }
                     "list" => {
                         sprintln!("╔══════════════════════════════════════════════════════════╗");
-                        sprintln!("   ═══ ALL 10 UNIVERSES ═══");
-                        for u in 0u8..10u8 {
+                        sprintln!("   ═══ ALL 12 UNIVERSES ═══");
+                        for u in 0u8..12u8 {
                             let marker = if u == k.active_universe { "★" } else { " " };
                             sprintln!("  {} {:<3} {:<20} {}     O_∞:{}",
                                 marker, universe_display(u), universe_name(u),
@@ -718,30 +718,50 @@ Stopped after {} ticks.", ran);
                                     sprintln!("  T  (ɢ=𐑠): {}  ɢ={}", if t_ok {"PASS"} else {"FAIL"}, ig.c.glyph());
                                     if !g1 || !g2 || !g3 || !t_ok { all_pass = false; }
                                 }
-                                8 => { // chirality_first: G1:Ħ>=H2  G2:criticality>=Phi_c  G3:Ω>=Omega_z
+                                8 => { // chirality_first: G1:Ħ≥𐑖  G2:⊙≥⊙  G3:Ω≥𐑭
                                        // T: T_CEILING — see manuscripts/clay_cross_universe_closure.md.
                                        // Uses IgPrim::ordinal(), NOT raw discriminant comparison — the
                                        // discriminant trick used in arms 0-7 is invalid for the criticality
-                                       // family (Phi_c_complex/Phi_ep are non-monotonic in discriminant order).
+                                       // family (𐑮/𐑻 are non-monotonic in discriminant order).
                                     let g1 = ig.h.ordinal() >= IgPrim::H2.ordinal();
                                     let g2 = ig.phi.ordinal() >= IgPrim::Phi_c.ordinal();
                                     let g3 = ig.omega.ordinal() >= IgPrim::Omega_z.ordinal();
-                                    sprintln!("  G1 (Ħ>=H2): {}  Ħ={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.h.glyph(), ig.h.ordinal());
-                                    sprintln!("  G2 (crit>=Phi_c): {}  crit={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
-                                    sprintln!("  G3 (Ω>=Omega_z): {}  Ω={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
+                                    sprintln!("  G1 (Ħ≥𐑖): {}  Ħ={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.h.glyph(), ig.h.ordinal());
+                                    sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
+                                    sprintln!("  G3 (Ω≥𐑭): {}  Ω={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                     if !t_ceiling_check(&ig) { all_pass = false; }
                                 }
-                                9 => { // scope_universe: G1:Γ>=G_aleph(maximal scope)  G2:criticality>=Phi_c  G3:Ω>=Omega_z
+                                9 => { // scope_universe: G1:Γ≥𐑲(maximal scope)  G2:⊙≥⊙  G3:Ω≥𐑭
                                        // T: T_CEILING — same generalization as U8, paired with a different gate spec.
                                     let g1 = ig.g.ordinal() >= IgPrim::G_aleph.ordinal();
                                     let g2 = ig.phi.ordinal() >= IgPrim::Phi_c.ordinal();
                                     let g3 = ig.omega.ordinal() >= IgPrim::Omega_z.ordinal();
-                                    sprintln!("  G1 (Γ>=G_aleph): {}  Γ={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.g.glyph(), ig.g.ordinal());
-                                    sprintln!("  G2 (crit>=Phi_c): {}  crit={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
-                                    sprintln!("  G3 (Ω>=Omega_z): {}  Ω={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
+                                    sprintln!("  G1 (Γ≥𐑲): {}  Γ={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.g.glyph(), ig.g.ordinal());
+                                    sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
+                                    sprintln!("  G3 (Ω≥𐑭): {}  Ω={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                     if !t_ceiling_check(&ig) { all_pass = false; }
+                                }
+                                10 => { // triple_criticality: G1/G2/G3 all on ⊙, escalating thresholds 𐑢/⊙/𐑣
+                                    let g1 = ig.phi.ordinal() >= IgPrim::Phi_sub.ordinal();
+                                    let g2 = ig.phi.ordinal() >= IgPrim::Phi_c.ordinal();
+                                    let g3 = ig.phi.ordinal() >= IgPrim::Phi_super.ordinal();
+                                    sprintln!("  G1 (⊙≥𐑢): {}  ⊙={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
+                                    sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
+                                    sprintln!("  G3 (⊙≥𐑣): {}  ⊙={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
+                                    if !g1 || !g2 || !g3 { all_pass = false; }
+                                    if !t_ceiling_check(&ig) { all_pass = false; }
+                                }
+                                11 => { // triple_criticality_gapped: same gates as U10, T_CEILING(gapped)
+                                    let g1 = ig.phi.ordinal() >= IgPrim::Phi_sub.ordinal();
+                                    let g2 = ig.phi.ordinal() >= IgPrim::Phi_c.ordinal();
+                                    let g3 = ig.phi.ordinal() >= IgPrim::Phi_super.ordinal();
+                                    sprintln!("  G1 (⊙≥𐑢): {}  ⊙={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
+                                    sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
+                                    sprintln!("  G3 (⊙≥𐑣): {}  ⊙={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
+                                    if !g1 || !g2 || !g3 { all_pass = false; }
+                                    if !t_ceiling_gapped_check(&ig) { all_pass = false; }
                                 }
                                 _ => {
                                     sprintln!("  Unknown universe — cannot verify.");
@@ -762,22 +782,53 @@ Stopped after {} ticks.", ran);
                     }
                     "dialetheic" => {
                         // ruleset dialetheic <name> <alt_universe>
-                        // Feeds the two REAL, already-computed conflicting verdicts —
-                        // F under canonical (U0), T under the given closing universe —
-                        // through the kernel's actual FFUSE primitive (Belnap join),
-                        // instead of reporting a flat F. join(T,F)=B: designated,
-                        // dialetheic, not flatly false. See
-                        // manuscripts/clay_cross_universe_closure.md for what this is
-                        // and is not — it does NOT make the entry true under canonical.
+                        // Decomposes the closure question into GATE and T components
+                        // and FFUSEs each separately (plus the combined verdict), through
+                        // the kernel's actual FFUSE primitive (Belnap join) — not a
+                        // shortcut. join(T,F)=B: designated, dialetheic, not flatly
+                        // false. See manuscripts/clay_cross_universe_closure.md for what
+                        // this is and is not — it does NOT make the entry true under
+                        // canonical. Decomposing matters: gate and T can disagree on
+                        // whether there's a real conflict (see Yang-Mills under U10).
                         use crate::belnap::B4;
                         use parasm::ParaVM;
+
+                        fn fuse(vm: &mut ParaVM, a: B4, b: B4) -> B4 {
+                            vm.set_belief(1, a);
+                            vm.set_belief(2, b);
+                            vm.load("FFUSE %r1 %r2 %r0\nHALT").unwrap();
+                            vm.run(None);
+                            vm.belief_of(0)
+                        }
+
+                        fn split(vm: &mut ParaVM, fused: B4) -> (B4, B4) {
+                            vm.set_belief(0, fused);
+                            vm.load("FSPLIT %r0 %r3 %r4\nHALT").unwrap();
+                            vm.run(None);
+                            (vm.belief_of(3), vm.belief_of(4))
+                        }
+
+                        // Real round-trip check, against the ACTUAL originals (a, b) —
+                        // not just "did it come out as (T,F)". FSPLIT(B) is a FIXED
+                        // decomposition (always emits (T,F) on its two destinations,
+                        // regardless of what produced the B), so this only matches when
+                        // the true inputs already were exactly {T,F}. Returns the fused
+                        // value, the split-back pair, and whether it exactly reproduces
+                        // the original (order-insensitive — FSPLIT doesn't preserve
+                        // which side was which either).
+                        fn fuse_and_check(vm: &mut ParaVM, a: B4, b: B4) -> (B4, B4, B4, bool) {
+                            let fused = fuse(vm, a, b);
+                            let (d1, d2) = split(vm, fused);
+                            let recovered = (d1 == a && d2 == b) || (d1 == b && d2 == a);
+                            (fused, d1, d2, recovered)
+                        }
 
                         let dname = parts.next().unwrap_or("").trim();
                         let alt_str = parts.next().unwrap_or("").trim();
                         let alt: u8 = match alt_str.parse() {
                             Ok(v) => v,
                             _ => {
-                                sprintln!("Usage: ruleset dialetheic <catalog_name> <alt_universe 8|9>");
+                                sprintln!("Usage: ruleset dialetheic <catalog_name> <alt_universe 8|9|10|11>");
                                 return;
                             }
                         };
@@ -787,50 +838,69 @@ Stopped after {} ticks.", ran);
                         };
                         let ig = entry.tuple;
 
-                        // Canonical (U0) gate-only verdict, ordinal-correct.
-                        let canon_pass =
+                        // Canonical (U0) gate verdict, ordinal-correct.
+                        let gate_canon =
                             ig.p.ordinal()     >= IgPrim::P_pmsym.ordinal()
                             && ig.phi.ordinal() >= IgPrim::Phi_c.ordinal()
                             && ig.omega.ordinal() >= IgPrim::Omega_z.ordinal();
+                        let t_canon = t_canonical_check_silent(&ig);
 
-                        // Alt-universe verdict: only U8/U9 are wired up so far.
-                        let alt_pass = match alt {
+                        // Alt-universe gate verdict: only U8/U9/U10/U11 wired up so far.
+                        // U8/U9/U10 use T_CEILING for their T side; U11 uses the
+                        // gapped variant (raises only the Ç anchor — see universe.rs).
+                        let gate_alt = match alt {
                             8 => ig.h.ordinal() >= IgPrim::H2.ordinal()
                                 && ig.phi.ordinal() >= IgPrim::Phi_c.ordinal()
-                                && ig.omega.ordinal() >= IgPrim::Omega_z.ordinal()
-                                && t_ceiling_check_silent(&ig),
+                                && ig.omega.ordinal() >= IgPrim::Omega_z.ordinal(),
                             9 => ig.g.ordinal() >= IgPrim::G_aleph.ordinal()
                                 && ig.phi.ordinal() >= IgPrim::Phi_c.ordinal()
-                                && ig.omega.ordinal() >= IgPrim::Omega_z.ordinal()
-                                && t_ceiling_check_silent(&ig),
+                                && ig.omega.ordinal() >= IgPrim::Omega_z.ordinal(),
+                            10 | 11 => ig.phi.ordinal() >= IgPrim::Phi_sub.ordinal()
+                                && ig.phi.ordinal() >= IgPrim::Phi_c.ordinal()
+                                && ig.phi.ordinal() >= IgPrim::Phi_super.ordinal(),
                             _ => {
-                                sprintln!("Only U8 and U9 have a known closing verdict so far.");
+                                sprintln!("Only U8, U9, U10, U11 have a known closing verdict so far.");
                                 return;
                             }
                         };
+                        let t_alt = if alt == 11 {
+                            t_ceiling_gapped_check_silent(&ig)
+                        } else {
+                            t_ceiling_check_silent(&ig)
+                        };
 
-                        let canon_b4 = if canon_pass { B4::T } else { B4::F };
-                        let alt_b4   = if alt_pass   { B4::T } else { B4::F };
+                        let gc = if gate_canon {B4::T} else {B4::F};
+                        let ga = if gate_alt   {B4::T} else {B4::F};
+                        let tc = if t_canon    {B4::T} else {B4::F};
+                        let ta = if t_alt      {B4::T} else {B4::F};
+                        let oc = if gate_canon && t_canon {B4::T} else {B4::F};
+                        let oa = if gate_alt   && t_alt   {B4::T} else {B4::F};
 
                         let mut vm = ParaVM::new();
-                        vm.set_belief(1, alt_b4);
-                        vm.set_belief(2, canon_b4);
-                        vm.load("FFUSE %r1 %r2 %r0\nHALT").unwrap();
-                        vm.run(None);
-                        let fused = vm.belief_of(0);
+                        let (gate_fused, gd1, gd2, gate_ok)    = fuse_and_check(&mut vm, ga, gc);
+                        let (t_fused, td1, td2, t_ok)          = fuse_and_check(&mut vm, ta, tc);
+                        let (overall_fused, od1, od2, ov_ok)   = fuse_and_check(&mut vm, oa, oc);
 
-                        sprintln!("Dialetheic bridge: {} — U₀ (canonical) vs U{} ", dname, alt);
-                        sprintln!("  Canonical (U₀) closure: {}  ({})", canon_b4.name(), if canon_pass {"PASS"} else {"FAIL"});
-                        sprintln!("  U{} closure:             {}  ({})", alt, alt_b4.name(), if alt_pass {"PASS"} else {"FAIL"});
-                        sprintln!("  FFUSE(U{}, U₀) -> r0:    {}", alt, fused.name());
-                        if fused == B4::B {
-                            sprintln!("  Designated (B is T|B-designated): dialetheic, NOT flatly false.");
-                            sprintln!("  This is not a proof under canonical — it is a structural record");
-                            sprintln!("  that canonical's F-verdict conflicts with real T-evidence from U{}.", alt);
-                        } else if fused == B4::T {
-                            sprintln!("  No conflict — closes everywhere checked.");
-                        } else {
-                            sprintln!("  No conflict — fails everywhere checked, no dialetheic upgrade available.");
+                        sprintln!("Dialetheic bridge: {} — U₀ (canonical) vs U{}", dname, alt);
+                        sprintln!("  GATE     canon={} alt={}  FFUSE->{}  FSPLIT->({},{})  recovered={}", gc.name(), ga.name(), gate_fused.name(), gd1.name(), gd2.name(), gate_ok);
+                        sprintln!("  T        canon={} alt={}  FFUSE->{}  FSPLIT->({},{})  recovered={}", tc.name(), ta.name(), t_fused.name(), td1.name(), td2.name(), t_ok);
+                        sprintln!("  OVERALL  canon={} alt={}  FFUSE->{}  FSPLIT->({},{})  recovered={}", oc.name(), oa.name(), overall_fused.name(), od1.name(), od2.name(), ov_ok);
+                        for (label, f, ok) in [("GATE", gate_fused, gate_ok), ("T", t_fused, t_ok), ("OVERALL", overall_fused, ov_ok)] {
+                            match f {
+                                B4::B => sprintln!("  {}: designated, dialetheic — canon's F conflicts with real T-evidence from U{}. Round-trip lossless: {}.", label, alt, ok),
+                                B4::T => sprintln!("  {}: no conflict — passes everywhere checked.", label),
+                                _     => sprintln!("  {}: no conflict — fails everywhere checked, no dialetheic upgrade.", label),
+                            }
+                        }
+
+                        // Prove the lossy case too, not just claim it: fuse (B, T) —
+                        // a value that's already a paradox plus a clean T — and show
+                        // the split-back does NOT recover (B, T).
+                        let (leak_fused, ld1, ld2, leak_ok) = fuse_and_check(&mut vm, B4::B, B4::T);
+                        sprintln!("  LEAK-CHECK  FFUSE(B,T)->{}  FSPLIT->({},{})  recovered={}", leak_fused.name(), ld1.name(), ld2.name(), leak_ok);
+                        if !leak_ok {
+                            sprintln!("  -> Confirmed: feeding an already-paradoxical input (B) loses information.");
+                            sprintln!("     The original B is gone; FSPLIT(B) only ever hands back a plain (T,F).");
                         }
                     }
                     _ => sprintln!("ruleset <show|list|verify|dialetheic> [catalog_name] [alt_universe]"),
@@ -1137,10 +1207,34 @@ fn redraw_input(old_len: usize, src: &[u8], src_len: usize, buf: &mut [u8; 256])
 // dynamics primitives, same anchors: Φ<=𐑹 ƒ<=𐑐 Ç<=𐑧 Ħ<=𐑫 Ω<=𐑭.
 // See manuscripts/clay_cross_universe_closure.md for the derivation. Uses
 // IgPrim::ordinal(), not raw discriminant comparison.
+// Canonical's actual T-constitution (exact-equality on four primitives,
+// ceiling on Ç only) — matches Python's _T_CANONICAL exactly. This is the
+// real canonical T-verdict, distinct from T_CEILING (which only applies
+// to U8/U9/U10/U11).
+fn t_canonical_check_silent(ig: &IgTuple) -> bool {
+    ig.p.ordinal()     == IgPrim::P_pmsym.ordinal()
+    && ig.f.ordinal()   == IgPrim::F_hbar.ordinal()
+    && ig.k.ordinal()   <= IgPrim::K_slow.ordinal()
+    && ig.h.ordinal()   == IgPrim::H_inf.ordinal()
+    && ig.omega.ordinal() == IgPrim::Omega_z.ordinal()
+}
+
 fn t_ceiling_check_silent(ig: &IgTuple) -> bool {
     let t_phi = ig.p.ordinal()     <= IgPrim::P_pmsym.ordinal();
     let t_f   = ig.f.ordinal()     <= IgPrim::F_hbar.ordinal();
     let t_k   = ig.k.ordinal()     <= IgPrim::K_slow.ordinal();
+    let t_h   = ig.h.ordinal()     <= IgPrim::H_inf.ordinal();
+    let t_om  = ig.omega.ordinal() <= IgPrim::Omega_z.ordinal();
+    t_phi && t_f && t_k && t_h && t_om
+}
+
+// U11 only: same as T_CEILING, but Ç's ceiling is raised from 𐑧 (K_slow,
+// ord 3) to 𐑪 (K_trap, ord 4) — a gapped/trapped spectrum, not just a slow
+// one. Motivated, not tailored: see universe.rs's U11 comment block.
+fn t_ceiling_gapped_check_silent(ig: &IgTuple) -> bool {
+    let t_phi = ig.p.ordinal()     <= IgPrim::P_pmsym.ordinal();
+    let t_f   = ig.f.ordinal()     <= IgPrim::F_hbar.ordinal();
+    let t_k   = ig.k.ordinal()     <= IgPrim::K_trap.ordinal();
     let t_h   = ig.h.ordinal()     <= IgPrim::H_inf.ordinal();
     let t_om  = ig.omega.ordinal() <= IgPrim::Omega_z.ordinal();
     t_phi && t_f && t_k && t_h && t_om
@@ -1161,6 +1255,21 @@ fn t_ceiling_check(ig: &IgTuple) -> bool {
     t_ok
 }
 
+fn t_ceiling_gapped_check(ig: &IgTuple) -> bool {
+    let t_phi = ig.p.ordinal()     <= IgPrim::P_pmsym.ordinal();
+    let t_f   = ig.f.ordinal()     <= IgPrim::F_hbar.ordinal();
+    let t_k   = ig.k.ordinal()     <= IgPrim::K_trap.ordinal();
+    let t_h   = ig.h.ordinal()     <= IgPrim::H_inf.ordinal();
+    let t_om  = ig.omega.ordinal() <= IgPrim::Omega_z.ordinal();
+    let t_ok = t_phi && t_f && t_k && t_h && t_om;
+    sprintln!("  T_CEILING(gapped) Φ<=𐑹: {}  ƒ<=𐑐: {}  Ç<=𐑪: {}  Ħ<=𐑫: {}  Ω<=𐑭: {}",
+        if t_phi {"PASS"} else {"FAIL"}, if t_f {"PASS"} else {"FAIL"},
+        if t_k {"PASS"} else {"FAIL"}, if t_h {"PASS"} else {"FAIL"},
+        if t_om {"PASS"} else {"FAIL"});
+    sprintln!("  T_CEILING(gapped) overall: {}", if t_ok {"PASS"} else {"FAIL"});
+    t_ok
+}
+
 // ─── Cross-Universe Jump Handler ─────────────────────────────
 
 fn handle_jump(k: &mut Kernel, rest: &str) {
@@ -1168,7 +1277,7 @@ fn handle_jump(k: &mut Kernel, rest: &str) {
     if rest.is_empty() {
         sprintln!("Usage: jump <U> using <compound> [--liminal]");
         sprintln!("       jump <U> via <V> using <c1> <c2> [--liminal]");
-        sprintln!("  <U> = U_0..U_9 or U₀..U₉");
+        sprintln!("  <U> = U_0..U_11 or U₀..U₁₁");
         sprintln!("  <compound> = Apertix, Diabaton, Bifrons, ... (see 'compound list')");
         return;
     }
@@ -1189,7 +1298,7 @@ fn handle_jump(k: &mut Kernel, rest: &str) {
     let using_pos = rest_clean.find(" using ");
     if using_pos.is_none() {
         sprintln!("Expected: jump <U> using <compound> [--liminal]");
-        sprintln!("  <U> = U_0 through U_9 (or U₀ through U₉)");
+        sprintln!("  <U> = U_0 through U_11 (or U₀ through U₁₁)");
         sprintln!("  <compound> = Apertix, Diabaton, Bifrons, ... (see 'compound list')");
         return;
     }
@@ -1218,9 +1327,9 @@ fn handle_jump(k: &mut Kernel, rest: &str) {
 
     // Parse universe
     let target: u8 = match parse_universe(u_str) {
-        Some(u) if u <= 9 => u,
+        Some(u) if u <= 11 => u,
         _ => {
-            sprintln!("Unknown universe: '{}'. Use U_0 through U_9 (or U₀ through U₉).", u_str);
+            sprintln!("Unknown universe: '{}'. Use U_0 through U_11 (or U₀ through U₁₁).", u_str);
             return;
         }
     };
@@ -1344,14 +1453,14 @@ fn print_help() {
     sprintln!("══ Cross-Universe Navigation (Phase 8) ══");
     sprintln!("══ Ruleset / Universe ══");
     sprintln!("  {:<36} — show active ruleset", "ruleset show");
-    sprintln!("  {:<36} — list all 10 universes (★ = active)", "ruleset list");
+    sprintln!("  {:<36} — list all 12 universes (★ = active)", "ruleset list");
     sprintln!("  {:<36} — invariant check (live snapshot)", "ruleset verify");
     sprintln!("  {:<36} — invariant check (named catalog entry)", "ruleset verify <name>");
     sprintln!("  {:<36} — cross-universe jump", "jump <U> using <compound>");
     sprintln!("  {:<36} — probe without IFIX seal", "jump <U> using <c> --liminal");
     sprintln!("  {:<36} — two-stage jump", "jump <U> via <V> using <c1> <c2>");
     sprintln!("  {:<36} — IFIX commit to current ruleset", "seal");
-    sprintln!("  <U> = U_0–U_9 or U₀–U₉    <compound> = see 'compound list'");
+    sprintln!("  <U> = U_0–U_11 or U₀–U₁₁    <compound> = see 'compound list'");
     sprintln!("  {:<36} — tensor under active absorption", "tensor <compound_a> <compound_b>");
     sprintln!("  {:<36} — meet under active absorption", "meet <compound_a> <compound_b>");
     sprintln!("  {:<36} — test absorption rule", "absorb_test <a> <b> <prim> <op>");
