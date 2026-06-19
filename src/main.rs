@@ -212,12 +212,18 @@ fn repl(k: &mut Kernel) {
                 lower == "exec" || lower == "status" || lower == "programs" || lower == "crystal"
                     || lower == "grammar" || lower == "rebis" || lower == "universe" || lower == "parasm"
             } => {
-                if enter_context(&mut ctx_stack, &cmd.to_lowercase()) {
-                    if let Some(ctx) = ctx_stack.current() {
-                        print_help_topic(ctx.name);
+                let already_in = ctx_stack.current()
+                    .map(|c| c.name.to_lowercase() == cmd.to_lowercase())
+                    .unwrap_or(false);
+                if !already_in {
+                    if enter_context(&mut ctx_stack, &cmd.to_lowercase()) {
+                        if let Some(ctx) = ctx_stack.current() {
+                            print_help_topic(ctx.name);
+                        }
                     }
+                    continue;
                 }
-                continue;
+                // Already in this context — fall through to command dispatch below
             }
             _ => {}
         }
@@ -2129,9 +2135,9 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
     use crate::rebis::exotic_hadron::{Glueball, Tetraquark, Pentaquark, QColor, GluonColor};
     use crate::rebis::pdb::{parse_pdb_ca_atoms, extract_contacts, extract_sequence_from_pdb, validate_structure};
     use crate::rebis::antibody::{analyze_epitope, design_cdr, design_full_antibody};
-    use crate::rebis::materials::{forge_material, verify_material_consistency, OuroboricAlloy, ThermalRectifier, NonQubitQC, GapClosure};
-    use crate::rebis::biology::{TissueGrid, Telomere, FrobeniusBioSim, CellState};
-    use crate::rebis::therapeutics::{Chemotherapeutic, OuroboricPill, UniversalAntidote};
+    use crate::rebis::materials::forge_material;
+    use crate::rebis::biology::{TissueGrid, FrobeniusBioSim};
+    use crate::rebis::therapeutics::Chemotherapeutic;
 
 
     match sub {
@@ -2481,79 +2487,166 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
         "material" | "materials" => {
             match arg {
                 "forge" => {
-                    if rest.is_empty() { sprintln!("Usage: rebis material forge <12-glyph-string>"); return; }
-                    let spec = forge_material(rest, "Fe", "Fe", "Fe", "Fe", "Fe", "Fe", "Fe", "Fe", "Fe", "Fe", "Fe", "Fe");
-                    sprintln!("Forged: {} ({})", spec.name, spec.structure_type);
-                    sprintln!("  D={} T={} R={} P={}", spec.dimensionality, spec.connectivity, spec.interface_type, spec.symmetry_class);
-                    sprintln!("  BondEnergy={:.0}-{:.0}kJ/mol  Frobenius={}",
-                        spec.bond_energy_kjmol.0, spec.bond_energy_kjmol.1,
-                        if spec.frobenius_verified { "PASS" } else { "FAIL" });
-                    sprintln!("  Consistency: {}/6 rules", verify_material_consistency("Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe"));
+                    // Forge a material from a 12-glyph IG tuple
+                    let predefined = crate::rebis::materials::predefined_novel_materials();
+                    if rest.is_empty() {
+                        sprintln!("══ IG Material Forge ══");
+                        sprintln!("  Predefined materials:");
+                        for (name, _) in &predefined {
+                            sprintln!("    {}", name);
+                        }
+                        sprintln!("  Usage: rebis material forge <name>   or   rebis material forge --all");
+                        return;
+                    }
+                    if rest == "--all" {
+                        sprintln!("{}", crate::rebis::materials::forge_report());
+                    } else {
+                        let name = rest.trim();
+                        if let Some((_, tuple)) = predefined.iter().find(|(n, _)| n.as_str() == name) {
+                            let spec = forge_material(name, tuple[0], tuple[1], tuple[2], tuple[3],
+                                tuple[4], tuple[5], tuple[6], tuple[7], tuple[8], tuple[9], tuple[10], tuple[11]);
+                            sprintln!("Forged: {}", spec.summary());
+                            sprintln!("  {}", spec.structure_type);
+                            sprintln!("  synthesis: {} | interface: {}", spec.synthesis_method, spec.interface_type);
+                            sprintln!("  bond: {:.0}-{:.0} kJ/mol  symmetry: {}",
+                                spec.bond_energy_kjmol.0, spec.bond_energy_kjmol.1, spec.symmetry_class);
+                            sprintln!("  Frobenius: {}  C-score: {:.3}",
+                                if spec.frobenius_verified { "PASS" } else { "FAIL" }, spec.c_score);
+                        } else {
+                            sprintln!("Unknown material: '{}'. Use 'rebis material forge' to list.", name);
+                        }
+                    }
                 }
                 "alloy" => {
-                    let a = OuroboricAlloy::new("Fe");
-                    sprintln!("OuroboricAlloy: base={} heal_temp={:.0}C strain={:.4} cycles={}",
-                        a.base_element, a.self_healing_temp_c, a.critical_strain, a.cycle_life);
+                    let mut alloy = crate::rebis::materials::OuroboricAlloy::new(64);
+                    let result = alloy.run_mechanical_test(800.0, 40);
+                    sprintln!("══ Ouroboric Alloy (64 grains) ══");
+                    sprintln!("  Cycles: {}", result.cycles);
+                    sprintln!("  Damage fraction: {:.4}", result.damage_fraction);
+                    sprintln!("  Final stress: {:.1} MPa", result.final_stress_mpa);
+                    sprintln!("  Frobenius maintained: {}", if result.frobenius_maintained { "YES" } else { "NO" });
+                    sprintln!("  Closure ratio: {:.4}", result.closure_ratio);
                 }
                 "thermal" => {
-                    let tr = ThermalRectifier::new(400.0, 50.0);
-                    sprintln!("ThermalRectifier: ratio={:.4} forward={:.2}W/mK reverse={:.2}W/mK",
-                        tr.rectification_ratio, tr.forward_conductivity_wmk, tr.reverse_conductivity_wmk);
+                    let specs = crate::rebis::materials::forge_all_predefined();
+                    if specs.len() >= 2 {
+                        let tr = crate::rebis::materials::ThermalRectifier::new(&specs[0], &specs[6]);
+                        sprintln!("{}", tr.report());
+                    }
                 }
                 "qc" => {
-                    let qc = NonQubitQC::new("topological", 3);
-                    sprintln!("NonQubitQC: encoding={} dims={} fidelity={:.4} topo={}",
-                        qc.encoding_type, qc.n_logical_dimensions, qc.gate_fidelity,
-                        if qc.topological_protection { "YES" } else { "NO" });
+                    sprintln!("{}", crate::rebis::materials::paradigm_summary_table());
                 }
-                "gap" => {
-                    let src = forge_material("Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe");
-                    let tgt = forge_material("FeC","Fe","Fe","Fe","C","Fe","Fe","Fe","Fe","Fe","Fe","Fe","Fe");
-                    let gc = GapClosure::analyze(&src, &tgt);
-                    sprintln!("GapClosure: {}->{}  prim_gaps={} steps={} energy={:.0}kJ/mol",
-                        gc.source_name, gc.target_name, gc.gap_primitives.len(),
-                        gc.synthesis_steps.len(), gc.estimated_energy_kjmol);
+                "sophick" => {
+                    sprintln!("{}", crate::rebis::materials::sophick_report());
                 }
-                _ => sprintln!("Material: forge <glyphs> | alloy | thermal | qc | gap"),
+                "exactor" | "gap" => {
+                    let predefined = crate::rebis::materials::predefined_novel_materials();
+                    if let Some((_name, tuple)) = predefined.first() {
+                        sprintln!("{}", crate::rebis::materials::closure_diagnosis(tuple));
+                    }
+                    // Also show gap between Ouroboric O2 and Sophick Mercury
+                    let gc = crate::rebis::materials::GapClosure::new(
+                        crate::rebis::materials::OUROBORIC_O2,
+                        crate::rebis::materials::SOPHICK_MERCURY,
+                    );
+                    sprintln!("
+{}", gc.report());
+                }
+                "report" | _ => {
+                    sprintln!("{}", crate::rebis::materials::forge_report());
+                    sprintln!("
+══ Quick Reference ══");
+                    sprintln!("  rebis material forge [name|--all]  — forge materials from IG tuples");
+                    sprintln!("  rebis material alloy               — Ouroboric alloy simulation");
+                    sprintln!("  rebis material thermal             — Thermal rectifier design");
+                    sprintln!("  rebis material qc                  — Non-qubit QC paradigm table");
+                    sprintln!("  rebis material sophick             — Sophick Forge Eagle Cycle");
+                    sprintln!("  rebis material exactor             — Frobenius closure diagnosis");
+                    sprintln!("  rebis material report              — Full materials report");
+                }
             }
         }
         "bio" => {
-            let mut grid = TissueGrid::new(4, 4);
-            for _ in 0..3 { grid.step(); }
-            sprintln!("TissueGrid (4x4, gen={}):", grid.generation);
-            let (mut h, mut s, mut c, mut a) = (0usize, 0, 0, 0);
-            for cell in &grid.cells {
-                match cell {
-                    CellState::Healthy => h += 1,
-                    CellState::Senescent => s += 1,
-                    CellState::Cancerous => c += 1,
-                    CellState::Apoptotic => a += 1,
+            match arg {
+                "tissue" => {
+                    let mut grid = TissueGrid::new(8, 8);
+                    for _ in 0..5 { grid.step(); }
+                    let (h, s, c, a) = grid.state_counts();
+                    sprintln!("══ TissueGrid (8×8, gen={}) ══", grid.generation);
+                    sprintln!("  Healthy: {}  Senescent: {}  Cancer: {}  Apoptotic: {}", h, s, c, a);
+                }
+                "telomere" => {
+                    let mut tel = crate::rebis::biology::OuroboricTelomere::new(5000);
+                    let divs: usize = rest.parse().unwrap_or(20);
+                    tel.run(divs);
+                    sprintln!("══ Ouroboric Telomere Simulation ══");
+                    sprintln!("{}", tel.report());
+                }
+                "frob" | _ => {
+                    let mut sim = FrobeniusBioSim::new(8, 8, 10);
+                    sim.run(10);
+                    sprintln!("{}", sim.report());
+                    let mut tel = crate::rebis::biology::OuroboricTelomere::new(8000);
+                    tel.run(15);
+                    sprintln!("
+{}", tel.report());
+                    sprintln!("
+  Usage: rebis bio [tissue|telomere <divs>|frob]");
                 }
             }
-            sprintln!("  Healthy: {}  Senescent: {}  Cancer: {}  Apoptotic: {}", h, s, c, a);
-            let tel = Telomere::new(8000);
-            sprintln!("Telomere: length={}bp limit={} divisions_left={}",
-                tel.length_bp, tel.hayflick_limit, tel.divisions_remaining);
-            let sim = FrobeniusBioSim::new(8, 8, 4);
-            sprintln!("FrobeniusBioSim (8x8): passes={} fails={} cycles={}",
-                sim.frobenius_passes, sim.frobenius_fails, sim.cycle_count);
         }
         "tx" => {
-            let chemo = Chemotherapeutic::new("RB-001", "TOP2A", 5.0, 500.0);
-            sprintln!("Chemotherapeutic: {} target={} Kd={:.1}nM gate1={} frob={}",
-                chemo.name, chemo.target_protein, chemo.binding_affinity_nm,
-                if chemo.gate1_open { "OPEN" } else { "CLOSED" },
-                if chemo.frobenius_verified { "PASS" } else { "FAIL" });
-            let pill = OuroboricPill::new("Ouro", "pH", "release");
-            sprintln!("OuroboricPill: sensor={} actuator={} feedback={} resp={:.0}min dur={:.0}h",
-                pill.sensor_type, pill.actuator_type, if pill.feedback_loop_closed { "YES" } else { "NO" },
-                pill.response_time_minutes, pill.duration_hours);
-            let antidote = UniversalAntidote::new("UniV", "heavy_metal", "chelation");
-            sprintln!("UniversalAntidote: toxin={} mechanism={} promiscuity={:.2} frob={}",
-                antidote.target_toxin_class, antidote.binding_mechanism,
-                antidote.promiscuity_index, if antidote.frobenius_verified { "PASS" } else { "FAIL" });
+            match arg {
+                "chemo" => {
+                    let chemo = Chemotherapeutic::new("RB-001", "TOP2A", 5.0, 500.0);
+                    sprintln!("══ Chemotherapeutic ══");
+                    sprintln!("  Name: {}  Target: {}", chemo.name, chemo.target_protein);
+                    sprintln!("  Kd: {:.1} nM  Selectivity: {:.0}x", chemo.binding_affinity_nm, chemo.selectivity_ratio);
+                    sprintln!("  Delivery: {}  Gate1(⊙): {}", chemo.delivery_mechanism,
+                        if chemo.gate1_open { "OPEN" } else { "CLOSED" });
+                    sprintln!("  Frobenius: {}  MTD: {:.1} mg",
+                        if chemo.verify() { "PASS" } else { "FAIL" }, chemo.max_tolerated_dose_mg);
+                }
+                "pill" => {
+                    let pill = crate::rebis::therapeutics::OuroboricPill::new("OP-001", 24.0);
+                    sprintln!("══ Ouroboric Pill ══");
+                    sprintln!("  Name: {}  Half-life: {:.1}h", pill.name, pill.half_life_hours);
+                    sprintln!("  Frobenius: {}  Gate1: {}",
+                        if pill.frobenius_verified { "μ∘δ=id" } else { "FAIL" },
+                        if pill.gate1_open { "self-sensing" } else { "passive" });
+                }
+                "antidote" => {
+                    let antidote = crate::rebis::therapeutics::UniversalAntidote::new("UA-001");
+                    sprintln!("══ Universal Antidote ══");
+                    sprintln!("  Name: {}  Targets: {}", antidote.name, antidote.n_targets);
+                    sprintln!("  Library diversity: {} clones", antidote.library_diversity);
+                    sprintln!("  Frobenius: {}", if antidote.frobenius_verified { "PASS" } else { "OPEN" });
+                }
+                "neuro" => {
+                    let nf = crate::rebis::therapeutics::NeurotrophicFactor::new("NF-001", 25.0, 48.0);
+                    sprintln!("══ Neurotrophic Factor ══");
+                    sprintln!("  Name: {}  Receptor: {}", nf.name, nf.target_receptor);
+                    sprintln!("  EC50: {:.1} nM  Half-life: {:.1}h", nf.ec50_nm, nf.half_life_hours);
+                    sprintln!("  Pathway: {}  Frobenius: {}",
+                        nf.downstream_pathway, if nf.frobenius_verified { "PASS" } else { "FAIL" });
+                }
+                _ => {
+                    let chemo = Chemotherapeutic::new("RB-001", "TOP2A", 5.0, 500.0);
+                    sprintln!("══ Therapeutics ══");
+                    sprintln!("  Chemotherapeutic: {} → {}  Kd={:.1}nM frob={}",
+                        chemo.name, chemo.target_protein, chemo.binding_affinity_nm,
+                        if chemo.verify() { "PASS" } else { "FAIL" });
+
+                    let pill = crate::rebis::therapeutics::OuroboricPill::new("OP-001", 24.0);
+                    sprintln!("  OuroboricPill: {} hl={:.1}h frob={}",
+                        pill.name, pill.half_life_hours, if pill.frobenius_verified { "PASS" } else { "FAIL" });
+                    sprintln!("
+  Usage: rebis tx [chemo|pill|antidote|neuro]");
+                }
+            }
         }
-_ => {
+        _ => {
             sprintln!("Rebis: Red-Hot Rebis kernel module (17 subcommands)");
             sprintln!("  rebis codon <XXX|AA>      — codon→AA or AA→codons (bidirectional)");
             sprintln!("  rebis translate <DNA>     — gene→protein pipeline (DNA→mRNA→AA)

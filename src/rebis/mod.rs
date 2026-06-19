@@ -40,6 +40,8 @@ pub mod antibody;
 pub mod materials;
 pub mod biology;
 pub mod therapeutics;
+pub mod clink;
+pub mod imas;
 
 
 /// The 12 IG primitives as Shavian glyphs — used for promotion tables
