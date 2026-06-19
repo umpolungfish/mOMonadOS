@@ -169,7 +169,7 @@ impl GeneticVerification {
             },
             stage7_crystal: {
                 // 17,280,000 / 64 = 270,000 exact division
-                17_280_000u64 % 64 == 0
+                crate::crystal::TOTAL as u64 % 64 == 0
             },
         }
     }

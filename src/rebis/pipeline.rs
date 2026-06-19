@@ -4,14 +4,14 @@
 // Computes the structural promotions needed to lift a source
 // tuple to a target tuple. Maps primitives to their ordinal gaps.
 
-use crate::rebis::RebisPrim;
+use crate::imas_ig::IgPrim;
 
 /// A single primitive promotion: from → to with ordinal gap.
 #[derive(Copy, Clone, Debug)]
 pub struct Promotion {
     pub family: &'static str,     // e.g., "D", "T", "Phi"
-    pub from: RebisPrim,
-    pub to: RebisPrim,
+    pub from: IgPrim,
+    pub to: IgPrim,
     pub gap: u8,                  // ordinal distance in the value ordering
     pub weight: f64,              // structural weight of this promotion
 }
@@ -24,50 +24,50 @@ impl Promotion {
 /// A 12-tuple of IG primitives.
 #[derive(Copy, Clone, Debug)]
 pub struct IgTuple {
-    pub d: RebisPrim,
-    pub t: RebisPrim,
-    pub r: RebisPrim,
-    pub p: RebisPrim,
-    pub f: RebisPrim,
-    pub k: RebisPrim,
-    pub g: RebisPrim,
-    pub c: RebisPrim,
-    pub phi: RebisPrim,
-    pub h: RebisPrim,
-    pub s: RebisPrim,
-    pub omega: RebisPrim,
+    pub d: IgPrim,
+    pub t: IgPrim,
+    pub r: IgPrim,
+    pub p: IgPrim,
+    pub f: IgPrim,
+    pub k: IgPrim,
+    pub g: IgPrim,
+    pub c: IgPrim,
+    pub phi: IgPrim,
+    pub h: IgPrim,
+    pub s: IgPrim,
+    pub omega: IgPrim,
 }
 
 impl IgTuple {
     /// The universal_imscriptive_grammar tuple (O_∞).
     pub const IUG: Self = Self {
-        d: RebisPrim::D_odot, t: RebisPrim::T_odot, r: RebisPrim::R_lr,
-        p: RebisPrim::P_pmsym, f: RebisPrim::F_hbar, k: RebisPrim::K_slow,
-        g: RebisPrim::G_aleph, c: RebisPrim::C_seq,
-        phi: RebisPrim::Ph_c, h: RebisPrim::H_inf,
-        s: RebisPrim::S_hetero, omega: RebisPrim::W_Z,
+        d: IgPrim::D_odot, t: IgPrim::T_odot, r: IgPrim::R_lr,
+        p: IgPrim::P_pmsym, f: IgPrim::F_hbar, k: IgPrim::K_slow,
+        g: IgPrim::G_aleph, c: IgPrim::C_seq,
+        phi: IgPrim::Phi_c, h: IgPrim::H_inf,
+        s: IgPrim::S_nm, omega: IgPrim::Omega_z,
     };
 
     /// The genetic_code tuple (O₂).
     pub const GENETIC: Self = Self {
-        d: RebisPrim::D_triangle, t: RebisPrim::T_boxtimes, r: RebisPrim::R_lr,
-        p: RebisPrim::P_psi, f: RebisPrim::F_hbar, k: RebisPrim::K_slow,
-        g: RebisPrim::G_aleph, c: RebisPrim::C_and,
-        phi: RebisPrim::Ph_c_complex, h: RebisPrim::H_2,
-        s: RebisPrim::S_hetero, omega: RebisPrim::W_Z2,
+        d: IgPrim::D_triangle, t: IgPrim::T_boxtimes, r: IgPrim::R_lr,
+        p: IgPrim::P_psi, f: IgPrim::F_hbar, k: IgPrim::K_slow,
+        g: IgPrim::G_aleph, c: IgPrim::C_and,
+        phi: IgPrim::Phi_c_complex, h: IgPrim::H2,
+        s: IgPrim::S_nm, omega: IgPrim::Omega_z2,
     };
 
     /// The standard_model tuple.
     pub const STANDARD_MODEL: Self = Self {
-        d: RebisPrim::D_infty, t: RebisPrim::T_net, r: RebisPrim::R_dagger,
-        p: RebisPrim::P_sym, f: RebisPrim::F_hbar, k: RebisPrim::K_fast,
-        g: RebisPrim::G_gimel, c: RebisPrim::C_or_,
-        phi: RebisPrim::Ph_c, h: RebisPrim::H_2,
-        s: RebisPrim::S_hetero, omega: RebisPrim::W_Z,
+        d: IgPrim::D_infty, t: IgPrim::T_net, r: IgPrim::R_dagger,
+        p: IgPrim::P_sym, f: IgPrim::F_hbar, k: IgPrim::K_fast,
+        g: IgPrim::G_gimel, c: IgPrim::C_or,
+        phi: IgPrim::Phi_c, h: IgPrim::H2,
+        s: IgPrim::S_nm, omega: IgPrim::Omega_z,
     };
 
     /// Get a primitive by family name.
-    pub fn get(&self, family: &str) -> Option<RebisPrim> {
+    pub fn get(&self, family: &str) -> Option<IgPrim> {
         match family {
             "D" => Some(self.d), "T" => Some(self.t), "R" => Some(self.r),
             "P" => Some(self.p), "F" => Some(self.f), "K" => Some(self.k),
@@ -101,7 +101,7 @@ impl IgTuple {
 }
 
 /// Ordinal gap between two values of the same primitive family.
-fn ordinal_gap(a: RebisPrim, b: RebisPrim) -> u8 {
+fn ordinal_gap(a: IgPrim, b: IgPrim) -> u8 {
     let va = a as u8;
     let vb = b as u8;
     if va > vb { va - vb } else { vb - va }
@@ -153,12 +153,12 @@ pub fn predict_tier(source: &IgTuple, proms: &[Promotion]) -> u8 {
 
 /// Determine ouroboricity tier from a tuple.
 fn tier_of(t: &IgTuple) -> u8 {
-    let ph = t.phi == RebisPrim::Ph_c;
-    let ks = t.k == RebisPrim::K_slow;
-    let wz = t.omega == RebisPrim::W_Z;
-    let d_odot = t.d == RebisPrim::D_odot;
-    let t_odot = t.t == RebisPrim::T_odot;
-    let ppmsym = t.p == RebisPrim::P_pmsym;
+    let ph = t.phi == IgPrim::Phi_c;
+    let ks = t.k == IgPrim::K_slow;
+    let wz = t.omega == IgPrim::Omega_z;
+    let d_odot = t.d == IgPrim::D_odot;
+    let t_odot = t.t == IgPrim::T_odot;
+    let ppmsym = t.p == IgPrim::P_pmsym;
 
     if ph && ks && wz && d_odot && t_odot && ppmsym { 3 }  // O_∞
     else if ph && ks && wz { 2 }                              // O₂

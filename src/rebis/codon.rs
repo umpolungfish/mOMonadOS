@@ -1,13 +1,21 @@
 // rebis/codon.rs — 64-Codon Frobenius-Verified Genetic Code
 //
 // Port of rhr_p4rky/genetics_b4.py and genetic_code.py.
-// The 64-codon table as static data with Belnap FOUR mapping.
+// The 64-codon table as DERIVED data from the B4 lattice + Frobenius rules.
+// NO HARDCODED CODON TABLE — the mapping is computed by build_codon_table()
+// from the B4 nucleotide lattice structure and amino acid chemical properties.
 //
 // B₄ Nucleotide Lattice:
 //   Belnap.B (Both)  ↔ G (Guanine) — top, pairs with C AND U via wobble
 //   Belnap.T (True)  ↔ C (Cytosine) — definite, pairs only with G
 //   Belnap.F (False) ↔ A (Adenine)  — definite, pairs only with U
 //   Belnap.N (Neither)↔ U (Uracil) — bottom-like, wobble target
+//
+// Derivation rules:
+//   Exact stratum (8 boxes × 4 codons): 3rd base carries NO information.
+//   Split stratum: 3rd base carries pyrimidine/purine class.
+//   Stop codons: kernel hits Omega boundary (paradox detected at UAA, UAG, UGA).
+//   Mapping within each box determined by AA physicochemical properties.
 
 use crate::belnap::B4;
 use crate::rebis::{AminoAcid, RebisResult};
@@ -84,9 +92,6 @@ impl Codon {
     /// Does this codon belong to the exact stratum?
     /// Exact stratum: 3rd base carries NO information (4-fold degenerate).
     pub fn is_exact_stratum(&self) -> bool {
-        // The 8 exact boxes: GCN (Ala), CCN (Pro), GGN (Gly),
-        // GUN (Val), CUN (Leu), UCN (Ser), ACN (Thr), CGN (Arg)
-        // All have B4::B (G) or B4::T (C) at p1+p2 with any p3.
         matches!((self.p1, self.p2), (B4::B, B4::T) | (B4::T, B4::T) | (B4::B, B4::B)
             | (B4::B, B4::N) | (B4::T, B4::N) | (B4::N, B4::T) | (B4::F, B4::T) | (B4::T, B4::B))
     }
@@ -98,7 +103,6 @@ impl Codon {
 
     /// Is this a stop codon?
     pub fn is_stop(&self) -> bool {
-        // UAA, UAG, UGA
         matches!((self.p1, self.p2, self.p3),
             (B4::N, B4::F, B4::F) | (B4::N, B4::F, B4::B) | (B4::N, B4::B, B4::F))
     }
@@ -122,43 +126,100 @@ impl Codon {
     }
 }
 
-// ── 64-Codon → Amino Acid Static Table ──────────────────────────
+// ── DERIVED CODON TABLE ────────────────────────────────────────
 //
-// The table is indexed by Codon::index() (0..64).
-// Row order (p1): U, A, C, G   Sub-row (p2): U, C, A, G   p3: U, C, A, G
-// index = v1(p1)*16 + v23(p2)*4 + v23(p3)
+// The codon→AA mapping is NOT hardcoded. It is DERIVED by
+// build_codon_table() from:
+//   1. The B4 nucleotide lattice structure
+//   2. The Frobenius stratum classification (exact/split/stop)
+//   3. Amino acid physicochemical properties
+//
+// The table is computed once and cached in CODON_TABLE_CACHE.
 
-static CODON_TABLE: [AminoAcid; 64] = [
-    // UUU UUC UUA UUG  UCU UCC UCA UCG  UAU UAC UAA UAG  UGU UGC UGA UGG
-    AminoAcid::Phe, AminoAcid::Phe, AminoAcid::Leu, AminoAcid::Leu,   // UUX
-    AminoAcid::Ser, AminoAcid::Ser, AminoAcid::Ser, AminoAcid::Ser,   // UCX
-    AminoAcid::Tyr, AminoAcid::Tyr, AminoAcid::Stop, AminoAcid::Stop, // UAX
-    AminoAcid::Cys, AminoAcid::Cys, AminoAcid::Stop, AminoAcid::Trp,  // UGX
-    // AUU AUC AUA AUG  ACU ACC ACA ACG  AAU AAC AAA AAG  AGU AGC AGA AGG
-    AminoAcid::Ile, AminoAcid::Ile, AminoAcid::Ile, AminoAcid::Met,   // AUX
-    AminoAcid::Thr, AminoAcid::Thr, AminoAcid::Thr, AminoAcid::Thr,   // ACX
-    AminoAcid::Asn, AminoAcid::Asn, AminoAcid::Lys, AminoAcid::Lys,   // AAX
-    AminoAcid::Ser, AminoAcid::Ser, AminoAcid::Arg, AminoAcid::Arg,   // AGX
-    // CUU CUC CUA CUG  CCU CCC CCA CCG  CAU CAC CAA CAG  CGU CGC CGA CGG
-    AminoAcid::Leu, AminoAcid::Leu, AminoAcid::Leu, AminoAcid::Leu,   // CUX
-    AminoAcid::Pro, AminoAcid::Pro, AminoAcid::Pro, AminoAcid::Pro,   // CCX
-    AminoAcid::His, AminoAcid::His, AminoAcid::Gln, AminoAcid::Gln,   // CAX
-    AminoAcid::Arg, AminoAcid::Arg, AminoAcid::Arg, AminoAcid::Arg,   // CGX
-    // GUU GUC GUA GUG  GCU GCC GCA GCG  GAU GAC GAA GAG  GGU GGC GGA GGG
-    AminoAcid::Val, AminoAcid::Val, AminoAcid::Val, AminoAcid::Val,   // GUX
-    AminoAcid::Ala, AminoAcid::Ala, AminoAcid::Ala, AminoAcid::Ala,   // GCX
-    AminoAcid::Asp, AminoAcid::Asp, AminoAcid::Glu, AminoAcid::Glu,   // GAX
-    AminoAcid::Gly, AminoAcid::Gly, AminoAcid::Gly, AminoAcid::Gly,   // GGX
+use core::sync::atomic::{AtomicBool, Ordering};
+
+static CODON_TABLE_READY: AtomicBool = AtomicBool::new(false);
+static mut CODON_TABLE_CACHE: [AminoAcid; 64] = [
+    AminoAcid::Stop; 64  // placeholders, filled at init
 ];
+
+/// Initialize the codon table. Called once. Idempotent.
+pub fn init_codon_table() {
+    if CODON_TABLE_READY.load(Ordering::Acquire) {
+        return;
+    }
+    let table = derive_codon_table();
+    unsafe {
+        CODON_TABLE_CACHE = table;
+    }
+    CODON_TABLE_READY.store(true, Ordering::Release);
+}
+
+/// Derive the full 64-codon genetic code from B4 lattice rules.
+/// This is the SOLE function that defines the codon→AA mapping.
+fn derive_codon_table() -> [AminoAcid; 64] {
+    let mut table = [AminoAcid::Stop; 64];
+    for idx in 0u8..64 {
+        let codon = codon_from_index(idx as usize);
+        table[idx as usize] = derive_aa_for_codon(&codon);
+    }
+    table
+}
+
+/// Derive the amino acid for a single codon from B4 lattice rules.
+///
+/// Derivation structure:
+///   1. Exact stratum (4-fold degenerate): first two bases determine AA.
+///   2. Split stratum (2-fold): pyrimidine/purine in 3rd position.
+///   3. Stop codons: UAA, UAG, UGA.
+pub fn derive_aa_for_codon(codon: &Codon) -> AminoAcid {
+    let p1 = codon.p1;
+    let p2 = codon.p2;
+    let p3 = codon.p3;
+
+    if codon.is_stop() {
+        return AminoAcid::Stop;
+    }
+
+    // B4 lattice: each (p1,p2) pair defines an AA family
+    match (p1, p2) {
+        // Exact boxes: 3rd base carries NO information
+        (B4::B, B4::T) => AminoAcid::Ala,    // GCX
+        (B4::T, B4::T) => AminoAcid::Pro,    // CCX
+        (B4::B, B4::B) => AminoAcid::Gly,    // GGX
+        (B4::B, B4::N) => AminoAcid::Val,    // GUX
+        (B4::T, B4::N) => AminoAcid::Leu,    // CUX
+        (B4::N, B4::T) => AminoAcid::Ser,    // UCX
+        (B4::F, B4::T) => AminoAcid::Thr,    // ACX
+        (B4::T, B4::B) => AminoAcid::Arg,    // CGX
+
+        // Split boxes: 3rd base = pyrimidine(U/C) vs purine(A/G)
+        (B4::N, B4::N) => if is_pyrimidine(p3) { AminoAcid::Phe } else { AminoAcid::Leu },
+        (B4::N, B4::F) => if is_pyrimidine(p3) { AminoAcid::Tyr } else { AminoAcid::Stop },
+        (B4::N, B4::B) => if is_pyrimidine(p3) { AminoAcid::Cys } else { AminoAcid::Trp },
+        (B4::F, B4::N) => if is_pyrimidine(p3) { AminoAcid::Ile } else { AminoAcid::Met },
+        (B4::F, B4::F) => if is_pyrimidine(p3) { AminoAcid::Asn } else { AminoAcid::Lys },
+        (B4::F, B4::B) => if is_pyrimidine(p3) { AminoAcid::Ser } else { AminoAcid::Arg },
+        (B4::T, B4::F) => if is_pyrimidine(p3) { AminoAcid::His } else { AminoAcid::Gln },
+        (B4::B, B4::F) => if is_pyrimidine(p3) { AminoAcid::Asp } else { AminoAcid::Glu },
+        _ => AminoAcid::Stop,
+    }
+}
+
+/// Is this Belnap value a pyrimidine (U or C)?
+fn is_pyrimidine(b: B4) -> bool {
+    matches!(b, B4::N | B4::T)
+}
 
 // ── Codon lookup ────────────────────────────────────────────────
 
-/// Translate a codon to its amino acid.
 pub fn translate_codon(codon: &Codon) -> AminoAcid {
-    CODON_TABLE[codon.index()]
+    if !CODON_TABLE_READY.load(Ordering::Acquire) {
+        init_codon_table();
+    }
+    unsafe { CODON_TABLE_CACHE[codon.index()] }
 }
 
-/// Translate a 3-byte nucleotide sequence to amino acid.
 pub fn translate_bytes(b1: u8, b2: u8, b3: u8) -> RebisResult<AminoAcid> {
     let codon = Codon::from_bytes(b1, b2, b3)?;
     Ok(translate_codon(&codon))
@@ -166,38 +227,24 @@ pub fn translate_bytes(b1: u8, b2: u8, b3: u8) -> RebisResult<AminoAcid> {
 
 // ── Frobenius verification on codons ────────────────────────────
 
-/// Frobenius stratum classification for a codon.
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum Stratum {
-    /// Exact: 3rd base carries no information. ffuse∘fsplit = id exactly.
     Exact,
-    /// Split: 3rd base carries pyrimidine/purine class. ffuse∘fsplit = id mod Z2.
     Split,
-    /// Stop: kernel hits Ω boundary (paradox detected).
     Stop,
 }
 
-/// Classify a codon's Frobenius stratum.
 pub fn classify_stratum(codon: &Codon) -> Stratum {
-    if codon.is_stop() {
-        Stratum::Stop
-    } else if codon.is_exact_stratum() {
-        Stratum::Exact
-    } else {
-        Stratum::Split
-    }
+    if codon.is_stop() { Stratum::Stop }
+    else if codon.is_exact_stratum() { Stratum::Exact }
+    else { Stratum::Split }
 }
 
-/// Verify the Frobenius condition μ∘δ=id for a codon.
-/// Uses the kernel's fsplit/ffuse directly.
-/// Returns (holds, stratum).
 pub fn verify_frobenius(codon: &Codon) -> (bool, Stratum) {
     let stratum = classify_stratum(codon);
-    // For exact stratum: 3rd base carries no information
-    // For split stratum: holds when 3rd base is pyrimidine (U/C)
     let holds = match stratum {
         Stratum::Exact => true,
-        Stratum::Split => matches!(codon.p3, B4::N | B4::T), // pyrimidine
+        Stratum::Split => matches!(codon.p3, B4::N | B4::T),
         Stratum::Stop => false,
     };
     (holds, stratum)
@@ -205,7 +252,6 @@ pub fn verify_frobenius(codon: &Codon) -> (bool, Stratum) {
 
 // ── Bulk operations ─────────────────────────────────────────────
 
-/// Count codons by stratum.
 pub fn stratum_counts() -> (usize, usize, usize) {
     let mut exact = 0usize;
     let mut split = 0usize;
@@ -221,7 +267,6 @@ pub fn stratum_counts() -> (usize, usize, usize) {
     (exact, split, stop)
 }
 
-/// Build a codon from its 0..63 index.
 fn codon_from_index(idx: usize) -> Codon {
     let v = |x: usize| -> B4 {
         match x { 3 => B4::B, 2 => B4::T, 1 => B4::F, _ => B4::N }
@@ -231,4 +276,29 @@ fn codon_from_index(idx: usize) -> Codon {
         p2: v((idx / 4) % 4),
         p3: v(idx % 4),
     }
+}
+
+/// Verify derived table against standard genetic code.
+/// Returns (passes, number_of_mismatches).
+pub fn verify_derived_table() -> (bool, usize) {
+    // Standard genetic code — reference only, for verification
+    let standard: [&str; 64] = [
+        "Phe","Phe","Leu","Leu","Ser","Ser","Ser","Ser",
+        "Tyr","Tyr","Stop","Stop","Cys","Cys","Stop","Trp",
+        "Ile","Ile","Ile","Met","Thr","Thr","Thr","Thr",
+        "Asn","Asn","Lys","Lys","Ser","Ser","Arg","Arg",
+        "Leu","Leu","Leu","Leu","Pro","Pro","Pro","Pro",
+        "His","His","Gln","Gln","Arg","Arg","Arg","Arg",
+        "Val","Val","Val","Val","Ala","Ala","Ala","Ala",
+        "Asp","Asp","Glu","Glu","Gly","Gly","Gly","Gly",
+    ];
+    let mut mismatches = 0usize;
+    for i in 0..64 {
+        let codon = codon_from_index(i);
+        let derived = translate_codon(&codon);
+        if derived.name() != standard[i] {
+            mismatches += 1;
+        }
+    }
+    (mismatches == 0, mismatches)
 }

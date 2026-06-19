@@ -11,29 +11,24 @@ use crate::rebis::AminoAcid;
 use alloc::string::String;
 use alloc::vec::Vec;
 
-/// Transcription: DNA → mRNA (T→U, complement strand).
-/// Returns the mRNA sequence.
+/// Transcription: DNA coding strand → mRNA (T→U only, NO complement).
+/// DNA: ATGGCC → mRNA: AUGGCC. The coding strand IS the mRNA with T→U.
 pub fn transcribe(dna: &[u8]) -> Vec<u8> {
     dna.iter().map(|&b| {
         match b {
-            b'A' | b'a' => b'U',
-            b'T' | b't' => b'A',
-            b'G' | b'g' => b'C',
-            b'C' | b'c' => b'G',
-            _ => b'N', // unknown → N
+            b'T' | b't' => b'U',
+            other => other.to_ascii_uppercase(),
         }
     }).collect()
 }
 
-/// Reverse transcription: mRNA → DNA (U→T).
+/// Reverse transcription: mRNA → DNA (U→T, no complement).
+/// mRNA: AUGGCC → DNA: ATGGCC. Just U→T.
 pub fn reverse_transcribe(mrna: &[u8]) -> Vec<u8> {
     mrna.iter().map(|&b| {
         match b {
-            b'A' | b'a' => b'T',
-            b'U' | b'u' => b'A',
-            b'G' | b'g' => b'C',
-            b'C' | b'c' => b'G',
-            _ => b'N',
+            b'U' | b'u' => b'T',
+            other => other.to_ascii_uppercase(),
         }
     }).collect()
 }
@@ -233,17 +228,23 @@ pub fn run_pipeline(dna: &[u8]) -> TranslationResult {
     let (protein, coding_len) = translate(&mrna);
     let stop_present = protein.last() == Some(&AminoAcid::Stop);
 
-    // Frobenius verification: re-transcribe protein→mRNA and check
+    // Frobenius verification: Protein→mRNA→Protein round-trip (μ∘δ=id)
+    // 1. Reverse-translate protein back to canonical mRNA
+    // 2. Re-translate that mRNA back to protein
+    // 3. Verify the two protein chains match (position-by-position)
     let non_stop: Vec<AminoAcid> = protein.iter()
         .filter(|&&aa| aa != AminoAcid::Stop)
         .copied()
         .collect();
-    let _back_mrna = reverse_translate(&non_stop);
-    let frobenius_ok = if let Some(s) = start {
-        s + coding_len <= mrna.len() && !protein.is_empty()
-    } else {
-        false
-    };
+    let back_mrna = reverse_translate(&non_stop);
+    let (roundtrip_protein, _) = translate(&back_mrna);
+    let roundtrip_non_stop: Vec<AminoAcid> = roundtrip_protein.iter()
+        .filter(|&&aa| aa != AminoAcid::Stop)
+        .copied()
+        .collect();
+    let frobenius_ok = non_stop.len() > 0
+        && non_stop.len() == roundtrip_non_stop.len()
+        && non_stop.iter().zip(roundtrip_non_stop.iter()).all(|(a, b)| a == b);
 
     TranslationResult {
         mrna,

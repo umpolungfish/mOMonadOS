@@ -16,6 +16,7 @@
 //!   3. Monotonic advance — Ω_z constraint on trajectory through the crystal
 
 use alloc::collections::BTreeMap;
+use crate::imas_ig::IgPrim;
 
 // ── Pipeline string → IG primitive Unicode values ──────────────────────
 
@@ -188,14 +189,21 @@ impl IGTuple {
 // ── Value type impls ────────────────────────────────────────────────────
 
 impl DVal {
+
+    /// Convert to the canonical IgPrim enum — single source of truth.
+    pub fn to_igprim(self) -> IgPrim {
+        match self {
+            DVal::Wedge => IgPrim::D_wedge,
+            DVal::Tri => IgPrim::D_triangle,
+            DVal::Infty => IgPrim::D_infty,
+            DVal::Odot => IgPrim::D_odot,
+        }
+    }
     pub fn as_str(&self) -> &'static str {
         match self { DVal::Wedge => "wedge", DVal::Tri => "tri",
                      DVal::Infty => "infty", DVal::Odot => "odot" }
     }
-    pub fn glyph(&self) -> &'static str {
-        match self { DVal::Wedge => "𐑛", DVal::Tri => "𐑨",
-                     DVal::Infty => "𐑼", DVal::Odot => "𐑦" }
-    }
+    pub fn glyph(&self) -> &'static str { self.to_igprim().glyph() }
     pub fn ordinal(&self) -> u8 {
         match self { DVal::Wedge => 0, DVal::Tri => 1,
                      DVal::Infty => 2, DVal::Odot => 3 }
@@ -203,16 +211,23 @@ impl DVal {
 }
 
 impl TVal {
+
+    /// Convert to the canonical IgPrim enum — single source of truth.
+    pub fn to_igprim(self) -> IgPrim {
+        match self {
+            TVal::Network => IgPrim::T_net,
+            TVal::In => IgPrim::T_in,
+            TVal::Bowtie => IgPrim::T_bowtie,
+            TVal::Boxtimes => IgPrim::T_boxtimes,
+            TVal::Odot => IgPrim::T_odot,
+        }
+    }
     pub fn as_str(&self) -> &'static str {
         match self { TVal::Network => "network", TVal::In => "in",
                      TVal::Bowtie => "bowtie", TVal::Boxtimes => "boxtimes",
                      TVal::Odot => "odot" }
     }
-    pub fn glyph(&self) -> &'static str {
-        match self { TVal::Network => "𐑡", TVal::In => "𐑰",
-                     TVal::Bowtie => "𐑥", TVal::Boxtimes => "𐑶",
-                     TVal::Odot => "𐑸" }
-    }
+    pub fn glyph(&self) -> &'static str { self.to_igprim().glyph() }
     pub fn ordinal(&self) -> u8 {
         match self { TVal::Network => 0, TVal::In => 1,
                      TVal::Bowtie => 2, TVal::Boxtimes => 3, TVal::Odot => 4 }
@@ -220,14 +235,21 @@ impl TVal {
 }
 
 impl RVal {
+
+    /// Convert to the canonical IgPrim enum — single source of truth.
+    pub fn to_igprim(self) -> IgPrim {
+        match self {
+            RVal::Super => IgPrim::R_super,
+            RVal::Cat => IgPrim::R_cat,
+            RVal::Dagger => IgPrim::R_dagger,
+            RVal::LR => IgPrim::R_lr,
+        }
+    }
     pub fn as_str(&self) -> &'static str {
         match self { RVal::Super => "super", RVal::Cat => "cat",
                      RVal::Dagger => "dagger", RVal::LR => "lr" }
     }
-    pub fn glyph(&self) -> &'static str {
-        match self { RVal::Super => "𐑩", RVal::Cat => "𐑑",
-                     RVal::Dagger => "𐑽", RVal::LR => "𐑾" }
-    }
+    pub fn glyph(&self) -> &'static str { self.to_igprim().glyph() }
     pub fn ordinal(&self) -> u8 {
         match self { RVal::Super => 0, RVal::Cat => 1,
                      RVal::Dagger => 2, RVal::LR => 3 }
@@ -235,14 +257,22 @@ impl RVal {
 }
 
 impl PVal {
+
+    /// Convert to the canonical IgPrim enum — single source of truth.
+    pub fn to_igprim(self) -> IgPrim {
+        match self {
+            PVal::Asym => IgPrim::P_asym,
+            PVal::Psi => IgPrim::P_psi,
+            PVal::Pm => IgPrim::P_pm,
+            PVal::Sym => IgPrim::P_sym,
+            PVal::PmSym => IgPrim::P_pmsym,
+        }
+    }
     pub fn as_str(&self) -> &'static str {
         match self { PVal::Asym => "asym", PVal::Psi => "psi",
                      PVal::Pm => "pm", PVal::Sym => "sym", PVal::PmSym => "pm_sym" }
     }
-    pub fn glyph(&self) -> &'static str {
-        match self { PVal::Asym => "𐑗", PVal::Psi => "𐑿",
-                     PVal::Pm => "𐑬", PVal::Sym => "𐑯", PVal::PmSym => "𐑹" }
-    }
+    pub fn glyph(&self) -> &'static str { self.to_igprim().glyph() }
     pub fn ordinal(&self) -> u8 {
         match self { PVal::Asym => 0, PVal::Psi => 1,
                      PVal::Pm => 2, PVal::Sym => 3, PVal::PmSym => 4 }
@@ -250,26 +280,41 @@ impl PVal {
 }
 
 impl FVal {
+
+    /// Convert to the canonical IgPrim enum — single source of truth.
+    pub fn to_igprim(self) -> IgPrim {
+        match self {
+            FVal::Ell => IgPrim::F_ell,
+            FVal::Eth => IgPrim::F_eth,
+            FVal::Hbar => IgPrim::F_hbar,
+        }
+    }
     pub fn as_str(&self) -> &'static str {
         match self { FVal::Ell => "ell", FVal::Eth => "eth", FVal::Hbar => "hbar" }
     }
-    pub fn glyph(&self) -> &'static str {
-        match self { FVal::Ell => "𐑱", FVal::Eth => "𐑞", FVal::Hbar => "𐑐" }
-    }
+    pub fn glyph(&self) -> &'static str { self.to_igprim().glyph() }
     pub fn ordinal(&self) -> u8 {
         match self { FVal::Ell => 0, FVal::Eth => 1, FVal::Hbar => 2 }
     }
 }
 
 impl KVal {
+
+    /// Convert to the canonical IgPrim enum — single source of truth.
+    pub fn to_igprim(self) -> IgPrim {
+        match self {
+            KVal::Fast => IgPrim::K_fast,
+            KVal::Mod => IgPrim::K_mod,
+            KVal::Slow => IgPrim::K_slow,
+            KVal::Trap => IgPrim::K_trap,
+            KVal::MBL => IgPrim::K_mbl,
+        }
+    }
     pub fn as_str(&self) -> &'static str {
         match self { KVal::Fast => "fast", KVal::Mod => "mod",
                      KVal::Slow => "slow", KVal::Trap => "trap", KVal::MBL => "MBL" }
     }
-    pub fn glyph(&self) -> &'static str {
-        match self { KVal::Fast => "𐑘", KVal::Mod => "𐑤",
-                     KVal::Slow => "𐑧", KVal::Trap => "𐑪", KVal::MBL => "𐑺" }
-    }
+    pub fn glyph(&self) -> &'static str { self.to_igprim().glyph() }
     pub fn ordinal(&self) -> u8 {
         match self { KVal::Fast => 0, KVal::Mod => 1,
                      KVal::Slow => 2, KVal::Trap => 3, KVal::MBL => 4 }
@@ -277,26 +322,40 @@ impl KVal {
 }
 
 impl GVal {
+
+    /// Convert to the canonical IgPrim enum — single source of truth.
+    pub fn to_igprim(self) -> IgPrim {
+        match self {
+            GVal::Beth => IgPrim::G_beth,
+            GVal::Gimel => IgPrim::G_gimel,
+            GVal::Aleph => IgPrim::G_aleph,
+        }
+    }
     pub fn as_str(&self) -> &'static str {
         match self { GVal::Beth => "beth", GVal::Gimel => "gimel", GVal::Aleph => "aleph" }
     }
-    pub fn glyph(&self) -> &'static str {
-        match self { GVal::Beth => "𐑚", GVal::Gimel => "𐑔", GVal::Aleph => "𐑲" }
-    }
+    pub fn glyph(&self) -> &'static str { self.to_igprim().glyph() }
     pub fn ordinal(&self) -> u8 {
         match self { GVal::Beth => 0, GVal::Gimel => 1, GVal::Aleph => 2 }
     }
 }
 
 impl GmVal {
+
+    /// Convert to the canonical IgPrim enum — single source of truth.
+    pub fn to_igprim(self) -> IgPrim {
+        match self {
+            GmVal::And => IgPrim::C_and,
+            GmVal::Or => IgPrim::C_or,
+            GmVal::Seq => IgPrim::C_seq,
+            GmVal::Broad => IgPrim::C_broad,
+        }
+    }
     pub fn as_str(&self) -> &'static str {
         match self { GmVal::And => "and", GmVal::Or => "or",
                      GmVal::Seq => "seq", GmVal::Broad => "broad" }
     }
-    pub fn glyph(&self) -> &'static str {
-        match self { GmVal::And => "𐑝", GmVal::Or => "𐑜",
-                     GmVal::Seq => "𐑠", GmVal::Broad => "𐑵" }
-    }
+    pub fn glyph(&self) -> &'static str { self.to_igprim().glyph() }
     pub fn ordinal(&self) -> u8 {
         match self { GmVal::And => 0, GmVal::Or => 1,
                      GmVal::Seq => 2, GmVal::Broad => 3 }
@@ -304,13 +363,23 @@ impl GmVal {
 }
 
 impl PhiVal {
+
+    /// Convert to the canonical IgPrim enum — single source of truth.
+    pub fn to_igprim(self) -> IgPrim {
+        match self {
+            PhiVal::Sub => IgPrim::Phi_sub,
+            PhiVal::C => IgPrim::Phi_c,
+            PhiVal::CComplex => IgPrim::Phi_c_complex,
+            PhiVal::EP => IgPrim::Phi_ep,
+            PhiVal::Super => IgPrim::Phi_super,
+        }
+    }
     pub fn as_str(&self) -> &'static str {
         match self { PhiVal::Sub => "sub", PhiVal::C => "c",
                      PhiVal::CComplex => "c_complex", PhiVal::EP => "EP",
                      PhiVal::Super => "super" }
     }
-    pub fn glyph(&self) -> &'static str {
-        match self { PhiVal::Sub => "𐑢", PhiVal::C => "\u{2299}",
+    pub fn glyph(&self) -> &'static str { self.to_igprim().glyph() }",
                      PhiVal::CComplex => "𐑮", PhiVal::EP => "𐑻",
                      PhiVal::Super => "𐑣" }
     }
@@ -321,40 +390,61 @@ impl PhiVal {
 }
 
 impl HVal {
+
+    /// Convert to the canonical IgPrim enum — single source of truth.
+    pub fn to_igprim(self) -> IgPrim {
+        match self {
+            HVal::M0 => IgPrim::H0,
+            HVal::M1 => IgPrim::H1,
+            HVal::M2 => IgPrim::H2,
+            HVal::Inf => IgPrim::H_inf,
+        }
+    }
     pub fn as_str(&self) -> &'static str {
         match self { HVal::M0 => "0", HVal::M1 => "1",
                      HVal::M2 => "2", HVal::Inf => "inf" }
     }
-    pub fn glyph(&self) -> &'static str {
-        match self { HVal::M0 => "𐑓", HVal::M1 => "𐑒",
-                     HVal::M2 => "𐑖", HVal::Inf => "𐑫" }
-    }
+    pub fn glyph(&self) -> &'static str { self.to_igprim().glyph() }
     pub fn ordinal(&self) -> u8 {
         match self { HVal::M0 => 0, HVal::M1 => 1, HVal::M2 => 2, HVal::Inf => 3 }
     }
 }
 
 impl SVal {
+
+    /// Convert to the canonical IgPrim enum — single source of truth.
+    pub fn to_igprim(self) -> IgPrim {
+        match self {
+            SVal::One => IgPrim::S_11,
+            SVal::Many => IgPrim::S_nn,
+            SVal::Hetero => IgPrim::S_nm,
+        }
+    }
     pub fn as_str(&self) -> &'static str {
         match self { SVal::One => "one", SVal::Many => "many", SVal::Hetero => "hetero" }
     }
-    pub fn glyph(&self) -> &'static str {
-        match self { SVal::One => "𐑙", SVal::Many => "𐑕", SVal::Hetero => "𐑳" }
-    }
+    pub fn glyph(&self) -> &'static str { self.to_igprim().glyph() }
     pub fn ordinal(&self) -> u8 {
         match self { SVal::One => 0, SVal::Many => 1, SVal::Hetero => 2 }
     }
 }
 
 impl OVal {
+
+    /// Convert to the canonical IgPrim enum — single source of truth.
+    pub fn to_igprim(self) -> IgPrim {
+        match self {
+            OVal::Trivial => IgPrim::Omega_0,
+            OVal::Z2 => IgPrim::Omega_z2,
+            OVal::Z => IgPrim::Omega_z,
+            OVal::NA => IgPrim::Omega_na,
+        }
+    }
     pub fn as_str(&self) -> &'static str {
         match self { OVal::Trivial => "0", OVal::Z2 => "Z2",
                      OVal::Z => "Z", OVal::NA => "NA" }
     }
-    pub fn glyph(&self) -> &'static str {
-        match self { OVal::Trivial => "𐑷", OVal::Z2 => "𐑴",
-                     OVal::Z => "𐑭", OVal::NA => "𐑟" }
-    }
+    pub fn glyph(&self) -> &'static str { self.to_igprim().glyph() }
     pub fn ordinal(&self) -> u8 {
         match self { OVal::Trivial => 0, OVal::Z2 => 1, OVal::Z => 2, OVal::NA => 3 }
     }
@@ -747,7 +837,7 @@ mod tests {
         for (i, stage) in stages.iter().enumerate() {
             // Every stage should have non-empty display
             let d = stage.display();
-            assert!(!d.is_empty(), "Stage {} display empty", i);
+            assert!(!d.is_empty(), "Stage {} display empty ", i);
         }
     }
 
@@ -756,14 +846,14 @@ mod tests {
         let ctx = StageContext::default();
         let stages = generate_all_stages(&ctx);
         assert!(verify_monotonic_advance(&stages),
-            "Ω must be monotonic across pipeline stages");
+            "Ω must be monotonic across pipeline stages ");
     }
 
     #[test]
     fn test_codon_stage_critical() {
         let ctx = StageContext::default();
         let codon = generate_stage3_codon(&ctx);
-        assert_eq!(codon.phi, PhiVal::C, "Codon stage must be ⊙-critical");
+        assert_eq!(codon.phi, PhiVal::C, "Codon stage must be Phi_c-critical ");
     }
 
     #[test]
@@ -783,10 +873,10 @@ mod tests {
         let counts = scan_activations("MAGILVFWY");
         // M has H=Inf; A has H=M0; G has Phi=Sub; I has K=Slow; L has K=Trap;
         // V has K=Slow; F has H=M2; W has H=Inf + Phi=Super; Y has H=M2 + Phi=CComplex
-        assert!(counts.get("Phi_active").unwrap_or(&0) >= &2, "G+W+Y activate Phi");
-        assert!(counts.get("K_branched").unwrap_or(&0) >= &2, "I+V activate K");
-        assert!(counts.get("H_high").unwrap_or(&0) >= &2, "F+Y activate H≥2");
-        assert!(counts.get("D_odot").unwrap_or(&0) == &0, "No K or R in test chain");
+        assert!(counts.get("Phi_active").unwrap_or(&0) >= &2, "G+W+Y activate Phi ");
+        assert!(counts.get("K_branched").unwrap_or(&0) >= &2, "I+V activate K ");
+        assert!(counts.get("H_high").unwrap_or(&0) >= &2, "F+Y activate H at least 2");
+        assert!(counts.get("D_odot").unwrap_or(&0) == &0, "No K or R in test chain ");
     }
 
     #[test]
@@ -805,7 +895,7 @@ mod tests {
         let stages = generate_all_stages(&ctx);
         for stage in &stages {
             let addr = tuple_crystal_address(stage);
-            assert!(addr < 17_280_000, "Address {} out of crystal range", addr);
+            assert!(addr < 17_280_000, "Address {} out of crystal range ", addr);
         }
     }
 
@@ -870,117 +960,8 @@ pub const CANONICAL_CODON: (&str, &str, &str, &str, &str, &str,
     ("wedge", "boxtimes", "lr", "pm", "hbar", "slow",
      "beth", "and", "c", "2", "many", "Z2");
 
-/// Canonical tuple for Stage 7 (Quaternary assembly).
-pub const CANONICAL_QUATERNARY: (&str, &str, &str, &str, &str, &str,
-                                  &str, &str, &str, &str, &str, &str) =
-    ("infty", "boxtimes", "lr", "sym", "ell", "trap",
-     "aleph", "broad", "sub", "inf", "hetero", "Z");
-
-
-// ── IgPrim Consistency Guard ─────────────────────────────────────────────
-// The genetic_tuples value enums (DVal, TVal, ...) are structurally isomorphic
-// to IgPrim by construction — same cardinalities, same ordering.
-// These tests GUARD against drift: if IgPrim values change, these break.
-#[cfg(test)]
-mod igprim_consistency {
-    use super::*;
-    use crate::imas_ig::IgPrim;
-
-    /// Verify DVal glyphs match IgPrim glyphs.
-    #[test]
-    fn dval_glyphs_match_igprim() {
-        assert_eq!(DVal::Wedge.glyph(), IgPrim::D_wedge.glyph());
-        assert_eq!(DVal::Tri.glyph(),   IgPrim::D_triangle.glyph());
-        assert_eq!(DVal::Infty.glyph(), IgPrim::D_infty.glyph());
-        assert_eq!(DVal::Odot.glyph(),  IgPrim::D_odot.glyph());
-    }
-
-    #[test]
-    fn tval_glyphs_match_igprim() {
-        assert_eq!(TVal::Network.glyph(),  IgPrim::T_net.glyph());
-        assert_eq!(TVal::In.glyph(),       IgPrim::T_in.glyph());
-        assert_eq!(TVal::Bowtie.glyph(),   IgPrim::T_bowtie.glyph());
-        assert_eq!(TVal::Boxtimes.glyph(), IgPrim::T_boxtimes.glyph());
-        assert_eq!(TVal::Odot.glyph(),     IgPrim::T_odot.glyph());
-    }
-
-    #[test]
-    fn rval_glyphs_match_igprim() {
-        assert_eq!(RVal::Super.glyph(),  IgPrim::R_super.glyph());
-        assert_eq!(RVal::Cat.glyph(),    IgPrim::R_cat.glyph());
-        assert_eq!(RVal::Dagger.glyph(), IgPrim::R_dagger.glyph());
-        assert_eq!(RVal::LR.glyph(),     IgPrim::R_lr.glyph());
-    }
-
-    #[test]
-    fn pval_glyphs_match_igprim() {
-        assert_eq!(PVal::Asym.glyph(),  IgPrim::P_asym.glyph());
-        assert_eq!(PVal::Psi.glyph(),   IgPrim::P_psi.glyph());
-        assert_eq!(PVal::Pm.glyph(),    IgPrim::P_pm.glyph());
-        assert_eq!(PVal::Sym.glyph(),   IgPrim::P_sym.glyph());
-        assert_eq!(PVal::PmSym.glyph(), IgPrim::P_pmsym.glyph());
-    }
-
-    #[test]
-    fn fval_glyphs_match_igprim() {
-        assert_eq!(FVal::Ell.glyph(),  IgPrim::F_ell.glyph());
-        assert_eq!(FVal::Eth.glyph(),  IgPrim::F_eth.glyph());
-        assert_eq!(FVal::Hbar.glyph(), IgPrim::F_hbar.glyph());
-    }
-
-    #[test]
-    fn kval_glyphs_match_igprim() {
-        assert_eq!(KVal::Fast.glyph(), IgPrim::K_fast.glyph());
-        assert_eq!(KVal::Mod.glyph(),  IgPrim::K_mod.glyph());
-        assert_eq!(KVal::Slow.glyph(), IgPrim::K_slow.glyph());
-        assert_eq!(KVal::Trap.glyph(), IgPrim::K_trap.glyph());
-        assert_eq!(KVal::MBL.glyph(),  IgPrim::K_mbl.glyph());
-    }
-
-    #[test]
-    fn gval_glyphs_match_igprim() {
-        assert_eq!(GVal::Beth.glyph(),  IgPrim::G_beth.glyph());
-        assert_eq!(GVal::Gimel.glyph(), IgPrim::G_gimel.glyph());
-        assert_eq!(GVal::Aleph.glyph(), IgPrim::G_aleph.glyph());
-    }
-
-    #[test]
-    fn gmval_glyphs_match_igprim() {
-        assert_eq!(GmVal::And.glyph(),   IgPrim::C_and.glyph());
-        assert_eq!(GmVal::Or.glyph(),    IgPrim::C_or.glyph());
-        assert_eq!(GmVal::Seq.glyph(),   IgPrim::C_seq.glyph());
-        assert_eq!(GmVal::Broad.glyph(), IgPrim::C_broad.glyph());
-    }
-
-    #[test]
-    fn phival_glyphs_match_igprim() {
-        assert_eq!(PhiVal::Sub.glyph(),      IgPrim::Phi_sub.glyph());
-        assert_eq!(PhiVal::C.glyph(),         IgPrim::Phi_c.glyph());
-        assert_eq!(PhiVal::CComplex.glyph(),  IgPrim::Phi_c_complex.glyph());
-        assert_eq!(PhiVal::EP.glyph(),        IgPrim::Phi_ep.glyph());
-        assert_eq!(PhiVal::Super.glyph(),     IgPrim::Phi_super.glyph());
-    }
-
-    #[test]
-    fn hval_glyphs_match_igprim() {
-        assert_eq!(HVal::M0.glyph(),  IgPrim::H0.glyph());
-        assert_eq!(HVal::M1.glyph(),  IgPrim::H1.glyph());
-        assert_eq!(HVal::M2.glyph(),  IgPrim::H2.glyph());
-        assert_eq!(HVal::Inf.glyph(), IgPrim::H_inf.glyph());
-    }
-
-    #[test]
-    fn sval_glyphs_match_igprim() {
-        assert_eq!(SVal::One.glyph(),    IgPrim::S_11.glyph());
-        assert_eq!(SVal::Many.glyph(),   IgPrim::S_nn.glyph());
-        assert_eq!(SVal::Hetero.glyph(), IgPrim::S_nm.glyph());
-    }
-
-    #[test]
-    fn oval_glyphs_match_igprim() {
-        assert_eq!(OVal::Trivial.glyph(), IgPrim::Omega_0.glyph());
-        assert_eq!(OVal::Z2.glyph(),      IgPrim::Omega_z2.glyph());
-        assert_eq!(OVal::Z.glyph(),       IgPrim::Omega_z.glyph());
-        assert_eq!(OVal::NA.glyph(),      IgPrim::Omega_na.glyph());
-    }
-}
+// /// Canonical tuple for Stage 7 (Quaternary assembly).
+// pub const CANONICAL_QUATERNARY: (&str, &str, &str, &str, &str, &str,
+//                                   &str, &str, &str, &str, &str, &str) =
+//     ("infty", "boxtimes", "lr", "sym", "ell", "trap",
+//      "aleph", "broad", "sub", "inf", "hetero", "Z");

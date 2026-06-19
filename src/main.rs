@@ -1038,7 +1038,29 @@ Stopped after {} ticks.", ran);
                 }
             }
             "" => {}
-            _ => sprintln!("Unknown: {}. Type 'help'.", cmd),
+            _ => {
+                // Context-aware subcommand dispatch: if we're inside a context
+                // (Rebis, Universe, etc.) and cmd isn't a top-level command,
+                // try dispatching as a subcommand of the current context.
+                // E.g., 'translate ATGGCC' in Rebis → treated as 'rebis translate ATGGCC'
+                let ctx_dispatch = ctx_stack.current().and_then(|ctx| {
+                    let ctx_name = ctx.name.to_lowercase();
+                    match ctx_name.as_str() {
+                        "rebis" => {
+                            // Remaining tokens from parts iterator become sub/arg/rest
+                            let sub = cmd;
+                            let arg = parts.next().unwrap_or("");
+                            let r: alloc::string::String = parts.collect::<alloc::vec::Vec<&str>>().join(" ");
+                            print_rebis(sub, arg, &r);
+                            Some(())
+                        }
+                        _ => None,
+                    }
+                });
+                if ctx_dispatch.is_none() {
+                    sprintln!("Unknown: {}. Type 'help'.", cmd);
+                }
+            },
         }
     }
 }
@@ -2138,6 +2160,8 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
     use crate::rebis::materials::forge_material;
     use crate::rebis::biology::{TissueGrid, FrobeniusBioSim};
     use crate::rebis::therapeutics::Chemotherapeutic;
+    use crate::rebis::clink;
+    
 
 
     match sub {
@@ -2646,8 +2670,27 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                 }
             }
         }
+        "clink" => {
+            match arg {
+                "chain" => sprintln!("{}", clink::clink_verify_chain()),
+                "ladder" => sprintln!("{}", clink::clink_distance_ladder()),
+                "promote" => sprintln!("{}", clink::clink_promotion_ladder()),
+                "summary" | _ => sprintln!("{}", clink::clink_summary()),
+            }
+        }
+        "imas" => {
+            match arg {
+                "bridge" => sprintln!("{}", crate::rebis::imas::bridge_all_report()),
+                "verify" => {
+                    if let Some(seq) = crate::rebis::imas::canonical_sequence(6) {
+                        sprintln!("{}", crate::rebis::imas::verify_bootstrap(seq));
+                    }
+                }
+                "summary" | _ => sprintln!("{}", crate::rebis::imas::imasm_summary()),
+            }
+        }
         _ => {
-            sprintln!("Rebis: Red-Hot Rebis kernel module (17 subcommands)");
+            sprintln!("Rebis: Red-Hot Rebis kernel module (19 subcommands)");
             sprintln!("  rebis codon <XXX|AA>      — codon→AA or AA→codons (bidirectional)");
             sprintln!("  rebis translate <DNA>     — gene→protein pipeline (DNA→mRNA→AA)
   rebis reverse <Prot>     — protein→mRNA→DNA (reverse pipeline)");
@@ -2665,7 +2708,9 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
             sprintln!("  rebis antibody epi|des.. — antibody CDR design");
             sprintln!("  rebis material forge|..  — IG material forge & metamaterials");
             sprintln!("  rebis bio                — biological sim (tissue, telomere)");
-            sprintln!("  rebis tx                 — therapeutics (chemo, pill, antidote)");
+            sprintln!("  rebis tx                 — therapeutics (chemo, pill, antidote)
+  rebis clink [chain|..]    — CLINK 9-layer chain (L0–L8)
+  rebis imas [bridge|..]    — IMASM arranger bridge");
         }
     }
 }
