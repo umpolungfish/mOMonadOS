@@ -55,6 +55,7 @@ pub static PROGRAMS_MENU: &[MenuItem] = &[
     MenuItem { name: "continuous",cmd: "continuous",desc: "Load continuous program 1-4", submenu: None },
     MenuItem { name: "novel",    cmd: "novel",    desc: "Load novel program 1-3", submenu: None },
     MenuItem { name: "shunt",    cmd: "shunt",    desc: "Load shunted program 1-9", submenu: None },
+    MenuItem { name: "dynamic",  cmd: "dynamic",  desc: "Dynamic mode: rebuild sequence from IgTuple each wrap", submenu: None },
 ];
 
 pub static CRYSTAL_MENU: &[MenuItem] = &[

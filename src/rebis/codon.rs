@@ -202,7 +202,6 @@ pub fn derive_aa_for_codon(codon: &Codon) -> AminoAcid {
         (B4::F, B4::B) => if is_pyrimidine(p3) { AminoAcid::Ser } else { AminoAcid::Arg },
         (B4::T, B4::F) => if is_pyrimidine(p3) { AminoAcid::His } else { AminoAcid::Gln },
         (B4::B, B4::F) => if is_pyrimidine(p3) { AminoAcid::Asp } else { AminoAcid::Glu },
-        _ => AminoAcid::Stop,
     }
 }
 

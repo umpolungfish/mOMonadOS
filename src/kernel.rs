@@ -61,6 +61,7 @@ pub struct Kernel {
     fork_stack:      [ForkFrame; 16],
     fork_depth:      usize,
     pub halted:      bool,
+    pub dynamic_mode: bool,  // true → rebuild program from IgTuple each wrap
     // ── Cross-universe ruleset state ──
     pub active_universe: u8,        // 0-7, current active ruleset (default 0 = canonical)
     pub liminal_target: Option<u8>, // universe jumped to, pending IFIX seal
@@ -89,6 +90,7 @@ impl Kernel {
             fork_stack:  [ForkFrame { resume_ip: 0, right_val: B4::N, right_set: false }; 16],
             fork_depth:  0,
             halted:      false,
+            dynamic_mode: false,
             active_universe:      0,
             liminal_target:       None,
             liminal_compound:     None,
@@ -396,11 +398,43 @@ impl Kernel {
     }
 
     fn try_self_modify(&mut self) {
-        if self.stack.depth() > 200 {
+        if self.dynamic_mode {
+            // Derive next program from current IgTuple rather than running a preset.
+            let snap = self.dynamic_imscribe();
+            let tuple = crate::imas_ig::IgTuple::from_snapshot(&snap);
+            let len = crate::sequence::next_seq_len(&snap);
+            self.program = crate::sequence::build_next_program(&tuple, len, snap.self_ref);
+            self.snapshot = Some(self_imscribe(&self.program));
+            self.ip = 0;
+            self.fork_depth = 0;
+        } else if self.stack.depth() > 200 {
             self.program.inject(self.ip, Token::TANCH);
-            // ── Refresh snapshot: the program's token count has changed ──
             self.snapshot = Some(self_imscribe(&self.program));
         }
+    }
+
+    /// Enable dynamic mode: the kernel rebuilds its own sequence from its
+    /// current IgTuple each time the program wraps. The first sequence is
+    /// built from the current snapshot (or bootstrap defaults if no snapshot yet).
+    pub fn load_dynamic(&mut self) {
+        self.dynamic_mode = true;
+        let snap = match self.snapshot {
+            Some(s) => s,
+            None    => self_imscribe(&self.program),
+        };
+        let tuple = crate::imas_ig::IgTuple::from_snapshot(&snap);
+        let len = crate::sequence::next_seq_len(&snap);
+        self.program = crate::sequence::build_next_program(&tuple, len, snap.self_ref);
+        self.snapshot = Some(self_imscribe(&self.program));
+        self.ip = 0;
+        self.fork_depth = 0;
+        self.halted = false;
+        self.phase = Phase::Think;
+    }
+
+    /// Disable dynamic mode; leave the current program in place.
+    pub fn disable_dynamic(&mut self) {
+        self.dynamic_mode = false;
     }
 
     /// Dynamic imscription: static structural analysis overlaid with

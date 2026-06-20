@@ -33,6 +33,7 @@ mod consciousness;
 mod rebis;
 mod universe;
 mod menu;
+mod sequence;
 
 use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
 use crystal::{CrystalStore, decode, encode, indices_from_snapshot, TOTAL};
@@ -457,6 +458,37 @@ Stopped after {} ticks.", ran);
                         sprintln!("  {}. {}", i + 1, continuous_name(i));
                     }
                     sprintln!("Usage: continuous <1-{}>", CONTINUOUS_COUNT);
+                }
+            }
+            "dynamic" => {
+                let arg = parts.next().unwrap_or("").trim();
+                match arg {
+                    "off" | "disable" => {
+                        k.disable_dynamic();
+                        sprintln!("Dynamic mode off. Current program unchanged.");
+                    }
+                    "status" => {
+                        sprintln!("Dynamic mode: {}", if k.dynamic_mode { "ON" } else { "OFF" });
+                        if let Some(snap) = k.snapshot {
+                            let tuple = IgTuple::from_snapshot(&snap);
+                            sprintln!("{}", sequence::vote_summary(&tuple));
+                        }
+                    }
+                    _ => {
+                        // "dynamic" or "dynamic on" — enable and build first sequence
+                        k.load_dynamic();
+                        sprintln!("Dynamic mode ON — sequence derived from IgTuple each wrap.");
+                        serial::write_str("Program: ");
+                        for (j, t) in k.program.as_slice().iter().enumerate() {
+                            if j > 0 { serial::write_str(" → "); }
+                            serial::write_str(t.name());
+                        }
+                        sprintln!();
+                        if let Some(snap) = k.snapshot {
+                            let tuple = IgTuple::from_snapshot(&snap);
+                            sprintln!("{}", sequence::vote_summary(&tuple));
+                        }
+                    }
                 }
             }
             "crystal" => {
