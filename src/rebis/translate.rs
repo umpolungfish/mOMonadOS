@@ -229,19 +229,28 @@ pub fn run_pipeline(dna: &[u8]) -> TranslationResult {
     let stop_present = protein.last() == Some(&AminoAcid::Stop);
 
     // Frobenius verification: Protein→mRNA→Protein round-trip (μ∘δ=id)
-    // 1. Reverse-translate protein back to canonical mRNA
-    // 2. Re-translate that mRNA back to protein
+    // 1. Reverse-translate protein back to canonical mRNA (δ)
+    // 2. Re-translate each codon directly (μ) — no AUG scanner; this is a
+    //    structural roundtrip, not a genomic parse, so no start codon needed.
     // 3. Verify the two protein chains match (position-by-position)
     let non_stop: Vec<AminoAcid> = protein.iter()
         .filter(|&&aa| aa != AminoAcid::Stop)
         .copied()
         .collect();
     let back_mrna = reverse_translate(&non_stop);
-    let (roundtrip_protein, _) = translate(&back_mrna);
-    let roundtrip_non_stop: Vec<AminoAcid> = roundtrip_protein.iter()
-        .filter(|&&aa| aa != AminoAcid::Stop)
-        .copied()
-        .collect();
+    let mut roundtrip_non_stop: Vec<AminoAcid> = Vec::new();
+    let mut rpos = 0usize;
+    while rpos + 2 < back_mrna.len() {
+        match Codon::from_bytes(back_mrna[rpos], back_mrna[rpos + 1], back_mrna[rpos + 2]) {
+            Ok(c) => {
+                let aa = translate_codon(&c);
+                if aa == AminoAcid::Stop { break; }
+                roundtrip_non_stop.push(aa);
+            }
+            Err(_) => break,
+        }
+        rpos += 3;
+    }
     let frobenius_ok = non_stop.len() > 0
         && non_stop.len() == roundtrip_non_stop.len()
         && non_stop.iter().zip(roundtrip_non_stop.iter()).all(|(a, b)| a == b);

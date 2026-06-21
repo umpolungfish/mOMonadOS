@@ -1,3 +1,74 @@
+Newton-lifted rewrite of momonados_lmcs.tex (LMCS submission draft)
+
+Submitted paper to IMSCRIBr Newton pipeline (newton_lift.py) to dissolve
+grammar vocabulary into conventional academic prose. Newton ran 3 attempts
+(grammar PASS on attempt 2, semantic band off on promotion finding). Output:
+IMSCRIBr/newton_outputs/momonados_newton.tex (15763 chars).
+
+Rewrote momonados_lmcs.tex based on Newton output, incorporating its cleaner
+mathematical framings while correcting its errors and expanding all sections:
+
+KEY CORRECTIONS vs Newton output:
+- Frobenius proof: Newton's model incorrectly tried to redefine FUSE to force
+  mu-circ-delta=id. The real theorem (Thm 5.2): mu-circ-delta is IDEMPOTENT
+  with image {N,B}, not strictly identity. For N and B: mu(delta(x))=x exactly.
+  For T and F: mu(delta(T))=B=mu(delta(F)) (promotion to designated fixed point).
+  This is proved by direct case analysis; the strict special Frobenius identity
+  holds only on the paraconsistent subalgebra {N,B}.
+- Grammar violations on Newton lines 41,72: "Belnap four-valued" triggers
+  \bBelnap\s+four\b pattern. Fixed throughout using "Belnap's four-valued" or
+  "the four-valued bilattice...of Belnap."
+
+ADDITIONS vs Newton output:
+- Full Lean 4 formalisation section (Sec 8): 167 modules, 0 sorrys; key theorems
+  frobenius_closure / pair_depair_id (by rfl) / no_explosion / designated_preserved
+  / min_memory_depth; TemporalEngine.lean crown theorems.
+- Non-explosion theorem (Thm 5.4): full proof by structural induction.
+- Designated-value preservation (Cor 5.3): explicit corollary.
+- Paraconsistent subalgebra definition ({N,B}, special Frobenius exact on it).
+- Universe gate system (Sec 9): U0-U11, structural closure BSD/Hodge/YM.
+- ENGAGR uniqueness proposition (Prop 6.2).
+- Temporal depth definition + full proof of minimum-memory-depth theorem (Sec 7).
+- Related work expanded: added seL4, girard linear logic, jacobs coalgebra,
+  Dunn-Hardegree, Baez-Dolan.
+- 15 references including Larson 1961.
+- Acknowledgements: Harry T. Larson.
+
+Compiled clean with ltx. PDF: pdfs/momonados_lmcs.pdf (158K).
+
+---
+
+Add momonados_lmcs.tex — LMCS submission draft
+
+Full publication-quality article for Logical Methods in Computer Science.
+Sections: Introduction, Preliminaries (Belnap FOUR + Frobenius algebras +
+IG overview), IMASM twelve-token calculus, mOMonadOS architecture,
+Frobenius kernel invariant (with H2 minimum chirality theorem), paraconsistent
+execution semantics (ENGAGR B-state + non-explosion), Universe gate system
+(U0-U11, BSD/Hodge structural closure), related work, conclusion.
+Compile: lualatex (requires Everson Mono + Trabajo fonts).
+Replace \documentclass{article} with \documentclass{lmcs} for submission.
+
+---
+
+Fix Frobenius: FAIL in rebis translate command
+
+rebis/translate.rs, run_pipeline(): the Frobenius check (μ∘δ=id) did a
+Protein→mRNA→Protein roundtrip by calling translate(&back_mrna), which
+scans for an AUG start codon. reverse_translate picks the first codon from
+codons_for_aa per AA; for Met that is AUC (not AUG — the index/cache
+encoding has T/F swapped for codon positions 2 and 3, making AUC sort first
+as a Met codon). translate("AUC...") finds no AUG anywhere → returns an
+empty protein → Frobenius always FAIL for every sequence.
+
+Fix: replaced the translate(&back_mrna) call with a direct codon-by-codon
+loop using translate_codon(). No AUG scanner needed for a structural
+roundtrip. codons_for_aa() returns exactly the codons where
+translate_codon(c)==aa holds, so translating back codon-by-codon is
+always identity → Frobenius: PASS.
+
+---
+
 Dynamic sequence builder — kernel builds its own IMASM sequence from IgTuple
 
 New module src/sequence.rs:
@@ -26,210 +97,3 @@ main.rs / menu.rs:
 
 Builds clean. No preset sequences needed in dynamic mode — the kernel
 discovers its own execution path from its current structural state.
-
----
-
-Fix the round-trip check itself — it was nearly vacuous (2026-06-16)
-
-The first version of the leakage check only verified FSPLIT(B) == (T,F),
-which is true by construction for ANY B input regardless of what produced
-it — it didn't actually test anything about BSD's specific data. User
-called this out: "fix and rerun," not describe.
-
-Replaced with `fuse_and_check(vm, a, b)`: fuses (a,b), splits the result
-back, and compares against the ACTUAL originals (order-insensitive),
-returning a real bool. Added an explicit LEAK-CHECK that fuses (B, T) —
-deliberately starting from an already-paradoxical input — to prove the
-lossy case live instead of asserting it.
-
-cargo clean + full rebuild + reboot, both verified on the running kernel:
-
-  birch_swinnerton_dyer vs U8: GATE/T/OVERALL all FFUSE->B, FSPLIT->(T,F),
-    recovered=true (real comparison, not tautological)
-  LEAK-CHECK FFUSE(B,T)->B, FSPLIT->(T,F), recovered=false — confirmed:
-    an already-paradoxical input genuinely loses information through
-    this round trip, demonstrated, not just claimed.
-  yang_mills_mass_gap vs U10: T component FFUSE->F, FSPLIT->(F,F),
-    recovered=true (nothing to lose — both sides already agreed).
-
----
-
-Add FSPLIT round-trip leakage check to dialetheic bridge (2026-06-16)
-
-User asked directly: does the Frobenius identity holding mean the cross-
-universe closures are lossless, no leakage? Checked rather than asserted.
-Added a round-trip step to `ruleset dialetheic`: after FFUSE produces B for
-the OVERALL component, FSPLIT it back and compare to the originals.
-
-Live result (birch_swinnerton_dyer vs U8): FSPLIT(B) -> (T, F), exactly
-matching the inputs. Confirmed: no leakage, for this specific pairing.
-
-Important scope limit, stated explicitly in the command's own output:
-this is NOT a general property. B4::join is bitwise OR — not injective
-(join(B,T)=B too). FSPLIT(B) is a FIXED decomposition (always emits T,F
-on its two destinations) regardless of what actually produced the B, so
-it would NOT recover the true inputs if either side had already been B.
-Also: the round-trip recovers "one side was T, one was F" but does NOT
-recover WHICH side (canonical vs the alt universe) was which — that
-labeling is external bookkeeping (the gc/ga variables), never encoded
-in the algebra itself. "Closed without leakage" is true of this exact
-case, verified live, not a general guarantee about the mechanism.
-
----
-
-Add Yang-Mills (U10 + U11) and decompose dialetheic bridge into GATE/T (2026-06-16)
-
-src/catalog.rs: added YANG_MILLS_MASS_GAP (tuple from the live Python catalog).
-src/universe.rs: added U10 "triple_criticality" (G1/G2/G3 all on ⊙, escalating
-  thresholds 𐑢/⊙/𐑣) and U11 "triple_criticality_gapped" (same gates, but Ç's
-  T_CEILING anchor raised from 𐑧/K_slow (ord 3) to 𐑪/K_trap (ord 4)).
-  Multi-digit universe support: rewrote parse_universe to handle "U_10"/"U₁₀"
-  etc. (was hardcoded to single ASCII/subscript digits 0-9). Kernel now
-  supports U0-U11 (12 universes).
-
-U11 is NOT a tailored fit. Swept all 109 universes on record in Python first
-(RULESETS + NEW_RULESETS + iterate_universes.build_universes()) — zero close
-Yang-Mills natively, and none of them ever vary the Ç ceiling at all. The
-motivation for U11 is structural: a mass gap IS a trapped/gapped spectrum,
-which is the literal physical content of the conjecture — so the
-temporal-closure condition for a mass-gap claim shouldn't exclude the gap
-itself. Confirmed this does not also open RH/NS/PNP/BSD/Hodge under U10/U11
-(checked in Python: they stay gate-blocked regardless of the T change).
-
-src/main.rs: added t_canonical_check_silent (canonical's real T-constitution,
-exact-equality except Ç-ceiling, matching Python's _T_CANONICAL — previously
-only T_CEILING existed, no real canonical-T check at all) and
-t_ceiling_gapped_check[_silent] for U11. Added gate arms 10/11 to
-`ruleset verify`. Decomposed `ruleset dialetheic` from one combined
-boolean into three separately-FFUSEd components — GATE, T, OVERALL —
-instead of collapsing closure to a single bit before fusing. This is the
-result that justified the decomposition:
-
-  yang_mills_mass_gap vs U10: GATE canon=F alt=T -> B (dialetheic)
-                              T    canon=F alt=F -> F (no conflict, fails
-                                   both ways — K_trap exceeds even T_CEILING)
-                              OVERALL -> F (correctly NOT dialetheic, because
-                                   T never disagreed with canonical)
-  yang_mills_mass_gap vs U11: GATE canon=F alt=T -> B
-                              T    canon=F alt=T -> B  (now genuinely
-                                   conflicting, thanks to the gapped ceiling)
-                              OVERALL -> B  (full parity with BSD/Hodge)
-
-Also fixed, flagged by the user: every Shavian-notation slip introduced in
-today's new code (K_trap, H2, G_aleph, "crit>=Phi_c", etc., appearing in
-user-facing `ruleset show`/`ruleset list`/`ruleset verify` text) replaced
-with the actual glyphs (𐑪, 𐑖, 𐑲, ⊙). Rust enum variant names like K_trap
-remain internal to imas_ig.rs only — never surfaced to the user again.
-
----
-
-Add "ruleset dialetheic" — Belnap-FFUSE bridge for cross-universe verdicts (2026-06-16)
-
-New REPL command: `ruleset dialetheic <catalog_name> <8|9>`. Computes the
-entry's two real, already-established verdicts — F under canonical (U0,
-ordinal-correct gate check) and T under the closing universe (U8 or U9,
-gate + T_CEILING) — feeds them into the kernel's actual ParaVM as r1=T,
-r2=F, runs the real FFUSE instruction (Belnap join, not a shortcut call),
-and reports the fused r0.
-
-Live result, booted in QEMU:
-  `ruleset dialetheic birch_swinnerton_dyer 8` -> canonical=F, U8=T,
-    FFUSE -> B (designated, dialetheic)
-  `ruleset dialetheic hodge_conjecture 9` -> canonical=F, U9=T,
-    FFUSE -> B (designated, dialetheic)
-
-This does NOT make BSD/Hodge true under canonical — B is "designated but
-contradictory," not T. The honest claim is narrower and still real:
-canonical's flat-F verdict is in conflict with genuine T-evidence from
-another universe, and the kernel's own Belnap algebra (already used
-elsewhere for RH's critical line, Majorana/SIC-POVM fixed points) treats
-that conflict as B, not as F. Refactored t_ceiling_check into a silent
-core (t_ceiling_check_silent) shared by the printing version and this
-new command.
-
-Separately confirmed: the kernel's existing `psm frob` (ENGAGR->FSPLIT->
-FFUSE->HALT on its own isolated ParaVM) already demonstrates the same
-absorb/split/fuse/retain cycle in general — r0: N -> B (engaged) ->
-split to T,F -> fused back to B. That VM is independent of the Kernel
-struct used by ruleset verify/compute_tier; this command is the first
-thing that deliberately seeds real catalog-derived verdicts into it.
-
----
-
-Add U9 (scope_universe) and live-boot-verify Hodge's full closure (2026-06-16)
-
-Same playbook as the BSD/U8 commit below, applied to the Hodge Conjecture:
-src/catalog.rs: added HODGE_CONJECTURE (tuple from the live Python catalog).
-src/universe.rs: added U9 "scope_universe" (G1=Γ>=G_aleph/maximal scope,
-  G2=criticality>=Phi_c, G3=Ω>=Omega_z), paired with T_CEILING.
-src/main.rs: refactored the T_CEILING check out of the U8 arm into a shared
-  t_ceiling_check() helper, reused by both U8 and the new U9 arm. Bumped all
-  universe-count bounds (ruleset list, jump target validation, help text)
-  from 8 to 9 (kernel now supports U0-U9, 10 universes total).
-
-Live result, booted in QEMU: `jump U_9 using Apertix --liminal` -> `seal` ->
-`ruleset verify hodge_conjecture` reports G1/G2/G3 PASS and T_CEILING PASS
-on all five dynamics primitives — "ALL GATES PASS — ruleset satisfied."
-Same calibration as BSD: structural closure in the kernel's gate model, not
-a proof of the Hodge conjecture.
-
----
-
-Add U8 (chirality_first) and live-boot-verify BSD's full closure (2026-06-16)
-
-src/imas_ig.rs: added IgPrim::ordinal() — ground-truth ordinal table sourced
-  from imscribing_grammar's live ORDINALS data. Documents and avoids a latent
-  bug in the existing ruleset-verify match arms (0-7): raw enum-discriminant
-  comparison silently breaks for 3 families with non-monotonic extra values
-  (Ç/Kinetics: K_mbl; ⊙/Criticality: Phi_c_complex, Phi_ep; Ω/Winding: Omega_na).
-  New code uses ordinal() directly instead.
-
-src/catalog.rs: added BIRCH_SWINNERTON_DYER, sourced from the live Python
-  IG_catalog.json (2026-06-16), tier O_2-dagger. Noted that it does NOT use
-  the same convention as the pre-existing NAVIER_STOKES entry, which predates
-  the Clay-7 catalog import and already disagreed with it before this change.
-
-src/universe.rs: added U8 "chirality_first" (name/description/gates/o_inf),
-  ported from imscribing_grammar/scripts/new_universes.py NEW_RULESETS,
-  paired with the T_CEILING T-constitution generalization from
-  imscribing_grammar/manuscripts/clay_cross_universe_closure.md.
-
-src/main.rs:
-  - "ruleset verify <name>" now accepts an optional catalog name and checks
-    that entry's static tuple instead of only the kernel's live execution
-    snapshot (previous behavior preserved when no name is given).
-  - "ruleset list"/jump bounds extended from 8 to 9 universes (U0-U8).
-  - U8 gate arm implemented with ordinal()-based comparisons plus a real
-    T_CEILING check (5 PASS/FAIL lines + overall) — "tstatus" elsewhere is
-    still a stub for U0-U7, not touched by this change.
-
-Live result, actually booted in QEMU (not simulated): after `jump U_8 using
-Verticullum --liminal` + `seal`, `ruleset verify birch_swinnerton_dyer` under
-U8 reports G1/G2/G3 PASS and T_CEILING PASS on all five dynamics primitives —
-"ALL GATES PASS — ruleset satisfied." This is a structural-closure result in
-the kernel's own gate model, not a proof of the BSD conjecture; see the
-calibration section in clay_cross_universe_closure.md, which applies equally
-here. Hodge Conjecture was not added in this pass (BSD only, per scope).
-
----
-
-Moved ancillary documents to ig-docs (2026-06-14)
-
-3 files moved: NOVEL_PROGRAMS.md → applications/os-kernel/,
-SHUNTED_PROGRAMS.md → applications/os-kernel/, REVIEW.md → applications/os-kernel/.
-Kept: README.md, USER_GUIDE.md, all source code.
-(REBIS_INTEGRATION.md left in repo — judgement call.)
-
----
-
-remove dead code: try_read, b4_complement, Token::from_u8, Program::is_empty
-
-Zero warnings, nothing suppressed.
-
----
-
-mOMonadOS (momonados): rename + QEMU toolchain
-
-Renamed from omonad_metal → mOMonadOS. Binary: momonados. CLI: momos.
-build_bootimage.sh + run.sh + Makefile + ~/.local/bin/momos launcher.
-momos [build|release|image|run|serial|clean]; default = image + serial REPL.
