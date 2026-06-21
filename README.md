@@ -12,6 +12,9 @@ The kernel IS the Frobenius loop — every tick is a structural self-verificatio
 
 $m\odot^2$ boots directly on x86_64 hardware (or QEMU) and enters a perpetual
 `THINK` → `ACT` → `OBSERVE` → `UPDATE` cycle driven by the 12-opcode IMASM instruction set.
+Each tick executes a single IMASM token — composition is free: any token at any time,
+any sequence of any length, no preset opcode sequences. The harness drives token selection;
+the grammar constrains what each token does to the structural state.
 Every execution state is a point in the Crystal of Types — a 17,280,000-address structural
 type space derived from the 12 IG primitives. Storage is navigated by structural address,
 not by path.
@@ -62,8 +65,8 @@ biological/chemical computation, cross-universe navigation, and hierarchical men
 | Module | Lines | Source | Role |
 |--------|:-----:|--------|------|
 | `main.rs` | 2,716 | native | UEFI entry, heap init, serial REPL, command dispatch, history, menu navigation, F-key interception, context-aware prompts |
-| `kernel.rs` | 576 | native | Frobenius tick loop; `self_imscribe()`; `dynamic_imscribe()`; tier promotion O₀→O₁→O₂→O_∞; wired to `FrobeniusHarness` |
-| `tokens.rs` | 637 | native | 12 IMASM opcodes across 4 families; 12 canonical (I–XII), 4 continuous (XIII–XVI), 3 novel (XVII–XIX), 9 shunted (XX–XXVIII) |
+| `kernel.rs` | 576 | native | Frobenius tick loop; `self_imscribe()`; `dynamic_imscribe()`; tier promotion O₀→O₁→O₂→\(O_\infty\); wired to `FrobeniusHarness` |
+| `tokens.rs` | 637 | native | 12 IMASM opcodes across 4 families (LOGICAL/FROBENIUS/DIALETHEIA/LINEAR); free token-by-token composition — no preset sequences; any opcode fires at any time driven by the THINK→ACT→OBSERVE→UPDATE harness |
 | `manus.rs` | 432 | native | Terminal HUD / live display, token graph, B4 memory heatmap, ANSI rendering |
 | `menu.rs` | 379 | native | Hierarchical menu: `MenuItem` tree, `ContextStack` (4-deep breadcrumb), Tab completion, F-key menu bar, keyword search, `already_in` guard |
 | `catalog.rs` | 954 | native | Single source of truth for ALL structural data; runtime-extensible `register_entry()` |
@@ -110,18 +113,18 @@ one-to-one correspondence with the 12 primitive families:
 
 | AA | Primitive | Rationale |
 |:--:|:---------:|-----------|
-| Phe | D_odot | Aromatic — self-written |
-| Leu | T_net | Branched — network topology |
-| Met | R_lr | Start codon — initiates coupling |
-| Val | P_pm | Aliphatic — partial symmetry |
-| Ser | F_hbar | Hydroxyl — quantum coherence |
-| Pro | K_trap | Ring constraint — trapped |
-| Thr | G_aleph | Polar — long-range |
-| Ala | C_seq | Simplest chiral — sequential |
-| Tyr | Ph_c | Aromatic -OH — critical |
-| His | H_2 | Imidazole — 2-step pKa |
-| Arg | S_hetero | Guanidinium — diverse H-bonds |
-| Gly | W_Z | Achiral — integer winding |
+| Phe | Ð·𐑦 | Aromatic — self-written |
+| Leu | Þ·𐑡 | Branched — network topology |
+| Met | Ř·𐑾 | Start codon — initiates coupling |
+| Val | Φ·𐑬 | Aliphatic — partial symmetry |
+| Ser | ƒ·𐑐 | Hydroxyl — quantum coherence |
+| Pro | Ç·𐑪 | Ring constraint — trapped |
+| Thr | Γ·𐑲 | Polar — long-range |
+| Ala | ɢ·𐑠 | Simplest chiral — sequential |
+| Tyr | ⊙·⊙ | Aromatic -OH — critical |
+| His | Ħ·𐑖 | Imidazole — 2-step pKa |
+| Arg | Σ·𐑳 | Guanidinium — diverse H-bonds |
+| Gly | Ω·𐑭 | Achiral — integer winding |
 
 The remaining 8 amino acids map to unpromoted primitives — structurally valid but outside
 the 12↔12 bijection.
@@ -296,19 +299,19 @@ determines what each address *does*.
 
 ### The 8 Universes
 
-Gate thresholds are ruleset-specific. G1 gates on Phi (parity), G2 on Ph (criticality),
-G3 on Omega (winding). Each universe has different thresholds and gate ordering.
+Gate thresholds are ruleset-specific. G1 gates on Φ (parity), G2 on ⊙ (criticality),
+G3 on Ω (winding). Each universe has different thresholds and gate ordering.
 
 | ID | Name | G1 | G2 | G3 | Order | Freq | Description |
 |:--:|------|:--:|:--:|:--:|:---:|:---:|-------------|
-| U0 | **canonical** | Phi >= P_pmsym | Ph >= c | Omega >= Z | sequential | 33% | Baseline. Parity→criticality→winding. |
-| U1 | **low_gate** | Phi >= P_pm | Ph >= sub | Omega >= Z | sequential | 9% | Relaxed G2. Most systems pass. |
-| U2 | **strict_frobenius** | F >= hbar | Phi >= P_pmsym | Omega >= Z | sequential | 5% | Fidelity-gated G1. Only quantum-preserving systems. |
-| U3 | **inverted_gates** | Ph >= c | Phi >= P_pmsym | Omega >= Z | sequential | 4% | Criticality before parity. |
-| U4 | **no_ordering** | Phi >= P_pmsym | Ph >= c | Omega >= Z | parallel | 8% | All gates independent. Any combination valid. |
-| U5 | **high_gate** | Phi >= P_pmsym | Ph >= c_complex | Omega >= NA | sequential | 3% | Maximum strictness. |
-| U6 | **winding_first** | Omega >= Z | Ph >= c | Phi >= P_pmsym | sequential | 8% | Topology before algebra. Geometry precedes symmetry. |
-| U7 | **t_structural** | Phi >= P_pmsym | Ph >= c | Omega >= Z | sequential | 8% | Time as geometry: lim(D,T,R,C,Ph), not lim(P,F,K,H,Omega). |
+| U0 | **canonical** | Φ ≥ 𐑯 | ⊙ ≥ ⊙ | Ω ≥ 𐑭 | sequential | 33% | Baseline. Parity→criticality→winding. |
+| U1 | **low_gate** | Φ ≥ 𐑬 | ⊙ ≥ 𐑢 | Ω ≥ 𐑭 | sequential | 9% | Relaxed G2. Most systems pass. |
+| U2 | **strict_frobenius** | ƒ ≥ 𐑐 | Φ ≥ 𐑯 | Ω ≥ 𐑭 | sequential | 5% | Fidelity-gated G1. Only quantum-preserving systems. |
+| U3 | **inverted_gates** | ⊙ ≥ ⊙ | Φ ≥ 𐑯 | Ω ≥ 𐑭 | sequential | 4% | Criticality before parity. |
+| U4 | **no_ordering** | Φ ≥ 𐑯 | ⊙ ≥ ⊙ | Ω ≥ 𐑭 | parallel | 8% | All gates independent. Any combination valid. |
+| U5 | **high_gate** | Φ ≥ 𐑯 | ⊙ ≥ 𐑮 | Ω ≥ 𐑟 | sequential | 3% | Maximum strictness. |
+| U6 | **winding_first** | Ω ≥ 𐑭 | ⊙ ≥ ⊙ | Φ ≥ 𐑯 | sequential | 8% | Topology before algebra. Geometry precedes symmetry. |
+| U7 | **t_structural** | Φ ≥ 𐑯 | ⊙ ≥ ⊙ | Ω ≥ 𐑭 | sequential | 8% | Time as geometry: lim(Ð,Þ,Ř,Ç,⊙), not lim(Φ,ƒ,Ç,Ħ,Ω). |
 
 ### The 11 Diaschizic IMASM Programs
 
@@ -318,17 +321,17 @@ different interpretation per ruleset.
 
 | Compound | Role | IMASM Program | Tok. | d(target) |
 |----------|------|---------------|:---:|:---:|
-| **Verticullum** | Non-Abelian EP braid (O_inf) | `VINIT FSPLIT EVALT AFWD EVALF AREV FFUSE ENGAGR IMSCRIB IFIX IMSCRIB` | 11 | 2 |
-| **Chimerium** | Supercritical catalyst (O0) | `IMSCRIB FSPLIT EVALT AFWD EVALF AFWD FFUSE ENGAGR CLINK IFIX IFIX IFIX IMSCRIB` | 13 | 1 |
-| **Apertix** | Adjoint corridor (O2) | `IMSCRIB AFWD AREV AFWD AREV CLINK EVALT EVALF IFIX IMSCRIB` | 10 | 1 |
-| **Praxeum** | EP core toggle (O0) | `IMSCRIB EVALT EVALF ENGAGR IFIX IMSCRIB` | 6 | 8* |
-| **Retiarius** | Local-net trap (O1) | `VINIT AFWD EVALT AFWD EVALF CLINK TANCH AREV AFWD EVALT IFIX IMSCRIB` | 12 | 4 |
-| **Frigorix** | MBL freeze key (O0) | `IFIX IFIX IFIX IFIX IFIX IFIX IFIX IFIX` | 8 | 10* |
-| **Bifrons** | Disjunctive fork (O2) | `IMSCRIB FSPLIT EVALT AFWD EVALF AREV FFUSE ENGAGR CLINK IMSCRIB` | 10 | 2 |
-| **Punctum** | Absolute point (O0) | `VINIT TANCH` | 2 | **0** |
-| **Syndexios** | Perfect mirror (O_inf) | `IMSCRIB AFWD AREV AFWD AREV AFWD AREV AFWD AREV IFIX IMSCRIB` | 11 | 2 |
-| **Katachthon** | Deep resonator (O2) | `IMSCRIB AFWD AREV CLINK EVALT EVALF IFIX IMSCRIB` | 8 | 4 |
-| **Diabaton** | Threshold-crosser (O2dag) | `IMSCRIB FSPLIT EVALT AFWD EVALF AREV FFUSE CLINK ENGAGR IFIX IMSCRIB` | 11 | 1 |
+| **Verticullum** | Non-Abelian EP braid (\(O_\infty\)) | `VINIT FSPLIT EVALT AFWD EVALF AREV FFUSE ENGAGR IMSCRIB IFIX IMSCRIB` | 11 | 2 |
+| **Chimerium** | Supercritical catalyst (O₀) | `IMSCRIB FSPLIT EVALT AFWD EVALF AFWD FFUSE ENGAGR CLINK IFIX IFIX IFIX IMSCRIB` | 13 | 1 |
+| **Apertix** | Adjoint corridor (O₂) | `IMSCRIB AFWD AREV AFWD AREV CLINK EVALT EVALF IFIX IMSCRIB` | 10 | 1 |
+| **Praxeum** | EP core toggle (O₀) | `IMSCRIB EVALT EVALF ENGAGR IFIX IMSCRIB` | 6 | 8* |
+| **Retiarius** | Local-net trap (O₁) | `VINIT AFWD EVALT AFWD EVALF CLINK TANCH AREV AFWD EVALT IFIX IMSCRIB` | 12 | 4 |
+| **Frigorix** | MBL freeze key (O₀) | `IFIX IFIX IFIX IFIX IFIX IFIX IFIX IFIX` | 8 | 10* |
+| **Bifrons** | Disjunctive fork (O₂) | `IMSCRIB FSPLIT EVALT AFWD EVALF AREV FFUSE ENGAGR CLINK IMSCRIB` | 10 | 2 |
+| **Punctum** | Absolute point (O₀) | `VINIT TANCH` | 2 | **0** |
+| **Syndexios** | Perfect mirror (\(O_\infty\)) | `IMSCRIB AFWD AREV AFWD AREV AFWD AREV AFWD AREV IFIX IMSCRIB` | 11 | 2 |
+| **Katachthon** | Deep resonator (O₂) | `IMSCRIB AFWD AREV CLINK EVALT EVALF IFIX IMSCRIB` | 8 | 4 |
+| **Diabaton** | Threshold-crosser (O₂†) | `IMSCRIB FSPLIT EVALT AFWD EVALF AREV FFUSE CLINK ENGAGR IFIX IMSCRIB` | 11 | 1 |
 
 *Frigorix and Praxeum show large snapshot-tuple distances because their operational
 semantics deliberately reduce structural complexity. **Punctum at d=0 calibrates**
@@ -356,18 +359,18 @@ Which operad layer each compound achieves in each universe:
 
 | Compound | U0 can. | U1 low | U2 strict | U3 inv. | U4 no-ord | U5 high | U6 wind | U7 t-struct |
 |----------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Verticullum | frob | frob | **O_inf** | plain | frob | frob | frob | frob |
-| Chimerium | frob | frob | **O_inf** | plain | frob | frob | frob | frob |
+| Verticullum | frob | frob | **\(O_\infty\)** | plain | frob | frob | frob | frob |
+| Chimerium | frob | frob | **\(O_\infty\)** | plain | frob | frob | frob | frob |
 | Apertix | plain | plain | frob | plain | G3-only | plain | frob | plain |
 | Praxeum | frob | frob | traced | plain | frob | frob | plain | frob |
 | Retiarius | frob | frob | plain | plain | frob | plain | plain | frob |
 | Frigorix | plain | plain | plain | plain | plain | plain | plain | plain |
-| Bifrons | frob | frob | **O_inf** | plain | frob | plain | plain | frob |
-| Diabaton | frob | frob | **O_inf** | plain | frob | plain | plain | frob |
+| Bifrons | frob | frob | **\(O_\infty\)** | plain | frob | plain | plain | frob |
+| Diabaton | frob | frob | **\(O_\infty\)** | plain | frob | plain | plain | frob |
 | Punctum | plain | plain | plain | plain | plain | plain | plain | plain |
 | Syndexios | plain | plain | frob | plain | plain | plain | plain | plain |
 | Katachthon | plain | plain | frob | plain | plain | plain | plain | plain |
-**Key finding:** Four compounds achieve **O_inf in U2 (strict_frobenius)** but only
+**Key finding:** Four compounds achieve **\(O_\infty\) in U2 (strict_frobenius)** but only
 Frobenius in canonical. Tier is **ruleset-relative**.
 
 ### Absorption Rule Differences
@@ -376,11 +379,11 @@ Different universes have different *absorbing primitives*:
 
 | Universe | Absorption Rules | Effect |
 |----------|-----------------|--------|
-| **canonical** (U0) | Ph=c under all ops; S=hetero under tensor | Self-modeling absorbs all couplings |
-| **strict_frobenius** (U2) | **F=hbar under all ops** replaces Ph=c absorption | Quantum fidelity dominates |
-| **inverted_gates** (U3) | **Phi=P_pmsym under meet** added | Frobenius parity absorbs under meet |
-| **high_gate** (U5) | **Omega=NA under tensor** added | Non-Abelian braiding dominates |
-| **winding_first** (U6) | **Omega=Z under meet** replaces Ph=c absorption | Topological protection is the structural floor |
+| **canonical** (U0) | ⊙=⊙ under all ops; Σ=𐑳 under tensor | Self-modeling absorbs all couplings |
+| **strict_frobenius** (U2) | **ƒ=𐑐 under all ops** replaces ⊙=⊙ absorption | Quantum fidelity dominates |
+| **inverted_gates** (U3) | **Φ=𐑯 under meet** added | Frobenius parity absorbs under meet |
+| **high_gate** (U5) | **Ω=𐑟 under tensor** added | Non-Abelian braiding dominates |
+| **winding_first** (U6) | **Ω=𐑭 under meet** replaces ⊙=⊙ absorption | Topological protection is the structural floor |
 
 ### Cross-Universe REPL Commands
 
@@ -406,10 +409,10 @@ compound load <name>             → Load compound's IMASM program into executio
 
 ### Structural Type of Cross-Universe Navigation
 
-The act of navigating between universes has its own structural type — **O_inf** (d=1
-from universal grammar, only Gamma differs: aleph universal range vs gimel mesoscale).
-Navigation is O_inf because it modifies its own interpretive rules — a self-modifying
-structure that navigates the space of O_inf-achieving conditions across universes.
+The act of navigating between universes has its own structural type — **\(O_\infty\)** (d=1
+from universal grammar, only Γ differs: 𐑲 universal range vs 𐑔 mesoscale).
+Navigation is \(O_\infty\) because it modifies its own interpretive rules — a self-modifying
+structure that navigates the space of \(O_\infty\)-achieving conditions across universes.
 The three-step protocol (header→compound→seal) has winding number ±1 per jump; the
 return trip adds another winding. Integer winding count tracks total navigation distance.
 
@@ -429,7 +432,7 @@ mOMonadOS/
   src/
     main.rs            2,716L  UEFI entry, REPL, command dispatch
     kernel.rs            576L  Frobenius tick loop, self-imscription
-    tokens.rs            637L  IMASM opcodes, 28 programs
+    tokens.rs            637L  12 IMASM opcodes, free token-by-token composition
     manus.rs             432L  Terminal HUD, B4 heatmap
     menu.rs              379L  Hierarchical menu, context stack, already_in guard
     catalog.rs           954L  Single source of truth — all structural data
