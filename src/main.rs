@@ -1498,6 +1498,7 @@ fn print_help() {
     sprintln!("  {:<34} — 7-stage genetic code verification", "rebis genetics");
     sprintln!("  {:<34} — Belnap hadron analysis (p, n, π+)", "rebis hadron");
     sprintln!("  {:<34} — serpent rod motif analysis", "rebis serpent [name]");
+    sprintln!("  {:<34} — DNA/RNA->folded protein (SerpentRod)", "rebis fold <DNA|RNA> [mito]");
     sprintln!("  {:<34} — IG promotion pipeline", "rebis pipeline [src]");
     sprintln!("  {:<34} — codon stratum counts", "rebis strata");
     sprintln!("  {:<34} — genetic ParaASM programs", "rebis asm [prog]");
@@ -2176,10 +2177,10 @@ fn print_cscore(k: &Kernel) {
     }
 }
 fn print_rebis(sub: &str, arg: &str, rest: &str) {
-    use crate::rebis::codon::{Codon, translate_codon, classify_stratum, stratum_counts};
-    use crate::rebis::genetics::GeneticVerification;
-    use crate::rebis::translate::{run_pipeline, run_reverse_pipeline, format_chain, format_chain_1letter, parse_aa, aa_letter, parse_chain, reverse_translate_aa, codon_to_rna, enumerate_mrna, roundtrip_verify};
-    
+    use crate::rebis::codon::{Codon, CodeTable, translate_codon, classify_stratum, stratum_counts, verify_frobenius};
+    use crate::rebis::genetics::{GeneticVerification, codons_for_aa, codon_distance, promoted_amino_acids, ALL_AMINO_ACIDS};
+    use crate::rebis::translate::{run_pipeline_table, run_reverse_pipeline, format_chain, format_chain_1letter, parse_aa, aa_letter, parse_chain, reverse_translate_aa, codon_to_rna, enumerate_mrna, roundtrip_verify};
+    use crate::rebis::fold::fold_sequence;
     use crate::rebis::hadron::{HadronState, HadronType, proton_quarks, neutron_quarks, pion_plus_quarks};
     use crate::rebis::serpent::{find_motif, motif_signature, MOTIFS};
     use crate::rebis::pipeline::{IgTuple, run_promotion_pipeline};
@@ -2230,17 +2231,208 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
         }
         "translate" => {
             if arg.is_empty() && rest.is_empty() {
-                sprintln!("Usage: rebis translate <DNA sequence>");
+                sprintln!("Usage: rebis translate <DNA> [mito]");
+                sprintln!("  mito — use vertebrate mitochondrial code");
                 sprintln!("Example: rebis translate ATGGCC");
+                sprintln!("         rebis translate ATGGCC mito");
                 return;
             }
-            let seq = if arg.is_empty() { rest } else { arg };
-            let result = run_pipeline(seq.as_bytes());
-            sprintln!("DNA: {}", seq);
-            sprintln!("mRNA: {}", core::str::from_utf8(&result.mrna).unwrap_or("???"));
-            sprintln!("Protein: {}", format_chain(&result.protein));
-            sprintln!("Coding length: {} bp", result.coding_length);
-            sprintln!("Frobenius: {}", if result.frobenius_verified { "PASS" } else { "FAIL" });
+            // Parse: seq [mito]
+            let (seq, table) = if arg == "mito" {
+                (rest, CodeTable::Mitochondrial)
+            } else if rest == "mito" {
+                (arg, CodeTable::Mitochondrial)
+            } else {
+                let s = if arg.is_empty() { rest } else { arg };
+                (s, CodeTable::Standard)
+            };
+            let result = run_pipeline_table(seq.as_bytes(), table);
+            let table_name = match table { CodeTable::Standard => "standard", CodeTable::Mitochondrial => "mitochondrial" };
+            sprintln!("DNA:          {}", seq);
+            sprintln!("mRNA:         {}", core::str::from_utf8(&result.mrna).unwrap_or("???"));
+            sprintln!("Code table:   {}", table_name);
+            sprintln!("Protein:      {}", format_chain(&result.protein));
+            sprintln!("Coding:       {} bp", result.coding_length);
+            sprintln!("Frobenius:    {}", if result.frobenius_verified { "PASS" } else { "FAIL" });
+            // Per-AA primitive annotation
+            let non_stop: alloc::vec::Vec<_> = result.protein.iter().zip(result.primitive_labels.iter())
+                .filter(|(&aa, _)| aa != crate::rebis::AminoAcid::Stop)
+                .collect();
+            if !non_stop.is_empty() {
+                sprintln!("Primitives:");
+                for (&aa, prim) in &non_stop {
+                    if let Some(name) = prim {
+                        sprintln!("  {} → {}", aa.name(), name);
+                    } else {
+                        sprintln!("  {} → (ground layer)", aa.name());
+                    }
+                }
+            }
+        }
+
+        "box" => {
+            // Box stratification: show all 16 (p1,p2) boxes
+            use crate::belnap::B4;
+            let positions = [B4::N, B4::F, B4::T, B4::B];
+            let labels = ["N(U)", "F(A)", "T(C)", "B(G)"];
+            sprintln!("Codon Box Stratification (16 boxes, p1×p2):");
+            sprintln!("  Box    RNA  Stratum  Codons  AAs");
+            for (i, &p1) in positions.iter().enumerate() {
+                for (j, &p2) in positions.iter().enumerate() {
+                    let sample = Codon { p1, p2, p3: B4::N };
+                    let strat = classify_stratum(&sample);
+                    // Collect all 4 codons and their AAs
+                    let mut aas = alloc::vec::Vec::new();
+                    for &p3 in &positions {
+                        let c = Codon { p1, p2, p3 };
+                        let aa = translate_codon(&c);
+                        let sym = c.symbol();
+                        let rna: alloc::string::String = [sym[0] as char, sym[1] as char, sym[2] as char].iter().collect();
+                        aas.push(alloc::format!("{}={}", rna, aa.name()));
+                    }
+                    sprintln!("  ({},{})  {:5?}  {}",
+                        labels[i], labels[j], strat, aas.join("  "));
+                }
+            }
+        }
+
+        "crystal" => {
+            // Crystal divisibility: 17,280,000 / 64
+            let total: u64 = crate::crystal::TOTAL as u64;
+            let codons: u64 = 64;
+            let quotient = total / codons;
+            let remainder = total % codons;
+            sprintln!("Crystal / Codon space divisibility:");
+            sprintln!("  Crystal of Types: {} addresses", total);
+            sprintln!("  Codon space:      {} codons", codons);
+            sprintln!("  Quotient:         {}", quotient);
+            sprintln!("  Remainder:        {}", remainder);
+            sprintln!("  Exact division:   {}", if remainder == 0 { "YES" } else { "NO" });
+            if remainder == 0 {
+                sprintln!("  Each codon maps to exactly {} crystal addresses", quotient);
+            }
+        }
+
+        "stop" => {
+            // Stop codon analysis as Ω boundary
+            use crate::belnap::B4;
+            sprintln!("Stop Codon Analysis (Ω boundary — kernel winding limit):");
+            let stops = [
+                ("UAA", Codon { p1: B4::N, p2: B4::F, p3: B4::F }, "Ω₀  trivial winding — null boundary"),
+                ("UAG", Codon { p1: B4::N, p2: B4::F, p3: B4::B }, "Ω_Z₂  Z2-protected — amber boundary"),
+                ("UGA", Codon { p1: B4::N, p2: B4::B, p3: B4::F }, "Ω_Z   integer winding — opal boundary"),
+            ];
+            for (name, codon, desc) in &stops {
+                let s = codon.symbol();
+                sprintln!("  {} ({}{}{})  B4: ({:?},{:?},{:?})  {}",
+                    name, s[0] as char, s[1] as char, s[2] as char,
+                    codon.p1, codon.p2, codon.p3, desc);
+            }
+            sprintln!("  Mito additional stops: AGA (F,B,F)=Ω_AGA  AGG (F,B,B)=Ω_AGG");
+            sprintln!("  Mito UGA → Trp (not Stop — Ω gate lifted in mitochondrial context)");
+        }
+
+        "mutation" => {
+            // B4 edit distance between two amino acids
+            if arg.is_empty() || rest.is_empty() {
+                sprintln!("Usage: rebis mutation <AA1> <AA2>");
+                sprintln!("  Computes minimum B4 edit distance between codon sets");
+                sprintln!("Example: rebis mutation Met Ala");
+                return;
+            }
+            match (parse_aa(arg), parse_aa(rest)) {
+                (Some(aa1), Some(aa2)) => {
+                    let codons1 = codons_for_aa(aa1);
+                    let codons2 = codons_for_aa(aa2);
+                    if codons1.is_empty() || codons2.is_empty() {
+                        sprintln!("No codons found for one or both AAs");
+                        return;
+                    }
+                    let mut min_dist = u8::MAX;
+                    let mut best_from = codons1[0];
+                    let mut best_to = codons2[0];
+                    for &c1 in &codons1 {
+                        for &c2 in &codons2 {
+                            let d = codon_distance(&c1, &c2);
+                            if d < min_dist {
+                                min_dist = d;
+                                best_from = c1;
+                                best_to = c2;
+                            }
+                        }
+                    }
+                    let s1 = best_from.symbol();
+                    let s2 = best_to.symbol();
+                    sprintln!("Mutation: {} → {}", aa1.name(), aa2.name());
+                    sprintln!("  Min B4 edit distance: {}", min_dist);
+                    sprintln!("  Optimal path: {}{}{} → {}{}{}",
+                        s1[0] as char, s1[1] as char, s1[2] as char,
+                        s2[0] as char, s2[1] as char, s2[2] as char);
+                    sprintln!("  {} codons → {} codons", codons1.len(), codons2.len());
+                    let prim1 = aa1.primitive_name();
+                    let prim2 = aa2.primitive_name();
+                    if prim1.is_some() || prim2.is_some() {
+                        sprintln!("  Primitive crossing: {} → {}",
+                            prim1.unwrap_or("(ground)"), prim2.unwrap_or("(ground)"));
+                    }
+                    // Risk assessment based on stratum crossing
+                    let s1_type = classify_stratum(&best_from);
+                    let s2_type = classify_stratum(&best_to);
+                    sprintln!("  Stratum: {:?} → {:?}", s1_type, s2_type);
+                }
+                _ => sprintln!("Unknown amino acid. Use 3-letter (Met), 1-letter (M), or full name."),
+            }
+        }
+
+        "verify-codons" => {
+            // Full per-codon Frobenius verification table
+            use crate::belnap::B4;
+            let positions = [B4::N, B4::F, B4::T, B4::B];
+            sprintln!("Per-Codon Frobenius Verification Table (64 codons):");
+            sprintln!("  Codon  B4(p1,p2,p3)      AA    Stratum  Frob  Primitive");
+            let mut pass = 0usize;
+            let mut fail = 0usize;
+            for &p1 in &positions {
+                for &p2 in &positions {
+                    for &p3 in &positions {
+                        let c = Codon { p1, p2, p3 };
+                        let aa = translate_codon(&c);
+                        let sym = c.symbol();
+                        let (holds, strat) = verify_frobenius(&c);
+                        let prim = aa.primitive_name().unwrap_or("-");
+                        if holds { pass += 1; } else { fail += 1; }
+                        sprintln!("  {}{}{}    ({:?},{:?},{:?})  {:4}  {:5?}  {}  {}",
+                            sym[0] as char, sym[1] as char, sym[2] as char,
+                            p1, p2, p3, aa.name(),
+                            strat, if holds { "PASS" } else { "FAIL" }, prim);
+                    }
+                }
+            }
+            sprintln!("  Summary: {} PASS, {} FAIL", pass, fail);
+        }
+
+        "primitives" => {
+            // Show the 12-primitive ↔ AA bijection
+            let promoted = promoted_amino_acids();
+            sprintln!("IG Primitive ↔ Amino Acid Bijection ({} promoted AAs):", promoted.len());
+            for aa in &promoted {
+                if let Some(prim) = aa.primitive_name() {
+                    let codons = codons_for_aa(*aa);
+                    sprintln!("  {} ({}) → {} [{} codon{}]",
+                        aa.name(), aa.code1(), prim, codons.len(),
+                        if codons.len() == 1 { "" } else { "s" });
+                }
+            }
+            sprintln!("Ground layer AAs (exact stratum, no primitive bijection):");
+            for &aa in &ALL_AMINO_ACIDS {
+                if aa == crate::rebis::AminoAcid::Stop { continue; }
+                if aa.primitive_name().is_none() {
+                    let codons = codons_for_aa(aa);
+                    sprintln!("  {} ({}) [{} codon{}]",
+                        aa.name(), aa.code1(), codons.len(),
+                        if codons.len() == 1 { "" } else { "s" });
+                }
+            }
         }
 
         "reverse" => {
@@ -2366,6 +2558,82 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                 None => sprintln!("Motif '{}' not found. Use 'rebis serpent' to list.", arg),
             }
         }
+
+        "fold" => {
+            if arg.is_empty() && rest.is_empty() {
+                sprintln!("Usage: rebis fold <DNA|RNA> [mito]");
+                sprintln!("  Translates DNA/RNA -> primary sequence, then predicts secondary");
+                sprintln!("  and tertiary structure via Chou-Fasman + SerpentRod Frobenius.");
+                sprintln!("  SerpentRod invariant: windingNumber <= contacts + 1");
+                sprintln!("Example: rebis fold ATGGCCTATAAAGAG");
+                sprintln!("         rebis fold AUGGCCUAUAAAGAG");
+                sprintln!("         rebis fold ATGGCC mito");
+                return;
+            }
+            let (seq, table) = if arg == "mito" {
+                (rest, CodeTable::Mitochondrial)
+            } else if rest == "mito" {
+                (arg, CodeTable::Mitochondrial)
+            } else {
+                let s = if arg.is_empty() { rest } else { arg };
+                (s, CodeTable::Standard)
+            };
+            let result = run_pipeline_table(seq.as_bytes(), table);
+            let chain: alloc::vec::Vec<crate::rebis::AminoAcid> = result.protein.iter()
+                .filter(|&&aa| aa != crate::rebis::AminoAcid::Stop).copied().collect();
+            if chain.is_empty() {
+                sprintln!("No protein translated from '{}'. Ensure sequence contains ATG/AUG start codon.", seq);
+                return;
+            }
+            let fold = fold_sequence(&chain);
+            let n = fold.residues.len();
+            let table_name = match table { CodeTable::Standard => "standard", CodeTable::Mitochondrial => "mitochondrial" };
+            sprintln!("══ SerpentRod Fold: {} residues ({}) ══", n, table_name);
+            sprintln!("Sequence: {}", format_chain_1letter(&chain));
+            sprintln!();
+            // Per-residue table
+            sprintln!("{:>4}  {:3}  {:1}  W#  Primitive", "Pos", "AA", "2°");
+            sprintln!("---- ---  -  --  ---------");
+            for r in &fold.residues {
+                let prim = r.aa.primitive_name().unwrap_or("·");
+                sprintln!("{:>4}  {:3}  {}  {:>2}  {}",
+                    r.position + 1, r.aa.name(), r.secondary.symbol(),
+                    r.winding_number, prim);
+            }
+            sprintln!();
+            // Secondary element summary
+            let n_h = fold.residues.iter().filter(|r| r.secondary == crate::rebis::fold::SecondaryLabel::Helix).count();
+            let n_s = fold.residues.iter().filter(|r| r.secondary == crate::rebis::fold::SecondaryLabel::Sheet).count();
+            let n_c = n - n_h - n_s;
+            sprintln!("Secondary structure:");
+            sprintln!("  Helix:  {:>3} residues ({:>2}%)", n_h, if n > 0 { n_h * 100 / n } else { 0 });
+            sprintln!("  Sheet:  {:>3} residues ({:>2}%)", n_s, if n > 0 { n_s * 100 / n } else { 0 });
+            sprintln!("  Coil:   {:>3} residues ({:>2}%)", n_c, if n > 0 { n_c * 100 / n } else { 0 });
+            sprintln!();
+            // Tertiary contacts
+            let n_hydro = fold.contacts.iter().filter(|c| matches!(c.kind, crate::rebis::fold::ContactKind::Hydrophobic)).count();
+            let n_ss    = fold.contacts.iter().filter(|c| matches!(c.kind, crate::rebis::fold::ContactKind::Disulfide)).count();
+            let n_ionic = fold.contacts.iter().filter(|c| matches!(c.kind, crate::rebis::fold::ContactKind::Ionic)).count();
+            sprintln!("Tertiary contacts: {} total", fold.contacts.len());
+            sprintln!("  Hydrophobic: {}  Disulfide: {}  Ionic: {}", n_hydro, n_ss, n_ionic);
+            if !fold.contacts.is_empty() {
+                sprintln!("  Top contacts (by confidence):");
+                let mut sorted: alloc::vec::Vec<_> = fold.contacts.iter().collect();
+                sorted.sort_unstable_by(|a, b| b.confidence.cmp(&a.confidence));
+                for c in sorted.iter().take(5) {
+                    sprintln!("    {:<12} {:>3} <-> {:<3}  conf={}%",
+                        c.kind.name(), c.i + 1, c.j + 1, c.confidence);
+                }
+            }
+            sprintln!();
+            sprintln!("SerpentRod invariant: {} (windingNumber <= contacts + 1)",
+                if fold.frobenius_ok { "PASS" } else { "FAIL" });
+            sprintln!("IG primitives activated: {}/12  Tier: {}",
+                fold.unique_primitives, fold.ouroboricity_tier);
+            let max_w = fold.residues.iter().map(|r| r.winding_number).max().unwrap_or(0);
+            sprintln!("Max winding number: {}  Total contacts: {}", max_w, fold.contacts.len());
+        }
+
         "pipeline" => {
             let source = match arg {
                 "genetic" => IgTuple::GENETIC,
@@ -2722,7 +2990,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
             }
         }
         _ => {
-            sprintln!("Rebis: Red-Hot Rebis kernel module (19 subcommands)");
+            sprintln!("Rebis: Red-Hot Rebis kernel module (20 subcommands)");
             sprintln!("  rebis codon <XXX|AA>      — codon→AA or AA→codons (bidirectional)");
             sprintln!("  rebis translate <DNA>     — gene→protein pipeline (DNA→mRNA→AA)
   rebis reverse <Prot>     — protein→mRNA→DNA (reverse pipeline)");
@@ -2730,6 +2998,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
             sprintln!("  rebis genetics           — 7-stage verification");
             sprintln!("  rebis hadron             — Belnap hadron analysis");
             sprintln!("  rebis serpent [name]     — serpent rod motifs");
+            sprintln!("  rebis fold <DNA|RNA>     — DNA/RNA -> folded protein (SerpentRod)");
             sprintln!("  rebis pipeline [src]     — IG promotion pipeline");
             sprintln!("  rebis strata             — codon stratum counts");
             sprintln!("  rebis asm [prog]         — genetic ParaASM programs");

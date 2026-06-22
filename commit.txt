@@ -1,3 +1,63 @@
+Fix translator T/F swap + add full red-hot_rebis feature parity
+
+ROOT BUG (src/rebis/codon.rs):
+codon_from_index() used a single decoder v (N=0,F=1,T=2,B=3) for ALL
+three codon positions, but Codon::index() uses v1 for p1 and v23 for p2/p3
+(where v23 has T=1, F=2 — swapped relative to v1). This made the entire
+derived codon table wrong for any codon with C or A in positions 2 or 3.
+E.g. GCC (p2=C=T, p3=C=T) was being decoded as GAA (p2=A=F, p3=A=F) →
+Glu instead of Ala.
+
+Fix: codon_from_index() now uses separate v1 (p1) and v23 (p2,p3) decoders
+matching Codon::index() exactly. All 64 codon translations now correct;
+Frobenius roundtrip PASS across all sequences.
+
+SECONDARY BUG:
+derive_aa_for_codon() for the (F,N)=AUX box used is_pyrimidine(p3) to
+split Ile/Met. AUA (p3=F=A=purine) was wrongly mapped to Met. Fix: only
+p3=B(G) → Met (AUG); all other AUX (AUU/AUC/AUA) → Ile.
+
+GENETICS FIXES (src/rebis/genetics.rs):
+promoted_amino_acids() was a hardcoded wrong list (Phe/Leu/Met/Val/Ser/Pro/
+Thr/Ala/Tyr/His/Arg/Gly). Now derived dynamically: an AA is promoted iff
+ALL its codons are in the split stratum (no exact-box codon). Derives the
+canonical 12: Met/Trp/Cys/Tyr/Phe/Ile/His/Asn/Gln/Asp/Lys/Glu. All 7
+genetics verification stages now PASS.
+
+PRIMITIVE DERIVATION (src/rebis/mod.rs):
+derive_primitive() was deriving wrong assignments from physicochemical
+properties (e.g. Phe→D_odot, Met→R_lr — both wrong). Now derived from B4
+codon box position: the (p1,p2) box and pyrimidine/purine half structurally
+determine the primitive. Canonical result:
+  Phe→ƒ  Tyr→Φ  Cys→Ř  Trp→Þ  Ile→Ç  Met→Ð
+  Asn→ɢ  Lys→Σ  His→Γ  Gln→⊙  Asp→Ħ  Glu→Ω
+Added primitive_name() method returning the canonical &str label.
+
+MITOCHONDRIAL CODE (src/rebis/codon.rs):
+CodeTable enum (Standard / Mitochondrial). MITO_TABLE_CACHE derived from
+derive_aa_mito(): same rules as standard + 4 structural exceptions:
+  AUA→Met (mito), UGA→Trp (mito), AGA/AGG→Stop (mito)
+translate_codon_mito(), translate_codon_table(), init_mito_table() added.
+codons_for_aa_table() in genetics.rs dispatches by CodeTable.
+
+NEW TRANSLATE PIPELINE (src/rebis/translate.rs):
+run_pipeline_table(dna, CodeTable): full pipeline with code table selection.
+TranslationResult: adds primitive_labels (Vec<Option<&str>>) and code_table.
+Frobenius roundtrip uses same table for consistency.
+
+NEW SUBCOMMANDS (src/main.rs):
+  rebis translate <DNA> [mito]  — code table selection, per-AA primitives
+  rebis box                      — 16 (p1,p2) boxes with strata and AAs
+  rebis crystal                  — 17,280,000/64=270,000 exact divisibility
+  rebis stop                     — UAA/UAG/UGA as Ω₀/Ω_Z₂/Ω_Z boundaries
+  rebis mutation <AA1> <AA2>     — min B4 edit distance + stratum crossing
+  rebis verify-codons            — per-codon Frobenius verification table
+  rebis primitives               — 12 promoted AAs ↔ 12 primitives bijection
+
+All feature derivations use B4 lattice structure — no hardcoded tables.
+
+---
+
 Newton-lifted rewrite of momonados_lmcs.tex (LMCS submission draft)
 
 Submitted paper to IMSCRIBr Newton pipeline (newton_lift.py) to dissolve

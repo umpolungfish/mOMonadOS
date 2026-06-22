@@ -5,7 +5,7 @@
 // and the 12-primitive ↔ 20 amino acid structural mapping.
 
 use crate::belnap::{B4, meet, join};
-use crate::rebis::codon::{Codon, Stratum, classify_stratum, translate_codon, wc_complement};
+use crate::rebis::codon::{Codon, CodeTable, Stratum, classify_stratum, translate_codon, translate_codon_mito, wc_complement};
 use crate::rebis::AminoAcid;
 
 // ── B₄ lattice operations on nucleotides ───────────────────────
@@ -72,17 +72,31 @@ pub static ALL_AMINO_ACIDS: [AminoAcid; 21] = [
     AminoAcid::Gly,
 ];
 
-/// The 12 amino acids that form a bijection with the 12 IG primitives.
-pub fn promoted_amino_acids() -> [AminoAcid; 12] {
-    [
-        AminoAcid::Phe, AminoAcid::Leu, AminoAcid::Met, AminoAcid::Val,
-        AminoAcid::Ser, AminoAcid::Pro, AminoAcid::Thr, AminoAcid::Ala,
-        AminoAcid::Tyr, AminoAcid::His, AminoAcid::Arg, AminoAcid::Gly,
-    ]
+/// The 12 promoted amino acids — those appearing ONLY in split-stratum codons.
+/// Derived dynamically from the stratum classification: an AA is promoted iff
+/// none of its codons fall in the exact (4-fold degenerate) stratum.
+/// This is a structural fact of the B4 lattice, not a hardcoded list.
+pub fn promoted_amino_acids() -> alloc::vec::Vec<AminoAcid> {
+    let mut promoted = alloc::vec::Vec::new();
+    for &aa in &ALL_AMINO_ACIDS {
+        if aa == AminoAcid::Stop { continue; }
+        let codons = codons_for_aa(aa);
+        if codons.is_empty() { continue; }
+        // Promoted iff NO codon is in the exact stratum
+        if !codons.iter().any(|c| c.is_exact_stratum()) {
+            promoted.push(aa);
+        }
+    }
+    promoted
 }
 
-/// Get all codons that encode a given amino acid.
+/// Get all codons that encode a given amino acid (standard code).
 pub fn codons_for_aa(aa: AminoAcid) -> alloc::vec::Vec<Codon> {
+    codons_for_aa_table(aa, CodeTable::Standard)
+}
+
+/// Get all codons for an AA under the given genetic code table.
+pub fn codons_for_aa_table(aa: AminoAcid, table: CodeTable) -> alloc::vec::Vec<Codon> {
     let mut result = alloc::vec::Vec::new();
     for i in 0u8..64 {
         let c = Codon {
@@ -90,7 +104,11 @@ pub fn codons_for_aa(aa: AminoAcid) -> alloc::vec::Vec<Codon> {
             p2: index_to_b4((i / 4) % 4),
             p3: index_to_b4(i % 4),
         };
-        if translate_codon(&c) == aa {
+        let translated = match table {
+            CodeTable::Standard => translate_codon(&c),
+            CodeTable::Mitochondrial => translate_codon_mito(&c),
+        };
+        if translated == aa {
             result.push(c);
         }
     }
@@ -144,6 +162,7 @@ impl GeneticVerification {
                 found.iter().all(|&x| x)
             },
             stage4_promoted_bijection: {
+                // Dynamic derivation: split-only AAs should biject to 12 primitives
                 promoted_amino_acids().len() == 12
             },
             stage5_wobble: {

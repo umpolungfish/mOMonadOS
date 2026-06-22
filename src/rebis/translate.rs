@@ -6,7 +6,7 @@
 //
 // Added reverse direction: Protein → mRNA (all degenerate codons enumerated).
 
-use crate::rebis::codon::{Codon, translate_codon, b4_to_nucleotide};
+use crate::rebis::codon::{Codon, CodeTable, translate_codon, translate_codon_table, b4_to_nucleotide};
 use crate::rebis::AminoAcid;
 use alloc::string::String;
 use alloc::vec::Vec;
@@ -218,42 +218,85 @@ pub struct TranslationResult {
     pub start_codon_pos: usize,
     pub stop_codon_present: bool,
     pub frobenius_verified: bool,
+    pub primitive_labels: Vec<Option<&'static str>>,
+    pub code_table: CodeTable,
 }
 
 /// Run the full gene→protein pipeline on a DNA sequence.
 pub fn run_pipeline(dna: &[u8]) -> TranslationResult {
+    run_pipeline_table(dna, CodeTable::Standard)
+}
+
+/// Run the pipeline with a specific genetic code table.
+pub fn run_pipeline_table(dna: &[u8], code_table: CodeTable) -> TranslationResult {
+    use crate::rebis::genetics::codons_for_aa_table;
+
     let mrna = transcribe(dna);
     let start = mrna.windows(3).position(|w| w == b"AUG");
 
-    let (protein, coding_len) = translate(&mrna);
+    // Find start, translate codons
+    let mut protein: Vec<AminoAcid> = Vec::new();
+    let mut coding_len = 0usize;
+    let mut pos = match start {
+        Some(i) => i,
+        None => {
+            return TranslationResult {
+                mrna, protein, coding_length: 0, start_codon_pos: 0,
+                stop_codon_present: false, frobenius_verified: false,
+                primitive_labels: Vec::new(), code_table,
+            };
+        }
+    };
+    let start_pos = pos;
+    while pos + 2 < mrna.len() {
+        let codon = match Codon::from_bytes(mrna[pos], mrna[pos+1], mrna[pos+2]) {
+            Ok(c) => c, Err(_) => break,
+        };
+        let aa = translate_codon_table(&codon, code_table);
+        protein.push(aa);
+        if aa == AminoAcid::Stop { coding_len = pos + 3 - start_pos; break; }
+        pos += 3;
+    }
+    if coding_len == 0 && !protein.is_empty() {
+        coding_len = protein.len() * 3;
+    }
     let stop_present = protein.last() == Some(&AminoAcid::Stop);
 
-    // Frobenius verification: Protein→mRNA→Protein round-trip (μ∘δ=id)
-    // 1. Reverse-translate protein back to canonical mRNA (δ)
-    // 2. Re-translate each codon directly (μ) — no AUG scanner; this is a
-    //    structural roundtrip, not a genomic parse, so no start codon needed.
-    // 3. Verify the two protein chains match (position-by-position)
-    let non_stop: Vec<AminoAcid> = protein.iter()
-        .filter(|&&aa| aa != AminoAcid::Stop)
-        .copied()
-        .collect();
-    let back_mrna = reverse_translate(&non_stop);
-    let mut roundtrip_non_stop: Vec<AminoAcid> = Vec::new();
+    // Frobenius round-trip: Protein→canonical mRNA→Protein using same table
+    let non_stop: Vec<AminoAcid> = protein.iter().filter(|&&aa| aa != AminoAcid::Stop).copied().collect();
+    let back_mrna: Vec<u8> = {
+        let mut v = Vec::new();
+        for &aa in &non_stop {
+            let codons = codons_for_aa_table(aa, code_table);
+            if codons.is_empty() { break; }
+            let c = &codons[0];
+            v.push(b4_to_nucleotide(c.p1));
+            v.push(b4_to_nucleotide(c.p2));
+            v.push(b4_to_nucleotide(c.p3));
+        }
+        v
+    };
+    let mut roundtrip: Vec<AminoAcid> = Vec::new();
     let mut rpos = 0usize;
     while rpos + 2 < back_mrna.len() {
-        match Codon::from_bytes(back_mrna[rpos], back_mrna[rpos + 1], back_mrna[rpos + 2]) {
+        match Codon::from_bytes(back_mrna[rpos], back_mrna[rpos+1], back_mrna[rpos+2]) {
             Ok(c) => {
-                let aa = translate_codon(&c);
+                let aa = translate_codon_table(&c, code_table);
                 if aa == AminoAcid::Stop { break; }
-                roundtrip_non_stop.push(aa);
+                roundtrip.push(aa);
             }
             Err(_) => break,
         }
         rpos += 3;
     }
-    let frobenius_ok = non_stop.len() > 0
-        && non_stop.len() == roundtrip_non_stop.len()
-        && non_stop.iter().zip(roundtrip_non_stop.iter()).all(|(a, b)| a == b);
+    let frobenius_ok = !non_stop.is_empty()
+        && non_stop.len() == roundtrip.len()
+        && non_stop.iter().zip(roundtrip.iter()).all(|(a, b)| a == b);
+
+    // IG primitive labels per AA
+    let primitive_labels: Vec<Option<&'static str>> = protein.iter()
+        .map(|&aa| aa.primitive_name())
+        .collect();
 
     TranslationResult {
         mrna,
@@ -262,6 +305,8 @@ pub fn run_pipeline(dna: &[u8]) -> TranslationResult {
         start_codon_pos: start.unwrap_or(0),
         stop_codon_present: stop_present,
         frobenius_verified: frobenius_ok,
+        primitive_labels,
+        code_table,
     }
 }
 
@@ -277,13 +322,28 @@ pub struct ReverseTranslationResult {
 
 /// Run protein → mRNA → DNA pipeline.
 pub fn run_reverse_pipeline(chain: &[AminoAcid]) -> ReverseTranslationResult {
-    use crate::rebis::genetics::codons_for_aa;
+    run_reverse_pipeline_table(chain, CodeTable::Standard)
+}
 
-    let canonical_mrna = reverse_translate(chain);
+pub fn run_reverse_pipeline_table(chain: &[AminoAcid], table: CodeTable) -> ReverseTranslationResult {
+    use crate::rebis::genetics::codons_for_aa_table;
+
+    let canonical_mrna: Vec<u8> = {
+        let mut v = Vec::new();
+        for &aa in chain {
+            let codons = codons_for_aa_table(aa, table);
+            if codons.is_empty() { break; }
+            let c = &codons[0];
+            v.push(b4_to_nucleotide(c.p1));
+            v.push(b4_to_nucleotide(c.p2));
+            v.push(b4_to_nucleotide(c.p3));
+        }
+        v
+    };
     let dna = reverse_transcribe(&canonical_mrna);
 
     let degeneracies: Vec<usize> = chain.iter()
-        .map(|&aa| codons_for_aa(aa).len())
+        .map(|&aa| codons_for_aa_table(aa, table).len())
         .collect();
 
     // Compute total combinations (cap at u64::MAX)
@@ -301,6 +361,8 @@ pub fn run_reverse_pipeline(chain: &[AminoAcid]) -> ReverseTranslationResult {
         chain: chain.to_vec(),
     }
 }
+
+// keep old run_reverse_pipeline stub above
 
 // ── Formatting ──────────────────────────────────────────────────
 

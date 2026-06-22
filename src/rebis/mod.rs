@@ -30,6 +30,7 @@
 pub mod codon;
 pub mod genetics;
 pub mod translate;
+pub mod fold;
 pub mod frob_filter;
 pub mod hadron;
 pub mod serpent;
@@ -122,62 +123,65 @@ impl AminoAcid {
         }
     }
 
-    /// DERIVED mapping from amino acid to IG primitive.
-    /// Computed from physicochemical properties — NO hardcoded mapping.
-    /// The 12 promoted AAs form a bijection with the 12 IG primitive families.
+    /// Derived mapping from AA to IG primitive via codon box position.
+    /// An AA is promoted iff all its codons are in the split stratum (no exact box).
+    /// The box (p1,p2) and pyrimidine/purine half determine the primitive family.
     pub fn to_primitive(self) -> Option<IgPrim> {
-        // Derive the primitive from structural properties.
-        // This function computes the mapping dynamically — if the properties
-        // above are correct, the mapping is structurally determined.
         self.derive_primitive()
     }
 
-    /// Structural derivation: properties → IG primitive.
-    fn derive_primitive(self) -> Option<IgPrim> {
-        let (hydro, mw, aromatic, charged, hydroxyl) = self.properties();
+    /// Canonical primitive name string, derived from codon box position.
+    /// Returns None for ground-layer AAs (those with any exact-stratum codon).
+    pub fn primitive_name(self) -> Option<&'static str> {
+        use crate::rebis::genetics::codons_for_aa;
+        use crate::belnap::B4;
         if self == AminoAcid::Stop { return None; }
+        let codons = codons_for_aa(self);
+        if codons.is_empty() { return None; }
+        if codons.iter().any(|c| c.is_exact_stratum()) { return None; }
+        let c = &codons[0];
+        let is_pyr = matches!(c.p3, B4::N | B4::T);
+        Some(match (c.p1, c.p2, is_pyr) {
+            (B4::N, B4::N, _)      => "ƒ (Fidelity)",         // Phe
+            (B4::N, B4::F, _)      => "Φ (Parity)",           // Tyr
+            (B4::N, B4::B, true)   => "Ř (Recognition)",      // Cys
+            (B4::N, B4::B, false)  => "Þ (Topology)",         // Trp
+            (B4::F, B4::N, true)   => "Ç (Kinetics)",         // Ile
+            (B4::F, B4::N, false)  => "Ð (Dimensionality)",   // Met
+            (B4::F, B4::F, true)   => "ɢ (Coupling)",         // Asn
+            (B4::F, B4::F, false)  => "Σ (Stoichiometry)",    // Lys
+            (B4::T, B4::F, true)   => "Γ (Granularity)",      // His
+            (B4::T, B4::F, false)  => "⊙ (Criticality)",      // Gln
+            (B4::B, B4::F, true)   => "Ħ (Chirality)",        // Asp
+            (B4::B, B4::F, false)  => "Ω (Winding)",          // Glu
+            _                      => return None,
+        })
+    }
 
-        // The derivation rules:
-        // 1. Aromatic → D_odot (π-system = self-written state-space)
-        // 2. High hydropathy → T_net (branched aliphatic = network)
-        //      BUT Leu has highest non-aromatic hydropathy → T_net
-        // 3. Start codon (Met) → R_lr (initiates bidirectional coupling)
-        // 4. High MW aliphatic → P_pm (partial symmetry)
-        // 5. Hydroxyl → F_hbar (hydrogen bonding = quantum coherence)
-        // 6. Ring constraint → K_trap (proline ring = trapped)
-        // 7. Polar with hydroxyl → G_aleph (long-range)
-        // 8. Simplest chiral → C_seq (alanine = minimal sequential)
-        // 9. Aromatic hydroxyl → Phi_c (tyrosine = critical)
-        // 10. Aromatic charged → H2 (histidine = 2-step pKa)
-        // 11. Charged + high MW → S_nm (arginine = diverse)
-        // 12. Achiral → Omega_z (glycine = integer winding)
-
-        if aromatic && hydroxyl && !charged {
-            Some(IgPrim::Phi_c)        // Tyr: aromatic -OH = critical
-        } else if aromatic && charged {
-            Some(IgPrim::H2)           // His: imidazole = 2-step pKa
-        } else if aromatic && !charged {
-            Some(IgPrim::D_odot)       // Phe: aromatic π-system
-        } else if !aromatic && charged && mw > 170.0 {
-            Some(IgPrim::S_nm)         // Arg: guanidinium = diverse H-bonds
-        } else if self == AminoAcid::Met {
-            Some(IgPrim::R_lr)         // Met: start codon, initiates coupling
-        } else if self == AminoAcid::Pro {
-            Some(IgPrim::K_trap)       // Pro: ring constraint
-        } else if self == AminoAcid::Gly {
-            Some(IgPrim::Omega_z)      // Gly: achiral = integer winding
-        } else if self == AminoAcid::Ala {
-            Some(IgPrim::C_seq)        // Ala: simplest chiral
-        } else if hydroxyl && !aromatic && !charged && hydro > -1.0 {
-            Some(IgPrim::G_aleph)      // Thr: polar hydroxyl, long-range
-        } else if hydroxyl && !aromatic && !charged {
-            Some(IgPrim::F_hbar)       // Ser: hydroxyl = quantum coherence
-        } else if hydro > 3.5 && !aromatic {
-            Some(IgPrim::T_net)        // Leu/Ile: branched aliphatic
-        } else if hydro > 2.0 && mw > 110.0 && !aromatic && !charged {
-            Some(IgPrim::P_pm)         // Val: aliphatic partial symmetry
-        } else {
-            None  // Non-promoted: Asp, Glu, Gln, Asn, Cys, Trp, Lys
+    /// Structural derivation: codon box position → IG primitive variant.
+    fn derive_primitive(self) -> Option<IgPrim> {
+        use crate::rebis::genetics::codons_for_aa;
+        use crate::belnap::B4;
+        if self == AminoAcid::Stop { return None; }
+        let codons = codons_for_aa(self);
+        if codons.is_empty() { return None; }
+        if codons.iter().any(|c| c.is_exact_stratum()) { return None; }
+        let c = &codons[0];
+        let is_pyr = matches!(c.p3, B4::N | B4::T);
+        match (c.p1, c.p2, is_pyr) {
+            (B4::N, B4::N, _)      => Some(IgPrim::F_hbar),   // Phe → ƒ
+            (B4::N, B4::F, _)      => Some(IgPrim::Phi_sub),   // Tyr → Φ (Parity, sub-critical gate)
+            (B4::N, B4::B, true)   => Some(IgPrim::R_lr),      // Cys → Ř
+            (B4::N, B4::B, false)  => Some(IgPrim::T_net),     // Trp → Þ
+            (B4::F, B4::N, true)   => Some(IgPrim::K_mod),     // Ile → Ç
+            (B4::F, B4::N, false)  => Some(IgPrim::D_infty),   // Met → Ð
+            (B4::F, B4::F, true)   => Some(IgPrim::G_aleph),   // Asn → ɢ
+            (B4::F, B4::F, false)  => Some(IgPrim::S_nm),      // Lys → Σ
+            (B4::T, B4::F, true)   => Some(IgPrim::C_seq),     // His → Γ
+            (B4::T, B4::F, false)  => Some(IgPrim::Phi_c),     // Gln → ⊙
+            (B4::B, B4::F, true)   => Some(IgPrim::H2),        // Asp → Ħ
+            (B4::B, B4::F, false)  => Some(IgPrim::Omega_z),   // Glu → Ω
+            _                      => None,
         }
     }
 }

@@ -197,7 +197,8 @@ pub fn derive_aa_for_codon(codon: &Codon) -> AminoAcid {
         (B4::N, B4::N) => if is_pyrimidine(p3) { AminoAcid::Phe } else { AminoAcid::Leu },
         (B4::N, B4::F) => if is_pyrimidine(p3) { AminoAcid::Tyr } else { AminoAcid::Stop },
         (B4::N, B4::B) => if is_pyrimidine(p3) { AminoAcid::Cys } else { AminoAcid::Trp },
-        (B4::F, B4::N) => if is_pyrimidine(p3) { AminoAcid::Ile } else { AminoAcid::Met },
+        // Only AUG (p3=B=G) is Met; AUU/AUC/AUA all encode Ile
+        (B4::F, B4::N) => if p3 == B4::B { AminoAcid::Met } else { AminoAcid::Ile },
         (B4::F, B4::F) => if is_pyrimidine(p3) { AminoAcid::Asn } else { AminoAcid::Lys },
         (B4::F, B4::B) => if is_pyrimidine(p3) { AminoAcid::Ser } else { AminoAcid::Arg },
         (B4::T, B4::F) => if is_pyrimidine(p3) { AminoAcid::His } else { AminoAcid::Gln },
@@ -267,13 +268,97 @@ pub fn stratum_counts() -> (usize, usize, usize) {
 }
 
 fn codon_from_index(idx: usize) -> Codon {
-    let v = |x: usize| -> B4 {
+    // p1: N(U)=0, F(A)=1, T(C)=2, B(G)=3 — must match v1 in Codon::index()
+    let v1 = |x: usize| -> B4 {
         match x { 3 => B4::B, 2 => B4::T, 1 => B4::F, _ => B4::N }
     };
+    // p2, p3: N(U)=0, T(C)=1, F(A)=2, B(G)=3 — must match v23 in Codon::index()
+    let v23 = |x: usize| -> B4 {
+        match x { 3 => B4::B, 2 => B4::F, 1 => B4::T, _ => B4::N }
+    };
     Codon {
-        p1: v((idx / 16) % 4),
-        p2: v((idx / 4) % 4),
-        p3: v(idx % 4),
+        p1: v1((idx / 16) % 4),
+        p2: v23((idx / 4) % 4),
+        p3: v23(idx % 4),
+    }
+}
+
+// ── Genetic code table selector ─────────────────────────────────
+
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+pub enum CodeTable {
+    Standard,
+    Mitochondrial,
+}
+
+// ── Mitochondrial code (derived from standard + 4 rule changes) ──
+//
+// Vertebrate mitochondrial code differs from standard in exactly 4 boxes:
+//   AUA (F,N,F) → Met   (standard: Ile)
+//   UGA (N,B,F) → Trp   (standard: Stop)
+//   AGA (F,B,F) → Stop  (standard: Arg)
+//   AGG (F,B,B) → Stop  (standard: Arg)
+
+static MITO_TABLE_READY: AtomicBool = AtomicBool::new(false);
+static mut MITO_TABLE_CACHE: [AminoAcid; 64] = [AminoAcid::Stop; 64];
+
+pub fn init_mito_table() {
+    if MITO_TABLE_READY.load(Ordering::Acquire) { return; }
+    let mut table = [AminoAcid::Stop; 64];
+    for idx in 0u8..64 {
+        let codon = codon_from_index(idx as usize);
+        table[idx as usize] = derive_aa_mito(&codon);
+    }
+    unsafe { MITO_TABLE_CACHE = table; }
+    MITO_TABLE_READY.store(true, Ordering::Release);
+}
+
+/// Derive AA for a codon using the vertebrate mitochondrial code.
+pub fn derive_aa_mito(codon: &Codon) -> AminoAcid {
+    let p1 = codon.p1;
+    let p2 = codon.p2;
+    let p3 = codon.p3;
+
+    // Mito stops: UAA, UAG, AGA, AGG (NOT UGA — UGA=Trp in mito)
+    if matches!((p1, p2, p3),
+        (B4::N, B4::F, B4::F) | (B4::N, B4::F, B4::B) |
+        (B4::F, B4::B, B4::F) | (B4::F, B4::B, B4::B)
+    ) { return AminoAcid::Stop; }
+
+    match (p1, p2) {
+        // Exact boxes — same as standard
+        (B4::B, B4::T) => AminoAcid::Ala,
+        (B4::T, B4::T) => AminoAcid::Pro,
+        (B4::B, B4::B) => AminoAcid::Gly,
+        (B4::B, B4::N) => AminoAcid::Val,
+        (B4::T, B4::N) => AminoAcid::Leu,
+        (B4::N, B4::T) => AminoAcid::Ser,
+        (B4::F, B4::T) => AminoAcid::Thr,
+        (B4::T, B4::B) => AminoAcid::Arg,
+        // Split boxes
+        (B4::N, B4::N) => if is_pyrimidine(p3) { AminoAcid::Phe } else { AminoAcid::Leu },
+        (B4::N, B4::F) => if is_pyrimidine(p3) { AminoAcid::Tyr } else { AminoAcid::Stop },
+        // UGX mito: UGU/UGC=Cys, UGA=Trp(mito), UGG=Trp — all purines=Trp
+        (B4::N, B4::B) => if is_pyrimidine(p3) { AminoAcid::Cys } else { AminoAcid::Trp },
+        // AUX mito: AUU/AUC=Ile, AUA=Met(mito), AUG=Met
+        (B4::F, B4::N) => if matches!(p3, B4::N | B4::T) { AminoAcid::Ile } else { AminoAcid::Met },
+        (B4::F, B4::F) => if is_pyrimidine(p3) { AminoAcid::Asn } else { AminoAcid::Lys },
+        // AGX mito: AGA/AGG=Stop (caught above); AGU/AGC=Ser
+        (B4::F, B4::B) => AminoAcid::Ser,
+        (B4::T, B4::F) => if is_pyrimidine(p3) { AminoAcid::His } else { AminoAcid::Gln },
+        (B4::B, B4::F) => if is_pyrimidine(p3) { AminoAcid::Asp } else { AminoAcid::Glu },
+    }
+}
+
+pub fn translate_codon_mito(codon: &Codon) -> AminoAcid {
+    if !MITO_TABLE_READY.load(Ordering::Acquire) { init_mito_table(); }
+    unsafe { MITO_TABLE_CACHE[codon.index()] }
+}
+
+pub fn translate_codon_table(codon: &Codon, table: CodeTable) -> AminoAcid {
+    match table {
+        CodeTable::Standard => translate_codon(codon),
+        CodeTable::Mitochondrial => translate_codon_mito(codon),
     }
 }
 
