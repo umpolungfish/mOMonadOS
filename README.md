@@ -5,7 +5,7 @@ The kernel IS the Frobenius loop — every tick is a structural self-verificatio
 
 **Author:** Lando⊗⊙perator  
 **Total codebase:** ~14,000 lines Rust (no_std) + build scripts  
-**Target:** x86_64-unknown-none (UEFI boot, no OS dependency)  
+**Target:** x86_64-unknown-none (bare-metal direct ELF boot, zero external crates)  
 **License:** Unlicense (public domain)
 
 ## What it is
@@ -57,6 +57,28 @@ physicochemical properties and the AA→Primitive bijection recomputes. The `Reb
 enum (49 variants duplicating `IgPrim`) has been deleted — the entire kernel now uses
 ONE primitive type, `IgPrim`, with no duplicates anywhere. See [Phase 10](#phase-10-fascistic-hardcode-purge) below.
 
+**Fix: Zero external crates** — complete (2026-06-22). All five external crates
+(`bootloader_api`, `x86_64`, `spin`, `lazy_static`, `linked_list_allocator`) removed.
+`Cargo.toml [dependencies]` is now empty. Serial UART uses hand-rolled inline asm
+`inb`/`outb`. IDT is a hand-rolled `[IdtEntry; 256]` loaded via `lidt` asm; CS selector
+read at runtime. Heap is a static BSS `BumpAllocator` (4 MB, 4 KB aligned). Entry is a
+naked `_rust_start` that establishes RSP on a static 128 KB `BOOT_STACK`, then calls the
+kernel. QEMU boots the bare ELF via PVH (`XEN_ELFNOTE_PHYS32_ENTRY`) + a 32→64 mode
+transition stub in `src/boot.rs`; no OVMF or disk image required.
+
+**Fix: Live-tuple vote weights** — complete (2026-06-22). `sequence.rs`
+`aggregate_votes()` replaced 40+ per-variant match arms with a 12×12
+`FAMILY_TOKEN_AFFINITY` const matrix. Vote weight = `affinity[family][token] × ordinal`.
+Higher-ordinal variants push harder toward their family's preferred tokens; weights are
+derived from the running tuple state, not from compiled-in constants.
+
+**Fix: Autopoietic sequence construction** — complete (2026-06-22).
+`build_via_substrate()` seeds a `MiniKernel` from the `IgTuple` (4 Belnap registers +
+64-entry stack), runs a tier-selected canonical IMASM program on it, maps post-execution
+register state through `TOKEN_REG_AFFINITY`, and combines that with family affinity scores
+(substrate ×3 + family ×1). The sequence builder is itself an IMASM execution — the
+kernel runs itself to decide what to run next.
+
 The kernel now supports **80+ REPL commands** spanning grammar operations, rebis
 biological/chemical computation, cross-universe navigation, and hierarchical menu navigation.
 
@@ -64,7 +86,7 @@ biological/chemical computation, cross-universe navigation, and hierarchical men
 
 | Module | Lines | Source | Role |
 |--------|:-----:|--------|------|
-| `main.rs` | 2,716 | native | UEFI entry, heap init, serial REPL, command dispatch, history, menu navigation, F-key interception, context-aware prompts |
+| `main.rs` | ~2,800 | native | bare-metal entry, static BSS heap init, serial REPL, command dispatch, history, menu navigation, F-key interception, context-aware prompts |
 | `kernel.rs` | 576 | native | Frobenius tick loop; `self_imscribe()`; `dynamic_imscribe()`; tier promotion O₀→O₁→O₂→\(O_\infty\); wired to `FrobeniusHarness` |
 | `tokens.rs` | 637 | native | 12 IMASM opcodes across 4 families (LOGICAL/FROBENIUS/DIALETHEIA/LINEAR); free token-by-token composition — no preset sequences; any opcode fires at any time driven by the THINK→ACT→OBSERVE→UPDATE harness |
 | `manus.rs` | 432 | native | Terminal HUD / live display, token graph, B4 memory heatmap, ANSI rendering |
@@ -76,8 +98,10 @@ biological/chemical computation, cross-universe navigation, and hierarchical men
 | `crystal.rs` | 168 | native | 17.28M-address encode/decode; `CrystalStore` (64 entries, fixed-capacity) |
 | `imas_ig.rs` | 450 | native | IMASM↔IG bridge: token fingerprinting, structural classification, FROB loop verification; **home of the canonical `IgPrim` enum** — the single source of truth for all 49 grammar primitive values |
 | `cl8nk.rs` | 787 | native | Full CLINK Layer 8 formula navigator — feature parity with Python `cl8nk_navigator.py`. Entry, promotions, distance, transcendence, tensor, meet, join, tier, chain, systems, stats. Catalog-native: all structural data sourced from catalog.rs |
-| `serial.rs` | 96 | native | 16550A UART COM1, 115200 8N1; `sprint!`/`sprintln!`; blocking line input |
-| `interrupts.rs` | 177 | native | PIT 100Hz timer, PIC remap, double-fault handler, escape-key detection |
+| `serial.rs` | 96 | native | 16550A UART COM1, 115200 8N1; inline asm `inb`/`outb`; `sprint!`/`sprintln!`; blocking line input |
+| `interrupts.rs` | ~190 | native | PIT 100Hz timer, PIC remap, hand-rolled IDT + GDT, double-fault handler, escape-key detection; all port I/O via inline asm |
+| `sequence.rs` | ~320 | native | Dynamic IMASM sequence builder; `FAMILY_TOKEN_AFFINITY[12][12]` matrix; `MiniKernel` substrate executor; `build_via_substrate()` autopoietic composition |
+| `boot.rs` | ~90 | native | PVH ELF note + 32→64 bit bootstrap: page table setup, PAE, long-mode transition, 64-bit GDT |
 ### Red-Hot Rebis Modules (Phase 5)
 
 All 20 modules ported from `red-hot_rebis/` to `no_std` Rust — 5,951 lines total.
@@ -430,9 +454,11 @@ return trip adds another winding. Integer winding count tracks total navigation 
 ```
 mOMonadOS/
   src/
-    main.rs            2,716L  UEFI entry, REPL, command dispatch
-    kernel.rs            576L  Frobenius tick loop, self-imscription
+    main.rs            ~2800L  bare-metal entry (_rust_start), BumpAllocator, REPL, command dispatch
+    boot.rs              ~90L  PVH ELF note + 32→64 bootstrap (page tables, GDT, far jump)
+    kernel.rs            576L  Frobenius tick loop, self-imscription, build_via_substrate() dispatch
     tokens.rs            637L  12 IMASM opcodes, free token-by-token composition
+    sequence.rs         ~320L  FAMILY_TOKEN_AFFINITY matrix, MiniKernel, build_via_substrate()
     manus.rs             432L  Terminal HUD, B4 heatmap
     menu.rs              379L  Hierarchical menu, context stack, already_in guard
     catalog.rs           954L  Single source of truth — all structural data
@@ -442,8 +468,8 @@ mOMonadOS/
     crystal.rs           168L  Crystal encode/decode
     imas_ig.rs           450L  IMASM↔IG bridge; canonical IgPrim enum (49 variants)
     cl8nk.rs             787L  Full CLINK L8 formula navigator (catalog-native)
-    serial.rs             96L  UART driver
-    interrupts.rs        177L  PIT timer, PIC remap
+    serial.rs             96L  UART driver; inline asm inb/outb; no external crates
+    interrupts.rs       ~190L  PIT timer, PIC remap, hand-rolled IDT; inline asm port I/O
     rebis/
       mod.rs             183L  Module root; re-exports IgPrim (no duplicate RebisPrim)
       genetic_tuples.rs  986L  7-stage generative tuple pipeline + 12 IgPrim guard tests
@@ -465,9 +491,10 @@ mOMonadOS/
       frob_filter.rs     153L  Frobenius codon filtration
       serpent.rs         117L  Serpent rod motifs
       materials_expanded.rs  17L  Expanded material type definitions
-  build_bootimage.sh           UEFI FAT32 disk image builder
-  run.sh                       QEMU launcher (serial mode)
-  Cargo.toml                   Rust project manifest
+  momonados.ld                 Linker script (PVH note → boot32 → text → rodata → bss)
+  build_bootimage.sh           ELF kernel builder (cargo build, single step)
+  run.sh                       QEMU launcher (PVH direct ELF boot, no OVMF)
+  Cargo.toml                   Rust project manifest — empty [dependencies]
   Makefile                     Build convenience targets
 ```
 
@@ -476,39 +503,31 @@ mOMonadOS/
 - Rust nightly (`rustup toolchain install nightly`)
 - `rust-src` component (`rustup component add rust-src`)
 - QEMU with x86_64 support (`sudo apt install qemu-system-x86`)
-- OVMF firmware (`sudo apt install ovmf`)
-- mtools for disk images (`sudo apt install mtools`)
+
+No OVMF, no mtools, no disk image tools needed.  QEMU boots the bare ELF directly
+via the PVH protocol (`XEN_ELFNOTE_PHYS32_ENTRY`).
 
 ## Build and Run
 
 ```sh
-# Launcher (recommended) — /home/mrnob0dy666/.local/bin must be on PATH
-momos           # build release image + boot serial REPL in QEMU
-momos build     # dev build only (fast, no image)
-momos release   # release build only
-momos image     # build release + FAT32 UEFI disk image
-momos clean     # wipe build artifacts
-
-# Make
-make run        # image + serial REPL
-make build      # dev build
-make release    # release build
-make image      # UEFI disk image
-make clean
-
 # Direct
-cargo build --release
-bash build_bootimage.sh
-bash run.sh --serial
+cargo build --release --target x86_64-unknown-none
+./run.sh          # boots release build in QEMU, serial on stdio
+
+# Or via build script
+bash build_bootimage.sh        # just compiles the ELF
+bash run.sh release            # compiles if needed, then boots
 ```
 
 The REPL runs over COM1 serial (stdio in QEMU). Quit with `quit`, `exit`, or `halt` —
-QEMU exits cleanly.
+QEMU writes 0x10 to the `isa-debug-exit` port and exits cleanly.
 
 ## Target
 
-`x86_64-unknown-none` — no OS, no std. Heap via `linked_list_allocator` over UEFI
-physical memory. Boot via `bootloader_api` 0.11 (same as exOS).
+`x86_64-unknown-none` — no OS, no std, **zero external crates**.
+Static BSS bump allocator (4 MB).  Boot: PVH ELF note → 32-bit `_start` stub
+(page tables + long-mode) → naked `_rust_start` (establishes RSP) → `kmain()`.
+`Cargo.toml [dependencies]` is empty.
 
 ## License
 

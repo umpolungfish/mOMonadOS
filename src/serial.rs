@@ -1,65 +1,79 @@
 #![allow(dead_code)]
-use x86_64::instructions::port::Port;
 use core::fmt;
 
 const COM1: u16 = 0x3F8;
 
+#[inline(always)]
+unsafe fn inb(port: u16) -> u8 {
+    let val: u8;
+    core::arch::asm!(
+        "in al, dx",
+        out("al") val,
+        in("dx") port,
+        options(nomem, nostack, preserves_flags)
+    );
+    val
+}
+
+#[inline(always)]
+unsafe fn outb(port: u16, val: u8) {
+    core::arch::asm!(
+        "out dx, al",
+        in("dx") port,
+        in("al") val,
+        options(nomem, nostack, preserves_flags)
+    );
+}
+
 pub fn init() {
     unsafe {
-        Port::<u8>::new(COM1 + 1).write(0x00); // disable interrupts
-        Port::<u8>::new(COM1 + 3).write(0x80); // enable DLAB
-        Port::<u8>::new(COM1 + 0).write(0x01); // baud divisor lo = 1 → 115200
-        Port::<u8>::new(COM1 + 1).write(0x00); // baud divisor hi
-        Port::<u8>::new(COM1 + 3).write(0x03); // 8N1, DLAB off
-        Port::<u8>::new(COM1 + 2).write(0xC7); // FIFO on, clear, 14-byte threshold
-        Port::<u8>::new(COM1 + 4).write(0x0B); // RTS/DSR
+        outb(COM1 + 1, 0x00); // disable interrupts
+        outb(COM1 + 3, 0x80); // enable DLAB
+        outb(COM1 + 0, 0x01); // baud divisor lo = 1 → 115200
+        outb(COM1 + 1, 0x00); // baud divisor hi
+        outb(COM1 + 3, 0x03); // 8N1, DLAB off
+        outb(COM1 + 2, 0xC7); // FIFO on, clear, 14-byte threshold
+        outb(COM1 + 4, 0x0B); // RTS/DSR
     }
 }
 
 #[inline]
 fn tx_ready() -> bool {
-    unsafe { Port::<u8>::new(COM1 + 5).read() & 0x20 != 0 }
+    unsafe { inb(COM1 + 5) & 0x20 != 0 }
 }
 
 #[inline]
 pub fn rx_ready() -> bool {
-    unsafe { Port::<u8>::new(COM1 + 5).read() & 0x01 != 0 }
+    unsafe { inb(COM1 + 5) & 0x01 != 0 }
 }
 
-/// Write a single byte, spin-waiting for TX ready.
 pub fn write_byte(b: u8) {
     while !tx_ready() {}
-    unsafe { Port::<u8>::new(COM1).write(b); }
+    unsafe { outb(COM1, b); }
 }
 
 pub fn read_byte() -> u8 {
     while !rx_ready() {}
-    unsafe { Port::<u8>::new(COM1).read() }
+    unsafe { inb(COM1) }
 }
 
 /// FIFO-burst write: fill the 14-byte FIFO before re-checking TX ready.
-/// Dramatically reduces spin-wait overhead for display output.
-/// 14-byte threshold set in init() — we batch up to 14 bytes per burst.
+/// Closures can't call `unsafe fn` directly; use a standalone flush_buf().
+fn flush_buf(buf: &[u8; 14], fill: usize) {
+    if fill == 0 { return; }
+    while !tx_ready() {}
+    unsafe {
+        for i in 0..fill { outb(COM1, buf[i]); }
+    }
+}
+
 pub fn write_str(s: &str) {
     let mut buf: [u8; 14] = [0; 14];
     let mut fill: usize = 0;
-
-    let flush = |buf: &mut [u8; 14], fill: &mut usize| {
-        if *fill == 0 { return; }
-        // Wait once for TX ready, then burst the batch
-        while !tx_ready() {}
-        unsafe {
-            let mut port = Port::<u8>::new(COM1);
-            for i in 0..*fill {
-                port.write(buf[i]);
-            }
-        }
-        *fill = 0;
-    };
-
     for b in s.bytes() {
         if b == b'\n' {
-            flush(&mut buf, &mut fill);
+            flush_buf(&buf, fill);
+            fill = 0;
             write_byte(b'\r');
             write_byte(b'\n');
             continue;
@@ -67,10 +81,11 @@ pub fn write_str(s: &str) {
         buf[fill] = b;
         fill += 1;
         if fill >= 14 {
-            flush(&mut buf, &mut fill);
+            flush_buf(&buf, fill);
+            fill = 0;
         }
     }
-    flush(&mut buf, &mut fill);
+    flush_buf(&buf, fill);
 }
 
 pub struct Writer;

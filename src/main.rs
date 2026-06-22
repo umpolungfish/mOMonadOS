@@ -6,9 +6,9 @@
 extern crate alloc;
 
 use alloc::string::String;
-use bootloader_api::{entry_point, BootInfo, config::{BootloaderConfig, Mapping}};
 use core::panic::PanicInfo;
-use linked_list_allocator::LockedHeap;
+use core::sync::atomic::{AtomicUsize, Ordering};
+use core::alloc::Layout;
 
 mod serial;
 mod belnap;
@@ -34,6 +34,7 @@ mod rebis;
 mod universe;
 mod menu;
 mod sequence;
+mod boot;
 
 use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
 use crystal::{CrystalStore, decode, encode, indices_from_snapshot, TOTAL};
@@ -42,37 +43,92 @@ use kernel::Kernel;
 use crate::imas_ig::{IgTuple, IgPrim};
 use universe::{parse_universe, universe_display, universe_name, universe_description, universe_gates, universe_o_inf};
 use menu::{ContextStack, render_menu_bar, menu_hint, tab_complete, print_help_topic, search_commands, enter_context, fkey_to_category, render_prompt};
+// ─── Bump allocator (no external crates) ─────────────────────
+
+#[repr(C, align(4096))]
+struct HeapStorage([u8; 4 * 1024 * 1024]);
+static mut HEAP_STORAGE: HeapStorage = HeapStorage([0; 4 * 1024 * 1024]);
+
+struct BumpAllocator {
+    next: AtomicUsize,
+    end:  AtomicUsize,
+}
+
+impl BumpAllocator {
+    const fn new() -> Self {
+        Self { next: AtomicUsize::new(0), end: AtomicUsize::new(0) }
+    }
+    fn init(&self, start: usize, size: usize) {
+        self.next.store(start, Ordering::Relaxed);
+        self.end.store(start + size, Ordering::Relaxed);
+    }
+}
+
+unsafe impl core::alloc::GlobalAlloc for BumpAllocator {
+    unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
+        let align = layout.align();
+        let size  = layout.size();
+        loop {
+            let cur     = self.next.load(Ordering::Relaxed);
+            let aligned = (cur + align - 1) & !(align - 1);
+            let new     = aligned + size;
+            if new > self.end.load(Ordering::Relaxed) { return core::ptr::null_mut(); }
+            if self.next.compare_exchange_weak(
+                cur, new, Ordering::Relaxed, Ordering::Relaxed,
+            ).is_ok() {
+                return aligned as *mut u8;
+            }
+        }
+    }
+    unsafe fn dealloc(&self, _ptr: *mut u8, _layout: Layout) {}
+}
+
 #[global_allocator]
-static ALLOCATOR: LockedHeap = LockedHeap::empty();
+static ALLOCATOR: BumpAllocator = BumpAllocator::new();
 
-const BOOTLOADER_CONFIG: BootloaderConfig = {
-    let mut config = BootloaderConfig::new_default();
-    config.mappings.physical_memory = Some(Mapping::Dynamic);
-    config.kernel_stack_size = 0x40000;
-    config
-};
+// ─── Kernel stack + bare-metal entry ─────────────────────────
 
-entry_point!(kmain, config = &BOOTLOADER_CONFIG);
+#[repr(C, align(16))]
+struct KernelStack([u8; 128 * 1024]);
+static BOOT_STACK: KernelStack = KernelStack([0; 128 * 1024]);
 
-fn kmain(boot_info: &'static mut BootInfo) -> ! {
+#[no_mangle]
+#[unsafe(naked)]
+pub unsafe extern "C" fn _rust_start() -> ! {
+    core::arch::naked_asm!(
+        "lea rax, [{stack}]",
+        "add rax, {size}",
+        "and rax, -16",
+        "mov rsp, rax",
+        "xor rbp, rbp",
+        "call {entry}",
+        "2:",
+        "hlt",
+        "jmp 2b",
+        stack = sym BOOT_STACK,
+        size  = const core::mem::size_of::<KernelStack>(),
+        entry = sym rust_start,
+    );
+}
+
+extern "C" fn rust_start() -> ! {
+    unsafe {
+        ALLOCATOR.init(
+            core::ptr::addr_of_mut!(HEAP_STORAGE.0) as usize,
+            core::mem::size_of::<HeapStorage>(),
+        );
+    }
+    kmain()
+}
+
+fn kmain() -> ! {
     serial::init();
     sprintln!("[BOOT] mOMonadOS — The Self-Imscribing Bare-Metal Kernel");
 
     interrupts::init(100);
     sprintln!("[BOOT] Interrupts online — PIT 100Hz, PIC remapped");
 
-    if let Some(phys_offset) = boot_info.physical_memory_offset.into_option() {
-        if let Some(region) = boot_info.memory_regions.iter().find(|r| {
-            matches!(r.kind, bootloader_api::info::MemoryRegionKind::Usable)
-                && r.end.saturating_sub(r.start) >= 4 * 1024 * 1024
-        }) {
-            let heap_phys = region.start + 0x100_0000;
-            let heap_start = (phys_offset + heap_phys) as *mut u8;
-            let heap_size = 4 * 1024 * 1024usize;
-            unsafe { ALLOCATOR.lock().init(heap_start, heap_size); }
-            sprintln!("[BOOT] Heap: 4MB @ {:#x}", phys_offset + heap_phys);
-        }
-    }
+    sprintln!("[BOOT] Heap: 4MB static BSS");
 
     let mut k = Kernel::new();
     k.boot();
@@ -94,9 +150,14 @@ fn kmain(boot_info: &'static mut BootInfo) -> ! {
     // On real hardware or without the device, falls through to HLT.
     sprintln!("[SHUTDOWN] μ∘δ=id. Goodbye.");
     unsafe {
-        x86_64::instructions::port::PortWrite::write_to_port(0xf4, 0x10u32);
+        core::arch::asm!(
+            "out dx, eax",
+            in("dx") 0xf4_u16,
+            in("eax") 0x10_u32,
+            options(nomem, nostack, preserves_flags)
+        );
     }
-    loop { x86_64::instructions::hlt(); }
+    loop { unsafe { core::arch::asm!("hlt", options(nostack, nomem, preserves_flags)); } }
 }
 
 fn print_banner() {
@@ -291,7 +352,7 @@ fn repl(k: &mut Kernel) {
                 while ran < n {
                     while !interrupts::timer_ready() {
                         if interrupts::escape_pressed() { break; }
-                        x86_64::instructions::hlt();
+                        unsafe { core::arch::asm!("hlt", options(nostack, nomem, preserves_flags)); }
                     }
                     if interrupts::escape_pressed() { break; }
                     interrupts::pending_ticks();
@@ -1681,7 +1742,7 @@ fn panic(info: &PanicInfo) -> ! {
     serial::write_str("\n[PANIC] ");
     sprint!("{}", info.message());
     sprintln!();
-    loop { x86_64::instructions::hlt(); }
+    loop { unsafe { core::arch::asm!("hlt", options(nostack, nomem, preserves_flags)); } }
 }
 
 // ─── ParaASM REPL ───────────────────────────────────────────────

@@ -403,7 +403,7 @@ impl Kernel {
             let snap = self.dynamic_imscribe();
             let tuple = crate::imas_ig::IgTuple::from_snapshot(&snap);
             let len = crate::sequence::next_seq_len(&snap);
-            self.program = crate::sequence::build_next_program(&tuple, len, snap.self_ref);
+            self.program = crate::sequence::build_via_substrate(&tuple, len, snap.self_ref, snap.tier);
             self.snapshot = Some(self_imscribe(&self.program));
             self.ip = 0;
             self.fork_depth = 0;
@@ -424,7 +424,7 @@ impl Kernel {
         };
         let tuple = crate::imas_ig::IgTuple::from_snapshot(&snap);
         let len = crate::sequence::next_seq_len(&snap);
-        self.program = crate::sequence::build_next_program(&tuple, len, snap.self_ref);
+        self.program = crate::sequence::build_via_substrate(&tuple, len, snap.self_ref, snap.tier);
         self.snapshot = Some(self_imscribe(&self.program));
         self.ip = 0;
         self.fork_depth = 0;

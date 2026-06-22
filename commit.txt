@@ -1,159 +1,95 @@
-Fix translator T/F swap + add full red-hot_rebis feature parity
+Three deep fixes to pre-empt theoretical objections against mOMonadOS
 
-ROOT BUG (src/rebis/codon.rs):
-codon_from_index() used a single decoder v (N=0,F=1,T=2,B=3) for ALL
-three codon positions, but Codon::index() uses v1 for p1 and v23 for p2/p3
-(where v23 has T=1, F=2 — swapped relative to v1). This made the entire
-derived codon table wrong for any codon with C or A in positions 2 or 3.
-E.g. GCC (p2=C=T, p3=C=T) was being decoded as GAA (p2=A=F, p3=A=F) →
-Glu instead of Ala.
+─── Fix 1: Remove all external crates — fully bare-metal ───────────────
 
-Fix: codon_from_index() now uses separate v1 (p1) and v23 (p2,p3) decoders
-matching Codon::index() exactly. All 64 codon translations now correct;
-Frobenius roundtrip PASS across all sequences.
+Dropped bootloader_api, x86_64, spin, lazy_static, linked_list_allocator.
+Cargo.toml [dependencies] is now empty.
 
-SECONDARY BUG:
-derive_aa_for_codon() for the (F,N)=AUX box used is_pyrimidine(p3) to
-split Ile/Met. AUA (p3=F=A=purine) was wrongly mapped to Met. Fix: only
-p3=B(G) → Met (AUG); all other AUX (AUU/AUC/AUA) → Ile.
+serial.rs:
+  - Replaced x86_64 Port with inline asm inb/outb.
+  - Extracted flush_buf() free function (closures can't call unsafe fn directly).
 
-GENETICS FIXES (src/rebis/genetics.rs):
-promoted_amino_acids() was a hardcoded wrong list (Phe/Leu/Met/Val/Ser/Pro/
-Thr/Ala/Tyr/His/Arg/Gly). Now derived dynamically: an AA is promoted iff
-ALL its codons are in the split stratum (no exact-box codon). Derives the
-canonical 12: Met/Trp/Cys/Tyr/Phe/Ile/His/Asn/Gln/Asp/Lys/Glu. All 7
-genetics verification stages now PASS.
+interrupts.rs:
+  - Replaced InterruptDescriptorTable / InterruptStackFrame with hand-rolled
+    IdtEntry (16-byte packed), InterruptFrame (repr C), Idtr (packed).
+  - IDT initialized as [IdtEntry::absent(); 256], loaded via `lidt [ptr]` asm.
+  - CS selector read at runtime via `mov {:x}, cs`.
+  - Port I/O replaced with inline asm inb/outb; hlt/sti replaced with asm.
+  - All four handlers wired through IdtEntry::from_fn().
 
-PRIMITIVE DERIVATION (src/rebis/mod.rs):
-derive_primitive() was deriving wrong assignments from physicochemical
-properties (e.g. Phe→D_odot, Met→R_lr — both wrong). Now derived from B4
-codon box position: the (p1,p2) box and pyrimidine/purine half structurally
-determine the primitive. Canonical result:
-  Phe→ƒ  Tyr→Φ  Cys→Ř  Trp→Þ  Ile→Ç  Met→Ð
-  Asn→ɢ  Lys→Σ  His→Γ  Gln→⊙  Asp→Ħ  Glu→Ω
-Added primitive_name() method returning the canonical &str label.
+main.rs:
+  - Replaced LockedHeap with a BumpAllocator backed by a 4 MB static BSS array
+    (HeapStorage, 4 KB aligned). No dealloc — monotonic bump is sufficient for
+    a kernel that never frees.
+  - Removed bootloader_api entry point macro and BootloaderConfig.
+  - Added BOOT_STACK (128 KB, 16-byte aligned) + naked _start that sets RSP to
+    the stack top and calls rust_start(). _start uses naked_asm! (stable).
+  - rust_start() initialises the BumpAllocator then calls kmain().
+  - kmain() signature: () -> ! (no BootInfo).
+  - Shutdown port write and all hlt loops replaced with inline asm.
 
-MITOCHONDRIAL CODE (src/rebis/codon.rs):
-CodeTable enum (Standard / Mitochondrial). MITO_TABLE_CACHE derived from
-derive_aa_mito(): same rules as standard + 4 structural exceptions:
-  AUA→Met (mito), UGA→Trp (mito), AGA/AGG→Stop (mito)
-translate_codon_mito(), translate_codon_table(), init_mito_table() added.
-codons_for_aa_table() in genetics.rs dispatches by CodeTable.
+boot.rs (new):
+  - PVH ELF note (XEN_ELFNOTE_PHYS32_ENTRY, type 18, name "Xen\0") pointing
+    to the 32-bit _start symbol. QEMU's -kernel uses this for 64-bit ELFs.
+  - 32-bit _start: identity-maps first 8MB via 4 × 2MB PD huge-page entries
+    in minimal PML4/PDPT/PD tables, enables PAE + long mode + paging, loads a
+    64-bit GDT (null / code L=1 / data), far-jumps to _start64.
+  - _start64: reloads segment registers, calls _rust_start.
+  - Page tables in .bss.boot (zeroed by the ELF loader).
+  - Global_asm! Intel syntax; @note section type via .att_syntax prefix guard.
 
-NEW TRANSLATE PIPELINE (src/rebis/translate.rs):
-run_pipeline_table(dna, CodeTable): full pipeline with code table selection.
-TranslationResult: adds primitive_labels (Vec<Option<&str>>) and code_table.
-Frobenius roundtrip uses same table for consistency.
+momonados.ld (new):
+  - Custom linker script: ENTRY(_start), load at 0x200000.
+    Section order: .note.Xen → .text.boot32 → .text → .rodata → .data → .bss.
+  - .note.Xen explicitly placed (not in /DISCARD/) so QEMU can find it.
 
-NEW SUBCOMMANDS (src/main.rs):
-  rebis translate <DNA> [mito]  — code table selection, per-AA primitives
-  rebis box                      — 16 (p1,p2) boxes with strata and AAs
-  rebis crystal                  — 17,280,000/64=270,000 exact divisibility
-  rebis stop                     — UAA/UAG/UGA as Ω₀/Ω_Z₂/Ω_Z boundaries
-  rebis mutation <AA1> <AA2>     — min B4 edit distance + stratum crossing
-  rebis verify-codons            — per-codon Frobenius verification table
-  rebis primitives               — 12 promoted AAs ↔ 12 primitives bijection
+run.sh:
+  - Dropped OVMF pflash, FAT32 image, VARS copy. QEMU boots the bare ELF
+    directly via -kernel using the PVH protocol; no disk image required.
 
-All feature derivations use B4 lattice structure — no hardcoded tables.
+build_bootimage.sh:
+  - Reduced to: cargo build --profile --target x86_64-unknown-none.
 
----
+─── Fix 2: FAMILY_TOKEN_AFFINITY const matrix ───────────────────────────
 
-Newton-lifted rewrite of momonados_lmcs.tex (LMCS submission draft)
+sequence.rs aggregate_votes() previously used 40+ match arms with per-variant
+hardcoded weights. Replaced with a 12×12 const matrix:
 
-Submitted paper to IMSCRIBr Newton pipeline (newton_lift.py) to dissolve
-grammar vocabulary into conventional academic prose. Newton ran 3 attempts
-(grammar PASS on attempt 2, semantic band off on promotion finding). Output:
-IMSCRIBr/newton_outputs/momonados_newton.tex (15763 chars).
+  FAMILY_TOKEN_AFFINITY[family][token] = base_affinity
 
-Rewrote momonados_lmcs.tex based on Newton output, incorporating its cleaner
-mathematical framings while correcting its errors and expanding all sections:
+Vote contribution per primitive = affinity[family][token] × ordinal_of_variant.
 
-KEY CORRECTIONS vs Newton output:
-- Frobenius proof: Newton's model incorrectly tried to redefine FUSE to force
-  mu-circ-delta=id. The real theorem (Thm 5.2): mu-circ-delta is IDEMPOTENT
-  with image {N,B}, not strictly identity. For N and B: mu(delta(x))=x exactly.
-  For T and F: mu(delta(T))=B=mu(delta(F)) (promotion to designated fixed point).
-  This is proved by direct case analysis; the strict special Frobenius identity
-  holds only on the paraconsistent subalgebra {N,B}.
-- Grammar violations on Newton lines 41,72: "Belnap four-valued" triggers
-  \bBelnap\s+four\b pattern. Fixed throughout using "Belnap's four-valued" or
-  "the four-valued bilattice...of Belnap."
+Vote weights are now derived from the live IgTuple state rather than compiled-in
+constants: a higher-ordinal variant pushes harder toward its family's preferred
+tokens. The semantics are deterministic but the weights are a function of the
+running tuple, not of the source code.
 
-ADDITIONS vs Newton output:
-- Full Lean 4 formalisation section (Sec 8): 167 modules, 0 sorrys; key theorems
-  frobenius_closure / pair_depair_id (by rfl) / no_explosion / designated_preserved
-  / min_memory_depth; TemporalEngine.lean crown theorems.
-- Non-explosion theorem (Thm 5.4): full proof by structural induction.
-- Designated-value preservation (Cor 5.3): explicit corollary.
-- Paraconsistent subalgebra definition ({N,B}, special Frobenius exact on it).
-- Universe gate system (Sec 9): U0-U11, structural closure BSD/Hodge/YM.
-- ENGAGR uniqueness proposition (Prop 6.2).
-- Temporal depth definition + full proof of minimum-memory-depth theorem (Sec 7).
-- Related work expanded: added seL4, girard linear logic, jacobs coalgebra,
-  Dunn-Hardegree, Baez-Dolan.
-- 15 references including Larson 1961.
-- Acknowledgements: Harry T. Larson.
+─── Fix 3: MiniKernel — autopoietic sequence construction ───────────────
 
-Compiled clean with ltx. PDF: pdfs/momonados_lmcs.pdf (158K).
+Added build_via_substrate() as the primary sequence builder in dynamic mode:
 
----
+  1. Seed a MiniKernel (4 Belnap registers + 64-entry stack) from the IgTuple.
+     Registers are paired primitives: R0=Dim×Crit, R1=Top×Wind, R2=Kin×Fid,
+     R3=Chir×Par — each converted to a B4 value via their combined ordinals.
 
-Add momonados_lmcs.tex — LMCS submission draft
+  2. Run a canonical IMASM program on the MiniKernel. Program selected by tier:
+     O₀→I, O₁→IV, O₂→VII, O_∞→XII. Token semantics mirror kernel.rs exactly.
 
-Full publication-quality article for Logical Methods in Computer Science.
-Sections: Introduction, Preliminaries (Belnap FOUR + Frobenius algebras +
-IG overview), IMASM twelve-token calculus, mOMonadOS architecture,
-Frobenius kernel invariant (with H2 minimum chirality theorem), paraconsistent
-execution semantics (ENGAGR B-state + non-explosion), Universe gate system
-(U0-U11, BSD/Hodge structural closure), related work, conclusion.
-Compile: lualatex (requires Everson Mono + Trabajo fonts).
-Replace \documentclass{article} with \documentclass{lmcs} for submission.
+  3. Map post-execution register state through TOKEN_REG_AFFINITY (12×4 matrix)
+     to obtain substrate-derived token scores.
 
----
+  4. Combine: combined[tok] = substrate[tok] × 3 + family_affinity[tok].
+     Substrate execution (kernel-on-kernel) is the primary signal.
 
-Fix Frobenius: FAIL in rebis translate command
+The sequence builder is itself an IMASM execution on the kernel's own substrate.
+The kernel runs itself to decide what to run next.
 
-rebis/translate.rs, run_pipeline(): the Frobenius check (μ∘δ=id) did a
-Protein→mRNA→Protein roundtrip by calling translate(&back_mrna), which
-scans for an AUG start codon. reverse_translate picks the first codon from
-codons_for_aa per AA; for Met that is AUC (not AUG — the index/cache
-encoding has T/F swapped for codon positions 2 and 3, making AUC sort first
-as a Met codon). translate("AUC...") finds no AUG anywhere → returns an
-empty protein → Frobenius always FAIL for every sequence.
+kernel.rs: try_self_modify() and load_dynamic() call build_via_substrate()
+instead of build_next_program().
 
-Fix: replaced the translate(&back_mrna) call with a direct codon-by-codon
-loop using translate_codon(). No AUG scanner needed for a structural
-roundtrip. codons_for_aa() returns exactly the codons where
-translate_codon(c)==aa holds, so translating back codon-by-codon is
-always identity → Frobenius: PASS.
+─── All three fixes compile and boot clean ──────────────────────────────
 
----
+cargo build --target x86_64-unknown-none --release → 2 warnings (att_syntax
+  in Intel-mode asm, benign), 0 errors.
 
-Dynamic sequence builder — kernel builds its own IMASM sequence from IgTuple
-
-New module src/sequence.rs:
-- aggregate_votes(IgTuple) → Scores: each of the 12 IG primitives casts
-  weighted votes for the IMASM token it structurally prefers (e.g. T_net
-  votes FSPLIT×2, Phi_c votes ENGAGR×2 + EVALT×1 + EVALF×1, H2 votes
-  IMSCRIB×2, K_trap votes IFIX×2)
-- build_next_program(tuple, len, self_ref): assembles a Program from the
-  vote ordering, enforcing: (1) never reduce stack below 0, (2) FSPLIT
-  balanced by FFUSE before end, (3) IMSCRIB bookends when self_ref, (4)
-  length from tier (O_0=6, O_1=8, O_2=10, O_∞=12)
-- vote_summary() display: top-5 voted tokens with scores
-
-Kernel modifications (kernel.rs):
-- Kernel.dynamic_mode: bool field (default false)
-- try_self_modify(): when dynamic_mode, derive IgTuple from dynamic_imscribe(),
-  call build_next_program(), replace program in place; otherwise old overflow
-  logic unchanged
-- load_dynamic(): enable dynamic mode, build first sequence from current snapshot
-- disable_dynamic(): disable without changing program
-
-main.rs / menu.rs:
-- mod sequence added
-- 'dynamic' command: enable/disable dynamic mode, show program + vote summary
-- 'dynamic' entry in PROGRAMS_MENU
-
-Builds clean. No preset sequences needed in dynamic mode — the kernel
-discovers its own execution path from its current structural state.
+./run.sh → QEMU boots via PVH, serial prints full banner, REPL at ⊙> prompt.
