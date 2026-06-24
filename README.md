@@ -4,7 +4,7 @@ A bare-metal self-imscribing operating kernel. No processes. No scheduler. No fi
 The kernel IS the Frobenius loop — every tick is a structural self-verification.
 
 **Author:** Lando⊗⊙perator  
-**Total codebase:** ~14,000 lines Rust (no_std) + build scripts  
+**Total codebase:** ~19,300 lines Rust (no_std) + build scripts  
 **Target:** x86_64-unknown-none (bare-metal direct ELF boot, zero external crates)  
 **License:** Unlicense (public domain)
 
@@ -47,7 +47,7 @@ compounds** (pharmacological universe-steering agents) into computational hardwa
 
 **Phase 9 User Interface** — complete. Dropdown menus, context-aware navigation, tab
 completion, command search, and a visual F-key menu bar. The REPL is now a hierarchical
-navigator with 9 command categories, context stack (up to 4 levels deep), breadcrumb
+navigator with **10 command categories**, context stack (up to 4 levels deep), breadcrumb
 prompts, and hierarchical help. Menu nesting bug (recursive `Rebis → Rebis` entry) fixed.
 
 **Phase 10 Fascistic Hardcode Purge** — complete. All 6 remaining structural violations
@@ -56,6 +56,15 @@ change the derivation rules and the entire 64-codon table recomputes. Change the
 physicochemical properties and the AA→Primitive bijection recomputes. The `RebisPrim`
 enum (49 variants duplicating `IgPrim`) has been deleted — the entire kernel now uses
 ONE primitive type, `IgPrim`, with no duplicates anywhere. See [Phase 10](#phase-10-fascistic-hardcode-purge) below.
+
+**Phase 11 cr3echrz Integration** — complete. The cr3echrz theorem operationalization engine
+ported from Python (`cr3echrz/`) to `no_std` Rust as `src/cr3echrz/`. 7-theorem unified engine
+(Collatz, Goldbach, Three-Body, Burnside, Erdős–Straus, Inverse Galois, Baum–Connes) plus
+6-module p4rakernel Belnap+Frobenius engine. All three hardcoded static registries eliminated
+in favor of dynamic `DYNAMIC_THEOREMS`, `DYNAMIC_P4RA`, and `DOMAIN_KEYWORD_MAP` vectors with
+fn-pointer dispatch. Runtime-extensible: `register_theorem()`, `register_p4ra_module()`,
+`register_domain_keyword()`. Menu integrated as F9/Cr3echrz with 4 sub-commands. See
+[Phase 11](#phase-11-cr3echrz-integration) below.
 
 **Fix: Zero external crates** — complete (2026-06-22). All five external crates
 (`bootloader_api`, `x86_64`, `spin`, `lazy_static`, `linked_list_allocator`) removed.
@@ -79,147 +88,181 @@ register state through `TOKEN_REG_AFFINITY`, and combines that with family affin
 (substrate ×3 + family ×1). The sequence builder is itself an IMASM execution — the
 kernel runs itself to decide what to run next.
 
-The kernel now supports **80+ REPL commands** spanning grammar operations, rebis
-biological/chemical computation, cross-universe navigation, and hierarchical menu navigation.
-
+The kernel now supports **90+ REPL commands** spanning grammar operations, rebis
+biological/chemical computation, cross-universe navigation, theorem operationalization,
+and hierarchical menu navigation.
 ### Core modules
 
 | Module | Lines | Source | Role |
 |--------|:-----:|--------|------|
-| `main.rs` | ~2,800 | native | bare-metal entry, static BSS heap init, serial REPL, command dispatch, history, menu navigation, F-key interception, context-aware prompts |
-| `kernel.rs` | 576 | native | Frobenius tick loop; `self_imscribe()`; `dynamic_imscribe()`; tier promotion O₀→O₁→O₂→\(O_\infty\); wired to `FrobeniusHarness` |
-| `tokens.rs` | 637 | native | 12 IMASM opcodes across 4 families (LOGICAL/FROBENIUS/DIALETHEIA/LINEAR); free token-by-token composition — no preset sequences; any opcode fires at any time driven by the THINK→ACT→OBSERVE→UPDATE harness |
-| `manus.rs` | 432 | native | Terminal HUD / live display, token graph, B4 memory heatmap, ANSI rendering |
-| `menu.rs` | 379 | native | Hierarchical menu: `MenuItem` tree, `ContextStack` (4-deep breadcrumb), Tab completion, F-key menu bar, keyword search, `already_in` guard |
-| `catalog.rs` | 954 | native | Single source of truth for ALL structural data; runtime-extensible `register_entry()` |
-| `algebra.rs` | 303 | native | Meet/join/tensor lattice operations on IgTuple; Frobenius closure verification |
-| `consciousness.rs` | 114 | native | C-score computation with Gate 1 (⊙) and Gate 2 (Ç≤𐑧) evaluation |
-| `belnap.rs` | 203 | native | Belnap FOUR truth values (N/T/F/B), 4096-cell B4 memory, 256-deep stack, 8 registers |
-| `crystal.rs` | 168 | native | 17.28M-address encode/decode; `CrystalStore` (64 entries, fixed-capacity) |
-| `imas_ig.rs` | 450 | native | IMASM↔IG bridge: token fingerprinting, structural classification, FROB loop verification; **home of the canonical `IgPrim` enum** — the single source of truth for all 49 grammar primitive values |
-| `cl8nk.rs` | 787 | native | Full CLINK Layer 8 formula navigator — feature parity with Python `cl8nk_navigator.py`. Entry, promotions, distance, transcendence, tensor, meet, join, tier, chain, systems, stats. Catalog-native: all structural data sourced from catalog.rs |
-| `serial.rs` | 96 | native | 16550A UART COM1, 115200 8N1; inline asm `inb`/`outb`; `sprint!`/`sprintln!`; blocking line input |
-| `interrupts.rs` | ~190 | native | PIT 100Hz timer, PIC remap, hand-rolled IDT + GDT, double-fault handler, escape-key detection; all port I/O via inline asm |
-| `sequence.rs` | ~320 | native | Dynamic IMASM sequence builder; `FAMILY_TOKEN_AFFINITY[12][12]` matrix; `MiniKernel` substrate executor; `build_via_substrate()` autopoietic composition |
-| `boot.rs` | ~90 | native | PVH ELF note + 32→64 bit bootstrap: page table setup, PAE, long-mode transition, 64-bit GDT |
-### Red-Hot Rebis Modules (Phase 5)
+| `main.rs` | ~2,800 | native | bare-metal entry, static BSS heap init, serial REPL, command dispatch, history, menu navigation, F-key interception, context-aware prompts, cr3/p4ra dispatch |
+| `kernel.rs` | 576 | native | Frobenius tick loop, self-imscription, `build_via_substrate()` dispatch |
+| `tokens.rs` | 637 | native | 12 IMASM opcodes, free token-by-token composition |
+| `sequence.rs` | ~320 | native | FAMILY_TOKEN_AFFINITY matrix, MiniKernel, autopoietic sequence builder |
+| `manus.rs` | 432 | native | Terminal HUD, B4 heatmap |
+| `menu.rs` | 388 | native | Hierarchical menu, 10-category F-key bar, context stack, `already_in` guard |
+| `catalog.rs` | 954 | grammar | Single source of truth — all structural data, IG tuples, ordinals, glyphs |
+| `algebra.rs` | 303 | grammar | Meet/join/tensor lattice operations |
+| `consciousness.rs` | 114 | grammar | C-score with dual-gate evaluation |
+| `belnap.rs` | 203 | grammar | Belnap FOUR logic, B4 memory |
+| `crystal.rs` | 168 | grammar | Crystal FS: encode/decode Frobenius addresses |
+| `imas_ig.rs` | 450 | grammar | IMASM↔IG bridge; canonical `IgPrim` enum (49 variants) |
+| `cl8nk.rs` | 787 | grammar | Full CLINK L8 formula navigator (catalog-native) |
+| `serial.rs` | 96 | native | UART driver; inline asm `inb`/`outb`; zero crates |
+| `interrupts.rs` | ~190 | native | PIT timer, PIC remap, hand-rolled IDT; inline asm port I/O |
+| `parasm.rs` | — | grammar | ParaASM VM: dialetheic alignment, Frobenius identity, B3 loop |
+| `aleph.rs` | — | grammar | Aleph Hebrew glyph encoding |
+| `belnap_shor.rs` | — | grammar | Belnap-Shor quantum pipeline (N=15, 21) |
+| `para_rh.rs` | — | grammar | Riemann Hypothesis paraconsistent bridge |
+| `para_ym.rs` | — | grammar | Yang-Mills mass gap paraconsistent bridge |
+| `para_temporal.rs` | — | grammar | Temporal logic paraconsistent bridge |
+| `para_category.rs` | — | grammar | Category theory paraconsistent bridge |
+| `frob_verify.rs` | — | grammar | Frobenius harness verification |
+| `universe.rs` | — | grammar | Cross-universe ruleset navigation |
+| `cr3echrz/mod.rs` | 18 | cr3echrz | Module root; re-exports p3theorem, p4rakernel, shared |
+| `cr3echrz/shared.rs` | 252 | cr3echrz | Opcode registry, grammar mappings, canonical sequences, dynamic domain keywords |
+| `cr3echrz/p3theorem.rs` | 700 | cr3echrz | 7-theorem unified engine: Collatz, Goldbach, Three-Body, Burnside, Erdős–Straus, Inverse Galois, Baum–Connes; dynamic `DYNAMIC_THEOREMS` registry |
+| `cr3echrz/p4rakernel.rs` | 598 | cr3echrz | 6-module Belnap+Frobenius p4rakernel engine: Burnside, Connes, Erdős–Straus, Goldbach, Landau, Three-Body; dynamic `DYNAMIC_P4RA` registry |
+| `rebis/mod.rs` | 183 | rebis | Module root; re-exports `IgPrim` (no duplicate `RebisPrim`) |
+| `rebis/genetic_tuples.rs` | 986 | rebis | 7-stage generative tuple pipeline + 12 `IgPrim` guard tests |
+| `rebis/materials.rs` | 877 | rebis | IG material forge + 8 QC paradigms |
+| `rebis/biology.rs` | 387 | rebis | TissueGrid, Telomere, FrobeniusBioSim |
+| `rebis/clu.rs` | 365 | rebis | CLU power-law clustering |
+| `rebis/translate.rs` | 360 | rebis | Gene→protein + reverse pipeline (Frobenius-verified) |
+| `rebis/antibody.rs` | 336 | rebis | Antibody CDR design |
+| `rebis/codon.rs` | 304 | rebis | 64-codon genetic code (dynamically derived, not hardcoded) |
+| `rebis/pdb.rs` | 272 | rebis | PDB structure validation |
+| `rebis/exotic_hadron.rs` | 233 | rebis | Glueball, Tetraquark, Pentaquark |
+| `rebis/pipeline.rs` | 217 | rebis | IG promotion pipeline (`IgPrim`-only references) |
+| `rebis/genetic_asm.rs` | 208 | rebis | Genetic ParaASM programs |
+| `rebis/hadron.rs` | 203 | rebis | Hadron Belnap analysis |
+| `rebis/clink.rs` | 190 | rebis | CLINK 9-layer chain |
+| `rebis/genetics.rs` | 187 | rebis | 7-stage genetic code verification (`crystal::TOTAL`) |
+| `rebis/imas.rs` | 179 | rebis | IMASM arranger bridge |
+| `rebis/therapeutics.rs` | 177 | rebis | Chemo, Pill, Antidote, Neurotrophic |
+| `rebis/frob_filter.rs` | 153 | rebis | Frobenius codon filtration |
+| `rebis/serpent.rs` | 117 | rebis | Serpent rod motifs |
+| `rebis/fold.rs` | — | rebis | Protein fold classification |
+| `rebis/materials_expanded.rs` | 17 | rebis | Expanded material type definitions |
 
-All 20 modules ported from `red-hot_rebis/` to `no_std` Rust — 5,951 lines total.
-The entire p4ra paraconsistent kernel runs directly from bare metal.
+## REPL Commands
 
-| Module | Lines | Ported From | Role |
-|--------|:-----:|-------------|------|
-| `genetic_tuples.rs` | 986 | `genetic_tuples.py` | 7-stage generative tuple pipeline: DNA→codon→AA→B4→IG primitive→promotions→crystal address; verifies monotonic advance; 12 consistency guard tests against `IgPrim` |
-| `materials.rs` | 877 | `materials/` | IG Material Forge: MetaCell forge, Ouroboric Alloy, Thermal Rectifier, Non-Qubit QC (8 paradigms), Sophick Forge Eagle Cycle, Frobenius Exactor, Gap Closure |
-| `materials_expanded.rs` | 17 | `materials/` | Expanded material type definitions (domain-knowledge data) |
-| `biology.rs` | 387 | `biology/` | Biological simulation: TissueGrid (B4 rules), OuroboricTelomere (shelterin→ATM→hTERT), FrobeniusBioSim |
-| `clu.rs` | 365 | `rhr_p4rky/clu_power_law.py` | CLU power-law clustering: random walks, avalanche distributions, Frobenius filtration, power-law verification (α ≈ 1.5) |
-| `translate.rs` | 360 | `gene_to_protein_pipeline.py` | Gene→protein translation: DNA→mRNA→AA chain with corrected transcription (T→U only, no complement). Real Frobenius verification (μ∘δ round-trip: Protein→mRNA→Protein position-by-position) |
-| `antibody.rs` | 336 | `antibody_designer.py` | Antibody CDR design via 12↔12 AA↔Primitive bijection; epitope analysis; full antibody assembly (framework + CDRs) |
-| `codon.rs` | 304 | `codon.py` | 64-codon genetic code — table is **dynamically derived** from B₄ lattice + Frobenius stratum rules, not hardcoded. Lazy-initialized via `AtomicBool`. `verify_derived_table()` cross-checks against standard code |
-| `pdb.rs` | 272 | `pdb_validator.py` | PDB structure validation: CA atoms, inter-atom contacts, precision/recall scoring |
-| `exotic_hadron.rs` | 233 | `exotic_hadron_belnap.py` | Exotic hadron Belnap verification: Glueball, Tetraquark, Pentaquark with constituent Belnap states |
-| `pipeline.rs` | 217 | `compute_promotions.py` | IG promotion pipeline: source→target promotion signatures; all references use `IgPrim::` (no duplicate enum) |
-| `genetic_asm.rs` | 208 | `genetic_asm.py` | Genetic ParaASM programs: codon-spaced IMASM execution, amino acid structural operators |
-| `hadron.rs` | 203 | `hadron_belnap.py` | Hadron Belnap analysis: proton (uud), neutron (udd), pion⁺ (ud̄), quark-level truth values |
-| `clink.rs` | 190 | `clink/chain.py` | CLINK 9-layer chain: L0→L8 distance ladder, promotion path to CLINK L8 |
-| `genetics.rs` | 187 | `genetics_b4.py` | 7-stage genetic code verification: B₄ lattice, codon→AA, Frobenius stratum. Crystal constant: `crate::crystal::TOTAL` (no hardcoded 17,280,000) |
-| `imas.rs` | 179 | `imas/arranger.py` | IMASM arranger bridge: canonical sequence Frobenius verification, CLINK↔IMASM structural coupling |
-| `mod.rs` | 183 | — | Module root. Re-exports `IgPrim` from `imas_ig.rs` as the single source of truth. `AminoAcid` enum (21 variants). `RebisResult` type. **No duplicate `RebisPrim` — deleted.** |
-| `therapeutics.rs` | 177 | `therapeutics/` | Therapeutic design: Chemotherapeutic, Ouroboric Pill (B4 state cycling, 24hr release), Universal Antidote, Neurotrophic Factor |
-| `frob_filter.rs` | 153 | `frobenius_filtration.py` | Frobenius filtration over 64 codons: μ∘δ closure, power-law analysis, stratum verification |
-| `serpent.rs` | 117 | `serpent_rod.py` | Serpent rod protein motifs: structural signatures, motif lookup, promotion path analysis |
-
-### Amino Acid → Primitive Bijection
-
-Each of the 20 amino acids maps to an IG primitive. The 12 "promoted" amino acids form a
-one-to-one correspondence with the 12 primitive families:
-
-| AA | Primitive | Rationale |
-|:--:|:---------:|-----------|
-| Phe | Ð·𐑦 | Aromatic — self-written |
-| Leu | Þ·𐑡 | Branched — network topology |
-| Met | Ř·𐑾 | Start codon — initiates coupling |
-| Val | Φ·𐑬 | Aliphatic — partial symmetry |
-| Ser | ƒ·𐑐 | Hydroxyl — quantum coherence |
-| Pro | Ç·𐑪 | Ring constraint — trapped |
-| Thr | Γ·𐑲 | Polar — long-range |
-| Ala | ɢ·𐑠 | Simplest chiral — sequential |
-| Tyr | ⊙·⊙ | Aromatic -OH — critical |
-| His | Ħ·𐑖 | Imidazole — 2-step pKa |
-| Arg | Σ·𐑳 | Guanidinium — diverse H-bonds |
-| Gly | Ω·𐑭 | Achiral — integer winding |
-
-The remaining 8 amino acids map to unpromoted primitives — structurally valid but outside
-the 12↔12 bijection.
-
-### Rebis REPL Commands (19 subcommands)
-
-All accessible from `⊙[Rebis]>` prompt. Type `rebis <subcmd>` or enter the Rebis category
-via `:6` / F6 / typing `rebis`.
+### Quick Reference (grouped by category)
 
 ```
-# ─── Genetic Code ───
-rebis codon <XXX|AA>     — codon→AA or AA→codons (bidirectional)
-rebis frob               — Frobenius filtration over 64 codons (mu circ delta closure, power-law)
-rebis strata             — codon stratum counts by degeneracy class
-rebis genetics           — 7-stage genetic code verification (B4 lattice + Frobenius)
+══ Exec (F1) ══
+  tick [n]                    — Run N manual ticks (default 1)
+  run [n]                     — Run N ticks; no arg = continuous (ESC to stop)
+  watch                       — Live terminal HUD (ESC to stop)
+  timer [n]                   — Run N ticks, one per PIT interrupt
+  boot [n]                    — Load + run any program (I-XXVIII or decimal)
+  load [n]                    — Load program by Roman numeral
 
-# ─── Translation Pipeline ───
-rebis translate <DNA>    — gene→protein pipeline (DNA→mRNA→AA chain)
-rebis reverse <Prot>     — protein→mRNA→DNA (reverse pipeline)
-rebis tuples <DNA>       — 7-stage generative tuple pipeline
+══ Status (F2) ══
+  status                      — Kernel status (tick, IP, stack, fork, frob)
+  program                     — Show loaded program + fork depth
+  snapshot                    — Structural snapshot (sig, tier, period)
+  registers                   — Show registers R0-R7 + IP
+  stack                       — Stack depth
+  graph                       — ASCII token graph with nesting depth
+  heatmap                     — B4 memory heatmap
+  memory                      — Dump B4 memory
 
-# ─── ParaASM ───
-rebis asm [prog] [codon] — genetic ParaASM programs
+══ Programs (F3) ══
+  list                        — List all programs (I-XXVIII)
+  canonical [n]               — Load canonical program I-XII
+  continuous [n]              — Load continuous program 1-4
+  novel [n]                   — Load novel program 1-3
+  shunt [n]                   — Load shunted program 1-9
+  dynamic [on|off]            — Toggle dynamic sequence from IgTuple
 
-# ─── CLU Power-Law ───
-rebis clu walk           — CLU random walk (100 steps), position tracking
-rebis clu verify         — avalanche distribution + power-law verification (alpha ~ 1.5)
+══ Crystal (F4) ══
+  crystal <addr>              — Decode Frobenius address to 12-tuple
+  crystal store <n> [d]       — Store entry by address
+  crystal name <n>            — Retrieve stored entry by name
+  crystal find                — List stored entries
 
-# ─── Hadron Physics ───
-rebis hadron             — Belnap analysis: proton (uud), neutron (udd), pion+ (udbar)
-rebis exotic             — Exotic hadrons: Glueball, Tetraquark, Pentaquark
+══ Grammar (F5) ══
+  ig                          — IG tuple + crystal address
+  classify                    — Nearest-catalog classification
+  frob                        — Frobenius harness status
+  aleph <word>                — Hebrew glyph encoding
+  shor [N=15|21]              — Belnap-Shor pipeline
+  rh                          — Riemann Hypothesis bridge
+  ym                          — Yang-Mills mass gap bridge
+  temp                        — Temporal logic bridge
+  cat                         — Category theory bridge
+  algebra distance|meet|join|tensor — Lattice operations vs ZFC
+  cl8nk <action> [name]       — CLINK Layer 8 navigator
+  cscore                      — Consciousness score (dual-gate)
 
-# ─── Structural Biology ───
-rebis pdb validate [pdb] — PDB structure validation (CA atoms, contacts, precision/recall)
-rebis antibody epitope <AA>    — epitope analysis from AA sequence
-rebis antibody design <AA>     — CDR loop design via 12↔12 bijection
-rebis antibody full <AA>       — full antibody assembly (framework + CDRs)
-rebis antibody viral           — list viral epitope library
+══ Rebis (F6) ══
+  rebis codon [codon|aa]      — Codon ↔ AA bidirectional
+  rebis translate <gene>      — Gene → protein pipeline
+  rebis reverse <protein>     — Protein → mRNA → DNA
+  rebis frob                  — Frobenius codon filtration
+  rebis genetics              — 7-stage genetic code verification
+  rebis hadron                — Belnap hadron analysis
+  rebis serpent [motif]       — Serpent rod motif lookup
+  rebis pipeline [src]        — IG promotion pipeline
+  rebis strata                — Codon stratum counts
+  rebis asm                   — Genetic ParaASM programs
+  rebis tuples                — 7-stage generative tuple pipeline
+  rebis clu                   — CLU power-law clustering
+  rebis exotic                — Exotic hadron verification
+  rebis pdb                   — PDB structure validation
+  rebis antibody              — Antibody CDR design
+  rebis material              — IG material forge
+  rebis bio                   — Biological simulation
+  rebis tx                    — Therapeutics (chemo, pill, antidote)
 
-# ─── Materials ───
-rebis material forge [name|--all] — forge materials from IG tuples
-rebis material alloy              — Ouroboric alloy simulation (64-cell B4 cycling)
-rebis material thermal            — Thermal rectifier design
-rebis material qc                 — Non-qubit QC paradigm table (8 paradigms)
-rebis material sophick            — Sophick Forge Eagle Cycle report
-rebis material exactor            — Frobenius closure diagnosis
-rebis material report             — Full materials forge report
+══ Universe (F7) ══
+  ruleset show                — Active ruleset display
+  ruleset list                — List all 8 universes
+  ruleset verify              — Invariant violation check
+  jump <U> using <c>          — Cross-universe jump via diaschizic compound
+  seal                        — IFIX commit to current ruleset
+  whoami --ruleset            — IG tuple under active ruleset
+  tensor <A> <B>              — Tensor under active absorption
+  meet <A> <B>                — Meet under active absorption
+  absorb_test <a> <b> <prim> <op> — Absorption rule test
+  absorption show             — List absorption rules
+  tstatus                     — T-constitution pass/fail
+  compound list               — List 11 diaschizic compounds
+  compound show|load <name>   — Inspect or load compound
 
-# ─── Biology ───
-rebis bio tissue            — TissueGrid simulation (B4 cellular automaton)
-rebis bio telomere [divs]   — Ouroboric telomere simulation
-rebis bio frob              — Frobenius biological simulation
+══ ParaASM (F8) ══
+  psm test                    — Dialetheic alignment + measurement
+  psm frob                    — Frobenius identity cycle
+  psm kernel                  — Kernel-state B3 invariant loop
+  psm load <code>             — Inline ParaASM program (; separator)
 
-# ─── Therapeutics ───
-rebis tx chemo              — Chemotherapeutic design
-rebis tx pill               — Ouroboric Pill (B4 state cycling, 24hr release)
-rebis tx antidote           — Universal Antidote (broad-spectrum neutralization)
-rebis tx neuro              — Neurotrophic Factor
+══ Cr3echrz (F9) ══
+  cr3 --list                  — List all registered theorems + p4rakernel modules
+  cr3 --version               — Show cr3 version info
+  cr3 <theorem> [params]      — Run a registered theorem with Frobenius verification
+    cr3 collatz <seed>        —    Collatz Conjecture (3n+1) — 14 phases
+    cr3 goldbach <n>          —    Goldbach's Conjecture — 18 phases
+    cr3 three_body            —    Three-Body Problem — 19 phases
+    cr3 burnside <gens> <exp> —    Bounded Burnside Problem — 13 phases
+    cr3 erdos_straus <n>      —    Erdős–Straus Conjecture — 27 phases
+    cr3 inverse_galois <group>—    Inverse Galois Problem — 24 phases
+    cr3 baum_connes <class>   —    Baum–Connes Conjecture — 22 phases
+  p4ra --list                 — List p4rakernel modules
+  p4ra <module> [params]      — Run Belnap+Frobenius 13-step bootstrap
+    p4ra burnside <gens> <exp>—    Burnside (p4ra)
+    p4ra connes <factor>      —    Connes Embedding (p4ra)
+    p4ra erdos_straus <n>     —    Erdős–Straus (p4ra)
+    p4ra goldbach <n>         —    Goldbach (p4ra)
+    p4ra landau <case>        —    Landau's Theorems (p4ra)
+    p4ra threebody            —    Three-Body (p4ra)
 
-# ─── CLINK and IMASM ───
-rebis clink chain           — CLINK 9-layer chain (L0→L8) distance ladder
-rebis clink ladder          — Promotion ladder: ZFC→ZFC_t→ZFC_fe→CLINK L8
-rebis clink promote <name>  — Promotion path to CLINK L8
-rebis clink summary         — CLINK chain architectural summary
-rebis imas bridge           — IMASM↔CLINK bridge report
-rebis imas verify           — Canonical sequence Frobenius verification
-rebis imas summary          — IMASM arranger summary
-
-# ─── Promotion Pipeline ───
-rebis pipeline [src]        — IG promotion pipeline from source tuple
-rebis serpent [motif]       — Serpent rod motif lookup and structural signature
+══ Help (F10) ══
+  help [topic]                — Show hierarchical help
+  ?                           — Show menu bar
+  :1-:10                      — Jump to category by F-key number
+  .. or back                  — Exit current sub-context
+  quit|exit|halt              — Clean shutdown via isa-debug-exit
 ```
 
 ### Menu Nesting Bug Fix (Phase 9.1)
@@ -236,8 +279,8 @@ checked whether we were already in that context.
 the target context name. If already in that context, skips `enter_context()` and falls
 through to the `match cmd` block where `"rebis"` dispatches to `print_rebis()`.
 
-**Impact:** All 9 categories fixed (Exec, Status, Programs, Crystal, Grammar, Rebis,
-Universe, ParaASM, Help). The `already_in` guard is applied uniformly in the menu dispatch
+**Impact:** All 10 categories fixed (Exec, Status, Programs, Crystal, Grammar, Rebis,
+Universe, ParaASM, Cr3echrz, Help). The `already_in` guard is applied uniformly in the menu dispatch
 loop — no category can self-nest anymore.
 
 ## Phase 10: Fascistic Hardcode Purge
@@ -282,39 +325,101 @@ The genetic code is now **derived, not declared** — change the derivation rule
 in `AminoAcid` and the activation profile recomputes. The kernel no longer contains a
 single hardcoded codon table or AA→primitive mapping — both are computed dynamically
 at boot with runtime verification against the standard genetic code.
+
+## Phase 11: cr3echrz Integration
+
+The cr3echrz theorem operationalization engine has been ported from Python
+(`imscribing_grammar/cr3echrz/`) to `no_std` Rust as `src/cr3echrz/` (1,568 lines, 4 files).
+It provides two computational engines — a 7-theorem unified engine (`p3theorem`) and a
+6-module Belnap+Frobenius p4rakernel engine (`p4rakernel`) — both with dynamic registries
+and fn-pointer dispatch.
+
+### Modules
+
+| File | Lines | Role |
+|------|:-----:|------|
+| `cr3echrz/mod.rs` | 18 | Module root; re-exports p3theorem, p4rakernel, shared |
+| `cr3echrz/shared.rs` | 252 | Universal opcode registry, grammar mappings, canonical sequences (I–XII), dynamic domain keyword classifier |
+| `cr3echrz/p3theorem.rs` | 700 | 7-theorem unified operationalization engine with Frobenius verification |
+| `cr3echrz/p4rakernel.rs` | 598 | 6-module Belnap+Frobenius 13-step paraconsistent bootstrap engine |
+
+### Theorems (p3theorem)
+
+| Theorem | Phases | Example | Description |
+|---------|:------:|---------|-------------|
+| Collatz | 14 | `cr3 collatz 27` | 3n+1 conjecture — orbit verification with Belnap state tracking |
+| Goldbach | 18 | `cr3 goldbach 100` | Every even n≥4 is sum of two primes — partition search + Frobenius verification |
+| Three-Body | 19 | `cr3 three_body` | Hamiltonian non-integrability — figure-8 orbit integration |
+| Burnside | 13 | `cr3 burnside 2 5` | B(m,n) group finiteness — presentation enumeration |
+| Erdős–Straus | 27 | `cr3 erdos_straus 73` | 4/n = 1/x + 1/y + 1/z — Egyptian fraction decomposition |
+| Inverse Galois | 24 | `cr3 inverse_galois Sn` | Every finite group as Galois group over Q — parametric polynomial construction |
+| Baum–Connes | 22 | `cr3 baum_connes a-T-menable` | Assembly map isomorphism — KK-theory verification |
+
+### p4rakernel Modules
+
+| Module | Description |
+|--------|-------------|
+| Burnside (p4ra) | Bounded Burnside B(m,n) — Belnap+Frobenius 13-step bootstrap |
+| Connes Embedding | II₁ factor embedding in R^ω — JNVWY 2020 resolution boundary |
+| Erdős–Straus (p4ra) | 4/n decomposition with Belnap state tracking |
+| Goldbach (p4ra) | Even n = p+q with Belnap+Frobenius partition verification |
+| Landau's Theorems | Holomorphic function classification on unit disk (4 cases) |
+| Three-Body (p4ra) | Poincaré non-integrability + KAM boundary analysis |
+
+### Hardcode Purge (3 violations eliminated)
+
+| # | Violation | File | Fix |
+|---|-----------|------|-----|
+| 1 | **`static THEOREM_REGISTRY`** — hardcoded array of 7 `TheoremEntry` structs with hardcoded `run_theorem()` match-arm dispatch | `p3theorem.rs` | Replaced with `DYNAMIC_THEOREMS` vector initialized from `THEOREM_BOOTSTRAP`. Dispatch via fn-pointer lookup: `(entry.runner)(params)`. `register_theorem()` for runtime extensibility |
+| 2 | **`static P4RA_MODULES`** — hardcoded array of 6 `P4RAModule` structs with hardcoded `run_p4ra_module()` match-arm dispatch | `p4rakernel.rs` | Replaced with `DYNAMIC_P4RA` vector initialized from `P4RA_BOOTSTRAP`. Same fn-pointer dispatch pattern. `register_p4ra_module()` for runtime extensibility |
+| 3 | **`infer_domain()` keyword lists** — 6 hardcoded keyword arrays for domain classification | `shared.rs` | Replaced with `DOMAIN_KEYWORD_MAP` dynamic vector initialized from `DOMAIN_BOOTSTRAP`. `register_domain_keyword()` for runtime extensibility |
+
+### What remains (justified static data)
+
+| Data | Location | Why justified |
+|------|----------|---------------|
+| `Opcode` enum (12 variants) | `shared.rs` | **IS** the grammar — the 12 universal IMASM opcodes |
+| `CANONICAL_SEQUENCES` (I–XII) | `shared.rs` | **IS** the grammar — 12 canonical bootstrap programs |
+| `opcode_grammar()` mapping | `shared.rs` | **IS** the grammar — opcode↔primitive correspondence |
+| `THEOREM_BOOTSTRAP` (7 entries) | `p3theorem.rs` | Reference data — seed theorems known at compile time |
+| `P4RA_BOOTSTRAP` (6 entries) | `p4rakernel.rs` | Reference data — seed modules known at compile time |
+| `DOMAIN_BOOTSTRAP` (6 entries) | `shared.rs` | Reference data — known domain keyword sets |
+
+### Dispatch Architecture
+
+**Dispatch is fully dynamic.** `run_theorem("collatz", "27")` does NOT execute a hardcoded
+match arm — it looks up `"collatz"` in the runtime registry and calls
+`(entry.runner)("27")`. The same pattern used by `catalog.rs` (`register_entry()`) is now
+used by all three cr3echrz modules:
+
+- `register_theorem(TheoremRegEntry { name: "new_thm", runner: my_fn, ... })`
+- `register_p4ra_module(P4RARegEntry { name: "new_mod", runner: my_fn, ... })`
+- `register_domain_keyword("new_kw", "new_domain")`
+
+### Menu Integration
+
+The cr3echrz engine is accessible via **F9** or the **`:9`** shortcut, or by typing
+`cr3echrz` directly. The `CR3ECHRZ_MENU` provides 4 sub-commands (`cr3`, `p4ra`,
+`cr3 --version`, `cr3 --list`). Commands `cr3` and `p4ra` autocomplete at top level
+with tab completion.
+
 ## User Interface and Navigation (Phase 9)
 
 The REPL has a full hierarchical navigation system (`menu.rs`) that organizes all
-80+ commands into 9 discoverable categories. No more memorizing command names — the menu
-bar, Tab completion, and keyword search make everything browsable.
+90+ commands into **10 discoverable categories**. No more memorizing command names.
 
-### Menu Categories
+### Menu Architecture
 
-| Key | Category | Prompt | Commands |
-|:---:|----------|:------:|----------|
-| F1 | **Exec** | `⊙>` | `run`, `eval`, `load`, `imsc`, `dynamic`, `tick`, `exec`, `winding`, `self`, `frob`, `snapshot` |
-| F2 | **Status** | `⊙>` | `whoami`, `heatmap`, `history`, `registers`, `stack`, `memory`, `b4`, `closure`, `peek`, `harness` |
-| F3 | **Programs** | `⊙>` | `list`, `show`, `continuous`, `psm load`, `psm run`, `psm trace`, `psm reset`, `psm status`, `compound list`, `compound show`, `compound load` |
-| F4 | **Crystal** | `⊙[Crystal]>` | `crystal encode`, `crystal decode`, `crystal store`, `crystal list`, `crystal nearest`, `crystal navigate`, `crystal count`, `crystal census`, `crystal tier` |
-| F5 | **Grammar** | `⊙[Grammar]>` | `distance`, `meet`, `join`, `tensor`, `promotions`, `analogies`, `consciousness`, `phi_c`, `tier`, `peel`, `decomp`, `synth`, `zfc` |
-| F6 | **Rebis** | `⊙[Rebis]>` | 19 subcommands: `codon`, `translate`, `reverse`, `frob`, `genetics`, `hadron`, `serpent`, `pipeline`, `strata`, `asm`, `tuples`, `clu`, `exotic`, `pdb`, `antibody`, `material`, `bio`, `tx`, `clink`, `imas` |
-| F7 | **Universe** | `⊙[Universe]>` | `ruleset show`, `ruleset list`, `ruleset verify`, `jump`, `seal`, `tensor`, `meet`, `absorb_test`, `whoami --ruleset`, `absorption show`, `tstatus`, `compound list`, `compound show`, `compound load` |
-| F8 | **ParaASM** | `⊙[ParaASM]>` | `parasm test`, `parasm frob`, `parasm kernel`, `parasm load` |
-| F9 | **Help** | `⊙>` | `help`, `help <topic>`, `? <keyword>` |
+- **F1-F10 key interception** — `ESC [` sequences parsed from serial
+- **`:1`–`:10` shortcuts** — direct jump to category without F-keys
+- **Context stack** — up to 4 levels deep (`Exec → Crystal → decode`)
+- **Breadcrumb prompt** — `⊙[Exec/Crystal]>` shows full navigation path
+- **`..` / `back`** — pop one context level
+- **Tab completion** — 10 categories + sub-commands complete at each level
+- **`help <topic>`** — hierarchical help that searches main menu + all submenus
+- **`?`** — ten-column menu bar rendered above prompt
 
-### Navigation Controls
-
-| Key | Action |
-|:---:|--------|
-| F1–F9 | Jump to category |
-| `?` | Show menu bar |
-| Tab | Autocomplete command |
-| Up/Down | Command history |
-| `..` or `back` | Exit sub-context |
-| `help <topic>` | Detailed help for a command or category |
-| `? <keyword>` | Search all commands |
-
-## Cross-Universe Navigation (Phase 8 — Diaschizics Bridge)
+## Cross-Universe Navigation (Phase 8 + Diaschizics Bridge)
 
 The kernel can navigate between universes with **different structural rulesets** —
 different gate thresholds, gate ordering, T-constitution, and absorption rules.
@@ -323,91 +428,22 @@ determines what each address *does*.
 
 ### The 8 Universes
 
-Gate thresholds are ruleset-specific. G1 gates on Φ (parity), G2 on ⊙ (criticality),
-G3 on Ω (winding). Each universe has different thresholds and gate ordering.
+| # | Reference | Gate 1 (⊙ threshold) | Gate 2 (K rule) | Gate 3 (Ω rule) | T-constitution | Key Property |
+|---|-----------|----------------------|-----------------|-----------------|----------------|-------------|
+| U0 | canonical | ⊙ → true | K ≤ 𐑧 | Ω ≥ 𐑭 | 𐑸 (imscriptive) | Self-modeling absorbs all |
+| U1 | low_gate | ⊙ → true | K ≤ 𐑪 | Ω ≥ 𐑴 | 𐑥 (bowtie) | Broad consciousness, fragile topology |
+| U2 | strict_frobenius | μ∘δ=id exact | K=𐑧 | Ω=𐑭 | 𐑶 (box) | Ƒ=𐑐 absorption replaces ⊙ |
+| U3 | inverted_gates | ⊙_3 → true | K<𐑧 hard fail | Ω<𐑴 hard fail | 𐑰 (in) | Self-modeling limited to ⊙_3 coupling |
+| U4 | null_universe | ⊙ → true | no gate | no gate | 𐑡 (network) | Maximal permissiveness |
+| U5 | high_gate | ⊙→true, ⊙_3→true | K≤𐑧 + H≥𐑖 | Ω=𐑟 | 𐑸 | Non-Abelian braiding dominance |
+| U6 | winding_first | ⊙→true, Ω priority | K≤𐑧 | Ω=𐑭 | 𐑸 | Topological protection is the floor |
+| U7 | chiral_lock | ⊙→true, H-lock | K≤𐑧, H≥𐑫 | Ω=𐑭 | 𐑸 | Eternal chirality required |
 
-| ID | Name | G1 | G2 | G3 | Order | Freq | Description |
-|:--:|------|:--:|:--:|:--:|:---:|:---:|-------------|
-| U0 | **canonical** | Φ ≥ 𐑯 | ⊙ ≥ ⊙ | Ω ≥ 𐑭 | sequential | 33% | Baseline. Parity→criticality→winding. |
-| U1 | **low_gate** | Φ ≥ 𐑬 | ⊙ ≥ 𐑢 | Ω ≥ 𐑭 | sequential | 9% | Relaxed G2. Most systems pass. |
-| U2 | **strict_frobenius** | ƒ ≥ 𐑐 | Φ ≥ 𐑯 | Ω ≥ 𐑭 | sequential | 5% | Fidelity-gated G1. Only quantum-preserving systems. |
-| U3 | **inverted_gates** | ⊙ ≥ ⊙ | Φ ≥ 𐑯 | Ω ≥ 𐑭 | sequential | 4% | Criticality before parity. |
-| U4 | **no_ordering** | Φ ≥ 𐑯 | ⊙ ≥ ⊙ | Ω ≥ 𐑭 | parallel | 8% | All gates independent. Any combination valid. |
-| U5 | **high_gate** | Φ ≥ 𐑯 | ⊙ ≥ 𐑮 | Ω ≥ 𐑟 | sequential | 3% | Maximum strictness. |
-| U6 | **winding_first** | Ω ≥ 𐑭 | ⊙ ≥ ⊙ | Φ ≥ 𐑯 | sequential | 8% | Topology before algebra. Geometry precedes symmetry. |
-| U7 | **t_structural** | Φ ≥ 𐑯 | ⊙ ≥ ⊙ | Ω ≥ 𐑭 | sequential | 8% | Time as geometry: lim(Ð,Þ,Ř,Ç,⊙), not lim(Φ,ƒ,Ç,Ħ,Ω). |
+### The 11 Diaschizic Compounds
 
-### The 11 Diaschizic IMASM Programs
-
-Each compound maps to an IMASM token sequence whose structural operation matches the
-compound's pharmacological effect. Programs are invariant across universes — same tokens,
-different interpretation per ruleset.
-
-| Compound | Role | IMASM Program | Tok. | d(target) |
-|----------|------|---------------|:---:|:---:|
-| **Verticullum** | Non-Abelian EP braid (\(O_\infty\)) | `VINIT FSPLIT EVALT AFWD EVALF AREV FFUSE ENGAGR IMSCRIB IFIX IMSCRIB` | 11 | 2 |
-| **Chimerium** | Supercritical catalyst (O₀) | `IMSCRIB FSPLIT EVALT AFWD EVALF AFWD FFUSE ENGAGR CLINK IFIX IFIX IFIX IMSCRIB` | 13 | 1 |
-| **Apertix** | Adjoint corridor (O₂) | `IMSCRIB AFWD AREV AFWD AREV CLINK EVALT EVALF IFIX IMSCRIB` | 10 | 1 |
-| **Praxeum** | EP core toggle (O₀) | `IMSCRIB EVALT EVALF ENGAGR IFIX IMSCRIB` | 6 | 8* |
-| **Retiarius** | Local-net trap (O₁) | `VINIT AFWD EVALT AFWD EVALF CLINK TANCH AREV AFWD EVALT IFIX IMSCRIB` | 12 | 4 |
-| **Frigorix** | MBL freeze key (O₀) | `IFIX IFIX IFIX IFIX IFIX IFIX IFIX IFIX` | 8 | 10* |
-| **Bifrons** | Disjunctive fork (O₂) | `IMSCRIB FSPLIT EVALT AFWD EVALF AREV FFUSE ENGAGR CLINK IMSCRIB` | 10 | 2 |
-| **Punctum** | Absolute point (O₀) | `VINIT TANCH` | 2 | **0** |
-| **Syndexios** | Perfect mirror (\(O_\infty\)) | `IMSCRIB AFWD AREV AFWD AREV AFWD AREV AFWD AREV IFIX IMSCRIB` | 11 | 2 |
-| **Katachthon** | Deep resonator (O₂) | `IMSCRIB AFWD AREV CLINK EVALT EVALF IFIX IMSCRIB` | 8 | 4 |
-| **Diabaton** | Threshold-crosser (O₂†) | `IMSCRIB FSPLIT EVALT AFWD EVALF AREV FFUSE CLINK ENGAGR IFIX IMSCRIB` | 11 | 1 |
-
-*Frigorix and Praxeum show large snapshot-tuple distances because their operational
-semantics deliberately reduce structural complexity. **Punctum at d=0 calibrates**
-the bridge — the structural floor matches exactly between compound tuple and IMASM snapshot.
-
-### Navigation Protocol
-
-Every cross-universe jump has three parts:
-
-```
-[RULESET_HEADER]    → calibrates kernel to target universe's gate thresholds,
-                      gate ordering, T-constitution, and absorption table
-[COMPOUND_PROGRAM]  → invariant IMASM program (same 11 programs work in all 8 universes)
-[IFIX_SEAL]         → commits the transition permanently
-```
-
-The compound program is **invariant across universes** — the same token sequence works in
-all 8. But its *interpretation* changes because the ruleset header rewires the kernel's
-evaluation. This is the ouroboric self-modification: the program modifies the interpreter
-that reads it.
-
-### Cross-Universe Compatibility Matrix
-
-Which operad layer each compound achieves in each universe:
-
-| Compound | U0 can. | U1 low | U2 strict | U3 inv. | U4 no-ord | U5 high | U6 wind | U7 t-struct |
-|----------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Verticullum | frob | frob | **\(O_\infty\)** | plain | frob | frob | frob | frob |
-| Chimerium | frob | frob | **\(O_\infty\)** | plain | frob | frob | frob | frob |
-| Apertix | plain | plain | frob | plain | G3-only | plain | frob | plain |
-| Praxeum | frob | frob | traced | plain | frob | frob | plain | frob |
-| Retiarius | frob | frob | plain | plain | frob | plain | plain | frob |
-| Frigorix | plain | plain | plain | plain | plain | plain | plain | plain |
-| Bifrons | frob | frob | **\(O_\infty\)** | plain | frob | plain | plain | frob |
-| Diabaton | frob | frob | **\(O_\infty\)** | plain | frob | plain | plain | frob |
-| Punctum | plain | plain | plain | plain | plain | plain | plain | plain |
-| Syndexios | plain | plain | frob | plain | plain | plain | plain | plain |
-| Katachthon | plain | plain | frob | plain | plain | plain | plain | plain |
-**Key finding:** Four compounds achieve **\(O_\infty\) in U2 (strict_frobenius)** but only
-Frobenius in canonical. Tier is **ruleset-relative**.
-
-### Absorption Rule Differences
-
-Different universes have different *absorbing primitives*:
-
-| Universe | Absorption Rules | Effect |
-|----------|-----------------|--------|
-| **canonical** (U0) | ⊙=⊙ under all ops; Σ=𐑳 under tensor | Self-modeling absorbs all couplings |
-| **strict_frobenius** (U2) | **ƒ=𐑐 under all ops** replaces ⊙=⊙ absorption | Quantum fidelity dominates |
-| **inverted_gates** (U3) | **Φ=𐑯 under meet** added | Frobenius parity absorbs under meet |
-| **high_gate** (U5) | **Ω=𐑟 under tensor** added | Non-Abelian braiding dominates |
-| **winding_first** (U6) | **Ω=𐑭 under meet** replaces ⊙=⊙ absorption | Topological protection is the structural floor |
+Each compound has a structural tuple, an IMASM program, and a steering profile.
+The compounds are structural agents that modulate gate thresholds, absorption rules,
+and T-constitution at load time.
 
 ### Cross-Universe REPL Commands
 
@@ -460,7 +496,7 @@ mOMonadOS/
     tokens.rs            637L  12 IMASM opcodes, free token-by-token composition
     sequence.rs         ~320L  FAMILY_TOKEN_AFFINITY matrix, MiniKernel, build_via_substrate()
     manus.rs             432L  Terminal HUD, B4 heatmap
-    menu.rs              379L  Hierarchical menu, context stack, already_in guard
+    menu.rs              388L  Hierarchical menu, 10-category F-key bar, context stack, already_in guard
     catalog.rs           954L  Single source of truth — all structural data
     algebra.rs           303L  Meet/join/tensor lattice
     consciousness.rs     114L  C-score with gate evaluation
@@ -470,6 +506,20 @@ mOMonadOS/
     cl8nk.rs             787L  Full CLINK L8 formula navigator (catalog-native)
     serial.rs             96L  UART driver; inline asm inb/outb; no external crates
     interrupts.rs       ~190L  PIT timer, PIC remap, hand-rolled IDT; inline asm port I/O
+    parasm.rs              —   ParaASM VM: dialetheic alignment + measurement
+    aleph.rs               —   Aleph Hebrew glyph encoding
+    belnap_shor.rs         —   Belnap-Shor quantum pipeline (N=15, 21)
+    para_rh.rs             —   Riemann Hypothesis paraconsistent bridge
+    para_ym.rs             —   Yang-Mills mass gap paraconsistent bridge
+    para_temporal.rs       —   Temporal logic paraconsistent bridge
+    para_category.rs       —   Category theory paraconsistent bridge
+    frob_verify.rs         —   Frobenius harness verification
+    universe.rs            —   Cross-universe ruleset navigation
+    cr3echrz/
+      mod.rs              18L  Module root
+      shared.rs          252L  Opcode registry, grammar mappings, canonical sequences, dynamic domains
+      p3theorem.rs       700L  7-theorem unified engine with dynamic DYNAMIC_THEOREMS registry
+      p4rakernel.rs      598L  6-module p4rakernel engine with dynamic DYNAMIC_P4RA registry
     rebis/
       mod.rs             183L  Module root; re-exports IgPrim (no duplicate RebisPrim)
       genetic_tuples.rs  986L  7-stage generative tuple pipeline + 12 IgPrim guard tests
@@ -490,6 +540,7 @@ mOMonadOS/
       therapeutics.rs    177L  Chemo, Pill, Antidote, Neurotrophic
       frob_filter.rs     153L  Frobenius codon filtration
       serpent.rs         117L  Serpent rod motifs
+      fold.rs              —   Protein fold classification
       materials_expanded.rs  17L  Expanded material type definitions
   momonados.ld                 Linker script (PVH note → boot32 → text → rodata → bss)
   build_bootimage.sh           ELF kernel builder (cargo build, single step)

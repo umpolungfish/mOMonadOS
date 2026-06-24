@@ -5,7 +5,7 @@
 
 use alloc::string::String;
 use alloc::vec::Vec;
-use alloc::collections::BTreeMap;
+
 
 // ─── 12 Universal IMASM Opcodes ────────────────────────────────────
 // JUSTIFIED static: the 12 opcodes ARE the grammar definition (cf. CARDS in catalog.rs).

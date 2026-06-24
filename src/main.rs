@@ -2262,41 +2262,34 @@ fn print_cscore(k: &Kernel) {
     }
 }
 fn print_cr3(sub: &str, rest: alloc::string::String) {
-    use crate::cr3echrz::p3theorem::{run_theorem, format_theorem_result, TheoremEntry};
-    use crate::cr3echrz::p4rakernel::{run_p4ra_module, format_p4ra_result, P4RAModule};
+    use crate::cr3echrz::p3theorem::{run_theorem, format_theorem_result, list_theorems};
+    use crate::cr3echrz::p4rakernel::list_p4ra_modules;
 
     match sub {
         "" | "--help" => {
-            sprintln!("cr3 — Unified Theorem Operationalization Engine");
-            sprintln!("  cr3 --list                List all theorems + p4rakernel modules");
-            sprintln!("  cr3 --list-theorems       List p3theorem engine (7 theorems)");
+            sprintln!("cr3 — Unified Theorem Operationalization Engine (dynamic registry)");
+            sprintln!("  cr3 --list                List all registered theorems + p4rakernel modules");
+            sprintln!("  cr3 --list-theorems       List p3theorem engine");
             sprintln!("  cr3 --version             Show version");
-            sprintln!("  cr3 <theorem> [params]    Run a theorem (p3theorem engine)");
+            sprintln!("  cr3 <theorem> [params]    Run a registered theorem");
             sprintln!("");
-            sprintln!("p3theorem engine (7 theorems):");
-            sprintln!("  cr3 collatz <seed>              Collatz (3n+1) — e.g. cr3 collatz 27");
-            sprintln!("  cr3 goldbach <n>               Goldbach — e.g. cr3 goldbach 100");
-            sprintln!("  cr3 three_body                 Three-Body figure-8 orbit");
-            sprintln!("  cr3 burnside <gens> <exp>      Burnside B(m,n) — e.g. cr3 burnside 2 5");
-            sprintln!("  cr3 erdos_straus <n>           Erdős–Straus — e.g. cr3 erdos_straus 73");
-            sprintln!("  cr3 inverse_galois <group>     Inverse Galois — e.g. cr3 inverse_galois Sn");
-            sprintln!("  cr3 baum_connes <class>        Baum–Connes — e.g. cr3 baum_connes a-T-menable");
+            sprintln!("{}", list_theorems());
             sprintln!("");
             sprintln!("For Belnap+Frobenius 13-step p4rakernel versions: use 'p4ra' command");
             sprintln!("  p4ra --list                  List p4rakernel modules");
         }
         "--list" => {
-            sprintln!("{}", TheoremEntry::list_all());
+            sprintln!("{}", list_theorems());
             sprintln!("");
-            sprintln!("{}", P4RAModule::list_all());
+            sprintln!("{}", list_p4ra_modules());
         }
         "--list-theorems" => {
-            sprintln!("{}", TheoremEntry::list_all());
+            sprintln!("{}", list_theorems());
         }
         "--version" => {
-            sprintln!("cr3 v1.0 — Unified Theorem Operationalization Engine");
+            sprintln!("cr3 v1.1 — Unified Theorem Operationalization Engine (dynamic registry)");
             sprintln!("Author: Lando⊗⊙perator");
-            sprintln!("7 theorems (p3theorem) + 6 p4rakernel modules");
+            sprintln!("Phase 10: fn-pointer dispatch, runtime-extensible registries");
             sprintln!("12 universal IMASM opcodes");
         }
         _ => {
@@ -2309,14 +2302,14 @@ fn print_cr3(sub: &str, rest: alloc::string::String) {
 }
 
 fn print_p4ra(sub: &str, rest: alloc::string::String) {
-    use crate::cr3echrz::p4rakernel::{run_p4ra_module, format_p4ra_result, P4RAModule};
+    use crate::cr3echrz::p4rakernel::{run_p4ra_module, format_p4ra_result, list_p4ra_modules};
 
     match sub {
         "" | "--help" => {
             sprintln!("p4ra — p4rakernel Belnap+Frobenius 13-step IMASM Bootstrap");
             sprintln!("  6 standalone theorem modules with Belnap FOUR + Frobenius verification");
             sprintln!("");
-            sprintln!("{}", P4RAModule::list_all());
+            sprintln!("{}", list_p4ra_modules());
             sprintln!("");
             sprintln!("Examples:");
             sprintln!("  p4ra burnside 2 5              B(2,5) — PARADOX");
@@ -2332,7 +2325,7 @@ fn print_p4ra(sub: &str, rest: alloc::string::String) {
             sprintln!("  p4ra threebody                 Three-Body: KAM boundary");
         }
         "--list" => {
-            sprintln!("{}", P4RAModule::list_all());
+            sprintln!("{}", list_p4ra_modules());
         }
         _ => {
             let result = run_p4ra_module(sub, &rest);
