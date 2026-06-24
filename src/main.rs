@@ -35,6 +35,7 @@ mod universe;
 mod menu;
 mod sequence;
 mod boot;
+mod cr3echrz;
 
 use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
 use crystal::{CrystalStore, decode, encode, indices_from_snapshot, TOTAL};
@@ -42,6 +43,7 @@ use kernel::Kernel;
 
 use crate::imas_ig::{IgTuple, IgPrim};
 use universe::{parse_universe, universe_display, universe_name, universe_description, universe_gates, universe_o_inf};
+use alloc::vec::Vec;
 use menu::{ContextStack, render_menu_bar, menu_hint, tab_complete, print_help_topic, search_commands, enter_context, fkey_to_category, render_prompt};
 // ─── Bump allocator (no external crates) ─────────────────────
 
@@ -272,7 +274,7 @@ fn repl(k: &mut Kernel) {
             s if {
                 let lower = s.to_lowercase();
                 lower == "exec" || lower == "status" || lower == "programs" || lower == "crystal"
-                    || lower == "grammar" || lower == "rebis" || lower == "universe" || lower == "parasm"
+                    || lower == "grammar" || lower == "rebis" || lower == "universe" || lower == "parasm" || lower == "cr3echrz"
             } => {
                 let already_in = ctx_stack.current()
                     .map(|c| c.name.to_lowercase() == cmd.to_lowercase())
@@ -326,6 +328,14 @@ fn repl(k: &mut Kernel) {
             "rebis" => {
                 let sub = parts.next().unwrap_or("");
                 print_rebis(sub, parts.next().unwrap_or(""), &parts.collect::<alloc::vec::Vec<&str>>().join(" "));
+            }
+            "cr3" => {
+                let sub = parts.next().unwrap_or("");
+                print_cr3(sub, parts.collect::<alloc::vec::Vec<&str>>().join(" "));
+            }
+            "p4ra" => {
+                let sub = parts.next().unwrap_or("");
+                print_p4ra(sub, parts.collect::<alloc::vec::Vec<&str>>().join(" "));
             }
             "tick" => {
                 let n: u64 = parts.next().and_then(|s| s.trim().parse().ok()).unwrap_or(1);
@@ -1572,6 +1582,20 @@ fn print_help() {
     sprintln!("  {:<34} — biological sim (tissue, telomere)", "rebis bio");
     sprintln!("  {:<34} — therapeutics (chemo, pill, antidote)", "rebis tx");
     sprintln!();
+    sprintln!("══ cr3echrz — Theorem Operationalization ══");
+    sprintln!("  {:<34} — list all theorems + p4rakernel modules", "cr3 --list");
+    sprintln!("  {:<34} — collatz|goldbach|three_body|burnside|...", "cr3 <theorem> [params]");
+    sprintln!("  {:<34} — Collatz 3n+1 (e.g. cr3 collatz 27)", "cr3 collatz <seed>");
+    sprintln!("  {:<34} — Goldbach partitions (e.g. cr3 goldbach 100)", "cr3 goldbach <n>");
+    sprintln!("  {:<34} — Three-Body figure-8 orbit", "cr3 three_body");
+    sprintln!("  {:<34} — Burnside B(m,n) finiteness", "cr3 burnside <gens> <exp>");
+    sprintln!("  {:<34} — Erdős–Straus 4/n decomposition", "cr3 erdos_straus <n>");
+    sprintln!("  {:<34} — Inverse Galois realizability", "cr3 inverse_galois <group>");
+    sprintln!("  {:<34} — Baum–Connes assembly map", "cr3 baum_connes <class>");
+    sprintln!("  {:<34} — Belnap+Frobenius 13-step bootstrap", "p4ra <module> [params]");
+    sprintln!("  {:<34} — list p4rakernel modules", "p4ra --list");
+    sprintln!("  {:<34} — burnside|connes|erdos_straus|goldbach|...", "p4ra <module>");
+    sprintln!();
     sprintln!("══ Cross-Universe Navigation (Phase 8) ══");
     sprintln!("══ Ruleset / Universe ══");
     sprintln!("  {:<36} — show active ruleset", "ruleset show");
@@ -2237,6 +2261,86 @@ fn print_cscore(k: &Kernel) {
         sprintln!("No snapshot. Tick first.");
     }
 }
+fn print_cr3(sub: &str, rest: alloc::string::String) {
+    use crate::cr3echrz::p3theorem::{run_theorem, format_theorem_result, TheoremEntry};
+    use crate::cr3echrz::p4rakernel::{run_p4ra_module, format_p4ra_result, P4RAModule};
+
+    match sub {
+        "" | "--help" => {
+            sprintln!("cr3 — Unified Theorem Operationalization Engine");
+            sprintln!("  cr3 --list                List all theorems + p4rakernel modules");
+            sprintln!("  cr3 --list-theorems       List p3theorem engine (7 theorems)");
+            sprintln!("  cr3 --version             Show version");
+            sprintln!("  cr3 <theorem> [params]    Run a theorem (p3theorem engine)");
+            sprintln!("");
+            sprintln!("p3theorem engine (7 theorems):");
+            sprintln!("  cr3 collatz <seed>              Collatz (3n+1) — e.g. cr3 collatz 27");
+            sprintln!("  cr3 goldbach <n>               Goldbach — e.g. cr3 goldbach 100");
+            sprintln!("  cr3 three_body                 Three-Body figure-8 orbit");
+            sprintln!("  cr3 burnside <gens> <exp>      Burnside B(m,n) — e.g. cr3 burnside 2 5");
+            sprintln!("  cr3 erdos_straus <n>           Erdős–Straus — e.g. cr3 erdos_straus 73");
+            sprintln!("  cr3 inverse_galois <group>     Inverse Galois — e.g. cr3 inverse_galois Sn");
+            sprintln!("  cr3 baum_connes <class>        Baum–Connes — e.g. cr3 baum_connes a-T-menable");
+            sprintln!("");
+            sprintln!("For Belnap+Frobenius 13-step p4rakernel versions: use 'p4ra' command");
+            sprintln!("  p4ra --list                  List p4rakernel modules");
+        }
+        "--list" => {
+            sprintln!("{}", TheoremEntry::list_all());
+            sprintln!("");
+            sprintln!("{}", P4RAModule::list_all());
+        }
+        "--list-theorems" => {
+            sprintln!("{}", TheoremEntry::list_all());
+        }
+        "--version" => {
+            sprintln!("cr3 v1.0 — Unified Theorem Operationalization Engine");
+            sprintln!("Author: Lando⊗⊙perator");
+            sprintln!("7 theorems (p3theorem) + 6 p4rakernel modules");
+            sprintln!("12 universal IMASM opcodes");
+        }
+        _ => {
+            let parts: Vec<&str> = rest.split_whitespace().collect();
+            let params = parts.join(" ");
+            let result = run_theorem(sub, &params);
+            sprintln!("{}", format_theorem_result(&result));
+        }
+    }
+}
+
+fn print_p4ra(sub: &str, rest: alloc::string::String) {
+    use crate::cr3echrz::p4rakernel::{run_p4ra_module, format_p4ra_result, P4RAModule};
+
+    match sub {
+        "" | "--help" => {
+            sprintln!("p4ra — p4rakernel Belnap+Frobenius 13-step IMASM Bootstrap");
+            sprintln!("  6 standalone theorem modules with Belnap FOUR + Frobenius verification");
+            sprintln!("");
+            sprintln!("{}", P4RAModule::list_all());
+            sprintln!("");
+            sprintln!("Examples:");
+            sprintln!("  p4ra burnside 2 5              B(2,5) — PARADOX");
+            sprintln!("  p4ra burnside 2 665 1 2 -1 -2  B(2,665) — INFINITE (Adian 1979)");
+            sprintln!("  p4ra connes R                  R — EMBEDDABLE");
+            sprintln!("  p4ra connes \"L(F_2)\"           L(F_2) — NON-EMBEDDABLE (JNVWY 2020)");
+            sprintln!("  p4ra erdos_straus 73           Erdős–Straus 4/73");
+            sprintln!("  p4ra goldbach 100              Goldbach: 100 = 3+97 = ...");
+            sprintln!("  p4ra goldbach 30               Goldbach: 30 = 7+23 = 11+19 = 13+17");
+            sprintln!("  p4ra landau Koebe              Landau: Koebe omits -1/4");
+            sprintln!("  p4ra landau Dense              Landau: Dense (unbounded)");
+            sprintln!("  p4ra landau Picard             Landau: Essential singularity");
+            sprintln!("  p4ra threebody                 Three-Body: KAM boundary");
+        }
+        "--list" => {
+            sprintln!("{}", P4RAModule::list_all());
+        }
+        _ => {
+            let result = run_p4ra_module(sub, &rest);
+            sprintln!("{}", format_p4ra_result(&result));
+        }
+    }
+}
+
 fn print_rebis(sub: &str, arg: &str, rest: &str) {
     use crate::rebis::codon::{Codon, CodeTable, translate_codon, classify_stratum, stratum_counts, verify_frobenius};
     use crate::rebis::genetics::{GeneticVerification, codons_for_aa, codon_distance, promoted_amino_acids, ALL_AMINO_ACIDS};
