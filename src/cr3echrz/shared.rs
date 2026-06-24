@@ -189,6 +189,21 @@ pub static DOMAIN_BOOTSTRAP: &[DomainEntry] = &[
         "theorem", "conjecture", "connes", "collatz", "goldbach",
         "galois", "burnside", "erdos", "straus", "baum",
         "three_body", "threebody", "pythagorean", "landau",
+        // Millennium + extended theorems
+        "riemann", "yang_mills", "yang-mills", "hodge", "navier_stokes",
+        "navier-stokes", "pvsnp", "p_vs_np", "odd_perfect", "opn",
+        "birch", "swinnerton", "bsd", "beal", "twin_prime", "twin",
+        "hadwiger", "nelson", "lonely_runner", "cramer", "cramér",
+        "perfect_cuboid", "cuboid", "sic_povm", "sic-povm", "zauner",
+        "hecke", "landau_siegel", "siegel", "solitary",
+        "cosmogeny", "godel", "gödel", "incompleteness",
+        "qg_unified", "quantum_gravity",
+        // Additional
+        "mass_gap", "mass-gap", "algebraic_cycle", "smooth_solution",
+        "nondeterministic", "polynomial", "eigenform", "braiding",
+        "non-abelian", "frobenius", "belnap", "paraconsistent",
+        "galois_group", "assembly_map", "k-theory", "kk-theory",
+        "factor", "ii1", "neumann",
     ]},
     DomainEntry { domain: "physical", keywords: &[
         "quantum", "field_theory", "cosmology", "black_hole", "gravity",
@@ -205,6 +220,31 @@ pub static DOMAIN_BOOTSTRAP: &[DomainEntry] = &[
     ]},
     DomainEntry { domain: "divinatory", keywords: &[
         "tarot", "hexagram", "geomancy", "scrying", "rune", "futhark",
+    ]},
+    DomainEntry { domain: "physical_theory", keywords: &[
+        "higgs", "mechanism", "electroweak", "standard_model", "sm_",
+        "general_relativity", "gravitational_wave", "black_hole_info",
+        "universe", "cosmology", "inflation", "dark_matter", "dark_energy",
+        "baryon", "lepton", "quark", "gluon", "neutrino_oscillation",
+        "flavor_mixing", "cpt", "supersymmetry", "string_theory", "m-theory",
+        "ads_cft", "holographic", "entanglement", "wormhole",
+    ]},
+    DomainEntry { domain: "biological", keywords: &[
+        "genetic_code", "codon", "protein", "antibody", "gene", "genome",
+        "mitochondrial", "mito_", "telomere", "cephalopod", "neurotrophic",
+        "serpent_rod", "enzyme", "ribosome", "peptide", "nucleotide",
+        "darwin", "evolution", "phylogenetic", "ecosystem",
+    ]},
+    DomainEntry { domain: "consciousness", keywords: &[
+        "consciousness", "qualia", "meditation", "dhikr", "shamanic",
+        "ecstatic", "trance", "dream", "incubation", "psychography",
+        "automatic_writing", "dmt", "psychedelic", "entheogen",
+    ]},
+    DomainEntry { domain: "mathematical_navigator", keywords: &[
+        "navigator", "crystal", "langlands", "functoriality", "l_function",
+        "automorphic", "galois_representation", "cohomology", "sheaf",
+        "scheme", "topos", "homotopy", "univalence", "infinity_groupoid",
+        "operad", "hopf", "monad", "yoneda", "adjunction",
     ]},
 ];
 

@@ -43,7 +43,6 @@ use kernel::Kernel;
 
 use crate::imas_ig::{IgTuple, IgPrim};
 use dialect::{parse_dialect, dialect_display, dialect_name, dialect_description, dialect_gates, dialect_o_inf};
-use alloc::vec::Vec;
 use menu::{ContextStack, render_menu_bar, menu_hint, tab_complete, print_help_topic, search_commands, enter_context, fkey_to_category, render_prompt};
 // ─── Bump allocator (no external crates) ─────────────────────
 
@@ -1583,7 +1582,8 @@ fn print_help() {
     sprintln!("  {:<34} — therapeutics (chemo, pill, antidote)", "rebis tx");
     sprintln!();
     sprintln!("══ cr3echrz — Theorem Operationalization ══");
-    sprintln!("  {:<34} — list all theorems + p4rakernel modules", "cr3 --list");
+    sprintln!("  {:<34} — list all theorems + p4rakernel + vault", "cr3 --list");
+    sprintln!("  {:<34} — list 281 vault ob3ects", "cr3 --list-ob3ects");
     sprintln!("  {:<34} — collatz|goldbach|three_body|burnside|...", "cr3 <theorem> [params]");
     sprintln!("  {:<34} — Collatz 3n+1 (e.g. cr3 collatz 27)", "cr3 collatz <seed>");
     sprintln!("  {:<34} — Goldbach partitions (e.g. cr3 goldbach 100)", "cr3 goldbach <n>");
@@ -2264,14 +2264,17 @@ fn print_cscore(k: &Kernel) {
 fn print_cr3(sub: &str, rest: alloc::string::String) {
     use crate::cr3echrz::p3theorem::{run_theorem, format_theorem_result, list_theorems};
     use crate::cr3echrz::p4rakernel::list_p4ra_modules;
+    use crate::cr3echrz::vault::{list_vault_ob3ects, run_vault_ob3ect, vault_domain_summary};
 
     match sub {
         "" | "--help" => {
             sprintln!("cr3 — Unified Theorem Operationalization Engine (dynamic registry)");
             sprintln!("  cr3 --list                List all registered theorems + p4rakernel modules");
             sprintln!("  cr3 --list-theorems       List p3theorem engine");
+            sprintln!("  cr3 --list-ob3ects [domain]  List vault ob3ects (281)");
             sprintln!("  cr3 --version             Show version");
             sprintln!("  cr3 <theorem> [params]    Run a registered theorem");
+            sprintln!("  cr3 <ob3ect_name>         Run a vault ob3ect");
             sprintln!("");
             sprintln!("{}", list_theorems());
             sprintln!("");
@@ -2282,21 +2285,32 @@ fn print_cr3(sub: &str, rest: alloc::string::String) {
             sprintln!("{}", list_theorems());
             sprintln!("");
             sprintln!("{}", list_p4ra_modules());
+            sprintln!("");
+            sprintln!("{}", vault_domain_summary());
         }
         "--list-theorems" => {
             sprintln!("{}", list_theorems());
         }
+        "--list-ob3ects" => {
+            let domain = rest.split_whitespace().next();
+            sprintln!("{}", list_vault_ob3ects(domain));
+        }
         "--version" => {
-            sprintln!("cr3 v1.1 — Unified Theorem Operationalization Engine (dynamic registry)");
+            sprintln!("cr3 v1.2 — Unified Theorem Operationalization Engine (dynamic registry)");
             sprintln!("Author: Lando⊗⊙perator");
             sprintln!("Phase 10: fn-pointer dispatch, runtime-extensible registries");
+            sprintln!("281 vault ob3ects + 7 theorems + 6 p4rakernel modules");
             sprintln!("12 universal IMASM opcodes");
         }
         _ => {
-            let parts: Vec<&str> = rest.split_whitespace().collect();
-            let params = parts.join(" ");
-            let result = run_theorem(sub, &params);
-            sprintln!("{}", format_theorem_result(&result));
+            // Try theorem first, then vault ob3ect
+            let result = run_theorem(sub, &rest);
+            if result.status == crate::belnap::B4::N {
+                // Not a theorem — try vault
+                sprintln!("{}", run_vault_ob3ect(sub));
+            } else {
+                sprintln!("{}", format_theorem_result(&result));
+            }
         }
     }
 }

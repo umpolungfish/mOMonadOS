@@ -541,6 +541,9 @@ fn ensure_theorems() -> &'static mut Vec<TheoremRegEntry> {
             for e in THEOREM_BOOTSTRAP.iter() {
                 v.push(e.clone());
             }
+            for e in THEOREM_BOOTSTRAP_MILLENNIUM.iter() {
+                v.push(e.clone());
+            }
             *ptr = Some(v);
         }
         (*ptr).as_mut().unwrap()
@@ -695,5 +698,246 @@ pub static THEOREM_BOOTSTRAP: &[TheoremRegEntry] = &[
         phase_count: 22,
         example_params: "a-T-menable",
         runner: baum_connes_runner,
+    },
+];
+
+
+// ─── Millennium theorem runner wrappers ──────────────────────────────
+
+fn riemann_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_riemann_hypothesis()
+}
+
+fn yang_mills_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_yang_mills()
+}
+
+fn hodge_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_hodge()
+}
+
+fn navier_stokes_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_navier_stokes()
+}
+
+fn pvsnp_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_p_vs_np()
+}
+
+fn opn_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_opn()
+}
+
+fn bsd_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_bsd()
+}
+
+fn beal_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_beal()
+}
+
+fn twin_prime_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_twin_prime()
+}
+
+fn hadwiger_nelson_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_hadwiger_nelson()
+}
+
+fn lonely_runner_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_lonely_runner()
+}
+
+fn cramer_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_cramer()
+}
+
+fn perfect_cuboid_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_perfect_cuboid()
+}
+
+fn sic_povm_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_sic_povm()
+}
+
+fn hecke_landau_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_hecke_landau()
+}
+
+fn solitary_10_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_solitary_10()
+}
+
+fn collatz_ops_runner(params: &str) -> TheoremResult {
+    let n: u64 = params.split_whitespace().next()
+        .and_then(|s| s.parse().ok()).unwrap_or(27);
+    super::p3theorem_millennium::run_collatz_ops(n)
+}
+
+fn cosmogeny_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_cosmogeny()
+}
+
+fn godel_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_godel_resolved()
+}
+
+fn rebis_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_rebis()
+}
+
+fn qg_unified_runner(_params: &str) -> TheoremResult {
+    super::p3theorem_millennium::run_qg_unified()
+}
+
+// ─── Extended THEOREM_BOOTSTRAP entries ───────────────────────────────
+
+pub static THEOREM_BOOTSTRAP_MILLENNIUM: &[TheoremRegEntry] = &[
+    TheoremRegEntry {
+        name: "riemann",
+        description: "Riemann Hypothesis — all non-trivial zeros on Re(s)=1/2",
+        phase_count: 42,
+        example_params: "",
+        runner: riemann_runner,
+    },
+    TheoremRegEntry {
+        name: "yang_mills",
+        description: "Yang-Mills Mass Gap — SU(N) quantum with positive mass gap",
+        phase_count: 48,
+        example_params: "",
+        runner: yang_mills_runner,
+    },
+    TheoremRegEntry {
+        name: "hodge",
+        description: "Hodge Conjecture — algebraic cycles on projective varieties",
+        phase_count: 36,
+        example_params: "",
+        runner: hodge_runner,
+    },
+    TheoremRegEntry {
+        name: "navier_stokes",
+        description: "Navier-Stokes — smooth solutions for all time in R3",
+        phase_count: 40,
+        example_params: "",
+        runner: navier_stokes_runner,
+    },
+    TheoremRegEntry {
+        name: "pvsnp",
+        description: "P vs NP — deterministic polynomial time vs nondeterministic",
+        phase_count: 38,
+        example_params: "",
+        runner: pvsnp_runner,
+    },
+    TheoremRegEntry {
+        name: "opn",
+        description: "Odd Perfect Numbers — no odd perfect numbers exist",
+        phase_count: 44,
+        example_params: "",
+        runner: opn_runner,
+    },
+    TheoremRegEntry {
+        name: "bsd",
+        description: "Birch-Swinnerton-Dyer — rank equals analytic rank",
+        phase_count: 46,
+        example_params: "",
+        runner: bsd_runner,
+    },
+    TheoremRegEntry {
+        name: "beal",
+        description: "Beal Conjecture — A^x + B^y = C^z => gcd > 1 for x,y,z>2",
+        phase_count: 28,
+        example_params: "",
+        runner: beal_runner,
+    },
+    TheoremRegEntry {
+        name: "twin_prime",
+        description: "Twin Prime Conjecture — infinitely many (p, p+2)",
+        phase_count: 32,
+        example_params: "",
+        runner: twin_prime_runner,
+    },
+    TheoremRegEntry {
+        name: "hadwiger_nelson",
+        description: "Hadwiger-Nelson — chromatic number of the plane",
+        phase_count: 26,
+        example_params: "",
+        runner: hadwiger_nelson_runner,
+    },
+    TheoremRegEntry {
+        name: "lonely_runner",
+        description: "Lonely Runner — every runner is lonely at some time",
+        phase_count: 24,
+        example_params: "",
+        runner: lonely_runner_runner,
+    },
+    TheoremRegEntry {
+        name: "cramer",
+        description: "Cramér Conjecture — p_{n+1}-p_n = O((log p_n)^2)",
+        phase_count: 30,
+        example_params: "",
+        runner: cramer_runner,
+    },
+    TheoremRegEntry {
+        name: "perfect_cuboid",
+        description: "Perfect Cuboid — integer-sided with integer diagonals",
+        phase_count: 34,
+        example_params: "",
+        runner: perfect_cuboid_runner,
+    },
+    TheoremRegEntry {
+        name: "sic_povm",
+        description: "SIC-POVM — symmetric informationally complete POVMs in all d",
+        phase_count: 36,
+        example_params: "",
+        runner: sic_povm_runner,
+    },
+    TheoremRegEntry {
+        name: "hecke_landau",
+        description: "Hecke-Landau — eigenform correspondence + Siegel zero",
+        phase_count: 28,
+        example_params: "",
+        runner: hecke_landau_runner,
+    },
+    TheoremRegEntry {
+        name: "solitary_10",
+        description: "Solitary 10 — 10 is solitary (no friend)",
+        phase_count: 20,
+        example_params: "",
+        runner: solitary_10_runner,
+    },
+    TheoremRegEntry {
+        name: "collatz_ops",
+        description: "Collatz operational — run Collatz on any seed",
+        phase_count: 14,
+        example_params: "27",
+        runner: collatz_ops_runner,
+    },
+    TheoremRegEntry {
+        name: "cosmogeny",
+        description: "Cosmogeny — structural genesis of 12-primitive grammar",
+        phase_count: 40,
+        example_params: "",
+        runner: cosmogeny_runner,
+    },
+    TheoremRegEntry {
+        name: "godel",
+        description: "Gödel Resolved — incompleteness via paraconsistent kernel",
+        phase_count: 38,
+        example_params: "",
+        runner: godel_runner,
+    },
+    TheoremRegEntry {
+        name: "rebis",
+        description: "Rebis — dual-unified structural type",
+        phase_count: 44,
+        example_params: "",
+        runner: rebis_runner,
+    },
+    TheoremRegEntry {
+        name: "qg_unified",
+        description: "QG Unified — SM+UG+T consummation at O_inf",
+        phase_count: 42,
+        example_params: "",
+        runner: qg_unified_runner,
     },
 ];
