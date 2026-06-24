@@ -24,7 +24,7 @@ pub static MAIN_MENU: &[MenuItem] = &[
     MenuItem { name: "Crystal",  cmd: "crystal",  desc: "Crystal FS (decode, store, find, name)", submenu: Some(CRYSTAL_MENU) },
     MenuItem { name: "Grammar",  cmd: "grammar",  desc: "Grammar bridges (ig, classify, frob, aleph, shor, rh, ym)", submenu: Some(GRAMMAR_MENU) },
     MenuItem { name: "Rebis",    cmd: "rebis",    desc: "Red-Hot Rebis (codon, translate, genetics, materials, bio, tx)", submenu: Some(REBIS_MENU) },
-    MenuItem { name: "Universe", cmd: "universe",  desc: "Cross-universe (ruleset, jump, seal, compound, whoami)", submenu: Some(UNIVERSE_MENU) },
+    MenuItem { name: "Dialect", cmd: "dialect",  desc: "Cross-dialect (ruleset, jump, seal, compound, whoami)", submenu: Some(DIALECT_MENU) },
     MenuItem { name: "ParaASM",  cmd: "parasm",   desc: "ParaASM (test, frob, kernel, load)", submenu: Some(PARASM_MENU) },
     MenuItem { name: "Cr3echrz", cmd: "cr3echrz", desc: "Theorem engine + p4rakernel (cr3, p4ra)", submenu: Some(CR3ECHRZ_MENU) },
     MenuItem { name: "Help",     cmd: "help",     desc: "Help system (help <topic> for details)", submenu: None },
@@ -102,11 +102,11 @@ pub static REBIS_MENU: &[MenuItem] = &[
     MenuItem { name: "tx",       cmd: "rebis tx",       desc: "Therapeutics (chemo, pill, antidote)", submenu: None },
 ];
 
-pub static UNIVERSE_MENU: &[MenuItem] = &[
+pub static DIALECT_MENU: &[MenuItem] = &[
     MenuItem { name: "show",     cmd: "ruleset show",    desc: "Active ruleset display", submenu: None },
-    MenuItem { name: "list",     cmd: "ruleset list",    desc: "List all 8 universes", submenu: None },
+    MenuItem { name: "list",     cmd: "ruleset list",    desc: "List all 8 dialects", submenu: None },
     MenuItem { name: "verify",   cmd: "ruleset verify",  desc: "Invariant violation check", submenu: None },
-    MenuItem { name: "jump",     cmd: "jump",            desc: "Cross-universe jump: jump <U> using <c>", submenu: None },
+    MenuItem { name: "jump",     cmd: "jump",            desc: "Cross-dialect jump: jump <U> using <c>", submenu: None },
     MenuItem { name: "seal",     cmd: "seal",            desc: "IFIX commit to current ruleset", submenu: None },
     MenuItem { name: "whoami",   cmd: "whoami --ruleset",desc: "IG tuple under active ruleset", submenu: None },
     MenuItem { name: "tensor",   cmd: "tensor",          desc: "Tensor under active absorption", submenu: None },
@@ -162,7 +162,7 @@ pub fn render_menu_bar() {
 
 /// Show compact menu hint (one line)
 pub fn menu_hint() {
-    serial::write_str("[F1]Exec [F2]Status [F3]Progs [F4]Crystal [F5]Grammar [F6]Rebis [F7]Universe [F8]ParaASM [F9]Cr3 [F10]Help  [?]Menu\n");
+    serial::write_str("[F1]Exec [F2]Status [F3]Progs [F4]Crystal [F5]Grammar [F6]Rebis [F7]Dialect [F8]ParaASM [F9]Cr3 [F10]Help  [?]Menu\n");
 }
 
 // ─── Sub-context ───────────────────────────────────────────

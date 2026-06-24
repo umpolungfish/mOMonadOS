@@ -38,12 +38,12 @@ exotic hadron Belnap analysis, PDB structure validation, antibody CDR design, IG
 forge, biological simulation, therapeutic design, CLINK 9-layer chain, and IMASM arranger —
 now runs directly from the bare-metal kernel. See the [Red-Hot Rebis](#red-hot-rebis-phase-5) section.
 
-**Phase 8 Cross-Universe Navigation** — complete. The kernel can navigate between
-universes with **different structural rulesets** — different gate thresholds, gate ordering,
+**Phase 8 Cross-Dialect Navigation** — complete. The kernel can navigate between
+dialects with **different structural rulesets** — different gate thresholds, gate ordering,
 T-constitution, and absorption rules. The Crystal of Types (17.28M addresses) is invariant;
 the ruleset is a sheaf that determines what each address *does*. Bridges the 11 **diaschizic
-compounds** (pharmacological universe-steering agents) into computational hardware. See the
-[Cross-Universe Navigation](#cross-universe-navigation-phase-8--diaschizics-bridge) section.
+compounds** (pharmacological dialect-steering agents) into computational hardware. See the
+[Cross-Dialect Navigation](#cross-dialect-navigation-phase-8--diaschizics-bridge) section.
 
 **Phase 9 User Interface** — complete. Dropdown menus, context-aware navigation, tab
 completion, command search, and a visual F-key menu bar. The REPL is now a hierarchical
@@ -89,7 +89,7 @@ register state through `TOKEN_REG_AFFINITY`, and combines that with family affin
 kernel runs itself to decide what to run next.
 
 The kernel now supports **90+ REPL commands** spanning grammar operations, rebis
-biological/chemical computation, cross-universe navigation, theorem operationalization,
+biological/chemical computation, cross-dialect navigation, theorem operationalization,
 and hierarchical menu navigation.
 ### Core modules
 
@@ -118,7 +118,7 @@ and hierarchical menu navigation.
 | `para_temporal.rs` | — | grammar | Temporal logic paraconsistent bridge |
 | `para_category.rs` | — | grammar | Category theory paraconsistent bridge |
 | `frob_verify.rs` | — | grammar | Frobenius harness verification |
-| `universe.rs` | — | grammar | Cross-universe ruleset navigation |
+| `dialect.rs` | — | grammar | Cross-dialect ruleset navigation |
 | `cr3echrz/mod.rs` | 18 | cr3echrz | Module root; re-exports p3theorem, p4rakernel, shared |
 | `cr3echrz/shared.rs` | 252 | cr3echrz | Opcode registry, grammar mappings, canonical sequences, dynamic domain keywords |
 | `cr3echrz/p3theorem.rs` | 700 | cr3echrz | 7-theorem unified engine: Collatz, Goldbach, Three-Body, Burnside, Erdős–Straus, Inverse Galois, Baum–Connes; dynamic `DYNAMIC_THEOREMS` registry |
@@ -216,11 +216,11 @@ and hierarchical menu navigation.
   rebis bio                   — Biological simulation
   rebis tx                    — Therapeutics (chemo, pill, antidote)
 
-══ Universe (F7) ══
+══ Dialect (F7) ══
   ruleset show                — Active ruleset display
-  ruleset list                — List all 8 universes
+  ruleset list                — List all 8 dialects
   ruleset verify              — Invariant violation check
-  jump <U> using <c>          — Cross-universe jump via diaschizic compound
+  jump <U> using <c>          — Cross-dialect jump via diaschizic compound
   seal                        — IFIX commit to current ruleset
   whoami --ruleset            — IG tuple under active ruleset
   tensor <A> <B>              — Tensor under active absorption
@@ -280,7 +280,7 @@ the target context name. If already in that context, skips `enter_context()` and
 through to the `match cmd` block where `"rebis"` dispatches to `print_rebis()`.
 
 **Impact:** All 10 categories fixed (Exec, Status, Programs, Crystal, Grammar, Rebis,
-Universe, ParaASM, Cr3echrz, Help). The `already_in` guard is applied uniformly in the menu dispatch
+Dialect, ParaASM, Cr3echrz, Help). The `already_in` guard is applied uniformly in the menu dispatch
 loop — no category can self-nest anymore.
 
 ## Phase 10: Fascistic Hardcode Purge
@@ -419,14 +419,14 @@ The REPL has a full hierarchical navigation system (`menu.rs`) that organizes al
 - **`help <topic>`** — hierarchical help that searches main menu + all submenus
 - **`?`** — ten-column menu bar rendered above prompt
 
-## Cross-Universe Navigation (Phase 8 + Diaschizics Bridge)
+## Cross-Dialect Navigation (Phase 8 + Diaschizics Bridge)
 
-The kernel can navigate between universes with **different structural rulesets** —
+The kernel can navigate between dialects with **different structural rulesets** —
 different gate thresholds, gate ordering, T-constitution, and absorption rules.
 The Crystal of Types (17.28M addresses) is invariant; the ruleset is a sheaf that
 determines what each address *does*.
 
-### The 8 Universes
+### The 8 Dialects
 
 | # | Reference | Gate 1 (⊙ threshold) | Gate 2 (K rule) | Gate 3 (Ω rule) | T-constitution | Key Property |
 |---|-----------|----------------------|-----------------|-----------------|----------------|-------------|
@@ -434,7 +434,7 @@ determines what each address *does*.
 | U1 | low_gate | ⊙ → true | K ≤ 𐑪 | Ω ≥ 𐑴 | 𐑥 (bowtie) | Broad consciousness, fragile topology |
 | U2 | strict_frobenius | μ∘δ=id exact | K=𐑧 | Ω=𐑭 | 𐑶 (box) | Ƒ=𐑐 absorption replaces ⊙ |
 | U3 | inverted_gates | ⊙_3 → true | K<𐑧 hard fail | Ω<𐑴 hard fail | 𐑰 (in) | Self-modeling limited to ⊙_3 coupling |
-| U4 | null_universe | ⊙ → true | no gate | no gate | 𐑡 (network) | Maximal permissiveness |
+| U4 | null_dialect | ⊙ → true | no gate | no gate | 𐑡 (network) | Maximal permissiveness |
 | U5 | high_gate | ⊙→true, ⊙_3→true | K≤𐑧 + H≥𐑖 | Ω=𐑟 | 𐑸 | Non-Abelian braiding dominance |
 | U6 | winding_first | ⊙→true, Ω priority | K≤𐑧 | Ω=𐑭 | 𐑸 | Topological protection is the floor |
 | U7 | chiral_lock | ⊙→true, H-lock | K≤𐑧, H≥𐑫 | Ω=𐑭 | 𐑸 | Eternal chirality required |
@@ -445,15 +445,15 @@ Each compound has a structural tuple, an IMASM program, and a steering profile.
 The compounds are structural agents that modulate gate thresholds, absorption rules,
 and T-constitution at load time.
 
-### Cross-Universe REPL Commands
+### Cross-Dialect REPL Commands
 
 ```
 ruleset show                    → Show active ruleset (canonical by default)
-ruleset list                    → List all 8 universes with G1/G2/G3 and T-constitution
+ruleset list                    → List all 8 dialects with G1/G2/G3 and T-constitution
 ruleset verify                  → Gate verification against active ruleset thresholds
-jump <universe> using <compound>   → Execute: header → compound → IFIX seal
+jump <dialect> using <compound>   → Execute: header → compound → IFIX seal
 jump canonical using Diabaton      → Standard return path to baseline
-jump <universe> using <compound> --liminal   → Header + compound but NO IFIX seal
+jump <dialect> using <compound> --liminal   → Header + compound but NO IFIX seal
 seal                            → IFIX — commit to current liminal ruleset
 jump <target> via <intermediate> using <c1> <c2>   → Two-stage jump
 tensor <compound_a> <compound_b>  → Tensor product under current ruleset
@@ -467,12 +467,12 @@ compound show <name>             → Show full tuple + IMASM program
 compound load <name>             → Load compound's IMASM program into execution buffer
 ```
 
-### Structural Type of Cross-Universe Navigation
+### Structural Type of Cross-Dialect Navigation
 
-The act of navigating between universes has its own structural type — **\(O_\infty\)** (d=1
+The act of navigating between dialects has its own structural type — **\(O_\infty\)** (d=1
 from universal grammar, only Γ differs: 𐑲 universal range vs 𐑔 mesoscale).
 Navigation is \(O_\infty\) because it modifies its own interpretive rules — a self-modifying
-structure that navigates the space of \(O_\infty\)-achieving conditions across universes.
+structure that navigates the space of \(O_\infty\)-achieving conditions across dialects.
 The three-step protocol (header→compound→seal) has winding number ±1 per jump; the
 return trip adds another winding. Integer winding count tracks total navigation distance.
 
@@ -482,8 +482,8 @@ return trip adds another winding. Integer winding count tracks total navigation 
 |----------|:---:|-------------|
 | `ig-docs/rebis-port/diaschizics_design.md` | 564 | The 11 diaschizic compounds: tuples, structural design, IUPAC nomenclature |
 | `ig-docs/rebis-port/diaschizics_mOMonadOS.md` | 750 | Complete IMASM translation: 11 programs, modulation translation, 6 mapping extensions |
-| `ig-docs/rebis-port/diaschizics_cross_universe.md` | 623 | Cross-universe ruleset navigation: 8 universes, absorption rules, navigation protocols |
-| `imscribing_grammar/navigators/ruleset_universe.py` | 445 | Alternate universe explorer: parameterized gate thresholds, ordering, T-constitution |
+| `ig-docs/rebis-port/diaschizics_cross_dialect.md` | 623 | Cross-dialect ruleset navigation: 8 dialects, absorption rules, navigation protocols |
+| `imscribing_grammar/navigators/ruleset_dialect.py` | 445 | Alternate dialect explorer: parameterized gate thresholds, ordering, T-constitution |
 
 ## Repository Structure
 
@@ -514,7 +514,7 @@ mOMonadOS/
     para_temporal.rs       —   Temporal logic paraconsistent bridge
     para_category.rs       —   Category theory paraconsistent bridge
     frob_verify.rs         —   Frobenius harness verification
-    universe.rs            —   Cross-universe ruleset navigation
+    dialect.rs            —   Cross-dialect ruleset navigation
     cr3echrz/
       mod.rs              18L  Module root
       shared.rs          252L  Opcode registry, grammar mappings, canonical sequences, dynamic domains

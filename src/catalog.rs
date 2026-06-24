@@ -477,7 +477,7 @@ const NAVIER_STOKES: CatalogEntry = entry(
 // (imscribing_grammar/imscrbgrmr), 2026-06-16 — NOT the same convention
 // as the generic NAVIER_STOKES entry above, which predates the Clay-7
 // catalog import and is known to disagree with it (see commit.txt /
-// manuscripts/clay_cross_universe_closure.md for the cross-system drift
+// manuscripts/clay_cross_dialect_closure.md for the cross-system drift
 // this already surfaced).
 const BIRCH_SWINNERTON_DYER: CatalogEntry = entry(
     "birch_swinnerton_dyer", "Clay Millennium Problem — BSD conjecture",
@@ -503,7 +503,7 @@ const HODGE_CONJECTURE: CatalogEntry = entry(
 // ── Yang-Mills Mass Gap (O₂†) ──
 // Tuple sourced directly from the live Python IG_catalog.json, 2026-06-16.
 // Same provenance note as BIRCH_SWINNERTON_DYER above. Unlike BSD/Hodge,
-// this one does NOT reach full closure under its best-known universe
+// this one does NOT reach full closure under its best-known dialect
 // (triple_criticality) — it clears all three gates but fails T_CEILING on
 // Ç alone (K_trap, ord 4, exceeds the ord-3 ceiling). Kept anyway: the
 // partial result is the interesting one here, not a clean PASS.

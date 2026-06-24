@@ -31,7 +31,7 @@ mod catalog;
 mod cl8nk;
 mod consciousness;
 mod rebis;
-mod universe;
+mod dialect;
 mod menu;
 mod sequence;
 mod boot;
@@ -42,7 +42,7 @@ use crystal::{CrystalStore, decode, encode, indices_from_snapshot, TOTAL};
 use kernel::Kernel;
 
 use crate::imas_ig::{IgTuple, IgPrim};
-use universe::{parse_universe, universe_display, universe_name, universe_description, universe_gates, universe_o_inf};
+use dialect::{parse_dialect, dialect_display, dialect_name, dialect_description, dialect_gates, dialect_o_inf};
 use alloc::vec::Vec;
 use menu::{ContextStack, render_menu_bar, menu_hint, tab_complete, print_help_topic, search_commands, enter_context, fkey_to_category, render_prompt};
 // ─── Bump allocator (no external crates) ─────────────────────
@@ -274,7 +274,7 @@ fn repl(k: &mut Kernel) {
             s if {
                 let lower = s.to_lowercase();
                 lower == "exec" || lower == "status" || lower == "programs" || lower == "crystal"
-                    || lower == "grammar" || lower == "rebis" || lower == "universe" || lower == "parasm" || lower == "cr3echrz"
+                    || lower == "grammar" || lower == "rebis" || lower == "dialect" || lower == "parasm" || lower == "cr3echrz"
             } => {
                 let already_in = ctx_stack.current()
                     .map(|c| c.name.to_lowercase() == cmd.to_lowercase())
@@ -695,25 +695,25 @@ Stopped after {} ticks.", ran);
                 let sub = parts.next().unwrap_or("");
                 match sub {
                     "show" => {
-                        let u = k.active_universe;
-                        let ud = universe_display(u);
-                        let gates = universe_gates(u);
-                        sprintln!("Active ruleset: {} ({})", universe_name(u), ud);
+                        let u = k.active_dialect;
+                        let ud = dialect_display(u);
+                        let gates = dialect_gates(u);
+                        sprintln!("Active ruleset: {} ({})", dialect_name(u), ud);
                         sprintln!("  {}", gates);
                         sprintln!("  Absorbing: ⊙(all) Σ=𐑳(tensor)");
                         if let Some(lim) = k.liminal_target {
                             sprintln!("  ⚠ LIMINAL JUMP PENDING → {} ({}). Use 'seal' to commit.",
-                                universe_display(lim), universe_name(lim));
+                                dialect_display(lim), dialect_name(lim));
                         }
                     }
                     "list" => {
                         sprintln!("╔══════════════════════════════════════════════════════════╗");
-                        sprintln!("   ═══ ALL 12 UNIVERSES ═══");
+                        sprintln!("   ═══ ALL 12 DIALECTS ═══");
                         for u in 0u8..12u8 {
-                            let marker = if u == k.active_universe { "★" } else { " " };
+                            let marker = if u == k.active_dialect { "★" } else { " " };
                             sprintln!("  {} {:<3} {:<20} {}     O_∞:{}",
-                                marker, universe_display(u), universe_name(u),
-                                universe_gates(u), universe_o_inf(u));
+                                marker, dialect_display(u), dialect_name(u),
+                                dialect_gates(u), dialect_o_inf(u));
                         }
                         sprintln!("╚══════════════════════════════════════════════════════════╝");
                         if k.liminal_target.is_some() {
@@ -721,7 +721,7 @@ Stopped after {} ticks.", ran);
                         }
                     }
                     "verify" => {
-                        let u = k.active_universe;
+                        let u = k.active_dialect;
                         // Optional catalog name: "ruleset verify birch_swinnerton_dyer"
                         // checks a named catalog entry's *static* structural tuple instead
                         // of the kernel's own live execution snapshot. Added 2026-06-16
@@ -744,7 +744,7 @@ Stopped after {} ticks.", ran);
                         };
                         if let Some(ig) = ig_opt {
                             let mut all_pass = true;
-                            sprintln!("Ruleset {} ({}) — Gate Verification:", universe_name(u), universe_display(u));
+                            sprintln!("Ruleset {} ({}) — Gate Verification:", dialect_name(u), dialect_display(u));
                             if !name_arg.is_empty() {
                                 sprintln!("  Catalog entry: {}  tuple: {}", name_arg, ig.display());
                             } else {
@@ -828,7 +828,7 @@ Stopped after {} ticks.", ran);
                                     if !g1 || !g2 || !g3 || !t_ok { all_pass = false; }
                                 }
                                 8 => { // chirality_first: G1:Ħ≥𐑖  G2:⊙≥⊙  G3:Ω≥𐑭
-                                       // T: T_CEILING — see manuscripts/clay_cross_universe_closure.md.
+                                       // T: T_CEILING — see manuscripts/clay_cross_dialect_closure.md.
                                        // Uses IgPrim::ordinal(), NOT raw discriminant comparison — the
                                        // discriminant trick used in arms 0-7 is invalid for the criticality
                                        // family (𐑮/𐑻 are non-monotonic in discriminant order).
@@ -841,7 +841,7 @@ Stopped after {} ticks.", ran);
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                     if !t_ceiling_check(&ig) { all_pass = false; }
                                 }
-                                9 => { // scope_universe: G1:Γ≥𐑲(maximal scope)  G2:⊙≥⊙  G3:Ω≥𐑭
+                                9 => { // scope_dialect: G1:Γ≥𐑲(maximal scope)  G2:⊙≥⊙  G3:Ω≥𐑭
                                        // T: T_CEILING — same generalization as U8, paired with a different gate spec.
                                     let g1 = ig.g.ordinal() >= IgPrim::G_aleph.ordinal();
                                     let g2 = ig.phi.ordinal() >= IgPrim::Phi_c.ordinal();
@@ -873,7 +873,7 @@ Stopped after {} ticks.", ran);
                                     if !t_ceiling_gapped_check(&ig) { all_pass = false; }
                                 }
                                 _ => {
-                                    sprintln!("  Unknown universe — cannot verify.");
+                                    sprintln!("  Unknown dialect — cannot verify.");
                                     all_pass = false;
                                 }
                             }
@@ -882,7 +882,7 @@ Stopped after {} ticks.", ran);
                                 sprintln!("  Result: ALL GATES PASS — ruleset satisfied.");
                             } else {
                                 sprintln!("  Result: VIOLATION — fails ruleset gate(s).");
-                                sprintln!("  Tip: load a different program/entry or jump to a compatible universe.");
+                                sprintln!("  Tip: load a different program/entry or jump to a compatible dialect.");
                             }
                         } else if name_arg.is_empty() {
                             sprintln!("No snapshot — tick first to generate a self-imscription.");
@@ -890,12 +890,12 @@ Stopped after {} ticks.", ran);
                         }
                     }
                     "dialetheic" => {
-                        // ruleset dialetheic <name> <alt_universe>
+                        // ruleset dialetheic <name> <alt_dialect>
                         // Decomposes the closure question into GATE and T components
                         // and FFUSEs each separately (plus the combined verdict), through
                         // the kernel's actual FFUSE primitive (Belnap join) — not a
                         // shortcut. join(T,F)=B: designated, dialetheic, not flatly
-                        // false. See manuscripts/clay_cross_universe_closure.md for what
+                        // false. See manuscripts/clay_cross_dialect_closure.md for what
                         // this is and is not — it does NOT make the entry true under
                         // canonical. Decomposing matters: gate and T can disagree on
                         // whether there's a real conflict (see Yang-Mills under U10).
@@ -937,7 +937,7 @@ Stopped after {} ticks.", ran);
                         let alt: u8 = match alt_str.parse() {
                             Ok(v) => v,
                             _ => {
-                                sprintln!("Usage: ruleset dialetheic <catalog_name> <alt_universe 8|9|10|11>");
+                                sprintln!("Usage: ruleset dialetheic <catalog_name> <alt_dialect 8|9|10|11>");
                                 return;
                             }
                         };
@@ -954,9 +954,9 @@ Stopped after {} ticks.", ran);
                             && ig.omega.ordinal() >= IgPrim::Omega_z.ordinal();
                         let t_canon = t_canonical_check_silent(&ig);
 
-                        // Alt-universe gate verdict: only U8/U9/U10/U11 wired up so far.
+                        // Alt-dialect gate verdict: only U8/U9/U10/U11 wired up so far.
                         // U8/U9/U10 use T_CEILING for their T side; U11 uses the
-                        // gapped variant (raises only the Ç anchor — see universe.rs).
+                        // gapped variant (raises only the Ç anchor — see dialect.rs).
                         let gate_alt = match alt {
                             8 => ig.h.ordinal() >= IgPrim::H2.ordinal()
                                 && ig.phi.ordinal() >= IgPrim::Phi_c.ordinal()
@@ -1012,7 +1012,7 @@ Stopped after {} ticks.", ran);
                             sprintln!("     The original B is gone; FSPLIT(B) only ever hands back a plain (T,F).");
                         }
                     }
-                    _ => sprintln!("ruleset <show|list|verify|dialetheic> [catalog_name] [alt_universe]"),
+                    _ => sprintln!("ruleset <show|list|verify|dialetheic> [catalog_name] [alt_dialect]"),
                 }
             }
             "jump" => {
@@ -1021,15 +1021,15 @@ Stopped after {} ticks.", ran);
             }
             "seal" => {
                 if let Some(target) = k.liminal_target {
-                    k.active_universe = target;
-                    let name = universe_name(target);
-                    let ud = universe_display(target);
+                    k.active_dialect = target;
+                    let name = dialect_name(target);
+                    let ud = dialect_display(target);
                     k.liminal_target = None;
                     k.liminal_compound = None;
                     sprintln!("IFIX — ruleset committed. Kernel now operates under {} ({}) permanently.",
                         name, ud);
-                    sprintln!("  {}", universe_gates(target));
-                    sprintln!("  Description: {}", universe_description(target));
+                    sprintln!("  {}", dialect_gates(target));
+                    sprintln!("  Description: {}", dialect_description(target));
                 } else {
                     sprintln!("No liminal jump to seal. Use 'jump <U> using <compound>' first.");
                 }
@@ -1040,7 +1040,7 @@ Stopped after {} ticks.", ran);
                 let prim = parts.next().unwrap_or("?");
                 let op = parts.next().unwrap_or("?");
                 sprintln!("absorb_test({}, {}, {}, {}) under canonical U₀", a, b, prim, op);
-                sprintln!("  Canonical: ⊙ absorbs under all ops. See cross-universe doc for U₁–U₇.");
+                sprintln!("  Canonical: ⊙ absorbs under all ops. See cross-dialect doc for U₁–U₇.");
             }
             "whoami" => {
                 let flag = parts.next().unwrap_or("");
@@ -1068,7 +1068,7 @@ Stopped after {} ticks.", ran);
                 match sub {
                     "list" => {
                         sprintln!("╔══════════════════════════════════════════════════════════════╗");
-                        sprintln!("   11 DIASCHIZIC COMPOUNDS  —  universe-steering agents       ");
+                        sprintln!("   11 DIASCHIZIC COMPOUNDS  —  dialect-steering agents       ");
                         sprintln!("──────────────────────────────────────────────────────────────");
                         for i in 0..COMPOUND_COUNT {
                             let p = compound_program(i);
@@ -1143,7 +1143,7 @@ Stopped after {} ticks.", ran);
             "" => {}
             _ => {
                 // Context-aware subcommand dispatch: if we're inside a context
-                // (Rebis, Universe, etc.) and cmd isn't a top-level command,
+                // (Rebis, Dialect, etc.) and cmd isn't a top-level command,
                 // try dispatching as a subcommand of the current context.
                 // E.g., 'translate ATGGCC' in Rebis → treated as 'rebis translate ATGGCC'
                 let ctx_dispatch = ctx_stack.current().and_then(|ctx| {
@@ -1336,7 +1336,7 @@ fn redraw_input(old_len: usize, src: &[u8], src_len: usize, buf: &mut [u8; 256])
 //
 // Ceiling-generalizes canonical's existing Ç-only ceiling rule to all five
 // dynamics primitives, same anchors: Φ<=𐑹 ƒ<=𐑐 Ç<=𐑧 Ħ<=𐑫 Ω<=𐑭.
-// See manuscripts/clay_cross_universe_closure.md for the derivation. Uses
+// See manuscripts/clay_cross_dialect_closure.md for the derivation. Uses
 // IgPrim::ordinal(), not raw discriminant comparison.
 // Canonical's actual T-constitution (exact-equality on four primitives,
 // ceiling on Ç only) — matches Python's _T_CANONICAL exactly. This is the
@@ -1361,7 +1361,7 @@ fn t_ceiling_check_silent(ig: &IgTuple) -> bool {
 
 // U11 only: same as T_CEILING, but Ç's ceiling is raised from 𐑧 (K_slow,
 // ord 3) to 𐑪 (K_trap, ord 4) — a gapped/trapped spectrum, not just a slow
-// one. Motivated, not tailored: see universe.rs's U11 comment block.
+// one. Motivated, not tailored: see dialect.rs's U11 comment block.
 fn t_ceiling_gapped_check_silent(ig: &IgTuple) -> bool {
     let t_phi = ig.p.ordinal()     <= IgPrim::P_pmsym.ordinal();
     let t_f   = ig.f.ordinal()     <= IgPrim::F_hbar.ordinal();
@@ -1401,7 +1401,7 @@ fn t_ceiling_gapped_check(ig: &IgTuple) -> bool {
     t_ok
 }
 
-// ─── Cross-Universe Jump Handler ─────────────────────────────
+// ─── Cross-Dialect Jump Handler ─────────────────────────────
 
 fn handle_jump(k: &mut Kernel, rest: &str) {
     let rest = rest.trim();
@@ -1435,7 +1435,7 @@ fn handle_jump(k: &mut Kernel, rest: &str) {
     }
     let using_pos = using_pos.unwrap();
 
-    // Extract universe part (before " using " or " via ")
+    // Extract dialect part (before " using " or " via ")
     let u_str: &str;
     let compound_str: &str;
     let via_str: Option<&str>;
@@ -1456,19 +1456,19 @@ fn handle_jump(k: &mut Kernel, rest: &str) {
     }
     compound_str = rest_clean[using_pos + 7..].trim();
 
-    // Parse universe
-    let target: u8 = match parse_universe(u_str) {
+    // Parse dialect
+    let target: u8 = match parse_dialect(u_str) {
         Some(u) if u <= 11 => u,
         _ => {
-            sprintln!("Unknown universe: '{}'. Use U_0 through U_11 (or U₀ through U₁₁).", u_str);
+            sprintln!("Unknown dialect: '{}'. Use U_0 through U_11 (or U₀ through U₁₁).", u_str);
             return;
         }
     };
 
-    // Parse via universe
+    // Parse via dialect
     let intermediate: Option<u8> = via_str.and_then(|v| {
         let v = v.trim();
-        if v.is_empty() { None } else { parse_universe(v) }
+        if v.is_empty() { None } else { parse_dialect(v) }
     });
 
     // Parse compounds (space-separated after "using")
@@ -1488,9 +1488,9 @@ fn handle_jump(k: &mut Kernel, rest: &str) {
     let c2: Option<u8> = if c2_name.is_empty() { None } else { compound_index(c2_name).map(|i| i as u8) };
 
     // Display the jump
-    sprintln!("*** CROSS-UNIVERSE JUMP: {} using {}", universe_display(target), compound_name(c1 as usize));
+    sprintln!("*** CROSS-DIALECT JUMP: {} using {}", dialect_display(target), compound_name(c1 as usize));
     if let Some(v) = intermediate {
-        sprintln!("    via {}", universe_display(v));
+        sprintln!("    via {}", dialect_display(v));
     }
     if let Some(idx) = c2 {
         sprintln!("    second compound: {} ({} tokens, tier {})", compound_name(idx as usize), compound_program(idx as usize).map(|p| p.len() as u8).unwrap_or(0), match idx { 0|8 => "O_inf", 2|6|9 => "O_2", 10 => "O_2_dagger", 4 => "O_1", _ => "O_0" });
@@ -1504,9 +1504,9 @@ fn handle_jump(k: &mut Kernel, rest: &str) {
 
     if liminal {
         sprintln!("    ⚠ LIMINAL MODE: jump is active but NOT sealed.");
-        sprintln!("      Probe the universe. Use 'seal' to commit or jump again to override.");
+        sprintln!("      Probe the dialect. Use 'seal' to commit or jump again to override.");
     } else {
-        sprintln!("    Jump staged. Type 'seal' to commit to {} permanently.", universe_display(target));
+        sprintln!("    Jump staged. Type 'seal' to commit to {} permanently.", dialect_display(target));
         sprintln!("    (Use 'jump ... --liminal' to probe without requiring seal.)");
     }
 }
@@ -1596,13 +1596,13 @@ fn print_help() {
     sprintln!("  {:<34} — list p4rakernel modules", "p4ra --list");
     sprintln!("  {:<34} — burnside|connes|erdos_straus|goldbach|...", "p4ra <module>");
     sprintln!();
-    sprintln!("══ Cross-Universe Navigation (Phase 8) ══");
-    sprintln!("══ Ruleset / Universe ══");
+    sprintln!("══ Cross-Dialect Navigation (Phase 8) ══");
+    sprintln!("══ Ruleset / Dialect ══");
     sprintln!("  {:<36} — show active ruleset", "ruleset show");
-    sprintln!("  {:<36} — list all 12 universes (★ = active)", "ruleset list");
+    sprintln!("  {:<36} — list all 12 dialects (★ = active)", "ruleset list");
     sprintln!("  {:<36} — invariant check (live snapshot)", "ruleset verify");
     sprintln!("  {:<36} — invariant check (named catalog entry)", "ruleset verify <name>");
-    sprintln!("  {:<36} — cross-universe jump", "jump <U> using <compound>");
+    sprintln!("  {:<36} — cross-dialect jump", "jump <U> using <compound>");
     sprintln!("  {:<36} — probe without IFIX seal", "jump <U> using <c> --liminal");
     sprintln!("  {:<36} — two-stage jump", "jump <U> via <V> using <c1> <c2>");
     sprintln!("  {:<36} — IFIX commit to current ruleset", "seal");

@@ -25,6 +25,25 @@ fn ord_round(x: f32) -> i32 {
 // ─── Vote table ──────────────────────────────────────────────────
 
 type Scores = [i32; 12];
+// ─── Substrate weight (configurable) ────────────────────────────
+// Controls the relative influence of substrate execution vs. family
+// affinity in build_via_substrate. Default 3 (= 3:1 substrate:family).
+// Modify at runtime via set_substrate_weight() to explore bifurcation.
+static mut SUBSTRATE_WEIGHT: i32 = 3;
+
+/// Get the current substrate weight multiplier.
+pub fn substrate_weight() -> i32 {
+    unsafe { SUBSTRATE_WEIGHT }
+}
+
+/// Set substrate weight at runtime. Returns the previous weight.
+pub fn set_substrate_weight(w: i32) -> i32 {
+    let prev = unsafe { SUBSTRATE_WEIGHT };
+    unsafe { SUBSTRATE_WEIGHT = w };
+    prev
+}
+
+
 
 // FAMILY_TOKEN_AFFINITY[family][token] — base affinity weight.
 // Rows: 12 IG primitive families in IgTuple field order
@@ -343,7 +362,7 @@ pub fn build_via_substrate(tuple: &IgTuple, len: usize, self_ref: bool, tier: u8
     let mut combined: Scores = [0; 12];
     for i in 0..12 {
         // Substrate execution is the primary signal (×3); family matrix is baseline.
-        combined[i] = sub_s[i] * 3 + family_s[i];
+        combined[i] = sub_s[i] * substrate_weight() + family_s[i];
     }
     build_program_from_scores(&combined, len, self_ref)
 }

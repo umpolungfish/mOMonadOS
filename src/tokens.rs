@@ -626,9 +626,9 @@ pub fn shunted_program(i: usize) -> Option<Program> {
 
 // ─── Diaschizic Compound Programs ────────────────────────────
 //
-// 11 compounds used for cross-universe jumps.
+// 11 compounds used for cross-dialect jumps.
 // Each is an IMASM token sequence with a specific structural operation.
-// Refs: ruleset_universe.py, ig-docs/rebis-port/diaschizics_design.md
+// Refs: ruleset_dialect.py, ig-docs/rebis-port/diaschizics_design.md
 
 pub const COMPOUND_COUNT: usize = 11;
 
