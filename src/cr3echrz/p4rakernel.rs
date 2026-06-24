@@ -60,7 +60,7 @@ fn primes_up_to(limit: u64) -> Vec<u64> {
 // ═══════════════════════════════════════════════════════════════════════
 
 pub fn run_p4ra_burnside(generators: usize, exponent: usize, seed: &[i32]) -> P4RAResult {
-    let mut status = B4::N;
+    let status;
     let frob_ok = true;
     let mut data = BTreeMap::new();
     let mut out_lines: Vec<String> = Vec::new();
@@ -126,7 +126,7 @@ pub fn run_p4ra_burnside(generators: usize, exponent: usize, seed: &[i32]) -> P4
 // ═══════════════════════════════════════════════════════════════════════
 
 pub fn run_p4ra_connes(factor_name: &str, use_2020: bool) -> P4RAResult {
-    let mut status = B4::N;
+    let status;
     let mut data = BTreeMap::new();
     let mut out_lines: Vec<String> = Vec::new();
     let frob_ok = true;
@@ -180,7 +180,7 @@ pub fn run_p4ra_connes(factor_name: &str, use_2020: bool) -> P4RAResult {
 // ═══════════════════════════════════════════════════════════════════════
 
 pub fn run_p4ra_erdos_straus(n: u64) -> P4RAResult {
-    let mut status = B4::N;
+    let mut status;
     let mut data = BTreeMap::new();
     let mut out_lines: Vec<String> = Vec::new();
     let mut frob_ok = true;
@@ -261,7 +261,7 @@ pub fn run_p4ra_erdos_straus(n: u64) -> P4RAResult {
 // ═══════════════════════════════════════════════════════════════════════
 
 pub fn run_p4ra_goldbach(n: u64) -> P4RAResult {
-    let mut status = B4::N;
+    let mut status;
     let mut data = BTreeMap::new();
     let mut out_lines: Vec<String> = Vec::new();
     let frob_ok = true;
@@ -339,7 +339,7 @@ pub fn run_p4ra_goldbach(n: u64) -> P4RAResult {
 // ═══════════════════════════════════════════════════════════════════════
 
 pub fn run_p4ra_landau(case: &str) -> P4RAResult {
-    let mut status = B4::N;
+    let status;
     let mut data = BTreeMap::new();
     let mut out_lines: Vec<String> = Vec::new();
     let frob_ok = true;
@@ -401,7 +401,7 @@ pub fn run_p4ra_landau(case: &str) -> P4RAResult {
 // ═══════════════════════════════════════════════════════════════════════
 
 pub fn run_p4ra_threebody() -> P4RAResult {
-    let mut status = B4::T;
+    let status = B4::B;
     let mut data = BTreeMap::new();
     let mut out_lines: Vec<String> = Vec::new();
     let frob_ok = true;
@@ -419,7 +419,6 @@ pub fn run_p4ra_threebody() -> P4RAResult {
     out_lines.push("[FFUSE] mu: KAM + chaos coexist".into());
     out_lines.push("[ENGAGR] KAM boundary: dialetheic — integrable AND chaotic".into());
 
-    status = B4::B;
     out_lines.push("[CLINK] chain: Poincare section -> figure-8 -> KAM -> chaos".into());
     out_lines.push("[IMSCRIB] Three-Body verified: non-integrable, KAM-stable".into());
     out_lines.push("[IFIX]  Poincare section recorded".into());
@@ -462,14 +461,15 @@ static mut DYNAMIC_P4RA: Option<Vec<P4RARegEntry>> = None;
 
 fn ensure_p4ra() -> &'static mut Vec<P4RARegEntry> {
     unsafe {
-        if DYNAMIC_P4RA.is_none() {
+        let ptr = core::ptr::addr_of_mut!(DYNAMIC_P4RA);
+        if (*ptr).is_none() {
             let mut v = Vec::new();
             for e in P4RA_BOOTSTRAP.iter() {
                 v.push(e.clone());
             }
-            DYNAMIC_P4RA = Some(v);
+            *ptr = Some(v);
         }
-        DYNAMIC_P4RA.as_mut().unwrap()
+        (*ptr).as_mut().unwrap()
     }
 }
 

@@ -214,16 +214,17 @@ static mut DOMAIN_KEYWORD_MAP: Option<Vec<(String, &'static str)>> = None;
 
 fn ensure_domain_map() -> &'static mut Vec<(String, &'static str)> {
     unsafe {
-        if DOMAIN_KEYWORD_MAP.is_none() {
+        let ptr = core::ptr::addr_of_mut!(DOMAIN_KEYWORD_MAP);
+        if (*ptr).is_none() {
             let mut v = Vec::new();
             for entry in DOMAIN_BOOTSTRAP {
                 for kw in entry.keywords {
                     v.push((String::from(*kw), entry.domain));
                 }
             }
-            DOMAIN_KEYWORD_MAP = Some(v);
+            *ptr = Some(v);
         }
-        DOMAIN_KEYWORD_MAP.as_mut().unwrap()
+        (*ptr).as_mut().unwrap()
     }
 }
 

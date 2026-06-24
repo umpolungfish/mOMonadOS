@@ -9,6 +9,8 @@
 // Intel syntax is required — Rust `global_asm!` uses LLVM's integrated
 // assembler in Intel mode on x86_64.
 
+#![allow(bad_asm_style)]
+
 use core::arch::global_asm;
 
 global_asm!(r#"

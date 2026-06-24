@@ -110,7 +110,7 @@ pub fn sieve(limit: usize) -> Vec<bool> {
 
 pub fn run_collatz(seed: u64) -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
-    let mut status = B4::N;
+    let status;
     let mut n = seed;
     let mut max_val = n;
     let mut trajectory: Vec<u64> = vec![seed];
@@ -124,10 +124,8 @@ pub fn run_collatz(seed: u64) -> TheoremResult {
         phases += 4;
 
         if r == 1 {
-            status = B4::T;
             n = 3 * n + 1;
         } else {
-            status = B4::F;
             n = n / 2;
         }
         phases += 5;
@@ -166,7 +164,7 @@ pub fn run_collatz(seed: u64) -> TheoremResult {
 
 pub fn run_goldbach(n: u64) -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
-    let mut status = B4::N;
+    let status;
     if n < 4 || n % 2 != 0 {
         return TheoremResult {
             name: "Goldbach's Conjecture".into(), status: B4::N,
@@ -537,14 +535,15 @@ static mut DYNAMIC_THEOREMS: Option<Vec<TheoremRegEntry>> = None;
 
 fn ensure_theorems() -> &'static mut Vec<TheoremRegEntry> {
     unsafe {
-        if DYNAMIC_THEOREMS.is_none() {
+        let ptr = core::ptr::addr_of_mut!(DYNAMIC_THEOREMS);
+        if (*ptr).is_none() {
             let mut v = Vec::new();
             for e in THEOREM_BOOTSTRAP.iter() {
                 v.push(e.clone());
             }
-            DYNAMIC_THEOREMS = Some(v);
+            *ptr = Some(v);
         }
-        DYNAMIC_THEOREMS.as_mut().unwrap()
+        (*ptr).as_mut().unwrap()
     }
 }
 
