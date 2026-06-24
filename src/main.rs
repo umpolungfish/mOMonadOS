@@ -255,7 +255,7 @@ fn repl(k: &mut Kernel) {
                 search_commands(keyword);
                 continue;
             }
-            // Menu shortcuts (:1 through :9)
+            // Menu shortcuts (:1 through :10)
             cmd if cmd.starts_with(":") => {
                 if let Ok(n) = cmd[1..].parse::<u8>() {
                     if let Some(cat) = fkey_to_category(n) {
@@ -265,7 +265,7 @@ fn repl(k: &mut Kernel) {
                             }
                         }
                     } else {
-                        sprintln!("Invalid category: :{} (use :1–:9)", n);
+                        sprintln!("Invalid category: :{} (use :1–:10)", n);
                     }
                 }
                 continue;

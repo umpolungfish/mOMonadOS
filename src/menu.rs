@@ -26,6 +26,7 @@ pub static MAIN_MENU: &[MenuItem] = &[
     MenuItem { name: "Rebis",    cmd: "rebis",    desc: "Red-Hot Rebis (codon, translate, genetics, materials, bio, tx)", submenu: Some(REBIS_MENU) },
     MenuItem { name: "Universe", cmd: "universe",  desc: "Cross-universe (ruleset, jump, seal, compound, whoami)", submenu: Some(UNIVERSE_MENU) },
     MenuItem { name: "ParaASM",  cmd: "parasm",   desc: "ParaASM (test, frob, kernel, load)", submenu: Some(PARASM_MENU) },
+    MenuItem { name: "Cr3echrz", cmd: "cr3echrz", desc: "Theorem engine + p4rakernel (cr3, p4ra)", submenu: Some(CR3ECHRZ_MENU) },
     MenuItem { name: "Help",     cmd: "help",     desc: "Help system (help <topic> for details)", submenu: None },
 ];
 
@@ -123,6 +124,13 @@ pub static PARASM_MENU: &[MenuItem] = &[
     MenuItem { name: "kernel",   cmd: "psm kernel", desc: "Kernel-state B3 invariant loop", submenu: None },
     MenuItem { name: "load",     cmd: "psm load",   desc: "Inline ParaASM program (; separator)", submenu: None },
 ];
+pub static CR3ECHRZ_MENU: &[MenuItem] = &[
+    MenuItem { name: "cr3",      cmd: "cr3",       desc: "Theorem engine (Collatz, Goldbach, Three-Body, Burnside, ...)", submenu: None },
+    MenuItem { name: "p4ra",     cmd: "p4ra",      desc: "p4rakernel Belnap+Frobenius 13-step bootstrap", submenu: None },
+    MenuItem { name: "version",  cmd: "cr3 --version", desc: "cr3 version info", submenu: None },
+    MenuItem { name: "list",     cmd: "cr3 --list", desc: "List theorems + p4rakernel modules", submenu: None },
+];
+
 
 
 // ─── Menu Bar ──────────────────────────────────────────────
@@ -154,7 +162,7 @@ pub fn render_menu_bar() {
 
 /// Show compact menu hint (one line)
 pub fn menu_hint() {
-    serial::write_str("[F1]Exec [F2]Status [F3]Progs [F4]Crystal [F5]Grammar [F6]Rebis [F7]Universe [F8]ParaASM  [F9]Help  [?]Menu\n");
+    serial::write_str("[F1]Exec [F2]Status [F3]Progs [F4]Crystal [F5]Grammar [F6]Rebis [F7]Universe [F8]ParaASM [F9]Cr3 [F10]Help  [?]Menu\n");
 }
 
 // ─── Sub-context ───────────────────────────────────────────
@@ -275,14 +283,14 @@ pub fn print_help_topic(topic: &str) {
 fn print_top_help() {
     sprintln!("mOMonadOS — Menu Navigation Help");
     sprintln!();
-    sprintln!("══ Categories ══ (type name or F1-F9 to enter)");
+    sprintln!("══ Categories ══ (type name or F1-F10 to enter)");
     sprintln!();
     for (i, item) in MAIN_MENU.iter().enumerate() {
         sprintln!("  [F{}] {:<12} — {}", i + 1, item.name, item.desc);
     }
     sprintln!();
     sprintln!("══ Quick Reference ══");
-    sprintln!("  F1-F9        — jump to category");
+    sprintln!("  F1-F10       — jump to category");
     sprintln!("  ?            — show menu bar");
     sprintln!("  Tab          — autocomplete command");
     sprintln!("  Up/Down      — command history");
@@ -370,9 +378,9 @@ pub fn enter_context(ctx: &mut ContextStack, name: &str) -> bool {
     false
 }
 
-/// Translate F-key (1-9) to category
+/// Translate F-key (1-10) to category
 pub fn fkey_to_category(fkey: u8) -> Option<&'static str> {
-    if fkey >= 1 && fkey <= 9 {
+    if fkey >= 1 && fkey <= 10 {
         Some(MAIN_MENU[(fkey - 1) as usize].cmd)
     } else {
         None
