@@ -1,26 +1,30 @@
 // shared.rs — Universal opcode registry, grammar mappings, canonical sequences, domains
-// Ported from cr3echrz/shared/ for mOMonadOS
+// Ported from cr3echrz/shared/ for mOMonadOS — Phase 10 dynamic registry
 // Author: Lando⊗⊙perator
 #![allow(dead_code)]
 
+use alloc::string::String;
+use alloc::vec::Vec;
+use alloc::collections::BTreeMap;
 
 // ─── 12 Universal IMASM Opcodes ────────────────────────────────────
+// JUSTIFIED static: the 12 opcodes ARE the grammar definition (cf. CARDS in catalog.rs).
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 #[repr(u8)]
 pub enum Opcode {
-    VInit   = 0,  // Initialize the void — ground of distinction
-    TAnchor = 1,  // Terminal anchor — boundary condition / theorem statement
-    FSplit  = 2,  // Frobenius split δ — decomposition into (T, F) arms
-    FFuse   = 3,  // Frobenius fuse μ — recomposition from arms
-    EvalT   = 4,  // Evaluate-true — theorem holds / true branch
-    EvalF   = 5,  // Evaluate-false — theorem fails / false branch
-    EngPar  = 6,  // Engage paradox — dialetheic boundary (both arms)
-    AFwd    = 7,  // Forward morphism — theorem-specific forward operation
-    ARev    = 8,  // Reverse morphism — theorem-specific reverse operation
-    CLink   = 9,  // Chain link — sequential composition
-    ImScrib = 10, // Self-imscribe — verify constants / identity
-    IFix     = 11, // Irreversible fix — permanent record / Poincaré section
+    VInit   = 0,
+    TAnchor = 1,
+    FSplit  = 2,
+    FFuse   = 3,
+    EvalT   = 4,
+    EvalF   = 5,
+    EngPar  = 6,
+    AFwd    = 7,
+    ARev    = 8,
+    CLink   = 9,
+    ImScrib = 10,
+    IFix    = 11,
 }
 
 impl Opcode {
@@ -74,6 +78,7 @@ impl Opcode {
 }
 
 // ─── Grammar primitive mapping ──────────────────────────────────────
+// JUSTIFIED static: this IS the grammar primitive↔opcode correspondence.
 
 pub struct GrammarPrim {
     pub symbol: &'static str,
@@ -83,24 +88,24 @@ pub struct GrammarPrim {
 
 pub fn opcode_grammar(op: Opcode) -> GrammarPrim {
     match op {
-        Opcode::VInit   => GrammarPrim { symbol: "𐑼", latin: "Ð", desc: "Dimensionality — ground of distinction" },
-        Opcode::TAnchor => GrammarPrim { symbol: "𐑡", latin: "Þ", desc: "Topology — boundary condition / container" },
-        Opcode::FSplit  => GrammarPrim { symbol: "𐑚", latin: "Γ", desc: "Split (δ) — Frobenius decomposition" },
-        Opcode::FFuse   => GrammarPrim { symbol: "𐑙", latin: "Σ", desc: "Fuse (μ) — Frobenius recomposition" },
-        Opcode::EvalT   => GrammarPrim { symbol: "⊙",  latin: "φ̂", desc: "Criticality — evaluate-true gate" },
-        Opcode::EvalF   => GrammarPrim { symbol: "𐑖", latin: "Ħ", desc: "Chirality — evaluate-false gate" },
-        Opcode::EngPar  => GrammarPrim { symbol: "𐑳", latin: "Σ", desc: "Stoichiometry — engage paradox" },
-        Opcode::AFwd    => GrammarPrim { symbol: "𐑾", latin: "Ř", desc: "Coupling — forward morphism" },
-        Opcode::ARev    => GrammarPrim { symbol: "𐑬", latin: "Φ", desc: "Parity — reverse morphism" },
-        Opcode::CLink   => GrammarPrim { symbol: "𐑱", latin: "ƒ", desc: "Kinetics — chain sequential composition" },
-        Opcode::ImScrib => GrammarPrim { symbol: "𐑠", latin: "ɢ", desc: "Composition — self-imscribe / verify" },
-        Opcode::IFix    => GrammarPrim { symbol: "𐑭", latin: "Ω", desc: "Winding — irreversible fixation" },
+        Opcode::VInit   => GrammarPrim { symbol: "\u{1047C}", latin: "Ð", desc: "Dimensionality" },
+        Opcode::TAnchor => GrammarPrim { symbol: "\u{10461}", latin: "Þ", desc: "Topology" },
+        Opcode::FSplit  => GrammarPrim { symbol: "\u{1045A}", latin: "Γ", desc: "Split (δ)" },
+        Opcode::FFuse   => GrammarPrim { symbol: "\u{10459}", latin: "Σ", desc: "Fuse (μ)" },
+        Opcode::EvalT   => GrammarPrim { symbol: "⊙",  latin: "φ̂", desc: "Criticality" },
+        Opcode::EvalF   => GrammarPrim { symbol: "\u{10456}", latin: "Ħ", desc: "Chirality" },
+        Opcode::EngPar  => GrammarPrim { symbol: "\u{10473}", latin: "Σ", desc: "Stoichiometry" },
+        Opcode::AFwd    => GrammarPrim { symbol: "\u{1047E}", latin: "Ř", desc: "Coupling" },
+        Opcode::ARev    => GrammarPrim { symbol: "\u{1046C}", latin: "Φ", desc: "Parity" },
+        Opcode::CLink   => GrammarPrim { symbol: "\u{10471}", latin: "ƒ", desc: "Kinetics" },
+        Opcode::ImScrib => GrammarPrim { symbol: "\u{10460}", latin: "ɢ", desc: "Composition" },
+        Opcode::IFix    => GrammarPrim { symbol: "\u{1046D}", latin: "Ω", desc: "Winding" },
     }
 }
 
 // ─── Canonical Bootstrap Sequences ──────────────────────────────────
+// JUSTIFIED static: these ARE the grammar — the 12 canonical IMASM programs.
 
-/// The 12 canonical IMASM bootstrap sequences (I–XII).
 pub static CANONICAL_SEQUENCES: &[(&str, &[Opcode])] = &[
     ("I_Dialetheic_Bootstrap", &[
         Opcode::VInit, Opcode::TAnchor, Opcode::FSplit, Opcode::EvalT, Opcode::AFwd,
@@ -168,38 +173,80 @@ pub fn canonical_name_index(index: usize) -> Option<&'static str> {
     }
 }
 
-// ─── Domain Classification ──────────────────────────────────────────
+// ─── Dynamic Domain Keyword Registry ────────────────────────────────
+// Replaces hardcoded keyword lists in infer_domain().
+// Keywords→domain mapping is populated at boot from the static bootstrap,
+// extensible at runtime via register_domain_keyword().
 
-/// Classify a theorem/ob3ect name into its domain type.
+pub struct DomainEntry {
+    pub domain: &'static str,
+    pub keywords: &'static [&'static str],
+}
+
+/// Static bootstrap — the known domain keyword sets (reference data, justified).
+pub static DOMAIN_BOOTSTRAP: &[DomainEntry] = &[
+    DomainEntry { domain: "mathematical", keywords: &[
+        "theorem", "conjecture", "connes", "collatz", "goldbach",
+        "galois", "burnside", "erdos", "straus", "baum",
+        "three_body", "threebody", "pythagorean", "landau",
+    ]},
+    DomainEntry { domain: "physical", keywords: &[
+        "quantum", "field_theory", "cosmology", "black_hole", "gravity",
+        "neutrino", "gauge", "higgs",
+    ]},
+    DomainEntry { domain: "alchemical", keywords: &[
+        "alembic", "stone", "lapis", "elixir", "rebis", "hermetic", "alchemical",
+    ]},
+    DomainEntry { domain: "magical", keywords: &[
+        "magic", "servitor", "sigil", "goetic", "pentagram", "apotropaic",
+    ]},
+    DomainEntry { domain: "computational", keywords: &[
+        "kernel", "compiler", "protocol", "virtual_machine", "proof_assistant",
+    ]},
+    DomainEntry { domain: "divinatory", keywords: &[
+        "tarot", "hexagram", "geomancy", "scrying", "rune", "futhark",
+    ]},
+];
+
+/// Runtime domain keyword map: keyword → domain.
+/// Initialized from DOMAIN_BOOTSTRAP at first access; extensible via register_domain_keyword().
+static mut DOMAIN_KEYWORD_MAP: Option<Vec<(String, &'static str)>> = None;
+
+fn ensure_domain_map() -> &'static mut Vec<(String, &'static str)> {
+    unsafe {
+        if DOMAIN_KEYWORD_MAP.is_none() {
+            let mut v = Vec::new();
+            for entry in DOMAIN_BOOTSTRAP {
+                for kw in entry.keywords {
+                    v.push((String::from(*kw), entry.domain));
+                }
+            }
+            DOMAIN_KEYWORD_MAP = Some(v);
+        }
+        DOMAIN_KEYWORD_MAP.as_mut().unwrap()
+    }
+}
+
+/// Register a new keyword→domain mapping at runtime.
+pub fn register_domain_keyword(keyword: &str, domain: &'static str) {
+    let map = ensure_domain_map();
+    let kw = keyword.to_lowercase();
+    // Update if exists, else insert
+    if let Some(entry) = map.iter_mut().find(|(k, _)| k.as_str() == kw) {
+        entry.1 = domain;
+    } else {
+        map.push((String::from(kw), domain));
+    }
+}
+
+/// Classify a theorem/ob3ect name into its domain type (dynamic lookup).
 pub fn infer_domain(name: &str) -> &'static str {
     let nl = name.to_lowercase();
-    // Mathematical keywords
-    for kw in ["theorem", "conjecture", "connes", "collatz", "goldbach",
-                "galois", "burnside", "erdos", "straus", "baum",
-                "three_body", "threebody", "pythagorean", "landau"] {
-        if nl.contains(kw) { return "mathematical"; }
-    }
-    // Physical keywords
-    for kw in ["quantum", "field_theory", "cosmology", "black_hole", "gravity",
-                "neutrino", "gauge", "higgs"] {
-        if nl.contains(kw) { return "physical"; }
-    }
-    // Alchemical
-    for kw in ["alembic", "stone", "lapis", "elixir", "rebis", "hermetic",
-                "alchemical"] {
-        if nl.contains(kw) { return "alchemical"; }
-    }
-    // Magical
-    for kw in ["magic", "servitor", "sigil", "goetic", "pentagram", "apotropaic"] {
-        if nl.contains(kw) { return "magical"; }
-    }
-    // Computational
-    for kw in ["kernel", "compiler", "protocol", "virtual_machine", "proof_assistant"] {
-        if nl.contains(kw) { return "computational"; }
-    }
-    // Divinatory
-    for kw in ["tarot", "hexagram", "geomancy", "scrying", "rune", "futhark"] {
-        if nl.contains(kw) { return "divinatory"; }
+    let map = ensure_domain_map();
+    for (keyword, domain) in map.iter() {
+        if nl.contains(keyword.as_str()) {
+            return domain;
+        }
     }
     "symbolic"
 }
