@@ -277,41 +277,41 @@ def run():
     print(f"  boot ΔS_proc (isolated): {boot_st['delta_S_proc_JK']:.4e} J/K  "
           f"({boot_st['delta_S_proc_kB']:.2e} k_B)")
 
-    # ── COMPUTATION TRIALS ────────────────────────────────────────────────────
-    print(f"\n{sep}\nPHASE 3 — mOMonadOS COMPUTATION  ({N_TRIALS} × run {RUN_TICKS})\n{sep}")
-    trial_results = []
-    cmd_script = f"\nrun {RUN_TICKS}\nquit\n"
+    def run_trial_set(label, cmd, n, phase_num):
+        print(f"\n{sep}\nPHASE {phase_num} — {label}  ({n} × {RUN_TICKS} ticks)\n{sep}")
+        trials = []
+        for i in range(n):
+            print(f"\n  Trial {i+1}/{n} ...")
+            sp = CPUSampler(); sp.start()
+            out, dur, rc = run_qemu(cmd, sp)
+            sp.stop()
+            st = sp.stats(f"{label}_{i+1}")
+            st["qemu_rc"] = rc; st["qemu_dur"] = round(dur, 3)
+            tick_line = next((l for l in out.splitlines() if "Tick:" in l), "")
+            tier_line = next((l for l in out.splitlines() if "Tier:" in l or "Frob:" in l), "")
+            st["output_tick"] = tick_line.strip()
+            st["frob_line"]   = tier_line.strip()
+            comp_ex_J, comp_ex_kB = excess_proc(st, boot_st)
+            st["comp_excess_proc_JK"] = round(comp_ex_J, 8)
+            st["comp_excess_proc_kB"] = round(comp_ex_kB, 2)
+            trials.append(st)
+            print(fmt(st))
+            if tick_line: print(f"  {tick_line.strip()}")
+            if tier_line: print(f"  {tier_line.strip()}")
+            time.sleep(1)
+        return trials
 
-    for i in range(N_TRIALS):
-        print(f"\n  Trial {i+1}/{N_TRIALS} ...")
-        sp = CPUSampler(); sp.start()
-        out, dur, rc = run_qemu(cmd_script, sp)
-        sp.stop()
-        st = sp.stats(f"trial_{i+1}")
-        st["qemu_rc"] = rc; st["qemu_dur"] = round(dur, 3)
+    # Three tier levels:
+    o1_bootstrap = run_trial_set("O1_BOOTSTRAP",  CMD_O1_BOOTSTRAP, N_TRIALS, 3)
+    o1_compound  = run_trial_set("O1_COMPOUND",   CMD_O1_COMPOUND,  N_TRIALS, 4)
+    oinf_chain   = run_trial_set("OINF_CHAIN",    CMD_OINF_CHAIN,   N_TRIALS, 5)
 
-        # Capture tick count and tier from output
-        tick_line = next((l for l in out.splitlines() if "Tick:" in l), "")
-        tier_line = next((l for l in out.splitlines() if "Tier:" in l or "Frob:" in l), "")
-        st["output_tick"] = tick_line.strip()
-        st["frob_line"]   = tier_line.strip()
-
-        # Process-isolated excess: computation above boot-only rate
-        comp_ex_J, comp_ex_kB = excess_proc(st, boot_st)
-        st["comp_excess_proc_JK"] = round(comp_ex_J, 8)
-        st["comp_excess_proc_kB"] = round(comp_ex_kB, 2)
-
-        trial_results.append(st)
-        print(fmt(st))
-        print(f"  comp excess vs boot (isolated): {comp_ex_J:.4e} J/K  ({comp_ex_kB:.2e} k_B)")
-        if tick_line: print(f"  {tick_line.strip()}")
-        if tier_line: print(f"  {tier_line.strip()}")
-        time.sleep(1)
-
-    results["phases"]["computation_trials"] = trial_results
+    results["phases"]["o1_bootstrap"] = o1_bootstrap
+    results["phases"]["o1_compound"]  = o1_compound
+    results["phases"]["oinf_chain"]   = oinf_chain
 
     # ── IDLE POST-RECOVERY ────────────────────────────────────────────────────
-    print(f"\n{sep}\nPHASE 4 — RECOVERY  ({IDLE_POST_S}s idle)\n{sep}")
+    print(f"\n{sep}\nPHASE 6 — RECOVERY  ({IDLE_POST_S}s idle)\n{sep}")
     sp = CPUSampler(); sp.start()
     for i in range(IDLE_POST_S):
         time.sleep(1)
@@ -322,70 +322,62 @@ def run():
     print(fmt(rec_st))
 
     # ── ANALYSIS ──────────────────────────────────────────────────────────────
-    print(f"\n{sep}\nANALYSIS\n{sep}")
+    print(f"\n{sep}\nANALYSIS — TIER-STRATIFIED ΔS\n{sep}")
 
-    mean_comp  = sum(t["comp_excess_proc_JK"] for t in trial_results) / N_TRIALS
-    mean_dS    = sum(t["delta_S_proc_JK"]    for t in trial_results) / N_TRIALS
-    mean_dur   = sum(t["qemu_dur"]           for t in trial_results) / N_TRIALS
-    mean_qcpu  = sum(t["mean_qemu_cpu_pct"]  for t in trial_results) / N_TRIALS
-    mean_land  = sum(t["landauer_dS_JK"]     for t in trial_results) / N_TRIALS
-    mean_instr = sum(t["est_instructions"]   for t in trial_results) / N_TRIALS
+    def mean_rate(trials):
+        mean_dS  = sum(t["delta_S_proc_JK"] for t in trials) / len(trials)
+        mean_dur = sum(t["qemu_dur"]         for t in trials) / len(trials)
+        return mean_dS / max(mean_dur, 1e-9), mean_dS, mean_dur
 
-    boot_dS    = boot_st["delta_S_proc_JK"]
+    def mean_qcpu(trials):
+        return sum(t["mean_qemu_cpu_pct"] for t in trials) / len(trials)
+
+    r1, dS1, dur1 = mean_rate(o1_bootstrap)
+    r2, dS2, dur2 = mean_rate(o1_compound)
+    r3, dS3, dur3 = mean_rate(oinf_chain)
+
+    boot_dS   = boot_st["delta_S_proc_JK"]
+    boot_rate = boot_dS / max(boot_st["duration_s"], 1e-9)
     rec_sys_ratio = (rec_st["mean_sys_util"] / idle_st["mean_sys_util"]
                      if idle_st.get("mean_sys_util", 0) > 0 else 1.0)
 
-    # Boot-normalised per-second ΔS rates (process-isolated)
-    boot_rate  = boot_dS / max(boot_st["duration_s"], 1e-9)
-    trial_rate = mean_dS / max(mean_dur, 1e-9)
-    rate_ratio = trial_rate / boot_rate if boot_rate > 0 else float("inf")
-
     print(f"\n  Method: PER-PROCESS CPU% × CORE_W={CORE_W:.2f}W  (background-isolated)")
-    print(f"  [Background noise from other processes is NOT included in ΔS_proc]\n")
-    print(f"  Boot-only ΔS_proc:          {boot_dS:.4e} J/K  ({boot_dS/K_B:.2e} k_B)")
-    print(f"  Boot ΔS rate:               {boot_rate:.4e} J/K/s")
-    print(f"\n  Mean trial duration:        {mean_dur:.2f}s")
-    print(f"  Mean QEMU CPU%:             {mean_qcpu:.1f}%")
-    print(f"  Mean trial ΔS_proc:         {mean_dS:.4e} J/K  ({mean_dS/K_B:.2e} k_B)")
-    print(f"  Mean trial ΔS rate:         {trial_rate:.4e} J/K/s")
-    print(f"  Trial rate / boot rate:     ×{rate_ratio:.3f}")
-    print(f"\n  Mean comp excess (proc):    {mean_comp:.4e} J/K  ({mean_comp/K_B:.2e} k_B)")
-    print(f"  Mean est. instructions:     {mean_instr:.3e}")
-    print(f"  Mean Landauer lower bound:  {mean_land:.4e} J/K  ({mean_land/K_B:.2e} k_B)")
-    if mean_land > 0 and mean_dS > 0:
-        print(f"  Actual / Landauer ratio:    ×{mean_dS/mean_land:.2e}")
+    print(f"  [Background noise from other processes NOT included]\n")
+    print(f"  {'Label':<22}  {'QEMU%':>6}  {'ΔS/trial':>12}  {'ΔS rate':>14}  {'vs O₁':>8}")
+    print(f"  {'-'*70}")
+    print(f"  {'Boot-only (ctrl)':<22}  {'—':>6}  {boot_dS:>12.4e}  {boot_rate:>14.4e}  {'—':>8}")
+    print(f"  {'O₁ Bootstrap':<22}  {mean_qcpu(o1_bootstrap):>6.1f}  {dS1:>12.4e}  {r1:>14.4e}  {'ref':>8}")
+    print(f"  {'O₁ Compound (b_live)':<22}  {mean_qcpu(o1_compound):>6.1f}  {dS2:>12.4e}  {r2:>14.4e}  {r2/r1:>8.4f}×")
+    print(f"  {'O_∞ Chain (Vert→XIV)':<22}  {mean_qcpu(oinf_chain):>6.1f}  {dS3:>12.4e}  {r3:>14.4e}  {r3/r1:>8.4f}×")
 
-    print()
-    # Significance: is per-second ΔS rate during computation different from boot?
-    if rate_ratio > 1.10:
-        print(f"  VERDICT: Computation ΔS rate is ×{rate_ratio:.3f} boot rate.")
-        print(f"           The IG token execution generates MORE heat per second than")
-        print(f"           QEMU boot overhead alone. mOMonadOS computation is thermally")
-        print(f"           distinguishable from its own infrastructure cost.")
-    elif rate_ratio < 0.90:
-        print(f"  VERDICT: Computation ΔS rate is ×{rate_ratio:.3f} boot rate.")
-        print(f"           The IG computation generates LESS heat per second than QEMU boot.")
-        print(f"           The Frobenius structure may be doing real work here.")
-    else:
-        print(f"  VERDICT: Computation ΔS rate ≈ boot rate (×{rate_ratio:.3f}).")
-        print(f"           Cannot distinguish computation from infrastructure cost.")
+    print(f"\n  ΔS rate comparison (process-isolated, J/K/s):")
+    print(f"    O_∞ / O₁_bootstrap = {r3/r1:.5f}×")
+    print(f"    O₁_compound / O₁_bootstrap = {r2/r1:.5f}×")
+    print(f"    O_∞ / O₁_compound  = {r3/r2:.5f}×")
+
+    thr = 0.05  # 5% threshold
+    print(f"\n  Significance threshold: {thr*100:.0f}%  (|ratio - 1.0| > {thr:.2f})")
+    for label, ratio in [("O_∞ vs O₁_bootstrap", r3/r1), ("O₁_compound vs O₁_bootstrap", r2/r1), ("O_∞ vs O₁_compound", r3/r2)]:
+        if abs(ratio - 1.0) > thr:
+            direction = "MORE" if ratio > 1.0 else "LESS"
+            print(f"  SIGNIFICANT: {label} = ×{ratio:.4f} — {direction} entropy at {abs(ratio-1)*100:.1f}% above threshold")
+        else:
+            print(f"  NOT SIGNIFICANT: {label} = ×{ratio:.4f} — within noise")
 
     print(f"\n  Background sys_util recovery: ×{rec_sys_ratio:.3f} vs pre-experiment idle")
 
     analysis = {
-        "method":                "per-process CPU% × CORE_W (background-isolated)",
-        "CORE_W":                CORE_W,
-        "boot_dS_proc_JK":      round(boot_dS, 8),
-        "boot_dS_rate_JK_s":    round(boot_rate, 8),
-        "mean_trial_dS_proc_JK": round(mean_dS, 8),
-        "mean_trial_dS_rate_JK_s": round(trial_rate, 8),
-        "rate_ratio_trial_vs_boot": round(rate_ratio, 4),
-        "mean_comp_excess_JK":  round(mean_comp, 8),
-        "mean_trial_dur_s":     round(mean_dur, 3),
-        "mean_qemu_cpu_pct":    round(mean_qcpu, 2),
-        "mean_landauer_JK":     round(mean_land, 10),
-        "mean_est_instructions":int(mean_instr),
-        "recovery_sys_util_ratio": round(rec_sys_ratio, 4),
+        "method":           "per-process CPU% × CORE_W (background-isolated)",
+        "CORE_W":           CORE_W,
+        "boot_dS_proc_JK":  round(boot_dS, 8),
+        "boot_rate_JK_s":   round(boot_rate, 8),
+        "o1_bootstrap":     {"mean_dS_JK": round(dS1,8), "rate_JK_s": round(r1,8), "mean_dur_s": round(dur1,3), "mean_qcpu": round(mean_qcpu(o1_bootstrap),2)},
+        "o1_compound":      {"mean_dS_JK": round(dS2,8), "rate_JK_s": round(r2,8), "mean_dur_s": round(dur2,3), "mean_qcpu": round(mean_qcpu(o1_compound),2), "b_live_present": True},
+        "oinf_chain":       {"mean_dS_JK": round(dS3,8), "rate_JK_s": round(r3,8), "mean_dur_s": round(dur3,3), "mean_qcpu": round(mean_qcpu(oinf_chain),2), "note": "Verticullum 500k + XIV_Tier_Climber 1.5M"},
+        "rate_ratio_oinf_vs_o1_bootstrap": round(r3/r1, 6),
+        "rate_ratio_o1c_vs_o1b":           round(r2/r1, 6),
+        "rate_ratio_oinf_vs_o1c":          round(r3/r2, 6),
+        "recovery_sys_util_ratio":         round(rec_sys_ratio, 4),
     }
     results["analysis"] = analysis
 
