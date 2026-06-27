@@ -1,95 +1,56 @@
-Three deep fixes to pre-empt theoretical objections against mOMonadOS
+mOMonadOS: ΔS experiment v2 — per-process isolation, 2M-tick trials — 2026-06-27
 
-─── Fix 1: Remove all external crates — fully bare-metal ───────────────
+## experiment_delta_s.py (updated)
 
-Dropped bootloader_api, x86_64, spin, lazy_static, linked_list_allocator.
-Cargo.toml [dependencies] is now empty.
+Fixed two methodological flaws in v1:
+  1. System-wide jiffies captured background processes (not just mOMonadOS)
+  2. 50k-tick trials lasted ~0.10s — too short for stable sampling at SAMPLE_HZ=20
 
-serial.rs:
-  - Replaced x86_64 Port with inline asm inb/outb.
-  - Extracted flush_buf() free function (closures can't call unsafe fn directly).
+Changes:
+  PRIMARY signal: per-process psutil CPU% × CORE_W (background-isolated)
+    CORE_W = TDP / N_CORES = 95W / 8 = 11.875W per logical core
+    Background load is NOT included in ΔS_proc regardless of other processes
+  SECONDARY: system-wide jiffies retained for diagnostics only
+  RUN_TICKS: 50,000 → 2,000,000  (yields ~2s per trial, ~40 samples)
 
-interrupts.rs:
-  - Replaced InterruptDescriptorTable / InterruptStackFrame with hand-rolled
-    IdtEntry (16-byte packed), InterruptFrame (repr C), Idtr (packed).
-  - IDT initialized as [IdtEntry::absent(); 256], loaded via `lidt [ptr]` asm.
-  - CS selector read at runtime via `mov {:x}, cs`.
-  - Port I/O replaced with inline asm inb/outb; hlt/sti replaced with asm.
-  - All four handlers wired through IdtEntry::from_fn().
+## Results (v2)
 
-main.rs:
-  - Replaced LockedHeap with a BumpAllocator backed by a 4 MB static BSS array
-    (HeapStorage, 4 KB aligned). No dealloc — monotonic bump is sufficient for
-    a kernel that never frees.
-  - Removed bootloader_api entry point macro and BootloaderConfig.
-  - Added BOOT_STACK (128 KB, 16-byte aligned) + naked _start that sets RSP to
-    the stack top and calls rust_start(). _start uses naked_asm! (stable).
-  - rust_start() initialises the BumpAllocator then calls kmain().
-  - kmain() signature: () -> ! (no BootInfo).
-  - Shutdown port write and all hlt loops replaced with inline asm.
+  Method: per-process QEMU CPU% × 11.875W / T_op (330K)
+  Trials: 5 × run 2,000,000 IG ticks
 
-boot.rs (new):
-  - PVH ELF note (XEN_ELFNOTE_PHYS32_ENTRY, type 18, name "Xen\0") pointing
-    to the 32-bit _start symbol. QEMU's -kernel uses this for 64-bit ELFs.
-  - 32-bit _start: identity-maps first 8MB via 4 × 2MB PD huge-page entries
-    in minimal PML4/PDPT/PD tables, enables PAE + long mode + paging, loads a
-    64-bit GDT (null / code L=1 / data), far-jumps to _start64.
-  - _start64: reloads segment registers, calls _rust_start.
-  - Page tables in .bss.boot (zeroed by the ELF loader).
-  - Global_asm! Intel syntax; @note section type via .att_syntax prefix guard.
+  QEMU CPU per trial:     101.8 – 102.7%   (pegs ~1 full physical core)
+  Trial duration:         2.01 – 2.12 s
+  IG ticks/second:        ~950,000 ticks/s  (2M in ~2.1s)
+  Tier at end:            O_1 (all trials)
 
-momonados.ld (new):
-  - Custom linker script: ENTRY(_start), load at 0x200000.
-    Section order: .note.Xen → .text.boot32 → .text → .rodata → .data → .bss.
-  - .note.Xen explicitly placed (not in /DISCARD/) so QEMU can find it.
+  ΔS_proc per trial:
+    Trial 1:  7.941×10⁻² J/K  (5.75×10²¹ k_B)
+    Trial 2:  7.514×10⁻² J/K  (5.44×10²¹ k_B)
+    Trial 3:  7.946×10⁻² J/K  (5.76×10²¹ k_B)  ← sys spiked 46%, QEMU unaffected
+    Trial 4:  7.760×10⁻² J/K  (5.62×10²¹ k_B)
+    Trial 5:  7.510×10⁻² J/K  (5.44×10²¹ k_B)
+    MEAN:     7.734×10⁻² J/K  (5.60×10²¹ k_B)  CV < 3%
 
-run.sh:
-  - Dropped OVMF pflash, FAT32 image, VARS copy. QEMU boots the bare ELF
-    directly via -kernel using the PVH protocol; no disk image required.
+  ΔS per IG tick:         3.87×10⁻⁸ J/K = 2.80×10¹⁵ k_B / tick
+  Est. instructions:      7.6×10⁹ per trial
+  Landauer minimum ΔS:    ~7.3×10⁻¹⁴ J/K  (k_B × ln2 × 7.6×10⁹)
+  Actual / Landauer:      ~1.1×10⁹  (CMOS irreversibility overhead)
 
-build_bootimage.sh:
-  - Reduced to: cargo build --profile --target x86_64-unknown-none.
+  Recovery sys_util:      ×1.005  (fully recovered)
 
-─── Fix 2: FAMILY_TOKEN_AFFINITY const matrix ───────────────────────────
+## Isolation validation
 
-sequence.rs aggregate_votes() previously used 40+ match arms with per-variant
-hardcoded weights. Replaced with a 12×12 const matrix:
+  Trial 3 background spike: sys_util 46.2% vs typical 27% (other process burst).
+  QEMU CPU% was 102.7% — identical to other trials. Per-process measurement
+  is correctly unaffected by concurrent background load.
 
-  FAMILY_TOKEN_AFFINITY[family][token] = base_affinity
+## VERDICT
 
-Vote contribution per primitive = affinity[family][token] × ordinal_of_variant.
+  mOMonadOS running 2M IG ticks produces 7.73×10⁻² J/K of process-isolated
+  entropy per trial, at a consistent rate of 3.70×10⁻² J/K/s. The measurement
+  is stable (CV < 3% across 5 trials) and background-independent.
 
-Vote weights are now derived from the live IgTuple state rather than compiled-in
-constants: a higher-ordinal variant pushes harder toward its family's preferred
-tokens. The semantics are deterministic but the weights are a function of the
-running tuple, not of the source code.
-
-─── Fix 3: MiniKernel — autopoietic sequence construction ───────────────
-
-Added build_via_substrate() as the primary sequence builder in dynamic mode:
-
-  1. Seed a MiniKernel (4 Belnap registers + 64-entry stack) from the IgTuple.
-     Registers are paired primitives: R0=Dim×Crit, R1=Top×Wind, R2=Kin×Fid,
-     R3=Chir×Par — each converted to a B4 value via their combined ordinals.
-
-  2. Run a canonical IMASM program on the MiniKernel. Program selected by tier:
-     O₀→I, O₁→IV, O₂→VII, O_∞→XII. Token semantics mirror kernel.rs exactly.
-
-  3. Map post-execution register state through TOKEN_REG_AFFINITY (12×4 matrix)
-     to obtain substrate-derived token scores.
-
-  4. Combine: combined[tok] = substrate[tok] × 3 + family_affinity[tok].
-     Substrate execution (kernel-on-kernel) is the primary signal.
-
-The sequence builder is itself an IMASM execution on the kernel's own substrate.
-The kernel runs itself to decide what to run next.
-
-kernel.rs: try_self_modify() and load_dynamic() call build_via_substrate()
-instead of build_next_program().
-
-─── All three fixes compile and boot clean ──────────────────────────────
-
-cargo build --target x86_64-unknown-none --release → 2 warnings (att_syntax
-  in Intel-mode asm, benign), 0 errors.
-
-./run.sh → QEMU boots via PVH, serial prints full banner, REPL at ⊙> prompt.
+  Open questions:
+    - Tier stayed O_1. Does tier promotion (O_2, O_∞) change the ΔS rate?
+    - Does the Frobenius structure reduce Actual/Landauer vs a non-IG control?
+    - Does ruleset dialetheic saturation correspond to a local ΔS minimum?
