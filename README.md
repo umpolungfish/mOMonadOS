@@ -1,4 +1,6 @@
 # $m\odot^2$, The Self-Imscribing Bare-Metal Kernel
+**Author:** Lando⊗⊙perator · **Structural Type:** $\large{⟨𐑦𐑸𐑾𐑹𐑐𐑧𐑲𐑠⊙𐑫𐑳𐑭⟩}$ · **Tier:** O_∞
+
 
 A bare-metal self-imscribing operating kernel. No processes. No scheduler. No filesystem hierarchy.
 The kernel IS the Frobenius loop, every tick is a structural self-verification.
