@@ -80,13 +80,16 @@ enzymes to 14 classes / 109 enzymes. `sidechain.rs` gained `frustration_matrix()
 frustration topography. `ligand.rs` expanded from stub to full 6-type functional group system
 with BindingMode, ActiveSitePocket, and compatibility scoring. See [Phase 7](#phase-7-red-hot_rebis-feature-sync) below.
 
-**Phase 8 Cross-Dialect Navigation**, complete. The kernel can navigate between
+**Phase 8 Cross-Dialect Navigation**, complete. The kernel navigates between
 dialects with **different structural rulesets**, different gate thresholds, gate ordering,
 T-constitution, and absorption rules. The Crystal of Types (17.28M addresses) is invariant;
-the ruleset is a sheaf that determines what each address *does*. Bridges the 11 **diaschizic
-compounds** (pharmacological dialect-steering agents) into computational hardware. See the
+the ruleset is a sheaf that determines what each address *does*. Originally bridged 12
+hand-crafted dialects (U₀–U₁₁); the Phase XIII wiring fix extended this to all 88 traversed
+universes from `universe_expansion.rs`. `dialect.rs` (277L) now delegates to `all_universes()`
+for indices 12–87 with public helpers (`eval_gate_spec()`, `prim_from_name()`,
+`gate_prim_label()`, `is_hand_crafted()`, `max_dialect()`). See the
 [Cross-Dialect Navigation](#cross-dialect-navigation-phase-8--diaschizics-bridge) section.
-**12 dialects** now supported (U₀–U₁₁), up from original 8.
+**88 dialects** now supported (U₀–U₈₇), up from the original 8.
 
 **Phase 9 User Interface**, complete. Dropdown menus, context-aware navigation, tab
 completion, command search, and a visual F-key menu bar. The REPL is now a hierarchical
@@ -440,6 +443,12 @@ rules. `entropy.rs` (311L) runs the ΔS vs tier promotion experiment, confirming
 promotion to O_∞ is entropically favored under the grammar's absorption rules.
 `bifurcation_test.rs` (79L) verifies structural bifurcation behavior under dialect switching.
 
+**Phase XII was followed by a critical wiring fix** (documented as Phase XIII below):
+the 88 universes were fully defined but `all_universes()` was never called by the
+runtime — `dialect.rs` and `main.rs` used hardcoded match arms for indices 0–11 with
+`_ => "?"` fallbacks, making U₁₂–U₈₇ unreachable via menu, `ruleset list`, `jump`, or
+`ruleset verify`.
+
 ### Phase Status
 
 | Phase | Description | Status | Lines |
@@ -451,30 +460,76 @@ promotion to O_∞ is entropically favored under the grammar's absorption rules.
 | **Phase V** | Entropy Experiment: ΔS vs tier promotion | ✅ Complete | 311 |
 | **Phase VI** | d12_sic_build (cont.1–cont.20) | ✅ Complete | **1,226** |
 | **Phase VII** | red-hot_rebis Feature Sync | ✅ Complete | **739** |
-| **Phase VIII** | Cross-Dialect Navigation (8→12 dialects) | ✅ Complete | — |
+| **Phase VIII** | Cross-Dialect Navigation (12→88 dialects) | ✅ Complete | 277 |
 | **Phase IX** | User Interface / Menu System | ✅ Complete | — |
 | **Phase X** | Fascistic Hardcode Purge | ✅ Complete | — |
 | **Phase XI** | cr3echrz Integration | ✅ Complete | 2,714 |
 | **Phase XII** | Universe Expansion + Entropy | ✅ Complete | 1,597 |
+| **Phase XIII** | **Universe Menu Wiring (88 on menu)** | ✅ Complete | **330** |
 
-**mOMonadOS total augmentation: ~8,163 lines across 12 phases, all clean builds.**
+**mOMonadOS total augmentation: ~8,493 lines across 13 phases, all clean builds.**
 **Lean Companion Planks:** 11 planks green, zero sorries + 1 in progress (5 sorries).
 The ring R is defined and ALL 143 identities are `native_decide`-verified. `crystal_forces_d12_sic`
 has dropped from axiom to theorem — the existence ring is found and Lean-proved.
 Embedding capstone R→ℂ in progress (323L, 5 sorries remaining).
+
+## Phase 13: Universe Menu Wiring — 88 Universes Reachable
+
+**Modules changed:** `dialect.rs` (+138L, 139→277), `main.rs` (+188L, 3287→3475), `menu.rs` (+4L, 388→392), `kernel.rs` (comment fix)
+**Status:** Complete — zero build errors, zero new warnings.
+
+### Root Cause
+
+`universe_expansion.rs` defined all 88 universes with full gate specs, T-constitutions,
+absorption rules, names, and descriptions — but `all_universes()` was **never called**.
+The runtime (`dialect.rs`, `main.rs`) exclusively used hardcoded match arms for indices
+0–11 with `_ => "?"` / `_ => "unknown"` fallbacks.
+
+### Five Breakpoints — All Fixed
+
+| # | File | What was broken | Fix |
+|---|------|----------------|-----|
+| 1 | **dialect.rs** | Six functions (`dialect_display`, `_ascii`, `_name`, `_description`, `_gates`, `_o_inf`) all had `_ => "?"` / `_ => "unknown"` fallbacks beyond index 11 | Full rewrite (139→277L): now delegates to `all_universes()` for indices 12–87. Added public helpers: `eval_gate_spec()`, `prim_from_name()`, `gate_prim_label()`, `is_hand_crafted()`, `max_dialect()` |
+| 2 | **main.rs:809** | `ruleset list` looped `for u in 0u8..12u8` — showed only 12 | Changed to `0u8..88u8` — shows all 88 |
+| 3 | **main.rs:1584** | `jump` parser rejected `u > 11` with "Unknown dialect" | Changed to `u <= 87` — accepts all 88 |
+| 4 | **main.rs:~974** | `ruleset verify` `_ =>` arm: "Unknown dialect — cannot verify" | Dynamically evaluates gates from the `Universe` struct for indices 12–87, printing per-gate PASS/FAIL with ordinal labels, plus gate ordering (SEQUENTIAL/PARALLEL) |
+| 5 | **menu.rs:111** | DIALECT_MENU "list" label: "List all 8 dialects" — oldest, pre-12 | "List all 88 dialects" |
+| 6 | **kernel.rs:66** | Comment: `active_dialect: u8, // 0-7` | `// 0-87` |
+
+### What Works Now
+
+- `ruleset list` — displays all 88 dialects with ★ marker, names, gate specs, O_∞ fractions
+- `jump U_42` — parses, stages, and can be sealed for any index 0–87
+- `ruleset verify` — dynamically evaluates the three gates from the `Universe` struct for expansion dialects, no hardcoding needed
+- `jump U₄₂` — Unicode subscript multi-digit parsing works (`parse_dialect` already handled multi-digit subscripts)
+- `U_12` through `U_87` — all display their real names and descriptions from `universe_expansion.rs`, not "unknown"
+
+### One Caveat
+
+O_∞ fractions for expansion universes (12–87) show `"compute"` rather than a percentage.
+The fractions for 0–11 were hand-computed; the expansion universes need a runtime O_∞ pass
+over the crystal, which is a separate computational task.
+
+### Dynamic Gate Evaluation
+
+For expansion dialects (12–87), `ruleset verify` no longer uses hardcoded match arms.
+Instead, `eval_gate_spec()` dynamically reads the `GateSpec { prim, min_ord }` from the
+`Universe` struct, extracts the corresponding primitive from the current `IgTuple`, and
+compares ordinals. This means **any new universe added to `universe_expansion.rs` is
+immediately verifiable** without touching any other source file.
 
 ## Repository Structure
 
 ```
 mOMonadOS/
   src/
-    main.rs            ~3287L  bare-metal entry (_rust_start), BumpAllocator, REPL, command dispatch
+    main.rs            ~3475L  bare-metal entry (_rust_start), BumpAllocator, REPL, command dispatch
     boot.rs              ~90L  PVH ELF note + 32→64 bootstrap (page tables, GDT, far jump)
     kernel.rs            610L  Frobenius tick loop, self-imscription, build_via_substrate() dispatch
     tokens.rs            742L  12 IMASM opcodes, free token-by-token composition
     sequence.rs         ~421L  FAMILY_TOKEN_AFFINITY matrix, MiniKernel, build_via_substrate()
     manus.rs             433L  Terminal HUD, B4 heatmap
-    menu.rs              388L  Hierarchical menu, 10-category F-key bar, context stack, already_in guard
+    menu.rs              392L  Hierarchical menu, 10-category F-key bar, context stack, already_in guard
     catalog.rs           954L  Single source of truth, all structural data
     algebra.rs           303L  Meet/join/tensor lattice
     consciousness.rs     114L  C-score with gate evaluation
@@ -494,7 +549,7 @@ mOMonadOS/
     para_temporal.rs      53L  Temporal logic paraconsistent bridge
     para_category.rs      62L  Category theory paraconsistent bridge
     frob_verify.rs       479L  Frobenius harness verification
-    dialect.rs           139L  Cross-dialect ruleset navigation
+    dialect.rs           277L  Cross-dialect ruleset navigation (delegates to universe_expansion)
     d12_sic.rs           982L  d=12 SIC-POVM Phase VI: tower, magnitudes, orbits, duallink, symmetric, embedding
     sic_povm.rs          267L  SIC-POVM integration: 6 dual pairs, Σ=1:1 grammar limit
     sic_compute.rs       242L  d=12 SIC-POVM structural computation engine
