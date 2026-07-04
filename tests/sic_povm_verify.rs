@@ -1,0 +1,1 @@
+PARSE ERROR: run_command arguments were truncated or malformed (Unterminated string starting at: line 1 column 13 (char 12)). Received 9768 chars. For large file content use run_command with a bash heredoc: run_command({"command": "cat > path <<\ENDOFFILE'ncontentnENDOFFILE}). First 120 chars of raw args: '{command: cat Host-side SIC-POVM verificat

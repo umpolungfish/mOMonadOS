@@ -41,6 +41,12 @@ mod clay_status;
 mod sic_povm;
 mod frobenius_unify;
 mod clay_witness;
+mod belnap_sic_bridge;
+mod sic_compute;
+mod universe_expansion;
+mod bifurcation_test;
+mod entropy;
+mod d12_sic;
 
 use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
 use crystal::{CrystalStore, decode, encode, indices_from_snapshot, TOTAL};
@@ -303,7 +309,7 @@ fn repl(k: &mut Kernel) {
             s if {
                 let lower = s.to_lowercase();
                 lower == "exec" || lower == "status" || lower == "programs" || lower == "crystal"
-                    || lower == "grammar" || lower == "rebis" || lower == "dialect" || lower == "parasm" || lower == "cr3echrz" || lower == "clay" || lower == "sic"
+                    || lower == "grammar" || lower == "rebis" || lower == "dialect" || lower == "parasm" || lower == "cr3echrz" || lower == "clay" || lower == "sic" || lower == "entropy" || lower == "d12"
             } => {
                 let already_in = ctx_stack.current()
                     .map(|c| c.name.to_lowercase() == cmd.to_lowercase())
@@ -367,7 +373,38 @@ fn repl(k: &mut Kernel) {
                     print_clay();
                 }
             }
-            "sic" => print_sic(),
+            "sic" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "verify" => sprintln!("{}", crate::sic_compute::sic_full_report()),
+                    "bridge" => sprintln!("{}", crate::belnap_sic_bridge::bridge_report()),
+                    "" => print_sic(),
+                    _ => sprintln!("sic [verify | bridge] — SIC-POVM d=12 commands"),
+                }
+            }
+            "entropy" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "tier" => sprintln!("{}", crate::entropy::entropy_summary()),
+                    "transition" => sprintln!("{}", crate::entropy::transition_report()),
+                    "" => sprintln!("{}", crate::entropy::entropy_report()),
+                    _ => sprintln!("entropy [tier | transition] — Phase V entropy experiment"),
+                }
+            }
+            "d12" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "tower" => sprintln!("{}", crate::d12_sic::phase_tower_collapse_report()),
+                    "magnitudes" | "mag" => sprintln!("{}", crate::d12_sic::magnitude_report()),
+                    "orbits" => sprintln!("{}", crate::d12_sic::orbit_report()),
+                    "duallink" | "dl" => sprintln!("{}", crate::d12_sic::dual_link_report()),
+                    "z0" => sprintln!("{}", crate::d12_sic::z0_report()),
+                    "ordinals" | "ord" => sprintln!("{}", crate::d12_sic::ordinal_guards_report()),
+                    "verify" => sprintln!("{}", crate::d12_sic::d12_full_report()),
+                    "" => sprintln!("{}", crate::d12_sic::d12_summary()),
+                    _ => sprintln!("d12 [tower|magnitudes|orbits|duallink|z0|ordinals|verify]"),
+                }
+            }
             "rebis" => {
                 let sub = parts.next().unwrap_or("");
                 print_rebis(sub, parts.next().unwrap_or(""), &parts.collect::<alloc::vec::Vec<&str>>().join(" "));
@@ -1606,6 +1643,8 @@ fn print_help() {
     sprintln!("  {:<32} — promotions | entry <name> (any catalog system)", "cl8nk <action> [name]");
     sprintln!("  {:<32} — consciousness score (dual-gate)", "cscore");
     sprintln!("  {:<32} — SIC-POVM d=12 structural identity (3 lattice proofs)", "sic");
+    sprintln!("  {:<32} — entropy experiment: ΔS vs tier promotion", "entropy [tier|transition]");
+    sprintln!("  {:<32} — d=12 SIC-POVM Phase VI: tower, magnitudes, orbits, z0", "d12 [subcmd]");
     sprintln!("  {:<32} — Clay Millennium structural status (machine-checked)", "clay");
     sprintln!();
     sprintln!("══ Rebis (Red-Hot Rebis) ══");

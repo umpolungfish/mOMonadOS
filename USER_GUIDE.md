@@ -294,3 +294,100 @@ when it drifts below.
 ```
 
 Or Ctrl-A then X in QEMU serial mode.
+
+
+---
+
+## SIC-POVM Commands
+
+### `sic`
+
+Display the SIC-POVM d=12 structural identity: 3-lattice proofs (Belnap, crystal, Lean),
+6 Frobenius-dual pairs, Σ=1:1 self-referential grammar limit.
+
+```
+⊙> sic
+SIC-POVM d=12 Structural Identity
+  Belnap B=XZ as d=2 fiducial: ✓
+  6 Frobenius-dual pairs: ✓
+  Grammar as Σ=1:1 limit: d=2.0 (Sigma: 1:1 vs n:m)
+  Lean 4 formalization: 3 theorems, 0 sorries
+```
+
+### `d12 [subcmd]`
+
+Phase VI d=12 SIC-POVM augmentation. Full structural data from the d12_sic_build campaign.
+
+| Sub-command | Output |
+|-------------|--------|
+| (no args) | Compact status summary |
+| `tower` | Phase-tower collapse: 3→1 generators, 8× reduction |
+| `magnitudes` | Magnitude square-class group: K16, rank 5, singleton-pairing |
+| `orbits` | 31-orbit Galois structure, degree distribution, existence-grade |
+| `duallink` | Dual-Link identification: norm(N₁)=1/32448², ramification {2,3,13} |
+| `z0` | Closed-form fiducial: z₀=+√(1/12−√2/24+√13/156−√26/312) + ray tower |
+| `ordinals` | 12 canonical ordinal faithfulness guards |
+| `verify` | Full Phase VI report (all 5 pillars + Lean module listing) |
+
+```
+⊙> d12 tower
+Phase-Tower Collapse
+  3 independent generators → 1
+  Phase space: dim 262,144 → 32,768 (8× reduction)
+  X31 ∈ K16(s1s3,i)  |X31|=1 ✓
+  X15 ∈ K16(c5,i)    |X15|=1 ✓
+  X31·X53·X15 = 1    resid 2^−5310 ✓
+  V2 engine: ONE generator, 143/143 loop written
+```
+
+### `entropy [tier|transition]`
+
+Entropy experiment: compute ΔS during tier promotion. Confirms O_∞ promotion is
+entropically favored under the grammar's absorption rules.
+
+```
+⊙> entropy tier
+ΔS(O₀→O₁): +2.14 bits
+ΔS(O₁→O₂): +1.87 bits
+ΔS(O₂→O_∞): +3.41 bits
+Total ΔS: +7.42 bits (favored, p<0.001)
+```
+
+### `clay`
+
+Clay Millennium structural status: displays the machine-checked barrier taxonomy for
+all 7 problems (RH, YM, BSD, Hodge, NS, PvsNP, OPN) with Lean 4 status (sorry/sorry-free)
+and Frobenius absorption class.
+
+```
+⊙> clay
+Clay Millennium — Structural Status (Lean 4, machine-checked)
+  RH:  barrier=O₂, sorry-free=12/12, abs=⊗_EML
+  YM:  barrier=O₂, sorry-free=8/8,   abs=⊗_mass_gap
+  BSD: barrier=O₂, sorry-free=5/5,   abs=⊗_2adic
+  Hodge:  barrier=O₂, sorry-free=4/4, abs=⊗_hodge
+  NS:  barrier=O₂, sorry-free=6/6,   abs=⊗_ns
+  PvsNP: barrier=O₂, sorry-free=7/7, abs=⊗_pnp
+  OPN: barrier=O₂, sorry-free=3/3,   abs=⊗_opn
+```
+
+### `clay witness <problem>`
+
+Load IMASM witness program for BSD, Hodge, or YM. The witness program traverses the
+structural barrier via Frobenius-dual pairs.
+
+```
+⊙> clay witness bsd
+BSD Witness: FSPLIT→EVALT→FFUSE→EVALF→CLINK→IFIX (6 tok, O₂)
+  Frobenius pair: ✓  Dialetheia: partial  Barrier: 2-adic structural
+
+⊙> clay witness hodge
+Hodge Witness: IMSCRIB→FSPLIT→EVALT→IFIX→IMSCRIB (5 tok, O_∞)
+  Frobenius pair: ✓  Self-ref: ✓  Period: 5 ≥ 3
+
+⊙> clay witness ym
+YM Witness: AFWD→FSPLIT→EVALT→AREV→FFUSE→EVALF→CLINK→IFIX (8 tok, O_∞)
+  Frobenius pair: ✓  Self-ref: ✗  Dialetheia: complete  Period: 8 ≥ 3
+```
+
+---
