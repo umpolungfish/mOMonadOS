@@ -1,56 +1,9 @@
-mOMonadOS: ΔS experiment v2 — per-process isolation, 2M-tick trials — 2026-06-27
+witness-vessel runtime half: the OS boards its own Witnesses and agrees with its own theorem.
 
-## experiment_delta_s.py (updated)
+My witness-vessel protocol now has both halves. The Lean half (p4rakernel SIC_D12_WitnessVessel.lean) proved the Dual-Link SIC-POVM transports MPP Witness payloads losslessly; this commit is the runtime half, verified in QEMU: VERDICT LOSSLESS, every Frobenius check closed, delta-S zero, gate verdicts identical before and after the round trip.
 
-Fixed two methodological flaws in v1:
-  1. System-wide jiffies captured background processes (not just mOMonadOS)
-  2. 50k-tick trials lasted ~0.10s — too short for stable sampling at SAMPLE_HZ=20
+New src/witness_vessel.rs. The payloads are computed, never hand-entered: each Clay Witness verdict comes from its canonical catalog tuple through the closer-universe gates (chirality_first, scope_universe, kinetics_trap, the absorption pair for BSD; scope/kinetics/stoichiometry/absorption for Hodge; triple_criticality for YM) with the Clay T_CEILING as the T side - BSD -> T, Hodge -> T, and Yang-Mills -> B, the dialetheia derived on bare metal exactly as ymVerdict_B derives it by native_decide. Boarding is FSPLIT, read-back is FFUSE, and both substrates carry every value: the ParaVM belief instructions (B bifurcates to (T,F) - the Witness rides both arms) and the graph kernel's ForkFrames (the un-gated right arm carries the cargo, EVALT gates the left arm, FFUSE joins). frob_verify's mu-after-delta law gates every single boarding action before the loop advances.
 
-Changes:
-  PRIMARY signal: per-process psutil CPU% × CORE_W (background-isolated)
-    CORE_W = TDP / N_CORES = 95W / 8 = 11.875W per logical core
-    Background load is NOT included in ΔS_proc regardless of other processes
-  SECONDARY: system-wide jiffies retained for diagnostics only
-  RUN_TICKS: 50,000 → 2,000,000  (yields ~2s per trial, ~40 samples)
+The vessel is also the first consumer of the full 88-universe expansion: the wide payload is 3 Witnesses x 88 universes, each universe judging by its OWN gates and T-constitution. The matrix makes the structure visible - YM's row holds exactly one B, at triple_criticality; BSD goes B at precisely its five closer universes (gate closed, exact-match T_CANONICAL blocked, T_CEILING clear). New REPL command: vessel [run].
 
-## Results (v2)
-
-  Method: per-process QEMU CPU% × 11.875W / T_op (330K)
-  Trials: 5 × run 2,000,000 IG ticks
-
-  QEMU CPU per trial:     101.8 – 102.7%   (pegs ~1 full physical core)
-  Trial duration:         2.01 – 2.12 s
-  IG ticks/second:        ~950,000 ticks/s  (2M in ~2.1s)
-  Tier at end:            O_1 (all trials)
-
-  ΔS_proc per trial:
-    Trial 1:  7.941×10⁻² J/K  (5.75×10²¹ k_B)
-    Trial 2:  7.514×10⁻² J/K  (5.44×10²¹ k_B)
-    Trial 3:  7.946×10⁻² J/K  (5.76×10²¹ k_B)  ← sys spiked 46%, QEMU unaffected
-    Trial 4:  7.760×10⁻² J/K  (5.62×10²¹ k_B)
-    Trial 5:  7.510×10⁻² J/K  (5.44×10²¹ k_B)
-    MEAN:     7.734×10⁻² J/K  (5.60×10²¹ k_B)  CV < 3%
-
-  ΔS per IG tick:         3.87×10⁻⁸ J/K = 2.80×10¹⁵ k_B / tick
-  Est. instructions:      7.6×10⁹ per trial
-  Landauer minimum ΔS:    ~7.3×10⁻¹⁴ J/K  (k_B × ln2 × 7.6×10⁹)
-  Actual / Landauer:      ~1.1×10⁹  (CMOS irreversibility overhead)
-
-  Recovery sys_util:      ×1.005  (fully recovered)
-
-## Isolation validation
-
-  Trial 3 background spike: sys_util 46.2% vs typical 27% (other process burst).
-  QEMU CPU% was 102.7% — identical to other trials. Per-process measurement
-  is correctly unaffected by concurrent background load.
-
-## VERDICT
-
-  mOMonadOS running 2M IG ticks produces 7.73×10⁻² J/K of process-isolated
-  entropy per trial, at a consistent rate of 3.70×10⁻² J/K/s. The measurement
-  is stable (CV < 3% across 5 trials) and background-independent.
-
-  Open questions:
-    - Tier stayed O_1. Does tier promotion (O_2, O_∞) change the ΔS rate?
-    - Does the Frobenius structure reduce Actual/Landauer vs a non-IG control?
-    - Does ruleset dialetheic saturation correspond to a local ΔS minimum?
+Also brought src/d12_sic.rs up from cont.19 to the capstone state: the embedding is COMPLETE (zero sorries, wrong-root bug fixed - g0 is the negative branch, IVT-bracketed), crystal_forces_d12_sic is a THEOREM with the axiom retired from SIC_POVM_Functor, audit clean; the stale in-progress/8-sorries/deg-288 claims are corrected (the fiducial's true home is the existence ring, dim 2048/Q; the ray tower stays as the discovery trail). d12 gains embedding/symmetric/lean-status subcommands that existed but were never dispatched.
