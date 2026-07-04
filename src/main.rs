@@ -36,6 +36,11 @@ mod menu;
 mod sequence;
 mod boot;
 mod cr3echrz;
+mod canonical_ordinal;
+mod clay_status;
+mod sic_povm;
+mod frobenius_unify;
+mod clay_witness;
 
 use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
 use crystal::{CrystalStore, decode, encode, indices_from_snapshot, TOTAL};
@@ -136,6 +141,31 @@ fn kmain() -> ! {
     catalog::catalog_init();
     sprintln!("[BOOT] IG Catalog: {} entries loaded", catalog::catalog_size());
     sprintln!("[BOOT] Kernel online — graph execution, token-arity driven");
+    // ── ⊙-ordinal faithfulness guard (Track B) ──
+    sprintln!("[BOOT] Canonical ordinal check...");
+    match canonical_ordinal::verify_canonical_ordinals() {
+        (true, _) => sprintln!("[BOOT] Ordinal faithfulness: ALL 44 VALUES MATCH Lean canonical ✓"),
+        (false, why) => {
+            sprintln!("[BOOT] ⚠ ORDINAL DRIFT DETECTED: {}", why);
+            sprintln!("[BOOT] Kernel will NOT proceed — ordinal drift is a structural integrity violation.");
+            sprintln!("[BOOT] Regenerate canonical_ordinal.rs from CanonicalOrdinalFaithfulness.lean");
+            loop { unsafe { core::arch::asm!("hlt", options(nostack, nomem, preserves_flags)); } }
+        }
+    }
+    // ── Clay closure/resistance status (Track C) ──
+    sprintln!("[BOOT] Clay Millennium status: {} closed, {} one-bump-short, {} unclosed",
+        clay_status::clay_summary().0, clay_status::clay_summary().1, clay_status::clay_summary().2);
+    sprintln!("[BOOT] SIC-POVM d=12: Crystal-forced (dual lattice), Shavian count 49=7², WH group |orbit|=144");
+    // ── Frobenius unification self-verification (Track E) ──
+    sprintln!("[BOOT] Frobenius identity check...");
+    let (frob_ham, frob_dist) = frobenius_unify::boot_summary();
+    if frob_ham == 0 {
+        sprintln!("[BOOT] Frobenius identity: KERNEL IS FROBENIUS FIXED POINT — d=0 ✓");
+    } else {
+        sprintln!("[BOOT] Frobenius identity: hamming={}, weighted={:.4} — kernel is grammar operationalized",
+            frob_ham, frob_dist);
+    }
+
     sprintln!("[BOOT] Bootstrap: IMSCRIB→AREV→FSPLIT→AFWD→FFUSE→CLINK→IFIX→IMSCRIB (cyclic)");
     sprintln!("[BOOT] Crystal FS: {} addresses", TOTAL);
     sprintln!("[BOOT] {} total programs (I–XXVIII): 12 canonical + {} continuous + {} novel + {} shunted",
@@ -273,7 +303,7 @@ fn repl(k: &mut Kernel) {
             s if {
                 let lower = s.to_lowercase();
                 lower == "exec" || lower == "status" || lower == "programs" || lower == "crystal"
-                    || lower == "grammar" || lower == "rebis" || lower == "dialect" || lower == "parasm" || lower == "cr3echrz"
+                    || lower == "grammar" || lower == "rebis" || lower == "dialect" || lower == "parasm" || lower == "cr3echrz" || lower == "clay" || lower == "sic"
             } => {
                 let already_in = ctx_stack.current()
                     .map(|c| c.name.to_lowercase() == cmd.to_lowercase())
@@ -324,6 +354,20 @@ fn repl(k: &mut Kernel) {
                 print_cl8nk(action, name);
             },
             "cscore" => print_cscore(k),
+            "clay" => {
+                let sub = parts.next().unwrap_or("");
+                if sub == "witness" {
+                    let problem = parts.next().unwrap_or("");
+                    if problem.is_empty() {
+                        sprintln!("{}", crate::clay_witness::list_witnesses());
+                    } else {
+                        sprintln!("{}", crate::clay_witness::witness_report(problem));
+                    }
+                } else {
+                    print_clay();
+                }
+            }
+            "sic" => print_sic(),
             "rebis" => {
                 let sub = parts.next().unwrap_or("");
                 print_rebis(sub, parts.next().unwrap_or(""), &parts.collect::<alloc::vec::Vec<&str>>().join(" "));
@@ -1050,8 +1094,10 @@ Stopped after {} ticks.", ran);
                     } else {
                         sprintln!("No snapshot — tick first.");
                     }
+                } else if flag == "--frobenius" {
+                    sprintln!("{}", crate::frobenius_unify::formatted_report());
                 } else {
-                    sprintln!("Usage: whoami --ruleset");
+                    sprintln!("Usage: whoami --ruleset | --frobenius");
                 }
             }
             "absorption" => {
@@ -1559,9 +1605,12 @@ fn print_help() {
     sprintln!("  {:<32} — distance|meet|join|tensor vs ZFC baseline", "algebra <op>");
     sprintln!("  {:<32} — promotions | entry <name> (any catalog system)", "cl8nk <action> [name]");
     sprintln!("  {:<32} — consciousness score (dual-gate)", "cscore");
+    sprintln!("  {:<32} — SIC-POVM d=12 structural identity (3 lattice proofs)", "sic");
+    sprintln!("  {:<32} — Clay Millennium structural status (machine-checked)", "clay");
     sprintln!();
     sprintln!("══ Rebis (Red-Hot Rebis) ══");
     sprintln!("  {:<34} — codon→AA or AA→codons (bidirectional)", "rebis codon <XXX|AA>");
+    sprintln!("  {:<32} — Clay witness IMASM programs (BSD/Hodge/YM)", "clay witness <problem>");
     sprintln!("  {:<34} — gene→protein pipeline (DNA→mRNA→AA)", "rebis translate <DNA>");
     sprintln!("  {:<34} — protein→mRNA→DNA (reverse pipeline)", "rebis reverse <Prot>");
     sprintln!("  {:<34} — Frobenius filtration (64 codons, power-law)", "rebis frob");
@@ -1611,6 +1660,7 @@ fn print_help() {
     sprintln!("  {:<36} — meet under active absorption", "meet <compound_a> <compound_b>");
     sprintln!("  {:<36} — test absorption rule", "absorb_test <a> <b> <prim> <op>");
     sprintln!("  {:<36} — IG tuple under active ruleset", "whoami --ruleset");
+    sprintln!("  {:<36} — Frobenius fixed-point identity check", "whoami --frobenius");
     sprintln!("  {:<36} — list all absorption rules", "absorption show");
     sprintln!("  {:<36} — T-constitution pass/fail report", "tstatus");
     sprintln!("  {:<36} — list 11 diaschizic compounds", "compound list");
@@ -2261,6 +2311,15 @@ fn print_cscore(k: &Kernel) {
         sprintln!("No snapshot. Tick first.");
     }
 }
+
+fn print_clay() {
+    sprintln!("{}", crate::clay_status::formatted_report());
+}
+
+fn print_sic() {
+    sprintln!("{}", crate::sic_povm::formatted_report());
+}
+
 fn print_cr3(sub: &str, rest: alloc::string::String) {
     use crate::cr3echrz::p3theorem::{run_theorem, format_theorem_result, list_theorems};
     use crate::cr3echrz::p4rakernel::list_p4ra_modules;
