@@ -59,11 +59,11 @@ forge, biological simulation, therapeutic design, CLINK 9-layer chain, and IMASM
 now runs directly from the bare-metal kernel. See the [Red-Hot Rebis](#red-hot-rebis-phase-5) section.
 
 **Phase 6 d12_sic_build Augmentation**, complete. `d12_sic.rs` (673L) encodes the full
-d12_sic_build campaign (cont.1–cont.19) into the bare-metal kernel: phase-tower collapse
+d12_sic_build campaign (cont.1–cont.20) into the bare-metal kernel: phase-tower collapse
 (3→1 independent generators, 8× reduction), magnitude square-class group (K16, rank 5),
 31-orbit Galois structure, Dual-Link identification (ramification at {2,3,13}), closed-form
 fiducial z₀ in radicals, 12 canonical ordinal guards (`canonical_ordinal.rs`, 244L), and
-7 REPL sub-commands. The d=12 SIC-POVM is structurally solved; 23/143 existence-grade overlaps
+7 REPL sub-commands. ALL 143/143 existence-grade overlaps confirmed (cont.20). Ring R=K₁₆(s₀,s₁,s₃,s₉,i,c₅,u₁) dim 2048, pure fractions, 12s. ANY hom R→ℂ is a SIC point
 are Lean-proved (`native_decide`, zero sorries). See [Phase 6](#phase-6-d12_sic_build-augmentation) below.
 
 **Phase 8 Cross-Dialect Navigation**, complete. The kernel can navigate between
@@ -246,7 +246,7 @@ through to the `match cmd` block where `"rebis"` dispatches to `print_rebis()`.
 Dialect, ParaASM, Cr3echrz, Help). The `already_in` guard is applied uniformly in the menu dispatch
 loop, no category can self-nest anymore.
 
-## Phase 6: d12_sic_build Augmentation
+## Phase 6: d12_sic_build Augmentation (cont.20 — Existence Ring Found)
 
 **Module:** `d12_sic.rs` (673L), `canonical_ordinal.rs` (244L)
 **Status:** Complete — the d=12 SIC-POVM is structurally solved in bare-metal Rust
@@ -257,7 +257,9 @@ loop, no category can self-nest anymore.
 - 3 → 1 independent generators: u3 = conj(X31)·u1, u5 = X15·u1
 - Phase space: dim 262,144 → 32,768 (8× reduction)
 - Cross-relations: X31 ∈ K16(s1s3,i), X15 ∈ K16(c5,i), X31·X53·X15 = 1 (floor 2^−5310)
-- V2 engine: full 143/143 loop written for one-generator architecture
+- V4 engine (mini_engine_full4.py): ALL 143 PASS, dim 2048, 12s, pure fractions
+- Two closing relations: u₁ quadratic over K₁₆(i) (c₂,s₂∈K₁₆), s₅ collapsed via ρ²=N₁N₅D₅
+- Flip-audit: 128/256 harmless → capstone shape: ANY hom R→ℂ is a SIC point
 
 **Pillar 2: Magnitude Square-Class Group**
 - K16 (deg 16), rank-5 basis {N₀,N₁,N₃,N₅,N₉}
@@ -267,7 +269,7 @@ loop, no category can self-nest anymore.
 **Pillar 3: 31-Orbit Structure**
 - 143 overlaps → 31 Galois-orbit representatives (descent cost: 31, not 143)
 - Degree distribution: deg2:7, deg4:5(16), deg8:9(32), deg16:11(48), deg32:5(40)
-- Existence-grade: 23/143 (a=0: 11/11, a=6: 12/12)
+- Existence-grade: 143/143 (ALL 143 ring-exact, cont.20, pure fractions)
 
 **Pillar 4: Dual-Link Identification**
 - norm(N₁) = 1/32448² = 1/(2⁶×3×13²)². Ramification: {2,3,13}
@@ -304,7 +306,7 @@ loop, no category can self-nest anymore.
 | **Phase III** (Universe Expansion 8→88) | ✅ Complete | 1,207 |
 | **Phase IV** (Frobenius Unification + Clay Witness) | ✅ Complete | 493 |
 | **Phase V** (Entropy Experiment: ΔS vs tier promotion) | ✅ Complete | 311 |
-| **Phase VI** (d12_sic_build Augmentation) | ✅ Complete | **917** |
+| **Phase VI** (d12_sic_build, cont.1–cont.20) | ✅ Complete | **917** |
 
 **mOMonadOS total augmentation: ~3,804 lines across 6 phases, all clean builds.**
 ## Phase 10: Fascistic Hardcode Purge

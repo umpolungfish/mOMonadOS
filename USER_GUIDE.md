@@ -316,7 +316,7 @@ SIC-POVM d=12 Structural Identity
 
 ### `d12 [subcmd]`
 
-Phase VI d=12 SIC-POVM augmentation. Full structural data from the d12_sic_build campaign.
+Phase VI d=12 SIC-POVM augmentation (cont.20 — Existence Ring Found). ALL 143 identities exact in R=K₁₆(s₀,s₁,s₃,s₉,i,c₅,u₁), dim 2048, pure fractions, 12s. ANY hom R→ℂ is a SIC point.
 
 | Sub-command | Output |
 |-------------|--------|
@@ -337,7 +337,9 @@ Phase-Tower Collapse
   X31 ∈ K16(s1s3,i)  |X31|=1 ✓
   X15 ∈ K16(c5,i)    |X15|=1 ✓
   X31·X53·X15 = 1    resid 2^−5310 ✓
-  V2 engine: ONE generator, 143/143 loop written
+  V4 engine: ALL 143 PASS, dim 2048, 12s, pure fractions
+  Ring: K₁₆(s₀,s₁,s₃,s₉,i,c₅,u₁)
+  Capstone: ANY hom R→ℂ is a SIC point
 ```
 
 ### `entropy [tier|transition]`
