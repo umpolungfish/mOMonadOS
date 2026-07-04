@@ -63,7 +63,7 @@ pub struct Kernel {
     pub halted:      bool,
     pub dynamic_mode: bool,  // true → rebuild program from IgTuple each wrap
     // ── Cross-dialect ruleset state ──
-    pub active_dialect: u8,        // 0-7, current active ruleset (default 0 = canonical)
+    pub active_dialect: u8,        // 0-87, current active ruleset (default 0 = canonical) (default 0 = canonical)
     pub liminal_target: Option<u8>, // dialect jumped to, pending IFIX seal
     pub liminal_compound: Option<u8>,   // compound index (0-10) used for liminal jump
     // ── Runtime accumulators for dynamic snapshot fields ──

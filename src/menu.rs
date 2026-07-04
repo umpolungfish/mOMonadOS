@@ -108,7 +108,7 @@ pub static REBIS_MENU: &[MenuItem] = &[
 
 pub static DIALECT_MENU: &[MenuItem] = &[
     MenuItem { name: "show",     cmd: "ruleset show",    desc: "Active ruleset display", submenu: None },
-    MenuItem { name: "list",     cmd: "ruleset list",    desc: "List all 8 dialects", submenu: None },
+    MenuItem { name: "list",     cmd: "ruleset list",    desc: "List all 88 dialects", submenu: None },
     MenuItem { name: "verify",   cmd: "ruleset verify",  desc: "Invariant violation check", submenu: None },
     MenuItem { name: "jump",     cmd: "jump",            desc: "Cross-dialect jump: jump <U> using <c>", submenu: None },
     MenuItem { name: "seal",     cmd: "seal",            desc: "IFIX commit to current ruleset", submenu: None },

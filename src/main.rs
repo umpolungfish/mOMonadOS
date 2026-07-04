@@ -49,6 +49,7 @@ mod universe_expansion;
 mod bifurcation_test;
 mod entropy;
 mod d12_sic;
+mod witness_vessel;
 
 use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
 use crystal::{CrystalStore, decode, encode, indices_from_snapshot, TOTAL};
@@ -405,8 +406,20 @@ fn repl(k: &mut Kernel) {
                     "z0" => sprintln!("{}", crate::d12_sic::z0_report()),
                     "ordinals" | "ord" => sprintln!("{}", crate::d12_sic::ordinal_guards_report()),
                     "verify" => sprintln!("{}", crate::d12_sic::d12_full_report()),
+                    "embedding" | "capstone" => sprintln!("{}", crate::d12_sic::embedding_report()),
+                    "symmetric" | "sym" => sprintln!("{}", crate::d12_sic::symmetric_moduli_report()),
+                    "lean-status" | "lean" => sprintln!("{}", crate::d12_sic::lean_status_report()),
+                    "unconditional" | "belnap" => sprintln!("{}", crate::d12_sic::belnap_sic_unconditional_report()),
                     "" => sprintln!("{}", crate::d12_sic::d12_summary()),
-                    _ => sprintln!("d12 [tower|magnitudes|orbits|existence|duallink|z0|ordinals|verify]"),
+                    _ => sprintln!("d12 [tower|magnitudes|orbits|existence|duallink|z0|ordinals|verify|embedding|symmetric|lean-status]"),
+                }
+            }
+            "vessel" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "run" | "verify" => sprintln!("{}", crate::witness_vessel::vessel_report()),
+                    "" => sprintln!("{}", crate::witness_vessel::vessel_summary()),
+                    _ => sprintln!("vessel [run] — witness-vessel transport protocol"),
                 }
             }
             "rebis" => {
@@ -793,7 +806,7 @@ Stopped after {} ticks.", ran);
                     "list" => {
                         sprintln!("╔══════════════════════════════════════════════════════════╗");
                         sprintln!("   ═══ ALL 12 DIALECTS ═══");
-                        for u in 0u8..12u8 {
+                        for u in 0u8..88u8 {
                             let marker = if u == k.active_dialect { "★" } else { " " };
                             sprintln!("  {} {:<3} {:<20} {}     O_∞:{}",
                                 marker, dialect_display(u), dialect_name(u),
@@ -957,8 +970,32 @@ Stopped after {} ticks.", ran);
                                     if !t_ceiling_gapped_check(&ig) { all_pass = false; }
                                 }
                                 _ => {
-                                    sprintln!("  Unknown dialect — cannot verify.");
-                                    all_pass = false;
+                                    // Dynamic gate evaluation for expansion universes (12–87).
+                                    if crate::dialect::is_hand_crafted(u) {
+                                        sprintln!("  Unknown dialect — cannot verify.");
+                                        all_pass = false;
+                                    } else {
+                                        let unis = crate::universe_expansion::all_universes();
+                                        let uni = &unis[u as usize];
+                                        let (g1_ok, g1_ord, g1_glyph) = crate::dialect::eval_gate_spec(&uni.g1, &ig);
+                                        let (g2_ok, g2_ord, g2_glyph) = crate::dialect::eval_gate_spec(&uni.g2, &ig);
+                                        let (g3_ok, g3_ord, g3_glyph) = crate::dialect::eval_gate_spec(&uni.g3, &ig);
+                                        let g1_label = crate::dialect::gate_prim_label(uni.g1.prim);
+                                        let g2_label = crate::dialect::gate_prim_label(uni.g2.prim);
+                                        let g3_label = crate::dialect::gate_prim_label(uni.g3.prim);
+                                        sprintln!("  G1 ({}≥{}): {}  {}={} (ord {})",
+                                            g1_label, uni.g1.min_ord, if g1_ok {"PASS"} else {"FAIL"},
+                                            g1_label, g1_glyph, g1_ord);
+                                        sprintln!("  G2 ({}≥{}): {}  {}={} (ord {})",
+                                            g2_label, uni.g2.min_ord, if g2_ok {"PASS"} else {"FAIL"},
+                                            g2_label, g2_glyph, g2_ord);
+                                        sprintln!("  G3 ({}≥{}): {}  {}={} (ord {})",
+                                            g3_label, uni.g3.min_ord, if g3_ok {"PASS"} else {"FAIL"},
+                                            g3_label, g3_glyph, g3_ord);
+                                        sprintln!("  Ordering: {}",
+                                            if uni.gate_ordering {"SEQUENTIAL"} else {"PARALLEL"});
+                                        if !g1_ok || !g2_ok || !g3_ok { all_pass = false; }
+                                    }
                                 }
                             }
 
@@ -1544,7 +1581,7 @@ fn handle_jump(k: &mut Kernel, rest: &str) {
 
     // Parse dialect
     let target: u8 = match parse_dialect(u_str) {
-        Some(u) if u <= 11 => u,
+        Some(u) if u <= 87 => u,
         _ => {
             sprintln!("Unknown dialect: '{}'. Use U_0 through U_11 (or U₀ through U₁₁).", u_str);
             return;
@@ -1649,6 +1686,7 @@ fn print_help() {
     sprintln!("  {:<32} — SIC-POVM d=12 structural identity (3 lattice proofs)", "sic");
     sprintln!("  {:<32} — entropy experiment: ΔS vs tier promotion", "entropy [tier|transition]");
     sprintln!("  {:<32} — d=12 SIC-POVM Phase VI: tower,magnitudes,orbits,existence,duallink,z0", "d12 [subcmd]");
+    sprintln!("  {:<32} — witness-vessel transport: Clay payloads x 88 universes, frob-gated", "vessel [run]");
     sprintln!("  {:<32} — Clay Millennium structural status (machine-checked)", "clay");
     sprintln!();
     sprintln!("══ Rebis (Red-Hot Rebis) ══");
@@ -1691,7 +1729,7 @@ fn print_help() {
     sprintln!("══ Cross-Dialect Navigation (Phase 8) ══");
     sprintln!("══ Ruleset / Dialect ══");
     sprintln!("  {:<36} — show active ruleset", "ruleset show");
-    sprintln!("  {:<36} — list all 12 dialects (★ = active)", "ruleset list");
+    sprintln!("  {:<36} — list all 88 dialects (★ = active)", "ruleset list");
     sprintln!("  {:<36} — invariant check (live snapshot)", "ruleset verify");
     sprintln!("  {:<36} — invariant check (named catalog entry)", "ruleset verify <name>");
     sprintln!("  {:<36} — cross-dialect jump", "jump <U> using <compound>");

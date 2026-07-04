@@ -1,16 +1,20 @@
 // d12_sic.rs -- Phase VI: d=12 SIC-POVM Augmentation from d12_sic_build
 //
-// Encodes the exact recovery findings from d12_sic_build (cont.1-cont.19)
-// and p4rakernel/p4ramill Lean 4 formalism. Five structural pillars:
+// Encodes the exact recovery findings from d12_sic_build (cont.1-cont.23,
+// campaign COMPLETE) and p4rakernel/p4ramill Lean 4 formalism. Six
+// structural pillars:
 //
 //   1. Phase-Tower Collapse: 3 generators -> 1 (u1 primitive; u3,u5 derived)
 //   2. Magnitude Square-Class Group: rank 5, singleton-pairing structure
 //   3. 31-Orbit Structure: 143 overlaps -> 31 Galois-orbit representatives
 //   4. Dual-Link Identification: magnitude extension IS Dual-Link SIC-POVM
 //   5. SIC_POVM_DualLinkClosure: unconditional Belnap SIC for d=2^n
+//   6. Embedding Capstone: ring hom R -> C at the IVT-bracketed root g0;
+//      crystal_forces_d12_sic is a THEOREM -- the axiom is retired
+//      (SIC_D12_Embedding.lean zero-sorry, SIC_POVM_Functor delegates)
 //
 // Author: Lando⊗⊙perator
-// Date: 2026-07-11
+// Date: 2026-07-04 (capstone state)
 
 use alloc::string::String;
 
@@ -264,14 +268,13 @@ pub const EXISTENCE_RING_BASE: &str = "K16 = Q[g]/(g^16-10g^14+40g^12-90g^10+126
 pub const FLIP_AUDIT_HARMLESS: u32 = 128;
 pub const FLIP_AUDIT_TOTAL: u32 = 256;
 pub const EXISTENCE_RING_CAPSTONE: &str = "ANY hom R->C is a SIC point (flip-audit)";
-/// Remaining for crystal_forces_d12_sic: embedding capstone R->C
-pub const EXISTENCE_RING_REMAINING: &str = "Embedding capstone: ring hom R->C IN PROGRESS (SIC_D12_Embedding.lean, 427 lines, 8 sorries)";
-pub const EXISTENCE_RING_LEAN_EMBEDDING_LINES: u32 = 427;
-pub const EXISTENCE_RING_LEAN_EMBEDDING_SORRIES: u32 = 8;
+/// Nothing remains: the embedding capstone landed (p4rakernel 488e22b).
+pub const EXISTENCE_RING_REMAINING: &str = "NONE -- embedding capstone COMPLETE: crystal_forces_d12_sic is a THEOREM (axiom retired)";
+pub const EXISTENCE_RING_LEAN_EMBEDDING_SORRIES: u32 = 0;
 pub const EXISTENCE_RING_LEAN_EXISTENCE_SORRIES: u32 = 0;
-/// Lean companion: SIC_D12_ExistenceRing.lean (413 lines, 14 theorems, 0 sorries)
+/// Lean companion: SIC_D12_ExistenceRing.lean (14 theorems, 0 sorries)
 pub const EXISTENCE_RING_LEAN_THEOREMS: u32 = 14;
-pub const EXISTENCE_RING_LEAN_JOBS: u32 = 8341;
+pub const EXISTENCE_RING_LEAN_JOBS: u32 = 8344;
 
 pub fn orbit_report() -> String {
     let mut s = String::new();
@@ -421,7 +424,9 @@ pub fn dual_link_report() -> String {
 ");
     s.push_str("d=2: Belnap B = XZ (unconditional, 22 theorems, 0 sorries)
 ");
-    s.push_str("d=12: coordinate tower, radical-expressible, degree 288/Q
+    s.push_str("d=12: existence ring R = K16(s0,s1,s3,s9,i,c5,u1), dim 2048/Q;
+");
+    s.push_str("      crystal_forces_d12_sic THEOREM via embedding capstone.
 ");
     s
 }
@@ -484,55 +489,67 @@ pub fn symmetric_moduli_report() -> String {
 // EMBEDDING CAPSTONE -- ring hom R -> C
 // ═══════════════════════════════════════════════════════════════
 
-/// SIC_D12_Embedding.lean (427 lines, 2026-07-03):
+/// SIC_D12_Embedding.lean (COMPLETE, p4rakernel 488e22b, 2026-07-04):
 /// Constructs a ring homomorphism phi: R -> C, where R = K16(s0,s1,s3,s9,i,c5,u1)
-/// is the d=12 existence ring (dim 2048/Q).
+/// is the d=12 existence ring (dim 2048/Q), and transfers everything.
 ///
-/// Strategy (in progress -- 8 sorries remaining):
-///   1. Find real root g0 in (0,1) of the K16 polynomial (IVT, proven)
-///   2. Evaluate K16 elements at g0C via Horner (evalK16, ring hom, proven)
-///   3. Extend to full R by picking square roots
-///   4. Prove phi is Q-algebra hom (phi_radd, phi_rmul -- SORRIED)
-///   5. Transfer 143 overlap identities from existence ring to C (SORRIED)
-///   6. Discharge crystal_forces_d12_sic axiom (SORRIED)
+/// The proof, stone by stone (ALL proven, zero sorries):
+///   1. g0 = -2.008573054090... -- the K16 real root, IVT-bracketed by exact
+///      rational sign checks at 1e-12 width (the (0,1) root was the WRONG
+///      branch; the fiducial embeds on the negative branch)
+///   2. evalK16 at g0C via Horner: a Q-algebra map (evalK16_kadd/kmul)
+///   3. Cover roots as REAL Real.sqrt generators -- star-compatibility by
+///      construction; positivity via exact divided-difference certificates
+///      (q(x) = (p(x)-p(mid))/(x-mid) in Q[x], pure rational, no intervals)
+///   4. phi is a star ring hom: phi_radd, phi_rmul (canonical-key domain),
+///      phi_rconj; u1 by half-angle reconstruction (u1Val_sq DERIVED)
+///   5. norm_sq_eq_one: trace-one transferred via frozen norm_sum
+///   6. equiangular: ring-side overlap_normSq from existence_identities_all,
+///      then equiangular_bridge (phi(zeta) pinned to {omega, omega^5} via
+///      Im Z = 1/2 exactly; D_ah/X_d/Z_d iterate term-matching)
+///   7. d12_sic_exists : IsSICPOVM 12 psi; crystal_forces_d12_sic THEOREM
 ///
-/// Current status: infrastructure complete (evalK16_kmul, g0C root, reduceGo_eval
-/// all proven). Remaining: ring hom transfer theorems (8 sorries).
+/// Axiom audit: [propext, Classical.choice, Quot.sound, Lean.ofReduceBool,
+/// Lean.trustCompiler] -- no project axioms, no Stark shadow, no circularity.
+/// SIC_POVM_Functor.lean now IMPORTS the Embedding and delegates: the last
+/// non-shadow axiom of the SIC tree is retired.
 
-pub const EMBEDDING_LEAN_LINES: u32 = 427;
-pub const EMBEDDING_SORRIES_REMAINING: u32 = 8;
+pub const EMBEDDING_SORRIES_REMAINING: u32 = 0;
 pub const EMBEDDING_INFRASTRUCTURE_DONE: bool = true;
-pub const EMBEDDING_HOM_TRANSFER_DONE: bool = false;
+pub const EMBEDDING_HOM_TRANSFER_DONE: bool = true;
+pub const EMBEDDING_COMPLETE: bool = true;
+/// The IVT-bracketed embedding root (negative branch of the even k16Poly).
+pub const EMBEDDING_ROOT_G0: &str = "-2.008573054090 (bracket width 1e-12, exact rational signs)";
 
-/// The 4 key sorries in SIC_D12_Embedding.lean
-pub const EMBEDDING_SORRY_LIST: [&str; 4] = [
-    "phi_radd:  phi(radd A B) = phi A + phi B",
-    "phi_rmul:  phi(rmul A B) = phi A * phi B",
-    "phi_rconj: phi(rconj A) = star(phi A)",
-    "norm_sq/equiangular: transfer of 143 overlaps to C^12",
+/// The theorem chain of SIC_D12_Embedding.lean, all green.
+pub const EMBEDDING_THEOREMS: [&str; 8] = [
+    "exists_root: k16Poly has a real root g0 in (certLo, certHi)",
+    "phi_radd / phi_rmul: phi is a Q-algebra hom (canonical keys)",
+    "phi_rconj: phi(rconj A) = star(phi A) -- conjugation internal",
+    "cover_modulus_nonneg + c5_discr_nonneg: divided-difference certs",
+    "u1Val_sq: u1 half-angle reconstruction (Complex.sqrt eliminated)",
+    "norm_sq_eq_one: wh_normSq 12 psi = 1 (trace-one transferred)",
+    "equiangular: (d+1)*|overlap|^2 = 1 for all 143 displacements",
+    "crystal_forces_d12_sic: SICPOVM_Exists 12 -- THEOREM, axiom retired",
 ];
 
 pub fn embedding_report() -> String {
     let mut s = String::new();
     s.push_str("═══ EMBEDDING CAPSTONE -- ring hom R -> C ═══\n");
-    s.push_str("(SIC_D12_Embedding.lean, 427 lines)\n\n");
-    s.push_str(&alloc::format!("Status: {} INFRASTRUCTURE COMPLETE\n",
-        if EMBEDDING_INFRASTRUCTURE_DONE { "\u{2713}" } else { "\u{2717}" }));
-    s.push_str(&alloc::format!("  Sorries remaining: {}\n", EMBEDDING_SORRIES_REMAINING));
-    s.push_str(&alloc::format!("  Ring hom transfer: {}\n\n",
-        if EMBEDDING_HOM_TRANSFER_DONE { "DONE" } else { "IN PROGRESS (phi_radd, phi_rmul, phi_rconj sorried)" }));
-    s.push_str("Proven infrastructure:\n");
-    s.push_str("  g0C root:  K16 real root in (0,1) via IVT (g0_root)     \u{2713}\n");
-    s.push_str("  evalK16:   Horner evaluation at g0C                    \u{2713}\n");
-    s.push_str("  evalK16_kmul:  evalK16 g0C (kmul v w) = eval v * eval w  \u{2713}\n");
-    s.push_str("  evalK16_kadd:  evalK16 g0C (kadd v w) = eval v + eval w  \u{2713}\n");
-    s.push_str("  reduceGo_eval: reduction preserves evaluation            \u{2713}\n\n");
-    s.push_str(&alloc::format!("Remaining sorries ({}):\n", EMBEDDING_SORRIES_REMAINING));
-    for sry in &EMBEDDING_SORRY_LIST {
-        s.push_str(&alloc::format!("  {}  \u{2717}\n", sry));
+    s.push_str("(SIC_D12_Embedding.lean, p4rakernel 488e22b)\n\n");
+    s.push_str("Status: COMPLETE -- zero sorries, full library green.\n");
+    s.push_str("crystal_forces_d12_sic is a THEOREM. The axiom is retired.\n\n");
+    s.push_str(&alloc::format!("Embedding root: g0 = {}\n", EMBEDDING_ROOT_G0));
+    s.push_str("  (negative branch -- the (0,1) root was the wrong-root bug, fixed)\n\n");
+    s.push_str("Theorem chain (all green):\n");
+    for thm in &EMBEDDING_THEOREMS {
+        s.push_str(&alloc::format!("  {}  \u{2713}\n", thm));
     }
-    s.push_str("\nDischarges: crystal_forces_d12_sic (SIC_POVM_Functor.lean axiom)\n");
-    s.push_str("  -> IsSICPOVM 12 psi (theorem, not axiom)\n");
+    s.push_str("\nAxiom audit: propext, Classical.choice, Quot.sound,\n");
+    s.push_str("  Lean.ofReduceBool, Lean.trustCompiler -- no project axioms,\n");
+    s.push_str("  no Stark shadow, no circularity.\n");
+    s.push_str("SIC_POVM_Functor.lean imports the Embedding and delegates.\n");
+    s.push_str("Nothing remains of the d=12 SIC existence campaign.\n");
     s
 }
 
@@ -550,13 +567,14 @@ mod embedding_tests {
     #[test]
     fn test_embedding_status() {
         assert!(EMBEDDING_INFRASTRUCTURE_DONE);
-        assert_eq!(EMBEDDING_SORRIES_REMAINING, 8);
-        assert!(!EMBEDDING_HOM_TRANSFER_DONE);
+        assert_eq!(EMBEDDING_SORRIES_REMAINING, 0);
+        assert!(EMBEDDING_HOM_TRANSFER_DONE);
+        assert!(EMBEDDING_COMPLETE);
     }
 
     #[test]
-    fn test_embedding_sorry_count() {
-        assert_eq!(EMBEDDING_SORRY_LIST.len(), 4);
+    fn test_embedding_theorem_chain() {
+        assert_eq!(EMBEDDING_THEOREMS.len(), 8);
     }
 }
 
@@ -579,7 +597,7 @@ pub const BELNAP_SIC_CAPSTONE: &str = "sic_no_condition (n : Nat) : (mlOrbit n).
 ///   Tier 0: d=1 (trivial)
 ///   Tier 1: d=2 (Belnap B=XZ, unconditional, degree 2)
 ///   Tier 2: d=4,8,16,... (all 2^n, unconditional from DualLinkClosure)
-///   Tier 3: d=12 (radical-expressible, phase-tower collapse, degree 288)
+///   Tier 3: d=12 (THEOREM: existence ring + embedding capstone)
 ///   Tier 4: d=7 (nested SIC from {D,P} subset, Φ-gate selection)
 ///   Tier 5: general d (Z[1/d, zeta_d] embedding, Stark conjecture as B-state)
 
@@ -587,7 +605,7 @@ pub const SIC_TIERS: [(&str, &str, &str); 6] = [
     ("Tier 0", "d=1",   "Trivial"),
     ("Tier 1", "d=2",   "Belnap B=XZ -- unconditional, degree 2"),
     ("Tier 2", "d=2^n", "All 2^n -- unconditional from DualLinkClosure"),
-    ("Tier 3", "d=12",  "Radical-expressible, phase-tower collapse, degree 288/Q"),
+    ("Tier 3", "d=12",  "THEOREM -- existence ring dim 2048/Q + embedding capstone"),
     ("Tier 4", "d=7",   "Nested SIC from {D,P} subset, Phi-gate selection"),
     ("Tier 5", "gen d",  "Z[1/d, zeta_d] -- Stark conjecture as B-state"),
 ];
@@ -722,10 +740,10 @@ pub fn z0_report() -> String {
     s.push_str(&alloc::format!("  c root of: {}
 
 ", Z1_QUARTIC));
-    s.push_str(&alloc::format!("Ray class field tower: degree {}/Q
+    s.push_str(&alloc::format!("Ray class field tower (discovery trail): degree {}/Q
 ", FIDUCIAL_RADICAL_DEGREE));
     s.push_str(&alloc::format!("  {} cyclic chunks ({} quadratic + {} cubic)
-", 
+",
         RAY_TOWER_CHUNKS, RAY_TOWER_QUADRATIC, RAY_TOWER_CUBIC));
     s.push_str(&alloc::format!("  c5-layer over K16: degree {} (quadratic!)
 ", C5_K16_DEGREE));
@@ -733,6 +751,12 @@ pub fn z0_report() -> String {
 Phase tower: 1 independent generator (u1), 8x collapse.
 ");
     s.push_str("All 12 z_k = sqrt(N_k) * u_k radical-expressible.
+");
+    s.push_str("TRUE HOME (endgame): existence ring R, dim 2048/Q -- the
+");
+    s.push_str("coordinates leave the ray class field (that was the cont.3
+");
+    s.push_str("discovery); the ring + embedding capstone is what proved it.
 ");
     s
 }
@@ -747,9 +771,12 @@ pub fn d12_full_report() -> String {
 ");
     s.push_str("║  d=12 SIC-POVM — AUGMENTED REPORT (Phase VI)    ║
 ");
-    s.push_str("║  d12_sic_build cont.1-19 + p4rakernel Lean      ║
+    s.push_str("║  d12_sic_build cont.1-23 COMPLETE + p4ra Lean   ║
 ");
     s.push_str("╚══════════════════════════════════════════════════╝
+
+");
+    s.push_str("CAPSTONE: crystal_forces_d12_sic is a THEOREM (axiom retired).
 
 ");
 
@@ -759,7 +786,7 @@ pub fn d12_full_report() -> String {
 "));
     s.push_str(&alloc::format!("  d=2^n: SIC_POVM_DualLinkClosure, axiom-free
 "));
-    s.push_str(&alloc::format!("  d=12:  Radical-expressible, phase-tower collapse
+    s.push_str(&alloc::format!("  d=12:  THEOREM -- existence ring + embedding capstone
 "));
     s.push_str(&alloc::format!("  d=7:   Nested SIC from {{D,P}} subset
 
@@ -815,38 +842,47 @@ pub fn d12_full_report() -> String {
 ");
     s.push_str(&alloc::format!("  z0 = +sqrt(1/12 - sqrt(2)/24 + sqrt(13)/156 - sqrt(26)/312)
 "));
-    s.push_str(&alloc::format!("  Ray class field tower: deg 288/Q (6 cyclic pieces)
-"));
     s.push_str(&alloc::format!("  All 12 coordinates radical-expressible.
+"));
+    s.push_str(&alloc::format!("  True home: existence ring R, dim 2048/Q (ray tower = trail)
 
 "));
 
-    s.push_str("── Machine-Checked Lean Modules ──
+    s.push_str("── Embedding Capstone ──
 ");
-    s.push_str("  SIC_D12_Norm.lean             (71 lines, trace=1)
+    s.push_str(&alloc::format!("  phi : R -> C at g0 = {}
+", EMBEDDING_ROOT_G0));
+    s.push_str("  norm_sq_eq_one + equiangular transferred; audit clean.
 ");
-    s.push_str("  SIC_D12_Equiangularity.lean   (245 lines, 143 overlaps)
+    s.push_str("  crystal_forces_d12_sic: THEOREM (SIC_POVM_Functor delegates)
+
 ");
-    s.push_str("  SIC_D12_MagnitudeClasses.lean (85 lines, 7 witnesses)
+
+    s.push_str("── Machine-Checked Lean Modules (all 0 sorries) ──
 ");
-    s.push_str("  SIC_D12_SymmetricModuli.lean  (88 lines, z0,z6 in Q(sqrt2,sqrt13))
+    s.push_str("  SIC_D12_Norm.lean             (trace=1)
 ");
-    s.push_str("  SIC_D12_RayTower.lean         (139 lines, deg 288/Q)
+    s.push_str("  SIC_D12_Equiangularity.lean   (143 overlaps pinned)
 ");
-    s.push_str("  SIC_D12_ExistenceRing.lean    (413 lines, ALL 143 overlaps in R)
+    s.push_str("  SIC_D12_MagnitudeClasses.lean (7 witnesses)
 ");
-    s.push_str("  SIC_POVM_DualLinkClosure.lean (139 lines, unconditional d=2^n)
+    s.push_str("  SIC_D12_SymmetricModuli.lean  (z0,z6 in Q(sqrt2,sqrt13))
 ");
-    s.push_str("  CanonicalOrdinalFaithfulness.lean (103 lines, 12 guards)
+    s.push_str("  SIC_D12_RayTower.lean         (discovery-trail tower)
 ");
-    s.push_str("  BelnapNFiducial.lean          (22 theorems, 0 sorries)
+    s.push_str("  SIC_D12_ExistenceRing.lean    (ALL 143 overlaps in R)
+");
+    s.push_str("  SIC_D12_Embedding.lean        (ring hom R->C, CAPSTONE)\n");
+    s.push_str("  SIC_D12_WitnessVessel.lean    (witness_vessel_lossless)\n");
+    s.push_str("  SIC_POVM_DualLinkClosure.lean (unconditional d=2^n)
+");
+    s.push_str("  SIC_POVM_Functor.lean         (crystal_forces_d12_sic THEOREM)\n");
+    s.push_str("  CanonicalOrdinalFaithfulness.lean (12 guards)
+");
+    s.push_str("  BelnapNFiducial.lean          (22 theorems)
 ");
     s.push_str("  SIC_Multilattice_Proof.lean   (proved)
 ");
-    s.push_str("  SIC_D12_SymmetricModuli.lean  (88 lines, 4 theorems, z0,z6 in Q(sqrt2,sqrt13))
-");
-    s.push_str("  SIC_D12_ExistenceRing.lean    (413 lines, ALL 143 overlaps in R, 0 sorries)\n");
-    s.push_str("  SIC_D12_Embedding.lean         (427 lines, ring hom R->C, 8 sorries remain)\n");
     s.push_str("  ZaunerEmbeddingEquivalence.lean (proved)\n");
     s.push_str("  QCI_SICPOVM_Bridge.lean        (proved)\n");
     s
@@ -860,11 +896,13 @@ pub fn d12_summary() -> String {
     let mut s = String::new();
     s.push_str("═══ d=12 SIC-POVM STATUS ═══
 ");
+    s.push_str("crystal_forces_d12_sic: THEOREM (axiom retired, audit clean)
+");
     s.push_str(&alloc::format!("Existence-grade: {}/{} overlaps proved exactly (ALL)
 ", EXISTENCE_GRADE_COUNT, EXISTENCE_GRADE_TOTAL));
     s.push_str(&alloc::format!("Ring: K16(s0,s1,s3,s9,i,c5,u1), dim 2048/Q
 "));
-    s.push_str(&alloc::format!("Capstone: ANY hom R->C is a SIC point
+    s.push_str(&alloc::format!("Capstone: phi : R -> C at IVT-bracketed g0; both SIC halves transfer
 
 "));
     s.push_str(&alloc::format!("Phase-tower: 1 independent generator (8x collapse)
@@ -875,7 +913,7 @@ pub fn d12_summary() -> String {
 ", ORBIT_COUNT, TOTAL_OVERLAPS));
     s.push_str(&alloc::format!("Dual-Link: norm(N1) = 1/{}^2
 ", DUAL_LINK_NORM_N1_DENOM));
-    s.push_str(&alloc::format!("Fiducial: radical-expressible, deg 288/Q
+    s.push_str(&alloc::format!("Fiducial: radical-expressible; true home = ring R, dim 2048/Q
 "));
     s.push_str("Belnap d=2^n: UNCONDITIONAL (0 sorries, 0 axioms)\n");
     s.push_str("\nSubcommands: tower | magnitudes | orbits | existence | duallink | z0 | ordinals | verify | symmetric | embedding | lean-status\n");
@@ -889,36 +927,43 @@ pub fn lean_status_report() -> String {
     s.push_str("║  p4rakernel d=12 SIC-POVM -- LEAN 4 STATUS       ║\n");
     s.push_str("╚══════════════════════════════════════════════════════╝\n\n");
 
-    s.push_str("── COMPLETED MODULES (0 sorries) ──\n");
-    s.push_str("  [check] SIC_D12_Norm.lean             (71 lines)  trace=1\n");
-    s.push_str("  [check] SIC_D12_Equiangularity.lean   (245 lines) 143 overlaps discharged\n");
-    s.push_str("  [check] SIC_D12_MagnitudeClasses.lean (85 lines)  7 witnesses in K16\n");
-    s.push_str("  [check] SIC_D12_SymmetricModuli.lean  (88 lines)  z0,z6 in Q(sqrt2,sqrt13)\n");
-    s.push_str("  [check] SIC_D12_ExistenceRing.lean    (413 lines) ALL 143 in ring R\n");
-    s.push_str("  [check] CanonicalOrdinalFaithfulness   (103 lines) 12 guards\n\n");
+    s.push_str("CAMPAIGN COMPLETE: crystal_forces_d12_sic is a THEOREM.\n");
+    s.push_str("Nothing remains of the d=12 SIC existence campaign.\n\n");
 
-    s.push_str("── IN PROGRESS (sorries remaining) ──\n");
-    s.push_str(&alloc::format!("  [clock] SIC_D12_Embedding.lean ({} lines, {} sorries)\n",
-        EMBEDDING_LEAN_LINES, EMBEDDING_SORRIES_REMAINING));
-    s.push_str("        phi_radd, phi_rmul, phi_rconj, norm_sq/equiangular\n\n");
+    s.push_str("── COMPLETED MODULES (0 sorries) ──\n");
+    s.push_str("  [check] SIC_D12_Norm.lean             trace=1\n");
+    s.push_str("  [check] SIC_D12_Equiangularity.lean   143 overlaps discharged\n");
+    s.push_str("  [check] SIC_D12_MagnitudeClasses.lean 7 witnesses in K16\n");
+    s.push_str("  [check] SIC_D12_SymmetricModuli.lean  z0,z6 in Q(sqrt2,sqrt13)\n");
+    s.push_str("  [check] SIC_D12_ExistenceRing.lean    ALL 143 in ring R\n");
+    s.push_str("  [check] SIC_D12_Embedding.lean        CAPSTONE: phi R->C, all transfer\n");
+    s.push_str("  [check] SIC_D12_WitnessVessel.lean    witness_vessel_lossless\n");
+    s.push_str("  [check] CanonicalOrdinalFaithfulness  12 guards\n\n");
 
     s.push_str("── PROVEN STRUCTURAL THEOREMS ──\n");
     s.push_str("  [check] SIC_POVM_DualLinkClosure.lean  -- unconditional d=2^n SIC\n");
-    s.push_str("  [check] SIC_POVM_Functor.lean           -- crystal forces d=12 (axiom)\n");
+    s.push_str("  [check] SIC_POVM_Functor.lean           -- crystal_forces_d12_sic THEOREM\n");
+    s.push_str("                                             (delegates to the Embedding)\n");
     s.push_str("  [check] BelnapNFiducial.lean             -- 22 theorems, 0 sorries\n");
     s.push_str("  [check] ZaunerEmbeddingEquivalence.lean  -- Hilbert-space embedding\n");
     s.push_str("  [check] QCI_SICPOVM_Bridge.lean          -- quantum-classical interface\n\n");
 
-    s.push_str("── d=12 SIC MODULE TOWER ──\n");
+    s.push_str("── d=12 SIC MODULE TOWER (all layers green) ──\n");
     s.push_str("  Layer 1: Norm + Equiangularity (pinned data, both halves exact)\n");
     s.push_str("  Layer 2: MagnitudeClasses + SymmetricModuli (field structure)\n");
     s.push_str("  Layer 3: ExistenceRing (all 143 overlaps in R, 0 sorries)\n");
-    s.push_str("  Layer 4: Embedding (hom R->C, 8 sorries remaining) <- CURRENT WORK\n");
-    s.push_str("  Layer 5: crystal_forces_d12_sic axiom discharged -> THEOREM\n\n");
+    s.push_str("  Layer 4: Embedding (hom R->C, 0 sorries) -- CAPSTONE LANDED\n");
+    s.push_str("  Layer 5: crystal_forces_d12_sic axiom discharged -> THEOREM\n");
+    s.push_str("  Layer 6: WitnessVessel (transport lemma riding frozen machinery)\n\n");
+
+    s.push_str("── AXIOM AUDIT ──\n");
+    s.push_str("  crystal_forces_d12_sic + d12_sic_exists depend on exactly:\n");
+    s.push_str("  propext, Classical.choice, Quot.sound, ofReduceBool, trustCompiler\n");
+    s.push_str("  -- no project axioms, no Stark shadow, no circularity.\n\n");
 
     s.push_str("── DEPLOYMENT ──\n");
     s.push_str("  lean-toolchain: mathlib v4.28.0\n");
-    s.push_str("  lake build: green (8341 jobs)\n");
+    s.push_str(&alloc::format!("  lake build: green ({} jobs, full library)\n", EXISTENCE_RING_LEAN_JOBS));
     s.push_str("  generator: gen_lean_existence.py (fractions-gated)\n");
     s
 }
@@ -959,7 +1004,7 @@ mod tests {
         assert_eq!(FLIP_AUDIT_HARMLESS, 128);
         assert_eq!(FLIP_AUDIT_TOTAL, 256);
         assert_eq!(EXISTENCE_RING_LEAN_THEOREMS, 14);
-        assert_eq!(EXISTENCE_RING_LEAN_JOBS, 8341);
+        assert_eq!(EXISTENCE_RING_LEAN_JOBS, 8344);
     }
 
     #[test]
