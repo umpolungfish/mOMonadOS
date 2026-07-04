@@ -164,6 +164,9 @@ pub fn grammar_is_sic_povm_theorem() -> &'static str {
      differing primitive (1:1 vs n:m). The 12 primitives form an informationally \
      complete POVM; μ∘δ=id is the SIC-POVM dual basis; ⊙ criticality means \
      the apparatus IS the measured system. This is proved in Lean 4: \
+     SIC_D12_Norm.lean, SIC_D12_Equiangularity.lean, SIC_D12_MagnitudeClasses.lean, \
+     SIC_D12_SymmetricModuli.lean, SIC_D12_ExistenceRing.lean (413 lines, 0 sorries), \
+     SIC_D12_Embedding.lean (427 lines, 8 sorries remaining), \
      QCI_SICPOVM_Bridge.lean, BelnapNFiducial.lean (22 theorems, 0 sorries), \
      SIC_Multilattice_Proof.lean, ZaunerEmbeddingEquivalence.lean."
 }

@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 /// Belnap FOUR truth values.
-#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug, Hash)]
 #[repr(u8)]
 pub enum B4 {
     N = 0, // None  — void, absence

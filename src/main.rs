@@ -4,6 +4,7 @@
 #![allow(dead_code)]
 
 extern crate alloc;
+use alloc::vec;
 
 use alloc::string::String;
 use core::panic::PanicInfo;
@@ -42,6 +43,7 @@ mod sic_povm;
 mod frobenius_unify;
 mod clay_witness;
 mod belnap_sic_bridge;
+mod belnap_c4;
 mod sic_compute;
 mod universe_expansion;
 mod bifurcation_test;
@@ -359,6 +361,7 @@ fn repl(k: &mut Kernel) {
                 let name = parts.next().unwrap_or("");
                 print_cl8nk(action, name);
             },
+            "c4" => print_c4_arg(parts.next().unwrap_or("")),
             "cscore" => print_cscore(k),
             "clay" => {
                 let sub = parts.next().unwrap_or("");
@@ -397,12 +400,13 @@ fn repl(k: &mut Kernel) {
                     "tower" => sprintln!("{}", crate::d12_sic::phase_tower_collapse_report()),
                     "magnitudes" | "mag" => sprintln!("{}", crate::d12_sic::magnitude_report()),
                     "orbits" => sprintln!("{}", crate::d12_sic::orbit_report()),
+                    "existence" | "ring" => sprintln!("{}", crate::d12_sic::existence_ring_report()),
                     "duallink" | "dl" => sprintln!("{}", crate::d12_sic::dual_link_report()),
                     "z0" => sprintln!("{}", crate::d12_sic::z0_report()),
                     "ordinals" | "ord" => sprintln!("{}", crate::d12_sic::ordinal_guards_report()),
                     "verify" => sprintln!("{}", crate::d12_sic::d12_full_report()),
                     "" => sprintln!("{}", crate::d12_sic::d12_summary()),
-                    _ => sprintln!("d12 [tower|magnitudes|orbits|duallink|z0|ordinals|verify]"),
+                    _ => sprintln!("d12 [tower|magnitudes|orbits|existence|duallink|z0|ordinals|verify]"),
                 }
             }
             "rebis" => {
@@ -1644,7 +1648,7 @@ fn print_help() {
     sprintln!("  {:<32} — consciousness score (dual-gate)", "cscore");
     sprintln!("  {:<32} — SIC-POVM d=12 structural identity (3 lattice proofs)", "sic");
     sprintln!("  {:<32} — entropy experiment: ΔS vs tier promotion", "entropy [tier|transition]");
-    sprintln!("  {:<32} — d=12 SIC-POVM Phase VI: tower, magnitudes, orbits, z0", "d12 [subcmd]");
+    sprintln!("  {:<32} — d=12 SIC-POVM Phase VI: tower,magnitudes,orbits,existence,duallink,z0", "d12 [subcmd]");
     sprintln!("  {:<32} — Clay Millennium structural status (machine-checked)", "clay");
     sprintln!();
     sprintln!("══ Rebis (Red-Hot Rebis) ══");
@@ -1904,7 +1908,7 @@ fn print_rh() {
     sprintln!("  barriers unif.: {}", if millennium_barriers_unified() { "PASS" } else { "FAIL" });
     sprintln!();
     sprintln!("  Functional equation bnot (s->1-s):");
-    for &v in &[B4::N, B4::T, B4::F, B4::B] {
+    for &v in &[crate::belnap::B4::N, B4::T, B4::F, B4::B] {
         let img = v.bnot();
         let tag = if img == v && v.designated() { " <- FROBENIUS FIXED" }
              else if img == v { " <- fixed" } else { "" };
@@ -1933,7 +1937,7 @@ fn print_shor() {
     sprintln!("  H|T⟩=B: {}", if b4_hadamard(B4::T) == B4::B { "PASS" } else { "FAIL" });
     sprintln!("  H|F⟩=B: {}", if b4_hadamard(B4::F) == B4::B { "PASS" } else { "FAIL" });
     sprintln!("  H|B⟩=T: {}", if b4_hadamard(B4::B) == B4::T { "PASS" } else { "FAIL" });
-    sprintln!("  H|N⟩=N: {}", if b4_hadamard(B4::N) == B4::N { "PASS" } else { "FAIL" });
+    sprintln!("  H|N⟩=N: {}", if b4_hadamard(crate::belnap::B4::N) == crate::belnap::B4::N { "PASS" } else { "FAIL" });
 
     sprintln!("── Shor N=15,a=7 ──");
     let r1 = run_belnap_shor(4, 7, 15);
@@ -1975,7 +1979,7 @@ fn print_psm(arg: &str) {
             let cost_tt = measure_cost(B4::T, B4::T) == 0;
             let irrev_t = collapse_irreversible(B4::T);
             let irrev_f = collapse_irreversible(B4::F);
-            let irrev_n = collapse_irreversible(B4::N);
+            let irrev_n = collapse_irreversible(crate::belnap::B4::N);
             sprintln!("  measure_step(B,B)=B:  {}", if m_b_b { "PASS" } else { "FAIL" });
             sprintln!("  measure_step(B,T)=T:  {}", if m_b_t { "PASS" } else { "FAIL" });
             sprintln!("  measure_step(B,F)=F:  {}", if m_b_f { "PASS" } else { "FAIL" });
@@ -2052,7 +2056,7 @@ fn print_psm(arg: &str) {
                         sprintln!("  halted:  {}", s.halted);
                         for i in 0..8 {
                             let b = vm.belief_of(i);
-                            if b != B4::N || s.steps > 0 {
+                            if b != crate::belnap::B4::N || s.steps > 0 {
                                 sprintln!("  r{}:      {}", i, b.name());
                             }
                         }
@@ -2324,6 +2328,38 @@ fn print_cl8nk(action: &str, name: &str) {
     }
 }
 
+fn print_c4_arg(arg: &str) {
+    use crate::belnap_c4::*;
+    match arg {
+        "born" | "table" => c4_born_table(),
+        "mul" | "multiply" => {
+            sprintln!("C₄ Multiplication Table (16×16)");
+            sprintln!("A * B for A,B ∈ {{N,F,T,B}}×{{N,F,T,B}}");
+            let table = c4_multiplication_table();
+            for (i, row) in table.iter().enumerate().take(16) {
+                sprintln!("  row {}: {} ... ({} cols)", i, row[0], row.len());
+            }
+        }
+        "probe" | "test" | "" => {
+            let i = BelnapComplex::i();
+            let i2 = c4_mul(&i, &i);
+            let conj = i.conjugate();
+            sprintln!("i = N + Ti");
+            sprintln!("i² = {}  (dialetheic: B = both true and false)", c4_format(&i2));
+            sprintln!("conj(i) = {}", c4_format(&conj));
+            sprintln!("|i|² = {}  → born P = {:.2}", c4_format(&BelnapComplex::new(i.magnitude_squared(), crate::belnap::B4::N)), i.born_probability());
+            sprintln!("|1|² = {}  → born P = {:.2}", c4_format(&BelnapComplex::new(BelnapComplex::one().magnitude_squared(), crate::belnap::B4::N)), BelnapComplex::one().born_probability());
+        }
+        _ => {
+            sprintln!("C₄ Belnap Complex Plane");
+            sprintln!("  Usage: grammar c4 [probe|born|mul]");
+            sprintln!("  probe   — test i² = B (dialetheic i)");
+            sprintln!("  born    — Born rule table (all 16 C₄ elements)");
+            sprintln!("  mul     — Multiplication table");
+        }
+    }
+}
+
 fn print_cscore(k: &Kernel) {
     use crate::consciousness::consciousness_eval;
     use crate::imas_ig::IgTuple;
@@ -2543,13 +2579,13 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
         "box" => {
             // Box stratification: show all 16 (p1,p2) boxes
             use crate::belnap::B4;
-            let positions = [B4::N, B4::F, B4::T, B4::B];
+            let positions = [crate::belnap::B4::N, B4::F, B4::T, B4::B];
             let labels = ["N(U)", "F(A)", "T(C)", "B(G)"];
             sprintln!("Codon Box Stratification (16 boxes, p1×p2):");
             sprintln!("  Box    RNA  Stratum  Codons  AAs");
             for (i, &p1) in positions.iter().enumerate() {
                 for (j, &p2) in positions.iter().enumerate() {
-                    let sample = Codon { p1, p2, p3: B4::N };
+                    let sample = Codon { p1, p2, p3: crate::belnap::B4::N };
                     let strat = classify_stratum(&sample);
                     // Collect all 4 codons and their AAs
                     let mut aas = alloc::vec::Vec::new();
@@ -2588,9 +2624,9 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
             use crate::belnap::B4;
             sprintln!("Stop Codon Analysis (Ω boundary — kernel winding limit):");
             let stops = [
-                ("UAA", Codon { p1: B4::N, p2: B4::F, p3: B4::F }, "Ω₀  trivial winding — null boundary"),
-                ("UAG", Codon { p1: B4::N, p2: B4::F, p3: B4::B }, "Ω_Z₂  Z2-protected — amber boundary"),
-                ("UGA", Codon { p1: B4::N, p2: B4::B, p3: B4::F }, "Ω_Z   integer winding — opal boundary"),
+                ("UAA", Codon { p1: crate::belnap::B4::N, p2: B4::F, p3: B4::F }, "Ω₀  trivial winding — null boundary"),
+                ("UAG", Codon { p1: crate::belnap::B4::N, p2: B4::F, p3: B4::B }, "Ω_Z₂  Z2-protected — amber boundary"),
+                ("UGA", Codon { p1: crate::belnap::B4::N, p2: B4::B, p3: B4::F }, "Ω_Z   integer winding — opal boundary"),
             ];
             for (name, codon, desc) in &stops {
                 let s = codon.symbol();
@@ -2657,7 +2693,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
         "verify-codons" => {
             // Full per-codon Frobenius verification table
             use crate::belnap::B4;
-            let positions = [B4::N, B4::F, B4::T, B4::B];
+            let positions = [crate::belnap::B4::N, B4::F, B4::T, B4::B];
             sprintln!("Per-Codon Frobenius Verification Table (64 codons):");
             sprintln!("  Codon  B4(p1,p2,p3)      AA    Stratum  Frob  Primitive");
             let mut pass = 0usize;
@@ -3161,6 +3197,117 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                 }
             }
         }
+        "sidechain" => {
+            match arg {
+                "analyze" | "" => {
+                    use crate::rebis::sidechain;
+                    let results = sidechain::batch_analyze();
+                    sprintln!("══ AA Sidechain × Environment Composition ({} pairs) ══", results.len());
+                    sprintln!("  {:<5} {:<14} {:<14} {:<8} {:<8} {:<8} {}",
+                        "#", "Sidechain", "Environment", "Tensor", "Meet", "Join", "Bottlenecks");
+                    for (i, a) in results.iter().enumerate().take(20) {
+                        sprintln!("  {:<5} {:<14} {:<14} {:<8.2} {:<8.2} {:<8.2} {}",
+                            i+1, a.sidechain, a.environment, a.distance_tensor_sc, a.distance_pre, a.asymmetry, a.n_bottlenecks);
+                    }
+                    if results.len() > 20 {
+                        sprintln!("  ... {} more pairs", results.len() - 20);
+                    }
+                }
+                "list" => {
+                    use crate::rebis::sidechain;
+                    let sc = sidechain::all_sidechains();
+                    sprintln!("══ All 20 AA Sidechains ══");
+                    for (name, _) in sc {
+                        sprintln!("  {}", name);
+                    }
+                    sprintln!();
+                    let env = sidechain::all_environments();
+                    sprintln!("══ 4 Environments ══");
+                    for (name, _) in env {
+                        sprintln!("  {}", name);
+                    }
+                }
+                "frustration" => {
+                    let mat = crate::rebis::sidechain::frustration_matrix();
+                    sprintln!("══ Frustration Matrix (min tensor distance per pair) ══");
+                    sprintln!("  {:<16} {:<16} {:<10}", "Sidechain", "Environment", "Dist");
+                    for (sc, env, d) in &mat {
+                        sprintln!("  {:<16} {:<16} {:<10.2}", sc, env, d);
+                    }
+                }
+                _ => {
+                    let sc = crate::rebis::sidechain::lookup_sidechain(arg);
+                    let env = crate::rebis::sidechain::lookup_environment(arg);
+                    if let Some(tup) = sc {
+                        sprintln!("Sidechain '{}' tuple:", arg);
+                        sprintln!("  ⟨{}{}{}{}{}{}{}{}{}{}{}{}⟩",
+                            tup.d.glyph(), tup.t.glyph(), tup.r.glyph(), tup.p.glyph(),
+                            tup.f.glyph(), tup.k.glyph(), tup.g.glyph(), tup.c.glyph(),
+                            tup.phi.glyph(), tup.h.glyph(), tup.s.glyph(), tup.omega.glyph());
+                    } else if let Some(tup) = env {
+                        sprintln!("Environment '{}' tuple:", arg);
+                        sprintln!("  ⟨{}{}{}{}{}{}{}{}{}{}{}{}⟩",
+                            tup.d.glyph(), tup.t.glyph(), tup.r.glyph(), tup.p.glyph(),
+                            tup.f.glyph(), tup.k.glyph(), tup.g.glyph(), tup.c.glyph(),
+                            tup.phi.glyph(), tup.h.glyph(), tup.s.glyph(), tup.omega.glyph());
+                    } else {
+                        sprintln!("Usage: rebis sidechain [analyze|list|frustration|<name>]");
+                        sprintln!("  analyze          — batch analyze all 80 pairs (default)");
+                        sprintln!("  list             — list all sidechains & environments");
+                        sprintln!("  frustration      — show frustration matrix");
+                        sprintln!("  <name>           — show tuple for sidechain or environment");
+                    }
+                }
+            }
+        }
+        "ligand" => {
+            match arg {
+                "groups" | "fg" | "functional" => {
+                    let names = crate::rebis::ligand::all_functional_group_names();
+                    sprintln!("══ Functional Groups ══");
+                    for name in &names {
+                        sprintln!("  {}", name);
+                    }
+                }
+                "design" | "" => {
+                    let site_name = if rest.is_empty() { "active_site" } else { rest };
+                    let residues: alloc::vec::Vec<&str> = if arg == "design" && !rest.is_empty() {
+                        rest.split(',').collect()
+                    } else {
+                        vec!["Ser195", "His57", "Asp102"]
+                    };
+                    crate::rebis::ligand::print_ligand_suggestions(site_name, &residues);
+                }
+                _ => {
+                    sprintln!("Usage: rebis ligand [groups|design <res1,res2,...>]");
+                    sprintln!("  groups          — list functional groups");
+                    sprintln!("  design [res]    — design ligands for active site");
+                    sprintln!("  Example: rebis ligand design Ser195,His57,Asp102");
+                }
+            }
+        }
+        "decay" => {
+            match arg {
+                "list" | "" => {
+                    let series = crate::rebis::decay_chain::known_series();
+                    sprintln!("══ Decay Series ══");
+                    for s in &series {
+                        let dist = crate::rebis::decay_chain::series_distance(s);
+                        sprintln!("  {}  (total IMASM distance: {:.1})", s, dist);
+                    }
+                }
+                "compare" => {
+                    crate::rebis::decay_chain::compare_series();
+                }
+                "all" => {
+                    crate::rebis::decay_chain::print_all_series();
+                }
+                s => {
+                    let upper = s.to_uppercase();
+                    crate::rebis::decay_chain::print_chain(&upper);
+                }
+            }
+        }
         "bio" => {
             match arg {
                 "tissue" => {
@@ -3279,6 +3426,9 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
             sprintln!("  rebis antibody epi|des.. — antibody CDR design");
             sprintln!("  rebis material forge|..  — IG material forge & metamaterials");
             sprintln!("  rebis bio                — biological sim (tissue, telomere)");
+            sprintln!("  rebis sidechain [analyze] — AA sidechain × environment algebra");
+            sprintln!("  rebis ligand [groups]     — Ligand design from catalytic sites");
+            sprintln!("  rebis decay [series]      — Nuclear decay as IMASM winding (U238, U235, Th232)");
             sprintln!("  rebis tx                 — therapeutics (chemo, pill, antidote)
   rebis clink [chain|..]    — CLINK 9-layer chain (L0–L8)
   rebis imas [bridge|..]    — IMASM arranger bridge");

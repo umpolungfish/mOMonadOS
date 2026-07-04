@@ -9,6 +9,7 @@
 //! derepression via the ouroboric telomere axis.
 
 use crate::belnap::B4;
+use crate::sprintln;
 
 // ── Biological Cell State ──────────────────────────────────────────────
 
@@ -384,4 +385,212 @@ impl Telomere {
         let limit = initial_bp / 50;
         Telomere { length_bp: initial_bp, hayflick_limit: limit, divisions_remaining: limit }
     }
+}
+
+
+// ── Expanded Enzyme Active Site Catalog ─────────────────────────────────
+// Ported from red-hot_rebis/rhr_p4rky/expanded_catalyzing_proteins.py
+// Each entry: name, organism, PDB, active-site residues
+
+#[derive(Debug, Clone)]
+pub struct EnzymeEntry {
+    pub name: &'static str,
+    pub organism: &'static str,
+    pub pdb: &'static str,
+    pub active_site_residues: &'static [&'static str],
+}
+
+pub const SERINE_PROTEASES: &[EnzymeEntry] = &[
+    EnzymeEntry { name: "chymotrypsin", organism: "Bos taurus", pdb: "1CHG", active_site_residues: &["Ser195", "His57", "Asp102"] },
+    EnzymeEntry { name: "thrombin", organism: "Homo sapiens", pdb: "1PPB", active_site_residues: &["Ser195", "His57", "Asp102"] },
+    EnzymeEntry { name: "elastase", organism: "Homo sapiens", pdb: "1HNE", active_site_residues: &["Ser195", "His57", "Asp102"] },
+    EnzymeEntry { name: "subtilisin", organism: "Bacillus subtilis", pdb: "1SBT", active_site_residues: &["Ser221", "His64", "Asp32"] },
+    EnzymeEntry { name: "factor_Xa", organism: "Homo sapiens", pdb: "1FJS", active_site_residues: &["Ser195", "His57", "Asp102"] },
+    EnzymeEntry { name: "kallikrein", organism: "Homo sapiens", pdb: "1SPJ", active_site_residues: &["Ser195", "His57", "Asp102"] },
+    EnzymeEntry { name: "plasmin", organism: "Homo sapiens", pdb: "1BUI", active_site_residues: &["Ser195", "His57", "Asp102"] },
+    EnzymeEntry { name: "proteinase_K", organism: "Engyodontium album", pdb: "2PRK", active_site_residues: &["Ser224", "His69", "Asp39"] },
+    EnzymeEntry { name: "urokinase", organism: "Homo sapiens", pdb: "1C5W", active_site_residues: &["Ser195", "His57", "Asp102"] },
+];
+
+pub const CYSTEINE_PROTEASES: &[EnzymeEntry] = &[
+    EnzymeEntry { name: "papain", organism: "Carica papaya", pdb: "1PPN", active_site_residues: &["Cys25", "His159", "Asn175"] },
+    EnzymeEntry { name: "cathepsin_B", organism: "Homo sapiens", pdb: "1CTB", active_site_residues: &["Cys29", "His199", "Asn219"] },
+    EnzymeEntry { name: "cathepsin_L", organism: "Homo sapiens", pdb: "1CJL", active_site_residues: &["Cys25", "His163", "Asn187"] },
+    EnzymeEntry { name: "caspase_3", organism: "Homo sapiens", pdb: "1CP3", active_site_residues: &["Cys163", "His121"] },
+    EnzymeEntry { name: "caspase_1", organism: "Homo sapiens", pdb: "1IBC", active_site_residues: &["Cys285", "His237"] },
+    EnzymeEntry { name: "calpain", organism: "Homo sapiens", pdb: "1KXR", active_site_residues: &["Cys115", "His272", "Asn296"] },
+];
+
+pub const ASPARTYL_PROTEASES: &[EnzymeEntry] = &[
+    EnzymeEntry { name: "pepsin", organism: "Sus scrofa", pdb: "1PSN", active_site_residues: &["Asp32", "Asp215"] },
+    EnzymeEntry { name: "renin", organism: "Homo sapiens", pdb: "1RNE", active_site_residues: &["Asp32", "Asp215"] },
+    EnzymeEntry { name: "cathepsin_D", organism: "Homo sapiens", pdb: "1LYB", active_site_residues: &["Asp33", "Asp231"] },
+    EnzymeEntry { name: "beta_secretase_BACE1", organism: "Homo sapiens", pdb: "1FKN", active_site_residues: &["Asp32", "Asp228"] },
+    EnzymeEntry { name: "HIV1_protease_dimer", organism: "Human immunodeficiency virus 1", pdb: "1HHP", active_site_residues: &["Asp25", "Asp25_prime", "Ile50", "Ile50_prime"] },
+];
+
+pub const METALLOPROTEASES: &[EnzymeEntry] = &[
+    EnzymeEntry { name: "thermolysin", organism: "Bacillus thermoproteolyticus", pdb: "1LND", active_site_residues: &["His142", "His146", "Glu166"] },
+    EnzymeEntry { name: "carboxypeptidase_A", organism: "Bos taurus", pdb: "1CPA", active_site_residues: &["His69", "His196", "Glu72", "Arg145", "Tyr248"] },
+    EnzymeEntry { name: "angiotensin_converting_enzyme", organism: "Homo sapiens", pdb: "1O86", active_site_residues: &["His383", "His387", "Glu411"] },
+    EnzymeEntry { name: "matrix_metalloproteinase_9", organism: "Homo sapiens", pdb: "1L6J", active_site_residues: &["His401", "His405", "His411"] },
+    EnzymeEntry { name: "matrix_metalloproteinase_2", organism: "Homo sapiens", pdb: "1CK7", active_site_residues: &["His403", "His407", "His413"] },
+    EnzymeEntry { name: "carbonic_anhydrase_IX", organism: "Homo sapiens", pdb: "3IAI", active_site_residues: &["His94", "His96", "His119"] },
+];
+
+pub const KINASES: &[EnzymeEntry] = &[
+    EnzymeEntry { name: "protein_kinase_A", organism: "Homo sapiens", pdb: "1ATP", active_site_residues: &["Lys72", "Glu91", "Asp184", "Asn171", "Asp166"] },
+    EnzymeEntry { name: "SRC_kinase", organism: "Homo sapiens", pdb: "2SRC", active_site_residues: &["Lys295", "Glu310", "Asp404"] },
+    EnzymeEntry { name: "EGFR_kinase", organism: "Homo sapiens", pdb: "1M17", active_site_residues: &["Lys721", "Glu738", "Asp831"] },
+    EnzymeEntry { name: "CDK2", organism: "Homo sapiens", pdb: "1AQ1", active_site_residues: &["Lys33", "Glu51", "Asp145"] },
+    EnzymeEntry { name: "MAP_kinase_ERK2", organism: "Homo sapiens", pdb: "1ERK", active_site_residues: &["Lys54", "Glu71", "Asp167"] },
+    EnzymeEntry { name: "AKT_kinase", organism: "Homo sapiens", pdb: "1UNQ", active_site_residues: &["Lys179", "Glu198", "Asp292"] },
+];
+
+pub const PHOSPHATASES: &[EnzymeEntry] = &[
+    EnzymeEntry { name: "alkaline_phosphatase", organism: "Homo sapiens", pdb: "1ALK", active_site_residues: &["Ser102", "Arg166", "Asp101", "His331"] },
+    EnzymeEntry { name: "PTP1B", organism: "Homo sapiens", pdb: "1PTY", active_site_residues: &["Cys215", "Arg221", "Asp181"] },
+    EnzymeEntry { name: "PP2A", organism: "Homo sapiens", pdb: "2IAE", active_site_residues: &["His59", "His241", "Asp57", "Asp85"] },
+    EnzymeEntry { name: "calcineurin", organism: "Homo sapiens", pdb: "1AUI", active_site_residues: &["His101", "Asp121", "His199", "His281"] },
+];
+
+pub const OXIDOREDUCTASES: &[EnzymeEntry] = &[
+    EnzymeEntry { name: "lactate_dehydrogenase", organism: "Homo sapiens", pdb: "1I10", active_site_residues: &["Arg109", "His195", "Arg171", "Asp168"] },
+    EnzymeEntry { name: "malate_dehydrogenase", organism: "Homo sapiens", pdb: "2DFD", active_site_residues: &["Arg102", "His186", "Arg161", "Asp158"] },
+    EnzymeEntry { name: "superoxide_dismutase_CuZn", organism: "Homo sapiens", pdb: "1SOS", active_site_residues: &["His46", "His48", "His61", "His118", "His44"] },
+    EnzymeEntry { name: "catalase", organism: "Homo sapiens", pdb: "1DGF", active_site_residues: &["His74", "Asn147", "Tyr357"] },
+    EnzymeEntry { name: "glutathione_peroxidase", organism: "Homo sapiens", pdb: "1GP1", active_site_residues: &["Sec45", "Gln81", "Trp158"] },
+    EnzymeEntry { name: "monoamine_oxidase_A", organism: "Homo sapiens", pdb: "2BXR", active_site_residues: &["Cys406", "Tyr444"] },
+    EnzymeEntry { name: "dihydrofolate_reductase", organism: "Homo sapiens", pdb: "1HFR", active_site_residues: &["Glu30", "Phe31", "Phe34"] },
+    EnzymeEntry { name: "aldose_reductase", organism: "Homo sapiens", pdb: "1AH3", active_site_residues: &["Tyr48", "His110", "Lys77", "Trp111"] },
+    EnzymeEntry { name: "nitric_oxide_synthase", organism: "Homo sapiens", pdb: "1NOS", active_site_residues: &["Cys194", "Trp356", "Tyr585", "Glu361"] },
+    EnzymeEntry { name: "cytochrome_P450_3A4", organism: "Homo sapiens", pdb: "1TQN", active_site_residues: &["Cys442"] },
+];
+
+pub const TRANSFERASES: &[EnzymeEntry] = &[
+    EnzymeEntry { name: "hexokinase", organism: "Homo sapiens", pdb: "1HKB", active_site_residues: &["Asp205", "Lys170", "Thr232"] },
+    EnzymeEntry { name: "glutathione_S_transferase", organism: "Homo sapiens", pdb: "1GSD", active_site_residues: &["Tyr6", "Ser11", "Arg13", "Arg20"] },
+    EnzymeEntry { name: "creatine_kinase", organism: "Homo sapiens", pdb: "1CRK", active_site_residues: &["Cys282", "Arg96", "Arg129", "Arg287"] },
+    EnzymeEntry { name: "DNA_methyltransferase_1", organism: "Homo sapiens", pdb: "3SWR", active_site_residues: &["Cys1226", "Glu1266", "Arg1312"] },
+    EnzymeEntry { name: "acetyltransferase_HAT", organism: "Homo sapiens", pdb: "1P0B", active_site_residues: &["Glu173", "His140", "Cys168"] },
+    EnzymeEntry { name: "catechol_O_methyltransferase", organism: "Homo sapiens", pdb: "3BWM", active_site_residues: &["Lys144", "Asp141", "Glu199"] },
+];
+
+pub const HYDROLASES: &[EnzymeEntry] = &[
+    EnzymeEntry { name: "beta_lactamase_TEM1", organism: "Escherichia coli", pdb: "1BTL", active_site_residues: &["Ser70", "Lys73", "Ser130", "Glu166"] },
+    EnzymeEntry { name: "phospholipase_A2", organism: "Homo sapiens", pdb: "1P2P", active_site_residues: &["His48", "Asp99", "Tyr52", "Tyr73"] },
+    EnzymeEntry { name: "butyrylcholinesterase", organism: "Homo sapiens", pdb: "1P0I", active_site_residues: &["Ser198", "His438", "Glu325"] },
+    EnzymeEntry { name: "lipase_pancreatic", organism: "Homo sapiens", pdb: "1LPA", active_site_residues: &["Ser152", "Asp176", "His263"] },
+    EnzymeEntry { name: "amylase_alpha", organism: "Homo sapiens", pdb: "1HNY", active_site_residues: &["Asp197", "Glu233", "Asp300"] },
+    EnzymeEntry { name: "urease_helicobacter", organism: "Helicobacter pylori", pdb: "1E9Z", active_site_residues: &["His136", "His138", "His248", "Asp362", "Lys220"] },
+];
+
+pub const LYASES: &[EnzymeEntry] = &[
+    EnzymeEntry { name: "fumarase", organism: "Homo sapiens", pdb: "3E04", active_site_residues: &["His188", "Glu296", "His129"] },
+    EnzymeEntry { name: "enolase", organism: "Homo sapiens", pdb: "2PSN", active_site_residues: &["Lys345", "Glu211", "Lys396", "His159"] },
+    EnzymeEntry { name: "aldolase_fructose_bisphosphate", organism: "Homo sapiens", pdb: "1ALD", active_site_residues: &["Lys229", "Glu187", "Lys146", "Arg148"] },
+];
+
+pub const ISOMERASES: &[EnzymeEntry] = &[
+    EnzymeEntry { name: "triosephosphate_isomerase", organism: "Homo sapiens", pdb: "1TIM", active_site_residues: &["Glu165", "His95", "Lys13"] },
+    EnzymeEntry { name: "phosphoglucose_isomerase", organism: "Homo sapiens", pdb: "1IAT", active_site_residues: &["His388", "Glu357", "Lys518"] },
+    EnzymeEntry { name: "peptidylprolyl_isomerase_FKBP12", organism: "Homo sapiens", pdb: "1FKF", active_site_residues: &["Phe36", "Tyr82", "Trp59", "Phe99"] },
+    EnzymeEntry { name: "topoisomerase_II", organism: "Homo sapiens", pdb: "1ZXM", active_site_residues: &["Tyr805", "Arg488"] },
+];
+
+pub const LIGASES: &[EnzymeEntry] = &[
+    EnzymeEntry { name: "DNA_ligase_I", organism: "Homo sapiens", pdb: "1X9N", active_site_residues: &["Lys568", "Glu621", "Arg646"] },
+];
+
+pub const DRUG_TARGETS: &[EnzymeEntry] = &[
+    EnzymeEntry { name: "COX_1", organism: "Homo sapiens", pdb: "1CQE", active_site_residues: &["Ser530", "Tyr385"] },
+    EnzymeEntry { name: "COX_2", organism: "Homo sapiens", pdb: "1CX2", active_site_residues: &["Ser530", "Tyr385", "Arg120", "Val523"] },
+    EnzymeEntry { name: "HMG_CoA_reductase", organism: "Homo sapiens", pdb: "1HWK", active_site_residues: &["Glu83", "Lys735", "Asp767", "His866"] },
+    EnzymeEntry { name: "ACE2", organism: "Homo sapiens", pdb: "1R42", active_site_residues: &["His345", "His374", "Glu402", "His540"] },
+    EnzymeEntry { name: "acetylcholinesterase_electrophorus", organism: "Electrophorus electricus", pdb: "1C2B", active_site_residues: &["Ser200", "His440", "Glu327"] },
+    EnzymeEntry { name: "xanthine_oxidase", organism: "Homo sapiens", pdb: "1FIQ", active_site_residues: &["Glu802", "Arg880", "Glu1261"] },
+    EnzymeEntry { name: "tyrosinase", organism: "Homo sapiens", pdb: "5M8L", active_site_residues: &["His180", "His202", "His211", "His363", "His367", "His390"] },
+    EnzymeEntry { name: "adenosine_deaminase", organism: "Homo sapiens", pdb: "1ADD", active_site_residues: &["His214", "His238", "Asp295", "Asp296"] },
+    EnzymeEntry { name: "thymidylate_synthase", organism: "Homo sapiens", pdb: "1HVY", active_site_residues: &["Cys195", "Arg218"] },
+    EnzymeEntry { name: "carbonic_anhydrase_XII", organism: "Homo sapiens", pdb: "1JCZ", active_site_residues: &["His94", "His96", "His119"] },
+    EnzymeEntry { name: "aldose_reductase_like_1", organism: "Homo sapiens", pdb: "1PWL", active_site_residues: &["Tyr48", "His110", "Lys77"] },
+    EnzymeEntry { name: "pancreatic_lipase", organism: "Homo sapiens", pdb: "1LPA", active_site_residues: &["Ser152", "Asp176", "His263"] },
+    EnzymeEntry { name: "acetylcholinesterase_human", organism: "Homo sapiens", pdb: "4EY7", active_site_residues: &["Ser203", "His447", "Glu334"] },
+    EnzymeEntry { name: "chymase", organism: "Homo sapiens", pdb: "1PJP", active_site_residues: &["Ser195", "His57", "Asp102"] },
+    EnzymeEntry { name: "neutrophil_elastase", organism: "Homo sapiens", pdb: "1HNE", active_site_residues: &["Ser195", "His57", "Asp102"] },
+    EnzymeEntry { name: "plasminogen", organism: "Homo sapiens", pdb: "1DDJ", active_site_residues: &["Ser195", "His57", "Asp102"] },
+    EnzymeEntry { name: "tPA", organism: "Homo sapiens", pdb: "1TPK", active_site_residues: &["Ser195", "His57", "Asp102"] },
+    EnzymeEntry { name: "furin", organism: "Homo sapiens", pdb: "1P8J", active_site_residues: &["Ser368", "His194", "Asp153"] },
+    EnzymeEntry { name: "TMPRSS2", organism: "Homo sapiens", pdb: "7MEQ", active_site_residues: &["Ser441", "His296", "Asp345"] },
+    EnzymeEntry { name: "cathepsin_K", organism: "Homo sapiens", pdb: "1ATK", active_site_residues: &["Cys25", "His162", "Asn182"] },
+    EnzymeEntry { name: "SARS_CoV2_3CL_protease", organism: "SARS-CoV-2", pdb: "6LU7", active_site_residues: &["Cys145", "His41"] },
+    EnzymeEntry { name: "SARS_CoV2_PLpro", organism: "SARS-CoV-2", pdb: "6WX4", active_site_residues: &["Cys111", "His272", "Asp286"] },
+    EnzymeEntry { name: "NS3_NS4A_protease", organism: "Hepatitis C virus", pdb: "1DY9", active_site_residues: &["Ser139", "His57", "Asp81"] },
+    EnzymeEntry { name: "neuraminidase", organism: "Influenza A virus", pdb: "2HU4", active_site_residues: &["Arg118", "Asp151", "Arg152", "Arg292", "Arg371", "Tyr406", "Glu277"] },
+    EnzymeEntry { name: "reverse_transcriptase_HIV", organism: "HIV-1", pdb: "1RTD", active_site_residues: &["Asp110", "Asp185", "Asp186"] },
+    EnzymeEntry { name: "integrase_HIV", organism: "HIV-1", pdb: "1QS4", active_site_residues: &["Asp64", "Asp116", "Glu152"] },
+    EnzymeEntry { name: "RNA_polymerase_II", organism: "Homo sapiens", pdb: "1I50", active_site_residues: &["Asp481", "Asp483", "Asp485"] },
+];
+
+pub const ADDITIONAL_TARGETS: &[EnzymeEntry] = &[
+    EnzymeEntry { name: "dihydroorotate_dehydrogenase", organism: "Homo sapiens", pdb: "2BXV", active_site_residues: &["Arg136", "Gln47", "Tyr356"] },
+    EnzymeEntry { name: "inosine_monophosphate_dehydrogenase", organism: "Homo sapiens", pdb: "1B3O", active_site_residues: &["Cys331", "Asp364"] },
+    EnzymeEntry { name: "PARP1", organism: "Homo sapiens", pdb: "4UND", active_site_residues: &["Glu988", "His862", "Tyr907"] },
+    EnzymeEntry { name: "histone_deacetylase_1", organism: "Homo sapiens", pdb: "4BKX", active_site_residues: &["His141", "Asp176", "His178", "Asp264"] },
+    EnzymeEntry { name: "sirtuin_1", organism: "Homo sapiens", pdb: "4I5I", active_site_residues: &["His363", "Phe297", "Asn346"] },
+    EnzymeEntry { name: "peptidyl_arginine_deiminase_4", organism: "Homo sapiens", pdb: "1WDA", active_site_residues: &["Cys645", "His471", "Asp473"] },
+    EnzymeEntry { name: "glutaminase", organism: "Homo sapiens", pdb: "3SS3", active_site_residues: &["Ser286", "Lys289", "Tyr414"] },
+    EnzymeEntry { name: "isocitrate_dehydrogenase_1", organism: "Homo sapiens", pdb: "1T09", active_site_residues: &["Arg132", "Arg100", "Asp275", "Asp279"] },
+    EnzymeEntry { name: "succinate_dehydrogenase", organism: "Homo sapiens", pdb: "1ZOY", active_site_residues: &["His207", "Arg408", "Ser409", "Trp164"] },
+    EnzymeEntry { name: "glutamate_dehydrogenase", organism: "Homo sapiens", pdb: "1L1F", active_site_residues: &["Lys113", "Asp165", "His189"] },
+    EnzymeEntry { name: "phenylalanine_hydroxylase", organism: "Homo sapiens", pdb: "1J8U", active_site_residues: &["Glu286", "His285", "Arg297"] },
+    EnzymeEntry { name: "tyrosine_hydroxylase", organism: "Homo sapiens", pdb: "2XSN", active_site_residues: &["His331", "His336", "Glu376"] },
+    EnzymeEntry { name: "tryptophan_hydroxylase", organism: "Homo sapiens", pdb: "1MLW", active_site_residues: &["His272", "His277", "Glu317"] },
+    EnzymeEntry { name: "DOPA_decarboxylase", organism: "Homo sapiens", pdb: "1JS3", active_site_residues: &["Lys303", "His192", "Asp271"] },
+    EnzymeEntry { name: "acetyl_CoA_carboxylase", organism: "Homo sapiens", pdb: "2YL2", active_site_residues: &["Glu196", "Lys259", "Cys786"] },
+    EnzymeEntry { name: "fatty_acid_synthase", organism: "Homo sapiens", pdb: "2JFD", active_site_residues: &["Cys161", "His302", "Ser581"] },
+];
+
+
+// ── Master Enzyme Catalog ──────────────────────────────────────────────
+
+pub const ALL_ENZYMES: &[&[EnzymeEntry]] = &[
+    SERINE_PROTEASES, CYSTEINE_PROTEASES, ASPARTYL_PROTEASES,
+    METALLOPROTEASES, KINASES, PHOSPHATASES, OXIDOREDUCTASES,
+    TRANSFERASES, HYDROLASES, LYASES, ISOMERASES, LIGASES,
+    DRUG_TARGETS, ADDITIONAL_TARGETS,
+];
+
+const ENZYME_CLASS_NAMES: &[&str] = &[
+    "Serine Proteases", "Cysteine Proteases", "Aspartyl Proteases",
+    "Metalloproteases", "Kinases", "Phosphatases", "Oxidoreductases",
+    "Transferases", "Hydrolases", "Lyases", "Isomerases", "Ligases",
+    "Drug Targets", "Additional Targets",
+];
+
+pub fn lookup_enzyme(name: &str) -> Option<&'static EnzymeEntry> {
+    for class in ALL_ENZYMES {
+        if let Some(e) = class.iter().find(|e| e.name == name) {
+            return Some(e);
+        }
+    }
+    None
+}
+
+pub fn print_enzyme_catalog(filter: &str) {
+    for (i, class) in ALL_ENZYMES.iter().enumerate() {
+        let class_name = ENZYME_CLASS_NAMES[i];
+        let keep = filter.is_empty() || class_name.to_lowercase().contains(filter);
+        let has_entry = class.iter().any(|e| !filter.is_empty() && e.name.contains(filter));
+        if !keep && !has_entry { continue; }
+        sprintln!("══ {} ({}) ══", class_name, class.len());
+        for e in *class {
+            if !filter.is_empty() && !e.name.contains(filter) && !class_name.to_lowercase().contains(filter) { continue; }
+            sprintln!("  {:<28} {:<22} {:<6}  [{}]",
+                e.name, e.organism, e.pdb, e.active_site_residues.join(", "));
+        }
+    }
+    sprintln!("── Total: {} enzymes across {} classes ──",
+        ALL_ENZYMES.iter().map(|c| c.len()).sum::<usize>(),
+        ALL_ENZYMES.len());
 }

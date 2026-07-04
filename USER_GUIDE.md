@@ -311,12 +311,12 @@ SIC-POVM d=12 Structural Identity
   Belnap B=XZ as d=2 fiducial: ✓
   6 Frobenius-dual pairs: ✓
   Grammar as Σ=1:1 limit: d=2.0 (Sigma: 1:1 vs n:m)
-  Lean 4 formalization: 3 theorems, 0 sorries
+  Lean 4 formalization: 4 planks (incl. SIC_D12_ExistenceRing), 0 sorries
 ```
 
 ### `d12 [subcmd]`
 
-Phase VI d=12 SIC-POVM augmentation (cont.20 — Existence Ring Found). ALL 143 identities exact in R=K₁₆(s₀,s₁,s₃,s₉,i,c₅,u₁), dim 2048, pure fractions, 12s. ANY hom R→ℂ is a SIC point.
+Phase VI d=12 SIC-POVM augmentation (cont.20 — Existence Ring Found). ALL 143 identities exact in R=K₁₆(s₀,s₁,s₃,s₉,i,c₅,u₁), dim 2048, pure fractions, 12s. ANY hom R→ℂ is a SIC point. Lean-proved: `SIC_D12_ExistenceRing.lean` (ALL 143 identities tower-derived, `native_decide`, 8341 jobs green, zero sorries).
 
 | Sub-command | Output |
 |-------------|--------|
@@ -324,10 +324,11 @@ Phase VI d=12 SIC-POVM augmentation (cont.20 — Existence Ring Found). ALL 143 
 | `tower` | Phase-tower collapse: 3→1 generators, 8× reduction |
 | `magnitudes` | Magnitude square-class group: K16, rank 5, singleton-pairing |
 | `orbits` | 31-orbit Galois structure, degree distribution, existence-grade |
+| `existence` | `ring` | Existence ring report: R=K₁₆(…), dim 2048, flip-audit, 14 Lean theorems |
 | `duallink` | Dual-Link identification: norm(N₁)=1/32448², ramification {2,3,13} |
 | `z0` | Closed-form fiducial: z₀=+√(1/12−√2/24+√13/156−√26/312) + ray tower |
 | `ordinals` | 12 canonical ordinal faithfulness guards |
-| `verify` | Full Phase VI report (all 5 pillars + Lean module listing) |
+| `verify` | Full Phase VI report (all 5 pillars + all 4 Lean planks incl. ExistenceRing) |
 
 ```
 ⊙> d12 tower

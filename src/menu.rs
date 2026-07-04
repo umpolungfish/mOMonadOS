@@ -78,6 +78,7 @@ pub static GRAMMAR_MENU: &[MenuItem] = &[
     MenuItem { name: "cat",      cmd: "cat",      desc: "Category theory bridge", submenu: None },
     MenuItem { name: "algebra",  cmd: "algebra",  desc: "distance|meet|join|tensor vs ZFC", submenu: None },
     MenuItem { name: "cl8nk",    cmd: "cl8nk",    desc: "CLINK Layer 8: cl8nk <action> [name]", submenu: None },
+        MenuItem { name: "c4",       cmd: "c4",       desc: "Belnap C₄ complex plane (i²=B)", submenu: None },
     MenuItem { name: "cscore",   cmd: "cscore",   desc: "Consciousness score (dual-gate)", submenu: None },
 ];
 
@@ -98,6 +99,9 @@ pub static REBIS_MENU: &[MenuItem] = &[
     MenuItem { name: "pdb",      cmd: "rebis pdb",      desc: "PDB structure validation", submenu: None },
     MenuItem { name: "antibody", cmd: "rebis antibody", desc: "Antibody CDR design", submenu: None },
     MenuItem { name: "material", cmd: "rebis material", desc: "IG material forge & metamaterials", submenu: None },
+    MenuItem { name: "sidechain",cmd: "rebis sidechain",desc: "AA sidechain × environment algebra (20×4)", submenu: None },
+    MenuItem { name: "ligand",   cmd: "rebis ligand",   desc: "Ligand design from catalytic sites", submenu: None },
+    MenuItem { name: "decay",    cmd: "rebis decay",    desc: "Nuclear decay as IMASM winding", submenu: None },
     MenuItem { name: "bio",      cmd: "rebis bio",      desc: "Biological simulation", submenu: None },
     MenuItem { name: "tx",       cmd: "rebis tx",       desc: "Therapeutics (chemo, pill, antidote)", submenu: None },
 ];
