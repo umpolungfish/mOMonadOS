@@ -312,7 +312,7 @@ fn repl(k: &mut Kernel) {
             s if {
                 let lower = s.to_lowercase();
                 lower == "exec" || lower == "status" || lower == "programs" || lower == "crystal"
-                    || lower == "grammar" || lower == "rebis" || lower == "dialect" || lower == "parasm" || lower == "cr3echrz" || lower == "clay" || lower == "sic" || lower == "entropy" || lower == "d12"
+                    || lower == "grammar" || lower == "rebis" || lower == "dialect" || lower == "parasm" || lower == "cr3echrz" || lower == "clay"
             } => {
                 let already_in = ctx_stack.current()
                     .map(|c| c.name.to_lowercase() == cmd.to_lowercase())

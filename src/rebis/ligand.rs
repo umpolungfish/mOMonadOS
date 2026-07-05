@@ -172,7 +172,7 @@ pub fn binding_compatibility(mode: BindingMode, group: &FunctionalGroup) -> f32 
 }
 
 /// Score a pocket for a given binding mode using IG tuple complementarity
-pub fn score_pocket(pocket: &ActiveSitePocket, mode: BindingMode) -> f32 {
+pub fn score_pocket(_pocket: &ActiveSitePocket, mode: BindingMode) -> f32 {
     let mut score = 0.0;
     for fg in ALL_FUNCTIONAL_GROUPS {
         let compat = binding_compatibility(mode, fg);
