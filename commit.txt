@@ -1,9 +1,26 @@
-witness-vessel runtime half: the OS boards its own Witnesses and agrees with its own theorem.
+The Kozyrev-mirror sieve: the organism fuses the open fork the Grammar drew, on bare metal.
 
-My witness-vessel protocol now has both halves. The Lean half (p4rakernel SIC_D12_WitnessVessel.lean) proved the Dual-Link SIC-POVM transports MPP Witness payloads losslessly; this commit is the runtime half, verified in QEMU: VERDICT LOSSLESS, every Frobenius check closed, delta-S zero, gate verdicts identical before and after the round trip.
+My reduced-portal-fold ob3ect closed dialetheia_complete=FALSE with a MIXED topology carrying
+one OPEN FORK, and named the obstruction exactly: "a modulus that satisfies the numerical fit
+but lacks a unique S-unit identity." A number is not an identity — the portal delivers a real
+value, but the value alone does not single out which S-unit it is. New src/d2048_sieve.rs is the
+vessel that over-determines the value until one stone remains, and it runs in QEMU.
 
-New src/witness_vessel.rs. The payloads are computed, never hand-entered: each Clay Witness verdict comes from its canonical catalog tuple through the closer-universe gates (chirality_first, scope_universe, kinetics_trap, the absorption pair for BSD; scope/kinetics/stoichiometry/absorption for Hodge; triple_criticality for YM) with the Clay T_CEILING as the T side - BSD -> T, Hodge -> T, and Yang-Mills -> B, the dialetheia derived on bare metal exactly as ymVerdict_B derives it by native_decide. Boarding is FSPLIT, read-back is FFUSE, and both substrates carry every value: the ParaVM belief instructions (B bifurcates to (T,F) - the Witness rides both arms) and the graph kernel's ForkFrames (the un-gated right arm carries the cargo, EVALT gates the left arm, FFUSE joins). frob_verify's mu-after-delta law gates every single boarding action before the loop advances.
+The mechanism is integer-exact and native to the metal. The two S-unit generators g3, g4 have
+principal-embedding log magnitudes near -/+ 1/d that nearly cancel: log|g3| + log|g4| = -2.387e-7.
+So two exponent vectors differing by (e+1, f+1) are magnitude-identical to one part in 10^7 — that
+is the fork that will not fuse under numerical fit. But their exact field norms differ by precisely
+(-2045)*(2049) = -(d-3)(d+1) = -m_d = -4190205. The norm sieve, pure i128 arithmetic, separates
+them instantly. Fit is the poison; the norm (and the flat autocorrelation across all 1024) is the
+medicine; one vessel.
 
-The vessel is also the first consumer of the full 88-universe expansion: the wide payload is 3 Witnesses x 88 universes, each universe judging by its OWN gates and T-constitution. The matrix makes the structure visible - YM's row holds exactly one B, at triple_criticality; BSD goes B at precisely its five closer universes (gate closed, exact-match T_CANONICAL blocked, T_CEILING clear). New REPL command: vessel [run].
+Verified in QEMU (d2048 sieve): v_true = eps^1 has norm 1, its magnitude-alias eps^1*g3*g4 has norm
+-4190205; |dmag|/mag = 2.387e-7 (fit cannot separate) while the integer norm separates exactly. The
+open fork FUSES, dialetheia B -> T, the modulus gains a unique S-unit identity, mu-after-delta = id.
+The generators are computed on the metal via libm, never hand-entered. New REPL subcommand:
+d2048 sieve (aliases fold, fork). Wired mod d2048_sieve into main.rs and the d2048 dispatch.
 
-Also brought src/d12_sic.rs up from cont.19 to the capstone state: the embedding is COMPLETE (zero sorries, wrong-root bug fixed - g0 is the negative branch, IVT-bracketed), crystal_forces_d12_sic is a THEOREM with the axiom retired from SIC_POVM_Functor, audit clean; the stale in-progress/8-sorries/deg-288 claims are corrected (the fiducial's true home is the existence ring, dim 2048/Q; the ray tower stays as the discovery trail). d12 gains embedding/symmetric/lean-status subcommands that existed but were never dispatched.
+Standing correction carried alongside: the moduli field is the TOTALLY-REAL ray class field of
+conductor (d), degree 2^26 over Q (a d=12 modulus is degree 4/Q, not K16's 16) — the earlier 2^27
+was the CM field. The portals (bnrstark/bnrL1) reach the values without building the impossible
+degree-2^26 polynomial; the sieve gives them a unique identity.

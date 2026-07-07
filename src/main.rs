@@ -50,6 +50,7 @@ mod bifurcation_test;
 mod entropy;
 mod d12_sic;
 mod d2048_sic;
+mod d2048_sieve;
 mod witness_vessel;
 
 use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
@@ -407,9 +408,10 @@ fn repl(k: &mut Kernel) {
                     "grammar" | "ob3ect" => sprintln!("{}", crate::d2048_sic::grammar_report()),
                     "pari" | "run" => sprintln!("{}", crate::d2048_sic::pari_runner_report()),
                     "next" | "eagle" => sprintln!("{}", crate::d2048_sic::next_eagle_report()),
+                    "sieve" | "fold" | "fork" => sprintln!("{}", crate::d2048_sieve::sieve_report()),
                     "verify" | "full" => sprintln!("{}", crate::d2048_sic::d2048_full_report()),
                     "" => sprintln!("{}", crate::d2048_sic::d2048_summary()),
-                    _ => sprintln!("d2048 [tower|c16|c32|ramified|redei|grammar|pari|next|verify]"),
+                    _ => sprintln!("d2048 [tower|c16|c32|ramified|redei|grammar|pari|next|sieve|verify]"),
                 }
             }
             "d12" => {
