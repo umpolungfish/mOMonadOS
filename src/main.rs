@@ -49,6 +49,7 @@ mod universe_expansion;
 mod bifurcation_test;
 mod entropy;
 mod d12_sic;
+mod d2048_sic;
 mod witness_vessel;
 
 use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
@@ -393,6 +394,22 @@ fn repl(k: &mut Kernel) {
                     "transition" => sprintln!("{}", crate::entropy::transition_report()),
                     "" => sprintln!("{}", crate::entropy::entropy_report()),
                     _ => sprintln!("entropy [tier | transition] — Phase V entropy experiment"),
+                }
+            }
+            "d2048" | "d2k" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "tower" => sprintln!("{}", crate::d2048_sic::tower_ascent_report()),
+                    "c16" => sprintln!("{}", crate::d2048_sic::c16_report()),
+                    "c32" | "hilbert" => sprintln!("{}", crate::d2048_sic::c32_report()),
+                    "ramified" | "ram" => sprintln!("{}", crate::d2048_sic::ramified_report()),
+                    "redei" => sprintln!("{}", crate::d2048_sic::redei_report()),
+                    "grammar" | "ob3ect" => sprintln!("{}", crate::d2048_sic::grammar_report()),
+                    "pari" | "run" => sprintln!("{}", crate::d2048_sic::pari_runner_report()),
+                    "next" | "eagle" => sprintln!("{}", crate::d2048_sic::next_eagle_report()),
+                    "verify" | "full" => sprintln!("{}", crate::d2048_sic::d2048_full_report()),
+                    "" => sprintln!("{}", crate::d2048_sic::d2048_summary()),
+                    _ => sprintln!("d2048 [tower|c16|c32|ramified|redei|grammar|pari|next|verify]"),
                 }
             }
             "d12" => {
@@ -1686,6 +1703,7 @@ fn print_help() {
     sprintln!("  {:<32} — SIC-POVM d=12 structural identity (3 lattice proofs)", "sic");
     sprintln!("  {:<32} — entropy experiment: ΔS vs tier promotion", "entropy [tier|transition]");
     sprintln!("  {:<32} — d=12 SIC-POVM Phase VI: tower,magnitudes,orbits,existence,duallink,z0", "d12 [subcmd]");
+    sprintln!("  {:<32} — d=2048 moduli tower ascent: tower,redei,grammar,pari,next", "d2048 [subcmd]");
     sprintln!("  {:<32} — witness-vessel transport: Clay payloads x 88 universes, frob-gated", "vessel [run]");
     sprintln!("  {:<32} — Clay Millennium structural status (machine-checked)", "clay");
     sprintln!();
