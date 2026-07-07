@@ -3,12 +3,12 @@
 // Encodes witness paths for Clay problems as IMASM programs.
 // Each program traces the structural closure path verified in
 // p4rakernel/p4ramill Lean 4:
-//   - Clay_WitnessedClosure.lean: BSD, Hodge close under 5 universes
+//   - Clay_WitnessedClosure.lean: BSD, Hodge close under 5 dialects
 //   - Clay_UnclosedResistance.lean: YM one-bump-short, RH/NS/PNP unclosed
 //
 // The witness programs use the IMSCRIB→CLINK→EVALT→IFIX pattern:
 //   1. IMSCRIB — structural snapshot of the problem's tuple
-//   2. CLINK    — compute ouroboricity tier under witness universe
+//   2. CLINK    — compute ouroboricity tier under witness dialect
 //   3. EVALT    — check: is tier O_∞?
 //   4. IFIX     — seal the result
 //
@@ -44,8 +44,8 @@ pub fn witness_name(i: usize) -> &'static str {
 /// Witness program description.
 pub fn witness_description(i: usize) -> &'static str {
     match i {
-        0 => "BSD closure witness — 5 universes, T_CEILING-consistent. ⟨𐑦𐑥𐑾𐑿𐑞𐑧𐑲𐑝𐑮𐑖𐑙𐑭⟩",
-        1 => "Hodge closure witness — 5 universes, T_CEILING-consistent. ⟨𐑦𐑸𐑽𐑿𐑱𐑧𐑲𐑝𐑮𐑓𐑳𐑭⟩",
+        0 => "BSD closure witness — 5 dialects, T_CEILING-consistent. ⟨𐑦𐑥𐑾𐑿𐑞𐑧𐑲𐑝𐑮𐑖𐑙𐑭⟩",
+        1 => "Hodge closure witness — 5 dialects, T_CEILING-consistent. ⟨𐑦𐑸𐑽𐑿𐑱𐑧𐑲𐑝𐑮𐑓𐑳𐑭⟩",
         2 => "YM one-bump-short witness — gate closed under triple_criticality, T_CEILING blocked on Ç",
         _ => "Unknown",
     }
@@ -56,7 +56,7 @@ pub fn witness_program(i: usize) -> Option<Vec<Token>> {
     let mut tokens = Vec::new();
     match i {
         // XXIX: BSD_Witness
-        // BSD closes under 5 universes with T_CEILING consistency.
+        // BSD closes under 5 dialects with T_CEILING consistency.
         // The witness: IMSCRIB captures the structure, AFWD promotes
         // toward closure, CLINK verifies the tier, EVALT confirms.
         0 => {
@@ -66,7 +66,7 @@ pub fn witness_program(i: usize) -> Option<Vec<Token>> {
             }
         }
         // XXX: Hodge_Witness
-        // Hodge closes under 5 universes. Same structural path as BSD.
+        // Hodge closes under 5 dialects. Same structural path as BSD.
         1 => {
             for t in [Token::IMSCRIB, Token::AFWD, Token::CLINK,
                       Token::EVALT, Token::IFIX] {
@@ -124,9 +124,9 @@ pub fn witness_report(problem: &str) -> String {
     out.push_str(&alloc::format!("Winding: Ω={} (ordinal {:.1})\n\n",
         report.winding, report.winding_ordinal));
 
-    if !report.closer_universes.is_empty() {
-        out.push_str("Closer universes:\n");
-        for u in &report.closer_universes {
+    if !report.closer_dialects.is_empty() {
+        out.push_str("Closer dialects:\n");
+        for u in &report.closer_dialects {
             out.push_str(&alloc::format!("  • {}\n", u));
         }
         out.push_str("\n");
@@ -142,7 +142,7 @@ pub fn witness_report(problem: &str) -> String {
         "hodge" => (1, "Hodge closure"),
         s if s.starts_with("ym") || s.starts_with("yang") => (2, "YM one-bump-short"),
         _ => {
-            out.push_str("No witness program — problem is unclosed under all universes.\n");
+            out.push_str("No witness program — problem is unclosed under all dialects.\n");
             out.push_str("The IMASM witness programs exist only for problems with\n");
             out.push_str("verified closure paths (BSD, Hodge) or partial closure (YM).\n");
             return out;
@@ -166,14 +166,14 @@ pub fn witness_report(problem: &str) -> String {
             out.push_str("        AFWD promotes toward the closure target.\n");
             out.push_str("        CLINK computes the ouroboricity tier.\n");
             out.push_str("        EVALT confirms: O_∞ reached.\n");
-            out.push_str("        IFIX seals: BSD IS closed under these 5 universes.\n");
+            out.push_str("        IFIX seals: BSD IS closed under these 5 dialects.\n");
         }
         1 => {
             out.push_str("\n  Path: IMSCRIB captures Hodge's structural snapshot.\n");
             out.push_str("        AFWD promotes toward the closure target.\n");
             out.push_str("        CLINK computes the ouroboricity tier.\n");
             out.push_str("        EVALT confirms: O_∞ reached.\n");
-            out.push_str("        IFIX seals: Hodge IS closed under these 5 universes.\n");
+            out.push_str("        IFIX seals: Hodge IS closed under these 5 dialects.\n");
         }
         2 => {
             out.push_str("\n  Path: IMSCRIB captures YM's structural snapshot.\n");
@@ -191,8 +191,8 @@ pub fn witness_report(problem: &str) -> String {
         out.push_str("\n── Low Winding Theorem ──\n");
         out.push_str(&alloc::format!(
             "Ω={} (ord {:.1}) < terminal anchor 3.\n", report.winding, report.winding_ordinal));
-        out.push_str("All closure-bearing universes require Ω≥3 (integer winding).\n");
-        out.push_str("This problem CANNOT close in any universe because its winding\n");
+        out.push_str("All closure-bearing dialects require Ω≥3 (integer winding).\n");
+        out.push_str("This problem CANNOT close in any dialect because its winding\n");
         out.push_str("is structurally insufficient. The low_winding_theorem is a\n");
         out.push_str("structural proof — not an empirical limit.\n");
     }

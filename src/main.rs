@@ -45,7 +45,7 @@ mod clay_witness;
 mod belnap_sic_bridge;
 mod belnap_c4;
 mod sic_compute;
-mod universe_expansion;
+mod dialect_expansion;
 mod bifurcation_test;
 mod entropy;
 mod d12_sic;
@@ -989,12 +989,12 @@ Stopped after {} ticks.", ran);
                                     if !t_ceiling_gapped_check(&ig) { all_pass = false; }
                                 }
                                 _ => {
-                                    // Dynamic gate evaluation for expansion universes (12–87).
+                                    // Dynamic gate evaluation for expansion dialects (12–87).
                                     if crate::dialect::is_hand_crafted(u) {
                                         sprintln!("  Unknown dialect — cannot verify.");
                                         all_pass = false;
                                     } else {
-                                        let unis = crate::universe_expansion::all_universes();
+                                        let unis = crate::dialect_expansion::all_dialects();
                                         let uni = &unis[u as usize];
                                         let (g1_ok, g1_ord, g1_glyph) = crate::dialect::eval_gate_spec(&uni.g1, &ig);
                                         let (g2_ok, g2_ord, g2_glyph) = crate::dialect::eval_gate_spec(&uni.g2, &ig);
@@ -1706,7 +1706,7 @@ fn print_help() {
     sprintln!("  {:<32} — entropy experiment: ΔS vs tier promotion", "entropy [tier|transition]");
     sprintln!("  {:<32} — d=12 SIC-POVM Phase VI: tower,magnitudes,orbits,existence,duallink,z0", "d12 [subcmd]");
     sprintln!("  {:<32} — d=2048 moduli tower ascent: tower,redei,grammar,pari,next", "d2048 [subcmd]");
-    sprintln!("  {:<32} — witness-vessel transport: Clay payloads x 88 universes, frob-gated", "vessel [run]");
+    sprintln!("  {:<32} — witness-vessel transport: Clay payloads x 88 dialects, frob-gated", "vessel [run]");
     sprintln!("  {:<32} — Clay Millennium structural status (machine-checked)", "clay");
     sprintln!();
     sprintln!("══ Rebis (Red-Hot Rebis) ══");

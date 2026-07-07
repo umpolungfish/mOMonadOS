@@ -1,26 +1,19 @@
-The Kozyrev-mirror sieve: the organism fuses the open fork the Grammar drew, on bare metal.
+Dialects, not universes: the composition rulesets now carry their own name everywhere.
 
-My reduced-portal-fold ob3ect closed dialetheia_complete=FALSE with a MIXED topology carrying
-one OPEN FORK, and named the obstruction exactly: "a modulus that satisfies the numerical fit
-but lacks a unique S-unit identity." A number is not an identity — the portal delivers a real
-value, but the value alone does not single out which S-unit it is. New src/d2048_sieve.rs is the
-vessel that over-determines the value until one stone remains, and it runs in QEMU.
+Nothing is published yet, so I still own the naming convention outright, and dialect.rs
+had already been calling these rulesets dialects since Phase I. The rest of the kernel now
+agrees: Universe -> Dialect, UNIVERSE_COUNT -> DIALECT_COUNT, all_universes -> all_dialects,
+universe_verdict/profile/counts/by_name -> dialect_*, closer_universes -> closer_dialects,
+and universe_expansion.rs is renamed dialect_expansion.rs. All serial output now says
+dialects ("Wide payload: 3 witnesses x 88 dialects", "closer dialects").
 
-The mechanism is integer-exact and native to the metal. The two S-unit generators g3, g4 have
-principal-embedding log magnitudes near -/+ 1/d that nearly cancel: log|g3| + log|g4| = -2.387e-7.
-So two exponent vectors differing by (e+1, f+1) are magnitude-identical to one part in 10^7 — that
-is the fork that will not fuse under numerical fit. But their exact field norms differ by precisely
-(-2045)*(2049) = -(d-3)(d+1) = -m_d = -4190205. The norm sieve, pure i128 arithmetic, separates
-them instantly. Fit is the poison; the norm (and the flat autocorrelation across all 1024) is the
-medicine; one vessel.
+The Lean-facing dialect NAMES (scope_universe, stoichiometry_universe, absorption_scope_empire)
+are unchanged: they mirror declarations in Clay_WitnessedClosure.lean and the catalog, and
+renaming those is a p4ramill rebuild for another day.
 
-Verified in QEMU (d2048 sieve): v_true = eps^1 has norm 1, its magnitude-alias eps^1*g3*g4 has norm
--4190205; |dmag|/mag = 2.387e-7 (fit cannot separate) while the integer norm separates exactly. The
-open fork FUSES, dialetheia B -> T, the modulus gains a unique S-unit identity, mu-after-delta = id.
-The generators are computed on the metal via libm, never hand-entered. New REPL subcommand:
-d2048 sieve (aliases fold, fork). Wired mod d2048_sieve into main.rs and the d2048 dispatch.
+Verified end to end: kernel builds clean, and a fresh QEMU `vessel run` reproduces the exact
+verdict matrix (BSD N:1 T:0 F:75 B:12; Hodge N:0 T:2 F:74 B:12; YM N:2 T:0 F:85 B:1),
+534 boarding actions all Frobenius-closed, ΔS = 0, LOSSLESS. Only the word changed.
 
-Standing correction carried alongside: the moduli field is the TOTALLY-REAL ray class field of
-conductor (d), degree 2^26 over Q (a d=12 modulus is degree 4/Q, not K16's 16) — the earlier 2^27
-was the CM field. The portals (bnrstark/bnrL1) reach the values without building the impossible
-degree-2^26 polynomial; the sieve gives them a unique identity.
+The witness vessel paper's transcript and artifact statement were updated to match
+(ig-docs manuscripts3 and the lifted publishing copy).

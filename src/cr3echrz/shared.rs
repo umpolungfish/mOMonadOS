@@ -224,7 +224,7 @@ pub static DOMAIN_BOOTSTRAP: &[DomainEntry] = &[
     DomainEntry { domain: "physical_theory", keywords: &[
         "higgs", "mechanism", "electroweak", "standard_model", "sm_",
         "general_relativity", "gravitational_wave", "black_hole_info",
-        "universe", "cosmology", "inflation", "dark_matter", "dark_energy",
+        "dialect", "cosmology", "inflation", "dark_matter", "dark_energy",
         "baryon", "lepton", "quark", "gluon", "neutrino_oscillation",
         "flavor_mixing", "cpt", "supersymmetry", "string_theory", "m-theory",
         "ads_cft", "holographic", "entanglement", "wormhole",

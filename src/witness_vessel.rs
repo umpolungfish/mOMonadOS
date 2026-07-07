@@ -21,9 +21,9 @@
 //                 modulus), EVALT gates the left arm (the phase probe),
 //                 FFUSE joins the arms back
 //
-// This module is also the first consumer of the FULL 88-universe expansion
-// (universe_expansion.rs). The payload is not a hand-picked U8-U11 slice:
-// it is the gate verdict of each Clay Witness under EVERY universe,
+// This module is also the first consumer of the FULL 88-dialect expansion
+// (dialect_expansion.rs). The payload is not a hand-picked U8-U11 slice:
+// it is the gate verdict of each Clay Witness under EVERY dialect,
 // computed before boarding and recomputed after read-back. Losslessness
 // means the two matrices are equal, entry by entry.
 //
@@ -40,7 +40,7 @@ use crate::imas_ig::{IgPrim, IgTuple};
 use crate::kernel::Kernel;
 use crate::parasm::ParaVM;
 use crate::tokens::{Program, Token};
-use crate::universe_expansion::{all_universes, GateSpec, Universe, UNIVERSE_COUNT};
+use crate::dialect_expansion::{all_dialects, GateSpec, Dialect, DIALECT_COUNT};
 
 // ═══════════════════════════════════════════════════════════════
 // TUPLE EVALUATION OVER THE 88 UNIVERSES
@@ -101,14 +101,14 @@ pub fn gate_pass(spec: &GateSpec, ig: &IgTuple) -> bool {
     }
 }
 
-/// All three gates of a universe.
-pub fn gates_closed(u: &Universe, ig: &IgTuple) -> bool {
+/// All three gates of a dialect.
+pub fn gates_closed(u: &Dialect, ig: &IgTuple) -> bool {
     gate_pass(&u.g1, ig) && gate_pass(&u.g2, ig) && gate_pass(&u.g3, ig)
 }
 
-/// The universe's OWN T-constitution: ceiling entries compare ordinals,
+/// The dialect's OWN T-constitution: ceiling entries compare ordinals,
 /// exact entries compare value glyphs.
-pub fn t_seal(u: &Universe, ig: &IgTuple) -> bool {
+pub fn t_seal(u: &Dialect, ig: &IgTuple) -> bool {
     for te in u.t_entries {
         let ok = match tuple_prim(ig, te.prim) {
             Some(v) => {
@@ -168,7 +168,7 @@ pub const WITNESSES: [(&str, &str); 3] = [
     ("YM", "yang_mills_mass_gap"),
 ];
 
-/// Closer-universe index sets, matching Clay_WitnessedClosure.lean:
+/// Closer-dialect index sets, matching Clay_WitnessedClosure.lean:
 ///   BSD  : chirality_first, scope_universe, kinetics_trap,
 ///          absorption_chirality_first, absorption_scope_empire
 ///   Hodge: scope_universe, kinetics_trap, stoichiometry_universe,
@@ -178,28 +178,28 @@ pub const BSD_CLOSERS: [usize; 5] = [8, 10, 12, 24, 25];
 pub const HODGE_CLOSERS: [usize; 5] = [10, 12, 19, 25, 26];
 pub const YM_CLOSERS: [usize; 1] = [13];
 
-/// Lean-mirror verdict: gate closure over the witness's closer universes,
+/// Lean-mirror verdict: gate closure over the witness's closer dialects,
 /// T side = the Clay T_CEILING. Expected: BSD → T, Hodge → T, YM → B
 /// (ymVerdict_B — the U10 dialetheia, derived not asserted).
-pub fn witness_verdict(unis: &[Universe; UNIVERSE_COUNT], closers: &[usize], ig: &IgTuple) -> B4 {
+pub fn witness_verdict(unis: &[Dialect; DIALECT_COUNT], closers: &[usize], ig: &IgTuple) -> B4 {
     let gate = closers.iter().all(|&i| gates_closed(&unis[i], ig));
     layer_verdict(gate, t_ceiling(ig))
 }
 
-/// Wide payload: verdict of one witness under one universe, using the
-/// universe's OWN gates and OWN T-constitution.
-pub fn universe_verdict(u: &Universe, ig: &IgTuple) -> B4 {
+/// Wide payload: verdict of one witness under one dialect, using the
+/// dialect's OWN gates and OWN T-constitution.
+pub fn dialect_verdict(u: &Dialect, ig: &IgTuple) -> B4 {
     layer_verdict(gates_closed(u, ig), t_seal(u, ig))
 }
 
-/// The full verdict matrix: 3 witnesses × 88 universes, row-major.
+/// The full verdict matrix: 3 witnesses × 88 dialects, row-major.
 /// Returns None if a catalog tuple is missing.
-pub fn verdict_matrix(unis: &[Universe; UNIVERSE_COUNT]) -> Option<Vec<B4>> {
-    let mut m = Vec::with_capacity(3 * UNIVERSE_COUNT);
+pub fn verdict_matrix(unis: &[Dialect; DIALECT_COUNT]) -> Option<Vec<B4>> {
+    let mut m = Vec::with_capacity(3 * DIALECT_COUNT);
     for (_, cat_name) in &WITNESSES {
         let ig = crate::catalog::lookup(cat_name)?.tuple;
         for u in unis.iter() {
-            m.push(universe_verdict(u, &ig));
+            m.push(dialect_verdict(u, &ig));
         }
     }
     Some(m)
@@ -277,7 +277,7 @@ impl VesselRun {
 /// Run the full witness-vessel protocol. None if the catalog is missing a
 /// witness tuple.
 pub fn run_vessel() -> Option<VesselRun> {
-    let unis = all_universes();
+    let unis = all_dialects();
 
     // 1. Payloads BEFORE boarding.
     let before = verdict_matrix(&unis)?;
@@ -357,17 +357,17 @@ pub fn run_vessel() -> Option<VesselRun> {
 // ═══════════════════════════════════════════════════════════════
 
 fn verdict_row(m: &[B4], row: usize) -> String {
-    let mut s = String::with_capacity(UNIVERSE_COUNT);
-    for i in 0..UNIVERSE_COUNT {
-        s.push_str(m[row * UNIVERSE_COUNT + i].name());
+    let mut s = String::with_capacity(DIALECT_COUNT);
+    for i in 0..DIALECT_COUNT {
+        s.push_str(m[row * DIALECT_COUNT + i].name());
     }
     s
 }
 
 fn distribution(m: &[B4], row: usize) -> (usize, usize, usize, usize) {
     let (mut n, mut t, mut f, mut b) = (0, 0, 0, 0);
-    for i in 0..UNIVERSE_COUNT {
-        match m[row * UNIVERSE_COUNT + i] {
+    for i in 0..DIALECT_COUNT {
+        match m[row * DIALECT_COUNT + i] {
             B4::N => n += 1,
             B4::T => t += 1,
             B4::F => f += 1,
@@ -396,7 +396,7 @@ pub fn vessel_report() -> String {
     };
 
     // ── Lean-mirror payloads ──
-    s.push_str("── Payloads (computed from canonical tuples + closer universes) ──\n");
+    s.push_str("── Payloads (computed from canonical tuples + closer dialects) ──\n");
     let expected = ["T", "T", "B"];
     for i in 0..3 {
         let ok = run.mirror_before[i].name() == expected[i];
@@ -414,13 +414,13 @@ pub fn vessel_report() -> String {
     s.push_str("  blocked (Ç). The Witness rides both arms: fsplit(B)=(T,F),\n");
     s.push_str("  ffuse(T,F)=B — b_cargo_mechanism, here executed, not asserted.\n\n");
 
-    // ── The 88-universe matrix ──
+    // ── The 88-dialect matrix ──
     s.push_str(&format!(
-        "── Wide payload: {} witnesses x {} universes ──\n",
+        "── Wide payload: {} witnesses x {} dialects ──\n",
         WITNESSES.len(),
-        UNIVERSE_COUNT
+        DIALECT_COUNT
     ));
-    s.push_str("  (each universe judged by its OWN gates and T-constitution)\n");
+    s.push_str("  (each dialect judged by its OWN gates and T-constitution)\n");
     for i in 0..3 {
         let (n, t, f, b) = distribution(&run.before, i);
         s.push_str(&format!(
@@ -467,8 +467,8 @@ pub fn vessel_summary() -> String {
     s.push_str("  read-back = FFUSE  (Belnap join)\n");
     s.push_str("  gate      = frob_verify: mu(delta(q)) == q per action\n");
     s.push_str(&format!(
-        "  payload   = 3 Clay Witnesses x {} universes (full expansion)\n",
-        UNIVERSE_COUNT
+        "  payload   = 3 Clay Witnesses x {} dialects (full expansion)\n",
+        DIALECT_COUNT
     ));
     s.push_str("Subcommands: vessel run — full protocol + report\n");
     s

@@ -4,7 +4,7 @@
 // p4rakernel/p4ramill/Imscribing/Millennium/FrobeniusUnification.lean (504 lines):
 //   The three Frobenius fixed points — Belnap B = XZ, SIC-POVM fiducial,
 //   and Majorana paired state — are structurally identical at O_∞ tier.
-//   All satisfy μ∘δ=id by rfl, achieving O_∞ in 72/88 universes.
+//   All satisfy μ∘δ=id by rfl, achieving O_∞ in 72/88 dialects.
 //
 // This module:
 //   1. Defines the Frobenius fixed-point tuple (the grammar)
@@ -63,7 +63,7 @@ pub fn frobenius_fixed_tuple() -> IgTuple {
 //   F: 𐑱 (classical) — the kernel runs on classical silicon, not
 //      a quantum-coherent substrate. This is an implementation constraint.
 //   G: 𐑲 (aleph) — the kernel's reach is universal, not mesoscale.
-//      It connects all cataloged systems, all universes, all ob3ects.
+//      It connects all cataloged systems, all dialects, all ob3ects.
 //
 // Tuple: ⟨𐑦𐑶𐑾𐑹𐑱𐑧𐑲𐑠⊙𐑖𐑙𐑭⟩
 
@@ -163,7 +163,7 @@ pub fn formatted_report() -> String {
     out.push_str("  2. SIC-POVM fiducial (multilattice → Σ=1:1 limit)\n");
     out.push_str("  3. Majorana paired state (topological quantum)\n\n");
 
-    out.push_str("All three: O_∞ tier, μ∘δ=id by rfl, O_∞ in 72/88 universes.\n\n");
+    out.push_str("All three: O_∞ tier, μ∘δ=id by rfl, O_∞ in 72/88 dialects.\n\n");
 
     out.push_str(&details);
 
