@@ -14,4 +14,4 @@ That pin is fixed for the journal pipeline. Do not move it.
   https://github.com/umpolungfish/ig-docs/blob/main/data/IG_catalog.json
 
 Full reader note:
-https://github.com/umpolungfish/ig-docs/blob/main/manuscripts3/SYNTESE_FREEZE_NOTE.md
+https://github.com/umpolungfish/ig-docs/blob/main/manuscripts3/SYNTHESE_FREEZE_NOTE.md
