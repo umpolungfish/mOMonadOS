@@ -52,6 +52,7 @@ mod d12_sic;
 mod d2048_sic;
 mod d2048_sieve;
 mod witness_vessel;
+mod ask;
 
 use tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
 use crystal::{CrystalStore, decode, encode, indices_from_snapshot, TOTAL};
@@ -255,17 +256,37 @@ impl History {
 
 fn repl(k: &mut Kernel) {
     let mut cfs = CrystalStore::new();
-    let mut line_buf = [0u8; 256];
+    let mut line_buf = [0u8; 512];
     let mut history = History::new();
     let mut ctx_stack = ContextStack::new();
+    let mut ask_paste = crate::ask::AskPaste::new();
 
     sprintln!("Type '?' for menu, 'help' for categories, Tab to complete.");
+    sprintln!("Kernel ask: structural dry-run (serial). Full wet-run (files, Gemini-length answers):");
+    sprintln!("  host: ./ask --file path | ./ask --ask \"…\" | ./ask -i   (no Python)");
     sprintln!();
 
     loop {
         render_prompt(&ctx_stack);
         let line = read_line(&mut line_buf, &mut history, &ctx_stack);
         if line.is_empty() { continue; }
+
+        // Multi-line ask paste: accumulate until a lone `.`
+        if ask_paste.active {
+            let t = line.trim();
+            if t == "." {
+                ask_paste.active = false;
+                let q = ask_paste.buf.clone();
+                ask_paste.buf.clear();
+                sprintln!("{}", crate::ask::run_ask(&q, &ask_paste.opts, k));
+            } else {
+                if !ask_paste.buf.is_empty() {
+                    ask_paste.buf.push(' ');
+                }
+                ask_paste.buf.push_str(line);
+            }
+            continue;
+        }
 
         let mut parts = line.splitn(4, ' ');
         let cmd = parts.next().unwrap_or("");
@@ -439,6 +460,40 @@ fn repl(k: &mut Kernel) {
                     "run" | "verify" => sprintln!("{}", crate::witness_vessel::vessel_report()),
                     "" => sprintln!("{}", crate::witness_vessel::vessel_summary()),
                     _ => sprintln!("vessel [run] — witness-vessel transport protocol"),
+                }
+            }
+            // Manuscript spine: PROVE→UNIFY→PORT ledger + vessel runtime half.
+            // No Python. Formal pack in p4ramill VAE_Vita_ManuscriptSpine.
+            "spine" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "run" | "full" => {
+                        sprintln!("{}", crate::d12_sic::manuscript_spine_report());
+                        sprintln!("{}", crate::witness_vessel::vessel_report());
+                        sprintln!("{}", crate::frobenius_unify::formatted_report());
+                    }
+                    "lean" | "status" | "" => {
+                        sprintln!("{}", crate::d12_sic::manuscript_spine_report());
+                    }
+                    _ => sprintln!("spine [run|lean] — manuscript spine (PROVE→UNIFY→PORT × vessel)"),
+                }
+            }
+            // Native MoDoT-parity ask (ob3ect native_kernel_ask). Full line after `ask `.
+            "ask" => {
+                let rest = if let Some(i) = line.find(char::is_whitespace) {
+                    line[i..].trim()
+                } else {
+                    ""
+                };
+                if rest == "/" || rest.starts_with("/ ") {
+                    let (opts, _) = crate::ask::parse_ask_args(rest.trim_start_matches('/'));
+                    ask_paste.active = true;
+                    ask_paste.buf.clear();
+                    ask_paste.opts = opts;
+                    sprintln!("ask paste mode — enter question lines; end with a line containing only .");
+                } else {
+                    let (opts, q) = crate::ask::parse_ask_args(rest);
+                    sprintln!("{}", crate::ask::run_ask(&q, &opts, k));
                 }
             }
             "rebis" => {
@@ -1337,9 +1392,10 @@ fn crystal_store_current(
 
 // ─── Input ────────────────────────────────────────────────────
 
-fn read_line<'a>(buf: &'a mut [u8; 256], history: &mut History, ctx: &ContextStack) -> &'a str {
+fn read_line<'a>(buf: &'a mut [u8], history: &mut History, ctx: &ContextStack) -> &'a str {
     let mut len = 0usize;
     let mut hist_pos = 0usize;
+    let max_len = buf.len().saturating_sub(1);
     let _tab_hits: [u8; 16] = [0; 16];  // cycling completions
 
     loop {
@@ -1353,7 +1409,7 @@ fn read_line<'a>(buf: &'a mut [u8; 256], history: &mut History, ctx: &ContextSta
                 if let Some(completion) = tab_complete(line_str, ctx) {
                     // Replace buffer with completion
                     let comp_bytes = completion.as_bytes();
-                    let n = comp_bytes.len().min(255);
+                    let n = comp_bytes.len().min(max_len);
                     buf[..n].copy_from_slice(&comp_bytes[..n]);
                     len = n;
                     // Redraw
@@ -1451,7 +1507,7 @@ fn read_line<'a>(buf: &'a mut [u8; 256], history: &mut History, ctx: &ContextSta
                 break;
             }
             b if b >= 0x20 => {
-                if len < buf.len() - 1 {
+                if len < max_len {
                     buf[len] = b;
                     len += 1;
                     serial::write_byte(b);
@@ -1464,10 +1520,11 @@ fn read_line<'a>(buf: &'a mut [u8; 256], history: &mut History, ctx: &ContextSta
     core::str::from_utf8(&buf[..len]).unwrap_or("")
 }
 
-fn redraw_input(old_len: usize, src: &[u8], src_len: usize, buf: &mut [u8; 256]) {
+fn redraw_input(old_len: usize, src: &[u8], src_len: usize, buf: &mut [u8]) {
     let _ = old_len;
-                    serial::write_str("\r\x1b[K");
-    let n = src_len.min(255);
+    serial::write_str("\r\x1b[K");
+    let max_len = buf.len().saturating_sub(1);
+    let n = src_len.min(max_len).min(src.len());
     buf[..n].copy_from_slice(&src[..n]);
     if let Ok(s) = core::str::from_utf8(&buf[..n]) {
         serial::write_str(s);
@@ -1707,6 +1764,8 @@ fn print_help() {
     sprintln!("  {:<32} — d=12 SIC-POVM Phase VI: tower,magnitudes,orbits,existence,duallink,z0", "d12 [subcmd]");
     sprintln!("  {:<32} — d=2048 moduli tower ascent: tower,redei,grammar,pari,next", "d2048 [subcmd]");
     sprintln!("  {:<32} — witness-vessel transport: Clay payloads x 88 dialects, frob-gated", "vessel [run]");
+    sprintln!("  {:<32} — manuscript spine: PROVE→UNIFY→PORT × vessel (no Python)", "spine [run|lean]");
+    sprintln!("  {:<32} — kernel structural ask (dry). Full wet: host ./ask --file| -i", "ask [opts] <question>");
     sprintln!("  {:<32} — Clay Millennium structural status (machine-checked)", "clay");
     sprintln!();
     sprintln!("══ Rebis (Red-Hot Rebis) ══");

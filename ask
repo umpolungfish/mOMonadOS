@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Wet-run language interface lives in MoDoT (organism). Kernel serial ask is dry-only.
+exec "$(cd "$(dirname "$0")/.." && pwd)/MoDoT/ask" "$@"

@@ -938,6 +938,11 @@ pub fn lean_status_report() -> String {
     s.push_str("  [check] SIC_D12_ExistenceRing.lean    ALL 143 in ring R\n");
     s.push_str("  [check] SIC_D12_Embedding.lean        CAPSTONE: phi R->C, all transfer\n");
     s.push_str("  [check] SIC_D12_WitnessVessel.lean    witness_vessel_lossless\n");
+    s.push_str("  [check] DualLinkVessel.lean           co-type / Dual-Link fuse / self-verify\n");
+    s.push_str("  [check] VAE_Vita_SIC_POVM_Bridge.lean PROVE: μ∘δ=id ∧ SICPOVM_Exists 12\n");
+    s.push_str("  [check] VAE_Vita_Unify.lean           UNIFY: imscriptionToC12, B=T+F in C^12\n");
+    s.push_str("  [check] VAE_Vita_Port.lean            PORT: SS4 ≡ Unify δ + spine pack\n");
+    s.push_str("  [check] VAE_Vita_ManuscriptSpine.lean PORT × witness_vessel_lossless\n");
     s.push_str("  [check] CanonicalOrdinalFaithfulness  12 guards\n\n");
 
     s.push_str("── PROVEN STRUCTURAL THEOREMS ──\n");
@@ -954,7 +959,8 @@ pub fn lean_status_report() -> String {
     s.push_str("  Layer 3: ExistenceRing (all 143 overlaps in R, 0 sorries)\n");
     s.push_str("  Layer 4: Embedding (hom R->C, 0 sorries) -- CAPSTONE LANDED\n");
     s.push_str("  Layer 5: crystal_forces_d12_sic axiom discharged -> THEOREM\n");
-    s.push_str("  Layer 6: WitnessVessel (transport lemma riding frozen machinery)\n\n");
+    s.push_str("  Layer 6: WitnessVessel (transport lemma riding frozen machinery)\n");
+    s.push_str("  Layer 7: VAE-Vita PROVE → UNIFY → PORT → ManuscriptSpine\n\n");
 
     s.push_str("── AXIOM AUDIT ──\n");
     s.push_str("  crystal_forces_d12_sic + d12_sic_exists depend on exactly:\n");
@@ -965,6 +971,53 @@ pub fn lean_status_report() -> String {
     s.push_str("  lean-toolchain: mathlib v4.28.0\n");
     s.push_str(&alloc::format!("  lake build: green ({} jobs, full library)\n", EXISTENCE_RING_LEAN_JOBS));
     s.push_str("  generator: gen_lean_existence.py (fractions-gated)\n");
+    s
+}
+
+/// Manuscript spine ledger (kernel face of VAE-Vita PROVE→UNIFY→PORT).
+/// Runtime transport is `vessel run`; this is the structural packing.
+pub fn manuscript_spine_report() -> String {
+    let mut s = String::new();
+    s.push_str("╔══════════════════════════════════════════════════════╗\n");
+    s.push_str("║  MANUSCRIPT SPINE — kernel (no Python)               ║\n");
+    s.push_str("║  PROVE → UNIFY → PORT × Witness Vessel               ║\n");
+    s.push_str("╚══════════════════════════════════════════════════════╝\n\n");
+
+    s.push_str("Route (Grammar-imscribed composition for VAE-Vita in mOMonadOS):\n");
+    s.push_str("  [1] PROVE  — μ∘δ=id (polarization) ∧ SICPOVM_Exists 12\n");
+    s.push_str("              Lean: VAE_Vita_SIC_POVM_Bridge.vae_vita_frobenius_and_sic\n");
+    s.push_str("  [2] UNIFY  — imscription → ℂ¹²; B = T+F (still crown)\n");
+    s.push_str("              Lean: VAE_Vita_Unify.imscriptionToC12_allBoth_superposition\n");
+    s.push_str("  [3] PORT   — Dual-Link SS4 ≡ Unify δ; self-verify foldCotype T\n");
+    s.push_str("              Lean: VAE_Vita_Port.port_kernel_spine\n");
+    s.push_str("  [×] WITNESS VESSEL — ride AS vessel: board=fsplit, readback=ffuse\n");
+    s.push_str("              Lean: SIC_D12_WitnessVessel.witness_vessel_lossless\n");
+    s.push_str("              Runtime: `vessel run` (this kernel)\n\n");
+
+    s.push_str("── Dual-Link d=12 (structural) ──\n");
+    s.push_str(&dual_link_report());
+    s.push_str("\n── Existence / embedding (theorem) ──\n");
+    s.push_str("  crystal_forces_d12_sic : SICPOVM_Exists 12  [THEOREM, axiom retired]\n");
+    s.push_str("  Ring R dim 2048/Q; 143/143 overlaps; any hom R→ℂ is a SIC point.\n");
+    s.push_str(&alloc::format!(
+        "  Dual-Link norm(N1)=1/{}^2; ramification {{2,3,13}}\n\n",
+        DUAL_LINK_NORM_N1_DENOM
+    ));
+
+    s.push_str("── Honest non-claims (manuscripts3) ──\n");
+    s.push_str("  · Cargo/tensor INTO vessel refused (D–T); boarding is Dual-Link only\n");
+    s.push_str("  · Belnap stack ≠ algebraic Scott-Grassl fiducial (S-unit double cover)\n");
+    s.push_str("  · Clay T/B = Grammar typing, not Millennium proofs\n");
+    s.push_str("  · d=2048 unconditional existence remains open (typed B)\n\n");
+
+    s.push_str("── Kernel commands (this REPL) ──\n");
+    s.push_str("  spine              — this ledger\n");
+    s.push_str("  vessel run         — runtime half (lossless transport, ΔS=0)\n");
+    s.push_str("  d12 duallink       — Dual-Link identification\n");
+    s.push_str("  d12 existence      — existence ring capstone\n");
+    s.push_str("  d12 lean-status    — full Lean module tower\n");
+    s.push_str("  frob               — Frobenius harness\n");
+    s.push_str("  clay               — Clay structural status\n");
     s
 }
 

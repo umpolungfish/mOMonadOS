@@ -17,3 +17,4 @@ verdict matrix (BSD N:1 T:0 F:75 B:12; Hodge N:0 T:2 F:74 B:12; YM N:2 T:0 F:85 
 
 The witness vessel paper's transcript and artifact statement were updated to match
 (ig-docs manuscripts3 and the lifted publishing copy).
+spine REPL: PROVE→UNIFY→PORT ledger + vessel run + frob unify (no Python)

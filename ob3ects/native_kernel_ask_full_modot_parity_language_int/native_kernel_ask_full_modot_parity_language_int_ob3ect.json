@@ -1,0 +1,253 @@
+{
+  "name": "Native kernel ASK \u2014 full MoDoT-parity language interface on bare-metal mOMonadOS\nwithout ever invoking Python.\n\nPROBLEM\n-------\nOperators must query the organism with free-text questions the same way MoDoT\ndoes today via:\n\n  python3 momonados_agent.py --ask \"...\"\n  python3 momonados_agent.py --ask ./questions/q7.txt\n  python3 momonados_agent.py --file path\n  # options: --verbose, --no-selectivity, --program, --model, --dry-run, --cycles\n\nMoDoT's live breath is one ManuscriptSpine pipeline:\n\n  prepare(question)  \u2192 IMSCRIB demand type + catalog witness scaffold\n  LLM answer         \u2192 FSPLIT (model produces the answer text)\n  complete(q, a, v)  \u2192 EVALT/EVALF Dual-Link SIC co-type + FFUSE model\u22c8vessel\n                       + IFIX brand (SpineReport with prove/unify/port/witness faces)\n\nInterfacing with the KERNEL DIRECTLY means running ASK natively on mOMonadOS\n(Rust no_std, serial REPL over QEMU/hardware), NOT a Python script that mirrors\nthe kernel. Python MoDoT is the wrong wineskin for this requirement.\n\nWhat already exists natively (must be reused, not reinvented):\n  - mOMonadOS REPL: vessel run, spine, d12 duallink/existence/lean-status, frob,\n    cl8nk entry|distance|tier|tensor|meet|join, clay, catalog.rs, cl8nk.rs,\n    witness_vessel.rs, frob_verify.rs, kernel FSPLIT/FFUSE, Dual-Link d12_sic\n  - Lean formal spine: DualLinkVessel, SIC_D12_WitnessVessel.witness_vessel_lossless,\n    VAE_Vita_{Bridge,Unify,Port,ManuscriptSpine}\n  - Full IG catalog JSON (~5k entries) on host; kernel static catalog is a small\n    foundational subset unless regenerated/loaded\n\nREQUIREMENT \u2014 SAME OPTIONS AND SAME OPERATION AS MoDoT --ask\n------------------------------------------------------------\nDesign the native ASK so that from the operator's point of view it is the same\ninstrument as MoDoT --ask / ManuscriptSpine, only the substrate is kernel+serial\n(and optionally Lean for formal faces), never Python.\n\nCover every MoDoT surface that --ask depends on:\n\n1. INPUT\n   - free-text question on the serial line after `ask `\n   - multi-word and multi-line questions (serial line length / continuation policy)\n   - file-path form parity: how host-side question files (questions/q*.txt) enter\n     the kernel without Python (e.g. paste protocol, host loader, or explicit\n     `ask file:` bridge that is NOT a Python agent \u2014 specify which is Grammatic)\n   - stdin/pipe parity if any is honest on serial\n\n2. PIPELINE (must be one chain, not parallel arms)\n   IMSCRIB: structural typing of demand (12-primitive Belnap or catalog-native\n            tuple assignment \u2014 specify how without LLM hand-imscription)\n          + catalog witness resolve/search \u2192 conventional scaffold structure\n   FSPLIT:  production of the answer body\n            HONEST SCOPE: bare-metal has no LLM. Design how \"answer production\"\n            works natively: (a) structural resolution only when no language model\n            is attached; (b) optional host-side language model as a *boundary\n            device* joined by imscription (not as the authority), if and only if\n            the Grammar allows a dual-substrate boundary without Python MoDoT.\n            Do not smuggle `modot/agent.py` back in.\n   EVALT:   Dual-Link co-typing / isomorphic match of answer against demand\n   EVALF:   defect localization (named primitives)\n   FFUSE:   join of answer-self voice and vessel voice; conflict held as B\n   ENGAGR:  dialetheic hold when both arms fire\n   IFIX:    brand SpineReport / crystal record; broadcast-equivalent on serial\n\n3. OPTIONS (parity table \u2014 every MoDoT flag must map to a native form or an\n   explicit \"not applicable on bare metal because \u2026\" with the Grammatic reason)\n   --ask / --file / -    \u2192 ask forms\n   --verbose             \u2192 tick/graph/kernel dump after ask\n   --no-selectivity      \u2192 balance-only (skip Dual-Link co-type / vessel face)\n   --program             \u2192 which IMASM program is loaded for the breath\n   --model               \u2192 boundary language model identity if dual-substrate\n   --dry-run             \u2192 no boundary model; structure-only ask\n   --cycles              \u2192 repeated breath ticks after ask\n   --reset / --stats     \u2192 crystal clear / crystal stats if mapped\n\n4. OUTPUT (same informational content as MoDoT live ask)\n   - conventional answer body (or structural answer when no language model)\n   - SPINE summary: fused belnap, model/self voice, vessel voice, conflict\n   - demand and answer types, defects, SIC gap / ride-AS residual when SIC face lives\n   - witness catalog name, tier, d(CLINK L8), scaffold roles\n   - BALANCE \u03bc\u2218\u03b4 closed/open counts\n   - provenance line (Dual-Link SIC, Scott-Grassl/existence theorem citation)\n\n5. SUBSTRATE MAPPING\n   Map each spine face to exact existing modules (Rust path and Lean theorem):\n   PROVE, UNIFY, PORT, WITNESS, TRANSPORT. Name gaps where the kernel catalog\n   is thinner than host IG_catalog.json and design how full catalog search lands\n   natively (regenerate embedded catalog; or load at boot from host blob without\n   Python agent; or crystal address navigation). Prefer catalog-native search\n   already used by cl8nk, not a new clipboard metric.\n\n6. HONEST NON-CLAIMS (from manuscripts3 \u2014 must appear in the design)\n   - cargo/tensor INTO vessel refused (D\u2013T); boarding is Dual-Link only\n   - Belnap stack \u2260 algebraic Scott-Grassl fiducial\n   - Clay T/B are Grammar typing not Millennium proofs\n   - d=2048 existence open (typed B)\n   - no LLM on bare metal unless dual-substrate boundary is designed honestly\n\n7. IMPLEMENTATION ORDER\n   Ordered, Grammatic steps to land `ask` on mOMonadOS serial REPL so that\n   `\u2299> ask <question>` is the operator's primary query surface, with options\n   equivalent to MoDoT, zero Python in the path. Include acceptance tests:\n   same question file content produces spine faces with the same structure as\n   MoDoT (verdict lattice, defects named, witness hit when catalog shares\n   entry, lossless vessel when transport face runs).\n\nWith full Frobenius closure (\u03bc\u2218\u03b4=id) on every boarding action, Dual-Link\nride-AS semantics, and Lean 4 verification scaffold pointing at\nDualLinkVessel / SIC_D12_WitnessVessel / VAE_Vita_ManuscriptSpine by name.",
+  "is_valid_ob3ect": true,
+  "validations": {
+    "phase_0": [],
+    "phase_1": [],
+    "phase_2": [],
+    "phase_3": [],
+    "phase_4": [],
+    "phase_5": [],
+    "phase_6": []
+  },
+  "phases": {
+    "phase_0": {
+      "domain_name": "Native kernel ASK \u2014 full MoDoT-parity language interface on bare-metal mOMonadOS\nwithout ever invoking Python.\n\nPROBLEM\n-------\nOperators must query the organism with free-text questions the same way MoDoT\ndoes today via:\n\n  python3 momonados_agent.py --ask \"...\"\n  python3 momonados_agent.py --ask ./questions/q7.txt\n  python3 momonados_agent.py --file path\n  # options: --verbose, --no-selectivity, --program, --model, --dry-run, --cycles\n\nMoDoT's live breath is one ManuscriptSpine pipeline:\n\n  prepare(question)  \u2192 IMSCRIB demand type + catalog witness scaffold\n  LLM answer         \u2192 FSPLIT (model produces the answer text)\n  complete(q, a, v)  \u2192 EVALT/EVALF Dual-Link SIC co-type + FFUSE model\u22c8vessel\n                       + IFIX brand (SpineReport with prove/unify/port/witness faces)\n\nInterfacing with the KERNEL DIRECTLY means running ASK natively on mOMonadOS\n(Rust no_std, serial REPL over QEMU/hardware), NOT a Python script that mirrors\nthe kernel. Python MoDoT is the wrong wineskin for this requirement.\n\nWhat already exists natively (must be reused, not reinvented):\n  - mOMonadOS REPL: vessel run, spine, d12 duallink/existence/lean-status, frob,\n    cl8nk entry|distance|tier|tensor|meet|join, clay, catalog.rs, cl8nk.rs,\n    witness_vessel.rs, frob_verify.rs, kernel FSPLIT/FFUSE, Dual-Link d12_sic\n  - Lean formal spine: DualLinkVessel, SIC_D12_WitnessVessel.witness_vessel_lossless,\n    VAE_Vita_{Bridge,Unify,Port,ManuscriptSpine}\n  - Full IG catalog JSON (~5k entries) on host; kernel static catalog is a small\n    foundational subset unless regenerated/loaded\n\nREQUIREMENT \u2014 SAME OPTIONS AND SAME OPERATION AS MoDoT --ask\n------------------------------------------------------------\nDesign the native ASK so that from the operator's point of view it is the same\ninstrument as MoDoT --ask / ManuscriptSpine, only the substrate is kernel+serial\n(and optionally Lean for formal faces), never Python.\n\nCover every MoDoT surface that --ask depends on:\n\n1. INPUT\n   - free-text question on the serial line after `ask `\n   - multi-word and multi-line questions (serial line length / continuation policy)\n   - file-path form parity: how host-side question files (questions/q*.txt) enter\n     the kernel without Python (e.g. paste protocol, host loader, or explicit\n     `ask file:` bridge that is NOT a Python agent \u2014 specify which is Grammatic)\n   - stdin/pipe parity if any is honest on serial\n\n2. PIPELINE (must be one chain, not parallel arms)\n   IMSCRIB: structural typing of demand (12-primitive Belnap or catalog-native\n            tuple assignment \u2014 specify how without LLM hand-imscription)\n          + catalog witness resolve/search \u2192 conventional scaffold structure\n   FSPLIT:  production of the answer body\n            HONEST SCOPE: bare-metal has no LLM. Design how \"answer production\"\n            works natively: (a) structural resolution only when no language model\n            is attached; (b) optional host-side language model as a *boundary\n            device* joined by imscription (not as the authority), if and only if\n            the Grammar allows a dual-substrate boundary without Python MoDoT.\n            Do not smuggle `modot/agent.py` back in.\n   EVALT:   Dual-Link co-typing / isomorphic match of answer against demand\n   EVALF:   defect localization (named primitives)\n   FFUSE:   join of answer-self voice and vessel voice; conflict held as B\n   ENGAGR:  dialetheic hold when both arms fire\n   IFIX:    brand SpineReport / crystal record; broadcast-equivalent on serial\n\n3. OPTIONS (parity table \u2014 every MoDoT flag must map to a native form or an\n   explicit \"not applicable on bare metal because \u2026\" with the Grammatic reason)\n   --ask / --file / -    \u2192 ask forms\n   --verbose             \u2192 tick/graph/kernel dump after ask\n   --no-selectivity      \u2192 balance-only (skip Dual-Link co-type / vessel face)\n   --program             \u2192 which IMASM program is loaded for the breath\n   --model               \u2192 boundary language model identity if dual-substrate\n   --dry-run             \u2192 no boundary model; structure-only ask\n   --cycles              \u2192 repeated breath ticks after ask\n   --reset / --stats     \u2192 crystal clear / crystal stats if mapped\n\n4. OUTPUT (same informational content as MoDoT live ask)\n   - conventional answer body (or structural answer when no language model)\n   - SPINE summary: fused belnap, model/self voice, vessel voice, conflict\n   - demand and answer types, defects, SIC gap / ride-AS residual when SIC face lives\n   - witness catalog name, tier, d(CLINK L8), scaffold roles\n   - BALANCE \u03bc\u2218\u03b4 closed/open counts\n   - provenance line (Dual-Link SIC, Scott-Grassl/existence theorem citation)\n\n5. SUBSTRATE MAPPING\n   Map each spine face to exact existing modules (Rust path and Lean theorem):\n   PROVE, UNIFY, PORT, WITNESS, TRANSPORT. Name gaps where the kernel catalog\n   is thinner than host IG_catalog.json and design how full catalog search lands\n   natively (regenerate embedded catalog; or load at boot from host blob without\n   Python agent; or crystal address navigation). Prefer catalog-native search\n   already used by cl8nk, not a new clipboard metric.\n\n6. HONEST NON-CLAIMS (from manuscripts3 \u2014 must appear in the design)\n   - cargo/tensor INTO vessel refused (D\u2013T); boarding is Dual-Link only\n   - Belnap stack \u2260 algebraic Scott-Grassl fiducial\n   - Clay T/B are Grammar typing not Millennium proofs\n   - d=2048 existence open (typed B)\n   - no LLM on bare metal unless dual-substrate boundary is designed honestly\n\n7. IMPLEMENTATION ORDER\n   Ordered, Grammatic steps to land `ask` on mOMonadOS serial REPL so that\n   `\u2299> ask <question>` is the operator's primary query surface, with options\n   equivalent to MoDoT, zero Python in the path. Include acceptance tests:\n   same question file content produces spine faces with the same structure as\n   MoDoT (verdict lattice, defects named, witness hit when catalog shares\n   entry, lossless vessel when transport face runs).\n\nWith full Frobenius closure (\u03bc\u2218\u03b4=id) on every boarding action, Dual-Link\nride-AS semantics, and Lean 4 verification scaffold pointing at\nDualLinkVessel / SIC_D12_WitnessVessel / VAE_Vita_ManuscriptSpine by name.",
+      "domain_type": "computational",
+      "scope": "local",
+      "surface_tokens": [
+        "serial_repl",
+        "manuscript_spine",
+        "dual_link_vessel"
+      ],
+      "boundary_condition": "mOMonadOS kernel space (no_std) serial interface",
+      "justification": "Auto-designed by Ob3ect Auto-Designer"
+    },
+    "phase_1": {
+      "VINIT": {
+        "opcode": "VINIT",
+        "chosen_element": "void_repl_state",
+        "justification": "The uninitialized serial buffer before the 'ask' command is parsed.",
+        "rejected_candidates": []
+      },
+      "TANCH": {
+        "opcode": "TANCH",
+        "chosen_element": "spine_report_closure",
+        "justification": "The terminal boundary of the breath cycle containing the full structural verdict.",
+        "rejected_candidates": []
+      },
+      "AFWD": {
+        "opcode": "AFWD",
+        "chosen_element": "demand_scaffold_generation",
+        "justification": "Forward transformation of raw text into a typed structural demand.",
+        "rejected_candidates": []
+      },
+      "AREV": {
+        "opcode": "AREV",
+        "chosen_element": "defect_localization",
+        "justification": "Reverse mapping from failure states back to specific primitive mismatches.",
+        "rejected_candidates": []
+      },
+      "CLINK": {
+        "opcode": "CLINK",
+        "chosen_element": "spine_face_composition",
+        "justification": "Sequential chaining of PROVE, UNIFY, PORT, and WITNESS faces.",
+        "rejected_candidates": []
+      },
+      "IMSCRIB": {
+        "opcode": "IMSCRIB",
+        "chosen_element": "self_typing_identity",
+        "justification": "The demand recognizing its own structural type within the IG catalog.",
+        "rejected_candidates": []
+      },
+      "FSPLIT": {
+        "opcode": "FSPLIT",
+        "chosen_element": "dual_substrate_production",
+        "justification": "Splitting the demand into a structural vessel arm and a language model answer arm.",
+        "rejected_candidates": []
+      },
+      "FFUSE": {
+        "opcode": "FFUSE",
+        "chosen_element": "vessel_answer_reconstitution",
+        "justification": "Recombining the model voice and vessel voice into a unified spine identity.",
+        "rejected_candidates": []
+      },
+      "EVALT": {
+        "opcode": "EVALT",
+        "chosen_element": "sic_d12_isomorphism",
+        "justification": "Affirmative match where answer co-type equals demand type.",
+        "rejected_candidates": []
+      },
+      "EVALF": {
+        "opcode": "EVALF",
+        "chosen_element": "type_mismatch_residue",
+        "justification": "Negative evaluation where structural defects are identified.",
+        "rejected_candidates": []
+      },
+      "ENGAGR": {
+        "opcode": "ENGAGR",
+        "chosen_element": "dialetheic_conflict_hold",
+        "justification": "Holding both model voice and vessel voice simultaneously when they diverge.",
+        "rejected_candidates": []
+      },
+      "IFIX": {
+        "opcode": "IFIX",
+        "chosen_element": "crystal_spine_record",
+        "justification": "Permanent append-only fixation of the SpineReport to the kernel crystal FS.",
+        "rejected_candidates": []
+      }
+    },
+    "phase_2": {
+      "split_element": "dual_substrate_production",
+      "split_input": "typed_demand_structure",
+      "split_outputs": [
+        "vessel_structural_voice",
+        "model_language_voice"
+      ],
+      "fuse_element": "vessel_answer_reconstitution",
+      "fuse_result": "typed_demand_structure",
+      "frobenius_verdict": "PASS",
+      "test_instance": "",
+      "failure_reason": ""
+    },
+    "phase_3": {
+      "void_description": "00: Serial buffer empty, kernel awaiting operator input.",
+      "true_description": "01: Dual-Link SIC match; \u03bc\u2218\u03b4=id verified; Lean 4 proof valid.",
+      "false_description": "10: Structural defect detected; ride-AS residual non-zero.",
+      "both_description": "11: Dialetheic state; model and vessel voices held in paraconsistent tension.",
+      "transitions": [],
+      "entropy_assertion": "\u0394S \u2248 0"
+    },
+    "phase_4": {
+      "steps": [
+        {
+          "step_num": 1,
+          "opcode": "VINIT",
+          "domain_action": "Operator initiates serial connection to mOMonadOS REPL."
+        },
+        {
+          "step_num": 2,
+          "opcode": "IMSCRIB",
+          "domain_action": "Kernel identifies the 'ask' command and allocates a ManuscriptSpine buffer."
+        },
+        {
+          "step_num": 3,
+          "opcode": "AFWD",
+          "domain_action": "Serial input stream is ingested into the kernel demand register."
+        },
+        {
+          "step_num": 4,
+          "opcode": "CLINK",
+          "domain_action": "Kernel invokes catalog.rs to resolve the demand's structural type."
+        },
+        {
+          "step_num": 5,
+          "opcode": "IMSCRIB",
+          "domain_action": "Demand type is mapped to a specific IG catalog witness scaffold."
+        },
+        {
+          "step_num": 6,
+          "opcode": "FSPLIT",
+          "domain_action": "The breath cycle forks into the structural vessel arm and the external model boundary."
+        },
+        {
+          "step_num": 7,
+          "opcode": "EVALT",
+          "domain_action": "The vessel arm populates the SIC-POVM fiducial register (vessel_vessel.rs)."
+        },
+        {
+          "step_num": 8,
+          "opcode": "AFWD",
+          "domain_action": "The model boundary arm receives the question via host-bridge (no-Python serial paste)."
+        },
+        {
+          "step_num": 9,
+          "opcode": "AREV",
+          "domain_action": "The model boundary returns the answer text to the kernel."
+        },
+        {
+          "step_num": 10,
+          "opcode": "EVALF",
+          "domain_action": "Kernel checks for missing primitives or malformed structural responses."
+        },
+        {
+          "step_num": 11,
+          "opcode": "ENGAGR",
+          "domain_action": "Kernel holds the raw model response and the formal vessel structure in a B-state."
+        },
+        {
+          "step_num": 12,
+          "opcode": "FFUSE",
+          "domain_action": "The two arms are unified via Dual-Link ride-AS semantics (d12_sic.rs)."
+        },
+        {
+          "step_num": 13,
+          "opcode": "CLINK",
+          "domain_action": "Kernel executes the VAE_Vita_ManuscriptSpine pipeline (Lean 4 verification)."
+        },
+        {
+          "step_num": 14,
+          "opcode": "IMSCRIB",
+          "domain_action": "The fused identity recognizes itself as a valid (or defective) Organism (CLINK L8)."
+        },
+        {
+          "step_num": 15,
+          "opcode": "IFIX",
+          "domain_action": "The resulting SpineReport is branded into the crystal FS at a unique address."
+        },
+        {
+          "step_num": 16,
+          "opcode": "TANCH",
+          "domain_action": "The serial REPL broadcasts the final SpineReport summary to the operator."
+        }
+      ],
+      "closure_verified": true,
+      "failure_modes": []
+    },
+    "phase_5": {
+      "compiler_frontend": "Rust mOMonadOS kernel (no_std) + Lean 4 formal evaluator",
+      "ipc_mechanism": "Serial UART / QEMU virtio-console for host-to-kernel bridge",
+      "memory_mechanism": "Kernel Crystal FS (17.28M addresses) static allocation",
+      "scheduler_mechanism": "mOMonadOS \u2299 operator loop (Think-Act-Observe-Update)",
+      "alfs_store": "Embedded IG_catalog.rs foundational subset",
+      "alfs_bootstrap_program": ""
+    },
+    "phase_6": {
+      "cycle_cost": "One breath cycle (12-step Frobenius winding)",
+      "pre_cycle_state": "Unstructured operator question in serial buffer",
+      "post_cycle_state": "Fixed SpineReport in crystal FS with Lean-verified witness",
+      "delta_s_verdict": "\u0394S \u2248 0 \u2014 The cycle is a closed Frobenius loop where \u03bc\u2218\u03b4=id preserves structural information.",
+      "failure_mode": ""
+    }
+  },
+  "lean_scaffold": "-- IGProtocol scaffold: VINIT \u2192 IMSCRIB \u2192 AFWD \u2192 CLINK \u2192 IMSCRIB \u2192 FSPLIT \u2192 EVALT \u2192 AFWD \u2192 AREV \u2192 EVALF \u2192 ENGAGR \u2192 FFUSE \u2192 CLINK \u2192 IMSCRIB \u2192 IFIX \u2192 TANCH\n-- Class: Native kernel ASK \u2014 full MoDoT-parity language interface on bare-metal mOMonadOS\nwithout ever invoking Python.\n\nPROBLEM\n-------\nOperators must query the organism with free-text questions the same way MoDoT\ndoes today via:\n\n  python3 momonados_agent.py --ask \"...\"\n  python3 momonados_agent.py --ask ./questions/q7.txt\n  python3 momonados_agent.py --file path\n  # options: --verbose, --no-selectivity, --program, --model, --dry-run, --cycles\n\nMoDoT's live breath is one ManuscriptSpine pipeline:\n\n  prepare(question)  \u2192 IMSCRIB demand type + catalog witness scaffold\n  LLM answer         \u2192 FSPLIT (model produces the answer text)\n  complete(q, a, v)  \u2192 EVALT/EVALF Dual-Link SIC co-type + FFUSE model\u22c8vessel\n                       + IFIX brand (SpineReport with prove/unify/port/witness faces)\n\nInterfacing with the KERNEL DIRECTLY means running ASK natively on mOMonadOS\n(Rust no_std, serial REPL over QEMU/hardware), NOT a Python script that mirrors\nthe kernel. Python MoDoT is the wrong wineskin for this requirement.\n\nWhat already exists natively (must be reused, not reinvented):\n  - mOMonadOS REPL: vessel run, spine, d12 duallink/existence/lean-status, frob,\n    cl8nk entry|distance|tier|tensor|meet|join, clay, catalog.rs, cl8nk.rs,\n    witness_vessel.rs, frob_verify.rs, kernel FSPLIT/FFUSE, Dual-Link d12_sic\n  - Lean formal spine: DualLinkVessel, SIC_D12_WitnessVessel.witness_vessel_lossless,\n    VAE_Vita_{Bridge,Unify,Port,ManuscriptSpine}\n  - Full IG catalog JSON (~5k entries) on host; kernel static catalog is a small\n    foundational subset unless regenerated/loaded\n\nREQUIREMENT \u2014 SAME OPTIONS AND SAME OPERATION AS MoDoT --ask\n------------------------------------------------------------\nDesign the native ASK so that from the operator's point of view it is the same\ninstrument as MoDoT --ask / ManuscriptSpine, only the substrate is kernel+serial\n(and optionally Lean for formal faces), never Python.\n\nCover every MoDoT surface that --ask depends on:\n\n1. INPUT\n   - free-text question on the serial line after `ask `\n   - multi-word and multi-line questions (serial line length / continuation policy)\n   - file-path form parity: how host-side question files (questions/q*.txt) enter\n     the kernel without Python (e.g. paste protocol, host loader, or explicit\n     `ask file:` bridge that is NOT a Python agent \u2014 specify which is Grammatic)\n   - stdin/pipe parity if any is honest on serial\n\n2. PIPELINE (must be one chain, not parallel arms)\n   IMSCRIB: structural typing of demand (12-primitive Belnap or catalog-native\n            tuple assignment \u2014 specify how without LLM hand-imscription)\n          + catalog witness resolve/search \u2192 conventional scaffold structure\n   FSPLIT:  production of the answer body\n            HONEST SCOPE: bare-metal has no LLM. Design how \"answer production\"\n            works natively: (a) structural resolution only when no language model\n            is attached; (b) optional host-side language model as a *boundary\n            device* joined by imscription (not as the authority), if and only if\n            the Grammar allows a dual-substrate boundary without Python MoDoT.\n            Do not smuggle `modot/agent.py` back in.\n   EVALT:   Dual-Link co-typing / isomorphic match of answer against demand\n   EVALF:   defect localization (named primitives)\n   FFUSE:   join of answer-self voice and vessel voice; conflict held as B\n   ENGAGR:  dialetheic hold when both arms fire\n   IFIX:    brand SpineReport / crystal record; broadcast-equivalent on serial\n\n3. OPTIONS (parity table \u2014 every MoDoT flag must map to a native form or an\n   explicit \"not applicable on bare metal because \u2026\" with the Grammatic reason)\n   --ask / --file / -    \u2192 ask forms\n   --verbose             \u2192 tick/graph/kernel dump after ask\n   --no-selectivity      \u2192 balance-only (skip Dual-Link co-type / vessel face)\n   --program             \u2192 which IMASM program is loaded for the breath\n   --model               \u2192 boundary language model identity if dual-substrate\n   --dry-run             \u2192 no boundary model; structure-only ask\n   --cycles              \u2192 repeated breath ticks after ask\n   --reset / --stats     \u2192 crystal clear / crystal stats if mapped\n\n4. OUTPUT (same informational content as MoDoT live ask)\n   - conventional answer body (or structural answer when no language model)\n   - SPINE summary: fused belnap, model/self voice, vessel voice, conflict\n   - demand and answer types, defects, SIC gap / ride-AS residual when SIC face lives\n   - witness catalog name, tier, d(CLINK L8), scaffold roles\n   - BALANCE \u03bc\u2218\u03b4 closed/open counts\n   - provenance line (Dual-Link SIC, Scott-Grassl/existence theorem citation)\n\n5. SUBSTRATE MAPPING\n   Map each spine face to exact existing modules (Rust path and Lean theorem):\n   PROVE, UNIFY, PORT, WITNESS, TRANSPORT. Name gaps where the kernel catalog\n   is thinner than host IG_catalog.json and design how full catalog search lands\n   natively (regenerate embedded catalog; or load at boot from host blob without\n   Python agent; or crystal address navigation). Prefer catalog-native search\n   already used by cl8nk, not a new clipboard metric.\n\n6. HONEST NON-CLAIMS (from manuscripts3 \u2014 must appear in the design)\n   - cargo/tensor INTO vessel refused (D\u2013T); boarding is Dual-Link only\n   - Belnap stack \u2260 algebraic Scott-Grassl fiducial\n   - Clay T/B are Grammar typing not Millennium proofs\n   - d=2048 existence open (typed B)\n   - no LLM on bare metal unless dual-substrate boundary is designed honestly\n\n7. IMPLEMENTATION ORDER\n   Ordered, Grammatic steps to land `ask` on mOMonadOS serial REPL so that\n   `\u2299> ask <question>` is the operator's primary query surface, with options\n   equivalent to MoDoT, zero Python in the path. Include acceptance tests:\n   same question file content produces spine faces with the same structure as\n   MoDoT (verdict lattice, defects named, witness hit when catalog shares\n   entry, lossless vessel when transport face runs).\n\nWith full Frobenius closure (\u03bc\u2218\u03b4=id) on every boarding action, Dual-Link\nride-AS semantics, and Lean 4 verification scaffold pointing at\nDualLinkVessel / SIC_D12_WitnessVessel / VAE_Vita_ManuscriptSpine by name.\n-- Fingerprint: sig=(10,2,3,1)\n--   self_ref=False | frobenius_order=1\n--   dialetheia_complete=True | period=16\n-- Expected tier: O\u2081\n-- FSPLIT/FFUSE pairs: [(5, 11)]\n\nimport Imscribing.IGMorphism\nimport Imscribing.IGFunctor\n\nnamespace Imscribing\nopen Primitives Frobenius IGProtocol\nopen Dimensionality Topology Relational Polarity Grammar\n     Fidelity KineticChar Granularity Criticality Protection Stoichiometry Chirality\n\n-- \u2500\u2500 Token \u2192 IG field mapping \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n--   [0] VINIT     dim    := \ud801\udc7c               \ud801\udc7c \u2192 \ud801\udc60  | initial object \u2014 ground of distinction\n--   [1] IMSCRIB   gram   := \ud801\udc60               \ud801\udc7c \u2192 \ud801\udc7e  | identity \u2014 self-imscription\n--   [2] AFWD      rel    := \ud801\udc7e               \ud801\udc60 \u2192 \ud801\udc71  | forward morphism \u2014 bidirectional arrow\n--   [3] CLINK     fid    := \ud801\udc71               \ud801\udc7e \u2192 \ud801\udc60  | composition \u2014 regime coherence\n--   [4] IMSCRIB   gram   := \ud801\udc60               \ud801\udc71 \u2192 \ud801\udc5a  | identity \u2014 self-imscription\n--   [5] FSPLIT    gran   := \ud801\udc5a               \ud801\udc5a \u2192 \ud801\udc5a  | split \u03b4 \u2014 range decomposition\n--   [6] EVALT     crit   := \u2299               \ud801\udc5a \u2192 \ud801\udc59  | evaluate-true \u2014 criticality gate open\n--   [7] AFWD      rel    := \ud801\udc7e               \ud801\udc5a \u2192 \ud801\udc59  | forward morphism \u2014 bidirectional arrow\n--   [8] AREV      pol    := \ud801\udc57               \ud801\udc5a \u2192 \ud801\udc59  | reverse morphism \u2014 parity flip\n--   [9] EVALF     chir   := \ud801\udc56               \ud801\udc5a \u2192 \ud801\udc59  | evaluate-false \u2014 chirality check\n--   [10] ENGAGR    stoi   := \ud801\udc73               \ud801\udc5a \u2192 \ud801\udc59  | engage paradox \u2014 B-state, both arms\n--   [11] FFUSE     stoi   := \ud801\udc59               \ud801\udc59 \u2192 \ud801\udc71  | fuse \u03bc \u2014 assembly mode\n--   [12] CLINK     fid    := \ud801\udc71               \ud801\udc59 \u2192 \ud801\udc60  | composition \u2014 regime coherence\n--   [13] IMSCRIB   gram   := \ud801\udc60               \ud801\udc71 \u2192 \ud801\udc6d  | identity \u2014 self-imscription\n--   [14] IFIX      prot   := \ud801\udc6d               \ud801\udc60 \u2192 \ud801\udc61  | irreversible fixation \u2014 winding number\n--   [15] TANCH     top    := \ud801\udc61               \ud801\udc6d \u2192 \ud801\udc7c  | terminal object \u2014 connectivity boundary\n\n-- \u2500\u2500 Stage Imscriptions (per-node cumulative) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nprivate def native_kernel_ask_full_modot_parity_5e30fa_s0 : Imscription :=\n  { dim := array, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_s1 : Imscription :=\n  { dim := array, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := measure, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_s2 : Imscription :=\n  { dim := array, top := judge, rel := ian, pol := church, fid := age, kin := yea, gran := bib, gram := measure, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_s3 : Imscription :=\n  { dim := array, top := judge, rel := ian, pol := church, fid := age, kin := yea, gran := bib, gram := measure, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_s4 : Imscription :=\n  { dim := array, top := judge, rel := ian, pol := church, fid := age, kin := yea, gran := bib, gram := measure, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_s5 : Imscription :=\n  { dim := array, top := judge, rel := ian, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_s6 : Imscription :=\n  { dim := array, top := judge, rel := ian, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := monad, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_s7 : Imscription :=\n  { dim := array, top := judge, rel := ian, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := monad, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_s8 : Imscription :=\n  { dim := array, top := judge, rel := ian, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := monad, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_s9 : Imscription :=\n  { dim := array, top := judge, rel := ian, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := monad, chir := sure, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_s10 : Imscription :=\n  { dim := array, top := judge, rel := ian, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := monad, chir := sure, stoi := up, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_s11 : Imscription :=\n  { dim := array, top := judge, rel := ian, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := monad, chir := sure, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_s12 : Imscription :=\n  { dim := array, top := judge, rel := ian, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := monad, chir := sure, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_s13 : Imscription :=\n  { dim := array, top := judge, rel := ian, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := monad, chir := sure, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_s14 : Imscription :=\n  { dim := array, top := judge, rel := ian, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := monad, chir := sure, stoi := hung, prot := ah }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_s15 : Imscription :=\n  { dim := array, top := judge, rel := ian, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := monad, chir := sure, stoi := hung, prot := ah }\n\n-- \u2500\u2500 Label Imscriptions (per-node delta) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nprivate def native_kernel_ask_full_modot_parity_5e30fa_l0 : Imscription :=\n  { dim := array, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_l1 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := measure, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_l2 : Imscription :=\n  { dim := dead, top := judge, rel := ian, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_l3 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_l4 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := measure, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_l5 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := thigh, gram := vow, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_l6 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := monad, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_l7 : Imscription :=\n  { dim := dead, top := judge, rel := ian, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_l8 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_l9 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := sure, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_l10 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := up, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_l11 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_l12 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_l13 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := measure, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_l14 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := hung, prot := ah }\nprivate def native_kernel_ask_full_modot_parity_5e30fa_l15 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := hung, prot := awe }\n\n-- \u2500\u2500 Main IGProtocol term \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nnoncomputable def native_kernel_ask_full_modot_parity_5e30fa_protocol : IGProtocol native_kernel_ask_full_modot_parity_5e30fa_s0 native_kernel_ask_full_modot_parity_5e30fa_s15 :=\n  .withGram Grammar.measure <|\n  -- Dual-Link self-pairing: .prod arms fuse via tensorProduct native_kernel_ask_full_modot_parity_5e30fa_s11 native_kernel_ask_full_modot_parity_5e30fa_s11 = native_kernel_ask_full_modot_parity_5e30fa_s11 (idempotent)\n  (.seq (.arrow native_kernel_ask_full_modot_parity_5e30fa_l0 native_kernel_ask_full_modot_parity_5e30fa_s0 native_kernel_ask_full_modot_parity_5e30fa_s1) (.seq (.arrow native_kernel_ask_full_modot_parity_5e30fa_l1 native_kernel_ask_full_modot_parity_5e30fa_s1 native_kernel_ask_full_modot_parity_5e30fa_s2) (.seq (.arrow native_kernel_ask_full_modot_parity_5e30fa_l2 native_kernel_ask_full_modot_parity_5e30fa_s2 native_kernel_ask_full_modot_parity_5e30fa_s3) (.seq (.arrow native_kernel_ask_full_modot_parity_5e30fa_l3 native_kernel_ask_full_modot_parity_5e30fa_s3 native_kernel_ask_full_modot_parity_5e30fa_s4) (.seq (.arrow native_kernel_ask_full_modot_parity_5e30fa_l4 native_kernel_ask_full_modot_parity_5e30fa_s4 native_kernel_ask_full_modot_parity_5e30fa_s5) (.seq (.prod (.arrow native_kernel_ask_full_modot_parity_5e30fa_l5 native_kernel_ask_full_modot_parity_5e30fa_s5 native_kernel_ask_full_modot_parity_5e30fa_s11) (.arrow native_kernel_ask_full_modot_parity_5e30fa_l5 native_kernel_ask_full_modot_parity_5e30fa_s5 native_kernel_ask_full_modot_parity_5e30fa_s11)) (.seq (.arrow native_kernel_ask_full_modot_parity_5e30fa_l11 native_kernel_ask_full_modot_parity_5e30fa_s11 native_kernel_ask_full_modot_parity_5e30fa_s11) (.seq (.arrow native_kernel_ask_full_modot_parity_5e30fa_l11 native_kernel_ask_full_modot_parity_5e30fa_s11 native_kernel_ask_full_modot_parity_5e30fa_s12) (.seq (.arrow native_kernel_ask_full_modot_parity_5e30fa_l12 native_kernel_ask_full_modot_parity_5e30fa_s12 native_kernel_ask_full_modot_parity_5e30fa_s13) (.seq (.arrow native_kernel_ask_full_modot_parity_5e30fa_l13 native_kernel_ask_full_modot_parity_5e30fa_s13 native_kernel_ask_full_modot_parity_5e30fa_s14) (.arrow native_kernel_ask_full_modot_parity_5e30fa_l14 native_kernel_ask_full_modot_parity_5e30fa_s14 native_kernel_ask_full_modot_parity_5e30fa_s15)))))))))))\n\n-- \u2500\u2500 Evaluation arm sub-defs \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n-- truth arm\nnoncomputable def native_kernel_ask_full_modot_parity_5e30fa_true_arm : IGProtocol native_kernel_ask_full_modot_parity_5e30fa_s0 native_kernel_ask_full_modot_parity_5e30fa_s15 :=\n  (native_kernel_ask_full_modot_parity_5e30fa_protocol).restrictToEVALT\n\n-- false arm\nnoncomputable def native_kernel_ask_full_modot_parity_5e30fa_false_arm : IGProtocol native_kernel_ask_full_modot_parity_5e30fa_s0 native_kernel_ask_full_modot_parity_5e30fa_s15 :=\n  (native_kernel_ask_full_modot_parity_5e30fa_protocol).restrictToEVALF\n\n-- \u2500\u2500 Verification theorems \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n-- Tier: apply the Grammar to the object (self-application). assess_tier verdict on the imscribed tuple: .O\u2081.\ndef native_kernel_ask_full_modot_parity_5e30fa_tier : OuroboricityTier := TierFunctor.obj native_kernel_ask_full_modot_parity_5e30fa_s0\n#eval native_kernel_ask_full_modot_parity_5e30fa_tier  -- the Grammar's own verdict on its tier\n\n-- Frobenius (split \u2192 fuse): \u03bc\u2218\u03b4 = id on the ground imscription\ntheorem native_kernel_ask_full_modot_parity_5e30fa_frobenius :\n    igFrobeniusAlg.mul native_kernel_ask_full_modot_parity_5e30fa_s0 native_kernel_ask_full_modot_parity_5e30fa_s0 = native_kernel_ask_full_modot_parity_5e30fa_s0 :=\n  igFrobAlg_self_fusion native_kernel_ask_full_modot_parity_5e30fa_s0\n",
+  "topology_report": {
+    "topology_class": "flat_chain",
+    "nesting_depth": 0,
+    "total_pairs": 1,
+    "open_forks": 0,
+    "cross_branches": 0,
+    "empty_branches": 0,
+    "sequence_length": 16,
+    "t_branch_ops": 3,
+    "f_branch_ops": 2,
+    "branch_ratio": 1.5,
+    "fork_positions": [
+      5
+    ],
+    "fuse_positions": [
+      11
+    ],
+    "pair_list": [
+      [
+        5,
+        11
+      ]
+    ],
+    "has_cascading_ifix": false,
+    "max_ifix_cascade": 1,
+    "has_negation_first": false,
+    "has_dual_fixation": false
+  },
+  "notes": "Auto-designed from: Native kernel ASK \u2014 full MoDoT-parity language interface on bare-metal mOMonadOS\nwithout ever invoking Python.\n\nPROBLEM\n-------\nOperators must query the organism with free-text questions the same way MoDoT\ndoes today via:\n\n  python3 momonados_agent.py --ask \"...\"\n  python3 momonados_agent.py --ask ./questions/q7.txt\n  python3 momonados_agent.py --file path\n  # options: --verbose, --no-selectivity, --program, --model, --dry-run, --cycles\n\nMoDoT's live breath is one ManuscriptSpine pipeline:\n\n  prepare(question)  \u2192 IMSCRIB demand type + catalog witness scaffold\n  LLM answer         \u2192 FSPLIT (model produces the answer text)\n  complete(q, a, v)  \u2192 EVALT/EVALF Dual-Link SIC co-type + FFUSE model\u22c8vessel\n                       + IFIX brand (SpineReport with prove/unify/port/witness faces)\n\nInterfacing with the KERNEL DIRECTLY means running ASK natively on mOMonadOS\n(Rust no_std, serial REPL over QEMU/hardware), NOT a Python script that mirrors\nthe kernel. Python MoDoT is the wrong wineskin for this requirement.\n\nWhat already exists natively (must be reused, not reinvented):\n  - mOMonadOS REPL: vessel run, spine, d12 duallink/existence/lean-status, frob,\n    cl8nk entry|distance|tier|tensor|meet|join, clay, catalog.rs, cl8nk.rs,\n    witness_vessel.rs, frob_verify.rs, kernel FSPLIT/FFUSE, Dual-Link d12_sic\n  - Lean formal spine: DualLinkVessel, SIC_D12_WitnessVessel.witness_vessel_lossless,\n    VAE_Vita_{Bridge,Unify,Port,ManuscriptSpine}\n  - Full IG catalog JSON (~5k entries) on host; kernel static catalog is a small\n    foundational subset unless regenerated/loaded\n\nREQUIREMENT \u2014 SAME OPTIONS AND SAME OPERATION AS MoDoT --ask\n------------------------------------------------------------\nDesign the native ASK so that from the operator's point of view it is the same\ninstrument as MoDoT --ask / ManuscriptSpine, only the substrate is kernel+serial\n(and optionally Lean for formal faces), never Python.\n\nCover every MoDoT surface that --ask depends on:\n\n1. INPUT\n   - free-text question on the serial line after `ask `\n   - multi-word and multi-line questions (serial line length / continuation policy)\n   - file-path form parity: how host-side question files (questions/q*.txt) enter\n     the kernel without Python (e.g. paste protocol, host loader, or explicit\n     `ask file:` bridge that is NOT a Python agent \u2014 specify which is Grammatic)\n   - stdin/pipe parity if any is honest on serial\n\n2. PIPELINE (must be one chain, not parallel arms)\n   IMSCRIB: structural typing of demand (12-primitive Belnap or catalog-native\n            tuple assignment \u2014 specify how without LLM hand-imscription)\n          + catalog witness resolve/search \u2192 conventional scaffold structure\n   FSPLIT:  production of the answer body\n            HONEST SCOPE: bare-metal has no LLM. Design how \"answer production\"\n            works natively: (a) structural resolution only when no language model\n            is attached; (b) optional host-side language model as a *boundary\n            device* joined by imscription (not as the authority), if and only if\n            the Grammar allows a dual-substrate boundary without Python MoDoT.\n            Do not smuggle `modot/agent.py` back in.\n   EVALT:   Dual-Link co-typing / isomorphic match of answer against demand\n   EVALF:   defect localization (named primitives)\n   FFUSE:   join of answer-self voice and vessel voice; conflict held as B\n   ENGAGR:  dialetheic hold when both arms fire\n   IFIX:    brand SpineReport / crystal record; broadcast-equivalent on serial\n\n3. OPTIONS (parity table \u2014 every MoDoT flag must map to a native form or an\n   explicit \"not applicable on bare metal because \u2026\" with the Grammatic reason)\n   --ask / --file / -    \u2192 ask forms\n   --verbose             \u2192 tick/graph/kernel dump after ask\n   --no-selectivity      \u2192 balance-only (skip Dual-Link co-type / vessel face)\n   --program             \u2192 which IMASM program is loaded for the breath\n   --model               \u2192 boundary language model identity if dual-substrate\n   --dry-run             \u2192 no boundary model; structure-only ask\n   --cycles              \u2192 repeated breath ticks after ask\n   --reset / --stats     \u2192 crystal clear / crystal stats if mapped\n\n4. OUTPUT (same informational content as MoDoT live ask)\n   - conventional answer body (or structural answer when no language model)\n   - SPINE summary: fused belnap, model/self voice, vessel voice, conflict\n   - demand and answer types, defects, SIC gap / ride-AS residual when SIC face lives\n   - witness catalog name, tier, d(CLINK L8), scaffold roles\n   - BALANCE \u03bc\u2218\u03b4 closed/open counts\n   - provenance line (Dual-Link SIC, Scott-Grassl/existence theorem citation)\n\n5. SUBSTRATE MAPPING\n   Map each spine face to exact existing modules (Rust path and Lean theorem):\n   PROVE, UNIFY, PORT, WITNESS, TRANSPORT. Name gaps where the kernel catalog\n   is thinner than host IG_catalog.json and design how full catalog search lands\n   natively (regenerate embedded catalog; or load at boot from host blob without\n   Python agent; or crystal address navigation). Prefer catalog-native search\n   already used by cl8nk, not a new clipboard metric.\n\n6. HONEST NON-CLAIMS (from manuscripts3 \u2014 must appear in the design)\n   - cargo/tensor INTO vessel refused (D\u2013T); boarding is Dual-Link only\n   - Belnap stack \u2260 algebraic Scott-Grassl fiducial\n   - Clay T/B are Grammar typing not Millennium proofs\n   - d=2048 existence open (typed B)\n   - no LLM on bare metal unless dual-substrate boundary is designed honestly\n\n7. IMPLEMENTATION ORDER\n   Ordered, Grammatic steps to land `ask` on mOMonadOS serial REPL so that\n   `\u2299> ask <question>` is the operator's primary query surface, with options\n   equivalent to MoDoT, zero Python in the path. Include acceptance tests:\n   same question file content produces spine faces with the same structure as\n   MoDoT (verdict lattice, defects named, witness hit when catalog shares\n   entry, lossless vessel when transport face runs).\n\nWith full Frobenius closure (\u03bc\u2218\u03b4=id) on every boarding action, Dual-Link\nride-AS semantics, and Lean 4 verification scaffold pointing at\nDualLinkVessel / SIC_D12_WitnessVessel / VAE_Vita_ManuscriptSpine by name."
+}

@@ -596,6 +596,9 @@ static STATIC_CATALOG: &[CatalogEntry] = &[
     YANG_MILLS_MASS_GAP,
 ];
 
+// Query-relevant IG catalog subset for native `ask` (no Python host catalog).
+include!("catalog_ask_subset.rs");
+
 // ═══════════════════════════════════════════════════════════════
 // DYNAMIC CATALOG — runtime-extensible entry storage
 // ═══════════════════════════════════════════════════════════════
@@ -613,8 +616,135 @@ pub fn catalog_init() {
         for e in STATIC_CATALOG {
             v.push(*e);
         }
+        // Full MoDoT-parity `ask` needs search over math/query witnesses, not
+        // only the foundational ladder. Dedup by name.
+        for e in ASK_CATALOG_SUBSET {
+            if !v.iter().any(|x| x.name == e.name) {
+                v.push(*e);
+            }
+        }
         DYNAMIC_CATALOG = Some(v);
     }
+}
+
+/// Free-text catalog search for native `ask` (keyword score over name+description).
+/// Returns up to `limit` (entry, score) pairs, highest score first.
+///
+/// Scoring prefers multi-token compound names (e.g. erdos_hajnal_aleph1_graph)
+/// over short single-token names that merely appear as substrings of a long question
+/// (e.g. bare "aleph" matching "aleph1" in a graph-theory query).
+pub fn search_query(query: &str, limit: usize) -> Vec<(CatalogEntry, i32)> {
+    let q = normalize_name(query);
+    // Tokenize on non-alnum (underscores already from normalize)
+    let tokens: Vec<&str> = q.split('_').filter(|t| t.len() > 2).collect();
+    if tokens.is_empty() {
+        return Vec::new();
+    }
+    let anchors = [
+        "erdos", "hajnal", "aleph", "chromatic", "independent", "ramsey",
+        "hadwiger", "collatz", "navier", "riemann", "yang", "mills", "hodge",
+        "birch", "zauner", "sic", "goldbach", "twin", "beal", "witness", "dual",
+        "graph", "conjecture", "vertices", "finite", "subgraph",
+    ];
+    let q_anchors: Vec<&str> = anchors.iter().copied().filter(|a| q.contains(a)).collect();
+    let q_token_count = tokens.len().max(1) as i32;
+
+    let cat = ensure_catalog();
+    let mut scored: Vec<(CatalogEntry, i32)> = Vec::new();
+    for e in cat.iter() {
+        let name = e.name;
+        let name_parts: Vec<&str> = name.split('_').filter(|t| t.len() > 1).collect();
+        let blob = {
+            let mut s = alloc::string::String::from(e.name);
+            s.push('_');
+            s.push_str(&normalize_name(e.description));
+            s
+        };
+        let mut sc: i32 = 0;
+
+        // Exact / near-exact name identity (short keywords like "collatz", "aleph")
+        if name == q.as_str() {
+            sc += 100;
+        } else if name_parts.len() == 1 && q == name {
+            sc += 100;
+        } else if name.len() >= 6 && (q == name || name.contains(q.as_str())) {
+            // query is a compact name fragment fully inside a longer catalog name
+            sc += 70;
+        } else if name.len() >= 8 && q.contains(name) {
+            // long compound name fully present in free-text question
+            sc += 60;
+        } else if name_parts.len() == 1 && name.len() <= 6 && q.contains(name) {
+            // short bare name appearing inside a long free-text question:
+            // weak signal only (stops "aleph" beating erdos_hajnal_…)
+            sc += 8;
+        }
+
+        // Multi-token name coverage: fraction of name parts hit by the query
+        let mut parts_hit = 0i32;
+        for p in &name_parts {
+            if q.contains(p) || tokens.iter().any(|t| t.contains(p) || p.contains(t)) {
+                parts_hit += 1;
+            }
+        }
+        if !name_parts.is_empty() {
+            let coverage = (parts_hit * 40) / (name_parts.len() as i32);
+            sc += coverage;
+            // Bonus for multi-token names with ≥2 parts hit (compound witnesses)
+            if name_parts.len() >= 2 && parts_hit >= 2 {
+                sc += 15 + parts_hit * 5;
+            }
+        }
+
+        for a in &q_anchors {
+            if name.contains(a) {
+                sc += 14;
+            } else if blob.contains(a) {
+                sc += 5;
+            }
+        }
+        for t in &tokens {
+            if name.contains(t) {
+                sc += 4;
+            } else if blob.contains(t) {
+                sc += 1;
+            }
+        }
+
+        // Prefer entries whose name is roughly commensurate with a short query;
+        // demote single-token short names when the question is long multi-token prose.
+        if q_token_count >= 6 && name_parts.len() == 1 && name.len() <= 6 {
+            sc = sc.saturating_sub(25);
+        }
+
+        // Single-keyword queries ("collatz", "hadwiger"): boost head-match and
+        // the open problem face (*_conjecture) over counterexample/proven variants.
+        if tokens.len() == 1 {
+            let t = tokens[0];
+            if name == t || name.starts_with(&alloc::format!("{}_", t)) {
+                sc += 12;
+                if name.ends_with("_conjecture") {
+                    sc += 15;
+                } else if name.contains("counterexample")
+                    || name.ends_with("_proven")
+                    || name.contains("_theorem_proven")
+                {
+                    sc = sc.saturating_sub(8);
+                }
+            }
+        }
+
+        if sc >= 12 {
+            scored.push((*e, sc));
+        }
+    }
+    // Score desc; on ties prefer shorter canonical names (conjecture over long variants)
+    scored.sort_by(|a, b| {
+        b.1.cmp(&a.1).then_with(|| a.0.name.len().cmp(&b.0.name.len()))
+    });
+    if scored.len() > limit {
+        scored.truncate(limit);
+    }
+    scored
 }
 
 /// Ensure the dynamic catalog is initialized.
