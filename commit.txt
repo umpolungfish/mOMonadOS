@@ -1,20 +1,25 @@
-Dialects, not universes: the composition rulesets now carry their own name everywhere.
+Fix the reproducibility gap and clear the review nits
 
-Nothing is published yet, so I still own the naming convention outright, and dialect.rs
-had already been calling these rulesets dialects since Phase I. The rest of the kernel now
-agrees: Universe -> Dialect, UNIVERSE_COUNT -> DIALECT_COUNT, all_universes -> all_dialects,
-universe_verdict/profile/counts/by_name -> dialect_*, closer_universes -> closer_dialects,
-and universe_expansion.rs is renamed dialect_expansion.rs. All serial output now says
-dialects ("Wide payload: 3 witnesses x 88 dialects", "closer dialects").
+I reviewed the kernel and fixed the things worth fixing without touching the
+verified core.
 
-The Lean-facing dialect NAMES (scope_universe, stoichiometry_universe, absorption_scope_empire)
-are unchanged: they mirror declarations in Clay_WitnessedClosure.lean and the catalog, and
-renaming those is a p4ramill rebuild for another day.
+- Added rust-toolchain.toml pinning nightly plus rust-src plus the
+  x86_64-unknown-none target. The build uses -Zbuild-std and no_std, both of which
+  need nightly and rust-src; before this it only worked because nightly happened to
+  be my default, and would have failed silently for anyone on a stable default. Now
+  it is pinned and reproducible.
+- Cleared the one build warning: renamed bd_times_B to bd_times_b in belnap_c4.rs
+  (snake case). The release build is now warning-clean.
+- Finished the dialects-not-universes rename: the leftover UNIVERSE banner comments
+  in dialect_expansion.rs now read DIALECT, matching the type.
+- Removed a duplicated "(default 0 = canonical)" fragment from the active_dialect
+  comment in kernel.rs.
+- Dropped the stale hardcoded line count from the README headline.
 
-Verified end to end: kernel builds clean, and a fresh QEMU `vessel run` reproduces the exact
-verdict matrix (BSD N:1 T:0 F:75 B:12; Hodge N:0 T:2 F:74 B:12; YM N:2 T:0 F:85 B:1),
-534 boarding actions all Frobenius-closed, ΔS = 0, LOSSLESS. Only the word changed.
-
-The witness vessel paper's transcript and artifact statement were updated to match
-(ig-docs manuscripts3 and the lifted publishing copy).
-spine REPL: PROVE→UNIFY→PORT ledger + vessel run + frob unify (no Python)
+Left deliberately untouched: the large main.rs (splitting it is a real refactor,
+not a quick safe fix), the vendored IG_catalog.json (I added it on purpose as the
+canonical tuple source, and the no_std kernel never reads it at runtime, so it is
+provenance, not accidental bloat), and the fork-stack depth cap in the kernel (that
+is the verified core, deep FSPLIT nesting past the cap is pathological, and I will
+not risk the Frobenius loop for a theoretical case). Build stays green and
+warning-clean.

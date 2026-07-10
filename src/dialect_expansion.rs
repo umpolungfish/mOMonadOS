@@ -19,7 +19,7 @@ use alloc::vec::Vec;
 use alloc::format;
 
 // ═══════════════════════════════════════════════════════════════
-// UNIVERSE COUNT
+// DIALECT COUNT
 // ═══════════════════════════════════════════════════════════════
 
 /// Total number of dialects: 88 (8 canonical + 80 expansion).
@@ -60,7 +60,7 @@ pub struct AbsorptionRule {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// UNIVERSE
+// DIALECT
 // ═══════════════════════════════════════════════════════════════
 
 #[derive(Debug, Clone)]
@@ -252,7 +252,7 @@ pub static ABS_SCOPE_TOTALITARIAN: &[AbsorptionRule] = &[
 ];
 
 // ═══════════════════════════════════════════════════════════════
-// UNIVERSE CONSTRUCTOR — builds all 88 dialects
+// DIALECT CONSTRUCTOR — builds all 88 dialects
 // ═══════════════════════════════════════════════════════════════
 
 /// Return all 88 dialects (0..87).

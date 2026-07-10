@@ -8,7 +8,7 @@
 A bare-metal self-imscribing operating kernel. No processes. No scheduler. No filesystem hierarchy.
 The kernel IS the Frobenius loop, every tick is a structural self-verification.
 
-**Total codebase:** ~26,660 lines Rust (no_std) + build scripts  
+**Total codebase:** tens of thousands of lines of Rust (no_std) + build scripts  
 **Target:** x86_64-unknown-none (bare-metal direct ELF boot, zero external crates)  
 **License:** Unlicense (public domain)
 

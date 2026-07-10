@@ -121,8 +121,8 @@ pub fn c4_sub(a: &BelnapComplex, b: &BelnapComplex) -> BelnapComplex {
 pub fn c4_mul(a: &BelnapComplex, b: &BelnapComplex) -> BelnapComplex {
     let ac = band(a.real, b.real);
     let bd = band(a.imag, b.imag);
-    let bd_times_B = band(bd, B4::B);
-    let real_part = band(ac, bnot(bd_times_B));
+    let bd_times_b = band(bd, B4::B);
+    let real_part = band(ac, bnot(bd_times_b));
     let ad = band(a.real, b.imag);
     let bc = band(a.imag, b.real);
     let imag_part = bor(ad, bc);

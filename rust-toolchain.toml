@@ -1,0 +1,7 @@
+# mOMonadOS builds no_std for a bare target and uses -Zbuild-std, both of which
+# require the nightly toolchain plus the rust-src component. Pinning them here so
+# the build is reproducible and does not silently fail on a stable default.
+[toolchain]
+channel = "nightly"
+components = ["rust-src"]
+targets = ["x86_64-unknown-none"]
