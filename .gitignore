@@ -1,1 +1,5 @@
 target/
+# 2.1MB tuple-provenance dump, duplicated from the canonical
+# imscribing_grammar/IG_catalog.json and never read at runtime (no_std). Kept on
+# disk for reference, out of the tracked tree to keep the repo lean.
+IG_catalog.json

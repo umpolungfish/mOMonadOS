@@ -3,6 +3,11 @@ use crate::belnap::*;
 use crate::tokens::*;
 use crate::frob_verify::FrobeniusHarness;
 
+/// Maximum simultaneous FSPLIT fork depth. Real programs never nest this deep;
+/// the cap is a safety bound, and exceeding it is now counted (`fork_overflow`)
+/// rather than dropped silently.
+const FORK_STACK_CAP: usize = 64;
+
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum Phase { Boot, Think, Act, Observe, Update, Halt }
 
@@ -58,8 +63,9 @@ pub struct Kernel {
     pub frob_checks: u64,
     pub frob_open:   u64,
     pub harness:     FrobeniusHarness,
-    fork_stack:      [ForkFrame; 16],
+    fork_stack:      [ForkFrame; FORK_STACK_CAP],
     fork_depth:      usize,
+    pub fork_overflow: u64,   // FSPLITs that exceeded FORK_STACK_CAP (0 in practice)
     pub halted:      bool,
     pub dynamic_mode: bool,  // true → rebuild program from IgTuple each wrap
     // ── Cross-dialect ruleset state ──
@@ -87,8 +93,9 @@ impl Kernel {
             frob_checks: 0,
             frob_open:   0,
             harness:     FrobeniusHarness::new("mOMonadOS"),
-            fork_stack:  [ForkFrame { resume_ip: 0, right_val: B4::N, right_set: false }; 16],
+            fork_stack:  [ForkFrame { resume_ip: 0, right_val: B4::N, right_set: false }; FORK_STACK_CAP],
             fork_depth:  0,
+            fork_overflow: 0,
             halted:      false,
             dynamic_mode: false,
             active_dialect:      0,
@@ -110,13 +117,19 @@ impl Kernel {
     pub fn fork_depth(&self) -> usize { self.fork_depth }
 
     fn push_fork(&mut self, resume_ip: usize) {
-        if self.fork_depth < 16 {
+        if self.fork_depth < FORK_STACK_CAP {
             self.fork_stack[self.fork_depth] = ForkFrame {
                 resume_ip,
                 right_val: B4::N,
                 right_set: false,
             };
             self.fork_depth += 1;
+        } else {
+            // Fork stack full: record the overflow rather than dropping the fork
+            // silently (a silent drop would desync the matching FFUSE). This path
+            // is unreachable for real programs; it makes a pathological nest
+            // observable instead of invisible.
+            self.fork_overflow += 1;
         }
     }
 
