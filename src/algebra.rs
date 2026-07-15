@@ -86,7 +86,7 @@ impl LatticeResult {
 /// Greatest lower bound of two tuples.
 /// Ordered primitives (F,K,G,Omega,H): min over ordinal.
 /// Categorical primitives (D,T,R,P,C,Phi,S): exact match required, else CONFLICT.
-/// Phi_c (⊙) is absorbing: any meet involving ⊙ yields ⊙.
+/// ⊙ (⊙) is absorbing: any meet involving ⊙ yields ⊙.
 pub fn meet(a: &IgTuple, b: &IgTuple) -> LatticeResult {
     lattice_op(a, b, true)
 }
@@ -94,7 +94,7 @@ pub fn meet(a: &IgTuple, b: &IgTuple) -> LatticeResult {
 /// Least upper bound of two tuples.
 /// Ordered primitives (F,K,G,Omega,H): max over ordinal.
 /// Categorical primitives: exact match required, else CONFLICT.
-/// Phi_c (⊙) is absorbing under join as well.
+/// ⊙ (⊙) is absorbing under join as well.
 pub fn join(a: &IgTuple, b: &IgTuple) -> LatticeResult {
     lattice_op(a, b, false)
 }
@@ -102,9 +102,9 @@ pub fn join(a: &IgTuple, b: &IgTuple) -> LatticeResult {
 fn lattice_op(a: &IgTuple, b: &IgTuple, is_meet: bool) -> LatticeResult {
     let op_name = if is_meet { "meet" } else { "join" };
 
-    // Phi_c absorption: ⊙ is absorbing under both meet and join
-    let phi = if a.phi == IgPrim::Phi_c || b.phi == IgPrim::Phi_c {
-        IgPrim::Phi_c
+    // ⊙ absorption: ⊙ is absorbing under both meet and join
+    let phi = if a.phi == IgPrim::⊙ || b.phi == IgPrim::⊙ {
+        IgPrim::⊙
     } else if is_meet {
         catalog::ord_min(a.phi, b.phi, &catalog::PHI_ORD)
     } else {
@@ -170,8 +170,8 @@ pub fn tensor(a: &IgTuple, b: &IgTuple) -> IgTuple {
     // Phi: ⊙ absorption rule — tensor(⊙, EP) = EP
     let phi = if a.phi == IgPrim::Phi_ep || b.phi == IgPrim::Phi_ep {
         IgPrim::Phi_ep
-    } else if a.phi == IgPrim::Phi_c || b.phi == IgPrim::Phi_c {
-        IgPrim::Phi_c
+    } else if a.phi == IgPrim::⊙ || b.phi == IgPrim::⊙ {
+        IgPrim::⊙
     } else {
         catalog::ord_max(a.phi, b.phi, &catalog::PHI_ORD)
     };

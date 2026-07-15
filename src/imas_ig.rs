@@ -88,10 +88,10 @@ pub enum IgPrim {
     C_broad = 32, // 𐑵 one-to-all broadcast
 
     // Phi (Criticality)
-    Phi_c         = 33, // ⊙ critical/power-law
-    Phi_c_complex = 34, // 𐑮 complex-plane critical
+    ⊙         = 33, // ⊙ critical/power-law
+    𐑮 = 34, // 𐑮 complex-plane critical
     Phi_ep        = 35, // 𐑻 exceptional point
-    Phi_sub       = 36, // 𐑢 sub-critical
+    𐑢       = 36, // 𐑢 sub-critical
     Phi_super     = 37, // 𐑣 supercritical/runaway
 
     // H (Chirality)
@@ -137,8 +137,8 @@ impl IgPrim {
     /// That trick silently breaks for three families that carry a
     /// non-monotonic extra value: Ç (Kinetics: K_mbl=4.5 sits between
     /// K_trap=4 and K_fast=1, not below K_fast), ⊙/Phi (Criticality:
-    /// Phi_c_complex=2.33 and Phi_ep=2.67 sit between Phi_c=2 and
-    /// Phi_super=3, not below Phi_sub=1), and Ω (Winding: Omega_na=4 sits
+    /// 𐑮=2.33 and Phi_ep=2.67 sit between ⊙=2 and
+    /// Phi_super=3, not below 𐑢=1), and Ω (Winding: Omega_na=4 sits
     /// above Omega_z=3, not below Omega_0=1). Any new gate logic should
     /// compare `ordinal()` directly rather than raw discriminants.
     pub fn ordinal(self) -> f32 {
@@ -160,9 +160,9 @@ impl IgPrim {
             G_beth => 1.0, G_gimel => 2.0, G_aleph => 3.0,
             // ɢ Coupling
             C_and => 1.0, C_or => 2.0, C_seq => 3.0, C_broad => 4.0,
-            // ⊙ Criticality — non-monotonic: Phi_c_complex/Phi_ep sit between
-            // Phi_c and Phi_super, not below Phi_sub.
-            Phi_sub => 1.0, Phi_c => 2.0, Phi_c_complex => 2.33, Phi_ep => 2.67, Phi_super => 3.0,
+            // ⊙ Criticality — non-monotonic: 𐑮/Phi_ep sit between
+            // ⊙ and Phi_super, not below 𐑢.
+            𐑢 => 1.0, ⊙ => 2.0, 𐑮 => 2.33, Phi_ep => 2.67, Phi_super => 3.0,
             // Ħ Chirality
             H0 => 1.0, H1 => 2.0, H2 => 3.0, H_inf => 4.0,
             // Σ Stoichiometry
@@ -238,10 +238,10 @@ impl IgTuple {
             else { IgPrim::C_broad };
 
         // Phi — Criticality from self_ref + dialetheia + period
-        let phi_val = if sr && dc { IgPrim::Phi_c }
-            else if sr { IgPrim::Phi_c_complex }
+        let phi_val = if sr && dc { IgPrim::⊙ }
+            else if sr { IgPrim::𐑮 }
             else if dc { IgPrim::Phi_ep }
-            else if p == 1 { IgPrim::Phi_sub }
+            else if p == 1 { IgPrim::𐑢 }
             else { IgPrim::Phi_super };
 
         // H — Chirality from period
@@ -325,7 +325,7 @@ pub fn all_canonical_ig() -> [IgTuple; 12] {
     let mut result = [IgTuple {
         d: IgPrim::D_infty, t: IgPrim::T_odot, r: IgPrim::R_lr,
         p: IgPrim::P_pmsym, f: IgPrim::F_hbar, k: IgPrim::K_mod,
-        g: IgPrim::G_aleph, c: IgPrim::C_seq, phi: IgPrim::Phi_c,
+        g: IgPrim::G_aleph, c: IgPrim::C_seq, phi: IgPrim::⊙,
         h: IgPrim::H2, s: IgPrim::S_nm, omega: IgPrim::Omega_z,
     }; 12];
     for i in 0..12 {

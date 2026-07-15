@@ -199,13 +199,13 @@ pub fn verify_canonical_ordinals() -> (bool, &'static str) {
     { return (false, "C_broad ordinal drift"); }
 
     // ── Phi / ⊙ (5 values, NON-UNIFORM — ⚠ ⊙-ordinal healing) ──
-    if Phi_sub.ordinal() != CANON_PHI_SUB
-    { return (false, "Phi_sub ordinal drift"); }
-    if Phi_c.ordinal() != CANON_PHI_C
-    { return (false, "Phi_c ordinal drift"); }
-    // ⚠ CRITICAL: Phi_c_complex must be 7/3≈2.333, not 3.0
-    if (Phi_c_complex.ordinal() - CANON_PHI_C_COMPLEX).abs() > 0.01
-    { return (false, "Phi_c_complex ordinal drift — the roar=7/3 bug!"); }
+    if 𐑢.ordinal() != CANON_PHI_SUB
+    { return (false, "𐑢 ordinal drift"); }
+    if ⊙.ordinal() != CANON_PHI_C
+    { return (false, "⊙ ordinal drift"); }
+    // ⚠ CRITICAL: 𐑮 must be 7/3≈2.333, not 3.0
+    if (𐑮.ordinal() - CANON_PHI_C_COMPLEX).abs() > 0.01
+    { return (false, "𐑮 ordinal drift — the roar=7/3 bug!"); }
     // ⚠ CRITICAL: Phi_ep must be 8/3≈2.667, not 3.0
     if (Phi_ep.ordinal() - CANON_PHI_EP).abs() > 0.01
     { return (false, "Phi_ep ordinal drift — the err=8/3 bug!"); }

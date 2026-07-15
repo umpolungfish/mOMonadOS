@@ -27,7 +27,7 @@ pub enum AlephFamily { Mother, Double, Simple }
 pub const ALEPH_LETTERS: [AlephLetter; 22] = [
     // 3 Mothers
     AlephLetter { glyph: "א", name: "Aleph",  prim: IgPrim::D_odot,   family: AlephFamily::Mother, value: 1 },
-    AlephLetter { glyph: "מ", name: "Mem",    prim: IgPrim::Phi_c,    family: AlephFamily::Mother, value: 40 },
+    AlephLetter { glyph: "מ", name: "Mem",    prim: IgPrim::⊙,    family: AlephFamily::Mother, value: 40 },
     AlephLetter { glyph: "ש", name: "Shin",   prim: IgPrim::Phi_ep,   family: AlephFamily::Mother, value: 300 },
     // 7 Doubles
     AlephLetter { glyph: "ב", name: "Bet",    prim: IgPrim::T_in,     family: AlephFamily::Double, value: 2 },

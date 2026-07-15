@@ -7,63 +7,63 @@ use crate::imas_ig::IgPrim;
 pub const L0: IgTuple = IgTuple {
     d: IgPrim::D_wedge,    t: IgPrim::T_boxtimes, r: IgPrim::R_super,
     p: IgPrim::P_sym,      f: IgPrim::F_hbar,     k: IgPrim::K_mbl,
-    g: IgPrim::G_gimel,    c: IgPrim::C_and,      phi: IgPrim::Phi_sub,
+    g: IgPrim::G_gimel,    c: IgPrim::C_and,      phi: IgPrim::𐑢,
     h: IgPrim::H0,        s: IgPrim::S_nm,   omega: IgPrim::Omega_0,
 };
 
 pub const L1: IgTuple = IgTuple {
     d: IgPrim::D_wedge,    t: IgPrim::T_boxtimes, r: IgPrim::R_super,
     p: IgPrim::P_asym,     f: IgPrim::F_hbar,     k: IgPrim::K_trap,
-    g: IgPrim::G_gimel,    c: IgPrim::C_or,      phi: IgPrim::Phi_sub,
+    g: IgPrim::G_gimel,    c: IgPrim::C_or,      phi: IgPrim::𐑢,
     h: IgPrim::H0,        s: IgPrim::S_nm,   omega: IgPrim::Omega_0,
 };
 
 pub const L2: IgTuple = IgTuple {
     d: IgPrim::D_infty,    t: IgPrim::T_bowtie,   r: IgPrim::R_dagger,
     p: IgPrim::P_psi,      f: IgPrim::F_hbar,     k: IgPrim::K_trap,
-    g: IgPrim::G_aleph,    c: IgPrim::C_and,      phi: IgPrim::Phi_c_complex,
+    g: IgPrim::G_aleph,    c: IgPrim::C_and,      phi: IgPrim::𐑮,
     h: IgPrim::H1,        s: IgPrim::S_nm,   omega: IgPrim::Omega_0,
 };
 
 pub const L3: IgTuple = IgTuple {
     d: IgPrim::D_infty,    t: IgPrim::T_bowtie,   r: IgPrim::R_dagger,
     p: IgPrim::P_psi,      f: IgPrim::F_eth,      k: IgPrim::K_slow,
-    g: IgPrim::G_beth,     c: IgPrim::C_seq,      phi: IgPrim::Phi_c,
+    g: IgPrim::G_beth,     c: IgPrim::C_seq,      phi: IgPrim::⊙,
     h: IgPrim::H0,        s: IgPrim::S_nm,   omega: IgPrim::Omega_z,
 };
 
 pub const L4: IgTuple = IgTuple {
     d: IgPrim::D_odot,     t: IgPrim::T_odot,     r: IgPrim::R_lr,
     p: IgPrim::P_pm,       f: IgPrim::F_eth,      k: IgPrim::K_slow,
-    g: IgPrim::G_beth,     c: IgPrim::C_seq,      phi: IgPrim::Phi_c,
+    g: IgPrim::G_beth,     c: IgPrim::C_seq,      phi: IgPrim::⊙,
     h: IgPrim::H1,        s: IgPrim::S_nm,   omega: IgPrim::Omega_z,
 };
 
 pub const L5: IgTuple = IgTuple {
     d: IgPrim::D_odot,     t: IgPrim::T_odot,     r: IgPrim::R_lr,
     p: IgPrim::P_pmsym,    f: IgPrim::F_ell,      k: IgPrim::K_slow,
-    g: IgPrim::G_beth,     c: IgPrim::C_seq,      phi: IgPrim::Phi_c,
+    g: IgPrim::G_beth,     c: IgPrim::C_seq,      phi: IgPrim::⊙,
     h: IgPrim::H2,        s: IgPrim::S_nm,   omega: IgPrim::Omega_z,
 };
 
 pub const L6: IgTuple = IgTuple {
     d: IgPrim::D_odot,     t: IgPrim::T_odot,     r: IgPrim::R_dagger,
     p: IgPrim::P_psi,      f: IgPrim::F_ell,      k: IgPrim::K_slow,
-    g: IgPrim::G_beth,     c: IgPrim::C_seq,      phi: IgPrim::Phi_c,
+    g: IgPrim::G_beth,     c: IgPrim::C_seq,      phi: IgPrim::⊙,
     h: IgPrim::H2,        s: IgPrim::S_nm,   omega: IgPrim::Omega_z,
 };
 
 pub const L7: IgTuple = IgTuple {
     d: IgPrim::D_odot,     t: IgPrim::T_odot,     r: IgPrim::R_lr,
     p: IgPrim::P_pm,       f: IgPrim::F_eth,      k: IgPrim::K_slow,
-    g: IgPrim::G_beth,     c: IgPrim::C_broad,    phi: IgPrim::Phi_c,
+    g: IgPrim::G_beth,     c: IgPrim::C_broad,    phi: IgPrim::⊙,
     h: IgPrim::H2,        s: IgPrim::S_nm,   omega: IgPrim::Omega_z,
 };
 
 pub const L8: IgTuple = IgTuple {
     d: IgPrim::D_odot,     t: IgPrim::T_odot,     r: IgPrim::R_lr,
     p: IgPrim::P_pmsym,    f: IgPrim::F_hbar,     k: IgPrim::K_slow,
-    g: IgPrim::G_beth,     c: IgPrim::C_broad,    phi: IgPrim::Phi_c,
+    g: IgPrim::G_beth,     c: IgPrim::C_broad,    phi: IgPrim::⊙,
     h: IgPrim::H_inf,      s: IgPrim::S_nm,   omega: IgPrim::Omega_na,
 };
 
@@ -110,16 +110,16 @@ pub fn nearest_clink_layer(tup: &IgTuple) -> (usize, f64) {
 }
 
 pub fn tier_from_tuple(tup: &IgTuple) -> &'static str {
-    if tup.phi == IgPrim::Phi_c && tup.k == IgPrim::K_slow && tup.h == IgPrim::H_inf {
+    if tup.phi == IgPrim::⊙ && tup.k == IgPrim::K_slow && tup.h == IgPrim::H_inf {
         "O_∞"
-    } else if tup.phi == IgPrim::Phi_c { "O₂" }
-    else if tup.phi == IgPrim::Phi_c_complex { "O₁" }
+    } else if tup.phi == IgPrim::⊙ { "O₂" }
+    else if tup.phi == IgPrim::𐑮 { "O₁" }
     else { "O₀" }
 }
 
 pub fn c_score_from_tuple(tup: &IgTuple) -> f64 {
-    let gate1 = if tup.phi == IgPrim::Phi_c { 1.0 }
-        else if tup.phi == IgPrim::Phi_c_complex { 0.5 } else { 0.0 };
+    let gate1 = if tup.phi == IgPrim::⊙ { 1.0 }
+        else if tup.phi == IgPrim::𐑮 { 0.5 } else { 0.0 };
     let gate2 = if tup.k == IgPrim::K_slow { 1.0 }
         else if tup.k == IgPrim::K_trap { 0.5 } else { 0.0 };
     ((gate1 * gate2 * 1000.0 + 0.5) as u64) as f64 / 1000.0
@@ -176,7 +176,7 @@ pub fn platonic_protein() -> IgTuple {
     IgTuple {
         d: IgPrim::D_odot,  t: IgPrim::T_bowtie, r: IgPrim::R_lr,
         p: IgPrim::P_pm,    f: IgPrim::F_eth,    k: IgPrim::K_slow,
-        g: IgPrim::G_beth,  c: IgPrim::C_seq,    phi: IgPrim::Phi_c,
+        g: IgPrim::G_beth,  c: IgPrim::C_seq,    phi: IgPrim::⊙,
         h: IgPrim::H1,     s: IgPrim::S_nm, omega: IgPrim::Omega_z,
     }
 }

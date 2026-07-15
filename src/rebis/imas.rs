@@ -93,8 +93,8 @@ pub fn fingerprint_to_ig(fp: &StructFingerprint) -> IgTuple {
         else if td<=3 {G_gimel} else {G_aleph};
     let c = if fp.frobenius_order>0 {C_seq} else if fp.period==1 {C_and}
         else if fp.period==2 {C_or} else {C_broad};
-    let phi = if fp.self_ref&&fp.dialetheia_complete {Phi_c} else if fp.self_ref {Phi_c_complex}
-        else if fp.dialetheia_complete {Phi_ep} else if fp.period==1 {Phi_sub} else {Phi_super};
+    let phi = if fp.self_ref&&fp.dialetheia_complete {⊙} else if fp.self_ref {𐑮}
+        else if fp.dialetheia_complete {Phi_ep} else if fp.period==1 {𐑢} else {Phi_super};
     let h = match fp.period {1=>H0,2=>H1,3=>H2,_=>H_inf};
     let nz = (fp.sig_l>0)as u8+(fp.sig_f>0)as u8+(fp.sig_d>0)as u8+(fp.sig_x>0)as u8;
     let s = if nz==1 {S_11} else if nz==2 {S_nn} else {S_nm};

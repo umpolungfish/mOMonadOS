@@ -47,10 +47,10 @@ pub fn rh_involution_identity() -> bool {
 }
 
 /// RH bridge imscription: D_holo·T_holo·R_dagger·P_pm_sym·F_hbar·K_slow
-/// ·G_aleph·Gamma_seq·Phi_c·H2·n_m·Omega_Z2
+/// ·G_aleph·Gamma_seq·⊙·H2·n_m·Omega_Z2
 pub const RH_IMSCRIPTION: &str = "⟨𐑦·𐑸·𐑽·𐑹·𐑐·𐑧·𐑲·𐑠·⊙·𐑖·𐑳·𐑴⟩";
 
-/// Contains both ⊙ (Phi_c) and 𐑹 (P_pm_sym) → O_∞ tier.
+/// Contains both ⊙ (⊙) and 𐑹 (P_pm_sym) → O_∞ tier.
 pub fn rh_bridge_is_o_inf() -> bool {
     RH_IMSCRIPTION.contains('⊙') && RH_IMSCRIPTION.contains('𐑹')
 }

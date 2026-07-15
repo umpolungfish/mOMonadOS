@@ -21,7 +21,7 @@ pub const ALANINE: IgTuple = IgTuple {
             h: IgPrim::H0,
             s: IgPrim::S_11,
             omega: IgPrim::Omega_0,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const ARGININE: IgTuple = IgTuple {
@@ -36,7 +36,7 @@ pub const ARGININE: IgTuple = IgTuple {
             h: IgPrim::H1,
             s: IgPrim::S_11,
             omega: IgPrim::Omega_z2,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const ASPARAGINE: IgTuple = IgTuple {
@@ -51,7 +51,7 @@ pub const ASPARAGINE: IgTuple = IgTuple {
             h: IgPrim::H1,
             s: IgPrim::S_11,
             omega: IgPrim::Omega_z2,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const ASPARTATE: IgTuple = IgTuple {
@@ -66,7 +66,7 @@ pub const ASPARTATE: IgTuple = IgTuple {
             h: IgPrim::H1,
             s: IgPrim::S_11,
             omega: IgPrim::Omega_z2,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const CYSTEINE: IgTuple = IgTuple {
@@ -81,7 +81,7 @@ pub const CYSTEINE: IgTuple = IgTuple {
             h: IgPrim::H1,
             s: IgPrim::S_11,
             omega: IgPrim::Omega_z2,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const GLUTAMATE: IgTuple = IgTuple {
@@ -96,7 +96,7 @@ pub const GLUTAMATE: IgTuple = IgTuple {
             h: IgPrim::H1,
             s: IgPrim::S_11,
             omega: IgPrim::Omega_z2,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const GLUTAMINE: IgTuple = IgTuple {
@@ -111,7 +111,7 @@ pub const GLUTAMINE: IgTuple = IgTuple {
             h: IgPrim::H1,
             s: IgPrim::S_11,
             omega: IgPrim::Omega_z2,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const GLYCINE: IgTuple = IgTuple {
@@ -126,7 +126,7 @@ pub const GLYCINE: IgTuple = IgTuple {
             h: IgPrim::H0,
             s: IgPrim::S_11,
             omega: IgPrim::Omega_0,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const HISTIDINE: IgTuple = IgTuple {
@@ -156,7 +156,7 @@ pub const ISOLEUCINE: IgTuple = IgTuple {
             h: IgPrim::H1,
             s: IgPrim::S_11,
             omega: IgPrim::Omega_z2,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const LEUCINE: IgTuple = IgTuple {
@@ -171,7 +171,7 @@ pub const LEUCINE: IgTuple = IgTuple {
             h: IgPrim::H1,
             s: IgPrim::S_11,
             omega: IgPrim::Omega_0,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const LYSINE: IgTuple = IgTuple {
@@ -186,7 +186,7 @@ pub const LYSINE: IgTuple = IgTuple {
             h: IgPrim::H1,
             s: IgPrim::S_11,
             omega: IgPrim::Omega_z2,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const METHIONINE: IgTuple = IgTuple {
@@ -201,7 +201,7 @@ pub const METHIONINE: IgTuple = IgTuple {
             h: IgPrim::H1,
             s: IgPrim::S_11,
             omega: IgPrim::Omega_0,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const PHENYLALANINE: IgTuple = IgTuple {
@@ -216,7 +216,7 @@ pub const PHENYLALANINE: IgTuple = IgTuple {
             h: IgPrim::H1,
             s: IgPrim::S_11,
             omega: IgPrim::Omega_z2,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const PROLINE: IgTuple = IgTuple {
@@ -231,7 +231,7 @@ pub const PROLINE: IgTuple = IgTuple {
             h: IgPrim::H2,
             s: IgPrim::S_11,
             omega: IgPrim::Omega_z2,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const SERINE: IgTuple = IgTuple {
@@ -246,7 +246,7 @@ pub const SERINE: IgTuple = IgTuple {
             h: IgPrim::H1,
             s: IgPrim::S_11,
             omega: IgPrim::Omega_z2,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const THREONINE: IgTuple = IgTuple {
@@ -261,7 +261,7 @@ pub const THREONINE: IgTuple = IgTuple {
             h: IgPrim::H1,
             s: IgPrim::S_11,
             omega: IgPrim::Omega_z2,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const TRYPTOPHAN: IgTuple = IgTuple {
@@ -276,7 +276,7 @@ pub const TRYPTOPHAN: IgTuple = IgTuple {
             h: IgPrim::H2,
             s: IgPrim::S_11,
             omega: IgPrim::Omega_z2,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const TYROSINE: IgTuple = IgTuple {
@@ -291,7 +291,7 @@ pub const TYROSINE: IgTuple = IgTuple {
             h: IgPrim::H2,
             s: IgPrim::S_11,
             omega: IgPrim::Omega_z2,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const VALINE: IgTuple = IgTuple {
@@ -306,7 +306,7 @@ pub const VALINE: IgTuple = IgTuple {
             h: IgPrim::H1,
             s: IgPrim::S_11,
             omega: IgPrim::Omega_0,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 // ═══ PROTEIN ENVIRONMENT TUPLES (4) ═══
@@ -323,7 +323,7 @@ pub const CHARGED_INTERFACE: IgTuple = IgTuple {
             h: IgPrim::H2,
             s: IgPrim::S_nn,
             omega: IgPrim::Omega_z,
-            phi: IgPrim::Phi_c_complex,
+            phi: IgPrim::𐑮,
 };
 
 pub const HYDROPHOBIC_CORE: IgTuple = IgTuple {
@@ -338,7 +338,7 @@ pub const HYDROPHOBIC_CORE: IgTuple = IgTuple {
             h: IgPrim::H0,
             s: IgPrim::S_nn,
             omega: IgPrim::Omega_0,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const INTERFACIAL: IgTuple = IgTuple {
@@ -353,7 +353,7 @@ pub const INTERFACIAL: IgTuple = IgTuple {
             h: IgPrim::H1,
             s: IgPrim::S_nm,
             omega: IgPrim::Omega_z2,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub const POLAR_SURFACE: IgTuple = IgTuple {
@@ -368,7 +368,7 @@ pub const POLAR_SURFACE: IgTuple = IgTuple {
             h: IgPrim::H2,
             s: IgPrim::S_nm,
             omega: IgPrim::Omega_z2,
-            phi: IgPrim::Phi_sub,
+            phi: IgPrim::𐑢,
 };
 
 pub fn all_sidechains() -> &'static [(&'static str, &'static IgTuple)] {

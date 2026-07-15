@@ -174,7 +174,7 @@ impl AminoAcid {
         let is_pyr = matches!(c.p3, B4::N | B4::T);
         match (c.p1, c.p2, is_pyr) {
             (B4::N, B4::N, _)      => Some(IgPrim::F_hbar),   // Phe → ƒ
-            (B4::N, B4::F, _)      => Some(IgPrim::Phi_sub),   // Tyr → Φ (Parity, sub-critical gate)
+            (B4::N, B4::F, _)      => Some(IgPrim::𐑢),   // Tyr → Φ (Parity, sub-critical gate)
             (B4::N, B4::B, true)   => Some(IgPrim::R_lr),      // Cys → Ř
             (B4::N, B4::B, false)  => Some(IgPrim::T_net),     // Trp → Þ
             (B4::F, B4::N, true)   => Some(IgPrim::K_mod),     // Ile → Ç
@@ -182,7 +182,7 @@ impl AminoAcid {
             (B4::F, B4::F, true)   => Some(IgPrim::G_aleph),   // Asn → ɢ
             (B4::F, B4::F, false)  => Some(IgPrim::S_nm),      // Lys → Σ
             (B4::T, B4::F, true)   => Some(IgPrim::C_seq),     // His → Γ
-            (B4::T, B4::F, false)  => Some(IgPrim::Phi_c),     // Gln → ⊙
+            (B4::T, B4::F, false)  => Some(IgPrim::⊙),     // Gln → ⊙
             (B4::B, B4::F, true)   => Some(IgPrim::H2),        // Asp → Ħ
             (B4::B, B4::F, false)  => Some(IgPrim::Omega_z),   // Glu → Ω
             _                      => None,

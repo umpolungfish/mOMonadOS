@@ -735,7 +735,7 @@ Stopped after {} ticks.", ran);
                             match u {
                                 0 => { // canonical: G1:Φ≥𐑹  G2:φ̂≥⊙  G3:Ω≥𐑭
                                     let g1 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
-                                    let g2 = (ig.phi as u8) <= (IgPrim::Phi_c as u8);
+                                    let g2 = (ig.phi as u8) <= (IgPrim::⊙ as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
                                     sprintln!("  G1 (Φ≥𐑹): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     sprintln!("  G2 (φ̂≥⊙): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
@@ -744,7 +744,7 @@ Stopped after {} ticks.", ran);
                                 }
                                 1 => { // low_gate: G1:Φ≥𐑬  G2:φ̂≥𐑢  G3:Ω≥𐑭
                                     let g1 = (ig.p as u8) <= (IgPrim::P_pm as u8);
-                                    let g2 = (ig.phi as u8) <= (IgPrim::Phi_sub as u8);
+                                    let g2 = (ig.phi as u8) <= (IgPrim::𐑢 as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
                                     sprintln!("  G1 (Φ≥𐑬): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     sprintln!("  G2 (φ̂≥𐑢): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
@@ -761,7 +761,7 @@ Stopped after {} ticks.", ran);
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
                                 3 => { // inverted_gates: G1:φ̂≥⊙  G2:Φ≥𐑹  G3:Ω≥𐑭
-                                    let g1 = (ig.phi as u8) <= (IgPrim::Phi_c as u8);
+                                    let g1 = (ig.phi as u8) <= (IgPrim::⊙ as u8);
                                     let g2 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
                                     sprintln!("  G1 (φ̂≥⊙): {}  φ̂={}", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph());
@@ -771,7 +771,7 @@ Stopped after {} ticks.", ran);
                                 }
                                 4 => { // no_ordering: G1+G2+G3 parallel — same as canonical but independence asserted
                                     let g1 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
-                                    let g2 = (ig.phi as u8) <= (IgPrim::Phi_c as u8);
+                                    let g2 = (ig.phi as u8) <= (IgPrim::⊙ as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
                                     sprintln!("  G1 (Φ≥𐑹): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     sprintln!("  G2 (φ̂≥⊙): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
@@ -781,7 +781,7 @@ Stopped after {} ticks.", ran);
                                 }
                                 5 => { // high_gate: G1:Φ≥𐑹  G2:φ̂≥𐑮  G3:Ω≥𐑟
                                     let g1 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
-                                    let g2 = (ig.phi as u8) <= (IgPrim::Phi_c_complex as u8);
+                                    let g2 = (ig.phi as u8) <= (IgPrim::𐑮 as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::Omega_na as u8);
                                     sprintln!("  G1 (Φ≥𐑹): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     sprintln!("  G2 (φ̂≥𐑮): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
@@ -790,7 +790,7 @@ Stopped after {} ticks.", ran);
                                 }
                                 6 => { // winding_first: G1:Ω≥𐑭  G2:φ̂≥⊙  G3:Φ≥𐑹
                                     let g1 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
-                                    let g2 = (ig.phi as u8) <= (IgPrim::Phi_c as u8);
+                                    let g2 = (ig.phi as u8) <= (IgPrim::⊙ as u8);
                                     let g3 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
                                     sprintln!("  G1 (Ω≥𐑭): {}  Ω={}", if g1 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     sprintln!("  G2 (φ̂≥⊙): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
@@ -799,7 +799,7 @@ Stopped after {} ticks.", ran);
                                 }
                                 7 => { // t_structural: G1:Φ≥𐑹  G2:φ̂≥⊙  G3:Ω≥𐑭  T:ɢ=𐑠
                                     let g1 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
-                                    let g2 = (ig.phi as u8) <= (IgPrim::Phi_c as u8);
+                                    let g2 = (ig.phi as u8) <= (IgPrim::⊙ as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
                                     let t_ok = ig.c == IgPrim::C_seq;
                                     sprintln!("  G1 (Φ≥𐑹): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
@@ -814,7 +814,7 @@ Stopped after {} ticks.", ran);
                                        // discriminant trick used in arms 0-7 is invalid for the criticality
                                        // family (𐑮/𐑻 are non-monotonic in discriminant order).
                                     let g1 = ig.h.ordinal() >= IgPrim::H2.ordinal();
-                                    let g2 = ig.phi.ordinal() >= IgPrim::Phi_c.ordinal();
+                                    let g2 = ig.phi.ordinal() >= IgPrim::⊙.ordinal();
                                     let g3 = ig.omega.ordinal() >= IgPrim::Omega_z.ordinal();
                                     sprintln!("  G1 (Ħ≥𐑖): {}  Ħ={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.h.glyph(), ig.h.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
@@ -825,7 +825,7 @@ Stopped after {} ticks.", ran);
                                 9 => { // scope_dialect: G1:Γ≥𐑲(maximal scope)  G2:⊙≥⊙  G3:Ω≥𐑭
                                        // T: T_CEILING — same generalization as U8, paired with a different gate spec.
                                     let g1 = ig.g.ordinal() >= IgPrim::G_aleph.ordinal();
-                                    let g2 = ig.phi.ordinal() >= IgPrim::Phi_c.ordinal();
+                                    let g2 = ig.phi.ordinal() >= IgPrim::⊙.ordinal();
                                     let g3 = ig.omega.ordinal() >= IgPrim::Omega_z.ordinal();
                                     sprintln!("  G1 (Γ≥𐑲): {}  Γ={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.g.glyph(), ig.g.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
@@ -834,8 +834,8 @@ Stopped after {} ticks.", ran);
                                     if !t_ceiling_check(&ig) { all_pass = false; }
                                 }
                                 10 => { // triple_criticality: G1/G2/G3 all on ⊙, escalating thresholds 𐑢/⊙/𐑣
-                                    let g1 = ig.phi.ordinal() >= IgPrim::Phi_sub.ordinal();
-                                    let g2 = ig.phi.ordinal() >= IgPrim::Phi_c.ordinal();
+                                    let g1 = ig.phi.ordinal() >= IgPrim::𐑢.ordinal();
+                                    let g2 = ig.phi.ordinal() >= IgPrim::⊙.ordinal();
                                     let g3 = ig.phi.ordinal() >= IgPrim::Phi_super.ordinal();
                                     sprintln!("  G1 (⊙≥𐑢): {}  ⊙={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
@@ -844,8 +844,8 @@ Stopped after {} ticks.", ran);
                                     if !t_ceiling_check(&ig) { all_pass = false; }
                                 }
                                 11 => { // triple_criticality_gapped: same gates as U10, T_CEILING(gapped)
-                                    let g1 = ig.phi.ordinal() >= IgPrim::Phi_sub.ordinal();
-                                    let g2 = ig.phi.ordinal() >= IgPrim::Phi_c.ordinal();
+                                    let g1 = ig.phi.ordinal() >= IgPrim::𐑢.ordinal();
+                                    let g2 = ig.phi.ordinal() >= IgPrim::⊙.ordinal();
                                     let g3 = ig.phi.ordinal() >= IgPrim::Phi_super.ordinal();
                                     sprintln!("  G1 (⊙≥𐑢): {}  ⊙={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
@@ -955,7 +955,7 @@ Stopped after {} ticks.", ran);
                         // Canonical (U0) gate verdict, ordinal-correct.
                         let gate_canon =
                             ig.p.ordinal()     >= IgPrim::P_pmsym.ordinal()
-                            && ig.phi.ordinal() >= IgPrim::Phi_c.ordinal()
+                            && ig.phi.ordinal() >= IgPrim::⊙.ordinal()
                             && ig.omega.ordinal() >= IgPrim::Omega_z.ordinal();
                         let t_canon = t_canonical_check_silent(&ig);
 
@@ -964,13 +964,13 @@ Stopped after {} ticks.", ran);
                         // gapped variant (raises only the Ç anchor — see dialect.rs).
                         let gate_alt = match alt {
                             8 => ig.h.ordinal() >= IgPrim::H2.ordinal()
-                                && ig.phi.ordinal() >= IgPrim::Phi_c.ordinal()
+                                && ig.phi.ordinal() >= IgPrim::⊙.ordinal()
                                 && ig.omega.ordinal() >= IgPrim::Omega_z.ordinal(),
                             9 => ig.g.ordinal() >= IgPrim::G_aleph.ordinal()
-                                && ig.phi.ordinal() >= IgPrim::Phi_c.ordinal()
+                                && ig.phi.ordinal() >= IgPrim::⊙.ordinal()
                                 && ig.omega.ordinal() >= IgPrim::Omega_z.ordinal(),
-                            10 | 11 => ig.phi.ordinal() >= IgPrim::Phi_sub.ordinal()
-                                && ig.phi.ordinal() >= IgPrim::Phi_c.ordinal()
+                            10 | 11 => ig.phi.ordinal() >= IgPrim::𐑢.ordinal()
+                                && ig.phi.ordinal() >= IgPrim::⊙.ordinal()
                                 && ig.phi.ordinal() >= IgPrim::Phi_super.ordinal(),
                             _ => {
                                 sprintln!("Only U8, U9, U10, U11 have a known closing verdict so far.");

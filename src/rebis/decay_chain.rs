@@ -127,28 +127,28 @@ fn element_tuple(sym: &str) -> IgTuple {
     // Map element symbol to a structural tuple based on periodicity
     match sym {
         // Noble gases: fully symmetric, high criticality
-        "Rn" => IgTuple { d: IgPrim::D_odot, t: IgPrim::T_odot, r: IgPrim::R_lr, p: IgPrim::P_sym, f: IgPrim::F_ell, k: IgPrim::K_mod, g: IgPrim::G_aleph, c: IgPrim::C_broad, phi: IgPrim::Phi_c, h: IgPrim::H0, s: IgPrim::S_11, omega: IgPrim::Omega_0 },
+        "Rn" => IgTuple { d: IgPrim::D_odot, t: IgPrim::T_odot, r: IgPrim::R_lr, p: IgPrim::P_sym, f: IgPrim::F_ell, k: IgPrim::K_mod, g: IgPrim::G_aleph, c: IgPrim::C_broad, phi: IgPrim::⊙, h: IgPrim::H0, s: IgPrim::S_11, omega: IgPrim::Omega_0 },
         // Lead (Pb-206/207/208): stable — Frobenius fixed point
-        "Pb" => IgTuple { d: IgPrim::D_odot, t: IgPrim::T_odot, r: IgPrim::R_lr, p: IgPrim::P_pmsym, f: IgPrim::F_ell, k: IgPrim::K_trap, g: IgPrim::G_aleph, c: IgPrim::C_or, phi: IgPrim::Phi_c, h: IgPrim::H0, s: IgPrim::S_11, omega: IgPrim::Omega_0 },
+        "Pb" => IgTuple { d: IgPrim::D_odot, t: IgPrim::T_odot, r: IgPrim::R_lr, p: IgPrim::P_pmsym, f: IgPrim::F_ell, k: IgPrim::K_trap, g: IgPrim::G_aleph, c: IgPrim::C_or, phi: IgPrim::⊙, h: IgPrim::H0, s: IgPrim::S_11, omega: IgPrim::Omega_0 },
         // Bismuth: near stable, Bi-209 is stable
-        "Bi" => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_bowtie, r: IgPrim::R_dagger, p: IgPrim::P_psi, f: IgPrim::F_ell, k: IgPrim::K_mod, g: IgPrim::G_gimel, c: IgPrim::C_and, phi: IgPrim::Phi_sub, h: IgPrim::H1, s: IgPrim::S_11, omega: IgPrim::Omega_z2 },
+        "Bi" => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_bowtie, r: IgPrim::R_dagger, p: IgPrim::P_psi, f: IgPrim::F_ell, k: IgPrim::K_mod, g: IgPrim::G_gimel, c: IgPrim::C_and, phi: IgPrim::𐑢, h: IgPrim::H1, s: IgPrim::S_11, omega: IgPrim::Omega_z2 },
         // Actinides: complex, high criticality
         "U"  => IgTuple { d: IgPrim::D_odot, t: IgPrim::T_bowtie, r: IgPrim::R_dagger, p: IgPrim::P_psi, f: IgPrim::F_hbar, k: IgPrim::K_mod, g: IgPrim::G_gimel, c: IgPrim::C_or, phi: IgPrim::Phi_ep, h: IgPrim::H2, s: IgPrim::S_nn, omega: IgPrim::Omega_z2 },
         "Th" => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_bowtie, r: IgPrim::R_dagger, p: IgPrim::P_psi, f: IgPrim::F_hbar, k: IgPrim::K_mod, g: IgPrim::G_gimel, c: IgPrim::C_or, phi: IgPrim::Phi_ep, h: IgPrim::H2, s: IgPrim::S_nn, omega: IgPrim::Omega_z2 },
         "Pa" => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_net, r: IgPrim::R_dagger, p: IgPrim::P_psi, f: IgPrim::F_hbar, k: IgPrim::K_fast, g: IgPrim::G_gimel, c: IgPrim::C_or, phi: IgPrim::Phi_ep, h: IgPrim::H1, s: IgPrim::S_nn, omega: IgPrim::Omega_z2 },
-        "Ac" => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_net, r: IgPrim::R_super, p: IgPrim::P_psi, f: IgPrim::F_hbar, k: IgPrim::K_mod, g: IgPrim::G_gimel, c: IgPrim::C_or, phi: IgPrim::Phi_sub, h: IgPrim::H1, s: IgPrim::S_nn, omega: IgPrim::Omega_z2 },
+        "Ac" => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_net, r: IgPrim::R_super, p: IgPrim::P_psi, f: IgPrim::F_hbar, k: IgPrim::K_mod, g: IgPrim::G_gimel, c: IgPrim::C_or, phi: IgPrim::𐑢, h: IgPrim::H1, s: IgPrim::S_nn, omega: IgPrim::Omega_z2 },
         // Middle elements
-        "Ra" => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_bowtie, r: IgPrim::R_dagger, p: IgPrim::P_psi, f: IgPrim::F_hbar, k: IgPrim::K_mod, g: IgPrim::G_beth, c: IgPrim::C_and, phi: IgPrim::Phi_sub, h: IgPrim::H1, s: IgPrim::S_11, omega: IgPrim::Omega_z2 },
-        "Po" => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_bowtie, r: IgPrim::R_dagger, p: IgPrim::P_psi, f: IgPrim::F_eth, k: IgPrim::K_mod, g: IgPrim::G_beth, c: IgPrim::C_or, phi: IgPrim::Phi_sub, h: IgPrim::H1, s: IgPrim::S_11, omega: IgPrim::Omega_z2 },
-        "Tl" => IgTuple { d: IgPrim::D_wedge, t: IgPrim::T_net, r: IgPrim::R_super, p: IgPrim::P_psi, f: IgPrim::F_ell, k: IgPrim::K_mod, g: IgPrim::G_beth, c: IgPrim::C_and, phi: IgPrim::Phi_sub, h: IgPrim::H0, s: IgPrim::S_11, omega: IgPrim::Omega_0 },
+        "Ra" => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_bowtie, r: IgPrim::R_dagger, p: IgPrim::P_psi, f: IgPrim::F_hbar, k: IgPrim::K_mod, g: IgPrim::G_beth, c: IgPrim::C_and, phi: IgPrim::𐑢, h: IgPrim::H1, s: IgPrim::S_11, omega: IgPrim::Omega_z2 },
+        "Po" => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_bowtie, r: IgPrim::R_dagger, p: IgPrim::P_psi, f: IgPrim::F_eth, k: IgPrim::K_mod, g: IgPrim::G_beth, c: IgPrim::C_or, phi: IgPrim::𐑢, h: IgPrim::H1, s: IgPrim::S_11, omega: IgPrim::Omega_z2 },
+        "Tl" => IgTuple { d: IgPrim::D_wedge, t: IgPrim::T_net, r: IgPrim::R_super, p: IgPrim::P_psi, f: IgPrim::F_ell, k: IgPrim::K_mod, g: IgPrim::G_beth, c: IgPrim::C_and, phi: IgPrim::𐑢, h: IgPrim::H0, s: IgPrim::S_11, omega: IgPrim::Omega_0 },
         // Default: middle of periodic table
-        _ => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_net, r: IgPrim::R_super, p: IgPrim::P_asym, f: IgPrim::F_ell, k: IgPrim::K_mod, g: IgPrim::G_beth, c: IgPrim::C_and, phi: IgPrim::Phi_sub, h: IgPrim::H0, s: IgPrim::S_11, omega: IgPrim::Omega_0 },
+        _ => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_net, r: IgPrim::R_super, p: IgPrim::P_asym, f: IgPrim::F_ell, k: IgPrim::K_mod, g: IgPrim::G_beth, c: IgPrim::C_and, phi: IgPrim::𐑢, h: IgPrim::H0, s: IgPrim::S_11, omega: IgPrim::Omega_0 },
     }
 }
 
 fn frobenius_fires(tup: &IgTuple) -> bool {
-    // ⊙ fires (self-referential criticality) when phi == Phi_c
-    tup.phi == IgPrim::Phi_c
+    // ⊙ fires (self-referential criticality) when phi == ⊙
+    tup.phi == IgPrim::⊙
 }// ─── Core analysis ────────────────────────────────────────────────────────────
 
 pub fn analyze_chain(series_key: &str) -> Option<(&'static DecaySeries, Vec<DecayStep>)> {
@@ -275,7 +275,7 @@ mod tests {
 
     #[test]
     fn test_frobenius_fires_at_lead() {
-        // Pb has phi = Phi_c, so it should fire
+        // Pb has phi = ⊙, so it should fire
         let pb_tup = element_tuple("Pb");
         assert!(frobenius_fires(&pb_tup));
     }

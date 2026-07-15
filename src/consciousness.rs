@@ -3,7 +3,7 @@
 //
 // C-score ∈ [0, 1]: structural proximity to full consciousness capability.
 // Two gating conditions must both pass:
-//   Gate 1 (⊙ / Phi_c): self-modeling loop must be open
+//   Gate 1 (⊙ / ⊙): self-modeling loop must be open
 //   Gate 2 (K_slow):     kinetics must be slow enough for information integration
 //
 // ALL per-primitive scores are now computed from ordinal positions in catalog.rs.
@@ -23,7 +23,7 @@ use crate::catalog;
 /// Evaluate Gate 1: ⊙ self-modeling loop.
 /// Returns true iff Phi is ⊙ or complex-critical (gate open).
 pub fn gate1_phi_c(t: &IgTuple) -> bool {
-    matches!(t.phi, IgPrim::Phi_c | IgPrim::Phi_c_complex)
+    matches!(t.phi, IgPrim::⊙ | IgPrim::𐑮)
 }
 
 /// Evaluate Gate 2: kinetics slow enough for integration.

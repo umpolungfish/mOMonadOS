@@ -59,10 +59,10 @@ SHavian_TO_RUST = {
     "𐑠": "IgPrim::C_seq",
     "𐑵": "IgPrim::C_broad",
     # φ̂ (Criticality)
-    "𐑢": "IgPrim::Phi_sub",
-    "⊙": "IgPrim::Phi_c",
-    "𐑮": "IgPrim::Phi_c_complex",
-    "𐑻": "IgPrim::Phi_EP",
+    "𐑢": "IgPrim::𐑢",
+    "⊙": "IgPrim::⊙",
+    "𐑮": "IgPrim::𐑮",
+    "𐑻": "IgPrim::𐑻",
     "𐑣": "IgPrim::Phi_super",
     # H (Chirality)
     "𐑓": "IgPrim::H0",
