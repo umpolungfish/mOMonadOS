@@ -152,7 +152,7 @@ fn lattice_op(a: &IgTuple, b: &IgTuple, is_meet: bool) -> LatticeResult {
 
 /// Tensor (composite) product: max on union primitives, min on P and F.
 /// Represents coupling two systems together.
-/// The ⊙_3 absorption rule: tensor(⊙, EP) = EP.
+/// The 𐑻 absorption rule: tensor(⊙, EP) = EP.
 pub fn tensor(a: &IgTuple, b: &IgTuple) -> IgTuple {
     // P and F: min (bottleneck — the weaker link dominates)
     let p = catalog::ord_min(a.p, b.p, &catalog::P_ORD);

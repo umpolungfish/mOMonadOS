@@ -1,30 +1,23 @@
-Split the REPL out of main.rs, harden the fork cap, untrack the catalog dump
+Retire the gen-2 glyph-pair notation for bare Shavian
 
-The three items I had deferred from the review as too big for a quick pass, done
-deliberately with a before-and-after QEMU boot to prove behavior did not move.
+The primitives stand on their own now, so the old `⊙_ÿ` / `Ð_ω` / `Φ_}` forms are
+residue. Rewrote all 49 of them to their Shavian values across source: 19,645
+tokens, 670 files.
 
-- Split main.rs. Everything from the REPL down (input handling, command dispatch,
-  the cross-dialect jump handler, the ParaASM REPL, and all the Phase-2 handlers)
-  moved into a new repl.rs. main.rs now holds only what belongs at the crate root:
-  the bump allocator, the bare-metal entry (rust_start / kmain), the boot banner,
-  and the panic handler. It went from a monolith to a small entry-point file. The
-  only cross-boundary change is that repl() is now pub and kmain calls it through
-  the module; nothing else referenced anything that moved, so nothing else changed.
-  I trimmed the imports on both sides to stay warning-clean.
+The map was not typed. I enumerated the gen-2 tokens that actually appear in the
+corpus, paired each marker to its phonetic name, and resolved every value through
+`models.from_symbol` — so the values come from code that runs, not from a table.
+Reality arbitrated one conflict: the SOUNDS document gives `Ř_Ð`, `Γ_\`, `Σ_M`,
+but the corpus has `Ř_=`, `Γ_ʔ`, `Σ_ï` in the tens of thousands and the doc's
+variants nowhere at all. The doc is mangled; the files are the record.
 
-- Hardened the FSPLIT fork cap in the kernel. The old code silently dropped any
-  fork nested past the fixed depth, which would desync the matching FFUSE. I raised
-  the cap and, more to the point, made overflow observable: it increments a
-  fork_overflow counter instead of vanishing. Real programs never nest that deep,
-  so tick semantics are unchanged and this only removes the silent-failure mode. I
-  did NOT touch the join semantics of the verified Frobenius loop.
+Left alone deliberately: `ig_outputs/` and the other run artifacts, ~455k tokens
+of it. Those runs really did emit gen-2 in May. Rewriting them would forge the
+record of what they produced, which is not tidying. The two naming documents keep
+their old-notation columns for the same reason.
 
-- Untracked IG_catalog.json. It is a tuple-provenance dump duplicated from the
-  canonical imscribing_grammar copy, and the no_std kernel never reads it at runtime
-  (the compiled catalog.rs is the runtime source). git rm --cached plus a .gitignore
-  entry keeps it on disk and in history while taking the weight out of the tracked
-  tree. Reversible in one command if I want it tracked again.
-
-Verified: the release build is error-clean and warning-clean on the pinned nightly,
-and a scripted QEMU boot (help, status, ig, quit) produces output byte-for-byte
-identical to the pre-refactor baseline.
+Bare `Phi` is untouched. Gen-1 `Phi` is today's ⊙, but today's `Φ` is Parity —
+those are genuinely different structures that happen to share letters, and no
+register makes them one, so every site needs reading. Contrast ⊙ appearing as
+both primitive and value, which is not a collision at all: `⊙ ≠ ⊙` is operator ≠
+operation, and it states `μ∘δ ≠ id` exactly.

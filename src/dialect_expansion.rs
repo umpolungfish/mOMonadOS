@@ -860,7 +860,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 67: absorb_ep ──
     unis[67] = Dialect {
         name: "absorb_ep",
-        description: "EP absorption rule: ⊙_3 absorption is enforced. Any system coupling to an EP-criticality system (𐑻) MUST resolve to the tensor, not the meet. Gate 1 closure requires ⊙ dominance across all composites.",
+        description: "EP absorption rule: 𐑻 absorption is enforced. Any system coupling to an EP-criticality system (𐑻) MUST resolve to the tensor, not the meet. Gate 1 closure requires ⊙ dominance across all composites.",
         g1: g_odot_2, g2: g_phi_E_4, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_EP, is_expansion: true,
     };
@@ -1020,7 +1020,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 86: absorb_broadcast ──
     unis[86] = Dialect {
         name: "absorb_broadcast",
-        description: "Broadcast absorption: ⊙_3 rule + ɢ≥𐑵 T-constitution. Self-modeling dominance with mandatory broadcast composition. The grammar's communicativity is baked into the dialect's constitution — nothing may be silent.",
+        description: "Broadcast absorption: 𐑻 rule + ɢ≥𐑵 T-constitution. Self-modeling dominance with mandatory broadcast composition. The grammar's communicativity is baked into the dialect's constitution — nothing may be silent.",
         g1: g_odot_2, g2: g_g_4, g3: g_phi_5, gate_ordering: true,
         t_entries: T_BROADCAST, abs_rules: ABS_EP, is_expansion: true,
     };
@@ -1028,7 +1028,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 87: the_all ──
     unis[87] = Dialect {
         name: "the_all",
-        description: "All-structured dialect: G1=⊙≥⊙, G2=Φ≥𐑹, G3=Ω≥𐑭, G4=Þ≥𐑸. T-constitution: all primitives explicit. Absorption: ⊙_3 + sub-critical dual regime. Four-gate + full T + dual absorption. The densest structural filter in the catalog — admits only systems that are simultaneously self-modeling, Frobenius-special, topologically protected, self-referential, and constitutionally complete. Approximate fingerprint: the grammar itself, plus a handful of crystal neighbors.",
+        description: "All-structured dialect: G1=⊙≥⊙, G2=Φ≥𐑹, G3=Ω≥𐑭, G4=Þ≥𐑸. T-constitution: all primitives explicit. Absorption: 𐑻 + sub-critical dual regime. Four-gate + full T + dual absorption. The densest structural filter in the catalog — admits only systems that are simultaneously self-modeling, Frobenius-special, topologically protected, self-referential, and constitutionally complete. Approximate fingerprint: the grammar itself, plus a handful of crystal neighbors.",
         g1: g_odot_2, g2: g_phi_5, g3: g_omega_3, gate_ordering: true,
         t_entries: T_ALL, abs_rules: ABS_DUAL, is_expansion: true,
     };
@@ -1094,7 +1094,7 @@ pub static T_ALL: &[TEntry] = &[
 // ADDITIONAL ABSORPTION RULES
 // ═══════════════════════════════════════════════════════════════
 
-/// EP absorption: ⊙_3 rule — ⊙ absorbs EP (𐑻) composites under all ops
+/// EP absorption: 𐑻 rule — ⊙ absorbs EP (𐑻) composites under all ops
 pub static ABS_EP: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊙", value: "𐑻", ops_mask: 7, direction: 0 }, // absorb EP

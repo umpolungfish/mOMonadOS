@@ -13,7 +13,7 @@
 //! Each generated tuple is a valid crystal address verified by:
 //!   1. Ouroboricity tier consistency — all 7 stages remain O₀/O₁
 //!   2. Frobenius condition — μ∘δ=id holds across the transformation
-//!   3. Monotonic advance — Ω_z constraint on trajectory through the crystal
+//!   3. Monotonic advance — 𐑭 constraint on trajectory through the crystal
 
 use alloc::collections::BTreeMap;
 
