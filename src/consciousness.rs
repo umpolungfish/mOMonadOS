@@ -23,7 +23,7 @@ use crate::catalog;
 /// Evaluate Gate 1: ⊙ self-modeling loop.
 /// Returns true iff Phi is ⊙ or complex-critical (gate open).
 pub fn gate1_phi_c(t: &IgTuple) -> bool {
-    matches!(t.phi, IgPrim::⊙ | IgPrim::𐑮)
+    matches!(t.phi, IgPrim::Phi_crit | IgPrim::𐑮)
 }
 
 /// Evaluate Gate 2: kinetics slow enough for integration.

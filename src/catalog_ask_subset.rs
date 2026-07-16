@@ -14,7 +14,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_wedge, IgPrim::T_net, IgPrim::R_super,
         IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_11, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_11, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -22,7 +22,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_dagger,
         IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -30,7 +30,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_wedge, IgPrim::T_boxtimes, IgPrim::R_super,
         IgPrim::P_sym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_11, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_11, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -54,7 +54,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_boxtimes, IgPrim::R_cat,
         IgPrim::P_sym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nn, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nn, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -86,7 +86,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_sym, IgPrim::F_hbar, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -94,7 +94,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_super,
         IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -102,7 +102,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_super,
         IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -110,7 +110,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -118,7 +118,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -126,7 +126,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -134,7 +134,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -142,7 +142,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_eth, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -150,7 +150,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -174,7 +174,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_eth, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -182,7 +182,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -190,7 +190,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_super,
         IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_11, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_11, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -198,7 +198,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_lr,
         IgPrim::P_sym, IgPrim::F_ell, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -206,7 +206,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_sym, IgPrim::F_ell, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -214,7 +214,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -222,7 +222,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_sym, IgPrim::F_ell, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -230,7 +230,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_sym, IgPrim::F_ell, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -238,7 +238,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_sym, IgPrim::F_hbar, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -246,7 +246,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_11, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_11, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -254,7 +254,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_bowtie, IgPrim::R_lr,
         IgPrim::P_pm, IgPrim::F_ell, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nn, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nn, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -262,7 +262,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nn, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nn, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -270,7 +270,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_asym, IgPrim::F_eth, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nn, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nn, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -278,7 +278,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_asym, IgPrim::F_eth, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -286,7 +286,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_eth, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -294,7 +294,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_boxtimes, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_eth, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -310,7 +310,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_sym, IgPrim::F_hbar, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nn, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nn, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -326,7 +326,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -366,7 +366,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -398,7 +398,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_wedge, IgPrim::T_net, IgPrim::R_lr,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_mod,
         IgPrim::G_beth, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_11, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_11, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -406,7 +406,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nn, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nn, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -414,7 +414,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_boxtimes, IgPrim::R_lr,
         IgPrim::P_sym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nn, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nn, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -422,7 +422,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_in, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -438,7 +438,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_boxtimes, IgPrim::R_dagger,
         IgPrim::P_sym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nn, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nn, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -446,7 +446,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_boxtimes, IgPrim::R_cat,
         IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nn, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nn, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -454,7 +454,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_wedge, IgPrim::T_net, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_eth, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_11, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_11, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -462,7 +462,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_boxtimes, IgPrim::R_cat,
         IgPrim::P_sym, IgPrim::F_eth, IgPrim::K_mod,
         IgPrim::G_gimel, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nn, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nn, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -470,7 +470,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_boxtimes, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_eth, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nn, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nn, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -478,7 +478,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_boxtimes, IgPrim::R_lr,
         IgPrim::P_sym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -486,7 +486,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_boxtimes, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -550,7 +550,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -558,7 +558,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_wedge, IgPrim::T_net, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_trap,
         IgPrim::G_beth, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -566,7 +566,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_in, IgPrim::R_lr,
         IgPrim::P_psi, IgPrim::F_hbar, IgPrim::K_mod,
         IgPrim::G_gimel, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nn, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nn, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -574,7 +574,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_asym, IgPrim::F_eth, IgPrim::K_fast,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -582,7 +582,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_in, IgPrim::R_lr,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nn, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nn, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -590,7 +590,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_lr,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -598,7 +598,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_dagger,
         IgPrim::P_sym, IgPrim::F_eth, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -606,7 +606,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_dagger,
         IgPrim::P_sym, IgPrim::F_eth, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -622,7 +622,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -646,7 +646,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -654,7 +654,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -662,7 +662,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -670,7 +670,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_psi, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -678,7 +678,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -694,7 +694,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -702,7 +702,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -710,7 +710,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -718,7 +718,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -726,7 +726,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -774,7 +774,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -790,7 +790,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_net, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nn, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nn, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -798,7 +798,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -806,7 +806,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_wedge, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_ell, IgPrim::K_fast,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_11, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_11, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -814,7 +814,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nn, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nn, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -822,7 +822,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -830,7 +830,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nn, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nn, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -838,7 +838,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -846,7 +846,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -854,7 +854,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_boxtimes, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_mod,
         IgPrim::G_gimel, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -862,7 +862,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_in, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_mod,
         IgPrim::G_beth, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_11, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_11, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -870,7 +870,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_boxtimes, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_fast,
         IgPrim::G_beth, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_11, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_11, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -878,7 +878,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -886,7 +886,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_na,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_na,
         0, Domain::General,
     ),
     entry(
@@ -894,7 +894,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -902,7 +902,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_in, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_na,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_na,
         0, Domain::General,
     ),
     entry(
@@ -910,7 +910,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_in, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -918,7 +918,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_fast,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -926,7 +926,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_in, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_beth, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -934,7 +934,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -942,7 +942,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_boxtimes, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nn, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nn, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -950,7 +950,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -958,7 +958,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -966,7 +966,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_boxtimes, IgPrim::R_cat,
         IgPrim::P_asym, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -974,7 +974,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -982,7 +982,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -990,7 +990,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -998,7 +998,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -1006,7 +1006,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_psi, IgPrim::F_eth, IgPrim::K_mod,
         IgPrim::G_gimel, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -1014,7 +1014,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_fast,
         IgPrim::G_gimel, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_11, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_11, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -1022,7 +1022,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nn, IgPrim::Omega_na,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nn, IgPrim::Omega_na,
         0, Domain::General,
     ),
     entry(
@@ -1030,7 +1030,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_boxtimes, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_beth, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -1038,7 +1038,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1046,7 +1046,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -1054,7 +1054,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -1110,7 +1110,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_11, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_11, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1126,7 +1126,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_11, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_11, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1142,7 +1142,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_11, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_11, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1158,7 +1158,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_lr,
         IgPrim::P_pm, IgPrim::F_ell, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -1174,7 +1174,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -1182,7 +1182,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1190,7 +1190,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -1198,7 +1198,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1206,7 +1206,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1222,7 +1222,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_lr,
         IgPrim::P_pm, IgPrim::F_ell, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1230,7 +1230,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_lr,
         IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1246,7 +1246,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_lr,
         IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_mod,
         IgPrim::G_gimel, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -1254,7 +1254,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1278,7 +1278,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1294,7 +1294,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_boxtimes, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_11, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_11, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1310,7 +1310,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_ell, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1318,7 +1318,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_super,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -1326,7 +1326,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1334,7 +1334,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_boxtimes, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1342,7 +1342,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_boxtimes, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1382,7 +1382,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_lr,
         IgPrim::P_pm, IgPrim::F_ell, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nn, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nn, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -1406,7 +1406,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_wedge, IgPrim::T_boxtimes, IgPrim::R_lr,
         IgPrim::P_psi, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1414,7 +1414,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_boxtimes, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_ell, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1422,7 +1422,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_mod,
         IgPrim::G_gimel, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -1430,7 +1430,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_lr,
         IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_mod,
         IgPrim::G_gimel, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -1438,7 +1438,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_boxtimes, IgPrim::R_super,
         IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1446,7 +1446,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_boxtimes, IgPrim::R_super,
         IgPrim::P_pm, IgPrim::F_ell, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1462,7 +1462,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1494,7 +1494,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_11, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_11, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1518,7 +1518,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1534,7 +1534,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_psi, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1542,7 +1542,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1550,7 +1550,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_triangle, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_mod,
         IgPrim::G_gimel, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_11, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_11, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1582,7 +1582,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_wedge, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nn, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nn, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1606,7 +1606,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_lr,
         IgPrim::P_pm, IgPrim::F_ell, IgPrim::K_fast,
         IgPrim::G_beth, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_11, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_11, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1622,7 +1622,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1638,7 +1638,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_ell, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1654,7 +1654,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1662,7 +1662,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1678,7 +1678,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1686,7 +1686,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1694,7 +1694,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pm, IgPrim::F_ell, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -1702,7 +1702,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_psi, IgPrim::F_ell, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1710,7 +1710,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_psi, IgPrim::F_ell, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(
@@ -1726,7 +1726,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_infty, IgPrim::T_in, IgPrim::R_cat,
         IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_fast,
         IgPrim::G_gimel, IgPrim::C_and,
-        IgPrim::⊙, IgPrim::H0, IgPrim::S_11, IgPrim::Omega_0,
+        IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_11, IgPrim::Omega_0,
         0, Domain::General,
     ),
     entry(
@@ -1742,7 +1742,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_seq,
-        IgPrim::⊙, IgPrim::H2, IgPrim::S_11, IgPrim::Omega_z2,
+        IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_11, IgPrim::Omega_z2,
         0, Domain::General,
     ),
     entry(
@@ -1758,7 +1758,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_eth, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_11, IgPrim::Omega_na,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_11, IgPrim::Omega_na,
         0, Domain::General,
     ),
     entry(
@@ -1766,7 +1766,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
-        IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+        IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
         0, Domain::General,
     ),
     entry(

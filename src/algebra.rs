@@ -103,8 +103,8 @@ fn lattice_op(a: &IgTuple, b: &IgTuple, is_meet: bool) -> LatticeResult {
     let op_name = if is_meet { "meet" } else { "join" };
 
     // ⊙ absorption: ⊙ is absorbing under both meet and join
-    let phi = if a.phi == IgPrim::⊙ || b.phi == IgPrim::⊙ {
-        IgPrim::⊙
+    let phi = if a.phi == IgPrim::Phi_crit || b.phi == IgPrim::Phi_crit {
+        IgPrim::Phi_crit
     } else if is_meet {
         catalog::ord_min(a.phi, b.phi, &catalog::PHI_ORD)
     } else {
@@ -170,8 +170,8 @@ pub fn tensor(a: &IgTuple, b: &IgTuple) -> IgTuple {
     // Phi: ⊙ absorption rule — tensor(⊙, EP) = EP
     let phi = if a.phi == IgPrim::Phi_ep || b.phi == IgPrim::Phi_ep {
         IgPrim::Phi_ep
-    } else if a.phi == IgPrim::⊙ || b.phi == IgPrim::⊙ {
-        IgPrim::⊙
+    } else if a.phi == IgPrim::Phi_crit || b.phi == IgPrim::Phi_crit {
+        IgPrim::Phi_crit
     } else {
         catalog::ord_max(a.phi, b.phi, &catalog::PHI_ORD)
     };

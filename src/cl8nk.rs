@@ -149,7 +149,7 @@ pub fn tuple_distance_cl8nk(t1: &IgTuple, t2: &IgTuple) -> (f32, Vec<Conflict>) 
 
 pub fn assess_tier(t: &IgTuple) -> &'static str {
     let mut score: u8 = 0;
-    if t.phi == IgPrim::⊙ { score += 1; }
+    if t.phi == IgPrim::Phi_crit { score += 1; }
     if t.p == IgPrim::P_pmsym { score += 1; }
     if t.h == IgPrim::H_inf { score += 1; }
     if t.omega == IgPrim::Omega_z || t.omega == IgPrim::Omega_na { score += 1; }
@@ -295,7 +295,7 @@ pub fn cl8nk_formula(key: &str, val: IgPrim) -> Option<FormulaEntry> {
             _ => None,
         },
         "Φ" => match val {
-            IgPrim::⊙         => Some(FormulaEntry { fragment: "ξ → ∞ ∧ μ∘δ = id", atom: Some("PHI_C"), proximity: "match" }),
+            IgPrim::Phi_crit         => Some(FormulaEntry { fragment: "ξ → ∞ ∧ μ∘δ = id", atom: Some("PHI_C"), proximity: "match" }),
             IgPrim::𐑮 => Some(FormulaEntry { fragment: "ξ ∈ ℂ ∧ Im(ξ) → ∞", atom: None, proximity: "close" }),
             IgPrim::Phi_ep        => Some(FormulaEntry { fragment: "H(λ) non-Herm ∧ det(H - λI) = 0 ∧ ∂_λ H = 0", atom: None, proximity: "distant" }),
             IgPrim::Phi_super     => Some(FormulaEntry { fragment: "ξ → ∞ ∧ chaotic(x)", atom: None, proximity: "distant" }),

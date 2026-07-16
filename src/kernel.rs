@@ -39,11 +39,25 @@ pub struct Snapshot {
     pub b_live_ticks: u64,           // ticks where B was on stack when EVALT or EVALF fired
     pub gate_discriminations: u64,   // ticks where EVALT actually passed T, or EVALF passed F
     pub value_period: usize,         // measured period of stack-top value trace (0 = not yet known)
+    // ── SIXTEEN_3 / R2 fields (O_inf_dag, lateral replicative opening) ──
+    // Mirror the Lean kernel's R2 triple (dim=dead, top=mime, prot=ah) as three
+    // independent structural/runtime conditions rather than one boolean, per the
+    // discerning ob3ect run (2026-07-15): atomicity, bifurcation, winding.
+    pub atomic_reentry: bool,        // "dim=dead": exactly one FSPLIT/FFUSE pair — a
+                                      // point-like fork, not an elaborate nested structure
+    pub bifurcation_revisited: bool, // "top=mime": that single fork point recurs every wrap
+                                      // (bowtie/figure-8), distinct from mere periodicity
+    pub winding_count: u32,          // "prot=ah": protected integer winding — a monotonic
+                                      // full-program-pass counter that never resets
 }
 
 impl Snapshot {
     pub fn tier_name(self) -> &'static str {
-        match self.tier { 1 => "O_1", 2 => "O_2", 3 => "O_inf", _ => "O_0" }
+        match self.tier {
+            1 => "O_1", 2 => "O_2", 3 => "O_inf",
+            4 => "O_inf_dag", // LATERAL to O_inf, not above it — see compute_tier
+            _ => "O_0",
+        }
     }
 }
 
@@ -77,6 +91,8 @@ pub struct Kernel {
     gate_discrimination_count: u64,
     value_trace:              [B4; 16],   // ring buffer of stack-top values after each tick
     value_trace_head:         usize,
+    winding_count:            u32,   // protected: incremented on every natural end-of-program
+                                      // wrap, never reset (not even by disable_dynamic)
 }
 
 impl Kernel {
@@ -105,6 +121,7 @@ impl Kernel {
             gate_discrimination_count: 0,
             value_trace:              [B4::N; 16],
             value_trace_head:         0,
+            winding_count:            0,
         }
     }
 
@@ -192,7 +209,13 @@ impl Kernel {
         let tok = self.program.get(self.ip).unwrap();
 
         let mut next_ip = self.ip + 1;
-        if next_ip >= self.program.len() { next_ip = 0; }
+        if next_ip >= self.program.len() {
+            next_ip = 0;
+            // Natural full-program wrap — protected winding, never reset. FFUSE's
+            // jump-to-resume below can also land next_ip at 0, but that's a fork
+            // resume, not a completed pass, so it does not increment this.
+            self.winding_count = self.winding_count.saturating_add(1);
+        }
 
         match tok {
             Token::VINIT => {
@@ -346,6 +369,19 @@ impl Kernel {
         }
     }
 
+    /// Load the program that deliberately targets O_inf_dag (R2, lateral replicative
+    /// opening) instead of terminal closure — see `tokens::replicative_opening_loop` for why
+    /// this specific 4-token cycle avoids both O_∞ paths by construction. Ticking it past its
+    /// first wrap (4 ticks) is what actually sets `winding_count > 0`; loading alone only
+    /// gets you the two structural preconditions (atomic_reentry, bifurcation_revisited).
+    pub fn load_replicative(&mut self) {
+        self.program = crate::tokens::replicative_opening_loop();
+        self.ip = 0;
+        self.fork_depth = 0;
+        self.halted = false;
+        self.phase = Phase::Think;
+    }
+
     pub fn load_continuous(&mut self, idx: usize) -> bool {
         if let Some(prog) = continuous_program(idx) {
             self.program = prog;
@@ -458,6 +494,7 @@ impl Kernel {
         snap.b_live_ticks        = self.b_live_count;
         snap.gate_discriminations = self.gate_discrimination_count;
         snap.value_period         = compute_value_period(&self.value_trace, self.value_trace_head);
+        snap.winding_count       = self.winding_count;
         snap.tier = compute_tier(&snap);
         snap
     }
@@ -535,6 +572,13 @@ pub fn self_imscribe(prog: &Program) -> Snapshot {
 
     let p = period(prog);
 
+    // ── R2 structural conditions (atomicity, bifurcation) — static, mirrors
+    // frob_order/self_ref above. winding_count is dynamic-only (see dynamic_imscribe). ──
+    let fsplit_count = prog.as_slice().iter().filter(|t| **t == Token::FSPLIT).count();
+    let ffuse_count  = prog.as_slice().iter().filter(|t| **t == Token::FFUSE).count();
+    let atomic_reentry = fsplit_count == 1 && ffuse_count == 1;
+    let bifurcation_revisited = atomic_reentry && self_ref;
+
     let mut snap = Snapshot {
         frobenius_order: frob_order,
         period: p,
@@ -546,6 +590,9 @@ pub fn self_imscribe(prog: &Program) -> Snapshot {
         b_live_ticks: 0,
         gate_discriminations: 0,
         value_period: 0,
+        atomic_reentry,
+        bifurcation_revisited,
+        winding_count: 0,
     };
     snap.tier = compute_tier(&snap);
     snap
@@ -565,6 +612,16 @@ pub fn self_imscribe(prog: &Program) -> Snapshot {
 ///         && value_period >= 3. The value trace itself demonstrates
 ///         aperiodic complexity — emergent O_∞ independent of whether
 ///         B specifically passed a gate.
+/// O_inf_dag (R2) — LATERAL to O_∞, not above it (tier 4, but a sideways move,
+///       not a rung — see Snapshot::tier_name). R1 (O_∞, above) is checked
+///       first and always dominates: this branch is reached only when neither
+///       Path A nor Path B fired. Fires on the three-part replicative-opening
+///       signal (atomicity, bifurcation, winding), mirroring the Lean kernel's
+///       R2 triple dim=dead ∧ top=mime ∧ prot=ah:
+///         atomic_reentry (a single, point-like FSPLIT/FFUSE pair)
+///         && bifurcation_revisited (that fork point recurs every wrap)
+///         && winding_count > 0 (a protected winding has actually occurred)
+///         && self_ref && frob_order > 0 (same self-referential precondition as R1).
 fn compute_tier(snap: &Snapshot) -> u8 {
     // Runtime evidence: B actually reached a gate → structural dialetheia
     // prediction is overridden. The kernel is an exact isomorphism of how
@@ -590,6 +647,13 @@ fn compute_tier(snap: &Snapshot) -> u8 {
         && snap.value_period >= 3
     {
         return 3;
+    }
+
+    // R2: lateral opening, tested only after R1's O_∞ paths (above) have failed.
+    if snap.self_ref && snap.frobenius_order > 0
+        && snap.atomic_reentry && snap.bifurcation_revisited && snap.winding_count > 0
+    {
+        return 4;
     }
 
     if snap.frobenius_order > 0 || snap.dialetheia_complete {

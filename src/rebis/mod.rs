@@ -182,7 +182,7 @@ impl AminoAcid {
             (B4::F, B4::F, true)   => Some(IgPrim::G_aleph),   // Asn → ɢ
             (B4::F, B4::F, false)  => Some(IgPrim::S_nm),      // Lys → Σ
             (B4::T, B4::F, true)   => Some(IgPrim::C_seq),     // His → Γ
-            (B4::T, B4::F, false)  => Some(IgPrim::⊙),     // Gln → ⊙
+            (B4::T, B4::F, false)  => Some(IgPrim::Phi_crit),     // Gln → ⊙
             (B4::B, B4::F, true)   => Some(IgPrim::H2),        // Asp → Ħ
             (B4::B, B4::F, false)  => Some(IgPrim::Omega_z),   // Glu → Ω
             _                      => None,

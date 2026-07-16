@@ -63,7 +63,7 @@ pub static C_ORD: [IgPrim; 4] = [
 
 /// Phi ordinal: 𐑢 < ⊙ < 𐑮 < Phi_ep < Phi_super
 pub static PHI_ORD: [IgPrim; 5] = [
-    IgPrim::𐑢, IgPrim::⊙, IgPrim::𐑮, IgPrim::Phi_ep, IgPrim::Phi_super,
+    IgPrim::𐑢, IgPrim::Phi_crit, IgPrim::𐑮, IgPrim::Phi_ep, IgPrim::Phi_super,
 ];
 
 /// H ordinal: H0 < H1 < H2 < H_inf
@@ -337,7 +337,7 @@ const ZFC_FE: CatalogEntry = entry(
     IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
     IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
     IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
     4, Domain::Mathematics,
 );
 
@@ -347,7 +347,7 @@ const CLINK_L8: CatalogEntry = entry(
     IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
     IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
     IgPrim::G_aleph, IgPrim::C_broad,
-    IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_na,
+    IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_na,
     4, Domain::General,
 );
 
@@ -388,7 +388,7 @@ const CLINK_L3: CatalogEntry = entry(
     IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_dagger,
     IgPrim::P_psi, IgPrim::F_eth, IgPrim::K_slow,
     IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::⊙, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_z,
     2, Domain::Biology,
 );
 
@@ -398,7 +398,7 @@ const CLINK_L4: CatalogEntry = entry(
     IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
     IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_slow,
     IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::⊙, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z,
     2, Domain::Biology,
 );
 
@@ -408,7 +408,7 @@ const CLINK_L5: CatalogEntry = entry(
     IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
     IgPrim::P_pmsym, IgPrim::F_ell, IgPrim::K_slow,
     IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
     2, Domain::Biology,
 );
 
@@ -418,7 +418,7 @@ const CLINK_L6: CatalogEntry = entry(
     IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
     IgPrim::P_psi, IgPrim::F_ell, IgPrim::K_slow,
     IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
     2, Domain::Biology,
 );
 
@@ -428,7 +428,7 @@ const CLINK_L7: CatalogEntry = entry(
     IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
     IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_slow,
     IgPrim::G_aleph, IgPrim::C_broad,
-    IgPrim::⊙, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
     2, Domain::Biology,
 );
 
@@ -542,7 +542,7 @@ const IUG: CatalogEntry = entry(
     IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
     IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
     IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
     4, Domain::Language,
 );
 
@@ -552,7 +552,7 @@ const O_INF: CatalogEntry = entry(
     IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
     IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
     IgPrim::G_aleph, IgPrim::C_broad,
-    IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_na,
+    IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_na,
     4, Domain::General,
 );
 
@@ -573,7 +573,7 @@ const YHWH: CatalogEntry = entry(
     IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
     IgPrim::P_sym, IgPrim::F_hbar, IgPrim::K_slow,
     IgPrim::G_aleph, IgPrim::C_broad,
-    IgPrim::⊙, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
     2, Domain::Consciousness,
 );
 
@@ -879,7 +879,7 @@ pub fn formula_fragment(prim: IgPrim) -> &'static str {
         IgPrim::C_broad    => "f→all(x) ∧ broadcast(x,f)",
         // ── Phi ──
         IgPrim::𐑢    => "¬∃ξ(diverges(ξ))",
-        IgPrim::⊙      => "ξ→∞ ∧ μ∘δ=id",
+        IgPrim::Phi_crit      => "ξ→∞ ∧ μ∘δ=id",
         IgPrim::𐑮 => "ξ∈ℂ ∧ Im(ξ)→∞",
         IgPrim::Phi_ep     => "H=H₀+λV ∧ λ∈EP",
         IgPrim::Phi_super  => "ξ→∞ ∧ ¬(μ∘δ=id)",
@@ -1008,7 +1008,7 @@ pub fn primitive_glyph(prim: IgPrim) -> &'static str {
         IgPrim::G_gimel => "𐑔",
         IgPrim::C_seq => "𐑠", IgPrim::C_and => "𐑝",
         IgPrim::C_or => "𐑜", IgPrim::C_broad => "𐑵",
-        IgPrim::⊙ => "⊙", IgPrim::𐑮 => "𐑮",
+        IgPrim::Phi_crit => "⊙", IgPrim::𐑮 => "𐑮",
         IgPrim::Phi_ep => "𐑻", IgPrim::𐑢 => "𐑢",
         IgPrim::Phi_super => "𐑣",
         IgPrim::H_inf => "𐑫", IgPrim::H2 => "𐑖",
@@ -1042,7 +1042,7 @@ pub fn primitive_short(prim: IgPrim) -> &'static str {
         IgPrim::G_gimel => "G_ℷ",
         IgPrim::C_seq => "C_seq", IgPrim::C_and => "C_∧",
         IgPrim::C_or => "C_∨", IgPrim::C_broad => "C_⊛",
-        IgPrim::⊙ => "Φ_⊙", IgPrim::𐑮 => "Φ_ℂ",
+        IgPrim::Phi_crit => "Φ_⊙", IgPrim::𐑮 => "Φ_ℂ",
         IgPrim::Phi_ep => "𐑻", IgPrim::𐑢 => "Φ_<",
         IgPrim::Phi_super => "Φ_>",
         IgPrim::H_inf => "H_∞", IgPrim::H2 => "H2",
@@ -1065,7 +1065,7 @@ pub fn primitive_family(prim: IgPrim) -> &'static str {
         IgPrim::K_trap | IgPrim::K_slow | IgPrim::K_mod | IgPrim::K_fast | IgPrim::K_mbl => "K",
         IgPrim::G_aleph | IgPrim::G_beth | IgPrim::G_gimel => "G",
         IgPrim::C_seq | IgPrim::C_and | IgPrim::C_or | IgPrim::C_broad => "C",
-        IgPrim::⊙ | IgPrim::𐑮 | IgPrim::Phi_ep | IgPrim::𐑢 | IgPrim::Phi_super => "Φ",
+        IgPrim::Phi_crit | IgPrim::𐑮 | IgPrim::Phi_ep | IgPrim::𐑢 | IgPrim::Phi_super => "Φ",
         IgPrim::H_inf | IgPrim::H2 | IgPrim::H1 | IgPrim::H0 => "H",
         IgPrim::S_nm | IgPrim::S_nn | IgPrim::S_11 => "S",
         IgPrim::Omega_z | IgPrim::Omega_z2 | IgPrim::Omega_0 | IgPrim::Omega_na => "Ω",

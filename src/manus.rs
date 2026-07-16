@@ -103,11 +103,13 @@ fn pad_left(text: &str, width: usize) {
 // ─── Tier → color ─────────────────────────────────────────────
 
 fn tier_color(tier: u8) -> &'static str {
-    match tier { 0 => DIM, 1 => YELLOW, 2 => BLUE, 3 => MAGENTA, _ => WHITE }
+    // tier 4 (O_inf_dag) is lateral to tier 3, not above it — given its own
+    // color (CYAN) rather than falling into the WHITE catch-all.
+    match tier { 0 => DIM, 1 => YELLOW, 2 => BLUE, 3 => MAGENTA, 4 => CYAN, _ => WHITE }
 }
 
 fn tier_label(tier: u8) -> &'static str {
-    match tier { 0 => "O_0", 1 => "O_1", 2 => "O_2", 3 => "O_inf", _ => "?" }
+    match tier { 0 => "O_0", 1 => "O_1", 2 => "O_2", 3 => "O_inf", 4 => "O_inf_dag", _ => "?" }
 }
 
 fn b4_style(v: B4) -> &'static str {

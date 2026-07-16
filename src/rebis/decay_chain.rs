@@ -127,9 +127,9 @@ fn element_tuple(sym: &str) -> IgTuple {
     // Map element symbol to a structural tuple based on periodicity
     match sym {
         // Noble gases: fully symmetric, high criticality
-        "Rn" => IgTuple { d: IgPrim::D_odot, t: IgPrim::T_odot, r: IgPrim::R_lr, p: IgPrim::P_sym, f: IgPrim::F_ell, k: IgPrim::K_mod, g: IgPrim::G_aleph, c: IgPrim::C_broad, phi: IgPrim::⊙, h: IgPrim::H0, s: IgPrim::S_11, omega: IgPrim::Omega_0 },
+        "Rn" => IgTuple { d: IgPrim::D_odot, t: IgPrim::T_odot, r: IgPrim::R_lr, p: IgPrim::P_sym, f: IgPrim::F_ell, k: IgPrim::K_mod, g: IgPrim::G_aleph, c: IgPrim::C_broad, phi: IgPrim::Phi_crit, h: IgPrim::H0, s: IgPrim::S_11, omega: IgPrim::Omega_0 },
         // Lead (Pb-206/207/208): stable — Frobenius fixed point
-        "Pb" => IgTuple { d: IgPrim::D_odot, t: IgPrim::T_odot, r: IgPrim::R_lr, p: IgPrim::P_pmsym, f: IgPrim::F_ell, k: IgPrim::K_trap, g: IgPrim::G_aleph, c: IgPrim::C_or, phi: IgPrim::⊙, h: IgPrim::H0, s: IgPrim::S_11, omega: IgPrim::Omega_0 },
+        "Pb" => IgTuple { d: IgPrim::D_odot, t: IgPrim::T_odot, r: IgPrim::R_lr, p: IgPrim::P_pmsym, f: IgPrim::F_ell, k: IgPrim::K_trap, g: IgPrim::G_aleph, c: IgPrim::C_or, phi: IgPrim::Phi_crit, h: IgPrim::H0, s: IgPrim::S_11, omega: IgPrim::Omega_0 },
         // Bismuth: near stable, Bi-209 is stable
         "Bi" => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_bowtie, r: IgPrim::R_dagger, p: IgPrim::P_psi, f: IgPrim::F_ell, k: IgPrim::K_mod, g: IgPrim::G_gimel, c: IgPrim::C_and, phi: IgPrim::𐑢, h: IgPrim::H1, s: IgPrim::S_11, omega: IgPrim::Omega_z2 },
         // Actinides: complex, high criticality
@@ -148,7 +148,7 @@ fn element_tuple(sym: &str) -> IgTuple {
 
 fn frobenius_fires(tup: &IgTuple) -> bool {
     // ⊙ fires (self-referential criticality) when phi == ⊙
-    tup.phi == IgPrim::⊙
+    tup.phi == IgPrim::Phi_crit
 }// ─── Core analysis ────────────────────────────────────────────────────────────
 
 pub fn analyze_chain(series_key: &str) -> Option<(&'static DecaySeries, Vec<DecayStep>)> {

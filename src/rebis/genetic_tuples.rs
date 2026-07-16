@@ -955,7 +955,7 @@ mod igprim_consistency {
     #[test]
     fn phival_glyphs_match_igprim() {
         assert_eq!(PhiVal::Sub.glyph(),      IgPrim::𐑢.glyph());
-        assert_eq!(PhiVal::C.glyph(),         IgPrim::⊙.glyph());
+        assert_eq!(PhiVal::C.glyph(),         IgPrim::Phi_crit.glyph());
         assert_eq!(PhiVal::CComplex.glyph(),  IgPrim::𐑮.glyph());
         assert_eq!(PhiVal::EP.glyph(),        IgPrim::Phi_ep.glyph());
         assert_eq!(PhiVal::Super.glyph(),     IgPrim::Phi_super.glyph());

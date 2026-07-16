@@ -138,6 +138,29 @@ pub fn bootstrap_loop() -> Program {
     p
 }
 
+/// The minimal program that deliberately targets O_inf_dag (R2, the lateral replicative
+/// opening) rather than merely being able to report it if reached by accident. A single
+/// FSPLIT/FFUSE pair (atomic_reentry), cyclic so the same fork point recurs every wrap
+/// (bifurcation_revisited), and — crucially — no EVALT/EVALF/ENGAGR at all, so
+/// dialetheia_complete is structurally false and b_live_ticks can never rise above 0:
+/// Path A (dialetheia-driven O_∞) is unreachable regardless of period. The stack-top value
+/// trace is constant B4::N every tick (traced by hand against tick()'s actual token
+/// semantics: FSPLIT peeks N, pushes N; FFUSE pops N, joins(N,N)=N, pushes N — the loop
+/// never introduces a second value), so value_period settles at 1, which keeps Path B
+/// (value-trace-driven O_∞, needs value_period ≥ 3) unreachable too. With both O_∞ paths
+/// closed off and R1 therefore never firing, R2's own conditions (self_ref, frobenius_order
+/// > 0, atomic_reentry, bifurcation_revisited, winding_count > 0 after the first wrap) are
+/// what `compute_tier` actually falls through to. See kernel.rs's `replicative_opening_tier`
+/// test, which runs this program for real and asserts tier == 4 rather than trusting the
+/// trace alone.
+pub fn replicative_opening_loop() -> Program {
+    let mut p = Program::empty();
+    for t in [Token::IMSCRIB, Token::FSPLIT, Token::FFUSE, Token::IMSCRIB] {
+        p.push(t);
+    }
+    p
+}
+
 pub const CANONICAL_COUNT: usize = 12;
 
 pub fn canonical_name(i: usize) -> &'static str {

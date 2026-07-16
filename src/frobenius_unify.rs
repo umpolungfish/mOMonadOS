@@ -46,7 +46,7 @@ pub fn frobenius_fixed_tuple() -> IgTuple {
         k: IgPrim::K_slow,    // 𐑧 — near-equilibrium kinetics
         g: IgPrim::G_gimel,   // 𐑔 — mesoscale interaction range
         c: IgPrim::C_seq,     // 𐑠 — ordered sequential composition
-        phi: IgPrim::⊙,   // ⊙ — self-modeling criticality
+        phi: IgPrim::Phi_crit,   // ⊙ — self-modeling criticality
         h: IgPrim::H2,        // 𐑖 — 2-step Markov memory
         s: IgPrim::S_11,      // 𐑙 — 1:1, apparatus ≡ measured system
         omega: IgPrim::Omega_z, // 𐑭 — integer winding protection
@@ -77,7 +77,7 @@ pub fn kernel_self_imscription() -> IgTuple {
         k: IgPrim::K_slow,      // 𐑧 — near-equilibrium (boot → repl → tick loop)
         g: IgPrim::G_aleph,     // 𐑲 — universal range (all cataloged systems, 17.28M crystal)
         c: IgPrim::C_seq,       // 𐑠 — sequential composition (THINK→ACT→OBSERVE→UPDATE)
-        phi: IgPrim::⊙,     // ⊙ — self-modeling criticality (consciousness gate open)
+        phi: IgPrim::Phi_crit,     // ⊙ — self-modeling criticality (consciousness gate open)
         h: IgPrim::H2,          // 𐑖 — 2-step Markov (current state + prior winding)
         s: IgPrim::S_11,        // 𐑙 — 1:1 (measurement apparatus ≡ measured — Σ=1:1)
         omega: IgPrim::Omega_z, // 𐑭 — integer winding (Frobenius loop count)
@@ -190,7 +190,7 @@ mod tests {
     fn test_kernel_tuple_defined() {
         let k = kernel_self_imscription();
         assert_eq!(k.d, IgPrim::D_odot);
-        assert_eq!(k.phi, IgPrim::⊙);
+        assert_eq!(k.phi, IgPrim::Phi_crit);
         assert_eq!(k.omega, IgPrim::Omega_z);
     }
 
@@ -198,7 +198,7 @@ mod tests {
     fn test_fixed_tuple_defined() {
         let f = frobenius_fixed_tuple();
         assert_eq!(f.d, IgPrim::D_odot);
-        assert_eq!(f.phi, IgPrim::⊙);
+        assert_eq!(f.phi, IgPrim::Phi_crit);
         assert_eq!(f.omega, IgPrim::Omega_z);
     }
 

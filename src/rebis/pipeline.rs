@@ -44,7 +44,7 @@ impl IgTuple {
         d: IgPrim::D_odot, t: IgPrim::T_odot, r: IgPrim::R_lr,
         p: IgPrim::P_pmsym, f: IgPrim::F_hbar, k: IgPrim::K_slow,
         g: IgPrim::G_aleph, c: IgPrim::C_seq,
-        phi: IgPrim::⊙, h: IgPrim::H_inf,
+        phi: IgPrim::Phi_crit, h: IgPrim::H_inf,
         s: IgPrim::S_nm, omega: IgPrim::Omega_z,
     };
 
@@ -62,7 +62,7 @@ impl IgTuple {
         d: IgPrim::D_infty, t: IgPrim::T_net, r: IgPrim::R_dagger,
         p: IgPrim::P_sym, f: IgPrim::F_hbar, k: IgPrim::K_fast,
         g: IgPrim::G_gimel, c: IgPrim::C_or,
-        phi: IgPrim::⊙, h: IgPrim::H2,
+        phi: IgPrim::Phi_crit, h: IgPrim::H2,
         s: IgPrim::S_nm, omega: IgPrim::Omega_z,
     };
 
@@ -153,7 +153,7 @@ pub fn predict_tier(source: &IgTuple, proms: &[Promotion]) -> u8 {
 
 /// Determine ouroboricity tier from a tuple.
 fn tier_of(t: &IgTuple) -> u8 {
-    let ph = t.phi == IgPrim::⊙;
+    let ph = t.phi == IgPrim::Phi_crit;
     let ks = t.k == IgPrim::K_slow;
     let wz = t.omega == IgPrim::Omega_z;
     let d_odot = t.d == IgPrim::D_odot;

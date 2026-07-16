@@ -201,8 +201,8 @@ pub fn verify_canonical_ordinals() -> (bool, &'static str) {
     // ── Phi / ⊙ (5 values, NON-UNIFORM — ⚠ ⊙-ordinal healing) ──
     if 𐑢.ordinal() != CANON_PHI_SUB
     { return (false, "𐑢 ordinal drift"); }
-    if ⊙.ordinal() != CANON_PHI_C
-    { return (false, "⊙ ordinal drift"); }
+    if Phi_crit.ordinal() != CANON_PHI_C
+    { return (false, "Phi_crit ordinal drift"); }
     // ⚠ CRITICAL: 𐑮 must be 7/3≈2.333, not 3.0
     if (𐑮.ordinal() - CANON_PHI_C_COMPLEX).abs() > 0.01
     { return (false, "𐑮 ordinal drift — the roar=7/3 bug!"); }

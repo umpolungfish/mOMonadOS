@@ -92,7 +92,7 @@ pub const ALL_FUNCTIONAL_GROUPS: &[FunctionalGroup] = &[
     FunctionalGroup { name: "hydroxamate", smiles_pattern: "C(=O)NO", rotatable_bonds: 1,
         ig_tuple: IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_bowtie, r: IgPrim::R_lr,
             p: IgPrim::P_pmsym, f: IgPrim::F_hbar, k: IgPrim::K_slow, g: IgPrim::G_gimel,
-            c: IgPrim::C_seq, phi: IgPrim::⊙, h: IgPrim::H1, s: IgPrim::S_11,
+            c: IgPrim::C_seq, phi: IgPrim::Phi_crit, h: IgPrim::H1, s: IgPrim::S_11,
             omega: IgPrim::Omega_z2 },
         binding_modes: &[BindingMode::MetalCoord, BindingMode::HydrogenBond],
     },

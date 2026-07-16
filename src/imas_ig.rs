@@ -88,7 +88,7 @@ pub enum IgPrim {
     C_broad = 32, // 𐑵 one-to-all broadcast
 
     // Phi (Criticality)
-    ⊙         = 33, // ⊙ critical/power-law
+    Phi_crit  = 33, // ⊙ critical/power-law
     𐑮 = 34, // 𐑮 complex-plane critical
     Phi_ep        = 35, // 𐑻 exceptional point
     𐑢       = 36, // 𐑢 sub-critical
@@ -162,7 +162,7 @@ impl IgPrim {
             C_and => 1.0, C_or => 2.0, C_seq => 3.0, C_broad => 4.0,
             // ⊙ Criticality — non-monotonic: 𐑮/Phi_ep sit between
             // ⊙ and Phi_super, not below 𐑢.
-            𐑢 => 1.0, ⊙ => 2.0, 𐑮 => 2.33, Phi_ep => 2.67, Phi_super => 3.0,
+            𐑢 => 1.0, Phi_crit => 2.0, 𐑮 => 2.33, Phi_ep => 2.67, Phi_super => 3.0,
             // Ħ Chirality
             H0 => 1.0, H1 => 2.0, H2 => 3.0, H_inf => 4.0,
             // Σ Stoichiometry
@@ -238,7 +238,7 @@ impl IgTuple {
             else { IgPrim::C_broad };
 
         // Phi — Criticality from self_ref + dialetheia + period
-        let phi_val = if sr && dc { IgPrim::⊙ }
+        let phi_val = if sr && dc { IgPrim::Phi_crit }
             else if sr { IgPrim::𐑮 }
             else if dc { IgPrim::Phi_ep }
             else if p == 1 { IgPrim::𐑢 }
@@ -325,7 +325,7 @@ pub fn all_canonical_ig() -> [IgTuple; 12] {
     let mut result = [IgTuple {
         d: IgPrim::D_infty, t: IgPrim::T_odot, r: IgPrim::R_lr,
         p: IgPrim::P_pmsym, f: IgPrim::F_hbar, k: IgPrim::K_mod,
-        g: IgPrim::G_aleph, c: IgPrim::C_seq, phi: IgPrim::⊙,
+        g: IgPrim::G_aleph, c: IgPrim::C_seq, phi: IgPrim::Phi_crit,
         h: IgPrim::H2, s: IgPrim::S_nm, omega: IgPrim::Omega_z,
     }; 12];
     for i in 0..12 {

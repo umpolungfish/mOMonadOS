@@ -75,7 +75,7 @@ const ALL_VALUES: [IgPrim; 49] = [
     IgPrim::K_trap, IgPrim::K_slow, IgPrim::K_mod, IgPrim::K_fast, IgPrim::K_mbl,
     IgPrim::G_aleph, IgPrim::G_beth, IgPrim::G_gimel,
     IgPrim::C_seq, IgPrim::C_and, IgPrim::C_or, IgPrim::C_broad,
-    IgPrim::⊙, IgPrim::𐑮, IgPrim::Phi_ep, IgPrim::𐑢, IgPrim::Phi_super,
+    IgPrim::Phi_crit, IgPrim::𐑮, IgPrim::Phi_ep, IgPrim::𐑢, IgPrim::Phi_super,
     IgPrim::H_inf, IgPrim::H2, IgPrim::H1, IgPrim::H0,
     IgPrim::S_nm, IgPrim::S_nn, IgPrim::S_11,
     IgPrim::Omega_z, IgPrim::Omega_z2, IgPrim::Omega_0, IgPrim::Omega_na,
