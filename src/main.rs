@@ -43,6 +43,7 @@ mod belnap_sic_bridge;
 mod belnap_c4;
 mod sic_compute;
 mod dialect_expansion;
+mod divisor_ring;
 mod bifurcation_test;
 mod entropy;
 mod d12_sic;

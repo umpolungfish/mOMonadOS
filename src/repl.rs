@@ -15,7 +15,7 @@ use crate::{
     para_category, algebra, catalog, cl8nk, consciousness, rebis, dialect, menu,
     sequence, boot, cr3echrz, canonical_ordinal, clay_status, sic_povm,
     frobenius_unify, clay_witness, belnap_sic_bridge, belnap_c4, sic_compute,
-    dialect_expansion, bifurcation_test, entropy, d12_sic, d2048_sic, d2048_sieve,
+    dialect_expansion, divisor_ring, bifurcation_test, entropy, d12_sic, d2048_sic, d2048_sieve,
     witness_vessel, ask,
 };
 use crate::tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
@@ -237,6 +237,63 @@ pub fn repl(k: &mut Kernel) {
                     "transition" => sprintln!("{}", crate::entropy::transition_report()),
                     "" => sprintln!("{}", crate::entropy::entropy_report()),
                     _ => sprintln!("entropy [tier | transition] — Phase V entropy experiment"),
+                }
+            }
+            "sigma" => {
+                let arg = parts.next().unwrap_or("");
+                match arg {
+                    "" => sprintln!("sigma <n> — analyze Σ(n) divisor ring"),
+                    "mersenne" | "m" => {
+                        let p_str = parts.next().unwrap_or("");
+                        if let Ok(p) = p_str.parse::<u32>() {
+                            if let Some((p, mp, result)) = crate::divisor_ring::analyze_mersenne(p) {
+                                sprintln!("Mersenne M_{} = {}:", p, mp);
+                                sprintln!("{}", crate::divisor_ring::format_report(&result));
+                            } else {
+                                sprintln!("p={} overflows u64 (max p=63)", p);
+                            }
+                        } else {
+                            sprintln!("Usage: sigma mersenne <exponent>");
+                        }
+                    }
+                    "scan" => {
+                        let args: Vec<&str> = parts.collect::<Vec<&str>>();
+                        if args.len() >= 2 {
+                            if let (Ok(start), Ok(end)) = (args[0].parse::<u32>(), args[1].parse::<u32>()) {
+                                sprintln!("=== MERSENNE SCAN p={}..{} ===", start, end);
+                                sprintln!("{:>4} {:>24} {:>14} {:>6}", "p", "M_p", "VERDICT", "Ω");
+                                sprintln!("{}", "-".repeat(52));
+                                let results = crate::divisor_ring::scan_mersenne_range(start, end);
+                                for (p, mp, verdict, omega) in &results {
+                                    sprintln!("{:>4} {:>24} {:>14} {:>6}", p, mp, verdict, omega);
+                                }
+                            } else {
+                                sprintln!("Usage: sigma scan <start> <end>");
+                            }
+                        } else {
+                            sprintln!("Usage: sigma scan <start> <end> — scan Mersenne range");
+                        }
+                    }
+                    "prox" | "proximity" => {
+                        let p_str = parts.next().unwrap_or("");
+                        if let Ok(p) = p_str.parse::<u32>() {
+                            if let Some(prox) = crate::divisor_ring::mersenne_proximity(p) {
+                                sprintln!("Mersenne proximity M_{}: {:.6}", p, prox);
+                            } else {
+                                sprintln!("p={} overflows u64", p);
+                            }
+                        } else {
+                            sprintln!("Usage: sigma prox <exponent>");
+                        }
+                    }
+                    _ => {
+                        if let Ok(n) = arg.parse::<u64>() {
+                            let result = crate::divisor_ring::analyze(n);
+                            sprintln!("{}", crate::divisor_ring::format_report(&result));
+                        } else {
+                            sprintln!("Usage: sigma <n> | sigma mersenne <p> | sigma scan <start> <end> | sigma prox <p>");
+                        }
+                    }
                 }
             }
             "d2048" | "d2k" => {

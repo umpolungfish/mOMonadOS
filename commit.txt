@@ -1,1 +1,1 @@
-guided proof: walk the bootstrap on the kernel itself
+proof parity: walk the parity law on the kernel
