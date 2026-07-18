@@ -178,6 +178,7 @@ pub fn repl(k: &mut Kernel) {
                 match parts.next().unwrap_or("") {
                     "" | "list" => crate::proof::list_proofs(),
                     "bootstrap" => crate::proof::walk_bootstrap(),
+                    "parity" => crate::proof::walk_parity(),
                     other => {
                         sprintln!("No guided proof named '{}'.", other);
                         crate::proof::list_proofs();
