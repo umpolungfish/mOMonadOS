@@ -50,6 +50,7 @@ mod d2048_sic;
 mod d2048_sieve;
 mod witness_vessel;
 mod ask;
+mod proof;
 mod repl;
 
 use tokens::{CANONICAL_COUNT, CONTINUOUS_COUNT, NOVEL_COUNT, SHUNTED_COUNT};

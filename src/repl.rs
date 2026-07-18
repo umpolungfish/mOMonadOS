@@ -174,6 +174,16 @@ pub fn repl(k: &mut Kernel) {
                 print_help_topic(topic);
             },
             "status" => print_status(k),
+            "proof" => {
+                match parts.next().unwrap_or("") {
+                    "" | "list" => crate::proof::list_proofs(),
+                    "bootstrap" => crate::proof::walk_bootstrap(),
+                    other => {
+                        sprintln!("No guided proof named '{}'.", other);
+                        crate::proof::list_proofs();
+                    }
+                }
+            },
             "frob" => print_frob(k),
             "ig" => print_ig(k),
             "classify" => print_classify(k),

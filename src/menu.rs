@@ -27,7 +27,13 @@ pub static MAIN_MENU: &[MenuItem] = &[
     MenuItem { name: "Dialect", cmd: "dialect",  desc: "Cross-dialect (ruleset, jump, seal, compound, whoami)", submenu: Some(DIALECT_MENU) },
     MenuItem { name: "ParaASM",  cmd: "parasm",   desc: "ParaASM (test, frob, kernel, load)", submenu: Some(PARASM_MENU) },
     MenuItem { name: "Cr3echrz", cmd: "cr3echrz", desc: "Theorem engine + p4rakernel (cr3, p4ra)", submenu: Some(CR3ECHRZ_MENU) },
+    MenuItem { name: "Proof",    cmd: "proof",    desc: "Guided proofs — walk a proof step by step on the kernel", submenu: Some(PROOF_MENU) },
     MenuItem { name: "Help",     cmd: "help",     desc: "Help system (help <topic> for details)", submenu: None },
+];
+
+pub static PROOF_MENU: &[MenuItem] = &[
+    MenuItem { name: "list",      cmd: "proof list",      desc: "List available guided proofs", submenu: None },
+    MenuItem { name: "bootstrap", cmd: "proof bootstrap", desc: "The Grammar verifying itself (7 steps, auto-play)", submenu: None },
 ];
 
 pub static EXEC_MENU: &[MenuItem] = &[

@@ -13,7 +13,7 @@ pub const TOTAL: u32 = CARDS[0] * CARDS[1] * CARDS[2] * CARDS[3]
                       * CARDS[4] * CARDS[5] * CARDS[6] * CARDS[7]
                       * CARDS[8] * CARDS[9] * CARDS[10] * CARDS[11];
 
-const CARDS: [u32; 12] = [4, 5, 4, 5, 3, 5, 3, 4, 5, 4, 3, 4];
+pub const CARDS: [u32; 12] = [4, 5, 4, 5, 3, 5, 3, 4, 5, 4, 3, 4];
 
 const STRIDES: [u32; 12] = {
     let mut s = [1u32; 12];
