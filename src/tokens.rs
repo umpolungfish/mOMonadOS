@@ -118,6 +118,24 @@ impl Program {
         self.buf[pos] = t;
         self.len += 1;
     }
+
+    /// ROTAT — the first op-opcode: cyclic shift of the program-ring by `k`.
+    ///
+    /// Not one of the 12 tokens: an op-opcode is an operator ON the whole word,
+    /// of a different order than the symbols in it. It is the ring automorphism,
+    /// the Weyl-Heisenberg shift X on Z/nZ. The kernel already presumed it — the
+    /// instruction pointer advancing `% n`, the cyclic FFUSE scan, the offset
+    /// scan in `self_imscribe` — this only names the operator those all turn on.
+    /// `signature` is ROTAT-invariant and `period` is the orbit size; `rotate`
+    /// by `len()` is the identity, so the ring closes on itself.
+    pub fn rotate(&self, k: usize) -> Program {
+        let n = self.len;
+        let mut out = Program::empty();
+        if n == 0 { return out; }
+        let s = k % n;
+        for i in 0..n { out.push(self.buf[(s + i) % n]); }
+        out
+    }
 }
 
 // ─── Bootstrap + 12 Canonicals ───────────────────────────────────

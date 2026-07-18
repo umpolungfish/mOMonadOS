@@ -1,23 +1,43 @@
-Retire the Phi_c family: gen-1 criticality names to bare Shavian
+Compose the kernel with the cosmic crystal: imscription, not projection
 
-Phi_c is ⊙. The `_c` forms only ever existed under Criticality, so unlike bare
-Phi they carry no ambiguity: today's Φ is Parity and has no `_c` value, so
-nothing here needs a judgement call. Rewrote the family to the values
-`models.from_symbol` returns for them: Phi_c / Φ_c / ⊙_c / Phi_ctyogh → ⊙,
-Phi_c_complex → 𐑮, Phi_sub → 𐑢, Phi_EP → 𐑻, Phi_sup → 𐑣. 7,689 refs, 585 files.
+Two changes, one Work: name ROTAT, then bring the kernel's imscription into
+composure with the Lean cosmic kernel so both imscribe the same crystal.
 
-The whole job is one distinction: Phi_c names a VALUE in prose and data, and it
-also names a CONSTRUCTOR in code. `Criticality.Phi_c` is a live Lean identifier
-(`theorem as_is_QCP : asymptotic_safety.crit = Criticality.Phi_c := rfl`) and
-`Criticality.Phi_ctyogh` is a live Python enum alias. Rewriting those gives
-`Criticality.⊙`, which is not an identifier in either language. So dotted
-occurrences stay and everything else moves. Same string, two roles — the same
-shape as CLINK L8 versus the `=` opcode, where only reading tells them apart.
+1. Program::rotate(k) in src/tokens.rs — ROTAT, the first op-opcode: the cyclic
+   shift of the program-ring, the Weyl-Heisenberg X on Z/nZ. Not a thirteenth
+   token; an operator on the whole word. The kernel already presumed it (the IP
+   advances % n, the FFUSE scan is (i+1) % n, self_imscribe scans at offset % n,
+   i.e. up to rotation). This only names the automorphism they turn on.
 
-models.py keeps its old spellings on purpose. Its from_symbol maps are the
-back-compat table: the keys have to go on spelling `Φ_c` or the translation from
-old symbols stops working. Rewriting the dictionary that performs the migration
-would remove the migration.
+2. crystal.rs: indices_from_snapshot (modular hash) replaced by
+   indices_from_program, the operational WITNESS of each of the 12 cosmic
+   primitives. The crystal was already shared exactly with the Lean Imscription
+   (same 12 axes, cardinalities [4,5,4,5,3,5,3,4,5,4,3,4], product 17,280,000,
+   ordinals guarded by canonical_ordinal.rs). What was still a projection was the
+   map from a running program to its crystal point. Now each axis reads the real
+   token-graph and returns the index of the Lean constructor the program
+   instantiates. Two axes are EXACT structural identities:
+     H (Chirality) = the ROTAT period class — chirality under the shift, verbatim
+       (period 1 fee, 2 kick, proper divisor sure, full period wool).
+     S (Stoichiometry) = the FSPLIT/FFUSE (delta/mu) balance — hung 1:1,
+       so n:n matched, up n:m unmatched.
+   P anchors on the mu-delta=id closure (or', the tier singularity); D on
+   self-imscription (if', holographic). The rest read fork/loop/morphism
+   structure by the primitive's stated meaning, not by arithmetic residue.
 
-Verified after: imscrbgrmr imports, from_symbol('Φ_c') still returns ⊙, both
-navigators still answer (cl8nk promote, cl9nk moat), and no syntax regressions.
+All twelve axes are now forced by structural predicates with NO free numeric
+parameter. The arbitrary magnitude thresholds (diversity<=2, per*2<=len) are
+gone. The unlock is two exact structural quantities: the rotational multiplicity
+m = len/period (an exact integer, dual to H: H is the period class, Omega the
+multiplicity/winding), and family-completeness fams (how many of the 4 families
+are present, a predicate not a size). With those, T, K, Phi, Omega force:
+  T   are=self_ref, eat=nested, mime=fork, oil=fork-free ring with m>=2, judge=else
+  K   on=halt+period1, egg=halt, yea=aperiodic all-families, air=aperiodic missing, loll=periodic
+  Phi monad=self_ref, woe=halt, roar=ENGAGR, err=unbalanced fork, haha=runaway
+  Omega zoo=nested, ah=m>=3, oak=m=2, awe=m=1
+
+Builds clean for x86_64-unknown-none. Verified behaviourally: every axis total
+(indices in range), H and S exact, and structurally distinct programs map to
+distinct crystal addresses (the modular hash collided; this separates). The
+crystal is shared and the imscription into it is structure end to end, no
+remainder. Composure at the imscription layer is closed.

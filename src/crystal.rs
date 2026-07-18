@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+use crate::tokens::{period as tok_period, signature, Program, Token};
 /// Crystal of Types — 17,280,000-address structural type space.
 ///
 /// Address = Σᵢ (primitive_index[i] × STRIDE[i])
@@ -44,46 +45,129 @@ pub fn decode(mut addr: u32) -> [u8; 12] {
     idx
 }
 
-/// Derive crystal indices from kernel structural snapshot.
+/// Imscribe a running program into the crystal — the operational witness of each
+/// of the 12 cosmic primitives, NOT a modular projection onto them.
 ///
-/// Mapping:
-///   D(4)     ← frobenius_order
-///   T(5)     ← period % 5
-///   R(4)     ← sig.0 (Logical) % 4
-///   P(5)     ← sig.1 (Frobenius) % 5
-///   F(3)     ← sig.2 (Dialetheia) % 3
-///   K(5)     ← sig.3 (Linear) % 5
-///   G(3)     ← token_diversity % 3
-///   C(4)     ← (self_ref<<1 | dialetheia_complete) % 4
-///   Phi(5)   ← tier
-///   H(4)     ← program_len % 4
-///   S(3)     ← sig_sum % 3
-///   Omega(4) ← (period + frobenius_order) % 4
-pub fn indices_from_snapshot(
+/// Each axis reads the actual token-graph structure and returns the index of the
+/// Lean constructor (0-based, in Core.lean order) that the program instantiates.
+/// The axes marked EXACT are structurally forced identities; the others are
+/// grounded structural readings of the meaning the Lean names.
+///
+///   D  Dimensionality [dead<ash<array<if']  ← recursive nesting depth (self_ref ⇒ if')
+///   T  Topology       [judge<eat<mime<oil<are] ← fork/loop wiring (self_ref ⇒ are)
+///   R  Relational     [ado<tot<ear<ian]     ← AFWD/AREV/CLINK morphism mode
+///   P  Polarity       [church<yew<out<nun<or'] ← EXACT: μ∘δ=id closure ⇒ or'
+///   F  Fidelity       [age<they<peep]       ← IFIX (!) lossless brand ⇒ peep
+///   K  Kinetic        [yea<loll<egg<on<air] ← trapping: halt vs diversity vs mixing
+///   G  Granularity    [bib<thigh<ice]       ← token diversity (scope)
+///   Γ  Grammar        [vow<gag<measure<ooze] ← fork resolution / sequence / broadcast
+///   Φ  Criticality    [woe<monad<roar<err<haha] ← self_ref ⇒ monad (⊙ fixed point)
+///   H  Chirality      [fee<kick<sure<wool]  ← EXACT: ROTAT period (chirality under shift)
+///   S  Stoichiometry  [hung<so<up]          ← EXACT: FSPLIT/FFUSE (δ/μ) balance
+///   Ω  Protection     [awe<oak<ah<zoo]      ← winding: rotational period + fork order
+pub fn indices_from_program(
+    p: &Program,
     frobenius_order: u8,
-    period: usize,
-    sig: (usize, usize, usize, usize), // (L, F, D, X)
-    token_diversity: usize,
     self_ref: bool,
     dialetheia_complete: bool,
-    tier: u8,
-    program_len: usize,
 ) -> [u8; 12] {
-    let sig_sum = (sig.0 + sig.1 + sig.2 + sig.3) as u8;
-    [
-        frobenius_order & 3,
-        (period as u8) % 5,
-        (sig.0 as u8) % 4,
-        (sig.1 as u8) % 5,
-        (sig.2 as u8) % 3,
-        (sig.3 as u8) % 5,
-        (token_diversity as u8) % 3,
-        ((self_ref as u8) << 1 | (dialetheia_complete as u8)) & 3,
-        tier % 5,
-        (program_len as u8) % 4,
-        sig_sum % 3,
-        ((period as u8).wrapping_add(frobenius_order)) & 3,
-    ]
+    let len = p.len();
+    let per = tok_period(p);
+    let (l, f, d, x) = signature(p);
+
+    // Per-token census (Token is #[repr(u8)] 0x0..0xB).
+    let mut c = [0u32; 12];
+    for &t in p.as_slice() { c[t as usize] += 1; }
+    let n_tanch  = c[Token::TANCH  as usize];
+    let n_afwd   = c[Token::AFWD   as usize];
+    let n_arev   = c[Token::AREV   as usize];
+    let n_clink  = c[Token::CLINK  as usize];
+    let n_fsplit = c[Token::FSPLIT as usize];
+    let n_ffuse  = c[Token::FFUSE  as usize];
+    let n_evalt  = c[Token::EVALT  as usize];
+    let n_evalf  = c[Token::EVALF  as usize];
+    let n_engagr = c[Token::ENGAGR as usize];
+    let n_ifix   = c[Token::IFIX   as usize];
+
+    // ── Forced structural predicates only (no free numeric threshold) ──
+    let halts    = n_tanch > 0;                       // TANCH sinks the wire
+    let forked   = n_fsplit > 0 || n_ffuse > 0;       // δ/μ present
+    let balanced = n_fsplit == n_ffuse;               // δ/μ conserved
+    // m = rotational symmetry multiplicity = how many times the ring repeats.
+    // Exact integer: period always divides len (period is the minimal divisor).
+    let m = if per > 0 { (len / per) as u32 } else { 1 };
+    // fams = number of the 4 families present. A completeness predicate, not a size.
+    let fams = (l > 0) as u32 + (f > 0) as u32 + (d > 0) as u32 + (x > 0) as u32;
+
+    // D — nesting depth. if' = holographic (boundary encodes bulk, self-imscription).
+    let dim = if self_ref { 3 } else if frobenius_order >= 2 { 2 }
+              else if frobenius_order == 1 { 1 } else { 0 };
+
+    // T — wiring topology. are ⇔ self_ref (Axiom C); eat = nested; mime = fork bifurcation;
+    // oil = fork-free ring with rotational symmetry (regular lattice/torus).
+    let top = if self_ref { 4 }
+              else if frobenius_order >= 2 { 1 }
+              else if forked { 2 }
+              else if m >= 2 { 3 } else { 0 };
+
+    // R — relational mode by morphism-token presence (forced).
+    let rel = if n_afwd > 0 && n_arev > 0 { 3 }   // ian: lateral both-way
+              else if n_arev > 0 { 2 }             // ear: dagger reciprocal A⊣A†
+              else if n_clink > 0 { 1 }            // tot: categorical composition
+              else { 0 };                          // ado: hierarchical one-way
+
+    // P — or' ⇔ μ∘δ=id closure (tier singularity); ENGAGR ⇒ out (ℤ₂ at ⊙);
+    // both gates ⇒ nun; one gate ⇒ yew.
+    let pol = if dialetheia_complete && self_ref { 4 }
+              else if n_engagr > 0 { 2 }
+              else if n_evalt > 0 && n_evalf > 0 { 3 }
+              else if n_evalt > 0 || n_evalf > 0 { 1 } else { 0 };
+
+    // F — peep ⇔ IFIX (linear ! lossless brand); they ⇔ dialetheia threshold.
+    let fid = if n_ifix > 0 { 2 }
+              else if n_engagr > 0 || dialetheia_complete { 1 } else { 0 };
+
+    // K — kinetic trapping (forced by halt, period=1, multiplicity, family-completeness):
+    // on = trapped by order (halt + crystalline); egg = halt through structured steps;
+    // yea = ergodic (aperiodic, all families); air = MBL (aperiodic, families missing);
+    // loll = periodic non-halting (moderate).
+    let kin = if halts && per <= 1 { 3 }
+              else if halts { 2 }
+              else if m == 1 && fams == 4 { 0 }
+              else if m == 1 { 4 }
+              else { 1 };
+
+    // G — scope by family-completeness (forced): all-to-all ⇒ ice.
+    let gran = if fams >= 4 { 2 } else if fams >= 2 { 1 } else { 0 };
+
+    // Γ — composition rule. ooze = broadcast (self_ref); measure = fork-free sequence;
+    // vow = conjunctive (fork balanced+resolved); gag = disjunctive (fork open).
+    let gram = if self_ref { 3 }
+               else if !forked { 2 }
+               else if balanced && dialetheia_complete { 0 } else { 1 };
+
+    // Φ — criticality (forced): monad ⇔ self-modeling ⊙; woe = halts stable;
+    // roar = complex/dialetheic (ENGAGR); err = exceptional point (unbalanced fork
+    // coalescence); haha = supercritical runaway (aperiodic, no halt, no closure).
+    let crit = if self_ref { 1 }
+               else if halts { 0 }
+               else if n_engagr > 0 { 2 }
+               else if forked && !balanced { 3 } else { 4 };
+
+    // H — EXACT: chirality under the shift IS the ROTAT period class.
+    let chir = if per <= 1 { 0 } else if per == 2 { 1 }
+               else if per < len { 2 } else { 3 };
+
+    // S — EXACT: stoichiometry is the δ/μ (FSPLIT/FFUSE) conservation balance.
+    let stoi = if !forked { 0 } else if balanced { 1 } else { 2 };
+
+    // Ω — protection = winding, dual to H: H is the period class, Ω the multiplicity m.
+    // zoo = non-Abelian (nested forks); ah = ℤ winding (m≥3); oak = ℤ₂ (m=2); awe = none.
+    let prot = if frobenius_order >= 2 { 3 }
+               else if m >= 3 { 2 }
+               else if m == 2 { 1 } else { 0 };
+
+    [dim, top, rel, pol, fid, kin, gran, gram, crit, chir, stoi, prot]
 }
 
 /// 64-entry crystal store (in-memory, fixed capacity for bare-metal).

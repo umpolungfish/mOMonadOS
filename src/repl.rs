@@ -19,7 +19,7 @@ use crate::{
     witness_vessel, ask,
 };
 use crate::tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
-use crate::crystal::{CrystalStore, decode, encode, indices_from_snapshot, TOTAL};
+use crate::crystal::{CrystalStore, decode, encode, indices_from_program, TOTAL};
 use crate::kernel::Kernel;
 use crate::imas_ig::{IgTuple, IgPrim};
 use crate::dialect::{parse_dialect, dialect_display, dialect_name, dialect_description, dialect_gates, dialect_o_inf};
@@ -1212,15 +1212,11 @@ fn crystal_store_current(
     canonical_idx: u8,
 ) -> u32 {
     if let Some(snap) = k.snapshot {
-        let indices = indices_from_snapshot(
+        let indices = indices_from_program(
+            &k.program,
             snap.frobenius_order,
-            snap.period,
-            snap.sig,
-            snap.token_diversity,
             snap.self_ref,
             snap.dialetheia_complete,
-            snap.tier,
-            k.program.len(),
         );
         let addr = encode(&indices);
         cfs.store(name, data, addr, canonical_idx)
