@@ -585,6 +585,62 @@ Stopped after {} ticks.", ran);
             "crystal" => {
                 let sub = parts.next().unwrap_or("").trim();
                 match sub {
+                    // μ leg, exposed: map an arbitrary opcode word to its twelve
+                    // crystal indices. The generator is δ (type → operational words);
+                    // this is μ (words → type verdict). Exposing it makes μ∘δ = id a
+                    // MEASUREMENT rather than a claim — round-trip a word and see which
+                    // of the twelve axes are recoverable from the sequence alone.
+                    "indices" => {
+                        let mut prog = crate::tokens::Program::empty();
+                        let mut n = 0usize;
+                        let mut bad = false;
+                        // `parts` is splitn(4,' ') — everything past the third token
+                        // arrives as one blob, so split each chunk again.
+                        for chunk in parts {
+                        for w in chunk.split_whitespace() {
+                            let t = match w.trim().to_ascii_uppercase().as_str() {
+                                "VINIT" => crate::tokens::Token::VINIT,
+                                "TANCH" => crate::tokens::Token::TANCH,
+                                "AFWD" => crate::tokens::Token::AFWD,
+                                "AREV" => crate::tokens::Token::AREV,
+                                "CLINK" => crate::tokens::Token::CLINK,
+                                "IMSCRIB" => crate::tokens::Token::IMSCRIB,
+                                "FSPLIT" => crate::tokens::Token::FSPLIT,
+                                "FFUSE" => crate::tokens::Token::FFUSE,
+                                "EVALT" => crate::tokens::Token::EVALT,
+                                "EVALF" => crate::tokens::Token::EVALF,
+                                "ENGAGR" => crate::tokens::Token::ENGAGR,
+                                "IFIX" => crate::tokens::Token::IFIX,
+                                other => {
+                                    if !other.is_empty() {
+                                        sprintln!("crystal indices: unknown opcode '{}'", other);
+                                        bad = true;
+                                    }
+                                    continue;
+                                }
+                            };
+                            prog.push(t);
+                            n += 1;
+                        }
+                        }
+                        if bad || n == 0 {
+                            if n == 0 && !bad {
+                                sprintln!("Usage: crystal indices <OPCODE> <OPCODE> ...");
+                            }
+                        } else {
+                            let snap = crate::kernel::self_imscribe(&prog);
+                            let idx = indices_from_program(
+                                &prog, snap.frobenius_order, snap.self_ref, snap.dialetheia_complete,
+                            );
+                            let addr = encode(&idx);
+                            serial::write_str("INDICES ");
+                            for (i, &v) in idx.iter().enumerate() {
+                                if i > 0 { serial::write_str(","); }
+                                sprint!("{}", v);
+                            }
+                            sprintln!(" ADDR {}", addr);
+                        }
+                    }
                     "store" => {
                         let name = parts.next().unwrap_or("").trim();
                         let data = parts.next().unwrap_or("").trim();
