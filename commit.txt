@@ -1,12 +1,7 @@
-kernel_3d_visualizer: the workaround helix WRAPS the torus — solenoid coils, not strands.
+kernel_3d_visualizer: no extra chord — the CLINK→IFIX section of the winding ITSELF is dotted.
 
-Two wrong readings corrected in sequence (winding-following strands, then
-latitude rings — both rejected): the CLINK–IMSCRIB–IFIX workaround helix is a
-SOLENOID: each flow coils poloidally AROUND the torus body while its toroidal
-angle travels to the pinch meridian. CLINK → ⊙ coils backward, IFIX → ⊙ coils
-forward the other way round, four full turns each, and both land EXACTLY on ⊙
-because the horn torus reaches the pinch at poloidal π on every meridian
-(R + R·cos π = 0) — the coil's landing is a property of the geometry, not an
-aimed endpoint. Dotted white CLINK ↔ IFIX connector (sequence-present,
-dataflow-empty) and the blue dashed R0 bus (AREV writes, IFIX/TANCH read)
-stand as before.
+The dashed connector swinging across was an invented edge; removed. Instead
+the gold (1,1) winding is drawn solid everywhere EXCEPT the CLINK→IFIX
+stretch (through FFUSE), which is rendered dotted at the same gold and the
+same radius: the sequence passes there, the dataflow does not — it detours
+through ⊙. One loop, two textures, no additional geometry.

@@ -51,7 +51,7 @@
   <div><span class="g" style="color:#8fbcff">+</span> EVALT &nbsp; <span class="g" style="color:#8fbcff">×</span> EVALF &nbsp; <span class="g" style="color:#ffff00">⊞</span> EVALI</div>
   <div class="sub"><span style="color:#00ff00">carved ring A</span> (green triangle on the torus's outer equator, +1/−1/0) = the A₂ root system, ind = n₊−n₋ = −1; the decided 3-step O₂dag→O<sub>∞</sub> gap. Its A₂ trine is the sphere's three evaluators.</div>
   <div class="sub"><span style="color:#0066ff">blue</span> work · <span style="color:#ffffff">white</span> no-work · <span style="color:#ffff00">gold</span> ⊞ ramify</div>
-  <div class="sub"><span style="color:#ffff00">yellow helix</span> CLINK→⊙ and IFIX→⊙: the workaround — the two work opcodes compose only THROUGH the identity at the pinch. <span style="color:#ffffff">dotted</span> = the direct CLINK↔IFIX chord, present in the sequence but empty of dataflow. <span style="color:#66aaff">blue dashed</span> = the R0 bus (AREV writes, IFIX/TANCH read).</div>
+  <div class="sub"><span style="color:#ffff00">yellow helix</span> CLINK→⊙ and IFIX→⊙: the workaround — the two work opcodes compose only THROUGH the identity at the pinch. <span style="color:#ffffff">dotted</span> = the CLINK→IFIX section of the winding itself, present in the sequence but empty of dataflow. <span style="color:#66aaff">blue dashed</span> = the R0 bus (AREV writes, IFIX/TANCH read).</div>
 </div>
 <div id="hint">Drag · Scroll · Right-drag</div>
 
@@ -239,13 +239,19 @@ EV.forEach(({ tok, glyph, p }) => {
 });
 
 // ── the kernel loop: (1,1) winding, threading the pinch ─────────────────
-const curvePts = [];
-for (let k = 0; k <= 800; k++) curvePts.push(horn(OFF + 2 * Math.PI * k / 800));
-const loopCurve = new THREE.CatmullRomCurve3(curvePts, true);
-scene.add(new THREE.Mesh(
-  new THREE.TubeGeometry(loopCurve, 800, 0.055, 12, true),
-  new THREE.MeshStandardMaterial({ color: 0xe8b84b, metalness: 0.35, roughness: 0.3, emissive: 0x3a2c08 })
-));
+// Drawn solid EXCEPT the CLINK → IFIX section, which is dotted (below, with
+// the dataflow edges): that stretch is present in the sequence but its
+// dataflow detours through ⊙ — the workaround.
+{
+  const aC = ang(TOKENS.findIndex(t => t.name === "CLINK"));
+  const aI = ang(TOKENS.findIndex(t => t.name === "IFIX"));
+  const solidPts = [];
+  for (let k = 0; k <= 700; k++) solidPts.push(horn(aI + (aC + 2 * Math.PI - aI) * k / 700));
+  scene.add(new THREE.Mesh(
+    new THREE.TubeGeometry(new THREE.CatmullRomCurve3(solidPts, false), 700, 0.055, 12, false),
+    new THREE.MeshStandardMaterial({ color: 0xe8b84b, metalness: 0.35, roughness: 0.3, emissive: 0x3a2c08 })
+  ));
+}
 
 // ── carved ring A on the torus (green): the A₂ root system, ind = n₊−n₋ = −1 ─
 // Three vertices on the outer equator (tp at poloidal 0), the 120° A₂ orbit,
@@ -384,13 +390,12 @@ imG.position.set(0, 0, -0.62); scene.add(imG);
   solidTube(iCoil, 0xffff00, 0.040); arrowHead(iCoil, 0xffff00);
   edgeLabel(pI.clone().multiplyScalar(1.25).add(new THREE.Vector3(0, 0, 0.12)), 'IFIX → ⊙', '#ffff00');
 
-  // Dotted white: the direct CLINK ↔ IFIX connector swinging across between
-  // the two rings — present in the sequence, empty of dataflow: the
-  // workaround IS that the two compose only through the identity ⊙.
-  const bulge = pC.clone().add(pI).multiplyScalar(0.5);
-  bulge.x *= 1.6; bulge.y *= 1.6;
-  const ptsCI = new THREE.CatmullRomCurve3([pC, bulge, pI]).getPoints(48);
-  dashedEdge(ptsCI, 0xffffff, 0.9, 0.026);
+  // Dotted: the CLINK → IFIX section of the winding ITSELF (through FFUSE) —
+  // present in the sequence, empty of dataflow: the workaround IS that the
+  // two compose only through the identity ⊙. Same gold, same radius, dotted.
+  const ptsCI = [];
+  for (let k = 0; k <= 96; k++) ptsCI.push(horn(ang(CLINK1) + (ang(IFIX_I) - ang(CLINK1)) * k / 96));
+  dashedEdge(ptsCI, 0xe8b84b, 0.95, 0.055);
   edgeLabel(mid(ptsCI).add(new THREE.Vector3(0, 0, 0.34)), 'CLINK ↔ IFIX (dotted)', '#ffffff');
 
   // Blue dashed: the R0 bus — AREV writes R0; IFIX and TANCH read it as the
