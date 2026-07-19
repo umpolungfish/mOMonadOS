@@ -398,12 +398,34 @@ imG.position.set(0, 0, -0.62); scene.add(imG);
   dashedEdge(ptsCI, 0xe8b84b, 0.95, 0.055);
   edgeLabel(mid(ptsCI).add(new THREE.Vector3(0, 0, 0.34)), 'CLINK ↔ IFIX (dotted)', '#ffffff');
 
+  // Dotted yellow: the coil's own CLINK → IFIX stretch — the solenoid
+  // continues around the torus body between the two stations, but dotted:
+  // the wrap exists, the dataflow through it does not. Endpoints land
+  // exactly on the two station spheres (v ends ≡ IFIX's angle mod 2π).
+  {
+    const aC = ang(CLINK1), aI = ang(IFIX_I);
+    const turns = 2, n = 240, pts = [];
+    for (let k = 0; k <= n; k++) {
+      const t = k / n;
+      const u = aC + (aI - aC) * t;
+      const v = aC + ((aI - aC) + turns * 2 * Math.PI) * t;
+      const p = tp(u, v);
+      const c = new THREE.Vector3(R * Math.cos(u), R * Math.sin(u), 0);
+      const nrm = p.clone().sub(c); const nl = nrm.length() || 1;
+      pts.push(p.add(nrm.multiplyScalar(0.06 / nl)));
+    }
+    dashedEdge(pts, 0xffff00, 0.85, 0.030);
+  }
+
   // Blue dashed: the R0 bus — AREV writes R0; IFIX and TANCH read it as the
-  // address. Drawn as bulged chords (register traffic, not sequence flow).
+  // address. Bulged chords (register traffic, not sequence flow), endpoints
+  // pinned to the station spheres, densely sampled so the dashes span the
+  // whole chord instead of stranding one fragment mid-air.
   function busChord(i, j) {
     const a = horn(ang(i)), b = horn(ang(j));
-    const m = a.clone().add(b).multiplyScalar(0.5).multiplyScalar(1.35);
-    return [a, a.clone().lerp(m, 0.5), m, b.clone().lerp(m, 0.5), b];
+    const m = a.clone().add(b).multiplyScalar(0.5);
+    m.multiplyScalar(m.length() > 0.01 ? 1.35 : 1);
+    return new THREE.CatmullRomCurve3([a, m, b]).getPoints(64);
   }
   [[AREV_I, IFIX_I], [AREV_I, TANCH_I]].forEach(([i, j]) => {
     const pts = busChord(i, j);
