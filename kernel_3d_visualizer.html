@@ -51,6 +51,7 @@
   <div><span class="g" style="color:#8fbcff">+</span> EVALT &nbsp; <span class="g" style="color:#8fbcff">×</span> EVALF &nbsp; <span class="g" style="color:#ffff00">⊞</span> EVALI</div>
   <div class="sub"><span style="color:#00ff00">carved ring A</span> (green triangle on the torus's outer equator, +1/−1/0) = the A₂ root system, ind = n₊−n₋ = −1; the decided 3-step O₂dag→O<sub>∞</sub> gap. Its A₂ trine is the sphere's three evaluators.</div>
   <div class="sub"><span style="color:#0066ff">blue</span> work · <span style="color:#ffffff">white</span> no-work · <span style="color:#ffff00">gold</span> ⊞ ramify</div>
+  <div class="sub"><span style="color:#ffff00">yellow helix</span> CLINK→⊙ and IFIX→⊙: the workaround — the two work opcodes compose only THROUGH the identity at the pinch. <span style="color:#ffffff">dotted</span> = the direct CLINK↔IFIX chord, present in the sequence but empty of dataflow. <span style="color:#66aaff">blue dashed</span> = the R0 bus (AREV writes, IFIX/TANCH read).</div>
 </div>
 <div id="hint">Drag · Scroll · Right-drag</div>
 
@@ -302,6 +303,106 @@ scene.add(new THREE.Mesh(new THREE.SphereGeometry(0.26, 32, 32),
   new THREE.MeshStandardMaterial({ color: 0xffd700, emissive: 0x8a6a10, metalness: 0.3, roughness: 0.2 })));
 const imG = glyphMark('⊙', '#ffe08a', 0.62);
 imG.position.set(0, 0, -0.62); scene.add(imG);
+
+// ── Dataflow edges: the CLINK–IMSCRIB–IFIX workaround helix + the R0 bus ──
+// Derived from kernel.rs tick semantics, not hand-drawn: CLINK composes
+// registers (meet → R3), IMSCRIB writes the self-knowledge registers R4–R7,
+// IFIX fixes the popped value into memory at R0. The composition CLINK→⊙→IFIX
+// is the workaround: the two work opcodes reach each other THROUGH the
+// identity at the pinch, never directly — the direct CLINK↔IFIX chord exists
+// on the winding but carries no dataflow, so it is drawn dotted. The R0 bus
+// (AREV writes R0; IFIX and TANCH read it) is the one true register edge set.
+(() => {
+  const firstIdx = name => TOKENS.findIndex(t => t.name === name);
+  const CLINK1 = firstIdx("CLINK");
+  const CLINK2 = TOKENS.map((t, i) => t.name === "CLINK" ? i : -1).filter(i => i >= 0)[1];
+  const IFIX_I = firstIdx("IFIX");
+  const AREV_I = firstIdx("AREV");
+  const TANCH_I = firstIdx("TANCH");
+  const aO = ang(IMSCRIB_I);
+
+  // Arc along the (1,1) winding from parameter a0 to a1, lifted off the gold
+  // tube along the local torus normal so the helix reads as its own strand.
+  function windArc(a0, a1, n = 96, lift = 0.10) {
+    const pts = [];
+    for (let k = 0; k <= n; k++) {
+      const t = a0 + (a1 - a0) * k / n;
+      const p = horn(t);
+      const c = new THREE.Vector3(R * Math.cos(t), R * Math.sin(t), 0);
+      const nrm = p.clone().sub(c); const nl = nrm.length() || 1;
+      pts.push(p.add(nrm.multiplyScalar(lift / nl)));
+    }
+    return pts;
+  }
+  function solidTube(pts, color, rad = 0.042) {
+    scene.add(new THREE.Mesh(
+      new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 96, rad, 8, false),
+      new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.5, metalness: 0.4, roughness: 0.2 })));
+  }
+  function dashedEdge(pts, color, opacity, rad = 0.018) {
+    const mat = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.4, transparent: true, opacity });
+    for (let i = 0; i + 2 < pts.length; i += 4) {
+      const seg = [pts[i], pts[i + 1], pts[i + 2]];
+      scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(seg), 4, rad, 6, false), mat));
+    }
+  }
+  function arrowHead(pts, color, size = 0.13) {
+    const tip = pts[pts.length - 1], prev = pts[pts.length - 5] || pts[0];
+    const dir = tip.clone().sub(prev).normalize();
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(size * 0.45, size, 10),
+      new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.6 }));
+    cone.position.copy(tip.clone().sub(dir.clone().multiplyScalar(size * 0.6)));
+    cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+    scene.add(cone);
+  }
+  function edgeLabel(p, text, color) {
+    const c = document.createElement('canvas'); c.width = 240; c.height = 44;
+    const x = c.getContext('2d');
+    x.font = 'bold 22px system-ui'; x.fillStyle = color; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText(text, 120, 22);
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthTest: false }));
+    sp.scale.set(0.72, 0.13, 1); sp.position.copy(p); scene.add(sp);
+  }
+  const mid = pts => pts[Math.floor(pts.length / 2)].clone();
+
+  // Yellow: CLINK₁ → ⊙, the near (backward) helix into the pinch.
+  const cNear = windArc(ang(CLINK1), aO, 96, 0.20);
+  solidTube(cNear, 0xffff00, 0.034); arrowHead(cNear, 0xffff00);
+  edgeLabel(mid(cNear).add(new THREE.Vector3(0, 0, 0.30)), 'CLINK → ⊙', '#ffff00');
+
+  // Yellow: IFIX → ⊙, the far (forward, wrapping) helix — arrives at the
+  // pinch from the opposite direction, so the two flows thread ⊙ as a helix.
+  const fFar = windArc(ang(IFIX_I), aO + 2 * Math.PI, 96, 0.28);
+  solidTube(fFar, 0xffff00, 0.034); arrowHead(fFar, 0xffff00);
+  edgeLabel(mid(fFar).add(new THREE.Vector3(0, 0, -0.30)), 'IFIX → ⊙', '#ffff00');
+
+  // Yellow: CLINK₂ → ⊙, the seal-side CLINK reaching ⊙ forward through TANCH's seal.
+  if (CLINK2 >= 0) {
+    const c2 = windArc(ang(CLINK2), aO + 2 * Math.PI, 96, 0.38);
+    solidTube(c2, 0xffff00, 0.026); arrowHead(c2, 0xffff00, 0.11);
+  }
+
+  // Dotted white: the direct CLINK↔IFIX chord along the winding (through
+  // FFUSE) — present in the sequence, empty of dataflow: the workaround IS
+  // that the two only compose through ⊙.
+  const ptsCI = windArc(ang(CLINK1), ang(IFIX_I), 64, 0.46);
+  dashedEdge(ptsCI, 0xffffff, 0.9, 0.026);
+  edgeLabel(mid(ptsCI).add(new THREE.Vector3(0, 0, 0.34)), 'CLINK ↔ IFIX (dotted)', '#ffffff');
+
+  // Blue dashed: the R0 bus — AREV writes R0; IFIX and TANCH read it as the
+  // address. Drawn as bulged chords (register traffic, not sequence flow).
+  function busChord(i, j) {
+    const a = horn(ang(i)), b = horn(ang(j));
+    const m = a.clone().add(b).multiplyScalar(0.5).multiplyScalar(1.35);
+    return [a, a.clone().lerp(m, 0.5), m, b.clone().lerp(m, 0.5), b];
+  }
+  [[AREV_I, IFIX_I], [AREV_I, TANCH_I]].forEach(([i, j]) => {
+    const pts = busChord(i, j);
+    dashedEdge(pts, 0x66aaff, 0.8, 0.020);
+    arrowHead(pts, 0x66aaff, 0.11);
+  });
+  edgeLabel(mid(busChord(AREV_I, TANCH_I)).add(new THREE.Vector3(0, 0, 0.30)), 'R0 bus', '#66aaff');
+})();
 
 // ── seal marker: TANCH → VINIT ──────────────────────────────────────────
 const vi = TOKENS.findIndex(t => t.name === "VINIT");

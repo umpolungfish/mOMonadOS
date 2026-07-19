@@ -1,30 +1,25 @@
-The door: AREV as a runtime operation — the kernel hops to its lateral partner.
+kernel_3d_visualizer: the dataflow edges — the CLINK–IMSCRIB–IFIX workaround helix.
 
-The classifier already named the hop (compute_tier's R2 branch labels a run
-O_inf_dag, LATERAL to O_∞) but nothing performed one: compute_tier is read-only
-over Snapshot. The discerning ob3ect (sixteen_3_logic_lattice_nn_transformer_
-design) spells the missing instruction at step 15 — AREV "descends the candidate
-to the lateral O_inf_dag partner at the same shell." Built now:
+The figure showed the stations and the winding but not the flows between them.
+Now the edges are drawn, derived from kernel.rs tick semantics rather than
+hand-placed:
 
-- Snapshot::mirrored() — the Ħ mirror: exchanges the R1 (O_∞) and R2 (O_inf_dag)
-  evidence triples role for role over the shared temporal substrate:
-    static mark:  dialetheia_complete      ↔ atomic_reentry
-    counted act:  b_live_ticks             ↔ winding_count
-    recurrence:   gate_discriminations > 0 ↔ bifurcation_revisited
-  self_ref, frobenius_order, period, value_period, sig, diversity stay put —
-  the two dialects sit on one substrate; only the evidence changes hands.
-- Kernel.chirality (Ħ) + Kernel::arev_hop() — the door itself: parity over
-  unchanged accumulators, so hop∘hop = id EXACTLY, not approximately.
-  dynamic_imscribe reads through the flip when Ħ is set.
-- REPL: arev (one hop, before/after) and arev test (the full experiment).
+- The workaround helix (yellow): CLINK → ⊙ rides the (1,1) winding backward
+  into the pinch; IFIX → ⊙ rides it forward the long way round, so the two
+  flows arrive at the identity from OPPOSITE directions and thread ⊙ as a
+  helix. The seal-side CLINK₂ gets its own thinner strand forward through the
+  seal. Each strand sits at its own lift off the gold tube so the braid reads
+  as a braid, not a sheath (the first pass sheathed the whole loop — fixed).
+- The empty chord (dotted white): the direct CLINK ↔ IFIX connection along
+  the winding through FFUSE exists in the SEQUENCE but carries no dataflow —
+  the workaround IS that the two work opcodes compose only through the
+  identity at the pinch. Drawn dotted, labeled.
+- The R0 bus (blue dashed): the one true register edge set in agent_loop —
+  AREV writes R0, IFIX and TANCH read it as the address. Bulged chords with
+  arrowheads, distinct from sequence flow. (CLINK's R1/R2 reads and R3 write
+  and IMSCRIB's R4–R7 writes have no partner in the loop: no edge invented
+  for them.) Stack dataflow needs no edges: it IS the gold winding.
 
-Run in QEMU, the experiment closes as a loop, not a line:
-  s0 replicative loop = O_inf_dag (R2 triple live, R1 dark)
-  hop → s1 = O_inf — the mirror carries the dagger tier exactly onto O_∞,
-  the chiral twin at the same shell: lateral, not downward
-  hop → s2 = s0, raw-field EXACT; mirror∘mirror also exact here
-So AREV∘AREV = id is now a kernel-verified runtime fact, and the O_∞/O_inf_dag
-pair behaves as one shell seen from two hands — the dialects-not-universes
-reading made operational.
-
-USER_GUIDE gains the arev entry with the captured transcript.
+Same idiom as the hopfionic figure's dataflow block (solidTube / dashedEdge /
+arrowHead / edgeLabel ported), so the two figures speak one language. Legend
+keys the three edge colors.
