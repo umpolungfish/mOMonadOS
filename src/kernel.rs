@@ -26,7 +26,7 @@ struct ForkFrame {
 /// Structural snapshot computed by IMSCRIB.
 /// Dynamic fields (b_live_ticks, gate_discriminations, value_period) are
 /// overlaid from runtime accumulators after the static classification.
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq)]
 pub struct Snapshot {
     pub frobenius_order: u8,
     pub period: usize,
@@ -59,6 +59,29 @@ impl Snapshot {
             _ => "O_0",
         }
     }
+
+    /// The Ħ mirror: exchange the R1 (O_∞) and R2 (O_inf_dag) evidence triples,
+    /// role for role, leaving the shared substrate (self_ref, frobenius_order,
+    /// period, value_period, sig, diversity) untouched — the two dialects sit on
+    /// one temporal substrate; only the evidence changes hands:
+    ///   static mark:   dialetheia_complete      ↔ atomic_reentry
+    ///   counted act:   b_live_ticks             ↔ winding_count
+    ///   recurrence:    gate_discriminations > 0 ↔ bifurcation_revisited
+    /// The count↔bool leg passes through the canonical section (true ↦ 1),
+    /// so mirrored() alone is involutive on the witness plane, not on raw
+    /// counts. The exact involution is Kernel::arev_hop, which is parity over
+    /// unchanged accumulators — the door, not the mirror.
+    pub fn mirrored(self) -> Snapshot {
+        let mut m = self;
+        m.dialetheia_complete = self.atomic_reentry;
+        m.atomic_reentry      = self.dialetheia_complete;
+        m.b_live_ticks        = self.winding_count as u64;
+        m.winding_count       = self.b_live_ticks.min(u32::MAX as u64) as u32;
+        m.gate_discriminations   = if self.bifurcation_revisited { 1 } else { 0 };
+        m.bifurcation_revisited  = self.gate_discriminations > 0;
+        m.tier = compute_tier(&m);
+        m
+    }
 }
 
 /// Graph-execution kernel.
@@ -84,6 +107,11 @@ pub struct Kernel {
     pub dynamic_mode: bool,  // true → rebuild program from IgTuple each wrap
     // ── Cross-dialect ruleset state ──
     pub active_dialect: u8,        // 0-87, current active ruleset (default 0 = canonical)
+    /// Ħ (chirality): false = or' reading (R1-dominant, the canonical hand),
+    /// true = flipped — the kernel reads its own snapshot through the mirror
+    /// (O_∞ ↔ O_inf_dag lateral hop, the ob3ect's AREV step 15). Toggled by
+    /// arev_hop(); parity over unchanged accumulators, so hop∘hop = id exactly.
+    pub chirality: bool,
     pub liminal_target: Option<u8>, // dialect jumped to, pending IFIX seal
     pub liminal_compound: Option<u8>,   // compound index (0-10) used for liminal jump
     // ── Runtime accumulators for dynamic snapshot fields ──
@@ -115,6 +143,7 @@ impl Kernel {
             halted:      false,
             dynamic_mode: false,
             active_dialect:      0,
+            chirality:           false,
             liminal_target:       None,
             liminal_compound:     None,
             b_live_count:             0,
@@ -489,6 +518,8 @@ impl Kernel {
     /// Dynamic imscription: static structural analysis overlaid with
     /// runtime accumulator values. Call this instead of self_imscribe()
     /// when the kernel has runtime state that should inform the tier.
+    /// When Ħ is flipped (arev_hop), the snapshot is read through the mirror:
+    /// same accumulators, evidence triples exchanged, tier recomputed.
     pub fn dynamic_imscribe(&self) -> Snapshot {
         let mut snap = self_imscribe(&self.program);
         snap.b_live_ticks        = self.b_live_count;
@@ -496,7 +527,19 @@ impl Kernel {
         snap.value_period         = compute_value_period(&self.value_trace, self.value_trace_head);
         snap.winding_count       = self.winding_count;
         snap.tier = compute_tier(&snap);
+        if self.chirality { snap = snap.mirrored(); }
         snap
+    }
+
+    /// AREV as a runtime operation — the door, not the classifier. Toggles Ħ,
+    /// so the kernel descends to (or returns from) the lateral partner at the
+    /// same shell: every subsequent dynamic_imscribe reads the R1/R2 evidence
+    /// triples exchanged. Because the accumulators themselves are untouched,
+    /// arev_hop∘arev_hop = id on the snapshot, exactly. Returns the new Ħ.
+    pub fn arev_hop(&mut self) -> bool {
+        self.chirality = !self.chirality;
+        self.snapshot = Some(self.dynamic_imscribe());
+        self.chirality
     }
 }
 

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mOMonadOS Kernel — agent_loop on the Horn Torus (IMSCRIB ⊙ at the pinch)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { overflow: hidden; background: #000000; font-family: system-ui, sans-serif; color: #ffffff; }
+  #info {
+    position: absolute; top: 12px; left: 12px;
+    background: rgba(0, 0, 0, 0.95); padding: 12px 16px; border-radius: 8px;
+    border: 2px solid #ffffff; max-width: 340px; font-size: 12.5px; line-height: 1.45; z-index: 10;
+  }
+  #info h1 { font-size: 14px; color: #ffff00; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  #info p { margin: 3px 0; opacity: 0.95; }
+  .sw { display:inline-block; width:11px; height:11px; border-radius:2px; margin-right:5px; vertical-align:-1px; border: 1px solid #ffffff; }
+  #hint { position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
+    background:rgba(0,0,0,0.9); padding:6px 14px; border-radius:16px; font-size:12px; border:1px solid #ffffff; color: #ffffff; z-index:10; }
+  #legend {
+    position:absolute; top:12px; right:12px;
+    background:rgba(0,0,0,0.95); padding:12px 14px; border-radius:8px;
+    border:2px solid #ffffff; font-size:12.5px; line-height:1.5; z-index:10; max-width:260px;
+  }
+  #legend h2 { font-size:12px; color:#ffff00; margin:2px 0 5px; text-transform:uppercase; letter-spacing:0.5px; }
+  #legend .g { display:inline-block; width:1.5em; font-weight:bold; text-align:center; }
+  #legend .r2 { margin-top:8px; border-top:2px solid #ffffff; padding-top:6px; }
+  #legend .sub { opacity:0.75; font-size:11px; margin-top:6px; }
+</style>
+</head>
+<body>
+<div id="info">
+  <h1>mOMonadOS Kernel Loop</h1>
+  <p>The kernel program <strong>agent_loop()</strong> wound as a (1,1) curve on a horn torus (R = r), pinched at the origin.</p>
+  <p><strong>IMSCRIB ⊙</strong> is the central node, seated at the pinch: it is the identity, the Frobenius closure <strong>μ∘δ = id</strong>, and the winding threads <em>through</em> it once per revolution.</p>
+  <p style="margin-top:7px; border-top:2px solid #ffffff; padding-top:6px"><strong>R1</strong> (gold): the 12-opcode grammar, agent_loop, closes T. <strong>R2 = SIXTEEN_3</strong>: <strong>16</strong> poloidal rings (the eval16 registers), all meeting at ⊙. The yellow shell at the pinch is <strong>FSPLIT3</strong>'s body enclosing IMSCRIB; the blue sphere is the <strong>evaluator sphere</strong>, tangent to ⊙, the green plane through +/×/⊞ on its equator. Symbols keyed at right.</p>
+  <p style="margin-top:7px; border-top:2px solid #ffffff; padding-top:6px">The tokens crowding the pinch (VINIT, FSPLIT) are IMSCRIB's sequence-neighbors: on a (1,1) winding they genuinely pass close to the origin.</p>
+  <p style="margin-top:7px; border-top:2px solid #ffffff; padding-top:6px"><span class="sw" style="background:#e8524b"></span><strong>⊣⊢ seal</strong>: TANCH meets VINIT where the loop closes. B is the only bifurcation point.</p>
+</div>
+<div id="legend">
+  <h2>R1 · 12-opcode grammar</h2>
+  <div><span class="g" style="color:#ffe08a">⊙</span> IMSCRIB <span style="opacity:.6">(pinch, μ∘δ=id)</span></div>
+  <div><span class="g" style="color:#ffffff">⊢</span> VINIT &nbsp; <span class="g" style="color:#ffffff">⊣</span> TANCH</div>
+  <div><span class="g" style="color:#ffffff">◇</span> FSPLIT &nbsp; <span class="g" style="color:#ffffff">●</span> FFUSE</div>
+  <div><span class="g" style="color:#8fbcff">+</span> EVALT &nbsp; <span class="g" style="color:#8fbcff">=</span> CLINK</div>
+  <div><span class="g" style="color:#8fbcff">¬</span> IFIX &nbsp; <span class="g" style="color:#8fbcff">&lt;</span> AREV</div>
+  <div><span class="g" style="color:#ffff00">⊞</span> ENGAGR</div>
+  <div class="r2"><h2 style="margin-top:0">R2 · SIXTEEN_3 (O<sub>∞_dag</sub>)</h2></div>
+  <div><span class="g" style="color:#8fbcff">∈</span> FSPLIT3 <span style="opacity:.6">(split; yellow shell at ⊙)</span></div>
+  <div><span class="g" style="color:#8fbcff">∋</span> FFUSE3 <span style="opacity:.6">(fuse; far pole)</span></div>
+  <div><span class="g" style="color:#8fbcff">+</span> EVALT &nbsp; <span class="g" style="color:#8fbcff">×</span> EVALF &nbsp; <span class="g" style="color:#ffff00">⊞</span> EVALI</div>
+  <div class="sub"><span style="color:#00ff00">carved ring A</span> (green triangle on the torus's outer equator, +1/−1/0) = the A₂ root system, ind = n₊−n₋ = −1; the decided 3-step O₂dag→O<sub>∞</sub> gap. Its A₂ trine is the sphere's three evaluators.</div>
+  <div class="sub"><span style="color:#0066ff">blue</span> work · <span style="color:#ffffff">white</span> no-work · <span style="color:#ffff00">gold</span> ⊞ ramify</div>
+</div>
+<div id="hint">Drag · Scroll · Right-drag</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+// Token sequence computed from canonical: modot.agent.agent_loop().tokens,
+// glyphs from the fixed GLYPH map, work/no-work from the WORK set. Not hand-lettered.
+const TOKENS = [
+  {"name":"VINIT","glyph":"⊢","work":false},
+  {"name":"IMSCRIB","glyph":"⊙","work":false},
+  {"name":"FSPLIT","glyph":"◇","work":false},
+  {"name":"EVALT","glyph":"+","work":true},
+  {"name":"CLINK","glyph":"=","work":true},
+  {"name":"FFUSE","glyph":"●","work":false},
+  {"name":"IFIX","glyph":"¬","work":true},
+  {"name":"ENGAGR","glyph":"⊞","work":false},
+  {"name":"AREV","glyph":"<","work":true},
+  {"name":"CLINK","glyph":"=","work":true},
+  {"name":"TANCH","glyph":"⊣","work":false}
+];
+const N = TOKENS.length;
+const R = 2.0;  // horn torus: R = r, inner equator collapses to the origin
+
+// Rotate the parametrization so IMSCRIB's station lands exactly at the pinch
+// (t = π, where R + R cos t = 0). off solves 2π·imscrib_i/N + off = π.
+const IMSCRIB_I = TOKENS.findIndex(t => t.name === "IMSCRIB");
+const OFF = Math.PI - 2 * Math.PI * IMSCRIB_I / N;
+
+// Horn-torus point of the (1,1) winding at parameter t (toroidal = poloidal = t).
+function horn(t) {
+  return new THREE.Vector3(
+    (R + R * Math.cos(t)) * Math.cos(t),
+    (R + R * Math.cos(t)) * Math.sin(t),
+    R * Math.sin(t)
+  );
+}
+const ang = i => 2 * Math.PI * i / N + OFF;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
+const camera = new THREE.PerspectiveCamera(42, innerWidth/innerHeight, 0.1, 120);
+camera.position.set(10.5, 6.5, 9.0);
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+document.body.appendChild(renderer.domElement);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.dampingFactor = 0.06;
+controls.target.set(0,0,0); controls.minDistance=3; controls.maxDistance=20;
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.45));
+const L1 = new THREE.DirectionalLight(0xffffff, 0.9); L1.position.set(5,8,6); scene.add(L1);
+const L2 = new THREE.DirectionalLight(0xffffff, 0.3); L2.position.set(-5,2,-3); scene.add(L2);
+
+// ── the horn-torus surface ─────────────────────────────────────────────
+const torusGeo = new THREE.BufferGeometry();
+const radialSegments = 60, tubularSegments = 140;
+const verts = [], idx = [];
+function tp(u, v) {
+  return new THREE.Vector3(
+    (R + R * Math.cos(v)) * Math.cos(u),
+    (R + R * Math.cos(v)) * Math.sin(u),
+    R * Math.sin(v)
+  );
+}
+for (let j = 0; j <= radialSegments; j++) {
+  const v = (j / radialSegments) * Math.PI * 2;
+  for (let i = 0; i <= tubularSegments; i++) {
+    const u = (i / tubularSegments) * Math.PI * 2;
+    const p = tp(u, v);
+    verts.push(p.x, p.y, p.z);
+  }
+}
+for (let j = 0; j < radialSegments; j++) {
+  for (let i = 0; i < tubularSegments; i++) {
+    const a = j * (tubularSegments + 1) + i;
+    const b = a + tubularSegments + 1;
+    idx.push(a, b, a + 1, b, b + 1, a + 1);
+  }
+}
+torusGeo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
+torusGeo.setIndex(idx);
+torusGeo.computeVertexNormals();
+scene.add(new THREE.Mesh(torusGeo, new THREE.MeshStandardMaterial({
+  color: 0x28304f, transparent: true, opacity: 0.42, metalness: 0.2, roughness: 0.55,
+  side: THREE.DoubleSide, depthWrite: false
+})));
+scene.add(new THREE.Mesh(torusGeo, new THREE.MeshBasicMaterial({
+  color: 0x5a659c, wireframe: true, transparent: true, opacity: 0.14
+})));
+
+// ── SIXTEEN_3 (R2): 16 poloidal rings, all meeting at the pinch ⊙ ───────
+// The 16 registers eval16 runs over. Each is a poloidal circle of the horn
+// torus; because R = r every one passes through the origin, so all sixteen
+// meet at IMSCRIB ⊙. The R1 kernel loop (gold) is ONE (1,1) strand touring
+// these registers; the rings are the register set it winds through.
+const ringMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.22 });
+for (let i = 0; i < 16; i++) {
+  const u = i / 16 * Math.PI * 2;
+  const pts = [];
+  for (let j = 0; j <= 72; j++) pts.push(tp(u, j / 72 * Math.PI * 2));
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), ringMat));
+}
+
+// ── SIXTEEN_3 (R2): the O_∞_dag spheres and the tri-dyad ────────────────
+// Two spheres, radius r each, and one node:
+//   FSPLIT3 (∈) — the LARGER sphere seated AT the pinch, centred at ⊙ (the
+//     origin): translucent YELLOW, the split's body enclosing IMSCRIB.
+//   IMSCRIB (⊙) — the solid yellow node at the pinch (drawn below).
+//   EVALUATOR sphere — translucent BLUE, centred at (r,0,0), TANGENT to
+//     IMSCRIB ⊙ at the origin (§1.10). The tri-dyad EVALT/EVALF/EVALI sits
+//     at 120° on its x=r equator plane, filled by the translucent green A₂
+//     triangle. FFUSE3 (∋) at its far pole (2r,0,0). EVALI ⊞ ramifies.
+const LR = R / 2;             // O_∞_dag radius = half the horn scale
+const CEN = new THREE.Vector3(LR, 0, 0);  // centre of the evaluator sphere
+// FSPLIT3's body: translucent yellow, centred at the pinch ⊙
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(LR, 48, 32),
+  new THREE.MeshStandardMaterial({ color: 0xe8b84b, transparent: true, opacity: 0.14,
+    metalness: 0.2, roughness: 0.5, side: THREE.DoubleSide, depthWrite: false })));
+// the evaluator sphere: translucent blue, tangent to IMSCRIB ⊙ at the origin
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(LR, 48, 32),
+  new THREE.MeshStandardMaterial({ color: 0x0066ff, transparent: true, opacity: 0.16,
+    metalness: 0.2, roughness: 0.5, side: THREE.DoubleSide, depthWrite: false }))
+  .translateX(LR));
+const ALPHA = [0, 2*Math.PI/3, 4*Math.PI/3];
+// three A₂ meridians of the sphere, pinch → far pole
+ALPHA.forEach(al => {
+  const pts = [];
+  for (let k = 0; k <= 80; k++) {
+    const t = k / 80 * Math.PI;
+    pts.push(new THREE.Vector3(LR - LR*Math.cos(t), LR*Math.sin(t)*Math.cos(al), LR*Math.sin(t)*Math.sin(al)));
+  }
+  scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 80, 0.022, 8, false),
+    new THREE.MeshStandardMaterial({ color: 0x0066ff, transparent: true, opacity: 0.6, metalness: 0.3, roughness: 0.25 })));
+});
+// The three evaluators are the A₂ trine on the sphere equator (plane x = r);
+// their carved-ring indices +1/−1/0 are drawn on the carved ring A on the
+// TORUS (below), matching the universal, not repeated on the sphere.
+const EV = [
+  { tok: 'EVALT', glyph: '+', p: new THREE.Vector3(LR, LR*Math.cos(ALPHA[0]), LR*Math.sin(ALPHA[0])) },
+  { tok: 'EVALF', glyph: '×', p: new THREE.Vector3(LR, LR*Math.cos(ALPHA[1]), LR*Math.sin(ALPHA[1])) },
+  { tok: 'EVALI', glyph: '⊞', p: new THREE.Vector3(LR, LR*Math.cos(ALPHA[2]), LR*Math.sin(ALPHA[2])) },
+];
+const GREEN = 0x00ff00;
+// the evaluator plane: A₂ trine through the three evaluators on x=r, drawn
+// as edge tubes plus a FILLED translucent green face.
+for (let e = 0; e < 3; e++) {
+  const a = EV[e].p, b = EV[(e+1) % 3].p;
+  const c = new THREE.CatmullRomCurve3([a, a.clone().lerp(b, 0.5), b]);
+  scene.add(new THREE.Mesh(new THREE.TubeGeometry(c, 20, 0.02, 8, false),
+    new THREE.MeshStandardMaterial({ color: GREEN, transparent: true, opacity: 0.7, metalness: 0.4, roughness: 0.3 })));
+}
+{
+  const tg = new THREE.BufferGeometry().setFromPoints([EV[0].p, EV[1].p, EV[2].p]);
+  tg.setIndex([0, 1, 2]); tg.computeVertexNormals();
+  scene.add(new THREE.Mesh(tg,
+    new THREE.MeshStandardMaterial({ color: GREEN, transparent: true, opacity: 0.22,
+      side: THREE.DoubleSide, depthWrite: false })));
+}
+// FFUSE3 (∋, fuse) at the far pole
+{
+  const p = new THREE.Vector3(2*LR, 0, 0);
+  const m = new THREE.Mesh(new THREE.SphereGeometry(0.1, 18, 18),
+    new THREE.MeshStandardMaterial({ color: 0x0066ff, metalness: 0.3, roughness: 0.25 }));
+  m.position.copy(p); scene.add(m);
+  const g = glyphMark('∋', '#66aaff', 0.44);
+  g.position.copy(p).add(new THREE.Vector3(0.34, 0, 0.2)); scene.add(g);
+}
+// FSPLIT3 (∈, split) is coincident with IMSCRIB ⊙ at the pinch; its ∈ mark
+// sits just beside the central node so the split is named where it lives.
+{
+  const g = glyphMark('∈', '#66aaff', 0.44);
+  g.position.set(-0.42, 0, 0.30); scene.add(g);
+}
+// the three evaluators: node + glyph beside it
+EV.forEach(({ tok, glyph, p }) => {
+  const gold = tok === 'EVALI';
+  const m = new THREE.Mesh(new THREE.SphereGeometry(gold ? 0.12 : 0.1, 18, 18),
+    new THREE.MeshStandardMaterial({ color: gold ? 0xffff00 : 0x0066ff, metalness: 0.3, roughness: 0.25 }));
+  m.position.copy(p); scene.add(m);
+  const out = p.clone().sub(CEN).setLength(0.36);
+  const g = glyphMark(glyph, gold ? '#ffff00' : '#8fbcff', 0.42);
+  g.position.copy(p).add(out).add(new THREE.Vector3(0, 0, 0.18)); scene.add(g);
+});
+
+// ── the kernel loop: (1,1) winding, threading the pinch ─────────────────
+const curvePts = [];
+for (let k = 0; k <= 800; k++) curvePts.push(horn(OFF + 2 * Math.PI * k / 800));
+const loopCurve = new THREE.CatmullRomCurve3(curvePts, true);
+scene.add(new THREE.Mesh(
+  new THREE.TubeGeometry(loopCurve, 800, 0.055, 12, true),
+  new THREE.MeshStandardMaterial({ color: 0xe8b84b, metalness: 0.35, roughness: 0.3, emissive: 0x3a2c08 })
+));
+
+// ── carved ring A on the torus (green): the A₂ root system, ind = n₊−n₋ = −1 ─
+// Three vertices on the outer equator (tp at poloidal 0), the 120° A₂ orbit,
+// carrying the indices +1 / −1 / 0 — the decided 3-step O₂dag→O_∞ gap, drawn on
+// the torus itself as in the universal figure.
+const ringV = ALPHA.map(ph => tp(-ph, 0));
+const KMODE = ['+1', '−1', '0'];
+for (let e = 0; e < 3; e++) {
+  const a = ringV[e], b = ringV[(e+1) % 3];
+  const cc = new THREE.CatmullRomCurve3([a, a.clone().lerp(b, 0.5), b]);
+  scene.add(new THREE.Mesh(new THREE.TubeGeometry(cc, 24, 0.03, 8, false),
+    new THREE.MeshStandardMaterial({ color: GREEN, metalness: 0.4, roughness: 0.25 })));
+}
+ringV.forEach((p, i) => {
+  const m = new THREE.Mesh(new THREE.SphereGeometry(0.13, 16, 16),
+    new THREE.MeshStandardMaterial({ color: i < 2 ? GREEN : 0xffffff, metalness: 0.3, roughness: 0.2 }));
+  m.position.copy(p); scene.add(m);
+  const g = glyphMark(KMODE[i], '#00ff00', 0.4);
+  g.position.copy(p).add(p.clone().normalize().multiplyScalar(0.55)).add(new THREE.Vector3(0, 0, 0.22));
+  scene.add(g);
+});
+
+// ── glyph marks: just the symbol, placed directly beside its node. Names
+//    live in the legend panel, so nothing crowds and nothing overlaps.
+function glyphMark(glyph, color, size = 0.42) {
+  const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+  const x = c.getContext('2d');
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.font = 'bold 92px system-ui';
+  x.lineWidth = 9; x.strokeStyle = 'rgba(0,0,0,0.92)'; x.strokeText(glyph, 64, 64);
+  x.fillStyle = color; x.fillText(glyph, 64, 64);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthTest: false }));
+  sp.scale.set(size, size, 1);
+  return sp;
+}
+
+// ── R1 token stations: node + glyph directly beside it ──────────────────
+TOKENS.forEach((tok, i) => {
+  if (tok.name === "IMSCRIB") return;
+  const a = ang(i);
+  const p = horn(a);
+  const col = tok.name === "ENGAGR" ? 0xffff00 : (tok.work ? 0x0066ff : 0xffffff);
+  const m = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 20),
+    new THREE.MeshStandardMaterial({ color: col, metalness: 0.3, roughness: 0.25 }));
+  m.position.copy(p); scene.add(m);
+  // glyph beside the node, nudged outward in the toroidal radial direction
+  const gcol = tok.name === "ENGAGR" ? '#ffff00' : (tok.work ? '#8fbcff' : '#ffffff');
+  const g = glyphMark(tok.glyph, gcol, 0.44);
+  g.position.copy(p).add(new THREE.Vector3(0.40 * Math.cos(a), 0.40 * Math.sin(a), 0.30));
+  scene.add(g);
+});
+
+// ── IMSCRIB ⊙ : the central node at the pinch (origin) ──────────────────
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(0.26, 32, 32),
+  new THREE.MeshStandardMaterial({ color: 0xffd700, emissive: 0x8a6a10, metalness: 0.3, roughness: 0.2 })));
+const imG = glyphMark('⊙', '#ffe08a', 0.62);
+imG.position.set(0, 0, -0.62); scene.add(imG);
+
+// ── seal marker: TANCH → VINIT ──────────────────────────────────────────
+const vi = TOKENS.findIndex(t => t.name === "VINIT");
+const sp = horn(ang(vi));
+const ring = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.03, 12, 32),
+  new THREE.MeshBasicMaterial({ color: 0xe8524b }));
+ring.position.copy(sp); ring.lookAt(0, 0, 0); scene.add(ring);
+
+function resize() {
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+}
+addEventListener('resize', resize);
+(function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+})();
+</script>
+</body>
+</html>

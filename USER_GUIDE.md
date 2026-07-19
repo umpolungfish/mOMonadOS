@@ -255,6 +255,29 @@ Registers R4–R7 are written by IMSCRIB (self-imscription opcode):
 Show current stack depth. The stack holds B4 values pushed by VINIT, EVALT, EVALF,
 ENGAGR, FSPLIT.
 
+### `arev [test]`
+
+The Ħ hop: toggle the kernel's chirality bit so every snapshot is read through
+the R1↔R2 mirror. The mirror exchanges the two evidence triples role for role
+(dialetheia_complete ↔ atomic_reentry, b_live_ticks ↔ winding_count,
+gate_discriminations ↔ bifurcation_revisited) over the shared temporal
+substrate; the accumulators themselves are untouched, so hop∘hop = id exactly.
+A run sitting at O_inf_dag reads as O_inf through the mirror: the lateral
+partner at the same shell, reached by AREV as an operation rather than named
+by the classifier.
+
+```
+⊙> arev test
+═ AREV door experiment ═
+replicative loop, 16 ticks, Ħ = or':
+  s0         tier O_inf_dag  R1(dialeth=false b_live=false gates=false)  R2(atomic=true wind=true bifurc=true)
+first hop (Ħ flipped) — R1 reads the mirrored evidence:
+  s1         tier O_inf      R1(dialeth=true b_live=true gates=true)  R2(atomic=false wind=false bifurc=false)
+second hop (Ħ back to or'):
+  s2         tier O_inf_dag  R1(...)  R2(...)
+hop∘hop = id (raw fields): EXACT
+```
+
 ---
 
 ## Belnap FOUR values

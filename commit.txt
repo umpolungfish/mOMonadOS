@@ -1,1 +1,30 @@
-proof parity: walk the parity law on the kernel
+The door: AREV as a runtime operation — the kernel hops to its lateral partner.
+
+The classifier already named the hop (compute_tier's R2 branch labels a run
+O_inf_dag, LATERAL to O_∞) but nothing performed one: compute_tier is read-only
+over Snapshot. The discerning ob3ect (sixteen_3_logic_lattice_nn_transformer_
+design) spells the missing instruction at step 15 — AREV "descends the candidate
+to the lateral O_inf_dag partner at the same shell." Built now:
+
+- Snapshot::mirrored() — the Ħ mirror: exchanges the R1 (O_∞) and R2 (O_inf_dag)
+  evidence triples role for role over the shared temporal substrate:
+    static mark:  dialetheia_complete      ↔ atomic_reentry
+    counted act:  b_live_ticks             ↔ winding_count
+    recurrence:   gate_discriminations > 0 ↔ bifurcation_revisited
+  self_ref, frobenius_order, period, value_period, sig, diversity stay put —
+  the two dialects sit on one substrate; only the evidence changes hands.
+- Kernel.chirality (Ħ) + Kernel::arev_hop() — the door itself: parity over
+  unchanged accumulators, so hop∘hop = id EXACTLY, not approximately.
+  dynamic_imscribe reads through the flip when Ħ is set.
+- REPL: arev (one hop, before/after) and arev test (the full experiment).
+
+Run in QEMU, the experiment closes as a loop, not a line:
+  s0 replicative loop = O_inf_dag (R2 triple live, R1 dark)
+  hop → s1 = O_inf — the mirror carries the dagger tier exactly onto O_∞,
+  the chiral twin at the same shell: lateral, not downward
+  hop → s2 = s0, raw-field EXACT; mirror∘mirror also exact here
+So AREV∘AREV = id is now a kernel-verified runtime fact, and the O_∞/O_inf_dag
+pair behaves as one shell seen from two hands — the dialects-not-universes
+reading made operational.
+
+USER_GUIDE gains the arev entry with the captured transcript.

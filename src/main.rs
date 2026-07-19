@@ -44,6 +44,7 @@ mod belnap_c4;
 mod sic_compute;
 mod dialect_expansion;
 mod divisor_ring;
+mod mersenne_parallel;
 mod bifurcation_test;
 mod entropy;
 mod d12_sic;

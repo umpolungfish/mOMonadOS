@@ -15,7 +15,7 @@ use crate::{
     para_category, algebra, catalog, cl8nk, consciousness, rebis, dialect, menu,
     sequence, boot, cr3echrz, canonical_ordinal, clay_status, sic_povm,
     frobenius_unify, clay_witness, belnap_sic_bridge, belnap_c4, sic_compute,
-    dialect_expansion, divisor_ring, bifurcation_test, entropy, d12_sic, d2048_sic, d2048_sieve,
+    dialect_expansion, divisor_ring, mersenne_parallel, bifurcation_test, entropy, d12_sic, d2048_sic, d2048_sieve,
     witness_vessel, ask,
 };
 use crate::tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
@@ -188,6 +188,13 @@ pub fn repl(k: &mut Kernel) {
             "frob" => print_frob(k),
             "ig" => print_ig(k),
             "classify" => print_classify(k),
+            "arev" => {
+                match parts.next().unwrap_or("") {
+                    ""     => print_arev_hop(k),
+                    "test" => print_arev_test(k),
+                    _ => sprintln!("arev [test] — Ħ hop to the lateral partner (O_∞ ↔ O_inf_dag) / door experiment"),
+                }
+            }
             "aleph" => print_aleph(k, parts.next().unwrap_or("")),
             "psm" => {
                 let psm_arg = parts.next().unwrap_or("");
@@ -294,6 +301,43 @@ pub fn repl(k: &mut Kernel) {
                             sprintln!("Usage: sigma <n> | sigma mersenne <p> | sigma scan <start> <end> | sigma prox <p>");
                         }
                     }
+                }
+            }
+            "mersearch" | "msearch" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "run" | "search" => {
+                        let args: Vec<&str> = parts.collect::<Vec<&str>>();
+                        if args.len() >= 2 {
+                            if let (Ok(start), Ok(end)) = (args[0].parse::<usize>(), args[1].parse::<usize>()) {
+                                sprintln!("{}", crate::mersenne_parallel::search_report(start, end));
+                            } else {
+                                sprintln!("Usage: mersearch run <start> <end>");
+                            }
+                        } else {
+                            sprintln!("Usage: mersearch run <start> <end>");
+                        }
+                    }
+                    "ll" => {
+                        let p_str = parts.next().unwrap_or("");
+                        if let Ok(p) = p_str.parse::<usize>() {
+                            sprintln!("Running Lucas-Lehmer for M_{}...", p);
+                            let result = crate::mersenne_parallel::lucas_lehmer(p);
+                            if result {
+                                sprintln!("M_{} is PRIME!", p);
+                            } else {
+                                sprintln!("M_{} is composite.", p);
+                            }
+                        } else {
+                            sprintln!("Usage: mersearch ll <exponent>");
+                        }
+                    }
+                    "" => {
+                        sprintln!("mersearch — Parallel Mersenne Prime Search");
+                        sprintln!("  mersearch run <start> <end>  — search range with parallel LL");
+                        sprintln!("  mersearch ll <exponent>      — test single exponent");
+                    }
+                    _ => sprintln!("mersearch [run|ll]"),
                 }
             }
             "d2048" | "d2k" => {
@@ -1690,6 +1734,7 @@ fn print_help() {
     sprintln!("  {:<30} — B4 memory heatmap with color blocks", "heatmap [start] [n]");
     sprintln!("  {:<30} — dump B4 memory", "memory [start] [n]");
     sprintln!("  {:<30} — show R0-R7", "registers");
+    sprintln!("  {:<30} — Ħ hop: read snapshot through the R1↔R2 mirror", "arev [test]");
     sprintln!("  {:<30} — stack depth", "stack");
     sprintln!();
     sprintln!("══ Program Loading ══");
@@ -1868,6 +1913,53 @@ fn print_classify(k: &Kernel) {
     } else {
         sprintln!("No snapshot. Tick first.");
     }
+}
+
+fn snap_witnesses(s: &crate::kernel::Snapshot) -> (bool, bool, bool, bool, bool, bool) {
+    (s.dialetheia_complete, s.b_live_ticks > 0, s.gate_discriminations > 0,
+     s.atomic_reentry, s.winding_count > 0, s.bifurcation_revisited)
+}
+
+fn print_snap_line(tag: &str, s: &crate::kernel::Snapshot) {
+    let (d, bl, g, a, w, bi) = snap_witnesses(s);
+    sprintln!("  {:<10} tier {:<9}  R1(dialeth={} b_live={} gates={})  R2(atomic={} wind={} bifurc={})",
+        tag, s.tier_name(), d, bl, g, a, w, bi);
+}
+
+/// One Ħ hop: toggle chirality, show the snapshot on each side of the door.
+fn print_arev_hop(k: &mut Kernel) {
+    let before = k.dynamic_imscribe();
+    let h = k.arev_hop();
+    let after = k.snapshot.unwrap_or(before);
+    sprintln!("AREV — Ħ hop, lateral at the same shell. Ħ now {}", if h { "flipped" } else { "or'" });
+    print_snap_line("before", &before);
+    print_snap_line("after", &after);
+}
+
+/// The door experiment: descend to O_inf_dag, hop through the mirror, hop back,
+/// and verify hop∘hop = id exactly (raw fields), plus the mirror's own behavior
+/// on the witness plane.
+fn print_arev_test(k: &mut Kernel) {
+    sprintln!("═ AREV door experiment ═");
+    k.load_replicative();
+    k.run(16); // 4 wraps of the 4-token cycle: winding_count > 0, both R2 marks live
+    if k.chirality { k.arev_hop(); } // enter with Ħ = or'
+    let s0 = k.dynamic_imscribe();
+    sprintln!("replicative loop, 16 ticks, Ħ = or':");
+    print_snap_line("s0", &s0);
+    k.arev_hop();
+    let s1 = k.snapshot.unwrap_or(s0);
+    sprintln!("first hop (Ħ flipped) — R1 reads the mirrored evidence:");
+    print_snap_line("s1", &s1);
+    k.arev_hop();
+    let s2 = k.snapshot.unwrap_or(s0);
+    sprintln!("second hop (Ħ back to or'):");
+    print_snap_line("s2", &s2);
+    sprintln!("hop∘hop = id (raw fields): {}", if s2 == s0 { "EXACT" } else { "BROKEN" });
+    let mm = s0.mirrored().mirrored();
+    sprintln!("mirror∘mirror = id: witness plane {}, raw fields {}",
+        if snap_witnesses(&mm) == snap_witnesses(&s0) { "EXACT" } else { "BROKEN" },
+        if mm == s0 { "EXACT" } else { "section-lossy (expected: counts pass through true ↦ 1)" });
 }
 
 fn roman_to_idx(s: &str) -> Option<usize> {
