@@ -1,25 +1,12 @@
-kernel_3d_visualizer: the dataflow edges — the CLINK–IMSCRIB–IFIX workaround helix.
+kernel_3d_visualizer: the workaround helix WRAPS the torus — solenoid coils, not strands.
 
-The figure showed the stations and the winding but not the flows between them.
-Now the edges are drawn, derived from kernel.rs tick semantics rather than
-hand-placed:
-
-- The workaround helix (yellow): CLINK → ⊙ rides the (1,1) winding backward
-  into the pinch; IFIX → ⊙ rides it forward the long way round, so the two
-  flows arrive at the identity from OPPOSITE directions and thread ⊙ as a
-  helix. The seal-side CLINK₂ gets its own thinner strand forward through the
-  seal. Each strand sits at its own lift off the gold tube so the braid reads
-  as a braid, not a sheath (the first pass sheathed the whole loop — fixed).
-- The empty chord (dotted white): the direct CLINK ↔ IFIX connection along
-  the winding through FFUSE exists in the SEQUENCE but carries no dataflow —
-  the workaround IS that the two work opcodes compose only through the
-  identity at the pinch. Drawn dotted, labeled.
-- The R0 bus (blue dashed): the one true register edge set in agent_loop —
-  AREV writes R0, IFIX and TANCH read it as the address. Bulged chords with
-  arrowheads, distinct from sequence flow. (CLINK's R1/R2 reads and R3 write
-  and IMSCRIB's R4–R7 writes have no partner in the loop: no edge invented
-  for them.) Stack dataflow needs no edges: it IS the gold winding.
-
-Same idiom as the hopfionic figure's dataflow block (solidTube / dashedEdge /
-arrowHead / edgeLabel ported), so the two figures speak one language. Legend
-keys the three edge colors.
+Two wrong readings corrected in sequence (winding-following strands, then
+latitude rings — both rejected): the CLINK–IMSCRIB–IFIX workaround helix is a
+SOLENOID: each flow coils poloidally AROUND the torus body while its toroidal
+angle travels to the pinch meridian. CLINK → ⊙ coils backward, IFIX → ⊙ coils
+forward the other way round, four full turns each, and both land EXACTLY on ⊙
+because the horn torus reaches the pinch at poloidal π on every meridian
+(R + R·cos π = 0) — the coil's landing is a property of the geometry, not an
+aimed endpoint. Dotted white CLINK ↔ IFIX connector (sequence-present,
+dataflow-empty) and the blue dashed R0 bus (AREV writes, IFIX/TANCH read)
+stand as before.

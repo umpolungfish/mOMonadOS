@@ -321,14 +321,21 @@ imG.position.set(0, 0, -0.62); scene.add(imG);
   const TANCH_I = firstIdx("TANCH");
   const aO = ang(IMSCRIB_I);
 
-  // Arc along the (1,1) winding from parameter a0 to a1, lifted off the gold
-  // tube along the local torus normal so the helix reads as its own strand.
-  function windArc(a0, a1, n = 96, lift = 0.10) {
+  // Solenoid coil AROUND the torus tube: from the station at angle a0, the
+  // toroidal angle travels du to the pinch meridian while the poloidal angle
+  // winds `turns` full times around the tube — the flow physically wraps the
+  // torus body on its way to ⊙. The horn torus reaches the pinch at poloidal
+  // π on EVERY meridian (R + R·cos π = 0), so ending the poloidal sweep at
+  // π + 2πk lands the coil exactly on ⊙. Lifted slightly off the surface.
+  function coilArc(a0, du, turns, n = 480, lift = 0.06) {
     const pts = [];
+    const dv = (Math.PI - a0) + turns * 2 * Math.PI;
     for (let k = 0; k <= n; k++) {
-      const t = a0 + (a1 - a0) * k / n;
-      const p = horn(t);
-      const c = new THREE.Vector3(R * Math.cos(t), R * Math.sin(t), 0);
+      const t = k / n;
+      const u = a0 + du * t;
+      const v = a0 + dv * t;
+      const p = tp(u, v);
+      const c = new THREE.Vector3(R * Math.cos(u), R * Math.sin(u), 0);
       const nrm = p.clone().sub(c); const nl = nrm.length() || 1;
       pts.push(p.add(nrm.multiplyScalar(lift / nl)));
     }
@@ -365,27 +372,24 @@ imG.position.set(0, 0, -0.62); scene.add(imG);
   }
   const mid = pts => pts[Math.floor(pts.length / 2)].clone();
 
-  // Yellow: CLINK₁ → ⊙, the near (backward) helix into the pinch.
-  const cNear = windArc(ang(CLINK1), aO, 96, 0.20);
-  solidTube(cNear, 0xffff00, 0.034); arrowHead(cNear, 0xffff00);
-  edgeLabel(mid(cNear).add(new THREE.Vector3(0, 0, 0.30)), 'CLINK → ⊙', '#ffff00');
+  // Yellow: CLINK → ⊙, coiling backward around the torus body to the pinch.
+  const pC = horn(ang(CLINK1)), pI = horn(ang(IFIX_I));
+  const cCoil = coilArc(ang(CLINK1), Math.PI - ang(CLINK1), 4);
+  solidTube(cCoil, 0xffff00, 0.040); arrowHead(cCoil, 0xffff00);
+  edgeLabel(pC.clone().multiplyScalar(1.25).add(new THREE.Vector3(0, 0, 0.12)), 'CLINK → ⊙', '#ffff00');
 
-  // Yellow: IFIX → ⊙, the far (forward, wrapping) helix — arrives at the
-  // pinch from the opposite direction, so the two flows thread ⊙ as a helix.
-  const fFar = windArc(ang(IFIX_I), aO + 2 * Math.PI, 96, 0.28);
-  solidTube(fFar, 0xffff00, 0.034); arrowHead(fFar, 0xffff00);
-  edgeLabel(mid(fFar).add(new THREE.Vector3(0, 0, -0.30)), 'IFIX → ⊙', '#ffff00');
+  // Yellow: IFIX → ⊙, coiling forward the other way round the body — the two
+  // coils wrap the torus in opposite toroidal directions and meet at ⊙.
+  const iCoil = coilArc(ang(IFIX_I), 3 * Math.PI - ang(IFIX_I), 4);
+  solidTube(iCoil, 0xffff00, 0.040); arrowHead(iCoil, 0xffff00);
+  edgeLabel(pI.clone().multiplyScalar(1.25).add(new THREE.Vector3(0, 0, 0.12)), 'IFIX → ⊙', '#ffff00');
 
-  // Yellow: CLINK₂ → ⊙, the seal-side CLINK reaching ⊙ forward through TANCH's seal.
-  if (CLINK2 >= 0) {
-    const c2 = windArc(ang(CLINK2), aO + 2 * Math.PI, 96, 0.38);
-    solidTube(c2, 0xffff00, 0.026); arrowHead(c2, 0xffff00, 0.11);
-  }
-
-  // Dotted white: the direct CLINK↔IFIX chord along the winding (through
-  // FFUSE) — present in the sequence, empty of dataflow: the workaround IS
-  // that the two only compose through ⊙.
-  const ptsCI = windArc(ang(CLINK1), ang(IFIX_I), 64, 0.46);
+  // Dotted white: the direct CLINK ↔ IFIX connector swinging across between
+  // the two rings — present in the sequence, empty of dataflow: the
+  // workaround IS that the two compose only through the identity ⊙.
+  const bulge = pC.clone().add(pI).multiplyScalar(0.5);
+  bulge.x *= 1.6; bulge.y *= 1.6;
+  const ptsCI = new THREE.CatmullRomCurve3([pC, bulge, pI]).getPoints(48);
   dashedEdge(ptsCI, 0xffffff, 0.9, 0.026);
   edgeLabel(mid(ptsCI).add(new THREE.Vector3(0, 0, 0.34)), 'CLINK ↔ IFIX (dotted)', '#ffffff');
 
