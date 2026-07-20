@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mOMonadOS Kernel — agent_loop on the Horn Torus (IMSCRIB ⊙ at the pinch)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { overflow: hidden; background: #000000; font-family: system-ui, sans-serif; color: #ffffff; }
+  #info {
+    position: absolute; top: 12px; left: 12px;
+    background: rgba(0, 0, 0, 0.95); padding: 12px 16px; border-radius: 8px;
+    border: 2px solid #ffffff; max-width: 340px; font-size: 12.5px; line-height: 1.45; z-index: 10;
+  }
+  #info h1 { font-size: 14px; color: #ffff00; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  #info p { margin: 3px 0; opacity: 0.95; }
+  .sw { display:inline-block; width:11px; height:11px; border-radius:2px; margin-right:5px; vertical-align:-1px; border: 1px solid #ffffff; }
+  #hint { position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
+    background:rgba(0,0,0,0.9); padding:6px 14px; border-radius:16px; font-size:12px; border:1px solid #ffffff; color: #ffffff; z-index:10; }
+  #legend {
+    position:absolute; top:12px; right:12px;
+    background:rgba(0,0,0,0.95); padding:12px 14px; border-radius:8px;
+    border:2px solid #ffffff; font-size:12.5px; line-height:1.5; z-index:10; max-width:260px;
+  }
+  #legend h2 { font-size:12px; color:#ffff00; margin:2px 0 5px; text-transform:uppercase; letter-spacing:0.5px; }
+  #legend .g { display:inline-block; width:1.5em; font-weight:bold; text-align:center; }
+  #legend .r2 { margin-top:8px; border-top:2px solid #ffffff; padding-top:6px; }
+  #legend .sub { opacity:0.75; font-size:11px; margin-top:6px; }
+</style>
+</head>
+<body>
+<div id="info">
+  <h1>mOMonadOS Kernel Loop</h1>
+  <p>The kernel program <strong>agent_loop()</strong> wound as a (1,1) curve on a horn torus (R = r), pinched at the origin.</p>
+  <p><strong>IMSCRIB ⊙</strong> is the central node, seated at the pinch: it is the identity, the Frobenius closure <strong>μ∘δ = id</strong>, and the winding threads <em>through</em> it once per revolution.</p>
+  <p style="margin-top:7px; border-top:2px solid #ffffff; padding-top:6px"><strong>R1</strong> (gold): the 12-opcode grammar, agent_loop, closes T. <strong>R2 = SIXTEEN_3</strong>: <strong>16</strong> poloidal rings (the eval16 registers), all meeting at ⊙. The yellow shell at the pinch is <strong>FSPLIT3</strong>'s body enclosing IMSCRIB; the blue sphere is the <strong>evaluator sphere</strong>, tangent to ⊙, the green plane through +/×/⊞ on its equator. Symbols keyed at right.</p>
+  <p style="margin-top:7px; border-top:2px solid #ffffff; padding-top:6px">The tokens crowding the pinch (VINIT, FSPLIT) are IMSCRIB's sequence-neighbors: on a (1,1) winding they genuinely pass close to the origin.</p>
+  <p style="margin-top:7px; border-top:2px solid #ffffff; padding-top:6px"><span class="sw" style="background:#e8524b"></span><strong>⊣⊢ seal</strong>: TANCH meets VINIT where the loop closes. B is the only bifurcation point.</p>
+  <p style="margin-top:7px; border-top:2px solid #ffffff; padding-top:6px"><strong>Exotic routing</strong> (Guide Part II): a program is a directed graph; edges are supplied by the verb (<code>protocol</code>, <code>wire</code>, …), not by text order. Pairing of ◇/● (or ∈/∋) is by <em>ancestry</em> over the edges—“however it routed.” Non-local, crossing, multi-hop and opposite-direction reconnections are all legal. The gold sequential helix is only one embedding; the coloured extra tubes show several exotic data-flows that the same token stations still admit under ancestry.</p>
+</div>
+<div id="legend">
+  <h2>R1 · 12-opcode grammar</h2>
+  <div><span class="g" style="color:#ffe08a">⊙</span> IMSCRIB <span style="opacity:.6">(pinch, μ∘δ=id)</span></div>
+  <div><span class="g" style="color:#ffffff">⊢</span> VINIT &nbsp; <span class="g" style="color:#ffffff">⊣</span> TANCH</div>
+  <div><span class="g" style="color:#ffffff">◇</span> FSPLIT &nbsp; <span class="g" style="color:#ffffff">●</span> FFUSE</div>
+  <div><span class="g" style="color:#8fbcff">+</span> EVALT &nbsp; <span class="g" style="color:#8fbcff">=</span> CLINK</div>
+  <div><span class="g" style="color:#8fbcff">¬</span> IFIX &nbsp; <span class="g" style="color:#8fbcff">&lt;</span> AREV</div>
+  <div><span class="g" style="color:#ffff00">⊞</span> ENGAGR</div>
+  <div class="r2"><h2 style="margin-top:0">R2 · SIXTEEN_3 (O<sub>∞_dag</sub>)</h2></div>
+  <div><span class="g" style="color:#8fbcff">∈</span> FSPLIT3 <span style="opacity:.6">(split; yellow shell at ⊙)</span></div>
+  <div><span class="g" style="color:#8fbcff">∋</span> FFUSE3 <span style="opacity:.6">(fuse; far pole)</span></div>
+  <div><span class="g" style="color:#8fbcff">+</span> EVALT &nbsp; <span class="g" style="color:#8fbcff">×</span> EVALF &nbsp; <span class="g" style="color:#ffff00">⊞</span> EVALI</div>
+  <div class="sub"><span style="color:#00ff00">carved ring A</span> (green triangle on the torus's outer equator, +1/−1/0) = the A₂ root system, ind = n₊−n₋ = −1; the decided 3-step O₂dag→O<sub>∞</sub> gap. Its A₂ trine is the sphere's three evaluators.</div>
+  <div class="sub"><span style="color:#0066ff">blue</span> work · <span style="color:#ffffff">white</span> no-work · <span style="color:#ffff00">gold</span> ⊞ / workaround</div>
+  <div class="sub"><span style="color:#ffff00">yellow helix</span> CLINK→⊙ &amp; IFIX→⊙: work opcodes compose only THROUGH the identity at the pinch. <span style="color:#ffffff">dotted gold</span> = CLINK→IFIX winding segment (present but empty of dataflow). <span style="color:#66aaff">blue dashed</span> = R0 bus (AREV writes → IFIX/TANCH read).</div>
+  <div class="sub"><span style="color:#ff66aa">magenta</span> = exotic ancestry demos (long-way FSPLIT↔FFUSE, EVALT→IFIX cross, ENGAGR→⊙, second-CLINK long return). All legal under the ancestry rule; none required by the sequential embedding.</div>
+</div>
+<div id="hint">Drag · Scroll · Right-drag</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+// Token sequence computed from canonical
+const TOKENS = [
+  {"name":"VINIT","glyph":"⊢","work":false},
+  {"name":"IMSCRIB","glyph":"⊙","work":false},
+  {"name":"FSPLIT","glyph":"◇","work":false},
+  {"name":"EVALT","glyph":"+","work":true},
+  {"name":"CLINK","glyph":"=","work":true},
+  {"name":"FFUSE","glyph":"●","work":false},
+  {"name":"IFIX","glyph":"¬","work":true},
+  {"name":"ENGAGR","glyph":"⊞","work":false},
+  {"name":"AREV","glyph":"<","work":true},
+  {"name":"CLINK","glyph":"=","work":true},
+  {"name":"TANCH","glyph":"⊣","work":false}
+];
+const N = TOKENS.length;
+const R = 2.0;
+
+const IMSCRIB_I = TOKENS.findIndex(t => t.name === "IMSCRIB");
+const OFF = Math.PI - 2 * Math.PI * IMSCRIB_I / N;
+
+function horn(t) {
+  return new THREE.Vector3(
+    (R + R * Math.cos(t)) * Math.cos(t),
+    (R + R * Math.cos(t)) * Math.sin(t),
+    R * Math.sin(t)
+  );
+}
+const ang = i => 2 * Math.PI * i / N + OFF;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
+const camera = new THREE.PerspectiveCamera(42, innerWidth/innerHeight, 0.1, 120);
+camera.position.set(10.5, 6.5, 9.0);
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+document.body.appendChild(renderer.domElement);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.dampingFactor = 0.06;
+controls.target.set(0,0,0); controls.minDistance=3; controls.maxDistance=20;
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.45));
+const L1 = new THREE.DirectionalLight(0xffffff, 0.9); L1.position.set(5,8,6); scene.add(L1);
+const L2 = new THREE.DirectionalLight(0xffffff, 0.3); L2.position.set(-5,2,-3); scene.add(L2);
+
+// Torus surface
+const torusGeo = new THREE.BufferGeometry();
+const radialSegments = 60, tubularSegments = 140;
+const verts = [], idx = [];
+function tp(u, v) {
+  return new THREE.Vector3(
+    (R + R * Math.cos(v)) * Math.cos(u),
+    (R + R * Math.cos(v)) * Math.sin(u),
+    R * Math.sin(v)
+  );
+}
+for (let j = 0; j <= radialSegments; j++) {
+  const v = (j / radialSegments) * Math.PI * 2;
+  for (let i = 0; i <= tubularSegments; i++) {
+    const u = (i / tubularSegments) * Math.PI * 2;
+    const p = tp(u, v);
+    verts.push(p.x, p.y, p.z);
+  }
+}
+for (let j = 0; j < radialSegments; j++) {
+  for (let i = 0; i < tubularSegments; i++) {
+    const a = j * (tubularSegments + 1) + i;
+    const b = a + tubularSegments + 1;
+    idx.push(a, b, a + 1, b, b + 1, a + 1);
+  }
+}
+torusGeo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
+torusGeo.setIndex(idx);
+torusGeo.computeVertexNormals();
+scene.add(new THREE.Mesh(torusGeo, new THREE.MeshStandardMaterial({
+  color: 0x28304f, transparent: true, opacity: 0.42, metalness: 0.2, roughness: 0.55,
+  side: THREE.DoubleSide, depthWrite: false
+})));
+scene.add(new THREE.Mesh(torusGeo, new THREE.MeshBasicMaterial({
+  color: 0x5a659c, wireframe: true, transparent: true, opacity: 0.14
+})));
+
+// 16 poloidal rings
+const ringMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.22 });
+for (let i = 0; i < 16; i++) {
+  const u = i / 16 * Math.PI * 2;
+  const pts = [];
+  for (let j = 0; j <= 72; j++) pts.push(tp(u, j / 72 * Math.PI * 2));
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), ringMat));
+}
+
+// Spheres and evaluators
+const LR = R / 2;
+const CEN = new THREE.Vector3(LR, 0, 0);
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(LR, 48, 32),
+  new THREE.MeshStandardMaterial({ color: 0xe8b84b, transparent: true, opacity: 0.14,
+    metalness: 0.2, roughness: 0.5, side: THREE.DoubleSide, depthWrite: false })));
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(LR, 48, 32),
+  new THREE.MeshStandardMaterial({ color: 0x0066ff, transparent: true, opacity: 0.16,
+    metalness: 0.2, roughness: 0.5, side: THREE.DoubleSide, depthWrite: false }))
+  .translateX(LR));
+
+const ALPHA = [0, 2*Math.PI/3, 4*Math.PI/3];
+ALPHA.forEach(al => {
+  const pts = [];
+  for (let k = 0; k <= 80; k++) {
+    const t = k / 80 * Math.PI;
+    pts.push(new THREE.Vector3(LR - LR*Math.cos(t), LR*Math.sin(t)*Math.cos(al), LR*Math.sin(t)*Math.sin(al)));
+  }
+  scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 80, 0.022, 8, false),
+    new THREE.MeshStandardMaterial({ color: 0x0066ff, transparent: true, opacity: 0.6, metalness: 0.3, roughness: 0.25 })));
+});
+
+const EV = [
+  { tok: 'EVALT', glyph: '+', p: new THREE.Vector3(LR, LR*Math.cos(ALPHA[0]), LR*Math.sin(ALPHA[0])) },
+  { tok: 'EVALF', glyph: '×', p: new THREE.Vector3(LR, LR*Math.cos(ALPHA[1]), LR*Math.sin(ALPHA[1])) },
+  { tok: 'EVALI', glyph: '⊞', p: new THREE.Vector3(LR, LR*Math.cos(ALPHA[2]), LR*Math.sin(ALPHA[2])) },
+];
+const GREEN = 0x00ff00;
+for (let e = 0; e < 3; e++) {
+  const a = EV[e].p, b = EV[(e+1) % 3].p;
+  const c = new THREE.CatmullRomCurve3([a, a.clone().lerp(b, 0.5), b]);
+  scene.add(new THREE.Mesh(new THREE.TubeGeometry(c, 20, 0.02, 8, false),
+    new THREE.MeshStandardMaterial({ color: GREEN, transparent: true, opacity: 0.7, metalness: 0.4, roughness: 0.3 })));
+}
+{
+  const tg = new THREE.BufferGeometry().setFromPoints([EV[0].p, EV[1].p, EV[2].p]);
+  tg.setIndex([0, 1, 2]); tg.computeVertexNormals();
+  scene.add(new THREE.Mesh(tg, new THREE.MeshStandardMaterial({ color: GREEN, transparent: true, opacity: 0.22, side: THREE.DoubleSide, depthWrite: false })));
+}
+
+// FFUSE3 and FSPLIT3 marks + evaluators
+{
+  const p = new THREE.Vector3(2*LR, 0, 0);
+  const m = new THREE.Mesh(new THREE.SphereGeometry(0.1, 18, 18), new THREE.MeshStandardMaterial({ color: 0x0066ff, metalness: 0.3, roughness: 0.25 }));
+  m.position.copy(p); scene.add(m);
+  const g = glyphMark('∋', '#66aaff', 0.44);
+  g.position.copy(p).add(new THREE.Vector3(0.34, 0, 0.2)); scene.add(g);
+}
+{
+  const g = glyphMark('∈', '#66aaff', 0.44);
+  g.position.set(-0.42, 0, 0.30); scene.add(g);
+}
+EV.forEach(({ tok, glyph, p }) => {
+  const gold = tok === 'EVALI';
+  const m = new THREE.Mesh(new THREE.SphereGeometry(gold ? 0.12 : 0.1, 18, 18),
+    new THREE.MeshStandardMaterial({ color: gold ? 0xffff00 : 0x0066ff, metalness: 0.3, roughness: 0.25 }));
+  m.position.copy(p); scene.add(m);
+  const out = p.clone().sub(CEN).setLength(0.36);
+  const g = glyphMark(glyph, gold ? '#ffff00' : '#8fbcff', 0.42);
+  g.position.copy(p).add(out).add(new THREE.Vector3(0, 0, 0.18)); scene.add(g);
+});
+
+// Token stations
+TOKENS.forEach((tok, i) => {
+  if (tok.name === "IMSCRIB") return;
+  const a = ang(i);
+  const p = horn(a);
+  const col = tok.name === "ENGAGR" ? 0xffff00 : (tok.work ? 0x0066ff : 0xffffff);
+  const m = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 20),
+    new THREE.MeshStandardMaterial({ color: col, metalness: 0.3, roughness: 0.25 }));
+  m.position.copy(p); scene.add(m);
+  const gcol = tok.name === "ENGAGR" ? '#ffff00' : (tok.work ? '#8fbcff' : '#ffffff');
+  const g = glyphMark(tok.glyph, gcol, 0.44);
+  g.position.copy(p).add(new THREE.Vector3(0.40 * Math.cos(a), 0.40 * Math.sin(a), 0.30));
+  scene.add(g);
+});
+
+// IMSCRIB central node
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(0.26, 32, 32),
+  new THREE.MeshStandardMaterial({ color: 0xffd700, emissive: 0x8a6a10, metalness: 0.3, roughness: 0.2 })));
+const imG = glyphMark('⊙', '#ffe08a', 0.62);
+imG.position.set(0, 0, -0.62); scene.add(imG);
+
+// Helical sequence tubes (solid gold for ordinary segments; dotted-style for the
+// CLINK→IFIX section that is present in the winding but carries no dataflow)
+{
+  const loopMat = new THREE.MeshStandardMaterial({
+    color: 0xe8b84b, metalness: 0.35, roughness: 0.3, emissive: 0x3a2c08
+  });
+  const dottedMat = new THREE.MeshStandardMaterial({
+    color: 0xe8b84b, transparent: true, opacity: 0.55, metalness: 0.35, roughness: 0.3, emissive: 0x3a2c08
+  });
+
+  const turnsPerSegment = 1;
+  const samplesPerSegment = 120;
+
+  for (let i = 0; i < TOKENS.length; i++) {
+    const j = (i + 1) % TOKENS.length;
+    const a1 = ang(i);
+    const a2 = ang(j);
+    // The sole segment that is part of the token order yet empty of dataflow
+    const isDottedSegment = (TOKENS[i].name === "CLINK" && TOKENS[j].name === "IFIX");
+
+    const segPts = [];
+    for (let k = 0; k <= samplesPerSegment; k++) {
+      const t = k / samplesPerSegment;
+      const u = a1 + (a2 - a1) * t;
+      const v = a1 + ((a2 - a1) + turnsPerSegment * 2 * Math.PI) * t;
+      segPts.push(tp(u, v));
+    }
+    if (isDottedSegment) {
+      // render as short dashed tubes to signal “empty of dataflow”
+      const mat = dottedMat;
+      for (let s = 0; s + 3 < segPts.length; s += 6) {
+        const chunk = [segPts[s], segPts[s+1], segPts[s+2], segPts[s+3]];
+        scene.add(new THREE.Mesh(
+          new THREE.TubeGeometry(new THREE.CatmullRomCurve3(chunk), 8, 0.026, 8, false),
+          mat
+        ));
+      }
+    } else {
+      scene.add(new THREE.Mesh(
+        new THREE.TubeGeometry(new THREE.CatmullRomCurve3(segPts), 64, 0.028, 12, false),
+        loopMat
+      ));
+    }
+  }
+}
+
+// Dataflow edges (core CLINK/IFIX workaround + R0 bus + exotic ancestry demos)
+(() => {
+  const firstIdx = name => TOKENS.findIndex(t => t.name === name);
+  const CLINK1 = firstIdx("CLINK");          // first CLINK (index 4)
+  const IFIX_I = firstIdx("IFIX");
+  const AREV_I = firstIdx("AREV");
+  const TANCH_I = firstIdx("TANCH");
+  const FSPLIT_I = firstIdx("FSPLIT");
+  const FFUSE_I = firstIdx("FFUSE");
+  const EVALT_I = firstIdx("EVALT");
+  const ENGAGR_I = firstIdx("ENGAGR");
+  // second CLINK is the only duplicate; locate it by walking past the first
+  const CLINK2 = (() => {
+    for (let i = CLINK1 + 1; i < TOKENS.length; i++) if (TOKENS[i].name === "CLINK") return i;
+    return -1;
+  })();
+
+  function coilArc(a0, du, turns, n = 480, lift = 0.06) {
+    const pts = [];
+    const dv = (Math.PI - a0) + turns * 2 * Math.PI;
+    for (let k = 0; k <= n; k++) {
+      const t = k / n;
+      const u = a0 + du * t;
+      const v = a0 + dv * t;
+      const p = tp(u, v);
+      const c = new THREE.Vector3(R * Math.cos(u), R * Math.sin(u), 0);
+      const nrm = p.clone().sub(c); const nl = nrm.length() || 1;
+      pts.push(p.add(nrm.multiplyScalar(lift / nl)));
+    }
+    return pts;
+  }
+  // General helical path between any two angular stations (can go the long way)
+  function helixBetween(aFrom, aTo, turns, n = 360, lift = 0.07) {
+    const pts = [];
+    // choose the directed delta; caller decides short vs long by aTo value
+    const du = aTo - aFrom;
+    for (let k = 0; k <= n; k++) {
+      const t = k / n;
+      const u = aFrom + du * t;
+      const v = aFrom + (du + turns * 2 * Math.PI) * t;
+      const p = tp(u, v);
+      const c = new THREE.Vector3(R * Math.cos(u), R * Math.sin(u), 0);
+      const nrm = p.clone().sub(c); const nl = nrm.length() || 1;
+      pts.push(p.add(nrm.multiplyScalar(lift / nl)));
+    }
+    return pts;
+  }
+  function solidTube(pts, color, rad = 0.042) {
+    scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 96, rad, 8, false),
+      new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.5, metalness: 0.4, roughness: 0.2 })));
+  }
+  function dashedEdge(pts, color, opacity, rad = 0.018) {
+    const mat = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.4, transparent: true, opacity });
+    for (let i = 0; i + 2 < pts.length; i += 4) {
+      const seg = [pts[i], pts[i + 1], pts[i + 2]];
+      scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(seg), 4, rad, 6, false), mat));
+    }
+  }
+  function arrowHead(pts, color, size = 0.13) {
+    const tip = pts[pts.length - 1], prev = pts[pts.length - 5] || pts[0];
+    const dir = tip.clone().sub(prev).normalize();
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(size * 0.45, size, 10),
+      new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.6 }));
+    cone.position.copy(tip.clone().sub(dir.clone().multiplyScalar(size * 0.6)));
+    cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+    scene.add(cone);
+  }
+  function edgeLabel(p, text, color) {
+    const c = document.createElement('canvas'); c.width = 280; c.height = 44;
+    const x = c.getContext('2d');
+    x.font = 'bold 20px system-ui'; x.fillStyle = color; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText(text, 140, 22);
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthTest: false }));
+    sp.scale.set(0.85, 0.13, 1); sp.position.copy(p); scene.add(sp);
+  }
+  const mid = pts => pts[Math.floor(pts.length / 2)].clone();
+
+  // ── Core workaround: CLINK₁ and IFIX must compose through ⊙ ──
+  const pC = horn(ang(CLINK1)), pI = horn(ang(IFIX_I));
+  const cCoil = coilArc(ang(CLINK1), Math.PI - ang(CLINK1), 4);
+  solidTube(cCoil, 0xffff00, 0.040); arrowHead(cCoil, 0xffff00);
+  edgeLabel(pC.clone().multiplyScalar(1.25).add(new THREE.Vector3(0, 0, 0.12)), 'CLINK → ⊙', '#ffff00');
+
+  const iCoil = coilArc(ang(IFIX_I), 3 * Math.PI - ang(IFIX_I), 4);
+  solidTube(iCoil, 0xffff00, 0.040); arrowHead(iCoil, 0xffff00);
+  edgeLabel(pI.clone().multiplyScalar(1.25).add(new THREE.Vector3(0, 0, 0.12)), 'IFIX → ⊙', '#ffff00');
+
+  // Dotted sequential CLINK₁→IFIX (empty of dataflow)
+  const ptsCI = [];
+  for (let k = 0; k <= 96; k++) ptsCI.push(horn(ang(CLINK1) + (ang(IFIX_I) - ang(CLINK1)) * k / 96));
+  dashedEdge(ptsCI, 0xe8b84b, 0.95, 0.055);
+  edgeLabel(mid(ptsCI).add(new THREE.Vector3(0, 0, 0.34)), 'CLINK ↔ IFIX (dotted)', '#ffffff');
+
+  // Extra gold dashed multi-turn on the same angular span (visual emphasis)
+  {
+    const aC = ang(CLINK1), aI = ang(IFIX_I);
+    const turns = -2, n = 240, pts = [];
+    for (let k = 0; k <= n; k++) {
+      const t = k / n;
+      const u = aC + (aI - aC) * t;
+      const v = aC + ((aI - aC) + turns * 2 * Math.PI) * t;
+      const p = tp(u, v);
+      const c = new THREE.Vector3(R * Math.cos(u), R * Math.sin(u), 0);
+      const nrm = p.clone().sub(c); const nl = nrm.length() || 1;
+      pts.push(p.add(nrm.multiplyScalar(0.06 / nl)));
+    }
+    dashedEdge(pts, 0xffff00, 0.85, 0.030);
+  }
+
+  // ── R0 bus (blue dashed) ──
+  function busChord(i, j) {
+    const a = horn(ang(i)), b = horn(ang(j));
+    const m = a.clone().add(b).multiplyScalar(0.5);
+    m.multiplyScalar(m.length() > 0.01 ? 1.35 : 1);
+    return new THREE.CatmullRomCurve3([a, m, b]).getPoints(64);
+  }
+  [[AREV_I, IFIX_I], [AREV_I, TANCH_I]].forEach(([i, j]) => {
+    const pts = busChord(i, j);
+    dashedEdge(pts, 0x66aaff, 0.8, 0.020);
+    arrowHead(pts, 0x66aaff, 0.11);
+  });
+  edgeLabel(mid(busChord(AREV_I, TANCH_I)).add(new THREE.Vector3(0, 0, 0.30)), 'R0 bus', '#66aaff');
+
+  // ═══════════════════════════════════════════════════════════════
+  // EXOTIC ROUTING DEMOS (magenta) — all legal under ancestry pairing
+  // (Guide Part II: “HOWEVER IT ROUTED”). These are not required by
+  // the sequential (1,1) embedding; they illustrate that the same
+  // stations admit non-local / opposite-direction / multi-hop edges.
+  // ═══════════════════════════════════════════════════════════════
+  const EXO = 0xff66aa;
+
+  // 1. Long-way FSPLIT → FFUSE (the classic dyad pair, routed the opposite
+  //    direction around the torus — ancestry still holds)
+  {
+    // force the long arc: add almost a full turn
+    const aF = ang(FSPLIT_I);
+    const aU = ang(FFUSE_I) + 2 * Math.PI; // overshoot so du > π
+    const pts = helixBetween(aF, aU, 3, 420, 0.09);
+    dashedEdge(pts, EXO, 0.9, 0.028);
+    arrowHead(pts, EXO, 0.12);
+    edgeLabel(mid(pts).add(new THREE.Vector3(0, 0.15, 0.25)), 'exotic FSPLIT↔FFUSE (long way)', '#ff66aa');
+  }
+
+  // 2. EVALT → IFIX cross-connection (skips the sequential CLINK/FFUSE,
+  //    multi-hop ancestry path that still lets the later fuse recover)
+  {
+    const aE = ang(EVALT_I);
+    const aI = ang(IFIX_I);
+    const pts = helixBetween(aE, aI, -1.5, 300, 0.11);
+    dashedEdge(pts, EXO, 0.85, 0.024);
+    arrowHead(pts, EXO, 0.11);
+    edgeLabel(mid(pts).add(new THREE.Vector3(0.1, -0.2, 0.2)), 'exotic EVALT→IFIX cross', '#ff66aa');
+  }
+
+  // 3. ENGAGR (⊞) → ⊙ direct (paradox-hold can also thread the pinch;
+  //    illustrates that any work opcode may use the identity as a hub)
+  {
+    const aG = ang(ENGAGR_I);
+    // coil toward the pinch from ENGAGR’s station
+    const pts = coilArc(aG, Math.PI - aG, 2.5, 320, 0.08);
+    solidTube(pts, EXO, 0.032);
+    arrowHead(pts, EXO, 0.11);
+    edgeLabel(horn(aG).clone().multiplyScalar(1.2).add(new THREE.Vector3(0, 0.1, 0.15)), 'exotic ENGAGR→⊙', '#ff66aa');
+  }
+
+  // 4. Second CLINK → TANCH long return (the later CLINK can close via a
+  //    multi-turn path that ignores the sequential stations in between)
+  if (CLINK2 >= 0) {
+    const aC2 = ang(CLINK2);
+    const aT = ang(TANCH_I) + 2 * Math.PI; // long way
+    const pts = helixBetween(aC2, aT, 2, 360, 0.075);
+    dashedEdge(pts, EXO, 0.8, 0.022);
+    arrowHead(pts, EXO, 0.10);
+    edgeLabel(mid(pts).add(new THREE.Vector3(-0.15, 0.1, -0.2)), 'exotic CLINK₂→TANCH (long)', '#ff66aa');
+  }
+})();
+
+// Seal marker
+const vi = TOKENS.findIndex(t => t.name === "VINIT");
+const sp = horn(ang(vi));
+const ring = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.03, 12, 32),
+  new THREE.MeshBasicMaterial({ color: 0xe8524b }));
+ring.position.copy(sp); ring.lookAt(0, 0, 0); scene.add(ring);
+
+function glyphMark(glyph, color, size = 0.42) {
+  const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+  const x = c.getContext('2d');
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.font = 'bold 92px system-ui';
+  x.lineWidth = 9; x.strokeStyle = 'rgba(0,0,0,0.92)'; x.strokeText(glyph, 64, 64);
+  x.fillStyle = color; x.fillText(glyph, 64, 64);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthTest: false }));
+  sp.scale.set(size, size, 1);
+  return sp;
+}
+
+function resize() {
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+}
+addEventListener('resize', resize);
+(function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+})();
+</script>
+</body>
+</html>

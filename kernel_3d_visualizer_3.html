@@ -1,0 +1,2049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mOMonadOS Kernel — agent_loop (1,1) on the horn torus · IMASM graph</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            overflow: hidden;
+            background: #000000;
+            font-family: system-ui, sans-serif;
+            color: #ffffff;
+        }
+        #info {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 2px solid #ffffff;
+            max-width: 390px;
+            font-size: 12.5px;
+            line-height: 1.45;
+            z-index: 10;
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+        #info h1 {
+            font-size: 14px;
+            color: #ffff00;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        #info p {
+            margin: 3px 0;
+            opacity: 0.95;
+        }
+        #info .highlight {
+            color: #ffaa44;
+            font-weight: bold;
+        }
+        #info .eq {
+            color: #ffffff;
+            font-weight: bold;
+            background: rgba(255, 170, 68, 0.15);
+            padding: 0 4px;
+            border-radius: 3px;
+        }
+        #info .geo {
+            color: #aaffcc;
+            font-weight: bold;
+        }
+        .sw {
+            display: inline-block;
+            width: 11px;
+            height: 11px;
+            border-radius: 2px;
+            margin-right: 5px;
+            vertical-align: -1px;
+            border: 1px solid #ffffff;
+        }
+        #hint {
+            position: absolute;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 12px;
+            border: 1px solid #ffffff;
+            color: #ffffff;
+            z-index: 10;
+            pointer-events: none;
+        }
+        #exec {
+            position: absolute;
+            bottom: 52px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.94);
+            border: 2px solid #e8b84b;
+            border-radius: 12px;
+            padding: 10px 16px;
+            z-index: 12;
+            min-width: min(520px, 92vw);
+            max-width: 640px;
+            font-size: 12.5px;
+            line-height: 1.4;
+            box-shadow: 0 0 24px rgba(232, 184, 75, 0.25);
+        }
+        #exec .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            margin-top: 6px;
+        }
+        #exec button, #exec select {
+            background: #1a1a1a;
+            color: #fff;
+            border: 1px solid #e8b84b;
+            border-radius: 6px;
+            padding: 5px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: inherit;
+        }
+        #exec button:hover { background: #2a2410; }
+        #exec button.active {
+            background: #e8b84b;
+            color: #000;
+            font-weight: bold;
+        }
+        #exec #ip-line {
+            font-family: ui-monospace, monospace;
+            font-size: 13px;
+            color: #ffe08a;
+            text-align: center;
+            letter-spacing: 0.02em;
+        }
+        #exec #ip-meta {
+            text-align: center;
+            color: #ccc;
+            font-size: 11.5px;
+            margin-top: 2px;
+        }
+        #exec #stack-line {
+            text-align: center;
+            font-family: ui-monospace, monospace;
+            color: #8fbcff;
+            font-size: 12px;
+            margin-top: 4px;
+            min-height: 1.2em;
+        }
+        #exec .tok-chip {
+            display: inline-block;
+            padding: 1px 5px;
+            margin: 0 1px;
+            border-radius: 3px;
+            opacity: 0.45;
+            border: 1px solid transparent;
+        }
+        #exec .tok-chip.on {
+            opacity: 1;
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.15);
+            color: #00ff88;
+            font-weight: bold;
+        }
+        #exec .tok-chip.done {
+            opacity: 0.75;
+            color: #e8b84b;
+        }
+        #legend {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 2px solid #ffffff;
+            font-size: 12.5px;
+            line-height: 1.5;
+            z-index: 10;
+            max-width: 300px;
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+        #legend h2 {
+            font-size: 12px;
+            color: #ffff00;
+            margin: 2px 0 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        #legend .g {
+            display: inline-block;
+            width: 1.5em;
+            font-weight: bold;
+            text-align: center;
+        }
+        #legend .r2 {
+            margin-top: 8px;
+            border-top: 2px solid #ffffff;
+            padding-top: 6px;
+        }
+        #legend .sub {
+            opacity: 0.75;
+            font-size: 11px;
+            margin-top: 6px;
+        }
+        #legend .split-eq {
+            margin-top: 10px;
+            border-top: 2px solid #ffaa44;
+            padding-top: 8px;
+            font-size: 13px;
+            text-align: center;
+            color: #ffaa44;
+            font-weight: bold;
+            letter-spacing: 0.3px;
+        }
+        #legend .split-eq small {
+            font-weight: normal;
+            font-size: 11px;
+            color: #cccccc;
+            display: block;
+            margin-top: 2px;
+        }
+        #legend .geo-box {
+            margin-top: 10px;
+            border-top: 2px solid #aaffcc;
+            padding-top: 8px;
+            font-size: 12px;
+            color: #aaffcc;
+        }
+        #legend .geo-box .val {
+            font-weight: bold;
+            color: #ffffff;
+        }
+        #legend .vol-box {
+            margin-top: 8px;
+            border-top: 1px solid #666;
+            padding-top: 6px;
+            font-size: 11.5px;
+            color: #dddddd;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <h1>mOMonadOS Kernel — agent_loop · (1,1)</h1>
+        <p><strong>Source of truth:</strong> <code>modot.agent.agent_loop()</code> +
+            <em>Imscriber's Guide to IMASM</em> + <code>mOMonadOS</code> /
+            <code>imasm_core</code>. The word is a <strong>directed graph</strong>, not a line;
+            edges come from the verb; pairing is by <strong>ancestry</strong> over edges
+            (Guide Parts I–II).</p>
+        <p style="margin-top:6px"><strong>Word</strong>
+            <span class="eq" id="glyph-word">⊢⊙◇+=●¬⊞&lt;=⊣</span><br>
+            <span style="opacity:.85;font-size:11px">VINIT IMSCRIB FSPLIT EVALT CLINK FFUSE IFIX ENGAGR AREV CLINK TANCH</span>
+        </p>
+        <p style="margin-top:7px; border-top:2px solid #ffffff; padding-top:6px">
+            <strong>Winding = (1,1)</strong> — one toroidal revolution and one poloidal
+            revolution on the horn torus (R = r). Stations share a single angle
+            <span class="eq">t</span>; the gold curve is <span class="eq">horn(t)</span>,
+            not a per-segment multi-turn helix. IMSCRIB ⊙ sits at the pinch
+            (t = π): identity, <strong>μ∘δ = id</strong>. The identity is crossed
+            <em>once</em> per revolution.
+        </p>
+        <p style="margin-top:7px; border-top:2px solid #ffff00; padding-top:6px">
+            <strong>Verdict (Guide III)</strong>: word carries <span class="eq">⊞</span> ENGAGR
+            → if it closes over work, report is <span class="eq">B (paradox held)</span>,
+            never clean T. <em>B beats T.</em> Bare ◇…● with only ⊙ is N (identity), not T.
+        </p>
+        <p style="margin-top:7px; border-top:2px solid #ffffff; padding-top:6px">
+            <strong>Cyclic, not linear</strong> — program graph wraps; end→start is one ring
+            (ROTAT / IP <code>% n</code>). Dialetheia reachability and FSPLIT↔FFUSE pairing
+            are cyclic. Do not read the glyph string as a linear cut.
+        </p>
+        <p style="margin-top:7px; border-top:2px solid #ffffff; padding-top:6px">
+            <span class="highlight">✦ Split radius = λ<sub>C</sub></span> — FSPLIT3 shell (yellow)
+            radius equals <span class="eq">λ<sub>C</sub> = h/(mc)</span> (units r<sub>split</sub> = 1).
+        </p>
+        <p style="margin-top:7px; border-top:2px solid #aaffcc; padding-top:6px">
+            <span class="geo">Geometry (r<sub>split</sub> = 1)</span><br>
+            • ⊙ → evaluator chord = <span class="eq">√2</span><br>
+            • ⊙ → FFUSE3 = <span class="eq">2</span><br>
+            • evaluator–evaluator (A₂) = <span class="eq">√3</span><br>
+            • green triangle = EVALT / EVALF / EVALI(⊞) on plane x = 1
+        </p>
+        <p style="margin-top:7px; border-top:2px solid #ffffff; padding-top:6px">
+            <strong>R1</strong> gold curve: agent_loop stations on the (1,1) ring.<br>
+            <strong>R2 · SIXTEEN_3</strong>: 16 poloidal rings; yellow FSPLIT3 shell; blue
+            evaluator sphere; FFUSE3 at the far pole. Classic dyad ◇/● is the arity-2 case
+            of the tri-dyad ∈/∋ (same ancestry rule).
+        </p>
+        <p style="margin-top:7px; border-top:2px solid #ffffff; padding-top:6px">
+            <span class="sw" style="background:#e8524b"></span><strong>⊣⊢ seal</strong>:
+            TANCH meets VINIT where the ring closes (cyclic wrap, not a linear end).
+        </p>
+        <p style="margin-top:7px; border-top:2px solid #ffffff; padding-top:6px">
+            <strong>Vessel / contents</strong> — sphere 4π/3 inside horn torus 16π² (R=r=2);
+            ratio = <span class="eq">exactly 12π</span>.
+        </p>
+        <p style="margin-top:7px; border-top:2px solid #ff66aa; padding-top:6px">
+            <strong>Magenta = exotic ancestry demos</strong> (Guide Part II): edges the verb
+            may supply that are <em>not</em> text-order. Pairing is HOWEVER IT ROUTED.
+            They are legal reconnections, not the sequential (1,1) bead path.
+        </p>
+    </div>
+    <div id="legend">
+        <h2>R1 · agent_loop stations</h2>
+        <div><span class="g" style="color:#ffe08a">⊙</span> IMSCRIB <span style="opacity:.6">(pinch · no work)</span></div>
+        <div><span class="g" style="color:#ffffff">⊢</span> VINIT &nbsp; <span class="g" style="color:#ffffff">⊣</span> TANCH <span style="opacity:.6">(no work)</span></div>
+        <div><span class="g" style="color:#ffffff">◇</span> FSPLIT &nbsp; <span class="g" style="color:#ffffff">●</span> FFUSE <span style="opacity:.6">(no work)</span></div>
+        <div><span class="g" style="color:#8fbcff">+</span> EVALT &nbsp; <span class="g" style="color:#8fbcff">=</span> CLINK <span style="opacity:.6">(work)</span></div>
+        <div><span class="g" style="color:#8fbcff">¬</span> IFIX &nbsp; <span class="g" style="color:#8fbcff">&lt;</span> AREV <span style="opacity:.6">(work)</span></div>
+        <div><span class="g" style="color:#ffff00">⊞</span> ENGAGR/EVALI <span style="opacity:.6">(work · B beats T)</span></div>
+        <div class="sub" style="margin-top:4px">Missing from this word (still in alphabet):
+            <span style="color:#ffffff">></span> AFWD · <span style="color:#8fbcff">×</span> EVALF</div>
+        <div class="r2"><h2 style="margin-top:0">R2 · SIXTEEN_3 face</h2></div>
+        <div><span class="g" style="color:#8fbcff">∈</span> FSPLIT3 &nbsp; <span class="g" style="color:#8fbcff">∋</span> FFUSE3</div>
+        <div><span class="g" style="color:#8fbcff">+</span> EVALT &nbsp; <span class="g" style="color:#8fbcff">×</span> EVALF &nbsp; <span class="g" style="color:#ffff00">⊞</span> EVALI</div>
+        <div class="sub"><span style="color:#00ff00">★ green A₂</span> = three evaluators (√3 chords).</div>
+        <div class="sub"><span style="color:#0066ff">blue</span> WORK · <span style="color:#ffffff">white</span> no-work ·
+            <span style="color:#ffff00">gold</span> ⊞ / pinch workarounds</div>
+        <div class="sub"><span style="color:#e8b84b">gold (1,1)</span> = sequential stations on horn(t).</div>
+        <div class="sub"><span style="color:#ffff00">yellow coils</span> CLINK→⊙ &amp; IFIX→⊙: work only through identity.</div>
+        <div class="sub"><span style="color:#66aaff">blue dashed</span> R0 bus (AREV → IFIX/TANCH).</div>
+        <div class="sub"><span style="color:#ff66aa">magenta</span> exotic ancestry (not text order).</div>
+
+        <div class="split-eq">
+            r<sub>split</sub> = λ<sub>C</sub> = h/(mc)
+            <small>FSPLIT3 shell radius ≡ Compton wavelength</small>
+        </div>
+
+        <div class="geo-box">
+            <strong>Exact distances (r<sub>split</sub> = 1)</strong><br>
+            ⊙ → evaluator chord: <span class="val">√2 ≈ 1.4142</span><br>
+            ⊙ → FFUSE3: <span class="val">2</span><br>
+            evaluator–evaluator: <span class="val">√3 ≈ 1.7321</span><br>
+            tangency point: <span class="val">(1,0,0)</span> (unoccupied)
+        </div>
+
+        <div class="vol-box">
+            <strong>Volumes &amp; ratio</strong><br>
+            FSPLIT3 sphere: 4π/3 ≈ 4.1888<br>
+            Horn torus (R=r=2): 16π² ≈ 157.9137<br>
+            Vessel / contents = <span style="color:#aaffcc;font-weight:bold">exactly 12π</span>
+        </div>
+        <div class="vol-box" style="border-top:2px solid #ffff00; margin-top:10px">
+            <strong style="color:#ffff00">Kernel fidelity</strong><br>
+            winding class: <span style="color:#fff;font-weight:bold">(1,1)</span><br>
+            poloidal turns / rev: <span style="color:#fff;font-weight:bold">1</span> (not N)<br>
+            graph: cyclic · ancestry pairing<br>
+            check: B if ⊞ + close+work
+        </div>
+    </div>
+    <div id="exec">
+        <div id="ip-line">IP · idle</div>
+        <div id="ip-meta">tick 0 · winding 0 · cyclic ring walk (head moves, word fixed)</div>
+        <div id="seq-chips" style="text-align:center;margin-top:6px;line-height:1.8"></div>
+        <div id="stack-line">B4 stack: [ ]</div>
+        <div id="arm-line" style="text-align:center;font-family:ui-monospace,monospace;font-size:12px;margin-top:3px;color:#ff99cc">
+            ◇ arms: idle
+        </div>
+        <div class="row" style="margin-top: 4px; margin-bottom: 2px;">
+            <label style="color:#e8b84b; font-weight: bold;">program &nbsp;
+                <select id="program-select" style="min-width: 240px; max-width: 320px; font-weight: normal;">
+                </select>
+            </label>
+        </div>
+        <div class="row">
+            <button type="button" id="btn-play" class="active">▶ Play</button>
+            <button type="button" id="btn-step">Step ›</button>
+            <button type="button" id="btn-reset">⟲ Reset</button>
+            <label style="color:#aaa">speed
+                <select id="speed">
+                    <option value="0.4">slow</option>
+                    <option value="1" selected>1×</option>
+                    <option value="2">2×</option>
+                    <option value="4">4×</option>
+                </select>
+            </label>
+        </div>
+    </div>
+    <div id="hint">Drag · Scroll · Right-drag · Space play/pause · → step</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js">
+    </script>
+    <script>
+        // ─── Token Meta Map and Program Dictionary ───
+        const TOKEN_META = {
+            "VINIT":   { "glyph": "⊢", "work": false },
+            "TANCH":   { "glyph": "⊣", "work": false },
+            "AFWD":    { "glyph": ">", "work": true  },
+            "AREV":    { "glyph": "<", "work": true  },
+            "CLINK":   { "glyph": "=", "work": true  },
+            "IMSCRIB": { "glyph": "⊙", "work": false },
+            "FSPLIT":  { "glyph": "◇", "work": false },
+            "EVALT":   { "glyph": "+", "work": true  },
+            "EVALF":   { "glyph": "×", "work": true  },
+            "FFUSE":   { "glyph": "●", "work": false },
+            "ENGAGR":  { "glyph": "⊞", "work": true  },
+            "IFIX":    { "glyph": "¬", "work": true  }
+        };
+
+        const PROGRAMS = {
+            "agent_loop": [
+                "VINIT", "IMSCRIB", "FSPLIT", "EVALT", "CLINK", "FFUSE", "IFIX", "ENGAGR", "AREV", "CLINK", "TANCH"
+            ],
+            "bootstrap_loop": [
+                "IMSCRIB", "AREV", "FSPLIT", "AFWD", "FFUSE", "CLINK", "IFIX", "IMSCRIB"
+            ],
+            "replicative_opening_loop": [
+                "IMSCRIB", "FSPLIT", "FFUSE", "IMSCRIB"
+            ],
+            "I_Dialetheic_Bootstrap": [
+                "IMSCRIB", "EVALT", "FSPLIT", "EVALF", "FFUSE", "ENGAGR", "IFIX", "IMSCRIB"
+            ],
+            "II_Void_Genesis": [
+                "VINIT", "FSPLIT", "EVALT", "FFUSE", "EVALF", "CLINK", "IFIX", "IMSCRIB"
+            ],
+            "III_Anchor_Protocol": [
+                "TANCH", "AFWD", "EVALT", "AREV", "EVALF", "CLINK", "IFIX", "TANCH"
+            ],
+            "IV_Dual_Bootstrap": [
+                "IMSCRIB", "AFWD", "FFUSE", "FSPLIT", "AREV", "CLINK", "IFIX", "IMSCRIB"
+            ],
+            "V_Linear_Chain": [
+                "IFIX", "IFIX", "IFIX", "IFIX", "IFIX", "IFIX", "IFIX", "IFIX"
+            ],
+            "VI_Empty_Bootstrap": [
+                "VINIT", "IMSCRIB", "VINIT", "IMSCRIB", "VINIT", "IMSCRIB", "VINIT", "IMSCRIB"
+            ],
+            "VII_Parakernel": [
+                "ENGAGR", "AFWD", "FSPLIT", "EVALT", "FFUSE", "EVALF", "IFIX", "ENGAGR"
+            ],
+            "VIII_Frobenius_Kernel": [
+                "FSPLIT", "FFUSE", "FSPLIT", "FFUSE"
+            ],
+            "IX_Chiral_Pairs": [
+                "AFWD", "AREV", "AFWD", "AREV", "AFWD", "AREV", "AFWD", "AREV"
+            ],
+            "X_Truth_Machine": [
+                "IMSCRIB", "FSPLIT", "EVALT", "IFIX", "IMSCRIB", "FSPLIT", "EVALF", "IFIX"
+            ],
+            "XI_Eternal_Return": [
+                "TANCH", "AFWD", "AREV", "TANCH", "AFWD", "AREV", "TANCH", "AFWD"
+            ],
+            "XII_ROM_Burn": [
+                "EVALT", "IFIX", "EVALF", "IFIX", "ENGAGR", "IFIX", "IMSCRIB", "IFIX"
+            ],
+            "XIII_Heartbeat": [
+                "IMSCRIB", "IMSCRIB", "IMSCRIB", "IMSCRIB"
+            ],
+            "XIV_Tier_Climber": [
+                "IMSCRIB", "FSPLIT", "EVALT", "EVALF", "FFUSE", "ENGAGR", "CLINK", "IFIX", "IMSCRIB"
+            ],
+            "XV_Frobenius_Oscillator": [
+                "FSPLIT", "IMSCRIB", "FFUSE", "IMSCRIB"
+            ],
+            "XVI_Paradox_Daemon": [
+                "VINIT", "FSPLIT", "EVALT", "EVALF", "ENGAGR", "FFUSE", "IMSCRIB"
+            ],
+            "XVII_Nested_Fork_Labyrinth": [
+                "VINIT", "FSPLIT", "FSPLIT", "FSPLIT", "AFWD", "FFUSE", "AREV", "FFUSE", "EVALT", "FFUSE", "TANCH"
+            ],
+            "XVIII_Terminal_Sink_Protocol": [
+                "VINIT", "AFWD", "AFWD", "AREV", "IMSCRIB", "CLINK", "AFWD", "TANCH"
+            ],
+            "XIX_Mirrorgram": [
+                "IMSCRIB", "FSPLIT", "EVALT", "EVALF", "FFUSE", "ENGAGR", "CLINK", "IFIX", "IMSCRIB"
+            ],
+            "XX_Shunt_Bridge": [
+                "VINIT", "FSPLIT", "EVALT", "FFUSE", "EVALF", "CLINK", "IMSCRIB", "EVALT", "FSPLIT", "EVALF", "FFUSE", "ENGAGR", "IFIX", "IMSCRIB"
+            ],
+            "XXI_Anchor_Paradox": [
+                "TANCH", "AFWD", "AREV", "ENGAGR", "FSPLIT", "EVALT", "FFUSE", "EVALF", "IFIX", "ENGAGR", "TANCH"
+            ],
+            "XXII_Chiral_ROM": [
+                "AFWD", "AREV", "EVALT", "IFIX", "AFWD", "AREV", "EVALF", "IFIX", "AFWD", "ENGAGR", "IFIX", "AREV"
+            ],
+            "XXIII_Dual_Kernel_Shunt": [
+                "IMSCRIB", "AFWD", "FSPLIT", "AREV", "CLINK", "FSPLIT", "EVALT", "FFUSE", "EVALF", "ENGAGR", "FFUSE", "IFIX", "IMSCRIB"
+            ],
+            "XXIV_Heartbeat_Paradox": [
+                "VINIT", "IMSCRIB", "ENGAGR", "VINIT", "IMSCRIB", "ENGAGR", "VINIT", "IMSCRIB"
+            ],
+            "XXV_Recursive_Kernel": [
+                "VINIT", "FSPLIT", "FFUSE", "CLINK", "VINIT", "FSPLIT", "FFUSE", "CLINK", "ENGAGR", "IMSCRIB"
+            ],
+            "XXVI_Truth_Spiral": [
+                "IMSCRIB", "FSPLIT", "EVALT", "IFIX", "FFUSE", "IMSCRIB", "FSPLIT", "EVALF", "IFIX", "FFUSE", "ENGAGR", "IFIX", "IMSCRIB"
+            ],
+            "XXVII_Omni_Spine": [
+                "IMSCRIB", "VINIT", "FSPLIT", "EVALT", "FFUSE", "EVALF", "CLINK", "AFWD", "AREV", "ENGAGR", "FSPLIT", "FFUSE", "IFIX", "IMSCRIB", "EVALT", "EVALF", "ENGAGR", "IFIX", "IMSCRIB"
+            ],
+            "XXVIII_Somatic_Shunt": [
+                "TANCH", "VINIT", "FSPLIT", "EVALT", "AFWD", "FFUSE", "EVALF", "TANCH", "ENGAGR", "IFIX", "IMSCRIB"
+            ],
+            "Verticullum": [
+                "ENGAGR", "FSPLIT", "EVALT", "FFUSE", "FSPLIT", "EVALF", "FFUSE", "IMSCRIB", "CLINK", "ENGAGR", "IFIX"
+            ],
+            "Chimerium": [
+                "ENGAGR", "FSPLIT", "EVALT", "FFUSE", "EVALF", "FSPLIT", "EVALT", "EVALF", "FFUSE", "CLINK", "IMSCRIB", "ENGAGR", "IFIX"
+            ],
+            "Apertix": [
+                "VINIT", "AFWD", "IMSCRIB", "FSPLIT", "EVALT", "EVALF", "FFUSE", "CLINK", "ENGAGR", "IFIX"
+            ],
+            "Praxeum": [
+                "ENGAGR", "EVALT", "FFUSE", "EVALF", "ENGAGR", "IFIX"
+            ],
+            "Retiarius": [
+                "FSPLIT", "EVALT", "AFWD", "FFUSE", "FSPLIT", "EVALF", "AREV", "FFUSE", "CLINK", "IMSCRIB", "ENGAGR", "IFIX"
+            ],
+            "Frigorix": [
+                "FSPLIT", "TANCH", "FFUSE", "VINIT", "AFWD", "TANCH", "IMSCRIB", "IFIX"
+            ],
+            "Bifrons": [
+                "FSPLIT", "EVALT", "AREV", "FFUSE", "FSPLIT", "EVALF", "AFWD", "FFUSE", "CLINK", "IFIX"
+            ],
+            "Punctum": [
+                "IMSCRIB", "IFIX"
+            ],
+            "Syndexios": [
+                "IMSCRIB", "FSPLIT", "EVALT", "FFUSE", "AREV", "FSPLIT", "EVALF", "FFUSE", "AFWD", "CLINK", "IFIX"
+            ],
+            "Katachthon": [
+                "IMSCRIB", "FSPLIT", "EVALT", "EVALF", "FFUSE", "CLINK", "IMSCRIB", "IFIX"
+            ],
+            "Diabaton": [
+                "VINIT", "AFWD", "IMSCRIB", "FSPLIT", "EVALT", "EVALF", "FFUSE", "CLINK", "TANCH", "ENGAGR", "IFIX"
+            ],
+            "Rebis_I_Dialetheic_Bootstrap": [
+                "VINIT", "TANCH", "AFWD", "AREV", "CLINK", "IMSCRIB", "EVALT", "EVALF"
+            ],
+            "Rebis_II_Void_Genesis": [
+                "VINIT", "TANCH", "IFIX"
+            ],
+            "Rebis_III_Anchor_Protocol": [
+                "VINIT", "TANCH", "AFWD", "CLINK", "IMSCRIB", "EVALT", "ENGAGR", "IFIX"
+            ],
+            "Rebis_IV_Dual_Bootstrap": [
+                "AFWD", "AREV", "CLINK", "IMSCRIB", "VINIT", "TANCH", "EVALT", "EVALF"
+            ],
+            "Rebis_V_Linear_Chain": [
+                "VINIT", "TANCH", "AFWD", "AREV", "CLINK", "IMSCRIB", "IFIX", "IFIX"
+            ],
+            "Rebis_VI_Empty_Bootstrap": [],
+            "Rebis_VII_Parakernel": [
+                "VINIT", "TANCH", "AFWD", "AREV", "FSPLIT", "FFUSE", "CLINK", "IMSCRIB"
+            ],
+            "Rebis_VIII_Frobenius_Kernel": [
+                "FSPLIT", "AFWD", "FFUSE", "AREV", "FSPLIT", "CLINK", "FFUSE", "IMSCRIB"
+            ],
+            "Rebis_IX_Chiral_Pairs": [
+                "AFWD", "AREV", "CLINK", "IMSCRIB", "AREV", "AFWD", "IMSCRIB", "CLINK"
+            ],
+            "Rebis_X_Truth_Machine": [
+                "EVALT", "EVALF", "ENGAGR", "IFIX", "EVALT", "EVALF", "ENGAGR", "IFIX"
+            ],
+            "Rebis_XI_Eternal_Return": [
+                "VINIT", "TANCH", "AFWD", "AREV", "CLINK", "IMSCRIB", "VINIT", "TANCH"
+            ],
+            "Rebis_XII_ROM_Burn": [
+                "VINIT", "TANCH", "IFIX", "IFIX", "IFIX", "IFIX", "IFIX", "IFIX"
+            ]
+        };
+
+        let TOKENS = [];
+        let N = 0;
+        let IMSCRIB_I = -1;
+        let OFF = 0;
+        let FSPLIT_I = -1;
+        let FFUSE_I = -1;
+
+        const R = 2.0; // horn: R = r → pinch at origin
+
+        // Rotate so IMSCRIB's station is at the pinch (t = π), matching gen_kernel_torus.py.
+        // (will be updated dynamically by rebuildProgram)
+
+        // (1,1) embedding: toroidal angle u and poloidal angle v share one parameter t.
+        // horn(t) = surface point with u = v = t. One full t-sweep = one of each turn.
+        function horn(t) {
+            return new THREE.Vector3(
+                (R + R * Math.cos(t)) * Math.cos(t),
+                (R + R * Math.cos(t)) * Math.sin(t),
+                R * Math.sin(t)
+            );
+        }
+        const ang = i => 2 * Math.PI * i / N + OFF;
+
+        // Forward arc on the ring from station i → j (wraps with +2π when j wraps to 0).
+        function ringArc(i, j) {
+            let a1 = ang(i);
+            let a2 = ang(j);
+            if (j <= i) a2 += 2 * Math.PI; // cyclic wrap — never go linear-backward
+            return { a1, a2 };
+        }
+
+        /** Sample the (1,1) ring from station iFrom to iTo.
+         *  dir: +1 = short forward (sequence way), -1 = the other way around. */
+        function sampleRingWay(iFrom, iTo, dir, n, liftSign = 0) {
+            let a0 = ang(iFrom);
+            let a1 = ang(iTo);
+            if (dir > 0) {
+                if (a1 <= a0) a1 += 2 * Math.PI;
+            } else {
+                if (a1 >= a0) a1 -= 2 * Math.PI; // long / opposite orientation
+            }
+            const pts = [];
+            for (let k = 0; k <= n; k++) {
+                const t = k / n;
+                const a = a0 + (a1 - a0) * t;
+                let p = horn(a);
+                if (liftSign !== 0) {
+                    const u = a;
+                    const c = new THREE.Vector3(R * Math.cos(u), R * Math.sin(u), 0);
+                    const nrm = p.clone().sub(c);
+                    const nl = nrm.length() || 1;
+                    const env = Math.sin(Math.PI * t);
+                    p = p.add(nrm.multiplyScalar((0.10 * liftSign * env) / nl));
+                }
+                pts.push(p);
+            }
+            pts[0].copy(horn(ang(iFrom)));
+            pts[pts.length - 1].copy(horn(ang(iTo)));
+            return pts;
+        }
+
+        const B4_COLOR = { N: 0x888888, T: 0x3399ff, F: 0xff5533, B: 0xffff00 };
+
+        // ─── Scene setup ───
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x000000);
+        const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 120);
+        camera.position.set(10.5, 6.5, 9.0);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(innerWidth, innerHeight);
+        renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+        document.body.appendChild(renderer.domElement);
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.06;
+        controls.target.set(0, 0, 0);
+        controls.minDistance = 3;
+        controls.maxDistance = 20;
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.45));
+        const L1 = new THREE.DirectionalLight(0xffffff, 0.9);
+        L1.position.set(5, 8, 6);
+        scene.add(L1);
+        const L2 = new THREE.DirectionalLight(0xffffff, 0.3);
+        L2.position.set(-5, 2, -3);
+        scene.add(L2);
+
+        // ─── Torus surface ───
+        const torusGeo = new THREE.BufferGeometry();
+        const radialSegments = 60,
+            tubularSegments = 140;
+        const verts = [],
+            idx = [];
+
+        function tp(u, v) {
+            return new THREE.Vector3(
+                (R + R * Math.cos(v)) * Math.cos(u),
+                (R + R * Math.cos(v)) * Math.sin(u),
+                R * Math.sin(v)
+            );
+        }
+        for (let j = 0; j <= radialSegments; j++) {
+            const v = (j / radialSegments) * Math.PI * 2;
+            for (let i = 0; i <= tubularSegments; i++) {
+                const u = (i / tubularSegments) * Math.PI * 2;
+                const p = tp(u, v);
+                verts.push(p.x, p.y, p.z);
+            }
+        }
+        for (let j = 0; j < radialSegments; j++) {
+            for (let i = 0; i < tubularSegments; i++) {
+                const a = j * (tubularSegments + 1) + i;
+                const b = a + tubularSegments + 1;
+                idx.push(a, b, a + 1, b, b + 1, a + 1);
+            }
+        }
+        torusGeo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
+        torusGeo.setIndex(idx);
+        torusGeo.computeVertexNormals();
+        scene.add(new THREE.Mesh(torusGeo, new THREE.MeshStandardMaterial({
+            color: 0x28304f,
+            transparent: true,
+            opacity: 0.42,
+            metalness: 0.2,
+            roughness: 0.55,
+            side: THREE.DoubleSide,
+            depthWrite: false
+        })));
+        scene.add(new THREE.Mesh(torusGeo, new THREE.MeshBasicMaterial({
+            color: 0x5a659c,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.14
+        })));
+
+        // ─── 16 poloidal rings ───
+        const ringMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.22 });
+        for (let i = 0; i < 16; i++) {
+            const u = i / 16 * Math.PI * 2;
+            const pts = [];
+            for (let j = 0; j <= 72; j++) pts.push(tp(u, j / 72 * Math.PI * 2));
+            scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), ringMat));
+        }
+
+        // ─── Spheres and evaluators ───
+        const LR = R / 2;
+        const CEN = new THREE.Vector3(LR, 0, 0);
+        // FSPLIT3 shell (yellow) — the split radius = LR ≡ λ_C
+        const splitShell = new THREE.Mesh(
+            new THREE.SphereGeometry(LR, 48, 32),
+            new THREE.MeshStandardMaterial({
+                color: 0xe8b84b,
+                transparent: true,
+                opacity: 0.18,
+                metalness: 0.2,
+                roughness: 0.5,
+                side: THREE.DoubleSide,
+                depthWrite: false,
+                emissive: 0xe8b84b,
+                emissiveIntensity: 0.08
+            })
+        );
+        scene.add(splitShell);
+
+        // Blue evaluator sphere (centered at CEN, tangent to ⊙ at (1,0,0))
+        scene.add(new THREE.Mesh(
+            new THREE.SphereGeometry(LR, 48, 32),
+            new THREE.MeshStandardMaterial({
+                color: 0x0066ff,
+                transparent: true,
+                opacity: 0.16,
+                metalness: 0.2,
+                roughness: 0.5,
+                side: THREE.DoubleSide,
+                depthWrite: false
+            })
+        ).translateX(LR));
+
+        const ALPHA = [0, 2 * Math.PI / 3, 4 * Math.PI / 3];
+        ALPHA.forEach(al => {
+            const pts = [];
+            for (let k = 0; k <= 80; k++) {
+                const t = k / 80 * Math.PI;
+                pts.push(new THREE.Vector3(
+                    LR - LR * Math.cos(t),
+                    LR * Math.sin(t) * Math.cos(al),
+                    LR * Math.sin(t) * Math.sin(al)
+                ));
+            }
+            scene.add(new THREE.Mesh(
+                new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 80, 0.022, 8, false),
+                new THREE.MeshStandardMaterial({ color: 0x0066ff, transparent: true, opacity: 0.6,
+                    metalness: 0.3, roughness: 0.25 })
+            ));
+        });
+
+        const EV = [
+            { tok: 'EVALT', glyph: '+', p: new THREE.Vector3(LR, LR * Math.cos(ALPHA[0]), LR * Math.sin(ALPHA[0])) },
+            { tok: 'EVALF', glyph: '×', p: new THREE.Vector3(LR, LR * Math.cos(ALPHA[1]), LR * Math.sin(ALPHA[1])) },
+            { tok: 'EVALI', glyph: '⊞', p: new THREE.Vector3(LR, LR * Math.cos(ALPHA[2]), LR * Math.sin(ALPHA[2])) },
+        ];
+        const GREEN = 0x00ff00;
+        // A₂ triangle edges — thicker + brighter so the large green triangle is unmistakable
+        for (let e = 0; e < 3; e++) {
+            const a = EV[e].p,
+                b = EV[(e + 1) % 3].p;
+            const c = new THREE.CatmullRomCurve3([a, a.clone().lerp(b, 0.5), b]);
+            scene.add(new THREE.Mesh(
+                new THREE.TubeGeometry(c, 24, 0.032, 10, false),
+                new THREE.MeshStandardMaterial({
+                    color: GREEN,
+                    transparent: true,
+                    opacity: 0.92,
+                    metalness: 0.35,
+                    roughness: 0.25,
+                    emissive: GREEN,
+                    emissiveIntensity: 0.35
+                })
+            ));
+        }
+        // Filled A₂ face (the large green triangle) — raised opacity + emissive so it reads clearly
+        {
+            const tg = new THREE.BufferGeometry().setFromPoints([EV[0].p, EV[1].p, EV[2].p]);
+            tg.setIndex([0, 1, 2]);
+            tg.computeVertexNormals();
+            scene.add(new THREE.Mesh(tg, new THREE.MeshStandardMaterial({
+                color: GREEN,
+                transparent: true,
+                opacity: 0.42,
+                side: THREE.DoubleSide,
+                depthWrite: false,
+                emissive: GREEN,
+                emissiveIntensity: 0.18
+            })));
+        }
+
+        // FFUSE3 and FSPLIT3 marks + evaluators
+        {
+            const p = new THREE.Vector3(2 * LR, 0, 0);
+            const m = new THREE.Mesh(new THREE.SphereGeometry(0.1, 18, 18),
+                new THREE.MeshStandardMaterial({ color: 0x0066ff, metalness: 0.3, roughness: 0.25 }));
+            m.position.copy(p);
+            scene.add(m);
+            const g = glyphMark('∋', '#66aaff', 0.44);
+            g.position.copy(p).add(new THREE.Vector3(0.34, 0, 0.2));
+            scene.add(g);
+        }
+        {
+            const g = glyphMark('∈', '#66aaff', 0.44);
+            g.position.set(-0.42, 0, 0.30);
+            scene.add(g);
+        }
+        EV.forEach(({ tok, glyph, p }) => {
+            const gold = tok === 'EVALI';
+            const m = new THREE.Mesh(new THREE.SphereGeometry(gold ? 0.12 : 0.1, 18, 18),
+                new THREE.MeshStandardMaterial({ color: gold ? 0xffff00 : 0x0066ff, metalness: 0.3,
+                    roughness: 0.25 }));
+            m.position.copy(p);
+            scene.add(m);
+            const out = p.clone().sub(CEN).setLength(0.36);
+            const g = glyphMark(glyph, gold ? '#ffff00' : '#8fbcff', 0.42);
+            g.position.copy(p).add(out).add(new THREE.Vector3(0, 0, 0.18));
+            scene.add(g);
+        });
+
+        let stationMeshes = [];
+        let stationBaseColor = [];
+
+        // ─── IP bead + trail (execution head walking the (1,1) ring) ───
+        const ipBead = new THREE.Mesh(
+            new THREE.SphereGeometry(0.20, 24, 24),
+            new THREE.MeshStandardMaterial({
+                color: 0x00ff88,
+                emissive: 0x00ff88,
+                emissiveIntensity: 0.85,
+                metalness: 0.2,
+                roughness: 0.25
+            })
+        );
+        ipBead.position.copy(horn(ang(0)));
+        scene.add(ipBead);
+        // Soft glow shell
+        const ipGlow = new THREE.Mesh(
+            new THREE.SphereGeometry(0.32, 16, 16),
+            new THREE.MeshBasicMaterial({
+                color: 0x00ff88, transparent: true, opacity: 0.22,
+                depthWrite: false
+            })
+        );
+        ipGlow.position.copy(ipBead.position);
+        scene.add(ipGlow);
+        // Trail: recent positions on the ring
+        const TRAIL_N = 48;
+        const trailPts = [];
+        for (let i = 0; i < TRAIL_N; i++) trailPts.push(horn(ang(0)).clone());
+        const trailGeo = new THREE.BufferGeometry().setFromPoints(trailPts);
+        const trailLine = new THREE.Line(
+            trailGeo,
+            new THREE.LineBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.55 })
+        );
+        scene.add(trailLine);
+
+        // ─── Split IP bead + trail (empty arm) ───
+        const splitBead = new THREE.Mesh(
+            new THREE.SphereGeometry(0.18, 24, 24),
+            new THREE.MeshStandardMaterial({
+                color: 0xff99cc,
+                emissive: 0xff99cc,
+                emissiveIntensity: 0.85,
+                metalness: 0.2,
+                roughness: 0.25
+            })
+        );
+        splitBead.visible = false;
+        scene.add(splitBead);
+
+        const splitGlow = new THREE.Mesh(
+            new THREE.SphereGeometry(0.28, 16, 16),
+            new THREE.MeshBasicMaterial({
+                color: 0xff99cc, transparent: true, opacity: 0.22,
+                depthWrite: false
+            })
+        );
+        splitGlow.visible = false;
+        scene.add(splitGlow);
+
+        const SPLIT_TRAIL_N = 48;
+        const splitTrailPts = [];
+        for (let i = 0; i < SPLIT_TRAIL_N; i++) splitTrailPts.push(new THREE.Vector3());
+        const splitTrailGeo = new THREE.BufferGeometry().setFromPoints(splitTrailPts);
+        const splitTrailLine = new THREE.Line(
+            splitTrailGeo,
+            new THREE.LineBasicMaterial({ color: 0xff99cc, transparent: true, opacity: 0.55 })
+        );
+        splitTrailLine.visible = false;
+        scene.add(splitTrailLine);
+
+        let armPlusMat, armMinusMat;
+
+        // ─── ═══════════════════════════════════════════════════════
+        //     SPLIT RADIUS = COMPTON WAVELENGTH  (r_split = λ_C)
+        //     + confirmed geometric invariants from UNIVERSAL_CONSTANTS
+        //     Visual measurement from ⊙ to the FSPLIT3 shell surface
+        //     Distances: √2 (eval), 2 (fuse), √3 (A₂), volumes → 12π
+        // ───────────────────────────────────────────────────────────
+        (function addComptonMeasurement() {
+            const rSplit = LR; // = 1.0 ≡ λ_C
+
+            // 1. Glowing radial line from origin to (rSplit, 0, 0)
+            const pts = [
+                new THREE.Vector3(0, 0, 0),
+                new THREE.Vector3(rSplit, 0, 0)
+            ];
+            const lineGeo = new THREE.BufferGeometry().setFromPoints(pts);
+            const lineMat = new THREE.LineBasicMaterial({
+                color: 0xffaa44,
+                transparent: true,
+                opacity: 0.95,
+                linewidth: 1
+            });
+            const radLine = new THREE.Line(lineGeo, lineMat);
+            scene.add(radLine);
+
+            // Glow tube along the radial line
+            const glowPts = [
+                new THREE.Vector3(0, 0, 0),
+                new THREE.Vector3(rSplit, 0, 0)
+            ];
+            const glowCurve = new THREE.CatmullRomCurve3(glowPts);
+            const glowTube = new THREE.Mesh(
+                new THREE.TubeGeometry(glowCurve, 8, 0.018, 6, false),
+                new THREE.MeshBasicMaterial({
+                    color: 0xffaa44,
+                    transparent: true,
+                    opacity: 0.35,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false
+                })
+            );
+            scene.add(glowTube);
+
+            // 2. Small sphere at the surface point (measurement endpoint)
+            const tipSphere = new THREE.Mesh(
+                new THREE.SphereGeometry(0.07, 16, 16),
+                new THREE.MeshStandardMaterial({
+                    color: 0xffaa44,
+                    emissive: 0xffaa44,
+                    emissiveIntensity: 0.7,
+                    metalness: 0.1,
+                    roughness: 0.2
+                })
+            );
+            tipSphere.position.set(rSplit, 0, 0);
+            scene.add(tipSphere);
+
+            // 3. Dashed circle at split radius (shows the full λ_C circumference)
+            const circPts = [];
+            const segments = 72;
+            for (let i = 0; i <= segments; i++) {
+                const a = (i / segments) * Math.PI * 2;
+                circPts.push(new THREE.Vector3(
+                    rSplit * Math.cos(a),
+                    rSplit * Math.sin(a),
+                    0
+                ));
+            }
+            const circGeo = new THREE.BufferGeometry().setFromPoints(circPts);
+            const circMat = new THREE.LineDashedMaterial({
+                color: 0xffaa44,
+                dashSize: 0.045,
+                gapSize: 0.045,
+                transparent: true,
+                opacity: 0.55
+            });
+            const circLine = new THREE.Line(circGeo, circMat);
+            circLine.computeLineDistances();
+            scene.add(circLine);
+
+            // 4. Second dashed circle tilted 45° for 3D visibility
+            const circPts2 = [];
+            for (let i = 0; i <= segments; i++) {
+                const a = (i / segments) * Math.PI * 2;
+                const x = rSplit * Math.cos(a);
+                const y = rSplit * Math.sin(a) * 0.5;
+                const z = rSplit * Math.sin(a) * 0.5;
+                circPts2.push(new THREE.Vector3(x, y, z));
+            }
+            const circGeo2 = new THREE.BufferGeometry().setFromPoints(circPts2);
+            const circMat2 = new THREE.LineDashedMaterial({
+                color: 0xffaa44,
+                dashSize: 0.04,
+                gapSize: 0.06,
+                transparent: true,
+                opacity: 0.25
+            });
+            const circLine2 = new THREE.Line(circGeo2, circMat2);
+            circLine2.computeLineDistances();
+            scene.add(circLine2);
+
+            // 5. Label "λ_C" at the tip
+            const lambdaLabel = makeTextSprite('λ_C', '#ffaa44', 0.70);
+            lambdaLabel.position.set(rSplit * 1.25, 0.38, 0.0);
+            scene.add(lambdaLabel);
+
+            // 6. Label "r_split" at the origin side
+            const rLabel = makeTextSprite('r_split', '#ffaa44', 0.50);
+            rLabel.position.set(-0.28, 0.28, 0.0);
+            scene.add(rLabel);
+
+            // 7. Dimension bracket: a small arc with arrows
+            const bracketPts = [];
+            for (let i = 0; i <= 20; i++) {
+                const t = i / 20;
+                const angle = t * Math.PI * 0.35;
+                const rad = rSplit + 0.18;
+                bracketPts.push(new THREE.Vector3(
+                    rad * Math.cos(angle),
+                    rad * Math.sin(angle),
+                    0
+                ));
+            }
+            const bracketGeo = new THREE.BufferGeometry().setFromPoints(bracketPts);
+            const bracketMat = new THREE.LineBasicMaterial({
+                color: 0xffaa44,
+                transparent: true,
+                opacity: 0.3
+            });
+            const bracketLine = new THREE.Line(bracketGeo, bracketMat);
+            scene.add(bracketLine);
+
+            // 8. Small arrow markers on the radial line
+            function addArrow(pos, dir, color, size) {
+                const cone = new THREE.Mesh(
+                    new THREE.ConeGeometry(size * 0.35, size, 8),
+                    new THREE.MeshStandardMaterial({
+                        color: color,
+                        emissive: color,
+                        emissiveIntensity: 0.3,
+                        metalness: 0.1,
+                        roughness: 0.3
+                    })
+                );
+                cone.position.copy(pos);
+                const up = new THREE.Vector3(0, 1, 0);
+                const dirN = dir.clone().normalize();
+                cone.quaternion.setFromUnitVectors(up, dirN);
+                scene.add(cone);
+            }
+            // Arrow at origin pointing outward
+            addArrow(
+                new THREE.Vector3(0.12, 0, 0),
+                new THREE.Vector3(1, 0, 0),
+                0xffaa44, 0.14
+            );
+            // Arrow at tip pointing inward
+            addArrow(
+                new THREE.Vector3(rSplit - 0.12, 0, 0),
+                new THREE.Vector3(-1, 0, 0),
+                0xffaa44, 0.14
+            );
+
+            // 9. Glow ring at the split radius (thin torus)
+            const glowRing = new THREE.Mesh(
+                new THREE.TorusGeometry(rSplit, 0.012, 16, 48),
+                new THREE.MeshBasicMaterial({
+                    color: 0xffaa44,
+                    transparent: true,
+                    opacity: 0.25,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false
+                })
+            );
+            glowRing.rotation.x = Math.PI / 2;
+            scene.add(glowRing);
+
+            // 10. A second glow ring at 45°
+            const glowRing2 = new THREE.Mesh(
+                new THREE.TorusGeometry(rSplit, 0.008, 16, 48),
+                new THREE.MeshBasicMaterial({
+                    color: 0xffaa44,
+                    transparent: true,
+                    opacity: 0.12,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false
+                })
+            );
+            glowRing2.rotation.x = Math.PI / 4;
+            glowRing2.rotation.z = Math.PI / 6;
+            scene.add(glowRing2);
+
+            // 11. A small text label "= h/(mc)" near the measurement
+            const eqLabel = makeTextSprite('= h/(mc)', '#ffaa44', 0.40);
+            eqLabel.position.set(rSplit * 0.55, -0.35, 0.0);
+            scene.add(eqLabel);
+
+            // 12. A faint "Compton wavelength" label floating above
+            const cwLabel = makeTextSprite('Compton wavelength', '#ffaa44', 0.38);
+            cwLabel.position.set(rSplit * 0.5, 0.55, 0.0);
+            cwLabel.material.opacity = 0.6;
+            scene.add(cwLabel);
+
+            // ═══════════════════════════════════════════════════════
+            // NEW: Confirmed geometric invariants from the formalization
+            // ═══════════════════════════════════════════════════════
+
+            // 13. Radial line ⊙ → EVALT (one evaluator) labeled √2
+            {
+                const evalP = EV[0].p; // (1, 1, 0)
+                const ptsE = [new THREE.Vector3(0, 0, 0), evalP.clone()];
+                const geoE = new THREE.BufferGeometry().setFromPoints(ptsE);
+                const matE = new THREE.LineBasicMaterial({
+                    color: 0xaaffcc,
+                    transparent: true,
+                    opacity: 0.85
+                });
+                scene.add(new THREE.Line(geoE, matE));
+
+                // glow tube
+                const glowE = new THREE.Mesh(
+                    new THREE.TubeGeometry(new THREE.CatmullRomCurve3(ptsE), 8, 0.012, 6, false),
+                    new THREE.MeshBasicMaterial({
+                        color: 0xaaffcc,
+                        transparent: true,
+                        opacity: 0.25,
+                        blending: THREE.AdditiveBlending,
+                        depthWrite: false
+                    })
+                );
+                scene.add(glowE);
+
+                const sqrt2Label = makeTextSprite('√2', '#aaffcc', 0.55);
+                sqrt2Label.position.copy(evalP.clone().multiplyScalar(0.55).add(new THREE.Vector3(0.15, 0.25, 0.1)));
+                scene.add(sqrt2Label);
+            }
+
+            // 14. Full diameter line ⊙ → FFUSE3 labeled 2
+            {
+                const fuseP = new THREE.Vector3(2 * LR, 0, 0);
+                const ptsF = [new THREE.Vector3(0, 0, 0), fuseP.clone()];
+                const geoF = new THREE.BufferGeometry().setFromPoints(ptsF);
+                const matF = new THREE.LineBasicMaterial({
+                    color: 0x66aaff,
+                    transparent: true,
+                    opacity: 0.7
+                });
+                scene.add(new THREE.Line(geoF, matF));
+
+                const glowF = new THREE.Mesh(
+                    new THREE.TubeGeometry(new THREE.CatmullRomCurve3(ptsF), 12, 0.014, 6, false),
+                    new THREE.MeshBasicMaterial({
+                        color: 0x66aaff,
+                        transparent: true,
+                        opacity: 0.22,
+                        blending: THREE.AdditiveBlending,
+                        depthWrite: false
+                    })
+                );
+                scene.add(glowF);
+
+                const twoLabel = makeTextSprite('2', '#66aaff', 0.55);
+                twoLabel.position.set(1.55, -0.32, 0.15);
+                scene.add(twoLabel);
+
+                // small tip marker at fuse already exists; add a subtle ring
+                const fuseRing = new THREE.Mesh(
+                    new THREE.TorusGeometry(0.14, 0.012, 10, 24),
+                    new THREE.MeshBasicMaterial({ color: 0x66aaff, transparent: true, opacity: 0.5 })
+                );
+                fuseRing.position.copy(fuseP);
+                fuseRing.lookAt(0, 0, 0);
+                scene.add(fuseRing);
+            }
+
+            // 15. One A₂ chord between evaluators labeled √3
+            {
+                const a = EV[0].p;
+                const b = EV[1].p;
+                const mid = a.clone().add(b).multiplyScalar(0.5);
+                const ptsA = [a.clone(), b.clone()];
+                const geoA = new THREE.BufferGeometry().setFromPoints(ptsA);
+                const matA = new THREE.LineBasicMaterial({
+                    color: 0x00ff00,
+                    transparent: true,
+                    opacity: 0.9
+                });
+                scene.add(new THREE.Line(geoA, matA));
+
+                const sqrt3Label = makeTextSprite('√3', '#00ff00', 0.50);
+                sqrt3Label.position.copy(mid.clone().add(new THREE.Vector3(0.25, 0.15, 0.25)));
+                scene.add(sqrt3Label);
+            }
+
+            // 16. Tiny marker + label at the unoccupied tangency / mixed-state center (1,0,0)
+            {
+                const mixed = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.05, 12, 12),
+                    new THREE.MeshBasicMaterial({
+                        color: 0xffffff,
+                        transparent: true,
+                        opacity: 0.7
+                    })
+                );
+                mixed.position.set(LR, 0, 0);
+                scene.add(mixed);
+
+                const mixedLabel = makeTextSprite('(1,0,0) mixed', '#ffffff', 0.38);
+                mixedLabel.position.set(LR + 0.15, -0.22, 0.35);
+                mixedLabel.material.opacity = 0.75;
+                scene.add(mixedLabel);
+            }
+
+            // 17. Volume / 12π annotation floating near the split
+            {
+                const volLabel = makeTextSprite('vol ratio = 12π', '#aaffcc', 0.42);
+                volLabel.position.set(0.3, -0.85, 0.6);
+                scene.add(volLabel);
+
+                const sphereVol = makeTextSprite('sphere 4π/3', '#e8b84b', 0.36);
+                sphereVol.position.set(-0.6, 0.7, 0.4);
+                sphereVol.material.opacity = 0.7;
+                scene.add(sphereVol);
+            }
+        })();
+
+        // ─── Program Group to hold all program-dependent meshes ───
+        const programGroup = new THREE.Group();
+        scene.add(programGroup);
+
+        let posOnLongPath;
+
+        function rebuildProgram(key) {
+            // 1. Clear old meshes from programGroup
+            while (programGroup.children.length > 0) {
+                const obj = programGroup.children[0];
+                programGroup.remove(obj);
+                if (obj.geometry) obj.geometry.dispose();
+                if (obj.material) {
+                    if (Array.isArray(obj.material)) {
+                        obj.material.forEach(m => m.dispose());
+                    } else {
+                        obj.material.dispose();
+                    }
+                }
+            }
+
+            // 2. Load program tokens
+            const rawTokens = PROGRAMS[key];
+            TOKENS = rawTokens.map(name => {
+                const meta = TOKEN_META[name];
+                return {
+                    name: name,
+                    glyph: meta ? meta.glyph : '?',
+                    work: meta ? meta.work : false
+                };
+            });
+            N = TOKENS.length;
+
+            // 3. Find crucial station indices
+            IMSCRIB_I = TOKENS.findIndex(t => t.name === "IMSCRIB");
+            // If IMSCRIB is not present, default to index 0
+            const alignIdx = IMSCRIB_I >= 0 ? IMSCRIB_I : 0;
+            OFF = Math.PI - 2 * Math.PI * alignIdx / N;
+
+            FSPLIT_I = TOKENS.findIndex(t => t.name === "FSPLIT");
+            FFUSE_I = TOKENS.findIndex(t => t.name === "FFUSE");
+
+            // Update UI word representations
+            const glyphWord = document.getElementById('glyph-word');
+            if (glyphWord) {
+                glyphWord.textContent = TOKENS.map(t => t.glyph).join('');
+            }
+            // Update the subtitles text with space-separated uppercase token names
+            const parent = glyphWord ? glyphWord.parentElement : null;
+            if (parent) {
+                const subtitle = parent.nextElementSibling;
+                if (subtitle && subtitle.tagName === 'SPAN') {
+                    subtitle.textContent = TOKENS.map(t => t.name).join(' ');
+                }
+            }
+
+            // 4. Build station meshes and labels
+            stationMeshes = [];
+            stationBaseColor = [];
+            TOKENS.forEach((tok, i) => {
+                const a = ang(i);
+                const p = horn(a);
+                const col = tok.name === "ENGAGR" ? 0xffff00 : (tok.work ? 0x0066ff : 0xffffff);
+                stationBaseColor[i] = col;
+
+                let m;
+                if (tok.name === "IMSCRIB") {
+                    m = new THREE.Mesh(new THREE.SphereGeometry(0.26, 32, 32),
+                        new THREE.MeshStandardMaterial({
+                            color: 0xffd700, emissive: 0x8a6a10, emissiveIntensity: 0.35,
+                            metalness: 0.3, roughness: 0.2
+                        })
+                    );
+                    m.position.copy(p);
+                    programGroup.add(m);
+                    stationMeshes[i] = m;
+
+                    const imG = glyphMark('⊙', '#ffe08a', 0.62);
+                    imG.position.copy(p).add(new THREE.Vector3(0, 0, -0.62));
+                    programGroup.add(imG);
+                } else {
+                    m = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 20),
+                        new THREE.MeshStandardMaterial({
+                            color: col, metalness: 0.3, roughness: 0.25,
+                            emissive: 0x000000, emissiveIntensity: 0
+                        }));
+                    m.position.copy(p);
+                    programGroup.add(m);
+                    stationMeshes[i] = m;
+
+                    const gcol = tok.name === "ENGAGR" ? '#ffff00' : (tok.work ? '#8fbcff' : '#ffffff');
+                    const g = glyphMark(tok.glyph, gcol, 0.44);
+                    g.position.copy(p).add(new THREE.Vector3(0.40 * Math.cos(a), 0.40 * Math.sin(a), 0.30));
+                    programGroup.add(g);
+                }
+            });
+
+            // 5. Build (1,1) sequence tube
+            const loopMat = new THREE.MeshStandardMaterial({
+                color: 0xe8b84b, metalness: 0.35, roughness: 0.3, emissive: 0x3a2c08
+            });
+            const dottedMat = new THREE.MeshStandardMaterial({
+                color: 0xe8b84b, transparent: true, opacity: 0.55, metalness: 0.35, roughness: 0.3, emissive: 0x3a2c08
+            });
+            const samplesPerSegment = 120;
+
+            for (let i = 0; i < N; i++) {
+                const j = (i + 1) % N;
+                const { a1, a2 } = ringArc(i, j);
+                const dA = a2 - a1;
+                const isDottedSegment = (TOKENS[i].name === "CLINK" && TOKENS[j].name === "IFIX");
+
+                const segPts = [];
+                for (let k = 0; k <= samplesPerSegment; k++) {
+                    const t = k / samplesPerSegment;
+                    const a = a1 + dA * t;
+                    segPts.push(horn(a));
+                }
+                if (isDottedSegment) {
+                    for (let s = 0; s + 3 < segPts.length; s += 6) {
+                        const chunk = [segPts[s], segPts[s + 1], segPts[s + 2], segPts[s + 3]];
+                        programGroup.add(new THREE.Mesh(
+                            new THREE.TubeGeometry(new THREE.CatmullRomCurve3(chunk), 8, 0.026, 8, false),
+                            dottedMat
+                        ));
+                    }
+                } else {
+                    programGroup.add(new THREE.Mesh(
+                        new THREE.TubeGeometry(new THREE.CatmullRomCurve3(segPts), 64, 0.028, 12, false),
+                        loopMat
+                    ));
+                }
+            }
+
+            // 6. Build splitting dual arms if FSPLIT and FFUSE exist
+            if (FSPLIT_I >= 0 && FFUSE_I >= 0) {
+                const armPlusPts = sampleRingWay(FSPLIT_I, FFUSE_I, +1, 80);
+                const armPlusCurve = new THREE.CatmullRomCurve3(armPlusPts);
+                const armPlusTubeGeo = new THREE.TubeGeometry(armPlusCurve, 80, 0.045, 8, false);
+                armPlusMat = new THREE.MeshStandardMaterial({
+                    color: 0x66ccff, transparent: true, opacity: 0.15, metalness: 0.4, roughness: 0.2,
+                    emissive: 0x66ccff, emissiveIntensity: 0.15
+                });
+                const armPlusMesh = new THREE.Mesh(armPlusTubeGeo, armPlusMat);
+                programGroup.add(armPlusMesh);
+
+                const armMinusPts = sampleRingWay(FSPLIT_I, FFUSE_I, -1, 160);
+                const armMinusCurve = new THREE.CatmullRomCurve3(armMinusPts);
+                const armMinusTubeGeo = new THREE.TubeGeometry(armMinusCurve, 160, 0.045, 8, false);
+                armMinusMat = new THREE.MeshStandardMaterial({
+                    color: 0xff99cc, transparent: true, opacity: 0.15, metalness: 0.4, roughness: 0.2,
+                    emissive: 0xff99cc, emissiveIntensity: 0.15
+                });
+                const armMinusMesh = new THREE.Mesh(armMinusTubeGeo, armMinusMat);
+                programGroup.add(armMinusMesh);
+
+                posOnLongPath = function(u) {
+                    let a0 = ang(FSPLIT_I);
+                    let a1 = ang(FFUSE_I);
+                    if (a1 >= a0) a1 -= 2 * Math.PI;
+                    const a = a0 + (a1 - a0) * u;
+                    return horn(a);
+                };
+            } else {
+                armPlusMat = undefined;
+                armMinusMat = undefined;
+                posOnLongPath = undefined;
+            }
+
+            // 7. Rebuild local/exotic edge paths based on present tokens
+            const firstIdx = name => TOKENS.findIndex(t => t.name === name);
+            const CLINK1 = firstIdx("CLINK");
+            const IFIX_I = firstIdx("IFIX");
+            const AREV_I = firstIdx("AREV");
+            const TANCH_I = firstIdx("TANCH");
+            const EVALT_I = firstIdx("EVALT");
+            const ENGAGR_I = firstIdx("ENGAGR");
+            const CLINK2 = (() => {
+                for (let i = CLINK1 + 1; i < N; i++)
+                    if (TOKENS[i].name === "CLINK") return i;
+                return -1;
+            })();
+
+            const ORIGIN = new THREE.Vector3(0, 0, 0);
+            const station = i => horn(ang(i));
+
+            function edgePath(aFrom, aToOrOrigin, { turns = 0, lift = 0.0, n = 240, toOrigin = false } = {}) {
+                const a0 = aFrom;
+                const p0 = horn(a0);
+                const p1 = toOrigin ? ORIGIN.clone() : horn(aToOrOrigin);
+
+                let a1;
+                if (toOrigin) {
+                    a1 = Math.PI;
+                    while (a1 <= a0 + 1e-9) a1 += 2 * Math.PI;
+                    a1 += Math.max(0, Math.round(turns)) * 2 * Math.PI;
+                } else {
+                    a1 = aToOrOrigin;
+                    if (a1 <= a0) a1 += 2 * Math.PI;
+                }
+
+                const pts = [];
+                for (let k = 0; k <= n; k++) {
+                    const t = k / n;
+                    if (k === 0) { pts.push(p0.clone()); continue; }
+                    if (k === n) { pts.push(p1.clone()); continue; }
+
+                    const a = a0 + (a1 - a0) * t;
+                    const extra = turns * 2 * Math.PI * Math.sin(Math.PI * t);
+                    const u = a;
+                    const v = a + extra;
+                    let p = tp(u, v);
+                    if (lift > 0) {
+                        const c = new THREE.Vector3(R * Math.cos(u), R * Math.sin(u), 0);
+                        const nrm = p.clone().sub(c);
+                        const nl = nrm.length() || 1;
+                        const env = Math.sin(Math.PI * t);
+                        p = p.add(nrm.multiplyScalar((lift * env) / nl));
+                    }
+                    if (toOrigin && t > 0.80) {
+                        const s = (t - 0.80) / 0.20;
+                        p = p.lerp(ORIGIN, s * s);
+                    }
+                    pts.push(p);
+                }
+                pts[0].copy(p0);
+                pts[pts.length - 1].copy(p1);
+                return pts;
+            }
+
+            function solidTube(pts, color, rad = 0.042) {
+                programGroup.add(new THREE.Mesh(
+                    new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 96, rad, 8, false),
+                    new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.5, metalness: 0.4, roughness: 0.2 })
+                ));
+            }
+
+            // Helper function to draw dashed edges
+            function dashedEdge(pts, color, opacity, rad = 0.018) {
+                const mat = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.4, transparent: true, opacity });
+                for (let i = 0; i + 1 < pts.length; i += 3) {
+                    const j = Math.min(i + 2, pts.length - 1);
+                    const seg = pts.slice(i, j + 1);
+                    if (seg.length < 2) continue;
+                    programGroup.add(new THREE.Mesh(
+                        new THREE.TubeGeometry(new THREE.CatmullRomCurve3(seg), 6, rad, 6, false), mat
+                    ));
+                }
+            }
+
+            function arrowHead(pts, color, size = 0.13) {
+                const tip = pts[pts.length - 1], prev = pts[pts.length - 5] || pts[pts.length - 2] || pts[0];
+                const dir = tip.clone().sub(prev);
+                if (dir.lengthSq() < 1e-12) return;
+                dir.normalize();
+                const cone = new THREE.Mesh(
+                    new THREE.ConeGeometry(size * 0.45, size, 10),
+                    new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.6 })
+                );
+                cone.position.copy(tip.clone().sub(dir.clone().multiplyScalar(size * 0.6)));
+                cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+                programGroup.add(cone);
+            }
+
+            function edgeLabel(p, text, color) {
+                const sp = makeTextSprite(text, color, 0.45);
+                sp.position.copy(p);
+                programGroup.add(sp);
+            }
+
+            const mid = pts => pts[Math.floor(pts.length / 2)].clone();
+            const EXO = 0xff66aa;
+
+            // Identity hubs: work opcodes compose through ⊙
+            if (CLINK1 >= 0 && IMSCRIB_I >= 0) {
+                const pC = station(CLINK1);
+                const cCoil = edgePath(ang(CLINK1), null, { turns: 2, lift: 0.05, n: 320, toOrigin: true });
+                solidTube(cCoil, 0xffff00, 0.040);
+                arrowHead(cCoil, 0xffff00);
+                edgeLabel(pC.clone().multiplyScalar(1.15).add(new THREE.Vector3(0, 0.15, 0.1)), 'CLINK → ⊙', '#ffff00');
+            }
+            if (IFIX_I >= 0 && IMSCRIB_I >= 0) {
+                const pI = station(IFIX_I);
+                const iCoil = edgePath(ang(IFIX_I), null, { turns: 2, lift: 0.05, n: 320, toOrigin: true });
+                solidTube(iCoil, 0xffff00, 0.040);
+                arrowHead(iCoil, 0xffff00);
+                edgeLabel(pI.clone().multiplyScalar(1.15).add(new THREE.Vector3(0, 0.15, 0.1)), 'IFIX → ⊙', '#ffff00');
+            }
+            // Empty segment label if CLINK & IFIX are adjacent
+            if (CLINK1 >= 0 && IFIX_I >= 0 && (CLINK1 + 1) % N === IFIX_I) {
+                const { a1, a2 } = ringArc(CLINK1, IFIX_I);
+                const ptsCI = edgePath(a1, a2, { turns: 0, lift: 0, n: 96 });
+                edgeLabel(mid(ptsCI).add(new THREE.Vector3(0, 0, 0.34)), 'CLINK↔IFIX (empty)', '#ffffff');
+            }
+
+            // R0 bus
+            if (AREV_I >= 0 && IFIX_I >= 0) {
+                const pts = busChord(AREV_I, IFIX_I);
+                dashedEdge(pts, 0x66aaff, 0.8, 0.020);
+                arrowHead(pts, 0x66aaff, 0.11);
+            }
+            if (AREV_I >= 0 && TANCH_I >= 0) {
+                const pts = busChord(AREV_I, TANCH_I);
+                dashedEdge(pts, 0x66aaff, 0.8, 0.020);
+                arrowHead(pts, 0x66aaff, 0.11);
+                edgeLabel(mid(pts).add(new THREE.Vector3(0, 0, 0.30)), 'R0 bus', '#66aaff');
+            }
+
+            function busChord(i, j) {
+                const a = station(i), b = station(j);
+                const m = a.clone().add(b).multiplyScalar(0.5);
+                if (m.length() > 0.01) m.multiplyScalar(1.25);
+                else m.set(0, 0.4, 0.4);
+                const curve = new THREE.CatmullRomCurve3([a, m, b]);
+                const pts = curve.getPoints(64);
+                pts[0].copy(a);
+                pts[pts.length - 1].copy(b);
+                return pts;
+            }
+
+            // Exotic flows
+            if (EVALT_I >= 0 && IFIX_I >= 0) {
+                const pts = edgePath(ang(EVALT_I), ang(IFIX_I), { turns: 0, lift: 0.07, n: 180 });
+                dashedEdge(pts, EXO, 0.7, 0.020);
+                arrowHead(pts, EXO, 0.10);
+                edgeLabel(mid(pts).add(new THREE.Vector3(0.1, -0.15, 0.18)), '+ → ¬', '#ff66aa');
+            }
+            if (ENGAGR_I >= 0 && IMSCRIB_I >= 0) {
+                const pts = edgePath(ang(ENGAGR_I), null, { turns: 2, lift: 0.06, n: 280, toOrigin: true });
+                solidTube(pts, EXO, 0.032);
+                arrowHead(pts, EXO, 0.11);
+                edgeLabel(station(ENGAGR_I).clone().multiplyScalar(1.15).add(new THREE.Vector3(0, 0.12, 0.1)), '⊞→⊙', '#ff66aa');
+            }
+            if (CLINK2 >= 0 && TANCH_I >= 0) {
+                const pts = edgePath(ang(CLINK2), ang(TANCH_I), { turns: 0, lift: 0.05, n: 160 });
+                dashedEdge(pts, EXO, 0.75, 0.020);
+                arrowHead(pts, EXO, 0.10);
+                edgeLabel(mid(pts).add(new THREE.Vector3(-0.1, 0.08, -0.15)), 'CLINK₂→TANCH', '#ff66aa');
+            }
+
+            // Seal ring
+            const vi = TOKENS.findIndex(t => t.name === "VINIT");
+            if (vi >= 0) {
+                const sp = horn(ang(vi));
+                const ring = new THREE.Mesh(
+                    new THREE.TorusGeometry(0.22, 0.03, 12, 32),
+                    new THREE.MeshBasicMaterial({ color: 0xe8524b })
+                );
+                ring.position.copy(sp);
+                ring.lookAt(0, 0, 0);
+                programGroup.add(ring);
+            }
+
+            // 8. Re-initialize execution state
+            exec.ip = 0;
+            exec.next = 1 % N;
+            exec.phase = 0;
+            exec.tick = 0;
+            exec.winding = 0;
+            exec.stack = [];
+            exec.lastFired = -1;
+            exec.pulse = 0;
+
+            for (let i = 0; i < TRAIL_N; i++) trailPts[i].copy(horn(ang(0)));
+            trailGeo.setFromPoints(trailPts);
+            setIpWorld(horn(ang(0)));
+
+            // Reset split visualization bead & trails
+            splitBead.visible = false;
+            splitGlow.visible = false;
+            splitTrailLine.visible = false;
+            if (FSPLIT_I >= 0) {
+                const startP = horn(ang(FSPLIT_I));
+                for (let i = 0; i < SPLIT_TRAIL_N; i++) splitTrailPts[i].copy(startP);
+                splitTrailGeo.setFromPoints(splitTrailPts);
+            }
+
+            // Trigger cold boot fireToken
+            fireToken(0);
+            exec.tick = 1;
+            exec.winding = 0;
+
+            highlightStations();
+            updateExecHud();
+        }
+
+        // Initialize select element listener
+        document.getElementById('program-select').addEventListener('change', (e) => {
+            rebuildProgram(e.target.value);
+        });
+
+        // ─── Helpers ───
+        function glyphMark(glyph, color, size = 0.42) {
+            const c = document.createElement('canvas');
+            c.width = 128;
+            c.height = 128;
+            const x = c.getContext('2d');
+            x.textAlign = 'center';
+            x.textBaseline = 'middle';
+            x.font = 'bold 92px system-ui';
+            x.lineWidth = 9;
+            x.strokeStyle = 'rgba(0,0,0,0.92)';
+            x.strokeText(glyph, 64, 64);
+            x.fillStyle = color;
+            x.fillText(glyph, 64, 64);
+            const sp = new THREE.Sprite(
+                new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthTest: false })
+            );
+            sp.scale.set(size, size, 1);
+            return sp;
+        }
+
+        function makeTextSprite(text, color, scale = 0.5) {
+            const c = document.createElement('canvas');
+            c.width = 512;
+            c.height = 128;
+            const x = c.getContext('2d');
+            x.textAlign = 'center';
+            x.textBaseline = 'middle';
+            x.font = 'bold 56px system-ui, sans-serif';
+            // Shadow for readability
+            x.shadowColor = 'rgba(0,0,0,0.9)';
+            x.shadowBlur = 14;
+            x.fillStyle = color;
+            x.fillText(text, 256, 64);
+            // draw again without shadow on top for crispness
+            x.shadowColor = 'transparent';
+            x.fillStyle = color;
+            x.fillText(text, 256, 64);
+            const sp = new THREE.Sprite(
+                new THREE.SpriteMaterial({
+                    map: new THREE.CanvasTexture(c),
+                    transparent: true,
+                    depthTest: false,
+                    depthWrite: false
+                })
+            );
+            const aspect = 512 / 128;
+            sp.scale.set(scale * aspect, scale, 1);
+            return sp;
+        }
+
+        // ─── Execution animation: IP walks the cyclic (1,1) ring ───
+        // Frame: word fixed in memory; green bead = instruction pointer.
+        // Dual (ROTAT): same relative motion as the ring rotating under a fixed "now".
+        const exec = {
+            playing: true,
+            ip: 0,              // current station index (just arrived / firing)
+            next: 1,           // next station (wraps)
+            phase: 0,          // 0..1 progress along arc ip → next
+            tick: 0,           // completed token firings
+            winding: 0,        // full ring revolutions (IP wraps past end)
+            speed: 1,          // stations per second (approx)
+            dwell: 0.28,       // fraction of segment spent "firing" at station
+            stack: [],         // B4 stack (kernel carrier: N/T/F/B)
+            lastFired: -1,
+            pulse: 0
+        };
+
+        // B4 stack effects mirroring mOMonadOS kernel token semantics.
+        function fireToken(i) {
+            const t = TOKENS[i];
+            const push = v => { exec.stack.push(v); if (exec.stack.length > 8) exec.stack.shift(); };
+            const pop = () => (exec.stack.length ? exec.stack.pop() : 'N');
+            switch (t.name) {
+                case 'VINIT':  push('N'); break;
+                case 'IMSCRIB': /* self-read into regs — no stack change */ break;
+                case 'FSPLIT':  push(exec.stack.length ? exec.stack[exec.stack.length - 1] : 'N'); break;
+                case 'EVALT': {
+                    const v = pop();
+                    push(v === 'T' ? 'T' : (v === 'B' ? 'N' : 'N'));
+                    break;
+                }
+                case 'EVALF': {
+                    const v = pop();
+                    push(v === 'F' ? 'F' : (v === 'B' ? 'N' : 'N'));
+                    break;
+                }
+                case 'FFUSE': {
+                    const a = pop(), b = pop();
+                    // join: N|x=x, T|F=B, etc. simplified
+                    if (a === 'B' || b === 'B' || (a === 'T' && b === 'F') || (a === 'F' && b === 'T')) push('B');
+                    else if (a === 'N') push(b);
+                    else if (b === 'N') push(a);
+                    else push(a);
+                    break;
+                }
+                case 'ENGAGR': push('B'); break;
+                case 'IFIX':   pop(); break;
+                case 'TANCH':  pop(); break;
+                case 'CLINK':
+                case 'AREV':
+                case 'AFWD':
+                default: break;
+            }
+            exec.tick++;
+            exec.lastFired = i;
+            exec.pulse = 1;
+            if (i === N - 1) exec.winding++;
+            updateExecHud();
+        }
+
+        function updateExecHud() {
+            const t = TOKENS[exec.ip];
+            const el = document.getElementById('ip-line');
+            const meta = document.getElementById('ip-meta');
+            const stackEl = document.getElementById('stack-line');
+            if (el) {
+                el.textContent = `IP @ ${exec.ip}  ${t.glyph} ${t.name}` +
+                    (t.work ? '  · work' : '  · no-work') +
+                    (t.name === 'ENGAGR' ? '  · B beats T' : '') +
+                    (t.name === 'IMSCRIB' ? '  · pinch / identity' : '');
+            }
+            if (meta) {
+                meta.textContent =
+                    `tick ${exec.tick} · winding ${exec.winding} · phase ${(exec.phase * 100) | 0}%` +
+                    ` · head walks ring (word fixed)`;
+            }
+            if (stackEl) {
+                const s = exec.stack.length ? exec.stack.join(' ') : '∅';
+                stackEl.textContent = `B4 stack: [ ${s} ]`;
+            }
+            // chips
+            const chips = document.getElementById('seq-chips');
+            if (chips) {
+                chips.innerHTML = TOKENS.map((tok, i) => {
+                    let cls = 'tok-chip';
+                    if (i === exec.ip) cls += ' on';
+                    else if (i === exec.lastFired) cls += ' done';
+                    return `<span class="${cls}" title="${tok.name}">${tok.glyph}</span>`;
+                }).join('');
+            }
+            // arm line
+            const armLine = document.getElementById('arm-line');
+            if (armLine) {
+                const isSplitting = (FSPLIT_I >= 0 && FFUSE_I >= 0 && exec.ip >= FSPLIT_I && exec.ip < FFUSE_I);
+                if (isSplitting) {
+                    const currentStation = TOKENS[exec.ip].name;
+                    armLine.textContent = `◇ arms: SPLITTING (IP⁺ @ ${currentStation} | IP⁻ traveling empty path)`;
+                    armLine.style.color = '#00ff88';
+                } else {
+                    armLine.textContent = `◇ arms: idle`;
+                    armLine.style.color = '#ff99cc';
+                }
+            }
+        }
+
+        function highlightStations() {
+            for (let i = 0; i < N; i++) {
+                const m = stationMeshes[i];
+                if (!m || !m.material) continue;
+                const on = (i === exec.ip);
+                if (i === IMSCRIB_I) {
+                    m.material.emissiveIntensity = on ? 1.1 : 0.35;
+                    m.scale.setScalar(on ? 1.15 : 1);
+                } else {
+                    m.material.emissive.setHex(on ? 0x00ff88 : 0x000000);
+                    m.material.emissiveIntensity = on ? 0.7 : 0;
+                    m.scale.setScalar(on ? 1.35 : 1);
+                }
+            }
+        }
+
+        /** Position on (1,1) arc from station i toward j at local phase u∈[0,1]. */
+        function posOnArc(i, j, u) {
+            const { a1, a2 } = ringArc(i, j);
+            return horn(a1 + (a2 - a1) * u);
+        }
+
+        function setIpWorld(p) {
+            ipBead.position.copy(p);
+            ipGlow.position.copy(p);
+            // trail
+            for (let i = 0; i < TRAIL_N - 1; i++) trailPts[i].copy(trailPts[i + 1]);
+            trailPts[TRAIL_N - 1].copy(p);
+            trailGeo.setFromPoints(trailPts);
+        }
+
+        // Build chips once
+        (function initChips() {
+            const programSelect = document.getElementById('program-select');
+            if (programSelect) {
+                const groups = {
+                    "Default": ["agent_loop", "bootstrap_loop", "replicative_opening_loop"],
+                    "Canonical (I-XII)": [
+                        "I_Dialetheic_Bootstrap", "II_Void_Genesis", "III_Anchor_Protocol", "IV_Dual_Bootstrap",
+                        "V_Linear_Chain", "VI_Empty_Bootstrap", "VII_Parakernel", "VIII_Frobenius_Kernel",
+                        "IX_Chiral_Pairs", "X_Truth_Machine", "XI_Eternal_Return", "XII_ROM_Burn"
+                    ],
+                    "Continuous (XIII-XVI)": [
+                        "XIII_Heartbeat", "XIV_Tier_Climber", "XV_Frobenius_Oscillator", "XVI_Paradox_Daemon"
+                    ],
+                    "Novel (XVII-XIX)": [
+                        "XVII_Nested_Fork_Labyrinth", "XVIII_Terminal_Sink_Protocol", "XIX_Mirrorgram"
+                    ],
+                    "Shunted (XX-XXVIII)": [
+                        "XX_Shunt_Bridge", "XXI_Anchor_Paradox", "XXII_Chiral_ROM", "XXIII_Dual_Kernel_Shunt",
+                        "XXIV_Heartbeat_Paradox", "XXV_Recursive_Kernel", "XXVI_Truth_Spiral", "XXVII_Omni_Spine",
+                        "XXVIII_Somatic_Shunt"
+                    ],
+                    "Compounds": [
+                        "Verticullum", "Chimerium", "Apertix", "Praxeum", "Retiarius", "Frigorix", "Bifrons",
+                        "Punctum", "Syndexios", "Katachthon", "Diabaton"
+                    ],
+                    "Rebis Arranger (I-XII)": [
+                        "Rebis_I_Dialetheic_Bootstrap", "Rebis_II_Void_Genesis", "Rebis_III_Anchor_Protocol",
+                        "Rebis_IV_Dual_Bootstrap", "Rebis_V_Linear_Chain", "Rebis_VI_Empty_Bootstrap",
+                        "Rebis_VII_Parakernel", "Rebis_VIII_Frobenius_Kernel", "Rebis_IX_Chiral_Pairs",
+                        "Rebis_X_Truth_Machine", "Rebis_XI_Eternal_Return", "Rebis_XII_ROM_Burn"
+                    ]
+                };
+
+                for (const [groupName, keys] of Object.entries(groups)) {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = groupName;
+                    keys.forEach(key => {
+                        const opt = document.createElement('option');
+                        opt.value = key;
+                        opt.textContent = key.replace(/_/g, ' ');
+                        optgroup.appendChild(opt);
+                    });
+                    programSelect.appendChild(optgroup);
+                }
+            }
+
+            rebuildProgram("agent_loop");
+        })();
+
+        // Controls
+        const btnPlay = document.getElementById('btn-play');
+        const btnStep = document.getElementById('btn-step');
+        const btnReset = document.getElementById('btn-reset');
+        const speedSel = document.getElementById('speed');
+
+        function setPlaying(on) {
+            exec.playing = on;
+            if (btnPlay) {
+                btnPlay.textContent = on ? '❚❚ Pause' : '▶ Play';
+                btnPlay.classList.toggle('active', on);
+            }
+        }
+        if (btnPlay) btnPlay.addEventListener('click', () => setPlaying(!exec.playing));
+        if (speedSel) speedSel.addEventListener('change', () => {
+            exec.speed = parseFloat(speedSel.value) || 1;
+        });
+        if (btnReset) btnReset.addEventListener('click', () => {
+            exec.ip = 0;
+            exec.next = 1 % N;
+            exec.phase = 0;
+            exec.tick = 0;
+            exec.winding = 0;
+            exec.stack = [];
+            exec.lastFired = -1;
+            exec.pulse = 0;
+            for (let i = 0; i < TRAIL_N; i++) trailPts[i].copy(horn(ang(0)));
+            trailGeo.setFromPoints(trailPts);
+            setIpWorld(horn(ang(0)));
+            fireToken(0);
+            exec.tick = 1;
+            exec.winding = 0;
+
+            // Reset splitting visualization state
+            if (typeof splitBead !== 'undefined') {
+                splitBead.visible = false;
+                splitGlow.visible = false;
+                splitTrailLine.visible = false;
+                if (FSPLIT_I >= 0) {
+                    const startP = horn(ang(FSPLIT_I));
+                    for (let i = 0; i < SPLIT_TRAIL_N; i++) splitTrailPts[i].copy(startP);
+                    splitTrailGeo.setFromPoints(splitTrailPts);
+                }
+            }
+            if (typeof armPlusMat !== 'undefined' && armPlusMat) {
+                armPlusMat.opacity = 0.15;
+                armPlusMat.emissiveIntensity = 0.15;
+            }
+            if (typeof armMinusMat !== 'undefined' && armMinusMat) {
+                armMinusMat.opacity = 0.15;
+                armMinusMat.emissiveIntensity = 0.15;
+            }
+
+            highlightStations();
+            updateExecHud();
+            setPlaying(false);
+        });
+
+        function advanceToNextStation() {
+            // finished arc ip → next: fire is already done at start of dwell;
+            // move indices forward
+            exec.ip = exec.next;
+            exec.next = (exec.ip + 1) % N;
+            exec.phase = 0;
+            fireToken(exec.ip);
+            highlightStations();
+        }
+
+        if (btnStep) btnStep.addEventListener('click', () => {
+            setPlaying(false);
+            // jump to end of current segment and fire next
+            advanceToNextStation();
+            setIpWorld(horn(ang(exec.ip)));
+        });
+
+        addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                setPlaying(!exec.playing);
+            } else if (e.code === 'ArrowRight') {
+                e.preventDefault();
+                setPlaying(false);
+                advanceToNextStation();
+                setIpWorld(horn(ang(exec.ip)));
+            } else if (e.code === 'KeyR' && !e.metaKey && !e.ctrlKey) {
+                if (btnReset) btnReset.click();
+            }
+        });
+
+        // ─── Resize & animate ───
+        function resize() {
+            camera.aspect = innerWidth / innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(innerWidth, innerHeight);
+        }
+        addEventListener('resize', resize);
+
+        let lastTs = performance.now();
+        (function animate(now) {
+            requestAnimationFrame(animate);
+            const dt = Math.min(0.05, (now - lastTs) / 1000);
+            lastTs = now;
+
+            if (exec.playing) {
+                // phase advances; first dwell fraction = sit on station (already fired)
+                // remainder = travel along (1,1) to next
+                exec.phase += dt * exec.speed;
+                while (exec.phase >= 1) {
+                    exec.phase -= 1;
+                    advanceToNextStation();
+                }
+            }
+
+            // Map phase: [0, dwell] hold at ip; (dwell, 1] lerp to next
+            let u;
+            if (exec.phase <= exec.dwell) {
+                u = 0;
+            } else {
+                u = (exec.phase - exec.dwell) / (1 - exec.dwell);
+            }
+            const p = posOnArc(exec.ip, exec.next, Math.min(1, Math.max(0, u)));
+            setIpWorld(p);
+
+            // Splitting animation logic
+            const isSplitting = (FSPLIT_I >= 0 && FFUSE_I >= 0 && exec.ip >= FSPLIT_I && exec.ip < FFUSE_I);
+            if (isSplitting && typeof posOnLongPath === 'function') {
+                if (!splitBead.visible) {
+                    splitBead.visible = true;
+                    splitGlow.visible = true;
+                    splitTrailLine.visible = true;
+                    // snap trail initially to starting point
+                    const startP = horn(ang(FSPLIT_I));
+                    for (let i = 0; i < SPLIT_TRAIL_N; i++) splitTrailPts[i].copy(startP);
+                    splitTrailGeo.setFromPoints(splitTrailPts);
+                }
+
+                // Make the tubes glow
+                if (typeof armPlusMat !== 'undefined') {
+                    armPlusMat.opacity = 0.85;
+                    armPlusMat.emissiveIntensity = 0.85;
+                    armMinusMat.opacity = 0.85;
+                    armMinusMat.emissiveIntensity = 0.85;
+                }
+
+                // Calculate split progress dynamically based on number of split segments
+                const numSplitSegments = FFUSE_I - FSPLIT_I;
+                const segmentIndex = exec.ip - FSPLIT_I;
+                const pSplit = (segmentIndex + Math.min(1, Math.max(0, u))) / numSplitSegments;
+
+                // Update split bead position along empty arm path (long path)
+                const posSplit = posOnLongPath(pSplit);
+                splitBead.position.copy(posSplit);
+                splitGlow.position.copy(posSplit);
+
+                // Update split trail
+                for (let i = 0; i < SPLIT_TRAIL_N - 1; i++) {
+                    splitTrailPts[i].copy(splitTrailPts[i + 1]);
+                }
+                splitTrailPts[SPLIT_TRAIL_N - 1].copy(posSplit);
+                splitTrailGeo.setFromPoints(splitTrailPts);
+            } else {
+                if (splitBead.visible) {
+                    splitBead.visible = false;
+                    splitGlow.visible = false;
+                    splitTrailLine.visible = false;
+                }
+
+                // Return tubes to idle glow
+                if (typeof armPlusMat !== 'undefined') {
+                    armPlusMat.opacity = 0.15;
+                    armPlusMat.emissiveIntensity = 0.15;
+                    armMinusMat.opacity = 0.15;
+                    armMinusMat.emissiveIntensity = 0.15;
+                }
+            }
+
+            // Pulse the bead when a token fires
+            if (exec.pulse > 0) {
+                exec.pulse = Math.max(0, exec.pulse - dt * 2.5);
+            }
+            const s = 1 + 0.35 * exec.pulse;
+            ipBead.scale.setScalar(s);
+            ipGlow.scale.setScalar(1 + 0.5 * exec.pulse);
+            ipGlow.material.opacity = 0.15 + 0.35 * exec.pulse;
+
+            if (isSplitting) {
+                splitBead.scale.setScalar(s * 0.9);
+                splitGlow.scale.setScalar(0.9 * (1 + 0.5 * exec.pulse));
+                splitGlow.material.opacity = 0.15 + 0.35 * exec.pulse;
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        })(performance.now());
+    </script>
+</body>
+</html>

@@ -595,8 +595,11 @@ Stopped after {} ticks.", ran);
                     sprintln!("diversity:{}/12", snap.token_diversity);
                     sprintln!("self_ref: {}", snap.self_ref);
                     sprintln!("frob_ord: {}", snap.frobenius_order);
+                    // Show static and effective separately — VII is the case that
+                    // diverges (static false, b_live > 0 → effective true → tier climbs).
                     let eff_dial = snap.dialetheia_complete || snap.b_live_ticks > 0;
-                    sprintln!("dialeth:  {} (b_live_ticks={})", eff_dial, snap.b_live_ticks);
+                    sprintln!("dialeth:  static={} effective={} (b_live_ticks={})",
+                        snap.dialetheia_complete, eff_dial, snap.b_live_ticks);
                     sprintln!("period:   {}", snap.period);
                     sprintln!("atomic_reentry:        {}", snap.atomic_reentry);
                     sprintln!("bifurcation_revisited: {}", snap.bifurcation_revisited);

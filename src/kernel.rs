@@ -388,13 +388,31 @@ impl Kernel {
         }
     }
 
+    /// Install `prog` and zero runtime evidence so a subsequent `snapshot`
+    /// reports the *static* classification of the new program (not the previous
+    /// program's b_live / winding / stale tier). Without this, VII→XII handoffs
+    /// (and any `load` before the first tick) left the old snapshot in place.
+    /// Stack and registers are cleared so leftover B from a prior program cannot
+    /// fake b_live on the next one.
+    fn install_program(&mut self, prog: Program) {
+        self.program = prog;
+        self.ip = 0;
+        self.fork_depth = 0;
+        self.halted = false;
+        self.phase = Phase::Think;
+        self.b_live_count = 0;
+        self.gate_discrimination_count = 0;
+        self.value_trace = [B4::N; 16];
+        self.value_trace_head = 0;
+        self.winding_count = 0;
+        self.stack.clear();
+        self.registers.clear();
+        self.snapshot = Some(self_imscribe(&self.program));
+    }
+
     pub fn load_canonical(&mut self, idx: usize) {
         if let Some(prog) = canonical(idx) {
-            self.program = prog;
-            self.ip = 0;
-            self.fork_depth = 0;
-            self.halted = false;
-            self.phase = Phase::Think;
+            self.install_program(prog);
         }
     }
 
@@ -404,20 +422,12 @@ impl Kernel {
     /// first wrap (4 ticks) is what actually sets `winding_count > 0`; loading alone only
     /// gets you the two structural preconditions (atomic_reentry, bifurcation_revisited).
     pub fn load_replicative(&mut self) {
-        self.program = crate::tokens::replicative_opening_loop();
-        self.ip = 0;
-        self.fork_depth = 0;
-        self.halted = false;
-        self.phase = Phase::Think;
+        self.install_program(crate::tokens::replicative_opening_loop());
     }
 
     pub fn load_continuous(&mut self, idx: usize) -> bool {
         if let Some(prog) = continuous_program(idx) {
-            self.program = prog;
-            self.ip = 0;
-            self.fork_depth = 0;
-            self.halted = false;
-            self.phase = Phase::Think;
+            self.install_program(prog);
             true
         } else {
             false
@@ -426,11 +436,7 @@ impl Kernel {
 
     pub fn load_novel(&mut self, idx: usize) -> bool {
         if let Some(prog) = novel_program(idx) {
-            self.program = prog;
-            self.ip = 0;
-            self.fork_depth = 0;
-            self.halted = false;
-            self.phase = Phase::Think;
+            self.install_program(prog);
             true
         } else {
             false
@@ -439,11 +445,7 @@ impl Kernel {
 
     pub fn load_shunted(&mut self, idx: usize) -> bool {
         if let Some(prog) = shunted_program(idx) {
-            self.program = prog;
-            self.ip = 0;
-            self.fork_depth = 0;
-            self.halted = false;
-            self.phase = Phase::Think;
+            self.install_program(prog);
             true
         } else {
             false
@@ -452,11 +454,7 @@ impl Kernel {
 
     pub fn load_compound(&mut self, idx: usize) -> bool {
         if let Some(prog) = compound_program(idx) {
-            self.program = prog;
-            self.ip = 0;
-            self.fork_depth = 0;
-            self.halted = false;
-            self.phase = Phase::Think;
+            self.install_program(prog);
             true
         } else {
             false
@@ -570,13 +568,15 @@ pub fn self_imscribe(prog: &Program) -> Snapshot {
         }
     };
 
-    // ── Dialetheia complete: presence check AND cyclic-order check ──
-    // For each ENGAGR, there must be at least one EVALT or EVALF that
-    // follows it before the next ENGAGR.
-    // Scan WRAPS (cyclic) — programs are cyclic graphs; B pushed by ENGAGR
+    // ── Dialetheia complete: presence check AND cyclic reachability ──
+    // Programs are cyclic graphs (end wraps to start). B pushed by ENGAGR
     // persists across the cycle boundary and can reach gates on the next
-    // iteration. The scan respects this: for each ENGAGR, we search forward
-    // modulo n until we hit the next ENGAGR or exhaust the program.
+    // revolution — so the static scan MUST be cyclic, not a linear
+    // end-of-program cut, and MUST NOT stop at an intermediate ENGAGR.
+    // For each ENGAGR, walk forward modulo n for a full period (n-1 steps)
+    // and require at least one EVALT or EVALF somewhere on that ring.
+    // (VII_Parakernel: trailing ENGAGR at the wrap sees EVALT/EVALF after
+    //  wrapping past the opening ENGAGR — correct under cyclic semantics.)
     let dialetheia_complete = {
         let slice = prog.as_slice();
         let has_evalt  = slice.iter().any(|t| *t == Token::Evalt);
@@ -590,14 +590,9 @@ pub fn self_imscribe(prog: &Program) -> Snapshot {
             for (i, &t) in slice.iter().enumerate() {
                 if t == Token::Engagr {
                     let mut found_gate = false;
-                    // Scan forward linearly — do NOT wrap.
-                    // The gate must appear after this ENGAGR and before
-                    // the next ENGAGR (or end-of-program) in the current cycle.
+                    // Full cyclic walk — wrap freely; do not break on ENGAGR.
                     for offset in 1..n {
                         let j = (i + offset) % n;
-                        if slice[j] == Token::Engagr {
-                            break; // reached next ENGAGR — no gate in between
-                        }
                         if slice[j] == Token::Evalt || slice[j] == Token::Evalf {
                             found_gate = true;
                             break;

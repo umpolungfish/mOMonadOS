@@ -144,6 +144,8 @@ impl B4Stack {
     }
 
     pub fn depth(&self) -> usize { self.top }
+
+    pub fn clear(&mut self) { self.top = 0; }
 }
 
 /// 8 × B4 register file.
@@ -160,6 +162,11 @@ impl B4Registers {
     pub fn read(&self, i: usize) -> B4 { self.regs[i & 7] }
 
     pub fn write(&mut self, i: usize, v: B4) { self.regs[i & 7] = v; }
+
+    pub fn clear(&mut self) {
+        self.regs = [B4::N; 8];
+        self.engagr = false;
+    }
 }
 
 // ── Module-level self-verification ──────────────────────────────
