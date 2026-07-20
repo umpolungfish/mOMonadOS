@@ -422,12 +422,19 @@ pub fn repl(k: &mut Kernel) {
             // lattice, gated by the kernel's own close condition.
             #[cfg(feature = "vita")]
             "vita" => {
-                let seed: u64 = parts.next().and_then(|s| s.trim().parse().ok()).unwrap_or(0x5DEECE66D);
+                // seed ↔ word is 1:1 — there is no default word, so there is no
+                // default seed: unseeded turns draw from the machine's moment.
+                let seed: u64 = parts.next().and_then(|s| s.trim().parse().ok())
+                    .unwrap_or_else(|| unsafe { core::arch::x86_64::_rdtsc() });
                 let temp: f32 = parts.next().and_then(|s| s.trim().parse().ok()).unwrap_or(0.8);
+                // The whole turn is transient: print, then roll the bump heap
+                // back so repeated turns never exhaust it.
+                let mark = crate::heap_mark();
                 match crate::vita::Vita::load() {
                     Some(v) => sprintln!("{}", v.speak_turn(seed, temp, 24)),
                     None => sprintln!("vita: baked weights missing/corrupt (rebuild with vita_weights.bin present)"),
                 }
+                crate::heap_reset(mark);
             }
             "rebis" => {
                 let sub = parts.next().unwrap_or("");

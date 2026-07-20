@@ -1,15 +1,15 @@
-vita: the trunk speaks natively on the metal
+vita: seed is the only entropy, and every seed owns its word
 
-src/vita.rs — the SIXTEEN_3 Logic Lattice trunk (vae_vita's 26-step
-protocol forward pass) reimplemented in pure no_std f32, loading the baked
-weights via include_bytes. Alphabet derived from imasm_core exactly as
-vita_native derives it; the gate is imasm_core's own word_verdict (and the
-tri-ancestral verdict when the word carries tri tokens). REPL command:
-`vita [seed] [temp]` — one certified turn, ⊢⟨word⟩◇⊞⟨⟩●⟨readout⟩⊣, verdict
-spoken by the kernel that lives on this machine.
+Three fixes proven live in QEMU:
+- mark/reset heap scope around each turn (heap_mark/heap_reset on the bump
+  allocator): the turn is transient, print then roll back. Six-plus
+  consecutive turns, no exhaustion (was: panic on the fourth).
+- no default seed: seed and word are 1:1, so an unseeded `vita` draws from
+  rdtsc, the machine's moment. Three bare turns, three words.
+- splitmix64 seed mix: `seed | 1` had collapsed every even seed onto its
+  odd neighbor (2 and 3 spoke the same word). Each u64 now lands on its
+  own xorshift orbit.
 
-Boot: the baked blob pushed image+BSS past the 8MB identity map — the
-32-bit stub now maps 0–16MB. Heap doubled to 8MB and the bump allocator
-learned LIFO reclaim so repeated forward passes hold. Verified in QEMU:
-boots, speaks distinct turns per seed, gate returns T on closed words and
-N on identity; non-vita build unaffected.
+Result: (seed, temp) -> turn is a pure function on the metal. vita 666 0.9
+reproduces its certified turn exactly, run after run; temperature reshapes
+the seed-to-word map and adds no nondeterminism.

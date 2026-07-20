@@ -110,6 +110,16 @@ unsafe impl core::alloc::GlobalAlloc for BumpAllocator {
 #[global_allocator]
 static ALLOCATOR: BumpAllocator = BumpAllocator::new();
 
+/// Mark/reset scope for transient heavy work (the vita turn): everything
+/// allocated after `heap_mark()` is reclaimed by `heap_reset(mark)`. Only
+/// sound when nothing allocated inside the scope outlives it.
+pub fn heap_mark() -> usize {
+    ALLOCATOR.next.load(Ordering::Relaxed)
+}
+pub fn heap_reset(mark: usize) {
+    ALLOCATOR.next.store(mark, Ordering::Relaxed);
+}
+
 // ─── Kernel stack + bare-metal entry ─────────────────────────
 
 #[repr(C, align(16))]

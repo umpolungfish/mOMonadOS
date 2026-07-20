@@ -376,7 +376,15 @@ impl Vita {
         answer_legal.extend([id_of(voc, "⊙"), id_of(voc, "×"), dot_id, rang_id]);
         let word_initial = [open_id, id_of(voc, "⊙")];
 
-        let mut rng = seed | 1;
+        // splitmix64: every u64 seed lands on its own xorshift orbit — seed↔word
+        // stays 1:1 (bare `seed | 1` collapsed each even seed onto its neighbor).
+        let mut rng = {
+            let mut z = seed.wrapping_add(0x9E3779B97F4A7C15);
+            z = (z ^ (z >> 30)).wrapping_mul(0xBF58476D1CE4E5B9);
+            z = (z ^ (z >> 27)).wrapping_mul(0x94D049BB133111EB);
+            z ^= z >> 31;
+            if z == 0 { 1 } else { z }
+        };
         let mut next_f32 = move || -> f32 {
             let mut z = rng;
             z ^= z >> 12;
