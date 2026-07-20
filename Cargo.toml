@@ -11,6 +11,9 @@ imasm_core = { path = "../MoDoT/imasm_core", default-features = false }
 name = "momonados"
 path = "src/main.rs"
 
+[features]
+vita = []
+
 [profile.dev]
 panic = "abort"
 

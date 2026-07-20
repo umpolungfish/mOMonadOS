@@ -418,6 +418,17 @@ pub fn repl(k: &mut Kernel) {
                     sprintln!("{}", crate::ask::run_ask(&q, &opts, k));
                 }
             }
+            // The trunk's mouth: one certified turn from the on-board vae_vita
+            // lattice, gated by the kernel's own close condition.
+            #[cfg(feature = "vita")]
+            "vita" => {
+                let seed: u64 = parts.next().and_then(|s| s.trim().parse().ok()).unwrap_or(0x5DEECE66D);
+                let temp: f32 = parts.next().and_then(|s| s.trim().parse().ok()).unwrap_or(0.8);
+                match crate::vita::Vita::load() {
+                    Some(v) => sprintln!("{}", v.speak_turn(seed, temp, 24)),
+                    None => sprintln!("vita: baked weights missing/corrupt (rebuild with vita_weights.bin present)"),
+                }
+            }
             "rebis" => {
                 let sub = parts.next().unwrap_or("");
                 print_rebis(sub, parts.next().unwrap_or(""), &parts.collect::<alloc::vec::Vec<&str>>().join(" "));
@@ -1771,6 +1782,8 @@ fn print_help() {
     sprintln!("  {:<32} — manuscript spine: PROVE→UNIFY→PORT × vessel (no Python)", "spine [run|lean]");
     sprintln!("  {:<32} — kernel structural ask (dry). Full wet: host ./ask --file| -i", "ask [opts] <question>");
     sprintln!("  {:<32} — Clay Millennium structural status (machine-checked)", "clay");
+    #[cfg(feature = "vita")]
+    sprintln!("  {:<32} — one certified turn from the on-board vae_vita trunk", "vita [seed] [temp]");
     sprintln!();
     sprintln!("══ Rebis (Red-Hot Rebis) ══");
     sprintln!("  {:<34} — codon→AA or AA→codons (bidirectional)", "rebis codon <XXX|AA>");

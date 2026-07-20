@@ -13,6 +13,8 @@ mod belnap;
 mod tokens;
 mod crystal;
 mod kernel;
+#[cfg(feature = "vita")]
+mod vita;
 mod interrupts;
 mod frob_verify;
 mod imas_ig;
@@ -61,8 +63,8 @@ use kernel::Kernel;
 // ─── Bump allocator (no external crates) ─────────────────────
 
 #[repr(C, align(4096))]
-struct HeapStorage([u8; 4 * 1024 * 1024]);
-static mut HEAP_STORAGE: HeapStorage = HeapStorage([0; 4 * 1024 * 1024]);
+struct HeapStorage([u8; 8 * 1024 * 1024]);
+static mut HEAP_STORAGE: HeapStorage = HeapStorage([0; 8 * 1024 * 1024]);
 
 struct BumpAllocator {
     next: AtomicUsize,
@@ -95,7 +97,14 @@ unsafe impl core::alloc::GlobalAlloc for BumpAllocator {
             }
         }
     }
-    unsafe fn dealloc(&self, _ptr: *mut u8, _layout: Layout) {}
+    unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
+        // LIFO reclaim: if this block is the most recent allocation, roll the
+        // bump pointer back. Catches the transient Vecs of a forward pass.
+        let end = ptr as usize + layout.size();
+        let _ = self.next.compare_exchange(
+            end, ptr as usize, Ordering::Relaxed, Ordering::Relaxed,
+        );
+    }
 }
 
 #[global_allocator]
@@ -143,7 +152,7 @@ fn kmain() -> ! {
     interrupts::init(100);
     sprintln!("[BOOT] Interrupts online — PIT 100Hz, PIC remapped");
 
-    sprintln!("[BOOT] Heap: 4MB static BSS");
+    sprintln!("[BOOT] Heap: 8MB static BSS");
 
     let mut k = Kernel::new();
     k.boot();

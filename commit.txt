@@ -1,9 +1,15 @@
-mOMonadOS links imasm_core: the kernel's Token is THE Token
+vita: the trunk speaks natively on the metal
 
-tokens.rs no longer defines its own 12-opcode enum; Token and Family come
-from imasm_core (no_std, alloc-only, same repr and variant order), the same
-definition ask_native and vae_vita already derive from. Program, the
-canonical loops, ROTAT, and everything downstream are untouched — they now
-compose over the shared type. Variant names follow the core's casing.
-Bootimage builds clean; the last hand-copied face in the constellation is
-gone, and the kernel gains the glyph face (Token::code) for free.
+src/vita.rs — the SIXTEEN_3 Logic Lattice trunk (vae_vita's 26-step
+protocol forward pass) reimplemented in pure no_std f32, loading the baked
+weights via include_bytes. Alphabet derived from imasm_core exactly as
+vita_native derives it; the gate is imasm_core's own word_verdict (and the
+tri-ancestral verdict when the word carries tri tokens). REPL command:
+`vita [seed] [temp]` — one certified turn, ⊢⟨word⟩◇⊞⟨⟩●⟨readout⟩⊣, verdict
+spoken by the kernel that lives on this machine.
+
+Boot: the baked blob pushed image+BSS past the 8MB identity map — the
+32-bit stub now maps 0–16MB. Heap doubled to 8MB and the bump allocator
+learned LIFO reclaim so repeated forward passes hold. Verified in QEMU:
+boots, speaks distinct turns per seed, gate returns T on closed words and
+N on identity; non-vita build unaffected.

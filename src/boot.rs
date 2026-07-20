@@ -44,12 +44,17 @@ _start:
     or      eax, 3
     mov     DWORD PTR [_boot_pdpt], eax
 
-    /* PD entries: four 2MB identity-mapped huge pages (covers 0–8MB)  */
+    /* PD entries: eight 2MB identity-mapped huge pages (covers 0–16MB;
+       the vita build's baked weights push the image + BSS past 8MB)    */
     /* PS=bit2, RW=bit1, P=bit0; bit2=PS for huge pages in PDE         */
     mov     DWORD PTR [_boot_pd + 0x00], 0x000083
     mov     DWORD PTR [_boot_pd + 0x08], 0x200083
     mov     DWORD PTR [_boot_pd + 0x10], 0x400083
     mov     DWORD PTR [_boot_pd + 0x18], 0x600083
+    mov     DWORD PTR [_boot_pd + 0x20], 0x800083
+    mov     DWORD PTR [_boot_pd + 0x28], 0xA00083
+    mov     DWORD PTR [_boot_pd + 0x30], 0xC00083
+    mov     DWORD PTR [_boot_pd + 0x38], 0xE00083
 
     /* CR3 = PML4 */
     mov     eax, offset _boot_pml4
