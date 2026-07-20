@@ -147,48 +147,48 @@ impl MiniKernel {
     fn step(&mut self, tok: Token) {
         use B4::*;
         match tok {
-            Token::VINIT   => self.push(N),
-            Token::TANCH   => { let _ = self.pop(); }
-            Token::AFWD    => {
+            Token::Vinit   => self.push(N),
+            Token::Tanch   => { let _ = self.pop(); }
+            Token::Afwd    => {
                 // kernel: R0 = B4::from_u8(R0.wrapping_add(1))
                 self.r[0] = B4::from_u8((self.r[0] as u8).wrapping_add(1));
             }
-            Token::AREV    => {
+            Token::Arev    => {
                 // kernel: R0 = B4::from_u8(R0.wrapping_sub(1))
                 self.r[0] = B4::from_u8((self.r[0] as u8).wrapping_sub(1));
             }
-            Token::CLINK   => {
+            Token::Clink   => {
                 // kernel: R3 = meet(R1, R2)
                 self.r[3] = b4_meet(self.r[1], self.r[2]);
             }
-            Token::IMSCRIB => {
+            Token::Imscrib => {
                 // kernel: R4-R7 from snapshot; here: R3 accumulates stack top
                 self.r[3] = b4_join(self.r[3], self.peek());
             }
-            Token::FSPLIT  => {
+            Token::Fsplit  => {
                 // kernel: copy top, save as right_val; simplified: just copy
                 let v = self.peek();
                 self.push(v);
             }
-            Token::FFUSE   => {
+            Token::Ffuse   => {
                 // kernel: join linear left with saved right_val; simplified: join top two
                 let a = self.pop();
                 let b = self.pop();
                 self.push(b4_join(a, b));
             }
-            Token::EVALT   => {
+            Token::Evalt   => {
                 let v = self.pop();
                 self.push(if v == T { T } else { N });
             }
-            Token::EVALF   => {
+            Token::Evalf   => {
                 let v = self.pop();
                 self.push(if v == F { F } else { N });
             }
-            Token::ENGAGR  => {
+            Token::Engagr  => {
                 self.push(B);
                 self.r[1] = b4_join(self.r[1], B);
             }
-            Token::IFIX    => {
+            Token::Ifix    => {
                 // kernel: store to memory[R0]; here: accumulate into R2
                 let v = self.pop();
                 self.r[2] = b4_join(self.r[2], v);
@@ -243,9 +243,9 @@ fn substrate_votes(tuple: &IgTuple, tier: u8) -> Scores {
 
 fn sorted_by_score(scores: &Scores) -> [Token; 12] {
     const ALL: [Token; 12] = [
-        Token::VINIT,  Token::TANCH,   Token::AFWD,   Token::AREV,
-        Token::CLINK,  Token::IMSCRIB, Token::FSPLIT,  Token::FFUSE,
-        Token::EVALT,  Token::EVALF,   Token::ENGAGR,  Token::IFIX,
+        Token::Vinit,  Token::Tanch,   Token::Afwd,   Token::Arev,
+        Token::Clink,  Token::Imscrib, Token::Fsplit,  Token::Ffuse,
+        Token::Evalt,  Token::Evalf,   Token::Engagr,  Token::Ifix,
     ];
     let mut order: [usize; 12] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
     let mut i = 1;
@@ -257,7 +257,7 @@ fn sorted_by_score(scores: &Scores) -> [Token; 12] {
         }
         i += 1;
     }
-    let mut result = [Token::AFWD; 12];
+    let mut result = [Token::Afwd; 12];
     let mut k = 0;
     while k < 12 { result[k] = ALL[order[k]]; k += 1; }
     result
@@ -267,10 +267,10 @@ fn sorted_by_score(scores: &Scores) -> [Token; 12] {
 
 fn stack_delta(tok: Token) -> i32 {
     match tok {
-        Token::VINIT | Token::ENGAGR => 1,
-        Token::FSPLIT                 => 1,
-        Token::TANCH | Token::IFIX   => -1,
-        Token::FFUSE                  => -1,
+        Token::Vinit | Token::Engagr => 1,
+        Token::Fsplit                 => 1,
+        Token::Tanch | Token::Ifix   => -1,
+        Token::Ffuse                  => -1,
         _                             =>  0,
     }
 }
@@ -300,48 +300,48 @@ fn build_program_from_scores(scores: &Scores, len: usize, self_ref: bool) -> Pro
         let is_last  = remaining == 1;
 
         if is_first && self_ref {
-            p.push(Token::IMSCRIB);
+            p.push(Token::Imscrib);
             i += 1;
             continue;
         }
         if is_last && self_ref && open_forks == 0 {
-            p.push(Token::IMSCRIB);
+            p.push(Token::Imscrib);
             i += 1;
             continue;
         }
         if open_forks > 0 && remaining <= open_forks as usize {
-            p.push(Token::FFUSE);
+            p.push(Token::Ffuse);
             open_forks -= 1;
             est_depth -= 1;
             i += 1;
             continue;
         }
 
-        let mut chosen = Token::AFWD;
+        let mut chosen = Token::Afwd;
         let mut found = false;
         let mut pi = 0;
         while pi < 12 {
             let tok = preferred[pi];
             let depth_after = est_depth + stack_delta(tok);
             if depth_after < 0 { pi += 1; continue; }
-            if tok == Token::FFUSE && open_forks == 0 { pi += 1; continue; }
-            if tok == Token::FSPLIT && (remaining as u32) <= open_forks + 2 { pi += 1; continue; }
-            if tok == Token::TANCH && (!is_last || self_ref || open_forks > 0) { pi += 1; continue; }
+            if tok == Token::Ffuse && open_forks == 0 { pi += 1; continue; }
+            if tok == Token::Fsplit && (remaining as u32) <= open_forks + 2 { pi += 1; continue; }
+            if tok == Token::Tanch && (!is_last || self_ref || open_forks > 0) { pi += 1; continue; }
             chosen = tok;
             found = true;
             break;
         }
-        if !found { chosen = Token::IMSCRIB; }
+        if !found { chosen = Token::Imscrib; }
 
         p.push(chosen);
-        if chosen == Token::FSPLIT { open_forks += 1; }
-        if chosen == Token::FFUSE  { open_forks -= 1; }
+        if chosen == Token::Fsplit { open_forks += 1; }
+        if chosen == Token::Ffuse  { open_forks -= 1; }
         est_depth += stack_delta(chosen);
         i += 1;
     }
 
     while open_forks > 0 && p.len() < 64 {
-        p.push(Token::FFUSE);
+        p.push(Token::Ffuse);
         open_forks -= 1;
     }
     p

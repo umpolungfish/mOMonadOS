@@ -234,9 +234,9 @@ pub fn board_paravm(vm: &mut ParaVM, v: B4) -> (B4, B4, B4) {
 pub fn board_forkframe(v: B4) -> B4 {
     let mut k = Kernel::new();
     let mut prog = Program::empty();
-    prog.push(Token::FSPLIT);
-    prog.push(Token::EVALT);
-    prog.push(Token::FFUSE);
+    prog.push(Token::Fsplit);
+    prog.push(Token::Evalt);
+    prog.push(Token::Ffuse);
     k.program = prog;
     k.ip = 0;
     k.stack.push(v);

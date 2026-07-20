@@ -701,18 +701,18 @@ Stopped after {} ticks.", ran);
                         for chunk in parts {
                         for w in chunk.split_whitespace() {
                             let t = match w.trim().to_ascii_uppercase().as_str() {
-                                "VINIT" => crate::tokens::Token::VINIT,
-                                "TANCH" => crate::tokens::Token::TANCH,
-                                "AFWD" => crate::tokens::Token::AFWD,
-                                "AREV" => crate::tokens::Token::AREV,
-                                "CLINK" => crate::tokens::Token::CLINK,
-                                "IMSCRIB" => crate::tokens::Token::IMSCRIB,
-                                "FSPLIT" => crate::tokens::Token::FSPLIT,
-                                "FFUSE" => crate::tokens::Token::FFUSE,
-                                "EVALT" => crate::tokens::Token::EVALT,
-                                "EVALF" => crate::tokens::Token::EVALF,
-                                "ENGAGR" => crate::tokens::Token::ENGAGR,
-                                "IFIX" => crate::tokens::Token::IFIX,
+                                "VINIT" => crate::tokens::Token::Vinit,
+                                "TANCH" => crate::tokens::Token::Tanch,
+                                "AFWD" => crate::tokens::Token::Afwd,
+                                "AREV" => crate::tokens::Token::Arev,
+                                "CLINK" => crate::tokens::Token::Clink,
+                                "IMSCRIB" => crate::tokens::Token::Imscrib,
+                                "FSPLIT" => crate::tokens::Token::Fsplit,
+                                "FFUSE" => crate::tokens::Token::Ffuse,
+                                "EVALT" => crate::tokens::Token::Evalt,
+                                "EVALF" => crate::tokens::Token::Evalf,
+                                "ENGAGR" => crate::tokens::Token::Engagr,
+                                "IFIX" => crate::tokens::Token::Ifix,
                                 other => {
                                     if !other.is_empty() {
                                         sprintln!("crystal indices: unknown opcode '{}'", other);

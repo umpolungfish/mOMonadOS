@@ -17,37 +17,37 @@ use alloc::string::{String, ToString};
 /// Chemical-property-based, NOT role-based.
 pub const AA_TO_TOKEN: &[(&str, Token)] = &[
     // Acidic (negative charge) → EVALF
-    ("ASP", Token::EVALF),
-    ("GLU", Token::EVALF),
+    ("ASP", Token::Evalf),
+    ("GLU", Token::Evalf),
     // Basic (positive charge) → EVALT
-    ("HIS", Token::EVALT),
-    ("LYS", Token::EVALT),
+    ("HIS", Token::Evalt),
+    ("LYS", Token::Evalt),
     // Guanidinium (planar rigid H-bond donor) → TANCH
-    ("ARG", Token::TANCH),
+    ("ARG", Token::Tanch),
     // Nucleophilic (attacks electrophilic centers) → FSPLIT
-    ("SER", Token::FSPLIT),
-    ("CYS", Token::FSPLIT),
-    ("THR", Token::FSPLIT),
+    ("SER", Token::Fsplit),
+    ("CYS", Token::Fsplit),
+    ("THR", Token::Fsplit),
     // Aromatic (multi-mode: H-bond + π-stack) → ENGAGR
-    ("TYR", Token::ENGAGR),
-    ("TRP", Token::ENGAGR),
+    ("TYR", Token::Engagr),
+    ("TRP", Token::Engagr),
     // Aromatic hydrophobic (directional π-stacking) → AFWD
-    ("PHE", Token::AFWD),
+    ("PHE", Token::Afwd),
     // Polar amide (bidirectional H-bond) → AREV
-    ("ASN", Token::AREV),
-    ("GLN", Token::AREV),
+    ("ASN", Token::Arev),
+    ("GLN", Token::Arev),
     // Flexible (minimal steric constraint) → VINIT
-    ("GLY", Token::VINIT),
+    ("GLY", Token::Vinit),
     // Small hydrophobic (methyl) → CLINK
-    ("ALA", Token::CLINK),
+    ("ALA", Token::Clink),
     // Branched hydrophobic (rigid, sterically constrained) → IFIX
-    ("VAL", Token::IFIX),
-    ("LEU", Token::IFIX),
-    ("ILE", Token::IFIX),
+    ("VAL", Token::Ifix),
+    ("LEU", Token::Ifix),
+    ("ILE", Token::Ifix),
     // Thioether (polarizable sulfur) → AREV
-    ("MET", Token::AREV),
+    ("MET", Token::Arev),
     // Cyclic (conformationally constrained) → IMSCRIB
-    ("PRO", Token::IMSCRIB),
+    ("PRO", Token::Imscrib),
 ];
 
 /// Chemical class label for each amino acid.
@@ -133,7 +133,7 @@ pub fn encode_site(residues: &[&str]) -> Option<ActiveSiteEncoding> {
     // Build 8-token arrangement (pad with IMSCRIB, truncate to 8)
     let mut tokens: Vec<Token> = assignments.iter().map(|a| a.token).collect();
     while tokens.len() < 8 {
-        tokens.push(Token::IMSCRIB);
+        tokens.push(Token::Imscrib);
     }
     tokens.truncate(8);
     
@@ -143,18 +143,18 @@ pub fn encode_site(residues: &[&str]) -> Option<ActiveSiteEncoding> {
 /// Token → chemical meaning (diagnostic label).
 pub fn token_meaning(tok: Token) -> &'static str {
     match tok {
-        Token::EVALF  => "acidic (negative)",
-        Token::EVALT  => "basic (positive)",
-        Token::TANCH  => "guanidinium (planar/rigid)",
-        Token::FSPLIT => "nucleophile (attacks)",
-        Token::ENGAGR => "aromatic (multi-mode)",
-        Token::AFWD   => "aromatic-hydrophobic (π-stack)",
-        Token::AREV   => "polar/H-bond (bidirectional)",
-        Token::VINIT  => "flexible (minimal steric)",
-        Token::CLINK  => "small hydrophobic (methyl)",
-        Token::IFIX   => "branched hydrophobic (rigid)",
-        Token::IMSCRIB=> "cyclic (constrained)",
-        Token::FFUSE  => "fuse (reserved)",
+        Token::Evalf  => "acidic (negative)",
+        Token::Evalt  => "basic (positive)",
+        Token::Tanch  => "guanidinium (planar/rigid)",
+        Token::Fsplit => "nucleophile (attacks)",
+        Token::Engagr => "aromatic (multi-mode)",
+        Token::Afwd   => "aromatic-hydrophobic (π-stack)",
+        Token::Arev   => "polar/H-bond (bidirectional)",
+        Token::Vinit  => "flexible (minimal steric)",
+        Token::Clink  => "small hydrophobic (methyl)",
+        Token::Ifix   => "branched hydrophobic (rigid)",
+        Token::Imscrib=> "cyclic (constrained)",
+        Token::Ffuse  => "fuse (reserved)",
     }
 }
 
@@ -164,10 +164,10 @@ mod tests {
     
     #[test]
     fn test_aa_to_token() {
-        assert_eq!(aa_to_token("SER"), Some(Token::FSPLIT));
-        assert_eq!(aa_to_token("ASP"), Some(Token::EVALF));
-        assert_eq!(aa_to_token("LYS"), Some(Token::EVALT));
-        assert_eq!(aa_to_token("PRO"), Some(Token::IMSCRIB));
+        assert_eq!(aa_to_token("SER"), Some(Token::Fsplit));
+        assert_eq!(aa_to_token("ASP"), Some(Token::Evalf));
+        assert_eq!(aa_to_token("LYS"), Some(Token::Evalt));
+        assert_eq!(aa_to_token("PRO"), Some(Token::Imscrib));
         assert_eq!(aa_to_token("XXX"), None);
     }
     
@@ -177,12 +177,12 @@ mod tests {
         let result = encode_site(residues).unwrap();
         assert_eq!(result.assignments.len(), 3);
         assert_eq!(result.tokens.len(), 8);
-        assert_eq!(result.tokens[0], Token::FSPLIT); // Ser
-        assert_eq!(result.tokens[1], Token::EVALT);   // His
-        assert_eq!(result.tokens[2], Token::EVALF);   // Asp
+        assert_eq!(result.tokens[0], Token::Fsplit); // Ser
+        assert_eq!(result.tokens[1], Token::Evalt);   // His
+        assert_eq!(result.tokens[2], Token::Evalf);   // Asp
         // Remaining 5 tokens should be IMSCRIB (padding)
         for i in 3..8 {
-            assert_eq!(result.tokens[i], Token::IMSCRIB);
+            assert_eq!(result.tokens[i], Token::Imscrib);
         }
     }
     

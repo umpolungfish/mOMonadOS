@@ -196,8 +196,8 @@ pub fn verify_program_structure(prog: &Program) -> FrobeniusResult {
     let (mut splits, mut fuses) = (0usize, 0usize);
     for i in 0..n {
         match prog.get(i) {
-            Some(Token::FSPLIT) => splits += 1,
-            Some(Token::FFUSE)  => fuses  += 1,
+            Some(Token::Fsplit) => splits += 1,
+            Some(Token::Ffuse)  => fuses  += 1,
             _ => {}
         }
     }

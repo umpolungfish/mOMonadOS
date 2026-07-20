@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 libm = "0.2"
+imasm_core = { path = "../MoDoT/imasm_core", default-features = false }
 
 [[bin]]
 name = "momonados"

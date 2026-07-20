@@ -1,13 +1,9 @@
-kernel_3d_visualizer: R0 bus attached, coil completed dotted through CLINK→IFIX.
+mOMonadOS links imasm_core: the kernel's Token is THE Token
 
-Two fixes:
-- The R0 bus chords were FLOATING: busChord fed dashedEdge only 5 points and
-  the dash stepper (i += 4) rendered exactly one fragment, stranded mid-air
-  with its arrowhead. Now the chord is a densely sampled CatmullRom (65 pts)
-  pinned at the station spheres — AREV (writer) to IFIX and TANCH (readers)
-  read as attached edges end to end.
-- The solenoid coil now CONTINUES through the CLINK→IFIX stretch, dotted:
-  two poloidal turns around the body between the two stations, endpoints
-  landing exactly on the station spheres (v ends at IFIX's angle mod 2π).
-  The wrap exists everywhere; only where dataflow is absent it goes dotted —
-  same rule as the winding section.
+tokens.rs no longer defines its own 12-opcode enum; Token and Family come
+from imasm_core (no_std, alloc-only, same repr and variant order), the same
+definition ask_native and vae_vita already derive from. Program, the
+canonical loops, ROTAT, and everything downstream are untouched — they now
+compose over the shared type. Variant names follow the core's casing.
+Bootimage builds clean; the last hand-copied face in the constellation is
+gone, and the kernel gains the glyph face (Token::code) for free.

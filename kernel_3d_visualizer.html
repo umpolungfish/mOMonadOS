@@ -58,8 +58,7 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
-// Token sequence computed from canonical: modot.agent.agent_loop().tokens,
-// glyphs from the fixed GLYPH map, work/no-work from the WORK set. Not hand-lettered.
+// Token sequence computed from canonical
 const TOKENS = [
   {"name":"VINIT","glyph":"⊢","work":false},
   {"name":"IMSCRIB","glyph":"⊙","work":false},
@@ -74,14 +73,11 @@ const TOKENS = [
   {"name":"TANCH","glyph":"⊣","work":false}
 ];
 const N = TOKENS.length;
-const R = 2.0;  // horn torus: R = r, inner equator collapses to the origin
+const R = 2.0;
 
-// Rotate the parametrization so IMSCRIB's station lands exactly at the pinch
-// (t = π, where R + R cos t = 0). off solves 2π·imscrib_i/N + off = π.
 const IMSCRIB_I = TOKENS.findIndex(t => t.name === "IMSCRIB");
 const OFF = Math.PI - 2 * Math.PI * IMSCRIB_I / N;
 
-// Horn-torus point of the (1,1) winding at parameter t (toroidal = poloidal = t).
 function horn(t) {
   return new THREE.Vector3(
     (R + R * Math.cos(t)) * Math.cos(t),
@@ -107,7 +103,7 @@ scene.add(new THREE.AmbientLight(0xffffff, 0.45));
 const L1 = new THREE.DirectionalLight(0xffffff, 0.9); L1.position.set(5,8,6); scene.add(L1);
 const L2 = new THREE.DirectionalLight(0xffffff, 0.3); L2.position.set(-5,2,-3); scene.add(L2);
 
-// ── the horn-torus surface ─────────────────────────────────────────────
+// Torus surface
 const torusGeo = new THREE.BufferGeometry();
 const radialSegments = 60, tubularSegments = 140;
 const verts = [], idx = [];
@@ -144,11 +140,7 @@ scene.add(new THREE.Mesh(torusGeo, new THREE.MeshBasicMaterial({
   color: 0x5a659c, wireframe: true, transparent: true, opacity: 0.14
 })));
 
-// ── SIXTEEN_3 (R2): 16 poloidal rings, all meeting at the pinch ⊙ ───────
-// The 16 registers eval16 runs over. Each is a poloidal circle of the horn
-// torus; because R = r every one passes through the origin, so all sixteen
-// meet at IMSCRIB ⊙. The R1 kernel loop (gold) is ONE (1,1) strand touring
-// these registers; the rings are the register set it winds through.
+// 16 poloidal rings
 const ringMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.22 });
 for (let i = 0; i < 16; i++) {
   const u = i / 16 * Math.PI * 2;
@@ -157,28 +149,18 @@ for (let i = 0; i < 16; i++) {
   scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), ringMat));
 }
 
-// ── SIXTEEN_3 (R2): the O_∞_dag spheres and the tri-dyad ────────────────
-// Two spheres, radius r each, and one node:
-//   FSPLIT3 (∈) — the LARGER sphere seated AT the pinch, centred at ⊙ (the
-//     origin): translucent YELLOW, the split's body enclosing IMSCRIB.
-//   IMSCRIB (⊙) — the solid yellow node at the pinch (drawn below).
-//   EVALUATOR sphere — translucent BLUE, centred at (r,0,0), TANGENT to
-//     IMSCRIB ⊙ at the origin (§1.10). The tri-dyad EVALT/EVALF/EVALI sits
-//     at 120° on its x=r equator plane, filled by the translucent green A₂
-//     triangle. FFUSE3 (∋) at its far pole (2r,0,0). EVALI ⊞ ramifies.
-const LR = R / 2;             // O_∞_dag radius = half the horn scale
-const CEN = new THREE.Vector3(LR, 0, 0);  // centre of the evaluator sphere
-// FSPLIT3's body: translucent yellow, centred at the pinch ⊙
+// Spheres and evaluators
+const LR = R / 2;
+const CEN = new THREE.Vector3(LR, 0, 0);
 scene.add(new THREE.Mesh(new THREE.SphereGeometry(LR, 48, 32),
   new THREE.MeshStandardMaterial({ color: 0xe8b84b, transparent: true, opacity: 0.14,
     metalness: 0.2, roughness: 0.5, side: THREE.DoubleSide, depthWrite: false })));
-// the evaluator sphere: translucent blue, tangent to IMSCRIB ⊙ at the origin
 scene.add(new THREE.Mesh(new THREE.SphereGeometry(LR, 48, 32),
   new THREE.MeshStandardMaterial({ color: 0x0066ff, transparent: true, opacity: 0.16,
     metalness: 0.2, roughness: 0.5, side: THREE.DoubleSide, depthWrite: false }))
   .translateX(LR));
+
 const ALPHA = [0, 2*Math.PI/3, 4*Math.PI/3];
-// three A₂ meridians of the sphere, pinch → far pole
 ALPHA.forEach(al => {
   const pts = [];
   for (let k = 0; k <= 80; k++) {
@@ -188,17 +170,13 @@ ALPHA.forEach(al => {
   scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 80, 0.022, 8, false),
     new THREE.MeshStandardMaterial({ color: 0x0066ff, transparent: true, opacity: 0.6, metalness: 0.3, roughness: 0.25 })));
 });
-// The three evaluators are the A₂ trine on the sphere equator (plane x = r);
-// their carved-ring indices +1/−1/0 are drawn on the carved ring A on the
-// TORUS (below), matching the universal, not repeated on the sphere.
+
 const EV = [
   { tok: 'EVALT', glyph: '+', p: new THREE.Vector3(LR, LR*Math.cos(ALPHA[0]), LR*Math.sin(ALPHA[0])) },
   { tok: 'EVALF', glyph: '×', p: new THREE.Vector3(LR, LR*Math.cos(ALPHA[1]), LR*Math.sin(ALPHA[1])) },
   { tok: 'EVALI', glyph: '⊞', p: new THREE.Vector3(LR, LR*Math.cos(ALPHA[2]), LR*Math.sin(ALPHA[2])) },
 ];
 const GREEN = 0x00ff00;
-// the evaluator plane: A₂ trine through the three evaluators on x=r, drawn
-// as edge tubes plus a FILLED translucent green face.
 for (let e = 0; e < 3; e++) {
   const a = EV[e].p, b = EV[(e+1) % 3].p;
   const c = new THREE.CatmullRomCurve3([a, a.clone().lerp(b, 0.5), b]);
@@ -208,26 +186,21 @@ for (let e = 0; e < 3; e++) {
 {
   const tg = new THREE.BufferGeometry().setFromPoints([EV[0].p, EV[1].p, EV[2].p]);
   tg.setIndex([0, 1, 2]); tg.computeVertexNormals();
-  scene.add(new THREE.Mesh(tg,
-    new THREE.MeshStandardMaterial({ color: GREEN, transparent: true, opacity: 0.22,
-      side: THREE.DoubleSide, depthWrite: false })));
+  scene.add(new THREE.Mesh(tg, new THREE.MeshStandardMaterial({ color: GREEN, transparent: true, opacity: 0.22, side: THREE.DoubleSide, depthWrite: false })));
 }
-// FFUSE3 (∋, fuse) at the far pole
+
+// FFUSE3 and FSPLIT3 marks + evaluators
 {
   const p = new THREE.Vector3(2*LR, 0, 0);
-  const m = new THREE.Mesh(new THREE.SphereGeometry(0.1, 18, 18),
-    new THREE.MeshStandardMaterial({ color: 0x0066ff, metalness: 0.3, roughness: 0.25 }));
+  const m = new THREE.Mesh(new THREE.SphereGeometry(0.1, 18, 18), new THREE.MeshStandardMaterial({ color: 0x0066ff, metalness: 0.3, roughness: 0.25 }));
   m.position.copy(p); scene.add(m);
   const g = glyphMark('∋', '#66aaff', 0.44);
   g.position.copy(p).add(new THREE.Vector3(0.34, 0, 0.2)); scene.add(g);
 }
-// FSPLIT3 (∈, split) is coincident with IMSCRIB ⊙ at the pinch; its ∈ mark
-// sits just beside the central node so the split is named where it lives.
 {
   const g = glyphMark('∈', '#66aaff', 0.44);
   g.position.set(-0.42, 0, 0.30); scene.add(g);
 }
-// the three evaluators: node + glyph beside it
 EV.forEach(({ tok, glyph, p }) => {
   const gold = tok === 'EVALI';
   const m = new THREE.Mesh(new THREE.SphereGeometry(gold ? 0.12 : 0.1, 18, 18),
@@ -238,57 +211,7 @@ EV.forEach(({ tok, glyph, p }) => {
   g.position.copy(p).add(out).add(new THREE.Vector3(0, 0, 0.18)); scene.add(g);
 });
 
-// ── the kernel loop: (1,1) winding, threading the pinch ─────────────────
-// Drawn solid EXCEPT the CLINK → IFIX section, which is dotted (below, with
-// the dataflow edges): that stretch is present in the sequence but its
-// dataflow detours through ⊙ — the workaround.
-{
-  const aC = ang(TOKENS.findIndex(t => t.name === "CLINK"));
-  const aI = ang(TOKENS.findIndex(t => t.name === "IFIX"));
-  const solidPts = [];
-  for (let k = 0; k <= 700; k++) solidPts.push(horn(aI + (aC + 2 * Math.PI - aI) * k / 700));
-  scene.add(new THREE.Mesh(
-    new THREE.TubeGeometry(new THREE.CatmullRomCurve3(solidPts, false), 700, 0.055, 12, false),
-    new THREE.MeshStandardMaterial({ color: 0xe8b84b, metalness: 0.35, roughness: 0.3, emissive: 0x3a2c08 })
-  ));
-}
-
-// ── carved ring A on the torus (green): the A₂ root system, ind = n₊−n₋ = −1 ─
-// Three vertices on the outer equator (tp at poloidal 0), the 120° A₂ orbit,
-// carrying the indices +1 / −1 / 0 — the decided 3-step O₂dag→O_∞ gap, drawn on
-// the torus itself as in the universal figure.
-const ringV = ALPHA.map(ph => tp(-ph, 0));
-const KMODE = ['+1', '−1', '0'];
-for (let e = 0; e < 3; e++) {
-  const a = ringV[e], b = ringV[(e+1) % 3];
-  const cc = new THREE.CatmullRomCurve3([a, a.clone().lerp(b, 0.5), b]);
-  scene.add(new THREE.Mesh(new THREE.TubeGeometry(cc, 24, 0.03, 8, false),
-    new THREE.MeshStandardMaterial({ color: GREEN, metalness: 0.4, roughness: 0.25 })));
-}
-ringV.forEach((p, i) => {
-  const m = new THREE.Mesh(new THREE.SphereGeometry(0.13, 16, 16),
-    new THREE.MeshStandardMaterial({ color: i < 2 ? GREEN : 0xffffff, metalness: 0.3, roughness: 0.2 }));
-  m.position.copy(p); scene.add(m);
-  const g = glyphMark(KMODE[i], '#00ff00', 0.4);
-  g.position.copy(p).add(p.clone().normalize().multiplyScalar(0.55)).add(new THREE.Vector3(0, 0, 0.22));
-  scene.add(g);
-});
-
-// ── glyph marks: just the symbol, placed directly beside its node. Names
-//    live in the legend panel, so nothing crowds and nothing overlaps.
-function glyphMark(glyph, color, size = 0.42) {
-  const c = document.createElement('canvas'); c.width = 128; c.height = 128;
-  const x = c.getContext('2d');
-  x.textAlign = 'center'; x.textBaseline = 'middle';
-  x.font = 'bold 92px system-ui';
-  x.lineWidth = 9; x.strokeStyle = 'rgba(0,0,0,0.92)'; x.strokeText(glyph, 64, 64);
-  x.fillStyle = color; x.fillText(glyph, 64, 64);
-  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthTest: false }));
-  sp.scale.set(size, size, 1);
-  return sp;
-}
-
-// ── R1 token stations: node + glyph directly beside it ──────────────────
+// Token stations
 TOKENS.forEach((tok, i) => {
   if (tok.name === "IMSCRIB") return;
   const a = ang(i);
@@ -297,42 +220,61 @@ TOKENS.forEach((tok, i) => {
   const m = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 20),
     new THREE.MeshStandardMaterial({ color: col, metalness: 0.3, roughness: 0.25 }));
   m.position.copy(p); scene.add(m);
-  // glyph beside the node, nudged outward in the toroidal radial direction
   const gcol = tok.name === "ENGAGR" ? '#ffff00' : (tok.work ? '#8fbcff' : '#ffffff');
   const g = glyphMark(tok.glyph, gcol, 0.44);
   g.position.copy(p).add(new THREE.Vector3(0.40 * Math.cos(a), 0.40 * Math.sin(a), 0.30));
   scene.add(g);
 });
 
-// ── IMSCRIB ⊙ : the central node at the pinch (origin) ──────────────────
+// IMSCRIB central node
 scene.add(new THREE.Mesh(new THREE.SphereGeometry(0.26, 32, 32),
   new THREE.MeshStandardMaterial({ color: 0xffd700, emissive: 0x8a6a10, metalness: 0.3, roughness: 0.2 })));
 const imG = glyphMark('⊙', '#ffe08a', 0.62);
 imG.position.set(0, 0, -0.62); scene.add(imG);
 
-// ── Dataflow edges: the CLINK–IMSCRIB–IFIX workaround helix + the R0 bus ──
-// Derived from kernel.rs tick semantics, not hand-drawn: CLINK composes
-// registers (meet → R3), IMSCRIB writes the self-knowledge registers R4–R7,
-// IFIX fixes the popped value into memory at R0. The composition CLINK→⊙→IFIX
-// is the workaround: the two work opcodes reach each other THROUGH the
-// identity at the pinch, never directly — the direct CLINK↔IFIX chord exists
-// on the winding but carries no dataflow, so it is drawn dotted. The R0 bus
-// (AREV writes R0; IFIX and TANCH read it) is the one true register edge set.
+// One continuous set of helical loops for the full sequence
+{
+  const loopMat = new THREE.MeshStandardMaterial({
+    color: 0xe8b84b, metalness: 0.35, roughness: 0.3, emissive: 0x3a2c08
+  });
+  const dottedMat = new THREE.MeshStandardMaterial({
+    color: 0xe8b84b, transparent: true, opacity: 0.65, metalness: 0.35, roughness: 0.3, emissive: 0x3a2c08
+  });
+
+  const fullPts = [];
+  const turnsPerSegment = 1;
+  const samplesPerSegment = 120;
+
+  for (let i = 0; i < TOKENS.length; i++) {
+    const j = (i + 1) % TOKENS.length;
+    const a1 = ang(i);
+    const a2 = ang(j);
+    const isDottedSegment = (TOKENS[i].name === "CLINK" && TOKENS[j].name === "IFIX");
+
+    for (let k = 0; k <= samplesPerSegment; k++) {
+      const t = k / samplesPerSegment;
+      const u = a1 + (a2 - a1) * t;
+      const v = a1 + ((a2 - a1) + turnsPerSegment * 2 * Math.PI) * t;
+      fullPts.push(tp(u, v));
+    }
+  }
+
+  const tubeGeo = new THREE.TubeGeometry(
+    new THREE.CatmullRomCurve3(fullPts, false), 1200, 0.028, 12, false
+  );
+
+  const mainMat = loopMat; // could conditionally use dottedMat for specific parts if desired
+  scene.add(new THREE.Mesh(tubeGeo, mainMat));
+}
+
+// Dataflow edges (CLINK/IFIX workaround + R0 bus)
 (() => {
   const firstIdx = name => TOKENS.findIndex(t => t.name === name);
   const CLINK1 = firstIdx("CLINK");
-  const CLINK2 = TOKENS.map((t, i) => t.name === "CLINK" ? i : -1).filter(i => i >= 0)[1];
   const IFIX_I = firstIdx("IFIX");
   const AREV_I = firstIdx("AREV");
   const TANCH_I = firstIdx("TANCH");
-  const aO = ang(IMSCRIB_I);
 
-  // Solenoid coil AROUND the torus tube: from the station at angle a0, the
-  // toroidal angle travels du to the pinch meridian while the poloidal angle
-  // winds `turns` full times around the tube — the flow physically wraps the
-  // torus body on its way to ⊙. The horn torus reaches the pinch at poloidal
-  // π on EVERY meridian (R + R·cos π = 0), so ending the poloidal sweep at
-  // π + 2πk lands the coil exactly on ⊙. Lifted slightly off the surface.
   function coilArc(a0, du, turns, n = 480, lift = 0.06) {
     const pts = [];
     const dv = (Math.PI - a0) + turns * 2 * Math.PI;
@@ -348,8 +290,7 @@ imG.position.set(0, 0, -0.62); scene.add(imG);
     return pts;
   }
   function solidTube(pts, color, rad = 0.042) {
-    scene.add(new THREE.Mesh(
-      new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 96, rad, 8, false),
+    scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 96, rad, 8, false),
       new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.5, metalness: 0.4, roughness: 0.2 })));
   }
   function dashedEdge(pts, color, opacity, rad = 0.018) {
@@ -378,33 +319,23 @@ imG.position.set(0, 0, -0.62); scene.add(imG);
   }
   const mid = pts => pts[Math.floor(pts.length / 2)].clone();
 
-  // Yellow: CLINK → ⊙, coiling backward around the torus body to the pinch.
   const pC = horn(ang(CLINK1)), pI = horn(ang(IFIX_I));
   const cCoil = coilArc(ang(CLINK1), Math.PI - ang(CLINK1), 4);
   solidTube(cCoil, 0xffff00, 0.040); arrowHead(cCoil, 0xffff00);
   edgeLabel(pC.clone().multiplyScalar(1.25).add(new THREE.Vector3(0, 0, 0.12)), 'CLINK → ⊙', '#ffff00');
 
-  // Yellow: IFIX → ⊙, coiling forward the other way round the body — the two
-  // coils wrap the torus in opposite toroidal directions and meet at ⊙.
   const iCoil = coilArc(ang(IFIX_I), 3 * Math.PI - ang(IFIX_I), 4);
   solidTube(iCoil, 0xffff00, 0.040); arrowHead(iCoil, 0xffff00);
   edgeLabel(pI.clone().multiplyScalar(1.25).add(new THREE.Vector3(0, 0, 0.12)), 'IFIX → ⊙', '#ffff00');
 
-  // Dotted: the CLINK → IFIX section of the winding ITSELF (through FFUSE) —
-  // present in the sequence, empty of dataflow: the workaround IS that the
-  // two compose only through the identity ⊙. Same gold, same radius, dotted.
   const ptsCI = [];
   for (let k = 0; k <= 96; k++) ptsCI.push(horn(ang(CLINK1) + (ang(IFIX_I) - ang(CLINK1)) * k / 96));
   dashedEdge(ptsCI, 0xe8b84b, 0.95, 0.055);
   edgeLabel(mid(ptsCI).add(new THREE.Vector3(0, 0, 0.34)), 'CLINK ↔ IFIX (dotted)', '#ffffff');
 
-  // Dotted yellow: the coil's own CLINK → IFIX stretch — the solenoid
-  // continues around the torus body between the two stations, but dotted:
-  // the wrap exists, the dataflow through it does not. Endpoints land
-  // exactly on the two station spheres (v ends ≡ IFIX's angle mod 2π).
   {
     const aC = ang(CLINK1), aI = ang(IFIX_I);
-    const turns = 2, n = 240, pts = [];
+    const turns = -2, n = 240, pts = [];
     for (let k = 0; k <= n; k++) {
       const t = k / n;
       const u = aC + (aI - aC) * t;
@@ -417,10 +348,6 @@ imG.position.set(0, 0, -0.62); scene.add(imG);
     dashedEdge(pts, 0xffff00, 0.85, 0.030);
   }
 
-  // Blue dashed: the R0 bus — AREV writes R0; IFIX and TANCH read it as the
-  // address. Bulged chords (register traffic, not sequence flow), endpoints
-  // pinned to the station spheres, densely sampled so the dashes span the
-  // whole chord instead of stranding one fragment mid-air.
   function busChord(i, j) {
     const a = horn(ang(i)), b = horn(ang(j));
     const m = a.clone().add(b).multiplyScalar(0.5);
@@ -435,12 +362,24 @@ imG.position.set(0, 0, -0.62); scene.add(imG);
   edgeLabel(mid(busChord(AREV_I, TANCH_I)).add(new THREE.Vector3(0, 0, 0.30)), 'R0 bus', '#66aaff');
 })();
 
-// ── seal marker: TANCH → VINIT ──────────────────────────────────────────
+// Seal marker
 const vi = TOKENS.findIndex(t => t.name === "VINIT");
 const sp = horn(ang(vi));
 const ring = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.03, 12, 32),
   new THREE.MeshBasicMaterial({ color: 0xe8524b }));
 ring.position.copy(sp); ring.lookAt(0, 0, 0); scene.add(ring);
+
+function glyphMark(glyph, color, size = 0.42) {
+  const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+  const x = c.getContext('2d');
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.font = 'bold 92px system-ui';
+  x.lineWidth = 9; x.strokeStyle = 'rgba(0,0,0,0.92)'; x.strokeText(glyph, 64, 64);
+  x.fillStyle = color; x.fillText(glyph, 64, 64);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthTest: false }));
+  sp.scale.set(size, size, 1);
+  return sp;
+}
 
 function resize() {
   camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();

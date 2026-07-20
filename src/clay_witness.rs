@@ -60,16 +60,16 @@ pub fn witness_program(i: usize) -> Option<Vec<Token>> {
         // The witness: IMSCRIB captures the structure, AFWD promotes
         // toward closure, CLINK verifies the tier, EVALT confirms.
         0 => {
-            for t in [Token::IMSCRIB, Token::AFWD, Token::CLINK,
-                      Token::EVALT, Token::IFIX] {
+            for t in [Token::Imscrib, Token::Afwd, Token::Clink,
+                      Token::Evalt, Token::Ifix] {
                 tokens.push(t);
             }
         }
         // XXX: Hodge_Witness
         // Hodge closes under 5 dialects. Same structural path as BSD.
         1 => {
-            for t in [Token::IMSCRIB, Token::AFWD, Token::CLINK,
-                      Token::EVALT, Token::IFIX] {
+            for t in [Token::Imscrib, Token::Afwd, Token::Clink,
+                      Token::Evalt, Token::Ifix] {
                 tokens.push(t);
             }
         }
@@ -79,10 +79,10 @@ pub fn witness_program(i: usize) -> Option<Vec<Token>> {
         // captures the gap: left branch (gate-level) passes,
         // right branch (T_CEILING) fails. The gap IS the witness.
         2 => {
-            for t in [Token::IMSCRIB, Token::FSPLIT,
-                      Token::EVALT, Token::CLINK,
-                      Token::FFUSE,  Token::EVALF,
-                      Token::IFIX] {
+            for t in [Token::Imscrib, Token::Fsplit,
+                      Token::Evalt, Token::Clink,
+                      Token::Ffuse,  Token::Evalf,
+                      Token::Ifix] {
                 tokens.push(t);
             }
         }

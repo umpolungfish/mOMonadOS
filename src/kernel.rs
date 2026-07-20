@@ -205,8 +205,8 @@ impl Kernel {
         let start = i;
         loop {
             match self.program.get(i) {
-                Some(Token::FSPLIT) => depth += 1,
-                Some(Token::FFUSE)  => {
+                Some(Token::Fsplit) => depth += 1,
+                Some(Token::Ffuse)  => {
                     depth -= 1;
                     if depth == 0 { return i; }
                 }
@@ -247,10 +247,10 @@ impl Kernel {
         }
 
         match tok {
-            Token::VINIT => {
+            Token::Vinit => {
                 self.stack.push(B4::N);
             }
-            Token::TANCH => {
+            Token::Tanch => {
                 let val = self.stack.pop();
                 let addr = self.registers.read(0) as usize;
                 self.memory.write(addr, val);
@@ -260,20 +260,20 @@ impl Kernel {
                     return false;
                 }
             }
-            Token::AFWD => {
+            Token::Afwd => {
                 let r0 = self.registers.read(0) as u8;
                 self.registers.write(0, B4::from_u8(r0.wrapping_add(1)));
             }
-            Token::AREV => {
+            Token::Arev => {
                 let r0 = self.registers.read(0) as u8;
                 self.registers.write(0, B4::from_u8(r0.wrapping_sub(1)));
             }
-            Token::CLINK => {
+            Token::Clink => {
                 let a = self.registers.read(1);
                 let b = self.registers.read(2);
                 self.registers.write(3, b4_meet(a, b));
             }
-            Token::IMSCRIB => {
+            Token::Imscrib => {
                 if let Some(snap) = self.snapshot {
                     self.registers.write(4, B4::from_u8(snap.token_diversity as u8 & 3));
                     self.registers.write(5, if snap.self_ref           { B4::T } else { B4::F });
@@ -281,7 +281,7 @@ impl Kernel {
                     self.registers.write(7, if snap.dialetheia_complete { B4::T } else { B4::F });
                 }
             }
-            Token::FSPLIT => {
+            Token::Fsplit => {
                 let v = self.stack.peek();
                 let ffuse_ip = self.find_matching_ffuse(self.ip);
                 let resume = if ffuse_ip + 1 >= self.program.len() { 0 }
@@ -293,7 +293,7 @@ impl Kernel {
                 }
                 self.stack.push(v);
             }
-            Token::EVALT => {
+            Token::Evalt => {
                 let v = self.stack.pop();
                 // ── B-live instrumentation: B on stack when gate fires ──
                 if v == B4::B { self.b_live_count += 1; }
@@ -302,7 +302,7 @@ impl Kernel {
                 if v == B4::T { self.gate_discrimination_count += 1; }
                 self.stack.push(filtered);
             }
-            Token::EVALF => {
+            Token::Evalf => {
                 let v = self.stack.pop();
                 // ── B-live instrumentation ──
                 if v == B4::B { self.b_live_count += 1; }
@@ -311,7 +311,7 @@ impl Kernel {
                 if v == B4::F { self.gate_discrimination_count += 1; }
                 self.stack.push(filtered);
             }
-            Token::FFUSE => {
+            Token::Ffuse => {
                 let left = self.stack.pop();
                 if let Some(frame) = self.pop_fork() {
                     let right = if frame.right_set { frame.right_val } else { B4::N };
@@ -321,11 +321,11 @@ impl Kernel {
                     self.stack.push(left);
                 }
             }
-            Token::ENGAGR => {
+            Token::Engagr => {
                 self.registers.engagr = true;
                 self.stack.push(B4::B);
             }
-            Token::IFIX => {
+            Token::Ifix => {
                 let addr = self.registers.read(0) as usize;
                 let val  = self.stack.pop();
                 self.memory.write(addr, val);
@@ -486,7 +486,7 @@ impl Kernel {
             self.ip = 0;
             self.fork_depth = 0;
         } else if self.stack.depth() > 200 {
-            self.program.inject(self.ip, Token::TANCH);
+            self.program.inject(self.ip, Token::Tanch);
             self.snapshot = Some(self_imscribe(&self.program));
         }
     }
@@ -557,15 +557,15 @@ pub fn self_imscribe(prog: &Program) -> Snapshot {
 
     let self_ref = n > 0 && prog.get(0) == prog.get(n - 1);
 
-    let fsplit = prog.as_slice().iter().any(|t| *t == Token::FSPLIT);
-    let ffuse  = prog.as_slice().iter().any(|t| *t == Token::FFUSE);
+    let fsplit = prog.as_slice().iter().any(|t| *t == Token::Fsplit);
+    let ffuse  = prog.as_slice().iter().any(|t| *t == Token::Ffuse);
     let frob_order = match (fsplit, ffuse) {
         (false, false) => 0,
         (true,  false) => 1,
         (false, true)  => 2,
         (true,  true)  => {
-            let first_split = prog.as_slice().iter().position(|t| *t == Token::FSPLIT).unwrap();
-            let first_fuse  = prog.as_slice().iter().position(|t| *t == Token::FFUSE).unwrap();
+            let first_split = prog.as_slice().iter().position(|t| *t == Token::Fsplit).unwrap();
+            let first_fuse  = prog.as_slice().iter().position(|t| *t == Token::Ffuse).unwrap();
             if first_split < first_fuse { 1 } else { 2 }
         }
     };
@@ -579,26 +579,26 @@ pub fn self_imscribe(prog: &Program) -> Snapshot {
     // modulo n until we hit the next ENGAGR or exhaust the program.
     let dialetheia_complete = {
         let slice = prog.as_slice();
-        let has_evalt  = slice.iter().any(|t| *t == Token::EVALT);
-        let has_evalf  = slice.iter().any(|t| *t == Token::EVALF);
-        let has_engagr = slice.iter().any(|t| *t == Token::ENGAGR);
+        let has_evalt  = slice.iter().any(|t| *t == Token::Evalt);
+        let has_evalf  = slice.iter().any(|t| *t == Token::Evalf);
+        let has_engagr = slice.iter().any(|t| *t == Token::Engagr);
 
         if !has_evalt || !has_evalf || !has_engagr {
             false
         } else {
             let mut all_ok = true;
             for (i, &t) in slice.iter().enumerate() {
-                if t == Token::ENGAGR {
+                if t == Token::Engagr {
                     let mut found_gate = false;
                     // Scan forward linearly — do NOT wrap.
                     // The gate must appear after this ENGAGR and before
                     // the next ENGAGR (or end-of-program) in the current cycle.
                     for offset in 1..n {
                         let j = (i + offset) % n;
-                        if slice[j] == Token::ENGAGR {
+                        if slice[j] == Token::Engagr {
                             break; // reached next ENGAGR — no gate in between
                         }
-                        if slice[j] == Token::EVALT || slice[j] == Token::EVALF {
+                        if slice[j] == Token::Evalt || slice[j] == Token::Evalf {
                             found_gate = true;
                             break;
                         }
@@ -617,8 +617,8 @@ pub fn self_imscribe(prog: &Program) -> Snapshot {
 
     // ── R2 structural conditions (atomicity, bifurcation) — static, mirrors
     // frob_order/self_ref above. winding_count is dynamic-only (see dynamic_imscribe). ──
-    let fsplit_count = prog.as_slice().iter().filter(|t| **t == Token::FSPLIT).count();
-    let ffuse_count  = prog.as_slice().iter().filter(|t| **t == Token::FFUSE).count();
+    let fsplit_count = prog.as_slice().iter().filter(|t| **t == Token::Fsplit).count();
+    let ffuse_count  = prog.as_slice().iter().filter(|t| **t == Token::Ffuse).count();
     let atomic_reentry = fsplit_count == 1 && ffuse_count == 1;
     let bifurcation_revisited = atomic_reentry && self_ref;
 

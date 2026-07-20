@@ -118,11 +118,11 @@ fn b4_style(v: B4) -> &'static str {
 
 fn token_style(t: Token) -> &'static str {
     match t {
-        Token::VINIT => CYAN,  Token::TANCH => RED,    Token::AFWD => GREEN,
-        Token::AREV => YELLOW, Token::CLINK => BLUE,    Token::IMSCRIB => MAGENTA,
-        Token::FSPLIT => BOLD_CYAN, Token::FFUSE => BOLD_CYAN,
-        Token::EVALT => BOLD_GREEN, Token::EVALF => BOLD_RED,
-        Token::ENGAGR => BOLD_WHITE, Token::IFIX => DIM,
+        Token::Vinit => CYAN,  Token::Tanch => RED,    Token::Afwd => GREEN,
+        Token::Arev => YELLOW, Token::Clink => BLUE,    Token::Imscrib => MAGENTA,
+        Token::Fsplit => BOLD_CYAN, Token::Ffuse => BOLD_CYAN,
+        Token::Evalt => BOLD_GREEN, Token::Evalf => BOLD_RED,
+        Token::Engagr => BOLD_WHITE, Token::Ifix => DIM,
     }
 }
 
@@ -355,15 +355,15 @@ pub fn draw_token_graph(k: &Kernel) {
         let marker = if i == k.ip { "▶" } else { " " };
 
         // Pre-adjust: FFUSE reduces depth before drawing
-        if t == Token::FFUSE && fork_depth > 0 { fork_depth -= 1; }
+        if t == Token::Ffuse && fork_depth > 0 { fork_depth -= 1; }
 
         // Indent
         let indent = fork_depth * 2;
         for _ in 0..indent { serial::write_byte(b' '); }
 
         // Draw connector
-        let prefix = if t == Token::FSPLIT { "├─" }
-                else if t == Token::FFUSE { "└─" }
+        let prefix = if t == Token::Fsplit { "├─" }
+                else if t == Token::Ffuse { "└─" }
                 else if fork_depth > 0 { "│ " }
                 else { "─ " };
         serial::write_str(prefix);
@@ -371,7 +371,7 @@ pub fn draw_token_graph(k: &Kernel) {
         styled(token_style(t), t.name());
 
         // For FSPLIT, show matching FFUSE
-        if t == Token::FSPLIT {
+        if t == Token::Fsplit {
             let ffuse = k.find_matching_ffuse(i);
             serial::write_str(" →FFUSE@");
             write_usize(ffuse);
@@ -380,7 +380,7 @@ pub fn draw_token_graph(k: &Kernel) {
         serial::write_str("\r\n");
 
         // Post-adjust: FSPLIT increases depth
-        if t == Token::FSPLIT { fork_depth += 1; }
+        if t == Token::Fsplit { fork_depth += 1; }
     }
 }
 

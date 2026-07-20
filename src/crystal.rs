@@ -78,16 +78,16 @@ pub fn indices_from_program(
     // Per-token census (Token is #[repr(u8)] 0x0..0xB).
     let mut c = [0u32; 12];
     for &t in p.as_slice() { c[t as usize] += 1; }
-    let n_tanch  = c[Token::TANCH  as usize];
-    let n_afwd   = c[Token::AFWD   as usize];
-    let n_arev   = c[Token::AREV   as usize];
-    let n_clink  = c[Token::CLINK  as usize];
-    let n_fsplit = c[Token::FSPLIT as usize];
-    let n_ffuse  = c[Token::FFUSE  as usize];
-    let n_evalt  = c[Token::EVALT  as usize];
-    let n_evalf  = c[Token::EVALF  as usize];
-    let n_engagr = c[Token::ENGAGR as usize];
-    let n_ifix   = c[Token::IFIX   as usize];
+    let n_tanch  = c[Token::Tanch  as usize];
+    let n_afwd   = c[Token::Afwd   as usize];
+    let n_arev   = c[Token::Arev   as usize];
+    let n_clink  = c[Token::Clink  as usize];
+    let n_fsplit = c[Token::Fsplit as usize];
+    let n_ffuse  = c[Token::Ffuse  as usize];
+    let n_evalt  = c[Token::Evalt  as usize];
+    let n_evalf  = c[Token::Evalf  as usize];
+    let n_engagr = c[Token::Engagr as usize];
+    let n_ifix   = c[Token::Ifix   as usize];
 
     // ── Forced structural predicates only (no free numeric threshold) ──
     let halts    = n_tanch > 0;                       // TANCH sinks the wire
