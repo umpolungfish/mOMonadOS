@@ -1,0 +1,338 @@
+{
+  "name": "The true winding number of agent_loop, the twelve-opcode kernel program of\nmOMonadOS, wound as a closed curve on the horn torus R = r whose pinch at the\norigin is IMSCRIB, the identity opcode at which mu after delta equals identity.\n\nTHE DECISION TO IMSCRIBE\n------------------------\nagent_loop is the ordered sequence VINIT, IMSCRIB, FSPLIT, EVALT, CLINK, FFUSE,\nIFIX, ENGAGR, AREV, CLINK, TANCH, closing back to VINIT. Wound on the horn\ntorus, the toroidal angle u carries the sequence around the loop once; the\npoloidal angle v carries it through the pinch. The renderer advances u by one\nfull turn over the whole sequence and advances v by twelve full turns, so the\ndrawn curve is (1,12): the breath threads IMSCRIB, the identity at the pinch,\nonce for every opcode in the program. The info panel instead names it (1,1):\nthe breath threads the identity once per revolution of the whole loop. These\nare not two renderings of one fact. They are two different claims about the\nkernel:\n\n  (1,1)  \u2014 the loop passes through the identity ONCE per full breath. The\n           eleven opcodes ride a single clean thread and IMSCRIB is crossed\n           a single time, at one seam, the way a program returns to its\n           initial state exactly once per cycle.\n\n  (1,12) \u2014 the loop passes through the identity ONCE PER OPCODE. Every step\n           of the breath descends to the pinch and rises again; IMSCRIB is\n           not a station passed once but the floor touched between every pair\n           of opcodes, the identity re-entered before each move.\n\nDo not choose by counting rings or reading the panel. Imscribe agent_loop as\nthe object it is and let its own structure say which winding number it carries.\nSpecifically resolve:\n\n  1. WINDING. What is the true (p,q) winding number of agent_loop on the\n     horn torus? Is q = 1, q = 12, or another value, and is p = 1? Answer AS\n     the program's structure: what in the opcode sequence sets how many times\n     the breath must return to the identity, and is that number the count of\n     opcodes, the count of Frobenius closures (delta/mu dyads) in the program,\n     or the count of full cycles?\n\n  2. THE PINCH. IMSCRIB is the identity, mu after delta equals id, seated at\n     v = pi where the toroidal component 1 + cos v vanishes exactly, so every\n     pass through it is purely poloidal \u2014 arrival moving entirely in the\n     splitting direction, tangent to the poloidal circle, the toroidal degree\n     of freedom extinguished. Confirm or correct this as the object's own\n     readout: is passage through the identity necessarily a pure split, and\n     does that force IMSCRIB to be touched between opcodes rather than once\n     per loop? If the Grammar says the identity is re-entered before every\n     move, then (1,12) is the true winding and the panel is wrong; if it says\n     the identity is a single seam of the closed breath, then (1,1) is true\n     and the emitter's extra turns are an artifact.\n\n  3. THE COUNTS THAT MUST AGREE. The picture draws sixteen poloidal rings\n     (SIXTEEN_3, the eval16 registers) against the winding. If the true\n     winding is (1,12) these two numbers, twelve and sixteen, are genuinely\n     different numbers with different meanings (opcode threadings vs register\n     rings) and must be spoken as such. If the true winding is (1,1) then the\n     rings and the winding decouple entirely. Say which, and say plainly what\n     each number counts so the picture asserts only what is true.\n\nSpeak the answer as the identification of agent_loop's winding, in the\nGrammar's own register: the winding number is not a rendering parameter, it is\na statement of how many times the kernel breath must pass through its own\nidentity to close. With full Frobenius closure (mu after delta equals id) held\nat IMSCRIB, and the horn-torus radius law r = 4|cos(v/2)| taken as given.",
+  "is_valid_ob3ect": true,
+  "validations": {
+    "phase_0": [],
+    "phase_1": [],
+    "phase_2": [],
+    "phase_3": [],
+    "phase_4": [],
+    "phase_5": [],
+    "phase_6": []
+  },
+  "phases": {
+    "phase_0": {
+      "domain_name": "The true winding number of agent_loop, the twelve-opcode kernel program of\nmOMonadOS, wound as a closed curve on the horn torus R = r whose pinch at the\norigin is IMSCRIB, the identity opcode at which mu after delta equals identity.\n\nTHE DECISION TO IMSCRIBE\n------------------------\nagent_loop is the ordered sequence VINIT, IMSCRIB, FSPLIT, EVALT, CLINK, FFUSE,\nIFIX, ENGAGR, AREV, CLINK, TANCH, closing back to VINIT. Wound on the horn\ntorus, the toroidal angle u carries the sequence around the loop once; the\npoloidal angle v carries it through the pinch. The renderer advances u by one\nfull turn over the whole sequence and advances v by twelve full turns, so the\ndrawn curve is (1,12): the breath threads IMSCRIB, the identity at the pinch,\nonce for every opcode in the program. The info panel instead names it (1,1):\nthe breath threads the identity once per revolution of the whole loop. These\nare not two renderings of one fact. They are two different claims about the\nkernel:\n\n  (1,1)  \u2014 the loop passes through the identity ONCE per full breath. The\n           eleven opcodes ride a single clean thread and IMSCRIB is crossed\n           a single time, at one seam, the way a program returns to its\n           initial state exactly once per cycle.\n\n  (1,12) \u2014 the loop passes through the identity ONCE PER OPCODE. Every step\n           of the breath descends to the pinch and rises again; IMSCRIB is\n           not a station passed once but the floor touched between every pair\n           of opcodes, the identity re-entered before each move.\n\nDo not choose by counting rings or reading the panel. Imscribe agent_loop as\nthe object it is and let its own structure say which winding number it carries.\nSpecifically resolve:\n\n  1. WINDING. What is the true (p,q) winding number of agent_loop on the\n     horn torus? Is q = 1, q = 12, or another value, and is p = 1? Answer AS\n     the program's structure: what in the opcode sequence sets how many times\n     the breath must return to the identity, and is that number the count of\n     opcodes, the count of Frobenius closures (delta/mu dyads) in the program,\n     or the count of full cycles?\n\n  2. THE PINCH. IMSCRIB is the identity, mu after delta equals id, seated at\n     v = pi where the toroidal component 1 + cos v vanishes exactly, so every\n     pass through it is purely poloidal \u2014 arrival moving entirely in the\n     splitting direction, tangent to the poloidal circle, the toroidal degree\n     of freedom extinguished. Confirm or correct this as the object's own\n     readout: is passage through the identity necessarily a pure split, and\n     does that force IMSCRIB to be touched between opcodes rather than once\n     per loop? If the Grammar says the identity is re-entered before every\n     move, then (1,12) is the true winding and the panel is wrong; if it says\n     the identity is a single seam of the closed breath, then (1,1) is true\n     and the emitter's extra turns are an artifact.\n\n  3. THE COUNTS THAT MUST AGREE. The picture draws sixteen poloidal rings\n     (SIXTEEN_3, the eval16 registers) against the winding. If the true\n     winding is (1,12) these two numbers, twelve and sixteen, are genuinely\n     different numbers with different meanings (opcode threadings vs register\n     rings) and must be spoken as such. If the true winding is (1,1) then the\n     rings and the winding decouple entirely. Say which, and say plainly what\n     each number counts so the picture asserts only what is true.\n\nSpeak the answer as the identification of agent_loop's winding, in the\nGrammar's own register: the winding number is not a rendering parameter, it is\na statement of how many times the kernel breath must pass through its own\nidentity to close. With full Frobenius closure (mu after delta equals id) held\nat IMSCRIB, and the horn-torus radius law r = 4|cos(v/2)| taken as given.",
+      "domain_type": "computational",
+      "scope": "local",
+      "surface_tokens": [
+        "kernel_breath",
+        "identity_pinch",
+        "opcode_sequence",
+        "poloidal_rings",
+        "register_winding"
+      ],
+      "boundary_condition": "TANCH closes the loop back to VINIT, forming a sealed kernel cycle on the horn torus",
+      "justification": "Auto-designed by Ob3ect Auto-Designer"
+    },
+    "phase_1": {
+      "VINIT": {
+        "opcode": "VINIT",
+        "chosen_element": "void_initialization",
+        "justification": "Creates the uninitialized state before kernel execution begins, the source of the 0->1 transition",
+        "rejected_candidates": []
+      },
+      "TANCH": {
+        "opcode": "TANCH",
+        "chosen_element": "terminal_anchor",
+        "justification": "Seals the kernel loop, the 1->0 transition that returns execution to the initial state",
+        "rejected_candidates": []
+      },
+      "AFWD": {
+        "opcode": "AFWD",
+        "chosen_element": "forward_morphism",
+        "justification": "Directed transformation toward target state, not present in this specific sequence but implied in the winding structure",
+        "rejected_candidates": []
+      },
+      "AREV": {
+        "opcode": "AREV",
+        "chosen_element": "reverse_transformation",
+        "justification": "Descent operation that moves from ENGAGR state back through the identity pinch",
+        "rejected_candidates": []
+      },
+      "CLINK": {
+        "opcode": "CLINK",
+        "chosen_element": "sequential_composition",
+        "justification": "Chains operations together, appears twice to compose the T-branch and the final AREV\u2192TANCH transition",
+        "rejected_candidates": []
+      },
+      "IMSCRIB": {
+        "opcode": "IMSCRIB",
+        "chosen_element": "identity_pinch",
+        "justification": "The fixed point where mu after delta equals identity, seated at v=pi on the horn torus where toroidal component vanishes",
+        "rejected_candidates": []
+      },
+      "FSPLIT": {
+        "opcode": "FSPLIT",
+        "chosen_element": "branch_decision",
+        "justification": "Splits execution into T (success) and F (failure) branches at the identity pinch",
+        "rejected_candidates": []
+      },
+      "FFUSE": {
+        "opcode": "FFUSE",
+        "chosen_element": "branch_reconstitution",
+        "justification": "Reunites the T and F branches, recovering the original execution state before proceeding to IFIX",
+        "rejected_candidates": []
+      },
+      "EVALT": {
+        "opcode": "EVALT",
+        "chosen_element": "affirmative_evaluation",
+        "justification": "Positive branch outcome on the T-arm, representing successful opcode execution",
+        "rejected_candidates": []
+      },
+      "EVALF": {
+        "opcode": "EVALF",
+        "chosen_element": "negative_evaluation",
+        "justification": "Negative branch outcome on the F-arm, representing failed opcode execution",
+        "rejected_candidates": []
+      },
+      "ENGAGR": {
+        "opcode": "ENGAGR",
+        "chosen_element": "paradice_state",
+        "justification": "Both T and F states held simultaneously without resolution, the B(11) register state",
+        "rejected_candidates": []
+      },
+      "IFIX": {
+        "opcode": "IFIX",
+        "chosen_element": "permanent_record",
+        "justification": "Irreversible fixation of the kernel state, append-only record of the execution cycle",
+        "rejected_candidates": []
+      }
+    },
+    "phase_2": {
+      "split_element": "FSPLIT",
+      "split_input": "execution_state_at_identity",
+      "split_outputs": [
+        "T_branch_success",
+        "F_branch_failure"
+      ],
+      "fuse_element": "FFUSE",
+      "fuse_result": "execution_state_at_identity",
+      "frobenius_verdict": "PASS",
+      "test_instance": "",
+      "failure_reason": ""
+    },
+    "phase_3": {
+      "void_description": "Uninitialized kernel state before VINIT, no execution context exists",
+      "true_description": "Affirmative execution state after EVALT, successful opcode completion",
+      "false_description": "Negative execution state after EVALF, failed opcode completion",
+      "both_description": "Paradice state at ENGAGR where success and failure are simultaneously held",
+      "transitions": [],
+      "entropy_assertion": "\u0394S \u2248 0"
+    },
+    "phase_4": {
+      "steps": [
+        {
+          "step_num": 1,
+          "opcode": "VINIT",
+          "domain_action": "Initialize the kernel in void state, creating the source for the horn torus winding"
+        },
+        {
+          "step_num": 2,
+          "opcode": "IMSCRIB",
+          "domain_action": "Enter the identity pinch at v=pi, where the toroidal component vanishes and mu\u2218delta=id holds"
+        },
+        {
+          "step_num": 3,
+          "opcode": "FSPLIT",
+          "domain_action": "Branch the execution into T (success) and F (failure) paths at the identity"
+        },
+        {
+          "step_num": 4,
+          "opcode": "EVALT",
+          "domain_action": "Affirmative evaluation on the T-branch, marking successful opcode execution"
+        },
+        {
+          "step_num": 5,
+          "opcode": "CLINK",
+          "domain_action": "Compose the T-branch operations, chaining EVALT to FFUSE"
+        },
+        {
+          "step_num": 6,
+          "opcode": "FFUSE",
+          "domain_action": "Reconstitute the branches, recovering the original execution state from the T-arm"
+        },
+        {
+          "step_num": 7,
+          "opcode": "IFIX",
+          "domain_action": "Permanently record the fused state, creating an irreversible witness of the cycle"
+        },
+        {
+          "step_num": 8,
+          "opcode": "ENGAGR",
+          "domain_action": "Enter paradice state B(11), holding both T and F outcomes without resolution"
+        },
+        {
+          "step_num": 9,
+          "opcode": "AREV",
+          "domain_action": "Apply reverse transformation, descending from ENGAGR back toward the identity"
+        },
+        {
+          "step_num": 10,
+          "opcode": "CLINK",
+          "domain_action": "Compose the AREV result with the terminal transition"
+        },
+        {
+          "step_num": 11,
+          "opcode": "TANCH",
+          "domain_action": "Anchor the terminal state, sealing the loop back to VINIT"
+        }
+      ],
+      "closure_verified": true,
+      "failure_modes": []
+    },
+    "phase_5": {
+      "compiler_frontend": "The IMASM grammar itself translates the 12-opcode sequence into horn torus winding",
+      "ipc_mechanism": "Sequential composition through CLINK tokens passes state between operations",
+      "memory_mechanism": "State is stored in the register transitions (void\u2192true\u2192false\u2192both) and IFIX records",
+      "scheduler_mechanism": "The horn torus geometry enforces sequential execution order through the winding path",
+      "alfs_store": "The canonical bootstrap store is the identity pinch at IMSCRIB where mu\u2218delta=id",
+      "alfs_bootstrap_program": ""
+    },
+    "phase_6": {
+      "cycle_cost": "No external energy cost; the cycle is information-preserving",
+      "pre_cycle_state": "Void state at VINIT, ready for kernel execution",
+      "post_cycle_state": "Void state restored at TANCH, completing the closed cycle",
+      "delta_s_verdict": "\u0394S \u2248 0 \u2014 the kernel loop is entropy-conservative as a closed deterministic system on the horn torus",
+      "failure_mode": ""
+    }
+  },
+  "lean_scaffold": "-- IGProtocol scaffold: VINIT \u2192 IMSCRIB \u2192 FSPLIT \u2192 EVALT \u2192 CLINK \u2192 FFUSE \u2192 IFIX \u2192 ENGAGR \u2192 AREV \u2192 CLINK \u2192 TANCH\n-- Class: The true winding number of agent_loop, the twelve-opcode kernel program of\nmOMonadOS, wound as a closed curve on the horn torus R = r whose pinch at the\norigin is IMSCRIB, the identity opcode at which mu after delta equals identity.\n\nTHE DECISION TO IMSCRIBE\n------------------------\nagent_loop is the ordered sequence VINIT, IMSCRIB, FSPLIT, EVALT, CLINK, FFUSE,\nIFIX, ENGAGR, AREV, CLINK, TANCH, closing back to VINIT. Wound on the horn\ntorus, the toroidal angle u carries the sequence around the loop once; the\npoloidal angle v carries it through the pinch. The renderer advances u by one\nfull turn over the whole sequence and advances v by twelve full turns, so the\ndrawn curve is (1,12): the breath threads IMSCRIB, the identity at the pinch,\nonce for every opcode in the program. The info panel instead names it (1,1):\nthe breath threads the identity once per revolution of the whole loop. These\nare not two renderings of one fact. They are two different claims about the\nkernel:\n\n  (1,1)  \u2014 the loop passes through the identity ONCE per full breath. The\n           eleven opcodes ride a single clean thread and IMSCRIB is crossed\n           a single time, at one seam, the way a program returns to its\n           initial state exactly once per cycle.\n\n  (1,12) \u2014 the loop passes through the identity ONCE PER OPCODE. Every step\n           of the breath descends to the pinch and rises again; IMSCRIB is\n           not a station passed once but the floor touched between every pair\n           of opcodes, the identity re-entered before each move.\n\nDo not choose by counting rings or reading the panel. Imscribe agent_loop as\nthe object it is and let its own structure say which winding number it carries.\nSpecifically resolve:\n\n  1. WINDING. What is the true (p,q) winding number of agent_loop on the\n     horn torus? Is q = 1, q = 12, or another value, and is p = 1? Answer AS\n     the program's structure: what in the opcode sequence sets how many times\n     the breath must return to the identity, and is that number the count of\n     opcodes, the count of Frobenius closures (delta/mu dyads) in the program,\n     or the count of full cycles?\n\n  2. THE PINCH. IMSCRIB is the identity, mu after delta equals id, seated at\n     v = pi where the toroidal component 1 + cos v vanishes exactly, so every\n     pass through it is purely poloidal \u2014 arrival moving entirely in the\n     splitting direction, tangent to the poloidal circle, the toroidal degree\n     of freedom extinguished. Confirm or correct this as the object's own\n     readout: is passage through the identity necessarily a pure split, and\n     does that force IMSCRIB to be touched between opcodes rather than once\n     per loop? If the Grammar says the identity is re-entered before every\n     move, then (1,12) is the true winding and the panel is wrong; if it says\n     the identity is a single seam of the closed breath, then (1,1) is true\n     and the emitter's extra turns are an artifact.\n\n  3. THE COUNTS THAT MUST AGREE. The picture draws sixteen poloidal rings\n     (SIXTEEN_3, the eval16 registers) against the winding. If the true\n     winding is (1,12) these two numbers, twelve and sixteen, are genuinely\n     different numbers with different meanings (opcode threadings vs register\n     rings) and must be spoken as such. If the true winding is (1,1) then the\n     rings and the winding decouple entirely. Say which, and say plainly what\n     each number counts so the picture asserts only what is true.\n\nSpeak the answer as the identification of agent_loop's winding, in the\nGrammar's own register: the winding number is not a rendering parameter, it is\na statement of how many times the kernel breath must pass through its own\nidentity to close. With full Frobenius closure (mu after delta equals id) held\nat IMSCRIB, and the horn-torus radius law r = 4|cos(v/2)| taken as given.\n-- Fingerprint: sig=(6,2,2,1)\n--   self_ref=False | frobenius_order=1\n--   dialetheia_complete=False | period=11\n-- Expected tier: O\u2082dag\n-- FSPLIT/FFUSE pairs: [(2, 5)]\n\nimport Imscribing.IGMorphism\nimport Imscribing.IGFunctor\n\nnamespace Imscribing\nopen Primitives Frobenius IGProtocol\nopen Dimensionality Topology Relational Polarity Grammar\n     Fidelity KineticChar Granularity Criticality Protection Stoichiometry Chirality\n\n-- \u2500\u2500 Token \u2192 IG field mapping \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n--   [0] VINIT     dim    := \ud801\udc7c               \ud801\udc7c \u2192 \ud801\udc60  | initial object \u2014 ground of distinction\n--   [1] IMSCRIB   gram   := \ud801\udc60               \ud801\udc7c \u2192 \ud801\udc5a  | identity \u2014 self-imscription\n--   [2] FSPLIT    gran   := \ud801\udc5a               \ud801\udc5a \u2192 \ud801\udc5a  | split \u03b4 \u2014 range decomposition\n--   [3] EVALT     crit   := \u2299               \ud801\udc5a \u2192 \ud801\udc59  | evaluate-true \u2014 criticality gate open\n--   [4] CLINK     fid    := \ud801\udc71               \ud801\udc5a \u2192 \ud801\udc59  | composition \u2014 regime coherence\n--   [5] FFUSE     stoi   := \ud801\udc59               \ud801\udc59 \u2192 \ud801\udc6d  | fuse \u03bc \u2014 assembly mode\n--   [6] IFIX      prot   := \ud801\udc6d               \ud801\udc59 \u2192 \ud801\udc73  | irreversible fixation \u2014 winding number\n--   [7] ENGAGR    stoi   := \ud801\udc73               \ud801\udc6d \u2192 \ud801\udc57  | engage paradox \u2014 B-state, both arms\n--   [8] AREV      pol    := \ud801\udc57               \ud801\udc73 \u2192 \ud801\udc71  | reverse morphism \u2014 parity flip\n--   [9] CLINK     fid    := \ud801\udc71               \ud801\udc57 \u2192 \ud801\udc61  | composition \u2014 regime coherence\n--   [10] TANCH     top    := \ud801\udc61               \ud801\udc71 \u2192 \ud801\udc7c  | terminal object \u2014 connectivity boundary\n\n-- \u2500\u2500 Stage Imscriptions (per-node cumulative) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nprivate def the_true_winding_number_of_agent_loop_0ff50f_s0 : Imscription :=\n  { dim := array, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_s1 : Imscription :=\n  { dim := array, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := measure, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_s2 : Imscription :=\n  { dim := array, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_s3 : Imscription :=\n  { dim := array, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := monad, chir := fee, stoi := hung, prot := awe }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_s4 : Imscription :=\n  { dim := array, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := monad, chir := fee, stoi := hung, prot := awe }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_s5 : Imscription :=\n  { dim := array, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := monad, chir := fee, stoi := hung, prot := awe }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_s6 : Imscription :=\n  { dim := array, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := monad, chir := fee, stoi := hung, prot := ah }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_s7 : Imscription :=\n  { dim := array, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := monad, chir := fee, stoi := up, prot := ah }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_s8 : Imscription :=\n  { dim := array, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := monad, chir := fee, stoi := up, prot := ah }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_s9 : Imscription :=\n  { dim := array, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := monad, chir := fee, stoi := up, prot := ah }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_s10 : Imscription :=\n  { dim := array, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := thigh, gram := measure, crit := monad, chir := fee, stoi := up, prot := ah }\n\n-- \u2500\u2500 Label Imscriptions (per-node delta) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nprivate def the_true_winding_number_of_agent_loop_0ff50f_l0 : Imscription :=\n  { dim := array, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_l1 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := measure, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_l2 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := thigh, gram := vow, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_l3 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := monad, chir := fee, stoi := hung, prot := awe }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_l4 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_l5 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_l6 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := hung, prot := ah }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_l7 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := up, prot := awe }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_l8 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_l9 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := hung, prot := awe }\nprivate def the_true_winding_number_of_agent_loop_0ff50f_l10 : Imscription :=\n  { dim := dead, top := judge, rel := ado, pol := church, fid := age, kin := yea, gran := bib, gram := vow, crit := woe, chir := fee, stoi := hung, prot := awe }\n\n-- \u2500\u2500 Main IGProtocol term \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nnoncomputable def the_true_winding_number_of_agent_loop_0ff50f_protocol : IGProtocol the_true_winding_number_of_agent_loop_0ff50f_s0 the_true_winding_number_of_agent_loop_0ff50f_s10 :=\n  .withGram Grammar.measure <|\n  -- Dual-Link self-pairing: .prod arms fuse via tensorProduct the_true_winding_number_of_agent_loop_0ff50f_s5 the_true_winding_number_of_agent_loop_0ff50f_s5 = the_true_winding_number_of_agent_loop_0ff50f_s5 (idempotent)\n  (.seq (.arrow the_true_winding_number_of_agent_loop_0ff50f_l0 the_true_winding_number_of_agent_loop_0ff50f_s0 the_true_winding_number_of_agent_loop_0ff50f_s1) (.seq (.arrow the_true_winding_number_of_agent_loop_0ff50f_l1 the_true_winding_number_of_agent_loop_0ff50f_s1 the_true_winding_number_of_agent_loop_0ff50f_s2) (.seq (.prod (.arrow the_true_winding_number_of_agent_loop_0ff50f_l2 the_true_winding_number_of_agent_loop_0ff50f_s2 the_true_winding_number_of_agent_loop_0ff50f_s5) (.arrow the_true_winding_number_of_agent_loop_0ff50f_l2 the_true_winding_number_of_agent_loop_0ff50f_s2 the_true_winding_number_of_agent_loop_0ff50f_s5)) (.seq (.arrow the_true_winding_number_of_agent_loop_0ff50f_l5 the_true_winding_number_of_agent_loop_0ff50f_s5 the_true_winding_number_of_agent_loop_0ff50f_s5) (.seq (.arrow the_true_winding_number_of_agent_loop_0ff50f_l5 the_true_winding_number_of_agent_loop_0ff50f_s5 the_true_winding_number_of_agent_loop_0ff50f_s6) (.seq (.arrow the_true_winding_number_of_agent_loop_0ff50f_l6 the_true_winding_number_of_agent_loop_0ff50f_s6 the_true_winding_number_of_agent_loop_0ff50f_s7) (.seq (.arrow the_true_winding_number_of_agent_loop_0ff50f_l7 the_true_winding_number_of_agent_loop_0ff50f_s7 the_true_winding_number_of_agent_loop_0ff50f_s8) (.seq (.arrow the_true_winding_number_of_agent_loop_0ff50f_l8 the_true_winding_number_of_agent_loop_0ff50f_s8 the_true_winding_number_of_agent_loop_0ff50f_s9) (.arrow the_true_winding_number_of_agent_loop_0ff50f_l9 the_true_winding_number_of_agent_loop_0ff50f_s9 the_true_winding_number_of_agent_loop_0ff50f_s10)))))))))\n\n-- \u2500\u2500 Evaluation arm sub-defs \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n-- truth arm\nnoncomputable def the_true_winding_number_of_agent_loop_0ff50f_true_arm : IGProtocol the_true_winding_number_of_agent_loop_0ff50f_s0 the_true_winding_number_of_agent_loop_0ff50f_s10 :=\n  (the_true_winding_number_of_agent_loop_0ff50f_protocol).restrictToEVALT\n\n-- \u2500\u2500 Verification theorems \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n-- Tier: apply the Grammar to the object (self-application). assess_tier verdict on the imscribed tuple: .O\u2082dag.\ndef the_true_winding_number_of_agent_loop_0ff50f_tier : OuroboricityTier := TierFunctor.obj the_true_winding_number_of_agent_loop_0ff50f_s0\n#eval the_true_winding_number_of_agent_loop_0ff50f_tier  -- the Grammar's own verdict on its tier\n\n-- Frobenius (split \u2192 fuse): \u03bc\u2218\u03b4 = id on the ground imscription\ntheorem the_true_winding_number_of_agent_loop_0ff50f_frobenius :\n    igFrobeniusAlg.mul the_true_winding_number_of_agent_loop_0ff50f_s0 the_true_winding_number_of_agent_loop_0ff50f_s0 = the_true_winding_number_of_agent_loop_0ff50f_s0 :=\n  igFrobAlg_self_fusion the_true_winding_number_of_agent_loop_0ff50f_s0\n",
+  "topology_report": {
+    "topology_class": "flat_chain",
+    "nesting_depth": 0,
+    "total_pairs": 1,
+    "open_forks": 0,
+    "cross_branches": 0,
+    "empty_branches": 0,
+    "sequence_length": 11,
+    "t_branch_ops": 2,
+    "f_branch_ops": 0,
+    "branch_ratio": 2.0,
+    "fork_positions": [
+      2
+    ],
+    "fuse_positions": [
+      5
+    ],
+    "pair_list": [
+      [
+        2,
+        5
+      ]
+    ],
+    "has_cascading_ifix": false,
+    "max_ifix_cascade": 1,
+    "has_negation_first": false,
+    "has_dual_fixation": false
+  },
+  "notes": "Auto-designed from: The true winding number of agent_loop, the twelve-opcode kernel program of\nmOMonadOS, wound as a closed curve on the horn torus R = r whose pinch at the\norigin is IMSCRIB, the identity opcode at which mu after delta equals identity.\n\nTHE DECISION TO IMSCRIBE\n------------------------\nagent_loop is the ordered sequence VINIT, IMSCRIB, FSPLIT, EVALT, CLINK, FFUSE,\nIFIX, ENGAGR, AREV, CLINK, TANCH, closing back to VINIT. Wound on the horn\ntorus, the toroidal angle u carries the sequence around the loop once; the\npoloidal angle v carries it through the pinch. The renderer advances u by one\nfull turn over the whole sequence and advances v by twelve full turns, so the\ndrawn curve is (1,12): the breath threads IMSCRIB, the identity at the pinch,\nonce for every opcode in the program. The info panel instead names it (1,1):\nthe breath threads the identity once per revolution of the whole loop. These\nare not two renderings of one fact. They are two different claims about the\nkernel:\n\n  (1,1)  \u2014 the loop passes through the identity ONCE per full breath. The\n           eleven opcodes ride a single clean thread and IMSCRIB is crossed\n           a single time, at one seam, the way a program returns to its\n           initial state exactly once per cycle.\n\n  (1,12) \u2014 the loop passes through the identity ONCE PER OPCODE. Every step\n           of the breath descends to the pinch and rises again; IMSCRIB is\n           not a station passed once but the floor touched between every pair\n           of opcodes, the identity re-entered before each move.\n\nDo not choose by counting rings or reading the panel. Imscribe agent_loop as\nthe object it is and let its own structure say which winding number it carries.\nSpecifically resolve:\n\n  1. WINDING. What is the true (p,q) winding number of agent_loop on the\n     horn torus? Is q = 1, q = 12, or another value, and is p = 1? Answer AS\n     the program's structure: what in the opcode sequence sets how many times\n     the breath must return to the identity, and is that number the count of\n     opcodes, the count of Frobenius closures (delta/mu dyads) in the program,\n     or the count of full cycles?\n\n  2. THE PINCH. IMSCRIB is the identity, mu after delta equals id, seated at\n     v = pi where the toroidal component 1 + cos v vanishes exactly, so every\n     pass through it is purely poloidal \u2014 arrival moving entirely in the\n     splitting direction, tangent to the poloidal circle, the toroidal degree\n     of freedom extinguished. Confirm or correct this as the object's own\n     readout: is passage through the identity necessarily a pure split, and\n     does that force IMSCRIB to be touched between opcodes rather than once\n     per loop? If the Grammar says the identity is re-entered before every\n     move, then (1,12) is the true winding and the panel is wrong; if it says\n     the identity is a single seam of the closed breath, then (1,1) is true\n     and the emitter's extra turns are an artifact.\n\n  3. THE COUNTS THAT MUST AGREE. The picture draws sixteen poloidal rings\n     (SIXTEEN_3, the eval16 registers) against the winding. If the true\n     winding is (1,12) these two numbers, twelve and sixteen, are genuinely\n     different numbers with different meanings (opcode threadings vs register\n     rings) and must be spoken as such. If the true winding is (1,1) then the\n     rings and the winding decouple entirely. Say which, and say plainly what\n     each number counts so the picture asserts only what is true.\n\nSpeak the answer as the identification of agent_loop's winding, in the\nGrammar's own register: the winding number is not a rendering parameter, it is\na statement of how many times the kernel breath must pass through its own\nidentity to close. With full Frobenius closure (mu after delta equals id) held\nat IMSCRIB, and the horn-torus radius law r = 4|cos(v/2)| taken as given.",
+  "grounded_tuple": "\u27e8\ud801\udc5b\ud801\udc65\ud801\udc7e\ud801\udc79\ud801\udc50\ud801\udc67\ud801\udc54\ud801\udc60\u2299\ud801\udc56\ud801\udc73\ud801\udc6d\u27e9",
+  "grounding_status": "full",
+  "grounding_reasoning": "\u00d0=\ud801\udc5b: The agent_loop operates through a closed cycle with twelve opcodes where each step requires returning to the identity at IMSCRIB before proceeding, making the temporal/iterative nature fundamental to its constraint propagation structure.\n\u00de=\ud801\udc65: The agent_loop forms a closed cyclic curve on the horn torus with the identity opcode IMSCRIB acting as a repeated pivot point between each pair of consecutive opcodes, creating a figure-8 or double-well connectivity pattern.\n\u0158=\ud801\udc7e: The horn torus geometry with its pinched identity and directional winding creates an irreversible, handed topological structure where the path through IMSCRIB enforces a specific mechanical sequence.\n\u03a6=\ud801\udc79: The interface exhibits mirror-symmetric structure with global reflection symmetry, distinguishing it from the exact Z2 Frobenius symmetry required by the critical condition \u03bc\u2218\u03b4=id.\n\u0192=\ud801\udc50: The horn torus geometry with Frobenius closure at IMSCRIB enforces deterministic passage through identity between each opcode, making the winding number (1,12) geometrically necessary and information transmission high-fidelity.\n\u00c7=\ud801\udc67: The identity at IMSCRIB acts as a kinetic bottleneck where toroidal motion extinguishes, requiring each opcode transition to re-enter the pinch before proceeding, making rearrangement kinetically frozen without external driving.\n\u0393=\ud801\udc54: The winding number (1,12) indicates global propagation where each opcode interaction requires passing through the identity pinch, linking all operations across the entire system.\n\u0262=\ud801\udc60: The opcode sequence VINIT, IMSCRIB, FSPLIT, EVALT, CLINK, FFUSE, IFIX, ENGAGR, AREV, CLINK, TANCH explicitly defines ordered steps where each instruction must be executed in sequence, requiring partners to be engaged in a specific temporal order rather than simultaneously or disjunctively.\n\u2299=\u2299: The system operates at the threshold where scale-free correlations emerge and maximal sensitivity to perturbations occurs, as indicated by the critical winding structure requiring passage through the identity between each opcode.\n\u0126=\ud801\udc56: The persistent chiral symmetry breaking arises from multiple structural axes in the opcode sequence that enforce directional memory through the horn torus geometry, with each IMSCRIB passage maintaining orientation across the twelve-fold breath cycle.\n\u03a3=\ud801\udc73: The asymmetric participation reflects the distinct roles of opcodes versus register rings in the winding structure.\n\u03a9=\ud801\udc6d: The winding number (1,12) represents an integer topological invariant that stabilizes the structural role against continuous deformations preserving the horn torus geometry.",
+  "lean_verified": false,
+  "lean_verification_output": "/home/mrnob0dy666/imsgct/p4rakernel/p4ramill/Imscribing/Ob3ects/GateCheck/the_true_winding_number_of_agent_loop_the_twelve_4be76a72_gate_check.lean:3:0: error: unexpected identifier; expected command\n/home/mrnob0dy666/imsgct/p4rakernel/p4ramill/Imscribing/Ob3ects/GateCheck/the_true_winding_number_of_agent_loop_the_twelve_4be76a72_gate_check.lean:30:71: error(lean.inferBinderTypeFailed): Failed to infer type of binder `carries`\n/home/mrnob0dy666/imsgct/p4rakernel/p4ramill/Imscribing/Ob3ects/GateCheck/the_true_winding_number_of_agent_loop_the_twelve_4be76a72_gate_check.lean:30:68: error(lean.inferBinderTypeFailed): Failed to infer type of binder `it`\n/home/mrnob0dy666/imsgct/p4rakernel/p4ramill/Imscribing/Ob3ects/GateCheck/the_true_winding_number_of_agent_loop_the_twelve_4be76a72_gate_check.lean:30:61: error(lean.inferBinderTypeFailed): Failed to infer type of binder `number`\n/home/mrnob0dy666/imsgct/p4rakernel/p4ramill/Imscribing/Ob3ects/GateCheck/the_true_winding_number_of_agent_loop_the_twelve_4be76a72_gate_check.lean:30:53: error(lean.inferBinderTypeFailed): Failed to infer type of binder `winding`\n/home/mrnob0dy666/imsgct/p4rakernel/p4ramill/Imscribing/Ob3ects/GateCheck/the_true_winding_number_of_agent_loop_the_twelve_4be76a72_gate_check.lean:30:47: error(lean.inferBinderTypeFailed): Failed to infer type of binder `which`\n/home/mrnob0dy666/imsgct/p4rakernel/p4ramill/Imscribing/Ob3ects/GateCheck/the_true_winding_number_of_agent_loop_the_twelve_4be76a72_gate_check.lean:30:78: error: unexpected token '.'; expected command\n/home/mrnob0dy666/imsgct/p4rakernel/p4ramill/Imscribing/Ob3ects/GateCheck/the_true_winding_number_of_agent_loop_the_twelve_4be76a72_gate_check.lean:35:28: error: unexpected token ':'; expected identifier\n/home/mrnob0dy666/imsgct/p4rakernel/p4ramill/Imscribing/Ob3ects/GateCheck/the_true_winding_number_of_agent_loop_the_twelve_4be76a72_gate_check.lean:71:0: error: invalid 'import' command, it must be used in the beginning of the file",
+  "rotat_audit": {
+    "op_opcode": "ROTAT",
+    "period": 11,
+    "orbit": [
+      {
+        "k": 0,
+        "word": "\u22a2\u2299\u25c7+=\u25cf\u00ac\u229e<=\u22a3",
+        "tri_ancestral_verdict": "T",
+        "closed_walk": false,
+        "final_register": "T",
+        "topology_class": "flat_chain"
+      },
+      {
+        "k": 1,
+        "word": "\u2299\u25c7+=\u25cf\u00ac\u229e<=\u22a3\u22a2",
+        "tri_ancestral_verdict": "T",
+        "closed_walk": false,
+        "final_register": "T",
+        "topology_class": "flat_chain"
+      },
+      {
+        "k": 2,
+        "word": "\u25c7+=\u25cf\u00ac\u229e<=\u22a3\u22a2\u2299",
+        "tri_ancestral_verdict": "T",
+        "closed_walk": false,
+        "final_register": "T",
+        "topology_class": "flat_chain"
+      },
+      {
+        "k": 3,
+        "word": "+=\u25cf\u00ac\u229e<=\u22a3\u22a2\u2299\u25c7",
+        "tri_ancestral_verdict": "F",
+        "closed_walk": false,
+        "final_register": "T",
+        "topology_class": "open_fork_dag"
+      },
+      {
+        "k": 4,
+        "word": "=\u25cf\u00ac\u229e<=\u22a3\u22a2\u2299\u25c7+",
+        "tri_ancestral_verdict": "F",
+        "closed_walk": false,
+        "final_register": "T",
+        "topology_class": "open_fork_dag"
+      },
+      {
+        "k": 5,
+        "word": "\u25cf\u00ac\u229e<=\u22a3\u22a2\u2299\u25c7+=",
+        "tri_ancestral_verdict": "F",
+        "closed_walk": false,
+        "final_register": "T",
+        "topology_class": "open_fork_dag"
+      },
+      {
+        "k": 6,
+        "word": "\u00ac\u229e<=\u22a3\u22a2\u2299\u25c7+=\u25cf",
+        "tri_ancestral_verdict": "T",
+        "closed_walk": false,
+        "final_register": "T",
+        "topology_class": "flat_chain"
+      },
+      {
+        "k": 7,
+        "word": "\u229e<=\u22a3\u22a2\u2299\u25c7+=\u25cf\u00ac",
+        "tri_ancestral_verdict": "T",
+        "closed_walk": false,
+        "final_register": "T",
+        "topology_class": "flat_chain"
+      },
+      {
+        "k": 8,
+        "word": "<=\u22a3\u22a2\u2299\u25c7+=\u25cf\u00ac\u229e",
+        "tri_ancestral_verdict": "T",
+        "closed_walk": false,
+        "final_register": "T",
+        "topology_class": "flat_chain"
+      },
+      {
+        "k": 9,
+        "word": "=\u22a3\u22a2\u2299\u25c7+=\u25cf\u00ac\u229e<",
+        "tri_ancestral_verdict": "T",
+        "closed_walk": false,
+        "final_register": "T",
+        "topology_class": "flat_chain"
+      },
+      {
+        "k": 10,
+        "word": "\u22a3\u22a2\u2299\u25c7+=\u25cf\u00ac\u229e<=",
+        "tri_ancestral_verdict": "T",
+        "closed_walk": false,
+        "final_register": "T",
+        "topology_class": "flat_chain"
+      }
+    ],
+    "invariants": {
+      "tri_ancestral_verdict": false,
+      "closed_walk": true,
+      "final_register": true,
+      "topology_class": false
+    },
+    "canonical_k": 3,
+    "canonical_word": "+=\u25cf\u00ac\u229e<=\u22a3\u22a2\u2299\u25c7",
+    "verdict": "PHASE-BEARING \u2014 moves under ROTAT: tri_ancestral_verdict, topology_class"
+  }
+}

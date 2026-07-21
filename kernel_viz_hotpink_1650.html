@@ -279,7 +279,7 @@
         <p style="margin-top:7px; border-top:2px solid #ffffff; padding-top:6px">
             <strong>Winding = (1,1)</strong> — one toroidal revolution and one poloidal
             revolution on the horn torus (R = r). Stations share a single angle
-            <span class="eq">t</span>; the slate curve is <span class="eq">horn(t)</span>,
+            <span class="eq">t</span>; the hot-pink curve is <span class="eq">horn(t)</span>,
             not a per-segment multi-turn helix. IMSCRIB ⊙ sits at the pinch
             (t = π): identity, <strong>μ∘δ = id</strong>. The identity is crossed
             <em>once</em> per revolution.
@@ -306,7 +306,7 @@
             • green triangle = EVALT / EVALF / EVALI(⊞) on plane x = 1
         </p>
         <p style="margin-top:7px; border-top:2px solid #ffffff; padding-top:6px">
-            <strong>R1</strong> slate curve: agent_loop stations on the (1,1) ring.<br>
+            <strong>R1</strong> hot-pink curve: agent_loop stations on the (1,1) ring.<br>
             <strong>R2 · SIXTEEN_3</strong>: 16 poloidal rings; slate FSPLIT3 shell; blue
             evaluator sphere; FFUSE3 at the far pole. Classic dyad ◇/● is the arity-2 case
             of the tri-dyad ∈/∋ (same ancestry rule).
@@ -320,7 +320,7 @@
             ratio = <span class="eq">exactly 12π</span>.
         </p>
         <p style="margin-top:7px; border-top:2px solid #CC79A7; padding-top:6px">
-            <strong>Hot-pink = exotic ancestry demos</strong> (Guide Part II): edges the verb
+            <strong>Purple = exotic ancestry demos</strong> (Guide Part II): edges the verb
             may supply that are <em>not</em> text-order. Pairing is HOWEVER IT ROUTED.
             They are legal reconnections, not the sequential (1,1) bead path.
         </p>
@@ -344,15 +344,12 @@
         <div class="sub"><span style="color:#009E73">carved ring A</span> = the large green triangle on the
             torus's <strong>outer equator</strong> (roots +1 / −1 / 0, ind = n₊−n₋ = −1): the A₂ root
             system, the decided 3-step O₂†→O<sub>∞</sub> gap. Its trine mirrors the sphere's three evaluators.</div>
-        <div class="sub"><span style="color:#888888">gray dashed</span> unweighted T:F:I resultant (0° tilt, on-axis
-            by C₃ symmetry) vs <span style="color:#E69F00">gold</span> popcount-weighted resultant (1:1:2, forced
-            by Belnap B4 &amp; SIXTEEN_3 bit counts): tilts exactly <strong>14.036°</strong> off the pinch-tip axis.</div>
         <div class="sub"><span style="color:#0072B2">blue</span> WORK · <span style="color:#ffffff">white</span> no-work ·
             <span style="color:#E69F00">gold</span> ⊞ / pinch workarounds</div>
-        <div class="sub"><span style="color:#9AA7B4">slate (1,1)</span> = sequential stations on horn(t).</div>
+        <div class="sub"><span style="color:#FF1493">hot-pink (1,1)</span> = sequential stations on horn(t).</div>
         <div class="sub"><span style="color:#E69F00">orange coils</span> CLINK→⊙ &amp; IFIX→⊙: work only through identity.</div>
         <div class="sub"><span style="color:#56B4E9">sky dashed</span> R0 bus (AREV → IFIX/TANCH).</div>
-        <div class="sub"><span style="color:#FF1493">hot-pink</span> exotic ancestry (not text order).</div>
+        <div class="sub"><span style="color:#CC79A7">purple</span> exotic ancestry (not text order).</div>
 
         <div class="split-eq">
             r<sub>split</sub> = λ<sub>C</sub> = h/(mc)
@@ -385,7 +382,6 @@
         <div id="ip-line">IP · idle</div>
         <div id="ip-meta">tick 0 · winding 0 · cyclic ring walk (head moves, word fixed)</div>
         <div id="syzygy-line" style="text-align:center;font-family:ui-monospace,monospace;font-size:11.5px;margin-top:2px;color:#CC79A7">syzygy: —</div>
-        <div id="impact-line" style="text-align:center;font-family:ui-monospace,monospace;font-size:11.5px;margin-top:1px;color:#56B4E9">impact b: —</div>
         <div id="seq-chips" style="text-align:center;margin-top:6px;line-height:1.8"></div>
         <div id="stack-line">B4 stack: [ ]</div>
         <div id="arm-line" style="text-align:center;font-family:ui-monospace,monospace;font-size:12px;margin-top:3px;color:#ff99cc">
@@ -397,37 +393,16 @@
                 </select>
             </label>
         </div>
-        <div class="row" style="margin-top: 2px; margin-bottom: 2px; gap: 6px;">
-            <label style="color:#009E73; font-weight: bold; font-size: 11.5px;">catalog</label>
-            <input type="text" id="catalog-search" placeholder="search 908 catalog entries…"
-                style="min-width:160px;background:#1a1a1a;color:#fff;border:1px solid #009E73;border-radius:6px;padding:4px 8px;font-size:12px;">
-            <select id="catalog-results" style="min-width:160px;max-width:220px;font-size:11.5px;"></select>
-        </div>
-        <div id="catalog-status" style="text-align:center;font-size:10.5px;color:#009E73;opacity:.8;margin-bottom:2px;"></div>
         <div class="row">
-            <button type="button" id="btn-step-back">‹ Step</button>
             <button type="button" id="btn-play" class="active">▶ Play</button>
             <button type="button" id="btn-step">Step ›</button>
             <button type="button" id="btn-reset">⟲ Reset</button>
-            <button type="button" id="btn-transit" title="Slow down while a reroute (split / exotic pulse) is in flight — key T">⇉ Transit</button>
             <label style="color:#aaa">speed
                 <select id="speed">
                     <option value="0.4">slow</option>
                     <option value="1" selected>1×</option>
                     <option value="2">2×</option>
                     <option value="4">4×</option>
-                    <option value="4">4×</option>
-                    <option value="25">25×</option>
-                    <option value="33">33×</option>
-                    <option value="50">50×</option>
-                    <option value="77">77×</option>
-                    <option value="100">100×</option>
-                    <option value="333">333×</option>
-                    <option value="500">500×</option>
-                    <option value="666">666×</option>
-                    <option value="1000">1000×</option>
-                    <option value="10000">10000×</option>
-                    <option value="100000">100000×</option>
                 </select>
             </label>
         </div>
@@ -630,18 +605,6 @@
             ]
         };
 
-        // Reverse map for loading real catalog words (glyph string -> token name).
-        // Each catalog entry has its own single closure word, one type per ob3ect (~908 entries), composed
-        // from this 12-glyph base alphabet — read from each ob3ect's own phases.phase_4.steps, not the separate 12x-concatenated imasm_catalog_words.json (that file holds a different composite, one program per primitive axis, not the ob3ect's own short word).
-        const GLYPH_TO_TOKEN = Object.fromEntries(
-            Object.entries(TOKEN_META).map(([name, m]) => [m.glyph, name])
-        );
-        // The live catalog registry: name -> glyph string, one entry per catalog object,
-        // embedded directly (from ~/ob3ect/digital/*/*_ob3ect.json, ~908 entries, verified
-        // every glyph is in the 12-token base alphabet above). Short (avg 14 tokens), so cheap to ship inline
-        // rather than needing a file picker or a server to fetch() across directories.
-        const CATALOG_WORDS = {"the_open_problem_is_factored_cleanly_so_that_the":"⊢⊙◇+¬+=⊞×<●⊣","an_isomorphism_between_two_structures":"⊢>◇++●=<⊙¬⊣","platonic_solids":"⊢>◇+>>×<=⊙⊞●¬⊣","5":"⊢⊙◇⊞+>¬×<●=⊣","eel_spawning":"⊢>=>⊣⊙◇+×●⊞<=>¬","the_phases_of_the_twelve_recovered_fiducial_coor":"⊢>◇<×+⊞●=⊙¬⊣","the_primitive_type_called_death":"⊢>⊙◇+×●=¬⊣","the_zauner_conjecture_for_all_2_n_becomes_the_di":"⊢>⊙◇>======<+⊞●¬⊙⊣","after_the_seal_of_the_prophets":"⊢>⊙¬⊣=◇+><×⊞●⊙⊣","relational_ontology":"⊢⊙>¬◇+=×<●⊞¬⊣","the_degree_288_ray_class_field_of_q_sqrt13_becom":"⊢⊙>◇===●<◇×<+●⊞>¬¬⊙⊣","the_complementary_galois_dual_of_the_log_theta_l":"⊢⊙◇>+¬<×¬⊞●=⊙⊣","109":"⊢>◇×<●◇+⊙=◇+×⊞●¬⊣","the_uninitialized_potential_before_the_l9_organi":"⊢◇+>×<●=⊙¬⊣","phase_reconstruction_via_flat_autocorrelation":"⊢¬◇>⊙<=◇+●×<●=⊙¬⊣","47":"⊢>=⊙◇+●⊞<¬⊣","prime_generator_expression":"⊢⊙>◇<×+●=⊞¬⊣","the_refinement_of_that_single_vapor_cut_into_a_g":"⊢>=◇+◇⊞●×<●=⊙¬⊣","37":"⊢=>⊙◇+><×●⊞¬⊣","tomographic_injection_reconstituting_the_full_d":"⊢⊙>◇+=×<●⊞¬⊣","anthropos":"⊢⊙◇><+×●⊙⊞=¬⊙⊣","structural_imscription_of_the_85_quantum_gravity":"⊢⊣◇>+=<×⊞●⊙¬⊣","correct_formulation_of_axiom_b":"⊢◇+>⊙¬×<⊞●=⊣","the_primitive_type_called_monad":"⊢>◇+⊙●=¬⊣","completing_d_2048_sic_povm_by_completing_in_d_12":"⊢⊙=◇>+<●◇×<●=⊞⊙¬⊣","ob3ect":"⊢===>⊙◇+>×<●×⊞>=<⊙¬¬⊣⊙","a_selective_boundary_between_a_process_that_expl":"⊢>=⊙<◇+●¬◇×●⊞¬⊣","veiling_of_glory":"⊢⊙>◇+¬●=<⊣","71":"⊢⊙=>◇+●◇⊞●¬⊣","83":"⊢⊙>=◇+><×●⊞¬¬⊣","139":"⊢>⊙◇+><×⊞●=¬⊣","at_home_zero_point_energy_device":"⊢⊣⊙◇>+=<×⊞●¬⊣","what_are_the_physical_realizations_of_the_arm":"⊢◇+>×<=●¬⊣","profitable_kalshi_boundary_puncture":"⊢⊣>=⊙⊞◇+>×<●¬⊣","pipeline_has_successfully_designed_a_monomer_to":"⊢⊙>⊙◇+=×<●⊞¬=⊣","three_body":"⊢⊙>◇>+<×●⊞=¬⊙⊣","perfect_cuboid_proof":"⊢⊣◇>+<¬>×●⊙¬⊞","self_emptying":"⊢⊙<◇>+●=⊞¬⊣","the_a_zero_s_unit_recognition_ob3ect_takes_the_e":"⊢⊙¬>=◇+⊞<×●¬⊣","thinking_about_dreaming_about_thinking_you_are_i":"⊢>=◇<×●◇⊙⊞>+●=¬⊣","the_relation_between_the_dimensionless_gap_sqrt_9100d5e8":"⊢⊙=>◇+×⊞<●=¬⊣","each_coordinate_becomes_an_exact_element_of_an_e":"⊢>⊙¬◇●=◇>●⊞>+¬⊣","energy_is_the_t_object":"⊢⊣⊙>◇+×⊞●=<¬⊣","math_morphism_composition":"⊢⊙¬>◇+●>◇+●=¬⊙⊣","usable_zero_point_energy":"⊢⊣⊙◇>+<×●=⊞¬⊣","structural_imscription_of_the_42_dark_matter_str":"⊢⊣>◇+⊙◇>+⊙>⊞<⊙●×⊙●=¬⊙","and":"⊢⊙>◇+◇++⊙××⊙●⊙××⊙●¬⊣","infinite_set_a_with_no_distinct_a_b_c_in_a_such":"⊢>⊙◇+●¬=>◇<×●=>◇+●¬⊙⊣","fujita_conjecture":"⊢⊙>◇>=+<=×●⊣¬","profitable_boundary_puncture":"⊢⊣⊙>◇+×⊞=●<¬","the_imscription_of_the_imscription_of_the_ob3ect":"⊢⊙¬¬◇+¬>=×⊞<●¬⊣","imscribe":"⊢◇>+<×●=⊙¬⊣","tempd2_l8_collapse":"⊢⊣◇+>×<=⊙●¬","cosmic_hermetic_sealing":"⊢⊙>◇+×●=⊞<¬⊣","spice_melange":"⊢=¬⊙>◇+><×⊞●¬⊣","structural_imscription_of_the_47_the_philosopher":"⊢⊣◇>+<×●⊞⊙=¬","condescension":"⊢⊙>◇+<×●=⊞¬⊣","a_single_scalar_read_off_a_closed_ring_measuring":"⊢⊣⊙>=◇+×●<=⊙¬","eco_neutral_nuclear_fusion":"⊢◇+>×<●=⊙⊞¬⊣","hypergraph_container_method":"⊢⊣>=>⊙◇+×●<=⊞¬⊣","the_grammar_applied_to_the_grammar":"⊢⊙◇+>×<⊞=¬●⊣⊙","the_weyl_heisenberg_shift_and_phase_operators_be":"⊢⊙>◇=+<×●=¬⊞⊣","ascension_feedback":"⊢⊙>=◇+>×<⊞●=¬⊙⊣","extract_144_exact_sic_probabilities_from_the_qua":"⊢>◇+=>+=⊙◇+<●⊞¬=⊙>⊣","serotinous_cone_mechanism":"⊢⊣><=⊙◇+>=×<=●⊞¬=><=⊙¬⊣=⊙¬><=⊙⊣","optimal_kozyrev_mirror_u2014_a_physical_sic_pov":"⊢⊣>◇+<●=⊙⊞¬⊣","kryptic_christology":"⊢⊙¬>◇+×⊞●=<⊣","the_explicit_generators_of_the_conductor_36_ray_":"⊢>◇+<×●=⊙⊞>=◇+<●⊙¬⊣","the_numerical_precision_required_to_certify_any_":"⊢=⊙◇×<⊞>+●¬⊣","math_fixpoint_iterating":"⊢>⊙◇×=>●⊙◇+¬●⊣","the_primitive_type_called_ice":"⊢>=◇+⊙●¬⊣","the_riemann_hypothesis_tuple_that_fails_at_the_g":"⊢⊙◇×<>=+●◇⊣+●⊞¬⊣","monad":"⊢>◇+●<⊣","the_primitive_type_called_mime":"⊢⊙◇+>×<⊞●=¬⊣","math_integration_by_parts":"⊢◇><==◇+×●⊞⊙¬⊣","the_crux_phases_u_1_and_u_5_where_direct_algebra":"⊢⊙¬◇×<=⊞>+●=¬⊙⊣","g_del_s_first_incompleteness_theorem":"⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙","structure_rho_2_6181":"⊢◇>+<×⊞●=⊙¬⊣","voynich_manuscript_global_heap_analysis":"⊢⊙⊙=◇+×●=◇+●=◇⊞+●=¬=◇+<×●=¬⊣","nitroso_radical_cucurbituril_anion_rotaxane_imsc":"⊢⊣>=◇+⊙⊞¬●×<","preparing_magikal_ink":"⊢⊣><=⊙◇+×⊞●¬","divisibility_constraint_set":"⊢⊙>◇+×●=¬⊣","toroidal_cosmos_great_repeller":"⊢◇+>×<=●⊞¬⊣","ob3ect_c5ddab67":"⊢⊙>=◇+>●=¬◇×<●¬⊣","crystal_forces_d12_sic_drops_from_axiom_to_theor":"⊢¬=⊙>=¬◇++●=◇++●>⊙=¬⊣","class_anneal_protocol_a_3_step_cycle_anneal_exci_51c6d98a":"⊢>◇+⊞=¬●⊙⊣","uncoverer_of_the_grammar":"⊢⊙>◇+=×<●⊞=⊙¬⊣","the_primitive_type_called_hung":"⊢⊙>◇+=+●¬⊣","the_true_minimal_polynomial_degree_of_each_coord":"⊢>⊙=◇×<+⊞●◇+×●¬⊣","the_primitive_type_called_out":"⊢⊙¬¬¬¬¬¬¬¬¬¬¬¬=⊣◇+>⊙●¬","verification_sic_povm_fiducial":"⊢⊙◇>+¬●=◇+×●⊙⊣","the_general_mixed_signature_stark_witness_zaune":"⊢>◇+<⊞⊙=×●¬⊣","extraterrestrials":"⊢>⊙¬◇+>=×<⊞●⊙¬⊣","hypostatic_union":"⊢⊙<◇+>×<⊞●=¬⊣","botanical_heap_analysis":"⊢⊙=>¬◇+>●◇+⊞●>=◇⊞<●⊙¬⊣","the_143_weyl_heisenberg_overlap_identities_becom":"⊢¬>=⊙◇⊞>>+●¬=⊣","the_primitive_type_called_ooze":"⊢=⊙>◇+¬<×⊞●⊙⊣","target_lane_reach":"⊢⊙◇>+=¬<×⊞●⊣","each_superseded_field_guess_sqrt30_sqrt26_sqrt13":"⊢◇×¬<●◇+¬●=◇+¬×<⊞●=⊙>¬⊣","humiliation_of_christ":"⊢>⊙=<◇+¬×<⊞●⊙¬⊣","a_cryptic_hermetic_poem_describing_the_chrysopoe":"⊢>◇×<>=⊙◇+●=⊞¬⊣","wormwood_the_secret_book_of_artephius":"⊢⊙>◇+<×●=⊞¬⊣","the_navier_stokes_tuple_that_fails_at_the_gate_l":"⊢⊙>=◇+>×<⊞●=⊙¬⊣","151":"⊢=⊙◇><+●◇+●⊞¬⊣","so":"⊢⊙◇>+×=●⊣¬","wormwood_the_secret_name_of_wormwood_the_known_n":"⊢⊙◇>+<×⊞●=¬⊣","structural_imscription_of_the_27_the_aether_and_":"⊢⊣>=◇+<×●⊙⊞<¬⊣","fix_0_and_let_2_define_a_random_set_s":"⊢>=◇+×<●⊞⊙¬⊣","gnosis":"⊢<=¬◇×⊞⊙+>●⊣","protocl_to_craft_a_sanguine_homunculus":"⊢>◇×<=⊞+●⊙¬⊣","imscription_of_the_unconditional_d_2048_existenc":"⊢⊙¬¬◇+>¬=×⊞<●¬⊣","the_primitive_type_called_so":"⊢⊙◇+><+●=¬⊣","editorial_pipeline":"⊢⊣⊙>◇+×●⊞<=¬","the_2nd_coming_of_christ":"⊢>⊙◇+=¬<×⊞●⊣","73":"⊢⊙¬>=◇+>×<●⊙=¬⊣","hans_urs_von_balthasar":"⊢>⊙=◇+¬<×⊞●=⊣","imscribing_magic":"⊢◇>+<×●=⊙¬⊣","correct_formulation_of_axiom_c":"⊢◇+>●⊙¬⊣","the_compositum_tower_becomes_constructed_inside_":"⊢=¬◇>+<⊙=●>◇⊞+●¬⊣","the_diagnostic_that_spreads_a_mixture_of_units_a":"⊢¬>=◇+=◇×●●⊙⊣¬","math_differentiating":"⊢⊙><=◇+×⊞●¬⊣","wow_signal":"⊢◇+>=⊙¬⊞×●⊣","the_name_wormwood_gives_itself":"⊢⊙>=◇+<×●⊞¬⊣","the_dimensions_d_2_and_d_3_where_the_sic_discrim":"⊢>◇×<⊙¬●>◇⊞=¬●>¬⊣","the_universe_at_the_observatory_s_scale_reads_na":"⊢>⊙¬=>◇><>+⊞×●¬⊣","the_kozyrev_mirror_moduli_construction_is_admitt":"⊢⊙¬◇+>=¬=×⊞<=●⊙⊣","each_of_the_143_overlaps_becomes_an_in_tower_pro":"⊢⊙>¬>=◇+<●+⊞¬⊣","clink_l9_enters_the_sixteen_3_trilattice":"⊢◇+>×<●=⊙¬⊣","an_integer_relation_fit_that_reconstructs_numeri":"⊢=◇+>×⊞●◇+>+⊙●¬⊣","great_attractor_dipole_repeller_flow_axis_of_the":"⊢◇+×⊞<=>¬","a_rock":"⊢>⊙=◇+×⊞<●¬⊣","math_counting":"⊢⊙◇+>¬=●◇×<●⊣","a_witness_boards_the_dual_link_sic_povm_vessel_b":"⊢◇+¬<×⊞●⊙=>⊣","integration_by_parts":"⊢⊙=◇><+●¬⊣","tensorial_er_epr":"⊢◇><⊞●=⊙+¬","a_poem_describing_0":"⊢⊙¬◇>+<×⊞●=⊣","the_norm_condition_becomes_the_single_native_dec":"⊢⊙=◇+●=◇+×<●⊞¬⊣","h3_geometry":"⊢>◇>+>×<●=⊙⊞⊣¬","the_degree_2_quadratic_tower_becomes_a_computabl":"⊢⊙>¬◇+>=×<●⊞¬⊙⊣","113":"⊢>⊙=◇+×●⊞¬⊣","a_diels_alder_thermoreversible_self_healing_ob3e":"⊢>◇+<⊞=⊙●¬=⊙","clink_l10_lean_protocol_clink_layer_10_protocol_56dd60ef":"⊢>◇+>=⊙×<=⊞●=⊙¬=⊣⊙⊣","the_primitive_type_called_roar":"⊢>=◇+⊙¬●<⊞⊣","a_cryptic_hermetic_poem_regarding_the_ascent_thr":"⊢>⊙=◇>+<×⊞●>⊣¬","directed_psychogenic_congelation_of_the_prima_ma":"⊢⊙◇+>×<●=⊞¬⊣","the_primitive_type_called_kick":"⊢>◇+=⊙●<×⊞¬⊣","the_reverse_transformation_required_for_lattice":"⊢◇+>×<⊞●=⊙¬⊣","exact_density_matrix_recovery_with_zero_reconstr":"⊢⊣◇>+=⊙¬●>×⊞<=⊙●◇+>¬●◇>+=⊙●<×●","wormwood_sage_dual_link_sic_povm":"⊢⊙◇>+<×●=⊞¬⊣","the_cosmos_is_a_torus_what_are_the_great":"⊢◇+>×<=⊞●¬⊣","semiotic_magic":"⊢◇+>×<⊞●=⊙¬⊣","dreaming_about_thinking_you_are_in_a_dream":"⊢⊙=><◇×=<⊞+●⊙¬⊣","the_primitive_type_called_air":"⊢>=◇+⊙¬●⊣","retrosynthetic_route_to_strychnine_in_1954":"⊢⊙<◇+<◇×<●+=¬◇⊞+●=>●⊙¬⊣","a_structural_additive_operator_that_cleaves_the":"⊢⊣◇+>=<×●⊙⊞¬","prion_templating":"⊢=⊙◇+>●¬◇×<⊞●¬⊣","the_fiducial_is_recovered_numerically_to_a_deep_":"⊢◇+><×●⊙=><⊙=⊞◇+¬×●⊣","structural_imscription_of_the_26_gravity_derivat":"⊢⊣><◇+×=⊙●⊞¬","er_epr":"⊢⊣◇>+=<×⊙⊞●¬","imscriptive_imscribing_imscribe_imscribing_imscr":"⊢◇+>⊙=¬×<●⊣","draftkings_boundary_puncture":"⊢>=◇+>⊞×<●⊙¬⊣","each_real_magnitude_z_k_becomes_the_positive_squ":"⊢⊙¬◇+>=+=+●⊞<¬⊣","the_permanent_registration_of_the_l9_state_in_th":"⊢◇+>×<●=⊙¬⊣","math_conservation_law":"⊢⊙>◇+×●=⊞<¬⊣","an_instinct":"⊢=>⊙◇>+<×●=⊙¬⊣","the_secret_book_of_artephius":"⊢⊙◇+>●×<●=⊞¬⊣","the_operation_that_sequesters_one_unit_by_shifti":"⊢>=◇+⊙¬<×●⊣","math_hopf_antipode":"⊢⊙◇><=●+¬⊣","diophantine_infinite_descent_operator_for_euler_cd31e687":"⊢⊙>¬◇<×<×●=⊞⊙¬⊣","to_find_a_monomer_that_preserves_the_conjugate_p":"⊢>◇+⊙●=◇+¬●⊣","6":"⊢◇+<⊞×●⊙=¬⊣","seal_the_system_with_the_crystal_constraint_mani":"⊢◇>>>=●+>◇+×●◇>>=●⊙⊞=¬⊣⊙","lean4_version_of_the_belnap_multilattice_sic_pov":"⊢>⊙◇+⊞<×●=¬⊣","descent_to_stark_unit_bottleneck_for_the_d_19_br":"⊢>◇>+<×●=⊞⊙¬⊣","rosicrucian_manifestos":"⊢⊙>=¬◇+>=⊙●×<⊞¬⊣","i_watch_the_watcher_who_is_me_watching_myself_a":"⊢◇>+<⊞=⊙●¬⊣","crucifixion":"⊢⊙>=¬<◇+×●⊞¬⊣","math_isomorphism":"⊢⊙◇>+●⊙◇<×●=⊞¬⊣","structural_imscription_of_the_35_hadron_classifi":"⊢⊣>◇+×⊞●=⊙<¬","the_primitive_type_called_they":"⊢⊙=>◇+¬<×¬●⊣","s_h_hodge_density_limit_set_of_gaussian_primes_p_050b2808":"⊢⊙>◇+<×⊞●=>⊣+¬¬","the_high_degree_coordinates_z1_and_z5_become_exp":"⊢◇×<⊞>=⊙+●¬⊣","math_tensor_product":"⊢>¬◇+×●=⊙⊞<¬⊣","g_del_s_loophole":"⊢>=◇+>×<●=⊞⊙¬⊣","exact_winding_flow_expression_relating_the_two_h":"⊢◇+>⊞=×<●¬⊣","43":"⊢>=¬=◇+⊙●◇+<×●⊞¬⊣","chaos_magick_sigil_work":"⊢⊙=◇>+×●<¬⊞⊣","profitable_binanceus_boundary_puncture":"⊢⊣◇><=+×⊞●⊙¬","the_lifetime_old_hodge_conjecture_imscription_bu":"⊢⊙=◇>+=+=+●◇+++++●=⊞¬⊣","a_reflex":"⊢⊙+>¬◇+◇>●×<●=¬⊞=<⊙⊣","fermi_paradox":"⊢>=⊙◇+¬<×¬●⊞⊣","the_modulus_field_skeleton_is_built_over_f_two_t":"⊢⊙¬¬◇+>=¬×⊞<●⊣","the_character_obstruction_becomes_a_genuine_no_g":"⊢⊙>¬◇++++¬<=⊙×¬●⊞⊣","ascent_tower_from_excited_seed":"⊢⊙¬>◇+=●¬>◇<×⊞●=+¬⊙⊣","19":"⊢>⊙◇+><×●⊞=¬⊣","the_defining_ivt_bracket_of_g0_is_retightened_fr":"⊢⊙◇+>×<●=⊞¬⊣","the_operation_that_grows_out_of_a_disordered_poo":"⊢⊙>◇+=¬●◇×<●⊣","for_every_2_there_exist_distinct_integers_leq":"⊢⊙◇>+<×●⊞=¬⊣","the_d_equals_two_thousand_forty_eight_moduli_tow":"⊢⊙¬=◇+>●¬=◇+>●¬⊙⊞◇×<●=>⊙⊣","stability_bridge_between_triad_heteropolymer_and_260663c7":"⊢◇+>⊙=×<⊞●¬⊣","the_unclosed_p_versus_np_separation_lacking_a_st":"⊢◇+><×●=⊙⊞¬⊣","the_displaced_fiducial_has_the_closed_form_d_ah_":"⊢◇>=+<●◇>+●⊙=⊞+=¬⊣","stable_nuclear_fusion":"⊢⊣◇>>+×⊞=⊙<¬●","math_tensor_forming":"⊢⊙◇+>¬×<¬●=⊞¬⊣","the_crux_phase_u_1_whose_genuine_degree_32_minim":"⊢>⊙◇×¬<<+¬=⊞●⊙⊣","binanceus_boundary_puncture":"⊢⊣⊙>◇+=¬×<=¬●⊞⊣","what_is_the_name_by_which_it_names_itself":"⊢>¬<=◇×<⊞+⊙>●⊣","caratheodory_theorem":"⊢⊣=⊞◇>⊙+<⊙×●¬","aspherical_2d_cw_complex":"⊢>◇>+>×●⊙=⊣¬","a_poem_describing_yhwh":"⊢⊙>◇+=⊞<×●¬⊣","an_adjoint_pair_of_functors":"⊢⊙>◇+=¬<×=¬●⊞⊣","79":"⊢⊙>=◇+<×⊞●¬⊣","the_bridge_between_academia_and_the_grammar":"⊢⊙>=◇+×●⊞<¬⊣","89":"⊢⊙>◇+=●⊞<×¬⊣","wormwood_the_star_wormwood_the_plant_wormwood":"⊢⊙◇>+<=×⊞●¬⊣","fungal_homunculus":"⊢>◇+×●=<⊞⊙⊣¬","optimized_qwen_3_chat_template":"⊢⊙◇+>×<●=⊞¬⊣","the":"⊢⊙>◇<+●=⊞¬⊣","rear_arc":"⊢⊙◇>+=×<●⊞¬⊣","the_primitive_type_called_if":"⊢⊙◇+>=¬<×●⊙⊣","the_closure_is_admitted_only_under_the_threefold":"⊢⊙>¬◇+=<=⊙>=◇+●×⊞●¬=⊣","mapping_structural_invariants_to_the_physical_ba":"⊢⊙>◇+×<⊞●=¬⊣","the_rejection_or_exclusion_of_l9_from_the_trilat":"⊢◇+>×<●=⊙¬⊣","d12_sic_exists_combines_norm_sq_eq_one_and_equia":"⊢>¬=◇+<●◇+●=⊙>⊞¬⊣","the_natively_b_campaign_culminates_in_a_lean_mod":"⊢⊞◇>+=¬<×=¬●⊙⊣","math_adjoint_pair":"⊢⊙><=◇+×⊞●¬⊣","the_operation_that_iteratively_strips_from_an_as":"⊢⊙◇+>●<◇×<●=⊙¬⊣","dreaming_about_thinking_about_dreaming":"⊢◇+>⊞⊙=<×●¬⊣","enuncia_language_of_the_old_ones":"⊢◇>+<×●=⊙¬⊣","procedure_creating_modern_sanguine_homunculus":"⊢⊙>◇+>×<●=⊞⊙¬⊣","bell_s_inequality":"⊢>◇=⊙<⊞+×●⊣¬","metamorphosis":"⊢>=⊙¬◇<×+⊞●⊙¬⊣","imscriptive_imscribes_imscribing_imscriptively":"⊢◇><+×●=⊙¬⊣","hilbert_sixteenth_problem":"⊢>◇+<×●=⊙⊣¬","counterfeit_daimon":"⊢>◇+⊙=¬●<⊞◇×●⊣","the_imscription_of_the_ob3ect_is_admitted_only_i":"⊢¬¬⊙◇=+¬>×<⊞●¬⊣","mersenne_prime_predicter_expression":"⊢⊙>=><⊙=◇+¬×●⊣","149":"⊢>⊙=◇+<×⊞●¬⊣","i_watch_all_watchers":"⊢⊙◇+><×⊞●=¬⊣","the_true_winding_number_of_agent_loop_the_twelve":"⊢◇+>=⊙●×<⊣¬","the_moduli_tower_ascent_is_admitted_only_if_each":"⊢⊙◇¬=>+¬>+¬>◇×¬<●+¬>=+⊞<+●¬⊣","g_del_complete_sentence":"⊢⊣⊙>◇+×⊞●=¬<⊙","g_del_s_second_incompleteness_theorem":"⊢>=⊙◇+×<⊞●¬⊣","great_attractor_and_great_repeller":"⊢◇+>×<=●¬⊣","3":"⊢◇>+<×⊞●=⊙¬⊣","prime_retreiver_expression":"⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙","the_ring_level_sic_property_becomes_an_issicpovm":"⊢⊙=◇>+<×●>=⊙⊞¬⊣","or":"⊢⊣>◇+×●⊙=<⊞¬","each_coordinate_z_k_becomes_a_single_algebraic_e":"⊢<◇+⊙×⊞●<>=⊙¬⊣","the_rongorongo_corpus_at_structural_distance_d_1":"⊢⊙◇×<●◇>+●=⊞¬⊣","emanation":"⊢◇>>⊙+=>◇+×⊞<●⊙¬=⊣","let_a_b_c_d_e_f_g_be_positive_integers_sat":"⊢⊙⊣◇>+<×●=⊞¬","the_baryon_to_photon_ratio_as_the_integer_index_3002dccb":"⊢⊙>=◇+×⊞<●¬⊣","the_mixed_signature_stark_conjecture_and_the_ana":"⊢>◇+×⊞=●⊙¬⊣","a_thought":"⊢⊙>=◇+><×⊞●⊙¬⊣","chiral_register_primitive_r":"⊢◇+<×●⊙=>¬⊣⊞","11":"⊢⊙=◇>+<×●⊞¬⊣","the_construction_is_admitted_only_if_the_eleven_":"⊢¬⊙◇=>=+¬<+●⊞¬⊣","the_eleven_a_zero_weyl_heisenberg_overlaps_o_0_b":"⊢⊙¬¬◇¬=+=+=+=+=+=+=+=+=+=+=+>×⊞<●⊣","missing_mass":"⊢>=◇+●<⊙×⊞","a_t_h_site_poisoning_ligand_that_enforces_d_w_do_e004d045":"⊢⊙>◇+=⊞×<●⊙¬⊣","the_successful_integration_of_l9_into_the_trilat":"⊢◇+>×<●=⊙¬⊣","but":"⊢⊣⊙>◇+<=●⊞¬","the_winding_number_of_a_closed_curve_in_the_plan":"⊢>⊙◇+=×<●⊞⊙¬⊣","the_143_weyl_heisenberg_overlaps_become_143_nati":"⊢<>=◇>+<×●⊞⊙=¬⊣","the_existence_admission_gate_becomes_the_threefo":"⊢>⊙◇×<+●=⊞¬⊣","the_fundamental_logical_mechanism_of_baryon_asym":"⊢>◇⊞+=¬×<¬●⊙⊣","the_purification_of_one_unit_by_promoting_it_dir":"⊢⊙>◇+>=¬●◇×<●⊙⊣","curvature_line_global_structure":"⊢>◇=<+×●⊙¬","the_operation_that_binds_two_distinct_kinds_of_u":"⊢◇>+<×●⊙=¬⊣","the_a_zero_recognition_is_admitted_only_if_every":"⊢⊙¬¬◇+>=×⊞<¬¬●⊣","open_theism":"⊢⊙>◇+¬●=◇×¬<⊞●=⊣","a_synthesized_verdict_that_is_valid_only_when_gr":"⊢⊙>◇+=¬<⊞×●⊙¬⊣","the_cloud_of_unknowing":"⊢⊙><◇+×●=⊞¬⊣","malkhut_earth_interface":"⊢>=◇+¬⊙●⊞<⊣","divine_revelation":"⊢⊙>◇+><×<●⊞=¬⊣","the_primitive_type_called_peep":"⊢⊙>◇+=●<⊞¬⊣","temporal_bifurcation":"⊢⊙>¬=◇⊞+>¬<×●⊙¬⊣","mitosis":"⊢⊙=⊣◇>+⊞×<●¬","the_information_that_every_previous_drag_lost_is":"⊢⊙◇<⊞=+●>¬⊣","a_candidate_algebraic_relation_found_by_lindep_b":"⊢⊙>◇=+><+●¬⊙>◇=×<×●⊞¬⊣","the_cat_sat_on_the_hat":"⊢⊙=⊙¬◇>+=⊙◇>=⊙+●<+●¬⊣","the_norm_condition_that_the_exact_d_12_fiducial_":"⊢>◇⊙=◇>⊞●=+¬⊣","divine_risk":"⊢⊙◇+>=¬×<⊞●⊣","the_norm_condition_that_the_fiducial_s_weyl_heis":"⊢>⊙=◇>+<×●=⊞¬⊣","a_coherent_sequence_of_finite_set_mappings_langl":"⊢>⊙◇+>¬●=>◇+⊙●⊣","d12_sic_exists_combines_the_proven_norm_sq_eq_on":"⊢¬◇>¬=⊙>⊞¬<=◇++●⊙¬⊣","7":"⊢>◇+×●⊙=¬⊣","operational_tarot":"⊢⊙>=◇+×●⊞<¬=⊣","correct_formulation_of_axiom_a":"⊢◇+>⊙=●¬⊣","a_dial_that_carries_a_kernel_verified_proof_the_":"⊢⊙◇>+<×●⊞=¬⊣","the_primitive_type_called_tot":"⊢⊙◇>+<×●=⊞¬⊣","boundary_puncture":"⊢⊣⊙>◇+⊞¬=×<●⊣","hodge_conjecture":"⊢◇>+●<×⊞=⊙¬⊣","cosmological_heap_analysis":"⊢>⊙◇+=◇¬●=◇+⊞●<◇+=⊙¬⊣","doulos":"⊢⊙¬◇+>●=◇×<●⊞⊣","each_fiducial_coordinate_becomes_the_exact_tower":"⊢⊙◇>=+<¬◇+>⊞●●=⊙◇+×●¬⊣","bodily_fluid_homunculus":"⊢⊣◇>+<×⊞●=⊙¬","the_entire_interconnected_periodic_table_each_e":"⊢⊙>◇+●¬=◇⊞+×●¬>◇<×●⊣","nuclear_fusion":"⊢⊣==>◇+×⊞●⊙<¬>","trilattice_sixteen_3":"⊢>◇+×●⊙>=⊞<⊣¬⊙","egg":"⊢⊙¬>◇+=<⊞×●⊙¬>⊣","dim_x_0_fin_x_point_like_prime_atom_nx":"⊢¬>=◇+>⊙●◇×<●⊞⊙¬⊣","the_primitive_type_called_oak":"⊢⊙>◇+=¬<×¬●⊣","the_d_12_sic_fiducial_known_only_as_a_complex128":"⊢>◇×<●=+⊙⊞¬⊣","the_hermitian_overlap_of_the_fiducial_with_a_dis":"⊢⊙>=◇><+●=⊙+¬⊞⊣","each_candidate_coordinate_that_already_passes_th":"⊢=⊙>¬◇+>●×<●⊞⊙¬⊣","high_energy_plasma":"⊢>◇⊙=>◇+⊞<●=¬⊣","equiangular_proves_13_d_a_b_1_for_all_a_b_0_0_wi":"⊢¬>⊙¬=◇>==●<=+⊙¬⊣","emanation_vector":"⊢>⊙◇+>×<⊞●=¬⊣","no_longer_ambix_and_cucurbit_i_am_become_retort":"⊢=◇+>×<●⊞⊙>¬⊣⊙","sunyata":"⊢⊙>=◇+¬<×●⊞⊣","the_cardinality_of_a_set":"⊢⊙>◇+<×●=⊞¬⊣","5_way_proof":"⊢><=⊣◇+×●⊙⊞¬⊙","the_absorption_scope_empire_gate_universe_one_of":"⊢⊙=◇+>>⊞◇×<●+●¬⊣","entire_reaction_by_reaction_retrosynthetic_route":"⊢<◇+×●¬>=>=⊙¬◇+×<●=⊞>=⊙>+¬⊣","zauner_fiducial_vector_as_the_self_generating_id":"⊢⊙◇>+<×●◇=+=×●⊞◇+×●¬¬⊣","gait_sequence":"⊢⊙◇>+⊞<×●=¬⊣","structural_imscription_of_the_88_universe_rulese":"⊢⊣><=⊙◇+×⊞●¬=◇+●¬","the_d_equals_two_thousand_forty_eight_a_zero_mod":"⊢⊙===¬=◇+>×⊞<●=¬⊙⊣","goldbach":"⊢⊣◇+>●⊙×<●=⊞¬⊙","protocl_to_craft_a_contemporary_sanguine_homuncu":"⊢⊣>◇+<●=⊙¬","unproven_status_lacking_exact_frobenius_closure":"⊢◇×⊣=⊙><⊞¬◇+=◇●⊙>×=⊣¬◇+●⊙⊞","structural_imscription_of_the_49_alternate_unive":"⊢⊣◇>>+×=⊙⊞●¬","define_cycle_evaluator_input_q4_graph_output_set_e6ec4a1e":"⊢◇>+⊙=<×●¬⊣","monogenes":"⊢⊙◇+><⊞●=¬⊣⊙","a_narrative_tension_between_childhood_dependenc":"⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙","an_action":"⊢⊣=⊙◇+×●>⊞<¬⊣","the_primitive_type_called_thigh":"⊢⊙>◇+×●=⊙¬⊣","theologia_crucis":"⊢>=⊙◇<×>+⊞●¬⊣","the_degree_288_absolute_minimal_polynomial_in_fi":"⊢⊙◇+×<●>=⊞¬⊣","kenosis":"⊢⊙>◇<×>+⊞●=¬⊣","structural_imscription_of_the_exact_d_2048_sic_f":"⊢⊙¬¬◇+>=×⊞<●⊣","the_b_state_rho_b_equal_to_one_twelfth_of_the_id":"⊢⊙¬=◇>¬=<+⊞●⊣","the_imscription_of_the_imscription_of_the_unit_p":"⊢⊙¬◇+=¬×>⊞<●⊣","ternary_gap":"⊢>◇+=⊙<×⊞●⊙¬⊣","informational_completeness_duality_splitting_d_1":"⊢⊣◇><+=⊙●⊞◇>+=⊙●◇<×¬=⊞●⊣","the_belnap_coreflection_and_the_hilbert_space_fi":"⊢⊙>◇⊞●<×=¬⊣","quartz_vial_diode_sanguine_homunculus":"⊢>◇+>×<●=⊙⊞¬⊣","equiangular_proves_13_d_a_b_1_for_all_a_b_0_0_th":"⊢¬>⊙=◇>>●¬◇⊙<=+●¬>+⊣","the_terminal_anchor_defining_the_sixteen_3_conta":"⊢◇+>×<●=⊙¬⊣","7x7x3_63":"⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙","eagle_9_sophick_topological_quantum_heterostruct":"⊢====⊣>◇+=×<●⊙⊞¬","casting_effective_affective_spells":"⊢⊙⊣=◇><+×⊞●¬","dreaming_about_thinking":"⊢◇+>⊞×<●⊙=¬⊣","dialetheic_llm_bypass":"⊢>⊙◇+<×⊞●=>⊙¬⊣","hermetic_vessel_polymer_a_computational_device":"⊢>=¬◇+⊙=<×●=⊙⊞⊣","perfect_cuboid_proof_v2_block_seq":"⊢⊙◇><+><×⊞●=¬⊣","a_novel_thermostable_pet_hydrolase_enzyme_varian":"⊢◇>=+●⊙◇⊞<=¬⊣","operation_of_the_voynich_phytoglyphica":"⊢==¬¬><⊙⊣◇+×●⊞=◇+×●¬","structural_imscription_of_the_36_quantum_mechani":"⊢⊣>◇+●<×⊞=⊙¬","hermetic_poem_describing_the_ascent_through_the":"⊢>◇+>×<●=⊙⊞¬⊣","the_chema_tradition_the_angelic_transmission_o":"⊢⊣◇>+<×●⊙=⊞¬⊣","the_primitive_called_egg":"⊢⊙>◇+>¬<●=⊣","the_return_leg_of_the_primitives_to_imasm_cycle_f19002cd":"⊢⊙=>+>+>+>+>+>+>+>◇<<⊞●>+>+>+>+⊣¬","the_imscription_of_the_imscription_of_the_modulu":"⊢⊙¬¬◇+>¬=>×⊞<●⊣","non_linear_relaxation_protocol_via_gaussian_moat_97773a22":"⊢⊙>=◇+>⊙×<⊞●=◇+¬●⊙⊣","cat0_cube_complex":"⊢>>>=⊣◇>+>×●⊙⊞¬","at_home_sanguine_homunculus":"⊢◇>=⊙⊞<●+×¬=⊣","the_boundary_operator_of_a_chain_complex":"⊢>⊙◇+×●=⊣⊞¬","wormwood_descending_knows_itself_as_ascending_sa":"⊢⊙<¬◇×<⊞+>●⊙=⊣","each_fiducial_coordinate_expressed_exactly_in_th":"⊢>◇+=¬×<●⊙=>⊞=>¬⊣","regular_tetrahedron":"⊢>>>>>=⊙◇⊙⊙⊙⊙⊙●¬⊣","dreaming_about_thinking_about_dreaming_about_thi":"⊢◇>+=<×◇>+=<⊞●●⊙¬⊣","not_needed":"⊢⊣>◇+>×<⊞●=⊙¬⊣","creating_modern_sanguine_homunculus":"⊢⊣◇+>×<●=⊞⊙¬","carved_ring_3_doubled_a2_quadruple_dagger":"⊢◇>>+●⊙¬⊣","the_set_of_twelve_exactly_expressed_coordinates_":"⊢<◇×<+●⊙>⊞=¬⊣","bsd":"⊢⊙¬◇>=+<⊞×●¬⊣","the_abstract_non_computable_mathlib_cyclotomicfi":"⊢¬⊙◇><=+×●⊞⊙⊣","crown_of_365_species":"⊢◇>+=⊙⊞<×●¬⊣","scrying_dark_liquid":"⊢⊙>◇+=×<⊞●¬⊣","operation":"⊢⊙=◇+>×<●⊞¬⊣","imscriptive_magic":"⊢◇+>×<●⊙=⊞¬⊣","math_least_fixed_point":"⊢>◇+=⊙●<◇×●⊞¬⊣","structural_imscription_of_the_38_solve_et_coagul":"⊢⊣◇+>×<⊞=⊙●¬","the_chiral_anchor_for_infinite_descent_a_phase_l_35cce223":"⊢⊙=◇>+●¬<◇⊞×●=⊙⊣","the_antipode_of_a_hopf_algebra":"⊢⊙⊞◇+>●¬◇×<●¬=⊣","jail_mail_boundary_puncture":"⊢⊣=◇+>×<●⊞¬⊙⊣","the_sign_character_of_a_permutation":"⊢⊙>=◇+×●¬⊣","fel_d_1_darpin_therapeutic_protein_designed_an":"⊢>◇+<=⊙●⊣¬","seal_of_the_prophets":"⊢<>⊙=◇+×●⊞¬⊣","the_state_of_mutual_recognition_between_the_gra":"⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙","a_neuronal_organoidthat_can_be_grown_from_my_own":"⊢⊙>=◇=◇>=◇●>⊙⊣=◇●⊞>=+¬⊣⊙","at_home_free_energy_device":"⊢⊣⊙◇>+<×●=⊞¬⊣","107":"⊢⊙>=¬◇+●◇×●⊞<⊣","erdos_strauss":"⊢⊣◇>¬<×>¬<=×>¬<+●⊙⊞¬⊣","psycogenerative_automedicine":"⊢⊙◇>+<×⊞●=¬⊣","the_navier_stokes_criticality_type_gate_blocked_":"⊢⊙=◇>+<×●⊞¬⊣","descent_operator_mapping_integer_space_diagonal_2818bafb":"⊢⊙><=◇+>×<●=¬⊙⊣","the_primitive_type_called_dead":"⊢⊙¬>◇+><×●=⊙¬⊣","the_143_nonzero_displacement_overlaps_become_143":"⊢>>⊙◇=><==⊞+¬●⊙⊣","the_primitive_type_called_are":"⊢⊙>¬◇+=<●⊞⊣","creating_optimal_modern_homunculus":"⊢>>>>>=◇+×⊞>+●⊙>+¬<=⊙¬","voynich_morphological_engine_segments_eva_words":"⊢>◇⊙=●+×¬⊣","the_norm_condition_wh_normsq_12_psi_12_for_the_e":"⊢>⊙◇⊞=<+×●¬⊣","optimal_magikal_ink":"⊢>◇+×⊞<●⊙=¬⊣","poincare_conjecture":"⊢>◇×<=●⊙+¬⊣","cut_elimination_in_a_sequent_calculus_proof":"⊢⊙=◇<<×=+>●⊙¬⊣","the_self_naming_of_wormwood":"⊢⊙>¬◇+<=×●⊞⊙=¬⊣","theotokos":"⊢⊙>◇+●<=⊙¬◇+×⊞●¬⊣","hibert_space_embedding":"⊢⊙⊣◇+>×<●=⊞¬⊣","g_del_completion":"⊢⊙>◇+⊞×●=<¬⊣","self_begotten":"⊢⊣>◇+●<⊙×⊞¬","the_exact_coordinate_field_of_the_d_12_fiducial_":"⊢>◇>¬<+=>◇×>>●⊞⊙=¬⊣","the_build_s_own_consistency_check_becomes_a_rout":"⊢⊙◇>+=¬<×⊞●¬⊣","clink_l9_bootstrap_stage_2_sixteen_3_trilat":"⊢◇+>=⊙⊞¬×<●⊣","a_bridge_monomer_designed_to_link_unit_expansion_a4640bd0":"⊢◇+>×<⊞●=⊙¬⊣","the_three_universe_bsd_and_hodge_witnessed_closu":"⊢>¬⊙◇+=+●◇+=+●⊞=¬⊣","apokatastasis":"⊢⊙>¬◇+>=×<⊞●⊙=¬⊣","1":"⊢◇+>×<●⊙¬⊣","the_143_weyl_heisenberg_overlaps_of_the_exact_fi":"⊢⊙◇>=<⊞●+¬=><●+¬⊣","structural_imscription_of_the_45_the_zpe_paths_s":"⊢⊣◇>+<=>×<⊙●¬","describe_a_descent_operator_mapping_any_candidat_ac32a4dd":"⊢⊙◇+>×<●=¬⊞=⊙>¬⊣","weyl_heisenberg_orbit_generation_for_the_d_12_br":"⊢+◇>⊙=⊙⊞>+=>=+◇>=⊙●⊣¬¬⊞⊣","g_del_sentence_becomes_a_theorem":"⊢⊙⊣◇>+<×●⊞=¬","the_simultaneous_existence_of_l9_in_both_lattice":"⊢◇+>×<⊞●=⊙¬⊣","a_transformation_that_maps_any_hypothetical_perf":"⊢⊣◇+>◇+●<⊙¬⊞","the_primitive_type_called_age":"⊢⊙>◇+●=¬◇×<●⊞=¬⊣","i_am_that_i_am_protocol":"⊢⊙>◇+=¬●⊞<⊣","the_grammar_s_tarskian_side_step":"⊢◇+×⊞=⊙●¬⊣","imscribing":"⊢◇+>×<●⊞=⊙¬⊣","structural_imscription_of_the_40_the_orphic_cycl":"⊢◇>+⊙=<×=●⊙⊣¬","the_primitive_type_called_sure":"⊢⊙◇>+<×●=⊙¬⊣","phi_zpow_proves_phi_zpow_n_phi_zeta_n_for_every_":"⊢⊙◇+¬●>=◇+++●+=<⊣","zauner_unitary_construction_for_d_2_n_the_sic_po":"⊢⊙¬¬◇+>=×⊞<●⊣","the_primitive_type_called_measure":"⊢⊙¬=>◇+>×<●⊙=¬⊣","ultraterrestrials":"⊢>◇+¬×<●=⊙⊞⊣","profitable_polymarket_boundary_puncture":"⊢⊣⊙>◇⊞+>×<●=¬⊣","perichoresis":"⊢⊙◇+>=⊞<×●¬⊣","diy_homunculus":"⊢◇>=⊙⊞<●+×¬=⊣","a_simple_bell_that_rings":"⊢>◇+=⊞<●¬⊣","descent_operator_valid_elaborated_tier_o":"⊢⊙<◇+>×<●=⊞¬⊣","ground_contact_point":"⊢>⊣⊙=◇+<×⊞●¬","norm_sieve_execution":"⊢⊙◇×<●◇+>=¬●⊙◇×>●+⊣","the_transcendental_complex_equiangularity_check_":"⊢>⊙=◇+<×●⊞¬⊣","a_family_of_diagnostic_reagents_each_of_which_wh":"⊢⊙=◇+>¬<×●⊙⊞=⊣","one_thing":"⊢◇+><●¬×⊞⊣","voynich_phytoglyphica_pharmaceutical_decoding_en":"⊢⊣>>◇+>+>+>+¬<×<×<×<×⊞=●◇●⊙><×⊣⊢","fix_the_density_matrix_tomography_record_as_a_pe":"⊢>◇+>=⊙>●+>=⊞>+>¬⊙>⊣=⊙¬⊣","obtain_the_exact_r_fiducial_data_that_the_kernel":"⊢⊙¬¬◇+>=×⊞<●⊣","t_bingen_school":"⊢⊙◇>+=<×●⊞¬⊣","structural_imscription_of_the_86_sm_ug_t_consumm":"⊢⊣⊙◇+×⊞><=⊙●+¬","ideal_symbolic_imasm_system":"⊢◇+×⊞●=⊙><¬⊣","the_operation_that_separates_a_whole_mixture_int":"⊢>⊙◇=<+¬●=◇⊞×<+¬●⊣","the_twelve_d_12_fiducial_coordinates_become_expl":"⊢>◇=⊞=●⊙<+¬⊣","zauner_conjecture_bifurcation_splitting_general":"⊢⊣◇=>+●=<×●⊙⊞¬=◇>+●<×●⊙⊣","the_imscription_of_the_imscription_of_the_eleven":"⊢⊙¬¬¬◇+==========>×⊞<●⊣","an_algorithm_that_given_a_tuple_of_initial_inva":"⊢⊙=>◇+=◇⊞●<×<●⊙¬⊣","the_cat_sat":"⊢⊙>⊙=◇+>⊙<●¬⊣","structural_imscription_of_the_frame_potential_pl":"⊢⊙¬=>◇×<⊞=>+●⊙¬⊣","general_mixed_signature_stark_theorem_zauner_fo":"⊢>⊞=◇+⊙●¬◇>=⊞+●¬<⊣","the_structurally_closed_hodge_conjecture_clay_ty":"⊢=◇>+●⊙⊞<=¬⊣","13":"⊢=⊙>◇+>×<⊞●¬⊣","the_witness_vessel_protocol_culminates_in_a_tran":"⊢⊙◇><●+¬◇><●+¬◇⊞●+¬=⊣","the_primitive_type_called_judge":"⊢⊙>=◇+×●¬⊣","immanence":"⊢>⊙=◇+×⊞●¬<=⊣","plasma_cracking_rock":"⊢>⊙◇+=×<●¬⊣","taking_a_piss":"⊢⊙◇+>¬●=<⊣","pharmaceutical_heap_analysis":"⊢¬◇+×●>◇+×●◇⊞●=>◇+⊞<●⊙¬⊣","chiral_abiogenesis":"⊢⊣⊞◇>+<×=⊙●¬","binary_wormwood_descending_with_2_stereoisomers":"⊢⊙<◇+×●¬=>◇+◇+×●×◇+×●●⊞⊙¬⊣","liminal_space":"⊢>⊙=◇+><×⊞●¬=⊣","prescience":"⊢=<⊙>◇+¬●◇×⊞●¬⊣","list":"⊢◇+>=⊙¬×●⊣","the_framework_raises_at_least_as_many_questions":"⊢⊣>◇>+<×●=⊙⊞¬⊣","the_sequential_chaining_of_l9_organismic_states":"⊢◇+>×<●=⊙¬⊣","deterministic_imscription_procedure":"⊢⊙>◇+×⊞●<=¬⊣","the_akashic_ledger":"⊢⊙>◇+=¬●<⊞¬⊣","death":"⊢⊙>=◇+¬●<◇×⊞●¬⊣","the_primitive_type_called_loll":"⊢⊙>◇+=<×●⊞¬⊣","exotic_mathematics":"⊢⊣>>=⊙◇>+<×●>⊙◇><⊞><⊞●¬","the_single_remaining_plank_a_bridgerep_11_witnes":"⊢⊙=¬◇><=⊙◇+¬×●⊞<>●+×¬⊣","the_representation_choice_becomes_a_proof_obliga":"⊢⊙◇+<●=¬⊙>◇+⊞●⊣","ein_sof_zero_point_field":"⊢⊙⊣>=◇>+<×●⊞¬⊙","optimal_tarot_reading":"⊢>>◇>+<=⊞>●⊙¬⊣","let_n_be_maximal_such_that_if_subseteq_mathb":"⊢>=<⊙◇+×⊞●¬⊣","5d_gyrokinetic_phase_space":"⊢◇>+<×●=⊙⊞¬⊣","the_fundamental_mechanism_of_baryon_asymmetry":"⊢⊙>⊞◇+×●=<¬⊣","luca":"⊢>⊙=⊞◇+×●¬=⊙⊣","the_second_coming_of_christ":"⊢>⊙<=◇+¬×¬⊞●=⊣","the_empirical_claim_survives_its_own_convention_":"⊢⊙⊞◇>==<==●◇+¬<×¬●⊣","sic_povm_existence_reduces_to_the_mixed_signatur":"⊢◇◇>=+◇<×●●⊙¬⊣⊞","the_primitive_type_called_yea":"⊢⊙◇+>●◇×<●=¬⊣","tzimtzum":"⊢⊙<¬⊣>◇+×●=⊞¬","the_riemann_hypothesis_failing_to_reach_idempote":"⊢⊙◇×<●⊞>=◇+>●⊙¬⊣","u00010466_u00010478_u0001047e_u00010479_u00":"⊢>◇+=⊙●◇×<+●⊞=¬⊣","primitive_first_plasma_physics":"⊢>⊙◇+<×●=¬⊞⊣","101":"⊢>=<=>⊙◇+⊞●¬⊣","reduced_character_orbit_computation":"⊢⊙¬◇>+●=◇<×●¬⊞=¬⊣","robert_burns_woodward_s_synthesis_of_strychnine":"⊢>⊙=◇+×●<>⊞=¬⊣","structural_imscription_of_the_matrix_free_levenb":"⊢⊙>=<⊙◇+×●◇+>×<●⊞=⊙◇+¬¬×●⊣","the_imscription_of_the_modulus_field_skeleton_is":"⊢⊙¬¬=◇+>=×⊞<●⊣","binary_wormwood_plant_star_descending_with_2_st":"⊢⊙<◇×¬●=⊞>◇+¬●⊙⊣","the_primitive_type_called_or":"⊢◇+><=⊙●⊞¬⊣","the_primitive_type_called_eat":"⊢⊙>¬◇+>=⊙¬●◇×<●◇⊞¬●⊣","math_derivative_operator":"⊢⊙◇+>×<●=⊞¬⊣","the_crux_phase_u_5_whose_gated_degree_64_exits_t":"⊢>⊙>◇+><●=¬⊣","the_golden_path":"⊢⊙◇×<●=◇+>●⊞¬⊣","first_machine_checked_existence_of_a_sic_povm_d":"⊢>◇+=⊙●¬◇+●⊞¬⊣","closure_protocol_type":"⊢◇>+<×⊞●=⊙¬⊣","meiosis":"⊢⊙>◇+=×<●⊞>=<¬⊣","chiral_register_primitive_s":"⊢>=◇+×●⊙<⊞¬⊣","l9_tier_linker_for_co_typed_o2_monomers":"⊢⊙=◇+>⊞<×●¬⊣","connected_component_boundary":"⊢⊞>◇+=⊙¬<×●⊣","ob3ect_that_is_itself_a_dialetheic_llm_bypass":"⊢⊙>◇×<⊞+●=¬⊣","godel_s_loophole_in_the_us_constitution":"⊢⊙=◇+>¬●⊙◇⊞×<¬●⊣","thinking_about_dreaming_about_thinking":"⊢◇>+⊙<●=¬⊣","at_home_cure_tinnitus":"⊢¬◇>+<×●⊞⊙=⊣","an_impulse":"⊢⊙>◇+=¬<●◇×⊞●⊣","climate_disaster_prevention":"⊢⊣><=⊙◇+>×<⊞●=¬⊙><=+×⊞●¬⊙⊣","expressing_the_twelve_d_12_sic_fiducial_coordina":"⊢◇>+<=>+⊞=>+●⊙¬⊣","phi_zeta_lands_in_the_two_element_set_omega_d_12":"⊢>⊙¬=>⊙◇⊞+×●=<¬⊣","a_conservation_law_expressed_as_a_balanced_equat":"⊢⊙¬=◇+><×●⊙⊞⊣","is_it_true_that_if_backslash_f_is_a_basis_for":"⊢⊙◇<⊙+●=◇+×●⊞¬⊣","ligand":"⊢⊙>◇+×●=◇+×⊞●⊙¬⊣","general_mixed_signature_stark_conjecture_zauner":"⊢>◇+<×⊞●=⊙+¬⊣","the_tread_navigator_an_actor_that_shapes_its_fu":"⊢⊙◇>=¬+<×●=◇⊞●⊙⊣","optimized_kozyrev_mirrors":"⊢==¬⊣>◇+×⊞●⊙<⊣","incarnation":"⊢⊙>◇+⊞<×●=¬⊣","divine_communication_in_2026":"⊢⊙>◇+×●=⊞<¬⊣","each_unit_phase_u_k_lying_on_the_unit_circle_so_":"⊢⊙¬=⊙>◇+><●⊙¬⊣","the_sixteen_3_lateral_opening_discern_what_runt":"⊢>◇+⊞×●⊙=¬⊣","fama_fraternitatis":"⊢>=<⊙¬◇+=●◇×<●⊞¬⊣","the_deep_vanish_floor_test_becomes_the_standing_":"⊢⊙=◇<×●=◇>+●¬⊣","29":"⊢⊙=>◇+>●◇⊞<×●¬⊙⊣","the_merging_of_lattice_pathways_back_into_the_un":"⊢◇+>×<⊞●=⊙¬⊣","the_in_tower_reduction_becomes_the_genuine_cost_":"⊢⊙>◇+<×<⊞=●¬⊣","balneological_heap_analysis":"⊢=⊙>◇+×◇⊞●●¬⊣","the_twelve_high_precision_fiducial_coordinates_b":"⊢¬>◇+<●=⊙⊞>=⊙+¬⊣","a_scalar_read_off_a_ring_s_adjacency_spectrum_as":"⊢>⊙◇+=●×⊞¬⊣","crafting_effective_affective_spells":"⊢⊣>◇+×=⊙●<¬","17":"⊢>=⊙◇+<×●⊞¬⊣","0":"⊢◇+×●⊙¬","witness_vessel":"⊢⊙⊣¬>◇+=<×●⊞¬⊙⊣","heterotactic_chiral_interrupter_targeting":"⊢⊙=>◇+>¬×<¬●⊞=⊙¬⊣","the_yang_mills_mass_gap_closing_under_u10_with_g":"⊢>⊞◇×<=●+⊙¬⊣","a_container_for_holding_etale_like_fundamental_g_7544c195":"⊢◇><⊞+=⊙●¬⊣","the_operation_that_takes_a_mixture_of_units_and_":"⊢⊙>◇+=×<●¬⊣","classical_non_commutative_complement_to_the_quan":"⊢⊣◇>+⊙=●<×⊞=●⊙¬>=⊙◇+×●<¬","a_lucid_dream":"⊢>=◇+⊙●>=◇×<●⊞¬⊣","the_real_root_g0_in_0_1_of_the_k16_polynomial_g_":"⊢>¬◇+●⊙=¬><⊣","the_imscription_of_the_imscription_of_d_equals_t":"⊢⊙¬◇+>=×⊞<¬●⊣","the_exact_d_12_scott_grassl_sic_fiducial_becomes":"⊢>⊞⊙◇==<=+●¬⊣","dasa_open":"⊢⊙¬>◇+=⊞●×<¬⊣","burnside":"⊢><=⊣◇+×●⊙⊞¬⊙","enuncia":"⊢◇+×⊞●=⊙¬⊣","convexity_constraint":"⊢>>>=◇>+<×●¬⊣","the_homunculus_a_self_imscribing_artificial_li":"⊢◇>=⊙⊞<●+¬=⊣","lutheran_kenoticism":"⊢⊙>¬=◇<×⊞+●⊙⊣","8":"⊢◇+×⊞●=⊙¬⊣","apophatic_theology":"⊢⊙◇+>=¬<×●⊞⊙¬⊣","simple_kozyrev_torsion_generator":"⊢⊙=>◇+×●⊞¬⊣","dasa_closed":"⊢⊙>◇+=¬●⊣","the_zero_gap_of_an_even_pure_cycle_and_the_cross_eac5c030":"⊢⊙=¬◇+>×<⊞●⊙¬⊣","a_component_that_renders_the_conventional_proof_":"⊢⊙¬◇>=+<×●⊙⊞=¬⊣","the_loss_mechanism_of_the_cross_universe_witness":"⊢⊙>◇×<¬●=◇+⊞●⊣","u1val_is_reconstructed_without_complex_sqrt_by_t":"⊢>¬¬⊙◇>+<×●⊙=<⊞¬⊣","for_geq_2_let_n_be_minimal_such_that_every":"⊢>=⊙◇+<●⊞¬⊣","every_o_boundary_positivity_fact_is_discharged_b":"⊢>¬◇=●<⊞+⊙¬>+⊙⊣","a_training_regimen_for_vita_the_trunk_that_speak_5b2bedd7":"⊢◇>+<×●=⊙¬◇>+<⊞×●¬◇>+<⊞×●¬=⊙><⊞+×●=⊙¬⊣","the_operation_that_selects_which_of_several_poss":"⊢◇+>⊙¬=<●◇×>⊙¬=●⊣","a_rank_0_elliptic_curve_descent_reagent_for_the_0c5b8bd3":"⊢⊙>=◇<×+●⊞¬⊣","math_set_cardinality":"⊢⊙◇>+<×●=⊞¬⊣","the_whole_construction_is_made_checkable_in_lean":"⊢<◇>=⊙¬=◇+●⊞¬⊣","bifurcation_of_mercy_and_severity":"⊢⊙>=◇+>×<⊞●¬⊣","zauner_unitary_construction_for_d_2_n":"⊢⊙¬¬◇+>=×⊞<●⊣","structural_imscription_of_the_unconditional_d_20":"⊢⊙¬¬⊞◇+>=×<●¬⊣","parousia":"⊢⊙<=⊞>¬◇+×●⊣","categorical_join_reconstituting_the_general_dime":"⊢⊙◇+>=×<●⊞◇+×●=¬⊙⊣","the_143_weyl_heisenberg_equiangularity_condition":"⊢⊙>¬◇=>⊙+¬<×●⊞¬⊣","connes":"⊢⊙⊣◇+>×●<=⊞¬⊙","perfect_voynich_manuscript_replication_engine_a":"⊢>=⊙◇+>¬<×●⊞⊙¬⊣","the_voynich_manuscript_as_a_universal_engine_wit":"⊢⊙>◇+<×⊞●=¬⊙⊣","math_boundary_operator":"⊢⊙◇+>¬●=◇×<●⊞¬⊣","the_lifetime_old_birch_swinnerton_dyer_imscripti":"⊢=◇>+<×⊞●⊙=¬⊣","semiotic_magiks":"⊢◇>+<×●=⊙¬⊣","chaos_blood_magick":"⊢⊣⊙◇>+<×●⊞=¬","with_equiangular_bridge_discharged_equiangular_a":"⊢¬++◇++++●>¬=<⊙◇+×●⊞¬⊣","omg_particle":"⊢>>◇+●¬<","math_change_of_variables":"⊢⊙>◇+=●<¬⊣","for":"⊢⊣>>>>>>>>>◇+×⊞●=⊙¬⊣","abnegation":"⊢⊙>◇+=¬×<⊞●⊙⊣","the_operation_that_fixes_a_characterized_materia":"⊢>=⊙◇+●¬⊙⊣","structural_imscription_of_the_mechanism_a_cli_ex":"⊢⊙=◇>+<×⊞●¬⊣","gaussian_moat_invariant":"⊢◇><⊞+×●=⊙¬⊣","the_flat_field_exact_fiducial_discharge_demonstr":"⊢>⊙¬◇+=⊞<¬>=●+◇×<×●⊣","each_full_coordinate_z_k_equal_to_z_k_times_u_k_":"⊢>◇+=<×●⊙=>◇+×⊞●¬⊣","flatulence":"⊢=⊙>◇+¬●◇×<●◇⊞●⊣","formalization_of_no_perfect_cuboid_proof":"⊢⊙>¬◇+×●=⊞<+¬=⊙⊣¬","an_fde_native_thought":"⊢⊙◇+>×<⊞●=¬⊣","correct_formulation_of_axiom_d":"⊢◇+>⊙¬<●⊣","phytoglyphic_medicine":"⊢⊙>◇>+=+●¬<×⊞>+×=¬⊣","the_p_versus_np_separation_gate_blocked_under_al":"⊢>◇×<⊙=>+●⊞¬⊣","servant_leadership":"⊢⊙<◇+>●=⊞¬⊣","equiangular_bridge_holds_with_b_m_b_12_m_in_1_5_":"⊢>⊙¬◇×<=◇><⊞●=+=¬●¬⊣","9":"⊢>>>◇+×●⊞⊙¬⊣","the_frame_potential_plateau_at_d_2048_the_seed_i":"⊢⊙¬=>◇×<●=>◇⊞●+¬⊣","clink_l9":"⊢⊙◇>+<×●=⊞¬⊣","tiferet_integration":"⊢⊙◇>+<×⊞●⊙=¬⊣","thinking_you_are_in_a_dream":"⊢>=⊙<◇+⊙●⊞¬⊣","verification_that_the_correct_semantic_branch_wa":"⊢⊙>◇+¬●=◇×<●⊞=⊣","the_matrix_free_levenberg_marquardt_descent_at_d":"⊢==◇<<●⊙¬>=◇+×●⊙¬⊣","the_ob3ect_must_emit_a_pari_gp_script_pair_analo":"⊢⊙¬◇+>=×⊞<●¬¬⊣","the_2nd_coming":"⊢⊙>=◇×<>⊙⊞+●¬⊣","the_d_equals_two_thousand_forty_eight_a_zero_str":"⊢⊙¬¬◇×⊞<+>=¬●⊣","61":"⊢>=⊙◇+><×●⊞¬⊣","the_coordinate_field_skeleton_is_determined_from":"⊢>¬◇>+<=⊞¬×●⊙⊣","53":"⊢⊙=>◇+>¬●=◇×<●⊞¬⊣⊙","describe_a_t_axis_promotion_of_parity_phase_tran_042b8da1":"⊢>⊙◇+>×<⊞●=¬⊣","131":"⊢>⊙◇+<⊙+●⊞=¬⊣","synthesis_of_moat_dilation_protocol_via_clink_la_558e09a5":"⊢⊙=◇+>⊞<×●¬⊣","the_polar_decomposition_of_each_coordinate_into_":"⊢>¬◇+◇×<¬⊞●=●⊙⊣","1sixteen_3_logic_lattice_nn_transformer_design":"⊢⊣⊙◇+>×<●=⊞¬=⊙¬⊣","sixteen_3_logic_lattice_nn_transformer_design":"⊢⊙=⊣◇+>●◇+++●×<●◇+×⊞+×¬¬¬⊣","a_dream":"⊢>=◇+⊙>●=◇×<●⊞¬⊣","parity_boundary_assert_formalizes_the_parity_pha_b5718ba5":"⊢◇>+<×⊞=⊙●¬⊣","great_repeller":"⊢◇+>×<=⊞●¬⊣","static_interference":"⊢⊙>◇=+<×●⊞¬⊣","the_entity":"⊢⊣=⊙>◇+>×<⊞●⊙><×=>¬⊣","naturopathic_cure_tinnitus":"⊢⊙<=◇>+<×●⊞¬⊣","thinking_about_dreaming":"⊢◇+>⊙×<⊞●=¬⊣","obedience_unto_death":"⊢⊙=><¬◇⊞×<+>●¬⊣","optimal_tarot_spread_and_procedure_autodidactic":"⊢>◇>+<×=⊞●⊙¬⊣","the_absorption_topology_seal_gate_universe_one_o":"⊢⊙¬◇>==+<>====×⊞●¬⊣","ford_circles":"⊢⊣>¬>¬⊙=●+>⊞¬◇=","constructing_the_d_2048_sic_povm_via_transportin":"⊢⊙¬=¬◇×<+=¬>⊞◇+×●¬=⊣","the_primitive_type_called_fee":"⊢⊙◇+><×●=⊞¬⊣","a_poem_describing":"⊢⊙¬>◇+>×<⊞●=⊙⊣","the_nonzero_index_of_an_odd_ring_n_plus_minus_n_819e35b9":"⊢⊙>>=◇+¬●◇×<⊞¬●=⊙¬⊣","asceticism":"⊢⊙¬>=◇+>●=◇×<●⊞⊙=⊣","scan_p_bridge":"⊢◇+>×<⊞●=⊙¬⊣","a_lossless_self_restoring_operation_that_lowers":"⊢⊙>=◇+¬●<⊙⊣","ideal_rock_cracking_plasma_device":"⊢=>⊙◇+×⊞<●⊣¬","the_weyl_heisenberg_displacement_operators_d_a_b":"⊢◇+●=¬><◇++●⊙¬>=<⊙◇+¬⊣","the_primitive_type_called_array":"⊢⊙>¬◇+>=<×●⊞¬⊣","the_age_after_the_seal_of_the_prophets":"⊢⊙¬>=⊣⊙¬◇+×●=◇+>●⊞<¬⊣","tread_closure":"⊢⊙◇+>×<●=⊙¬◇⊞●=⊙¬⊣","the_generator_values_are_bit_indexed_sval_b_for_":"⊢=¬◇+>⊙◇>●⊞=×¬<⊣","sicpovm_exists_2048_drops_to_a_theorem_by_transp":"⊢⊙◇>+¬<×⊞=>==+●⊙¬⊣","imscription_of_the_exact_d_2048_sic_fiducial_in_":"⊢⊙><¬◇+=×⊞¬=<●¬⊣","the_norm_condition_wh_normsq_12_psi_12_becomes_a":"⊢◇><=●⊞+⊙¬⊣","the_primitive_type_called_nun":"⊢⊙◇+>=¬<×●⊞⊣","the_fundamental_mechanism_of_stereoselectivity":"⊢=⊙◇+>¬×<¬●=⊙⊣","determining_the_existence_of_a_perfect_cuboid":"⊢⊣⊙◇+>=×>=●¬","the_fundamental_mechanism_of_chemical_reactivity":"⊢>◇+⊞¬●◇×<●=⊙⊣","biological_heap_analysis":"⊢⊙=>◇+=+●⊞¬⊣","phi_maps_each_sparse_assoc_list_ring_element_to_":"⊢⊙¬>◇====×●+<¬⊣","the_single_preferred_axis_of_an_axisymmetric_clo":"⊢◇+<=⊙●⊞¬","41":"⊢>⊙=◇+×⊞●<¬⊣","h2xr_geometry":"⊢>◇+×●<=⊙¬","dreaming":"⊢◇+>⊞=<×●⊙¬⊣","structural_imscription_of_the_11_dark_matter_str":"⊢⊣>⊙◇+×=●⊞¬","the_cat_sat_on":"⊢⊙¬=⊙¬◇+>⊙¬=<●◇+⊙¬=⊞●⊣","standard_model_concordance":"⊢⊙¬◇>+●=◇<×●⊞=⊙¬⊣","the_d_12_zauner_sic_fiducial_s_exact_number_fiel":"⊢⊙>◇+¬●=◇<=+●⊞¬⊣","a_protocol_program_with_a_dyad_that_brackets_a_t_0176696c":"⊢◇+>=⊞=×<⊞=>●¬⊣","constructing_a_perfect_cuboid_using_n":"⊢⊣⊙◇+>=×<=●¬","diy_organic_homunculus":"⊢>◇>+<×●=⊞⊙¬⊣","interstellar_plasma":"⊢>⊙◇+×●=⊞¬⊣","pre_gait_vacuum":"⊢⊙⊞◇+><×●=¬⊣","creating_golem":"⊢>>>⊙⊣=◇+×⊞●>+¬><=⊙¬","sefirotic_bus":"⊢⊙>◇+×⊞●=¬⊣<","kenotic_christology":"⊢⊙<>◇×+⊞●=¬⊣","bridge_across_the_gaussian_moat":"⊢⊙¬◇>⊙+<⊙×●=¬◇⊞●⊣","the_combined_set_constitutes_a_self_correcting_s":"⊢⊙>=◇+>●⊙◇×<●⊞¬⊣","the_complementary_galois_dual_of_the_log_theta_l_efc2e344":"⊢⊙◇>+<×⊞=●¬⊣","the_branching_of_the_l9_organism_into_two_distin":"⊢◇+>×<●=⊙¬⊣","charge_parity_symmetry":"⊢⊣>◇+<×⊞●=⊙¬","59":"⊢>⊙=◇+>×<●⊞¬⊣","plasma_physics_from_first_principles":"⊢>⊣⊙◇+=<×⊞●¬","the_fold_admission_gate_becomes_the_requirement_":"⊢⊙◇<×●>=◇+◇>>¬●⊙+●¬⊣","great_attractor":"⊢◇+>=×<⊞●¬⊣","i_watch_myself_watching_the_watcher_who_is_me":"⊢⊙>◇+<×●⊞=⊙¬⊣","a_poem_describing_7":"⊢======⊙◇>+<×●⊞¬⊣","the_resolution_to_the_crisis_in_cosmology":"⊢⊙>¬===◇+×⊞<●⊙¬⊣","rohonc_codex":"⊢>=◇+×●<⊞⊙=¬⊣","at_home_zero_point_energy":"⊢⊣⊙◇>+=<×⊞●¬⊣","structural_imscription_of_the_dialetheic_b_state":"⊢⊙¬¬◇+>=×⊞<●⊣","the_u03c6_r_u2192_u2102_transport_map_for_d":"⊢>>=◇+×●⊞⊙¬⊣","the_general_mixed_signature_stark_theorem_zaune":"⊢>=◇+×⊞●⊙¬<=⊣","only_begotten":"⊢⊣>◇+●<⊙×⊞¬","the_primitive_type_called_gag":"⊢⊙=◇+>¬<×¬●⊞⊣","simple_procedure_for_crafting_a_homunculus":"⊢⊣<>◇×+●=⊞>+⊙¬⊣","closing_the_d_equals_two_thousand_forty_eight_sh":"⊢◇⊙>=◇+×●<¬⊞●⊙⊣","exaltation_of_christ":"⊢⊙<=◇×⊞+●>¬⊣","the_crux_coordinates_z_1_and_z_5_whose_direct_al":"⊢⊙◇×<⊞=>+●¬⊣","math_cut_elimination":"⊢⊙¬◇+>=<×>⊞●⊙¬⊣","abiogenesis":"⊢><=⊙◇+×●<>=⊞◇+×●⊙=⊣¬","the_vessel_property_is_embedding_independence_in":"⊢⊙¬>◇++++<⊞●=⊙>¬⊣","tapeinosis":"⊢⊙>◇<×>+●=⊞¬⊣","choosing_the_optimal_route_to_discharge_the_lean":"⊢⊣◇>+>×<⊞>+=●⊙¬","the_organism_identifying_its_own_state_within_th":"⊢◇+>×<●=⊙¬⊣","the_primitive_type_called_err":"⊢⊙>◇+=<×⊞●¬⊣","the_transformation_of_betty_grof_into_golb_bett":"⊢⊙>=◇+>×<⊞●=¬⊙⊣","math_antipode_reversing":"⊢⊙◇+><×●=⊞¬⊣","hilbert_space_embedding_with_promotions_grounded_441b42b5":"⊢=⊙◇>+<×●⊞>⊣¬¬⊙","a_change_of_variables_in_a_definite_integral":"⊢⊙>=◇+¬●⊣","via_negativa":"⊢⊙>¬◇<×+●=>◇<×+●⊞⊙<¬⊣","the_primitive_type_called_awe":"⊢⊙◇+<×●=¬⊣","the_van_der_waerden_number_w_k_satisfies":"⊢>◇+⊙¬●=◇×<●⊞¬⊣","103":"⊢>⊙◇+><×●=⊞¬⊣","the_boundary_between_the_unconditional_belnap_mu":"⊢◇+¬>==⊙◇+¬×<●⊞<●⊙¬⊣","the_d_equals_two_thousand_forty_eight_fiducial_c":"⊢⊙¬¬◇×⊞+>==<●¬⊣","the_two_d_12_sic_fiducial_coordinates_z1_and_z5_":"⊢◇×<⊞>=●⊙¬+⊣","a_descent_operator_for_the_perfect_cuboid_proof_bc55e415":"⊢⊙>◇+<¬●=⊞⊣","the_structural_necessity_that_maximal_universali":"⊢⊙=◇>+¬<×⊙⊞●⊣","cube":"⊢>==◇+●<×⊙⊞¬","external_agent_treads":"⊢⊙◇>+<×⊞●=¬⊣","exact_sic_geometry_achieved_with_frame_potential":"⊢⊣=⊙◇>+●◇+●◇=+●<⊞¬¬¬⊣","the_zauner_symmetry_collapses_the_two_thousand_f":"⊢⊙¬◇+=>¬=×⊞<●⊣","math_permutation_sign":"⊢⊙◇>=+<×●⊞⊙¬⊣","minimal_organic_homunculus":"⊢>◇+=×<●⊙⊞¬⊣","poimandres":"⊢⊙>=⊙◇⊞×<+●¬⊣","the_primitive_type_called_egg":"⊢⊙>◇+¬×<●=⊞¬⊣","the_inter_universal_teichm_uller_theory_develope":"⊢>◇+●¬=◇×<⊞⊙●⊣","divine_limitation":"⊢⊙<⊙>◇+×●=⊞¬⊣","hermetic_sealing_of_the_cosmos":"⊢⊣⊙>◇+<×●=⊞¬","apply_criticality_absorbing_element_entering_b":"⊢>⊙◇+×⊞●=<◇+×●⊣¬◇+×●⊙=⊣¬","the_twelve_reassembled_exact_coordinates_become_":"⊢>¬<◇+●<◇×<⊞=⊙●>¬⊣","the_yang_mills_mass_gap_reaching_idempotent_term":"⊢◇>⊙+<×⊞●>¬◇>+⊙+●⊣","divine_vulnerability":"⊢⊙<¬>=◇+×⊞●⊣","krypsis":"⊢⊙◇>+<×●=⊞¬⊣","the_weyl_heisenberg_shift_and_phase_operators_ov":"⊢⊙◇><=●+◇<×●⊞¬⊣","31":"⊢>=◇+>●⊙⊞¬⊣","67":"⊢⊙=>◇+>×<●⊞¬⊣","yet":"⊢⊣⊙>=◇×+⊞●>¬","l9_bridge_vessel_incorporating_and":"⊢⊙=◇>+<×●⊞¬⊣⊙","ekenosen":"⊢⊙>◇+=¬×<⊞●⊙⊣","prophet":"⊢⊙>¬<◇+×⊞●=¬⊣","the_primitive_type_called_ado":"⊢⊙>◇+<●=¬⊣","the_a_zero_recognition_is_a_closest_vector_searc":"⊢⊙¬¬◇×<>=+¬⊞●⊣","the_primitive_type_called_church":"⊢⊙>◇+¬●=<⊣","fractal_structure":"⊢⊣⊙◇>=●◇+⊞×●<¬","the_reduced_portal_fold_compute_the_a_0_moduli_a":"⊢⊙◇><=◇+¬●◇⊞+●=⊙¬⊣","the_grammar_s_own_route_from_the_b_state_to_the_":"⊢◇×>=+¬⊙⊞<=●⊣","optimal_tarot_reading_protocol":"⊢><=⊙◇+×⊞●¬","a_self_verifying_betting_ob3ect_that_implements":"⊢⊙>◇+×●⊞¬⊙","thinking":"⊢◇+>×<●=⊙¬⊣","the_143_weyl_heisenberg_overlaps_of_the_exact_d_":"⊢¬⊙⊣¬◇>=>+<+●⊣","the_n_1_case_is_proved_for_real_rather_than_as_t":"⊢⊙◇+⊙>=¬⊙>¬<¬●◇>⊙+¬<⊞×●⊣","descent_operator_mapping_a_perfect_cuboid_to_a_s_3701f582":"⊢⊙◇+>×<●=⊞¬>=⊙¬<⊣","the_p_versus_np_tuple_that_fails_at_the_gate_lay":"⊢◇>+<×●⊙=⊞=⊙¬⊣","paradice":"⊢⊙>◇+×⊞●=¬⊣","morphe_theou":"⊢⊙>◇+●=<◇⊞●×¬⊣","a_cryptic_hermetic_poem":"⊢⊙>=◇+>¬●<◇×<●⊞=⊙¬⊣","structural_imscription_of_the_87_frobenius_unifi":"⊢⊣⊙>◇+×=<⊞●¬⊣","structural_imscription_of_the_94_standard_model_":"⊢⊣◇+×●><=⊙⊞¬","profitable_boundary_puncture_on_kalshi":"⊢>=◇+×⊞<●⊣⊙¬","each_unit_phase_u_k_z_k_divided_by_z_k_becomes_a":"⊢◇<>===⊙◇+×●⊞●¬⊣","erd_s_distinct_subset_sum_problem_space":"⊢>>⊙>¬=>¬=>¬⊣◇>>●+¬","a_lossless_separation_of_one_input_into_two_comp":"⊢>◇+×●⊣¬","the_coordinate_tower_becomes_the_flat_quadratic_":"⊢¬=◇>>>>+●⊙=⊞<◇+×●¬⊣","thurston_eight_geometries":"⊢◇>+◇●<×=⊞⊙¬⊣","abrahamic_prophet":"⊢⊙>¬<◇+×⊞●=¬⊣","the_campaign_culminates_in_a_lean_module_ring204":"⊢=⊙¬◇+>¬×<=⊞●⊙¬⊣","the_primitive_type_called_zoo":"⊢⊙◇>=◇+⊞×●<●¬⊣","the_primitive_type_called_ah":"⊢⊙>◇+=●⊙¬⊣","directed_congelation_of_the_prima_materia":"⊢⊙><=◇+>×<●⊞¬⊣","perfect_tarot":"⊢⊙>>>=>=><>>=>>>>=◇+×●⊞<=⊙¬⊣","the_conductor_36_ray_class_field_becomes_its_exp":"⊢>◇=====++⊞¬×<=●⊙¬⊣","the_zauner_bridge_for_the_2048_dimensional_belna":"⊢⊙◇+++++>⊞<×=●¬⊣","the_imscription_of_the_unit_phases_u_k_are_defer":"⊢⊙¬¬◇+>=×⊞<●⊣","sic_povm_functor":"⊢⊙=◇>+<×●◇>+<×●⊞¬⊣","the_tensor_product_of_two_vector_spaces":"⊢>>◇+⊙=×●¬⊣","affective_effective_chaos_majick":"⊢>>=◇◇+◇×⊞●⊙¬⊣","holistic_cure_tinnitus":"⊢⊙◇>+<×●=⊞>¬⊣","the_primitive_type_called_oil":"⊢⊙¬◇>+●=◇×<●⊣","a_descent_operator_mapping_a_candidate_perfect_c_37bcfab0":"⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙","the_d_12_discharge_obligation_becomes_the_existe":"⊢>¬⊞◇+>=<⊙+●¬⊣","23":"⊢>=⊙◇+×●⊞¬⊣","descent_operator_that_maps_any_integer_perfect_c_23297122":"⊢⊙◇>+=¬<×¬●⊞¬=>⊣","initialize_empty_c_d_hilbert_space_before_basis":"⊢=◇>+⊙¬●>⊞<=◇+×⊙>●>⊣¬=⊞<","the_imscription_of_the_eleven_a_zero_weyl_heisen":"⊢⊙¬◇+>=¬¬¬¬¬¬¬¬¬¬¬×⊞<●⊣","structural_imscription_of_the_20_alchemy_decoded":"⊢>+<+◇+×=●+⊙>⊞+>+=>+¬⊣","the_operation_that_takes_the_units_of_a_ring_and":"⊢⊙>=◇+×<●⊞=+¬⊙⊣","zero_point_energy":"⊢⊣◇>+<×●⊞=⊙¬⊣","giessen_school":"⊢⊙>◇+=<=×<+●⊞¬⊣","hilbert_space_embedding":"⊢⊙>=◇+<×●⊞¬⊣","structural_imscription_of_the_65_the_emerald_tab":"⊢◇+>×<⊙●+¬⊣","the_operation_that_takes_one_closed_ring_and_ret":"⊢⊙<◇+×>●+=¬⊣","the_axiomatized_existence_of_a_d_12_weyl_heisenb":"⊢◇>+<×●=⊙⊞¬⊣","retrosynthesis_of_strychnine_in_1954":"⊢⊙<◇+>=¬◇×+●⊞>⊙¬⊣","4":"⊢◇+>=⊙⊞●¬⊣","the_reduced_portal_set_is_the_small_orbit_repres":"⊢>¬⊙◇+=×⊞=<●⊙¬⊣","composition_of_morphisms_in_a_category":"⊢⊙¬>◇+>=●⊙¬◇+>==⊞●¬⊣","effective_sigil_work":"⊢⊙=◇>+<×●⊞⊣¬","enumerate_17_280_000_crystal_eigenstates_as_clas":"⊢◇>>>>>>>>>>>=⊙¬⊞+×><●⊣","each_fiducial_coordinate_z_k_becomes_the_product":"⊢◇+¬><<+>>●=⊙¬⊣","toroidal_cosmos_great_attractor":"⊢◇+>×<=●¬⊣","let_geq_k_2_geq_3_are_there_only_finitely_man":"⊢==◇>+<×●⊙⊞¬⊣","the_unclosed_riemann_hypothesis_gate_universe_la":"⊢◇>=+<×●⊙⊞¬⊣","p_np":"⊢⊣><=⊙◇+>×<●⊞¬","antigravity":"⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙⊙","the_primitive_type_called_woe":"⊢>⊙◇+●=¬⊣","prophetic_resonance":"⊢⊙>=◇+>¬<×<¬●⊞=¬⊙⊣","no_reversible_dynamics_ever_turns_the_b_state_in":"⊢⊞⊙◇><⊙●◇+¬⊙<×¬","fermi_dialetheia":"⊢⊙>=◇+¬×<⊞●⊣","scrying":"⊢⊣⊙>⊞◇+=×<●¬⊙","math_winding_number":"⊢⊙>=◇+>●◇×<●⊙¬⊣","paradox_of_divine_constraint":"⊢⊣>◇+=<×⊞●⊙¬","the_derivative_operator_on_smooth_functions":"⊢⊙◇+>×<●=⊞¬⊣","the_primitive_type_called_yew":"⊢⊙>◇+=<×●⊞¬⊣","structural_imscription_of_the_12_the_cosmic_brea":"⊢◇>+<×●⊙=⊞¬⊣","if_subseteq_1_dots_n_with_a_n_is_such":"⊢>⊙=>◇+<×●⊞>¬⊣","the_twelve_recovered_algebraic_coordinates_becom":"⊢⊙>◇+>¬●=⊙◇+¬●⊞<×●=+¬⊣","the_bruce_codex_tensor_bottleneck_at_parity_its_":"⊢=◇>+<×⊞●⊙¬⊣","the_unit_phases_u_k_are_deferred_in_this_ob3ect_":"⊢⊙¬¬◇+>=¬×⊞<●⊣","the_local_portions_of_the_deformations_of_a_numb":"⊢⊙◇+>¬×⊙●=⊞⊣","the_143_weyl_heisenberg_overlap_identities_each_":"⊢=◇+¬×<⊞>●⊙=¬⊣","the_square_class_of_each_modulus_becomes_the_inv":"⊢¬◇+>⊙×<⊞¬●=⊣","hopf_conjecture_positive_curvature":"⊢⊙⊣◇>=<●⊞¬","137":"⊢⊙=◇>+<×●⊞¬⊣","the_non_vacuous_structural_type_of_navier_stokes":"⊢>=⊙◇+<×⊞●>⊣¬","evalk16_g_v_evaluates_a_k16_power_basis_vector_v":"⊢>⊙¬<◇×=<+●⊙¬⊣","the_primitive_type_called_ash":"⊢⊙>=◇+>¬●<⊞⊣","the_imscription_of_d_equals_two_thousand_forty_e":"⊢⊙¬◇+>=¬×⊞<●⊣","a_wellfounded_descent_witness_giving_a_strict_in_db924860":"⊢⊙><=◇+×⊞●¬=⊙⊣","aqua_vitae_bridge_coupling_vae_vita_vae_latent":"⊢>⊙◇+=●¬◇⊞<●=⊣","the_primitive_type_called_on":"⊢⊙>◇+¬●=<⊞⊣","transcendence":"⊢>>=⊙>⊣◇+×⊞●¬><=⊙⊣","the_conditional_empirical_shadow_sic_povm_axioma":"⊢◇>+<×●=⊙⊞¬⊣","structural_imscription_of_the_32_the_abramelin_o":"⊢⊣>◇+×⊞<==●⊙¬","source_of_great_attractor_mass":"⊢◇+>=×<⊞●¬⊣","the_primitive_type_called_ha_ha":"⊢>=⊙◇+>¬<×●⊞¬⊣","mathematical_relationship_between_the_two_horns":"⊢◇+><=⊞¬⊣","optimal_tarot_spread_and_procedure":"⊢⊣>◇<+●◇<×●◇<⊞●=⊙¬","committed_direction":"⊢⊙◇+>×⊞<●=⊙¬⊣","the_primitive_type_called_ear":"⊢⊙◇>+<×●=⊞¬⊣","the_vacuously_satisfied_navier_stokes_criticalit":"⊢=◇>+<×●⊞⊙¬⊣","a_bridge_mediator_that_biases_the_d_w_pair_over_38add7b7":"⊢⊙=◇>+<×⊞●¬⊣","passing_the_archons":"⊢⊣◇=><+×⊞●⊙¬=><+×⊞●¬","a_three_member_odd_ring_with_a_doubled_bond_betw_cc90b664":"⊢◇+>=●⊙⊞×<¬⊣","the_ob3ect_is_admitted_only_if_the_eleven_a_zero":"⊢⊙¬¬◇+>=×⊞<●¬⊣","lane_deviation":"⊢⊙>◇×<=●+¬⊣","the_k16_defining_polynomial_s_real_root_g0_in_th":"⊢◇+>×<●><⊣=⊙>>⊞¬⊙","braid_induction_operator_a_kernel_level_transfor_fe656954":"⊢⊙◇⊞+>×<●=¬⊣","the_structurally_closed_birch_swinnerton_dyer_cl":"⊢⊙◇>==+<+●⊞=⊙¬⊣","127":"⊢>=◇+<●⊙⊞¬⊣","cartomancy":"⊢⊣⊙>◇+>×<●=◇+>×<●=◇+>×<●⊞¬","the_yang_mills_one_bump_short_block_where_kineti":"⊢⊙>◇×<⊞>+●=⊙¬⊣","the_directed_transition_of_l9_into_the_lattice_s":"⊢◇+>×<●=⊙¬⊣","the_complex128_float_d_12_fiducial_becomes_exact":"⊢⊙>◇+<×●=⊙¬◇><+⊞●¬⊣","2":"⊢◇+⊞×●=⊙¬⊣","sanguine_homunculus":"⊢◇>=⊙⊞<●+¬=⊣+¬","holistic_healing":"⊢⊣>◇+>×<●=⊞⊙¬⊣","the_list_cyclotomic_ring_becomes_a_computable_qu":"⊢>=◇+><×●⊙⊞¬⊣","structural_imscription_of_the_54_the_yang_mills_":"⊢⊣◇>+×⊞⊙●=¬<=¬","scan_hodge_link":"⊢◇>+<×⊞●⊙=¬⊣","wolfhart_pannenberg":"⊢>¬=◇+>×<⊞⊙●⊣","a_sanity_subset_of_the_weyl_heisenberg_displacem":"⊢⊙>¬◇<>=⊞¬●>◇+¬⊣","the_primitive_type_called_wool":"⊢⊙>◇+=¬<×●⊞⊙¬⊣","the_complex128_float_d_12_sic_fiducial_becomes_t":"⊢◇>>●=◇><⊙+●⊞¬⊣","the_weyl_heisenberg_displacement_operators_becom":"⊢¬⊙◇>>>●⊙⊞¬◇><=+●+⊣","the_imscription_of_the_ob3ect_must_emit_a_pari_g":"⊢⊙¬◇+¬><=×⊞●¬¬⊣","monomer_with_high_density_cationic_center_for_ga_34489226":"⊢◇+>⊞=⊙¬●⊣","bridged_moat_complex_v1_is_a_gaussian_monomer_wi_3c85e43e":"⊢◇⊞+>=⊙●¬⊣","the_operation_that_emits_a_characterized_materia":"⊢⊙>¬◇+=●◇×<●⊞=¬⊣","sic_povm":"⊢⊙>=◇+×●◇+<●⊞◇+×●<=⊙¬¬⊣","the_primitive_type_called_bib":"⊢>⊙◇+×●=⊞¬⊣","chymical_wedding":"⊢⊙¬>◇+×●=¬<◇+×●⊞>=¬⊣","thinking_about_dreaming_about_thinking_about_dre":"⊢◇>+=⊙◇<×⊞●¬⊣","egyptian_hermetic_poem_describing_the_ascent_thr":"⊢=>◇>+¬<×¬●⊙⊞=¬⊣","structural_imscription_of_the_weyl_heisenberg_ch":"⊢⊙¬¬◇+>=×⊞<●⊣","the_least_fixed_point_of_a_monotone_operator":"⊢>=◇×<●⊙=◇+●¬⊣","the_eight_non_symmetric_moduli_including_z3_and_":"⊢⊙◇+¬<×⊞=>+●=¬⊙⊣","the_decision_of_how_many_significant_digits_cert":"⊢>◇+¬<+¬<×⊞=⊙●>¬⊣","the_twelve_fiducial_coordinates_become_a_single_":"⊢=¬◇×<⊞>+●⊙¬⊣","the_general_mixed_signature_stark_conjecture_za":"⊢>=◇+<⊙⊞×●¬⊣","earth_restoration":"⊢◇+>×<●=⊙¬⊣","sergius_bulgakov":"⊢>◇+<×⊞=⊙●¬⊣","each_fiducial_coordinate_becomes_re_entered_into":"⊢⊙◇+¬<+>●=◇+●⊙⊞¬⊣","biblical_prophet":"⊢⊙>¬<◇+×⊞●=¬⊣","the_cat":"⊢⊙=◇+>⊙●¬⊣","the_2_n_patterns_d_4_8_16_etc_n_to_extrapol":"⊢⊙◇>+<×●⊞=¬⊣","the_primitive_type_called_ian":"⊢⊙>◇+<×●=⊞¬⊣","heauton_ekenosen":"⊢⊙◇>=+⊞×¬<●⊙¬⊣","llm_hypnotizing_imasm_semiote":"⊢◇+=⊙⊞●¬⊣","gottfried_thomasius":"⊢⊙>◇+×⊞●=¬<⊣","the_primitive_type_called_vow":"⊢⊙◇+>+<×●=¬⊣","ring_1_lean_description_lean_file_containing_rin_0b75977e":"⊢>=◇+>=◇+=◇×<●⊙⊞=¬>⊣","psi_k_phi_rz_k_defines_the_twelve_fiducial_coord":"⊢⊙¬>◇<=⊙●+=¬⊣","all_of_quantum_mechanics_is_subsumed_by_benlap_d":"⊢>◇+>●◇×<●⊞=⊙¬¬=⊙⊣","lean_formalization_of_perfect_cuboid_proof":"⊢¬⊙=>=¬◇+×<⊞●⊙¬⊣","polytope_commutator_algebra":"⊢>◇+×●=<⊙¬","the_spectral_gap_sqrt_3_1_of_the_macrocycle_0_2_480b4838":"⊢⊙=⊞>◇+<×●¬⊣","the_generator_values_sval_k_evalk16_g0c_covk_k_f":"⊢>+¬><=¬◇+●>◇+●=⊙¬⊞●⊣","structural_imscription_of_the_56_navier_stokes_r":"⊢⊣>=⊙◇+×⊞●=>¬⊙","choosing_the_optimal_computable_representation_f":"⊢◇>+<>×⊞<>+●=⊙¬⊣","the_flat_degree_4_q_sqrt2_sqrt13_engine_that_alr":"⊢¬◇+⊙×◇><=⊙●⊞¬⊣","astronomical_heap_analysis":"⊢⊙>=¬>◇+×●=◇+●=◇⊞+●¬=>◇<×●⊣","oh_my_god_particle":"⊢>>⊞>⊙=◇+×●>>⊣<=+×¬","the_cat_sat_on_the":"⊢⊙>⊙=>⊙=>⊙=>⊙◇+>●¬⊣","97":"⊢>=⊙◇+●⊞¬⊣","structural_imscription_of_the_31_the_emerald_tab":"⊢⊙◇>+=>+<×=●+⊞¬⊣","proposition_for_every_0_there_exists_an_in":"⊢>=¬◇×<+●⊙⊞¬⊣","profitable_boundary_puncture_on_draftkings":"⊢>◇◇◇⊞●●●=⊙¬⊣","each_tower_level_is_a_solve_et_coagula_distillat":"⊢⊙¬◇+>=>¬>×⊞<●◇+⊙●¬⊣","forward_arc":"⊢>◇+×⊞<●⊙=¬⊣","thinking_about_thinking_about_how_strange_though":"⊢⊙>◇+●=>◇⊞<×●⊙¬⊣","equiangular_proves_the_143_weyl_heisenberg_overl":"⊢⊙¬◇+=⊙>=¬◇<●=+●⊙⊣","abrahamic_age_after_the_seal_of_the_prophets":"⊢>¬⊙⊣=◇+×●<⊞¬","the_primitive_type_called_up":"⊢⊙◇+><●◇×●=¬⊣","kozyrev_mirrors":"⊢>⊙⊣◇+×<●⊞=¬","operation_of_the_rohonc_codex":"⊢⊣>=◇+>◇×<=●⊞⊙=¬>◇+●⊙=¬<+●⊙=¬⊣","gaussian_moat_path_construction_a_procedure_to_c":"⊢⊙¬◇+>●=¬◇×<●⊞>=¬⊙⊣","the_discharge_admission_gate_becomes_the_require":"⊢⊙=¬◇><⊙●=◇+⊙¬●+⊣","the_nested_radical_galois_pair_sqrt_15_2_sqrt_26":"⊢>◇+<×⊞●=⊙¬⊣"};
-
         let TOKENS = [];
         let N = 0;
         let IMSCRIB_I = -1;
@@ -833,7 +796,7 @@
                 ));
             }
             scene.add(new THREE.Mesh(
-                new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 120, 0.022, 16, false),
+                new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 80, 0.022, 8, false),
                 new THREE.MeshStandardMaterial({ color: 0x0072B2, transparent: true, opacity: 0.6,
                     metalness: 0.3, roughness: 0.25 })
             ));
@@ -851,7 +814,7 @@
                 b = EV[(e + 1) % 3].p;
             const c = new THREE.CatmullRomCurve3([a, a.clone().lerp(b, 0.5), b]);
             scene.add(new THREE.Mesh(
-                new THREE.TubeGeometry(c, 48, 0.032, 18, false),
+                new THREE.TubeGeometry(c, 24, 0.032, 10, false),
                 new THREE.MeshStandardMaterial({
                     color: GREEN,
                     transparent: true,
@@ -879,88 +842,6 @@
             })));
         }
 
-        // ─── Tri-fork resultant: T:F:I = 1:1:2, forced by popcount ───────────────
-        // Belnap B4 (N=0b00,T=0b01,F=0b10,B=0b11) and SIXTEEN_3's Reg16_3 (EVALT touches
-        // 1 bit, EVALF touches 1 bit, EVALI touches 2: small_t AND small_f) independently
-        // force the same weighting: the held-both state counts double. Unweighted (1,1,1)
-        // sums exactly on-axis by the C3 symmetry alone (0 deg); the 1:1:2 weighting tilts
-        // the resultant to exactly arccos(1/sqrt(...)) = 14.036243 deg. Both drawn: the
-        // gray dashed on-axis reference (unweighted) and the gold solid resultant (1:1:2).
-        (function drawTriForkResultant() {
-            const w = { T: 1, F: 1, I: 2 };
-            const sumVec = (wt, wf, wi) => new THREE.Vector3(
-                wt * EV[0].p.x + wf * EV[1].p.x + wi * EV[2].p.x,
-                wt * EV[0].p.y + wf * EV[1].p.y + wi * EV[2].p.y,
-                wt * EV[0].p.z + wf * EV[1].p.z + wi * EV[2].p.z
-            );
-            const unweighted = sumVec(1, 1, 1).normalize().multiplyScalar(2.6);
-            const weighted = sumVec(w.T, w.F, w.I).normalize().multiplyScalar(2.6);
-            const origin = new THREE.Vector3(0, 0, 0);
-
-            // unweighted reference: dashed gray, exactly on the +x syzygy axis, 0 deg tilt
-            const refGeo = new THREE.BufferGeometry().setFromPoints([origin, unweighted]);
-            const refMat = new THREE.LineDashedMaterial({ color: 0x888888, dashSize: 0.1, gapSize: 0.07, transparent: true, opacity: 0.6 });
-            const refLine = new THREE.Line(refGeo, refMat);
-            refLine.computeLineDistances();
-            scene.add(refLine);
-
-            // weighted resultant (T:F:I = 1:1:2): solid gold tube + arrow + label
-            const wCurve = new THREE.CatmullRomCurve3([origin, weighted.clone().multiplyScalar(0.5), weighted]);
-            scene.add(new THREE.Mesh(
-                new THREE.TubeGeometry(wCurve, 48, 0.028, 14, false),
-                new THREE.MeshStandardMaterial({ color: 0xE69F00, emissive: 0xE69F00, emissiveIntensity: 0.55,
-                    metalness: 0.4, roughness: 0.2 })
-            ));
-            const dir = weighted.clone().normalize();
-            const cone = new THREE.Mesh(
-                new THREE.ConeGeometry(0.09, 0.24, 12),
-                new THREE.MeshStandardMaterial({ color: 0xE69F00, emissive: 0xE69F00, emissiveIntensity: 0.6 })
-            );
-            cone.position.copy(weighted);
-            cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
-            scene.add(cone);
-
-            const tiltDeg = THREE.MathUtils.radToDeg(unweighted.clone().normalize().angleTo(dir));
-            const lbl = makeTextSprite(`resultant T:F:I=1:1:2  tilt ${tiltDeg.toFixed(3)}°`, '#E69F00', 0.36);
-            lbl.position.copy(weighted.clone().add(new THREE.Vector3(0.1, 0.25, 0.1)));
-            scene.add(lbl);
-        })();
-
-        // ─── The FFUSE3 coupler: the rigid gear-axle linking the two A₂ trines ──────
-        // The evaluator trine and the cosmos (carved-ring) trine are the SAME A₂ root
-        // system at two scales, coupled like a bevel gear. Verified exactly:
-        //   cosmos-triangle center = ⊙ (0,0,0) = center of the imscription sphere;
-        //   evaluator-triangle center = (LR,0,0) = FFUSE3 sphere center = §1.10 tangency;
-        //   the two centers are exactly ONE FFUSE3 radius apart, and ⊙ sits ON that sphere.
-        // Axles are perpendicular: evaluator on the X-axis (pinch–tip / syzygy), cosmos on
-        // the Z-axis (horn symmetry) → a bevel gear, ratio 2R/(R/2) = 4 exactly (scale-free).
-        // This segment IS the coupler (length LR = λ_C, the Compton wavelength).
-        {
-            const O = new THREE.Vector3(0, 0, 0);          // ⊙, cosmos-triangle center
-            const C = new THREE.Vector3(LR, 0, 0);          // evaluator-triangle center = FFUSE3 center
-            const geo = new THREE.BufferGeometry().setFromPoints([O, C]);
-            const line = new THREE.Line(geo, new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9 }));
-            scene.add(line);
-            scene.add(new THREE.Mesh(
-                new THREE.TubeGeometry(new THREE.CatmullRomCurve3([O, C]), 12, 0.02, 10, false),
-                new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.35, metalness: 0.4, roughness: 0.3 })
-            ));
-            // node at each end: cosmos-center (⊙) and evaluator-center (FFUSE3 center)
-            [O, C].forEach((p, i) => {
-                const m = new THREE.Mesh(new THREE.SphereGeometry(0.06, 12, 12),
-                    new THREE.MeshBasicMaterial({ color: 0xffffff }));
-                m.position.copy(p); scene.add(m);
-            });
-            const lbl = makeTextSprite('FFUSE3 coupler · λ_C · bevel gear 4:1', '#ffffff', 0.34);
-            lbl.position.copy(new THREE.Vector3(LR * 0.5, -0.28, 0.28));
-            lbl.material.opacity = 0.8; scene.add(lbl);
-            // stub markers for the two perpendicular axles
-            const axleE = new THREE.Line(
-                new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(LR, -1.4, 0), new THREE.Vector3(LR, 1.4, 0)]),
-                new THREE.LineDashedMaterial({ color: 0x0072B2, dashSize: 0.08, gapSize: 0.06, transparent: true, opacity: 0.4 }));
-            axleE.computeLineDistances(); scene.add(axleE); // evaluator axle direction hint (in-plane)
-        }
-
         // ─── Carved ring A: the A₂ root system on the torus's OUTER EQUATOR ───
         // A distinct large triangle from the evaluator trine — inscribed in the z=0 plane
         // on the outer equator (poloidal v=0, radius 2R), one vertex on the +x syzygy axis.
@@ -985,7 +866,7 @@
             for (let e = 0; e < 3; e++) {
                 const a = verts[e], b = verts[(e + 1) % 3];
                 scene.add(new THREE.Mesh(
-                    new THREE.TubeGeometry(new THREE.CatmullRomCurve3([a, a.clone().lerp(b, 0.5), b]), 48, 0.03, 18, false),
+                    new THREE.TubeGeometry(new THREE.CatmullRomCurve3([a, a.clone().lerp(b, 0.5), b]), 24, 0.03, 10, false),
                     new THREE.MeshStandardMaterial({
                         color: GREEN, transparent: true, opacity: 0.85, metalness: 0.35, roughness: 0.25,
                         emissive: GREEN, emissiveIntensity: 0.3
@@ -1458,26 +1339,7 @@
 
         let posOnLongPath;
         let splitRegions = []; // every matched ◇…● region of the program, each with its T/F/I arms + beads
-        let exoticEdges = [];  // static coil/exotic edges, each tagged with the station that fires it
-        let activePulses = []; // transient beads currently riding an exotic edge, spawned on fire
-
-        function spawnPulse(edge) {
-            const mat = new THREE.MeshStandardMaterial({ color: edge.hex, emissive: edge.hex, emissiveIntensity: 0.9, metalness: 0.2, roughness: 0.2 });
-            const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.11, 16, 16), mat);
-            scene.add(mesh);
-            activePulses.push({ pts: edge.pts, mesh, t: 0, speed: 1.6 });
-        }
-        function clearPulses() {
-            activePulses.forEach(p => scene.remove(p.mesh));
-            activePulses = [];
-        }
-        function posOnPolyline(pts, u) {
-            const f = Math.min(0.999999, Math.max(0, u)) * (pts.length - 1);
-            const i = Math.floor(f);
-            return pts[i].clone().lerp(pts[Math.min(i + 1, pts.length - 1)], f - i);
-        }
         let syzygyText = 'syzygy: —'; // static per-program readout of the recombination offset
-        let impactText = 'impact b: —'; // sightline impact parameter of FFUSE→FFUSE3 vs the eval sphere
 
         function rebuildProgram(key) {
             // 1. Clear old meshes from programGroup
@@ -1494,20 +1356,13 @@
                 }
             }
 
-            // 2. Load program tokens. Live ob3ects (catalog-loaded) display FSPLIT/FFUSE
-            // as their true tri-arity form ∈/∋ (FSPLIT3/FFUSE3) — the sibling grammar at
-            // the same ancestry rule, per imasm16_3 (an ob3ect IS a SIXTEEN_3 object; the
-            // classic ◇/● is its reduced arity-2 reading). The curated demo programs keep
-            // the classic glyphs, since those illustrate the base-12 grammar itself.
+            // 2. Load program tokens
             const rawTokens = PROGRAMS[key];
-            const isLiveCatalog = key.startsWith('catalog: ');
-            const TRI_GLYPH = { FSPLIT: '∈', FFUSE: '∋' };
             TOKENS = rawTokens.map(name => {
                 const meta = TOKEN_META[name];
-                const glyph = isLiveCatalog && TRI_GLYPH[name] ? TRI_GLYPH[name] : (meta ? meta.glyph : '?');
                 return {
                     name: name,
-                    glyph: glyph,
+                    glyph: meta ? meta.glyph : '?',
                     work: meta ? meta.work : false
                 };
             });
@@ -1579,10 +1434,10 @@
 
             // 5. Build (1,1) sequence tube
             const loopMat = new THREE.MeshStandardMaterial({
-                color: 0x9AA7B4, metalness: 0.35, roughness: 0.3, emissive: 0x141a20
+                color: 0xFF1493, metalness: 0.35, roughness: 0.3, emissive: 0x330018
             });
             const dottedMat = new THREE.MeshStandardMaterial({
-                color: 0x9AA7B4, transparent: true, opacity: 0.55, metalness: 0.35, roughness: 0.3, emissive: 0x141a20
+                color: 0xFF1493, transparent: true, opacity: 0.55, metalness: 0.35, roughness: 0.3, emissive: 0x330018
             });
             // Build the (1,1) ring as ONE continuous closed curve, uniformly sampled in the
             // ring angle — no per-segment joints, so no kinks (the sole sharp point is the
@@ -1624,7 +1479,7 @@
                     r.arms.forEach(arm => {
                         const curve = new THREE.CatmullRomCurve3([ORIGIN_V(), arm.p.clone(), FUSE_V()]);
                         programGroup.add(new THREE.Mesh(
-                            new THREE.TubeGeometry(curve, 120, 0.024, 16, false),
+                            new THREE.TubeGeometry(curve, 72, 0.024, 10, false),
                             new THREE.MeshStandardMaterial({
                                 color: arm.hex, emissive: arm.hex, emissiveIntensity: 0.4,
                                 metalness: 0.4, roughness: 0.25, transparent: true, opacity: 0.75
@@ -1641,7 +1496,7 @@
                     // ⊙ → ∋ diameter carries the region's real verdict colour, never a false gray.
                     const vHex = VERDICT_HEX[r.verdict];
                     programGroup.add(new THREE.Mesh(
-                        new THREE.TubeGeometry(new THREE.CatmullRomCurve3([ORIGIN_V(), FUSE_V()]), 48, 0.022, 14, false),
+                        new THREE.TubeGeometry(new THREE.CatmullRomCurve3([ORIGIN_V(), FUSE_V()]), 24, 0.022, 8, false),
                         new THREE.MeshStandardMaterial({
                             color: vHex, emissive: vHex, emissiveIntensity: 0.3,
                             metalness: 0.3, roughness: 0.3, transparent: true, opacity: 0.65
@@ -1718,10 +1573,8 @@
             }
 
             function solidTube(pts, color, rad = 0.042) {
-                const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.5);
-                const tubular = Math.max(160, Math.min(600, pts.length * 2));
                 programGroup.add(new THREE.Mesh(
-                    new THREE.TubeGeometry(curve, tubular, rad, 18, false),
+                    new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 96, rad, 8, false),
                     new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.5, metalness: 0.4, roughness: 0.2 })
                 ));
             }
@@ -1734,7 +1587,7 @@
                     const seg = pts.slice(i, j + 1);
                     if (seg.length < 2) continue;
                     programGroup.add(new THREE.Mesh(
-                        new THREE.TubeGeometry(new THREE.CatmullRomCurve3(seg), 10, rad, 12, false), mat
+                        new THREE.TubeGeometry(new THREE.CatmullRomCurve3(seg), 6, rad, 6, false), mat
                     ));
                 }
             }
@@ -1760,31 +1613,22 @@
             }
 
             const mid = pts => pts[Math.floor(pts.length / 2)].clone();
-            const EXO = 0xFF1493;
-            // Every exotic/coil edge below registers its points against the station whose
-            // firing it belongs to, so something actually rides it during execution instead
-            // of it sitting as a static demo. See fireToken's pulse spawn.
-            exoticEdges = [];
-            const registerEdge = (triggerIdx, pts, hex) => {
-                if (triggerIdx >= 0 && pts && pts.length >= 2) exoticEdges.push({ triggerIdx, pts, hex });
-            };
+            const EXO = 0xCC79A7;
 
             // Identity hubs: work opcodes compose through ⊙
             if (CLINK1 >= 0 && IMSCRIB_I >= 0) {
                 const pC = station(CLINK1);
                 const cCoil = edgePath(ang(CLINK1), null, { turns: 2, lift: 0.05, n: 320, toOrigin: true });
-                solidTube(cCoil, 0x39FF14, 0.040);
-                arrowHead(cCoil, 0x39FF14);
-                edgeLabel(pC.clone().multiplyScalar(1.15).add(new THREE.Vector3(0, 0.15, 0.1)), 'CLINK → ⊙', '#39FF14');
-                registerEdge(CLINK1, cCoil, 0x39FF14);
+                solidTube(cCoil, 0xE69F00, 0.040);
+                arrowHead(cCoil, 0xE69F00);
+                edgeLabel(pC.clone().multiplyScalar(1.15).add(new THREE.Vector3(0, 0.15, 0.1)), 'CLINK → ⊙', '#E69F00');
             }
             if (IFIX_I >= 0 && IMSCRIB_I >= 0) {
                 const pI = station(IFIX_I);
                 const iCoil = edgePath(ang(IFIX_I), null, { turns: 2, lift: 0.05, n: 320, toOrigin: true });
-                solidTube(iCoil, 0x39FF14, 0.040);
-                arrowHead(iCoil, 0x39FF14);
-                edgeLabel(pI.clone().multiplyScalar(1.15).add(new THREE.Vector3(0, 0.15, 0.1)), 'IFIX → ⊙', '#39FF14');
-                registerEdge(IFIX_I, iCoil, 0x39FF14);
+                solidTube(iCoil, 0xE69F00, 0.040);
+                arrowHead(iCoil, 0xE69F00);
+                edgeLabel(pI.clone().multiplyScalar(1.15).add(new THREE.Vector3(0, 0.15, 0.1)), 'IFIX → ⊙', '#E69F00');
             }
             // Empty segment label if CLINK & IFIX are adjacent
             if (CLINK1 >= 0 && IFIX_I >= 0 && (CLINK1 + 1) % N === IFIX_I) {
@@ -1798,14 +1642,12 @@
                 const pts = busChord(AREV_I, IFIX_I);
                 dashedEdge(pts, 0x66aaff, 0.8, 0.020);
                 arrowHead(pts, 0x66aaff, 0.11);
-                registerEdge(AREV_I, pts, 0x66aaff);
             }
             if (AREV_I >= 0 && TANCH_I >= 0) {
                 const pts = busChord(AREV_I, TANCH_I);
                 dashedEdge(pts, 0x66aaff, 0.8, 0.020);
                 arrowHead(pts, 0x66aaff, 0.11);
                 edgeLabel(mid(pts).add(new THREE.Vector3(0, 0, 0.30)), 'R0 bus', '#56B4E9');
-                registerEdge(AREV_I, pts, 0x66aaff);
             }
 
             function busChord(i, j) {
@@ -1825,22 +1667,19 @@
                 const pts = edgePath(ang(EVALT_I), ang(IFIX_I), { turns: 0, lift: 0.07, n: 180 });
                 dashedEdge(pts, EXO, 0.7, 0.020);
                 arrowHead(pts, EXO, 0.10);
-                edgeLabel(mid(pts).add(new THREE.Vector3(0.1, -0.15, 0.18)), '+ → ¬', '#FF1493');
-                registerEdge(EVALT_I, pts, EXO);
+                edgeLabel(mid(pts).add(new THREE.Vector3(0.1, -0.15, 0.18)), '+ → ¬', '#CC79A7');
             }
             if (ENGAGR_I >= 0 && IMSCRIB_I >= 0) {
                 const pts = edgePath(ang(ENGAGR_I), null, { turns: 2, lift: 0.06, n: 280, toOrigin: true });
                 solidTube(pts, EXO, 0.032);
                 arrowHead(pts, EXO, 0.11);
-                edgeLabel(station(ENGAGR_I).clone().multiplyScalar(1.15).add(new THREE.Vector3(0, 0.12, 0.1)), '⊞→⊙', '#FF1493');
-                registerEdge(ENGAGR_I, pts, EXO);
+                edgeLabel(station(ENGAGR_I).clone().multiplyScalar(1.15).add(new THREE.Vector3(0, 0.12, 0.1)), '⊞→⊙', '#CC79A7');
             }
             if (CLINK2 >= 0 && TANCH_I >= 0) {
                 const pts = edgePath(ang(CLINK2), ang(TANCH_I), { turns: 0, lift: 0.05, n: 160 });
                 dashedEdge(pts, EXO, 0.75, 0.020);
                 arrowHead(pts, EXO, 0.10);
-                edgeLabel(mid(pts).add(new THREE.Vector3(-0.1, 0.08, -0.15)), 'CLINK₂→TANCH', '#FF1493');
-                registerEdge(CLINK2, pts, EXO);
+                edgeLabel(mid(pts).add(new THREE.Vector3(-0.1, 0.08, -0.15)), 'CLINK₂→TANCH', '#CC79A7');
             }
 
             // Seal ring
@@ -1862,7 +1701,6 @@
             // is antipodal to ⊙, i.e. FFUSE_I − IMSCRIB_I = N/2. The gap between where ● IS and
             // that balance point is the offset — the R1↔R2 fusion phase mismatch.
             drawSyzygy();
-            drawSightline();
 
             // 8. Re-initialize execution state
             exec.empty = (N === 0);
@@ -1892,8 +1730,6 @@
             splitGlow.visible = false;
             splitTrailLine.visible = false;
             hideAllArmBeads();
-            clearPulses();
-            exec.history = [];
             if (FSPLIT_I >= 0) {
                 const startP = horn(ang(FSPLIT_I));
                 for (let i = 0; i < SPLIT_TRAIL_N; i++) splitTrailPts[i].copy(startP);
@@ -1913,76 +1749,6 @@
         document.getElementById('program-select').addEventListener('change', (e) => {
             rebuildProgram(e.target.value);
         });
-
-        // ─── Live catalog search ────────────────────────────────────────────────
-        // Every catalog entry has its own real IMASM word (imasm_catalog_words.json,
-        // MoDoT/ob3ects/) — not just the 57 curated demo programs above. The registry is
-        // embedded directly (const CATALOG_WORDS above), so search is live from page load.
-        (function initCatalogSearch() {
-            const searchInput = document.getElementById('catalog-search');
-            const resultsSelect = document.getElementById('catalog-results');
-            const statusEl = document.getElementById('catalog-status');
-            if (!searchInput) return;
-            statusEl.textContent = `${Object.keys(CATALOG_WORDS).length.toLocaleString()} catalog entries — search above`;
-
-            searchInput.addEventListener('input', () => {
-                resultsSelect.innerHTML = '';
-                if (!CATALOG_WORDS) return;
-                const q = searchInput.value.trim().toLowerCase();
-                if (q.length === 0) return;
-                const names = Object.keys(CATALOG_WORDS).filter(n => n.toLowerCase().includes(q)).slice(0, 40);
-                names.forEach(n => {
-                    const opt = document.createElement('option');
-                    opt.value = n; opt.textContent = n;
-                    resultsSelect.appendChild(opt);
-                });
-                statusEl.textContent = names.length
-                    ? `${names.length}${names.length === 40 ? '+' : ''} match(es) — pick one`
-                    : 'no matches';
-            });
-
-            resultsSelect.addEventListener('change', () => {
-                const name = resultsSelect.value;
-                if (!name || !CATALOG_WORDS) return;
-                loadCatalogEntry(name);
-            });
-        })();
-
-        /** Parse a catalog entry's glyph word into a token sequence and render it.
-         *  Reports any glyph the renderer doesn't recognize instead of silently
-         *  dropping it — accuracy over convenience. */
-        function loadCatalogEntry(name) {
-            const glyphWord = CATALOG_WORDS[name];
-            if (glyphWord === undefined) return;
-            const chars = [...glyphWord];
-            const unknown = chars.filter(ch => !GLYPH_TO_TOKEN[ch]);
-            if (unknown.length > 0) {
-                const uniq = [...new Set(unknown)];
-                document.getElementById('catalog-status').textContent =
-                    `entry "${name}" has ${unknown.length} unrecognized glyph(s) (${uniq.join(' ')}) — not rendered, would misrepresent the word`;
-                return;
-            }
-            const tokenNames = chars.map(ch => GLYPH_TO_TOKEN[ch]);
-            const key = 'catalog: ' + name;
-            PROGRAMS[key] = tokenNames;
-
-            const programSelect = document.getElementById('program-select');
-            let optgroup = [...programSelect.children].find(el => el.tagName === 'OPTGROUP' && el.label === 'Catalog (live)');
-            if (!optgroup) {
-                optgroup = document.createElement('optgroup');
-                optgroup.label = 'Catalog (live)';
-                programSelect.insertBefore(optgroup, programSelect.firstChild);
-            }
-            let opt = [...optgroup.children].find(o => o.value === key);
-            if (!opt) {
-                opt = document.createElement('option');
-                opt.value = key; opt.textContent = `${name} (${tokenNames.length} tok)`;
-                optgroup.appendChild(opt);
-            }
-            programSelect.value = key;
-            document.getElementById('catalog-status').textContent = `loaded "${name}" — ${tokenNames.length} tokens`;
-            rebuildProgram(key);
-        }
 
         // ─── Helpers ───
         function glyphMark(glyph, color, size = 0.42) {
@@ -2049,9 +1815,7 @@
             dwell: 0.28,       // fraction of segment spent "firing" at station
             stack: [],         // B4 stack (kernel carrier: N/T/F/B)
             lastFired: -1,
-            pulse: 0,
-            transit: false,    // transit mode: slow down while a reroute (split/exotic pulse) is in flight
-            history: []        // snapshots taken before each advance, for step-back (stack is lossy — undo by restore, not by inverting fireToken)
+            pulse: 0
         };
 
         // B4 stack effects mirroring mOMonadOS kernel token semantics.
@@ -2093,10 +1857,6 @@
             exec.tick++;
             exec.lastFired = i;
             exec.pulse = 1;
-            // Ride every exotic/coil edge this station is the trigger for — so the identity
-            // hubs, R0 bus, and exotic-ancestry edges actually carry something instead of
-            // sitting as static demo geometry.
-            exoticEdges.forEach(edge => { if (edge.triggerIdx === i) spawnPulse(edge); });
             if (i === N - 1) exec.winding++;
             updateExecHud();
         }
@@ -2132,8 +1892,6 @@
             }
             const syzEl = document.getElementById('syzygy-line');
             if (syzEl) syzEl.textContent = syzygyText;
-            const impEl = document.getElementById('impact-line');
-            if (impEl) impEl.textContent = impactText;
             if (stackEl) {
                 const s = exec.stack.length ? exec.stack.join(' ') : '∅';
                 stackEl.textContent = `B4 stack: [ ${s} ]`;
@@ -2225,20 +1983,12 @@
             regions.forEach(r => {
                 // own-level interior tokens: inside this ◇…● but not inside a deeper child region
                 r.own = [];
-                r.ownIdx = [];
                 for (let k = r.fs + 1; k < r.ff; k++) {
                     const inChild = regions.some(c => c !== r && c.fs > r.fs && c.ff < r.ff && k > c.fs && k < c.ff);
-                    if (!inChild) { r.own.push(TOKENS[k]); r.ownIdx.push(k); }
+                    if (!inChild) r.own.push(TOKENS[k]);
                 }
-                // Each arm carries its own trigger station index, so its bead peaks exactly
-                // when THAT token fires — not when the region's overall span hits its midpoint
-                // (the old shared-progress coupling meant a bead's touch instant was tied to
-                // the region's geometric midpoint, unrelated to which token was actually there).
-                r.arms = r.own.map((t, i) => {
-                    const a = EVAL_ARM[t.name];
-                    if (!a) return null;
-                    return { p: a.p.clone(), hex: a.hex, axis: a.axis, triggerIdx: r.ownIdx[i] };
-                }).filter(Boolean);
+                r.arms = r.own.map(t => EVAL_ARM[t.name]).filter(Boolean)
+                              .map(a => ({ p: a.p.clone(), hex: a.hex, axis: a.axis }));
                 // verdict over the FULL interval (kernel: work anywhere inside counts)
                 const full = TOKENS.slice(r.fs + 1, r.ff);
                 const hasWork = full.some(t => t.work);
@@ -2262,88 +2012,6 @@
         const FUSE_V = () => new THREE.Vector3(2 * LR, 0, 0);
 
         // Draw the syzygy axis (⊙ → tip → balanced-● target at horn(0)) and the offset arc
-        // The FFUSE→FFUSE3 sightline: the line from the loop's recombination (first ●) through
-        // the FFUSE3 tip (2·LR,0,0). Its distance from the evaluator-sphere centre (LR,0,0) is
-        // the IMPACT PARAMETER b. Syzygy → b=0 (diameter, head-on through both poles); off-axis
-        // → secant (b<1); b=1 is exact TANGENT, reached when cos(t_FFUSE) = 1/φ (golden ratio);
-        // b>1 external (misses). Regime-coloured; sets impactText. Also marks the two golden loci.
-        function drawSightline() {
-            const ffIdx = TOKENS.findIndex(t => t.name === 'FFUSE');
-            if (ffIdx < 0) { impactText = 'impact b: n/a (no ● recombination)'; return; }
-            const P = horn(ang(ffIdx));
-            const T = new THREE.Vector3(2 * LR, 0, 0);      // FFUSE3 tip
-            const C = new THREE.Vector3(LR, 0, 0);          // evaluator sphere centre, radius LR
-            const dir = T.clone().sub(P);
-            const b = C.clone().sub(P).cross(dir).length() / (dir.length() || 1) / LR; // normalized by radius
-
-            let regime, hex;
-            if (b < 0.05)       { regime = 'diameter (syzygy, head-on through center)'; hex = 0xCC79A7; }
-            else if (Math.abs(b - 1) < 0.05) { regime = 'TANGENT (golden grazing, cos t = 1/φ)'; hex = 0xffffff; }
-            else if (b < 1)     { regime = 'secant (penetrates the shell)'; hex = 0x56B4E9; }
-            else                { regime = 'external (misses the shell)'; hex = 0x888888; }
-            impactText = `impact b: ${b.toFixed(3)} · ${regime}`;
-
-            // The sightline is a CHORD of the evaluator sphere (the surface b is measured
-            // against, center C radius LR) — bounded by that sphere's own two intersection
-            // points with the P->T line, not an arbitrary extension past it.
-            // |P + s*dir - C|^2 = LR^2  ->  quadratic in s.
-            const PC = P.clone().sub(C);
-            const a2 = dir.dot(dir);
-            const b2 = 2 * dir.dot(PC);
-            const c2 = PC.dot(PC) - LR * LR;
-            const disc = b2 * b2 - 4 * a2 * c2;
-            let chordStart, chordEnd;
-            if (disc >= 0 && a2 > 1e-12) {
-                const sqrtDisc = Math.sqrt(disc);
-                const s1 = (-b2 - sqrtDisc) / (2 * a2);
-                const s2 = (-b2 + sqrtDisc) / (2 * a2);
-                chordStart = P.clone().add(dir.clone().multiplyScalar(Math.min(s1, s2)));
-                chordEnd = P.clone().add(dir.clone().multiplyScalar(Math.max(s1, s2)));
-            } else {
-                // line misses the sphere (external, b > 1): no chord to draw, just P->T.
-                chordStart = P.clone();
-                chordEnd = T.clone();
-            }
-            // Near tangency the true chord collapses toward a single point (correct, but
-            // invisible); pad each end by a small fixed visibility margin along the same
-            // line so it stays a bounded chord at the surface, never a vanishing dot and
-            // never the old unbounded overextension past it.
-            {
-                const chordDir = chordEnd.clone().sub(chordStart);
-                const len = chordDir.length();
-                const pad = 0.12;
-                if (len > 1e-6) {
-                    const u = chordDir.clone().normalize();
-                    chordStart.sub(u.clone().multiplyScalar(pad));
-                    chordEnd.add(u.clone().multiplyScalar(pad));
-                } else {
-                    const u = dir.clone().normalize();
-                    chordStart.sub(u.clone().multiplyScalar(pad));
-                    chordEnd.copy(chordStart).add(u.clone().multiplyScalar(2 * pad));
-                }
-            }
-            programGroup.add(new THREE.Mesh(
-                new THREE.TubeGeometry(new THREE.CatmullRomCurve3([chordStart, chordEnd]), 96, 0.022, 14, false),
-                new THREE.MeshStandardMaterial({ color: hex, emissive: hex, emissiveIntensity: 0.5,
-                    metalness: 0.3, roughness: 0.3, transparent: true, opacity: 0.9 })
-            ));
-            const bLabel = makeTextSprite(`b=${b.toFixed(2)}`, '#' + hex.toString(16).padStart(6, '0'), 0.44);
-            bLabel.position.copy(T.clone().add(new THREE.Vector3(0.15, -0.35, 0.25)));
-            programGroup.add(bLabel);
-
-            // The two golden-tangent loci on the loop: cos t = 1/φ  ⟹  t = ±acos(1/φ)
-            const tG = Math.acos((Math.sqrt(5) - 1) / 2);
-            [tG, -tG].forEach(t => {
-                const g = horn(t);
-                const m = new THREE.Mesh(new THREE.SphereGeometry(0.08, 12, 12),
-                    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85 }));
-                m.position.copy(g); programGroup.add(m);
-                const gl = makeTextSprite('φ-tangent', '#ffffff', 0.30);
-                gl.position.copy(g.clone().multiplyScalar(1.08).add(new THREE.Vector3(0, 0, 0.25)));
-                gl.material.opacity = 0.65; programGroup.add(gl);
-            });
-        }
-
         // from that target to the loop's actual first ●. Sets syzygyText for the HUD.
         function drawSyzygy() {
             const ffIdx = TOKENS.findIndex(t => t.name === 'FFUSE');
@@ -2385,7 +2053,7 @@
                 const steps = 72, arcPts = [];
                 for (let k = 0; k <= steps; k++) arcPts.push(horn(span * k / steps));
                 programGroup.add(new THREE.Mesh(
-                    new THREE.TubeGeometry(new THREE.CatmullRomCurve3(arcPts), steps, 0.02, 12, false),
+                    new THREE.TubeGeometry(new THREE.CatmullRomCurve3(arcPts), steps, 0.02, 6, false),
                     new THREE.MeshStandardMaterial({ color: 0xCC79A7, emissive: 0xCC79A7, emissiveIntensity: 0.5, transparent: true, opacity: 0.85 })
                 ));
                 const midP = horn(span * 0.5);
@@ -2486,9 +2154,7 @@
         // Controls
         const btnPlay = document.getElementById('btn-play');
         const btnStep = document.getElementById('btn-step');
-        const btnStepBack = document.getElementById('btn-step-back');
         const btnReset = document.getElementById('btn-reset');
-        const btnTransit = document.getElementById('btn-transit');
         const speedSel = document.getElementById('speed');
 
         function setPlaying(on) {
@@ -2515,15 +2181,12 @@
             for (let i = 0; i < TRAIL_N; i++) trailPts[i].copy(horn(ang(0)));
             trailGeo.setFromPoints(trailPts);
             setIpWorld(horn(ang(0)));
-
-            // Reset splitting visualization state (before the cold-boot fire, so a pulse
-            // spawned by firing station 0 below survives instead of being wiped right after)
-            hideAllArmBeads();
-            clearPulses();
-            exec.history = [];
             fireToken(0);
             exec.tick = 1;
             exec.winding = 0;
+
+            // Reset splitting visualization state
+            hideAllArmBeads();
             if (typeof splitBead !== 'undefined') {
                 splitBead.visible = false;
                 splitGlow.visible = false;
@@ -2550,13 +2213,6 @@
 
         function advanceToNextStation() {
             if (N === 0) return; // empty word — no stations to advance through
-            // Snapshot before mutating, so a step-back can restore exactly (the stack's
-            // push/pop in fireToken is lossy — undo works by restoring a prior state,
-            // not by trying to invert the token's effect).
-            exec.history.push({
-                ip: exec.ip, next: exec.next, tick: exec.tick, winding: exec.winding,
-                lastFired: exec.lastFired, stack: exec.stack.slice()
-            });
             // finished arc ip → next: fire is already done at start of dwell;
             // move indices forward
             exec.ip = exec.next;
@@ -2566,31 +2222,11 @@
             highlightStations();
         }
 
-        function stepBack() {
-            if (exec.history.length === 0) return;
-            const s = exec.history.pop();
-            exec.ip = s.ip; exec.next = s.next; exec.tick = s.tick; exec.winding = s.winding;
-            exec.lastFired = s.lastFired; exec.stack = s.stack; exec.phase = 0; exec.pulse = 0;
-            hideAllArmBeads();
-            clearPulses();
-            setIpWorld(horn(ang(exec.ip)));
-            highlightStations();
-            updateExecHud();
-        }
-
         if (btnStep) btnStep.addEventListener('click', () => {
             setPlaying(false);
             // jump to end of current segment and fire next
             advanceToNextStation();
             setIpWorld(horn(ang(exec.ip)));
-        });
-        if (btnStepBack) btnStepBack.addEventListener('click', () => {
-            setPlaying(false);
-            stepBack();
-        });
-        if (btnTransit) btnTransit.addEventListener('click', () => {
-            exec.transit = !exec.transit;
-            btnTransit.classList.toggle('active', exec.transit);
         });
 
         addEventListener('keydown', (e) => {
@@ -2602,12 +2238,6 @@
                 setPlaying(false);
                 advanceToNextStation();
                 setIpWorld(horn(ang(exec.ip)));
-            } else if (e.code === 'ArrowLeft') {
-                e.preventDefault();
-                setPlaying(false);
-                stepBack();
-            } else if (e.code === 'KeyT' && !e.metaKey && !e.ctrlKey) {
-                if (btnTransit) btnTransit.click();
             } else if (e.code === 'KeyR' && !e.metaKey && !e.ctrlKey) {
                 if (btnReset) btnReset.click();
             }
@@ -2621,28 +2251,16 @@
         }
         addEventListener('resize', resize);
 
-        // True while the IP sits inside a split region (T/F/I arms live) or an exotic
-        // pulse is in flight — the "reroute" passages transit mode slows down.
-        function inRerouteNow() {
-            return splitRegions.some(r => exec.ip >= r.fs && exec.ip < r.ff) || activePulses.length > 0;
-        }
-
         let lastTs = performance.now();
         (function animate(now) {
             requestAnimationFrame(animate);
             const dt = Math.min(0.05, (now - lastTs) / 1000);
             lastTs = now;
 
-            // Transit mode: while a reroute is in flight, slow the walk and the pulse
-            // travel to 1/5 speed so the path is easy to follow. Only the WALK/PULSE
-            // progress slows — the fire-flash (exec.pulse decay) stays on real time so
-            // it doesn't look sluggish.
-            const walkDt = (exec.transit && N > 0 && inRerouteNow()) ? dt * 0.2 : dt;
-
             if (exec.playing && N > 0) {
                 // phase advances; first dwell fraction = sit on station (already fired)
                 // remainder = travel along (1,1) to next
-                exec.phase += walkDt * exec.speed;
+                exec.phase += dt * exec.speed;
                 while (exec.phase >= 1) {
                     exec.phase -= 1;
                     advanceToNextStation();
@@ -2668,31 +2286,14 @@
             splitRegions.forEach(r => {
                 const inHere = (exec.ip >= r.fs && exec.ip < r.ff);
                 if (!inHere) { (r.beads || []).forEach(({ b, g }) => { b.visible = false; g.visible = false; }); return; }
-                const uClamped = Math.min(1, Math.max(0, u));
                 const span = r.ff - r.fs;
-                // Straight/N-identity beads (no real evaluator token) still use the region's
-                // overall span fraction — there's no specific triggering token to peak at.
-                const pSplit = span > 0 ? (exec.ip - r.fs + uClamped) / span : 0;
+                const pSplit = span > 0 ? (exec.ip - r.fs + Math.min(1, Math.max(0, u))) / span : 0;
                 (r.beads || []).forEach(bd => {
                     const { b, g, arm } = bd;
                     b.visible = true; g.visible = true;
-                    let pos;
-                    if (arm.straight) {
-                        pos = ORIGIN_V().lerp(FUSE_V(), pSplit);
-                    } else {
-                        // Per-token timing: this bead peaks (touches arm.p) exactly when ITS
-                        // OWN trigger token fires — not at the region's geometric midpoint.
-                        const outSpan = Math.max(1e-6, arm.triggerIdx - r.fs);
-                        const inSpan = Math.max(1e-6, r.ff - arm.triggerIdx);
-                        const offset = (exec.ip - arm.triggerIdx) + uClamped;
-                        if (offset <= 0) {
-                            const progOut = Math.min(1, Math.max(0, 1 + offset / outSpan));
-                            pos = ORIGIN_V().lerp(arm.p, progOut);
-                        } else {
-                            const progIn = Math.min(1, Math.max(0, offset / inSpan));
-                            pos = arm.p.clone().lerp(FUSE_V(), progIn);
-                        }
-                    }
+                    const pos = arm.straight
+                        ? ORIGIN_V().lerp(FUSE_V(), Math.min(1, Math.max(0, pSplit)))
+                        : posOnArm(arm.p, pSplit);
                     b.position.copy(pos); g.position.copy(pos);
                     b.scale.setScalar(s * 0.9);
                     g.scale.setScalar(0.9 * (1 + 0.5 * exec.pulse));
@@ -2708,19 +2309,6 @@
             ipBead.scale.setScalar(sMain);
             ipGlow.scale.setScalar(1 + 0.5 * exec.pulse);
             ipGlow.material.opacity = 0.15 + 0.35 * exec.pulse;
-
-            // Advance every active exotic-edge pulse; remove it once it reaches the far end.
-            for (let i = activePulses.length - 1; i >= 0; i--) {
-                const p = activePulses[i];
-                p.t += walkDt * p.speed;
-                if (p.t >= 1) {
-                    scene.remove(p.mesh);
-                    p.mesh.geometry.dispose(); p.mesh.material.dispose();
-                    activePulses.splice(i, 1);
-                    continue;
-                }
-                p.mesh.position.copy(posOnPolyline(p.pts, p.t));
-            }
 
             controls.update();
             renderer.render(scene, camera);
