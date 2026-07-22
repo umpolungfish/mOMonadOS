@@ -1281,7 +1281,7 @@
             <span style="color:#E69F00">gold</span> ⊞ / pinch workarounds</div>
         <div class="sub"><span style="color:#9AA7B4">slate (1,1)</span> = sequential stations on horn(t).</div>
         <div class="sub"><span style="color:#E69F00">orange coils</span> CLINK→⊙ &amp; IFIX→⊙: work only through identity.</div>
-        <div class="sub"><span style="color:#56B4E9">sky dashed</span> R0 bus (AREV → IFIX/TANCH).</div>
+        <div class="sub">The packet is the instruction pointer walking the single (1,1) loop in execution order. No separate bus; AREV is a stack op, not a routed signal.</div>
         <div class="sub"><span style="color:#FF1493">hot-pink</span> exotic ancestry (not text order).</div>
 
         <div class="split-eq">
@@ -2870,31 +2870,33 @@
                 edgeLabel(mid(ptsCI).add(new THREE.Vector3(0, 0, 0.34)), 'CLINK↔IFIX (empty)', '#ffffff');
             }
 
-            // R0 bus
-            if (AREV_I >= 0 && IFIX_I >= 0) {
-                const pts = busChord(AREV_I, IFIX_I);
-                dashedEdge(pts, 0x66aaff, 0.8, 0.020);
-                arrowHead(pts, 0x66aaff, 0.11);
-                registerEdge(AREV_I, pts, 0x66aaff);
-            }
-            if (AREV_I >= 0 && TANCH_I >= 0) {
-                const pts = busChord(AREV_I, TANCH_I);
-                dashedEdge(pts, 0x66aaff, 0.8, 0.020);
-                arrowHead(pts, 0x66aaff, 0.11);
-                edgeLabel(mid(pts).add(new THREE.Vector3(0, 0, 0.30)), 'R0 bus', '#56B4E9');
-                registerEdge(AREV_I, pts, 0x66aaff);
-            }
+            // No R0 bus. The kernel (modot.agent) has no such object: AREV is a stack op
+            // (pop, Belnap-negate, push), not a signal routed to IFIX/TANCH. busChord drew a
+            // straight chord through the bulk (or bowed it outward when the midpoint missed
+            // the origin) — the exact artifact. The real packet is the instruction pointer
+            // walking the single (1,1) loop in execution order. Removed.
 
-            function busChord(i, j) {
-                const a = station(i), b = station(j);
-                const m = a.clone().add(b).multiplyScalar(0.5);
-                if (m.length() > 0.01) m.multiplyScalar(1.25);
-                else m.set(0, 0.4, 0.4);
-                const curve = new THREE.CatmullRomCurve3([a, m, b]);
-                const pts = curve.getPoints(64);
-                pts[0].copy(a);
-                pts[pts.length - 1].copy(b);
-                return pts;
+            // Tangent chords: every FFUSE3 (●/∋) station on the mainline → the FFUSE3 tip on
+            // the evaluator at (2·LR, 0, 0), the far pole of the evaluator sphere where the
+            // fuse lands. Each mainline recombination tied to the one evaluator fuse point.
+            {
+                const node = new THREE.Vector3(2 * LR, 0, 0); // ∋ node on the evaluator
+                const nodeR = 0.1;                             // its sphere radius
+                for (let i = 0; i < N; i++) {
+                    if (TOKENS[i].name !== "FFUSE") continue;
+                    const a = station(i).clone();
+                    // stop exactly on the node's surface facing the station — no impaling
+                    const end = node.clone().add(a.clone().sub(node).setLength(nodeR));
+                    // LineCurve3 is dead straight: no Catmull-Rom phantom point, so the tube
+                    // cannot overshoot through the node and out the far side.
+                    programGroup.add(new THREE.Mesh(
+                        new THREE.TubeGeometry(new THREE.LineCurve3(a, end), 1, 0.02, 12, false),
+                        new THREE.MeshStandardMaterial({
+                            color: 0x00E5FF, emissive: 0x00E5FF, emissiveIntensity: 0.5,
+                            metalness: 0.2, roughness: 0.3
+                        })
+                    ));
+                }
             }
 
             // Exotic flows
