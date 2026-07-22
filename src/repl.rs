@@ -400,6 +400,36 @@ pub fn repl(k: &mut Kernel) {
                     _ => sprintln!("spine [run|lean] — manuscript spine (PROVE→UNIFY→PORT × vessel)"),
                 }
             }
+            // MoDoT Constant Closure: 5 Lean modules (FineStructure, ProtonElectron,
+            // LeptonMassRatios, BosonMassRatios, GravitationalCoupling) ported to kernel.
+            "constants" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "fine-structure" | "alpha" | "α" => {
+                        sprintln!("{}", crate::constant_closure::fine_structure_report());
+                    }
+                    "proton-electron" | "mpme" | "pem" => {
+                        sprintln!("{}", crate::constant_closure::proton_electron_report());
+                    }
+                    "lepton" | "muon" | "tau" => {
+                        sprintln!("{}", crate::constant_closure::lepton_report());
+                    }
+                    "boson" | "w" | "z" | "higgs" => {
+                        sprintln!("{}", crate::constant_closure::boson_report());
+                    }
+                    "gravitational" | "gravity" | "alpha_g" | "ag" => {
+                        sprintln!("{}", crate::constant_closure::gravitational_report());
+                    }
+                    "verify" | "status" => {
+                        sprintln!("{}", crate::constant_closure::constant_closure_status_report());
+                    }
+                    "all" | "full" | "" => {
+                        sprintln!("{}", crate::constant_closure::full_constant_closure_report());
+                    }
+                    _ => sprintln!("constants [fine-structure|proton-electron|lepton|boson|gravitational|verify|all]"),
+                }
+            }
+
             // Native MoDoT-parity ask (ob3ect native_kernel_ask). Full line after `ask `.
             "ask" => {
                 let rest = if let Some(i) = line.find(char::is_whitespace) {

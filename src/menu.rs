@@ -86,6 +86,7 @@ pub static GRAMMAR_MENU: &[MenuItem] = &[
     MenuItem { name: "cl8nk",    cmd: "cl8nk",    desc: "CLINK Layer 8: cl8nk <action> [name]", submenu: None },
         MenuItem { name: "c4",       cmd: "c4",       desc: "Belnap C₄ complex plane (i²=B)", submenu: None },
     MenuItem { name: "cscore",   cmd: "cscore",   desc: "Consciousness score (dual-gate)", submenu: None },
+    MenuItem { name: "constants", cmd: "constants", desc: "MoDoT constant closure: fine-structure, proton-electron, lepton, boson, gravity", submenu: None },
 ];
 
 pub static REBIS_MENU: &[MenuItem] = &[
