@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>mOMonadOS Torus Knot Weave — U₀–U₇ · (p,q) knot per dialect</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;background:#000;font-family:system-ui,sans-serif;color:#fff}
+#info{position:absolute;top:12px;left:12px;background:rgba(0,0,0,0.95);padding:12px 16px;border-radius:8px;border:2px solid #fff;max-width:390px;font-size:12.5px;line-height:1.45;z-index:10;max-height:calc(100vh-80px);overflow-y:auto}
+#info h1{font-size:14px;color:#E69F00;margin-bottom:6px}
+#gate-panel{position:absolute;top:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.95);padding:8px 14px;border-radius:8px;border:2px solid #56B4E9;font-size:11px;line-height:1.4;z-index:10;max-width:400px;min-width:280px}
+#gate-panel h2{font-size:11px;color:#56B4E9;margin-bottom:3px;text-align:center}
+#gate-panel #dialect-name{font-size:13px;font-weight:bold;color:#e8b84b;text-align:center;margin-bottom:2px}
+#gate-panel #knot-info{font-size:10px;color:#009E73;text-align:center;margin-bottom:3px}
+#gate-panel .gr{display:flex;justify-content:space-between;margin:2px 0;padding:2px 6px;border-radius:3px}
+#gate-panel .gr.pass{background:rgba(0,255,136,0.12);border-left:3px solid #39FF14}
+#gate-panel .gr.fail{background:rgba(68,68,68,0.4);border-left:3px solid #444}
+#gate-panel .gl{color:#ccc;flex:1}
+#gate-panel .gv{font-weight:bold;text-align:right;margin-left:8px}
+#gate-panel .sub{opacity:0.6;font-size:10px;margin-top:4px;border-top:1px solid #333;padding-top:4px}
+#legend{position:absolute;top:120px;right:12px;background:rgba(0,0,0,0.95);padding:12px 14px;border-radius:8px;border:2px solid #fff;font-size:12.5px;line-height:1.5;z-index:10;max-width:300px;max-height:calc(100vh-200px);overflow-y:auto}
+#legend h2{font-size:12px;color:#E69F00;margin:2px 0 5px}
+#legend .g{display:inline-block;width:1.5em;font-weight:bold;text-align:center}
+#legend .knot-row{font-size:10px;padding:2px 4px;border-radius:3px;margin:1px 0;cursor:pointer;display:flex;justify-content:space-between}
+#legend .knot-row.active{background:rgba(0,255,136,0.15);border-left:3px solid #39FF14}
+#legend .knot-row .kp{color:#009E73;font-weight:bold;font-family:monospace}
+#legend .knot-row .kn{color:#ccc}
+#dialect-panel{position:absolute;bottom:12px;left:12px;background:rgba(0,0,0,0.92);border:2px solid #e8b84b;border-radius:10px;padding:8px 14px;z-index:13;font-size:12px;line-height:1.4;box-shadow:0 0 16px rgba(232,184,75,0.2)}
+#dialect-panel label{color:#e8b84b;font-weight:bold;font-size:11px;margin-right:6px}
+#dialect-panel select{background:#1a1a1a;color:#fff;border:1px solid #e8b84b;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-family:inherit;min-width:140px}
+#dialect-panel select:hover{background:#2a2410}
+#program-panel{position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,0.92);border:2px solid #CC79A7;border-radius:10px;padding:8px 14px;z-index:13;font-size:12px;line-height:1.4;box-shadow:0 0 16px rgba(204,121,167,0.2)}
+#program-panel label{color:#CC79A7;font-weight:bold;font-size:11px;margin-right:6px}
+#program-panel select{background:#1a1a1a;color:#fff;border:1px solid #CC79A7;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-family:inherit;min-width:140px}
+#program-panel select:hover{background:#2a2410}
+#play-panel{position:absolute;bottom:52px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.92);border:2px solid #56B4E9;border-radius:10px;padding:6px 14px;z-index:13;font-size:12px;box-shadow:0 0 16px rgba(86,180,233,0.2);display:flex;gap:8px;align-items:center}
+#play-panel button{background:#1a1a1a;color:#fff;border:1px solid #56B4E9;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;font-family:inherit}
+#play-panel button:hover{background:#1a2a3a}
+#play-panel button.active{background:#56B4E9;color:#000;font-weight:bold}
+#play-panel label{font-size:10px;color:#999}
+#play-panel select{background:#1a1a1a;color:#fff;border:1px solid #56B4E9;border-radius:6px;padding:3px 8px;cursor:pointer;font-size:10px;font-family:inherit}
+#exec{position:absolute;bottom:100px;left:12px;background:rgba(0,0,0,0.92);border:2px solid #009E73;border-radius:10px;padding:8px 14px;z-index:11;min-width:260px;max-width:360px;font-size:12px;line-height:1.35;box-shadow:0 0 16px rgba(0,158,115,0.2)}
+#exec #ip-line{font-family:ui-monospace,monospace;font-size:13px;color:#ffe08a;letter-spacing:0.02em}
+#exec #ip-meta{color:#ccc;font-size:11px;margin-top:2px}
+#exec #knot-meta{color:#009E73;font-size:11px;margin-top:1px;font-family:monospace}
+#exec #stack-line{font-family:ui-monospace,monospace;color:#56B4E9;font-size:12px;margin-top:4px;min-height:1.2em}
+#exec .tok-chip{display:inline-block;padding:1px 5px;margin:0 1px;border-radius:3px;opacity:0.45;border:1px solid transparent}
+#exec .tok-chip.on{opacity:1;border-color:#39FF14;background:rgba(0,255,136,0.15);color:#39FF14;font-weight:bold}
+#exec .tok-chip.done{opacity:0.75;color:#e8b84b}
+#catalog{position:absolute;bottom:100px;right:12px;background:rgba(0,0,0,0.92);border:2px solid #CC79A7;border-radius:10px;padding:8px 12px;z-index:12;min-width:240px;max-width:340px;font-size:11px;line-height:1.3;box-shadow:0 0 12px rgba(204,121,167,0.2)}
+#catalog #catalog-search{background:#1a1a1a;color:#fff;border:1px solid #CC79A7;border-radius:5px;padding:4px 8px;font-size:11px;font-family:inherit;width:100%}
+#catalog #catalog-results{max-height:100px;overflow-y:auto;font-size:10px;color:#ccc;background:#1a1a1a;border:1px solid #555;border-radius:5px;padding:4px 8px;min-height:18px;margin-top:3px}
+#catalog #catalog-status{font-size:9px;color:#888;float:right;margin-top:-16px}
+#ucf{position:absolute;bottom:80px;right:12px;background:rgba(0,0,0,0.95);padding:10px 14px;border-radius:8px;border:2px solid #CC79A7;font-size:11.5px;line-height:1.4;z-index:10;max-width:260px;max-height:calc(100vh-300px);overflow-y:auto;color:#ddd}
+#ucf h2{font-size:12px;color:#CC79A7;margin:0 0 6px}
+.panel-toggle{position:absolute;top:8px;right:8px;width:22px;height:22px;background:#1a1a1a;color:#fff;border:1px solid #fff;border-radius:5px;cursor:pointer;font-size:15px;line-height:1;padding:0;z-index:11}
+@media(max-width:820px){#info{font-size:10px;max-width:none;right:8px;max-height:140px}#legend{max-width:none;left:8px;top:auto;bottom:320px;max-height:120px}#gate-panel{max-width:none;left:8px;bottom:240px;max-height:120px}#dialect-panel{font-size:10px;left:8px;bottom:8px}#program-panel{font-size:10px;right:8px;bottom:8px}#play-panel{font-size:10px;left:50%;bottom:52px;transform:translateX(-50%)}#exec{font-size:10px;left:8px;bottom:100px;min-width:auto;max-width:45vw}#catalog{font-size:10px;right:8px;bottom:100px;min-width:auto;max-width:45vw;max-height:100px}#ucf{bottom:auto;top:310px;right:8px;left:8px;max-width:none;max-height:160px}}
+</style></head><body style="background:#000">
+<div id="cdn-fail" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;background:#000;color:#ff4444;align-items:center;justify-content:center;flex-direction:column"><h2>⚠️ Three.js CDN failed</h2><p>Check network.</p></div>
+<div id="info"><button class="panel-toggle" onclick="this.parentElement.classList.toggle('collapsed')">&minus;</button>
+<h1>Knot Weave · U₀–U₇</h1>
+<p><span style="color:#56B4E9">R=r=2</span> horn torus · <b style="color:#009E73">(p,q) knot</b> per dialect</p>
+<p>Each of the 8 dialects maps to a distinct <b>torus knot</b> (p,q). Stations follow the active knot path. All 8 knots rendered — active one glows.</p>
+<p style="margin-top:6px;border-top:1px solid #333;padding-top:5px;font-size:11px">
+<span style="color:#ffe08a">⊙</span> IMSCRIB always gold · beads walk the knot cyclically</p></div>
+
+<div id="gate-panel"><button class="panel-toggle" onclick="this.parentElement.classList.toggle('collapsed')">&minus;</button>
+<div id="dialect-name">canonical (U₀)</div>
+<div id="knot-info">(p,q) = (1,1) · winding: 1/1</div>
+<div id="gate-ordering">sequential: G1 → G2 → G3</div>
+<div id="gate-content"><div class="gr fail"><span class="gl">G1: loading...</span><span class="gv">—</span></div></div>
+<div class="sub" id="dialect-desc">Standard gate thresholds</div>
+<div class="sub" id="tuple-display" style="margin-top:4px;border-top:1px solid #e8b84b;padding-top:4px;font-family:monospace;font-size:10px;color:#ffe08a;word-break:break-all">—</div></div>
+
+<div id="legend"><button class="panel-toggle" onclick="this.parentElement.classList.toggle('collapsed')">&minus;</button>
+<h2>KNOTS · (p,q) per dialect</h2>
+<div id="knot-legend"></div>
+<div style="margin-top:8px;border-top:1px solid #444;padding-top:6px">
+<div><span class="g" style="color:#ffe08a">⊙</span> IMSCRIB <span style="opacity:0.6">(always gold)</span></div>
+<div><span class="g" style="color:#fff">⊢</span> VINIT <span class="g" style="color:#fff">⊣</span> TANCH</div>
+<div><span class="g" style="color:#fff">◇</span> FSPLIT <span class="g" style="color:#fff">●</span> FFUSE</div>
+<div><span class="g" style="color:#56B4E9">+</span> EVALT <span class="g" style="color:#56B4E9">=</span> CLINK <span class="g" style="color:#56B4E9">&gt;</span> AFWD <span class="g" style="color:#56B4E9">&lt;</span> AREV <span class="g" style="color:#56B4E9">¬</span> IFIX</div>
+<div><span class="g" style="color:#E69F00">⊞</span> ENGAGR</div>
+<div class="split-eq" style="margin-top:8px;border-top:2px solid #56B4E9;padding-top:6px;font-size:13px;text-align:center;color:#56B4E9;font-weight:bold">split: ◇+×⊞●<br><small style="font-weight:normal;font-size:10px;color:#ccc">N=idle · T=close · F=fail · B=paradox</small></div>
+<div style="margin-top:6px;border-top:1px solid #666;padding-top:5px;font-size:10px;color:#999">
+<span style="color:#39FF14">●</span> G1 pass · <span style="color:#00BFFF">●</span> G2 pass · <span style="color:#FF8800">●</span> G1 only · <span style="color:#444">●</span> none</div>
+<div class="geo-box" style="margin-top:6px;border-top:2px solid #009E73;padding-top:6px;font-size:11px;color:#009E73">
+vol 𝒱 = 4π²Rr² = 32π² · √2 ≈ 1.414 chord · gear = 4:1</div></div>
+
+<div id="ucf"><button class="panel-toggle" onclick="this.parentElement.classList.toggle('collapsed')">&minus;</button>
+<h2>UCFm Constants</h2>
+<div class="section-title" style="font-size:10px;color:#F0E442;margin:4px 0 2px">Correspondence</div>
+<div class="const-row" style="display:flex;justify-content:space-between;margin:2px 0;font-size:11px"><span style="color:#aaa">½ turn (π)</span><span style="color:#fff;font-weight:bold">⊙ pinch</span></div>
+<div class="const-row" style="display:flex;justify-content:space-between;margin:2px 0;font-size:11px"><span style="color:#aaa">√3 ≈ 1.732</span><span style="color:#fff;font-weight:bold">A₂ root</span></div>
+<div class="const-row" style="display:flex;justify-content:space-between;margin:2px 0;font-size:11px"><span style="color:#aaa">4:1 bevel</span><span style="color:#fff;font-weight:bold">gear ratio</span></div>
+<div class="const-row" style="display:flex;justify-content:space-between;margin:2px 0;font-size:11px"><span style="color:#aaa">tan⁻¹(¼)≈14.036°</span><span style="color:#fff;font-weight:bold">bevel angle</span></div></div>
+
+<div id="dialect-panel">
+<label>DIALECT</label>
+<select id="dialect-sel"></select>
+</div>
+<div id="program-panel">
+<label>WORD</label>
+<select id="program-select"></select>
+</div>
+<div id="play-panel">
+<button id="btn-play" class="active">▶ Play</button>
+<button id="btn-step">Step ›</button>
+<button id="btn-reset">⟲ Reset</button>
+<label style="font-size:10px;color:#999">speed<select id="speed-sel"><option value="1">1×</option><option value="4">4×</option><option value="25">25×</option><option value="100">100×</option><option value="1000">1000×</option></select></label></div>
+
+<div id="exec"><button class="panel-toggle" onclick="this.parentElement.classList.toggle('collapsed')">&minus;</button>
+<div id="ip-line">IP · idle</div>
+<div id="ip-meta">ip:0 · tick:0 · winding:0</div>
+<div id="knot-meta">(p,q) = (1,1) · stations on knot · trail follows weave</div>
+<div id="stack-line"></div>
+<div id="arm-line" style="text-align:center;font-size:11px;color:#e8b84b;margin-top:2px">◇ arms: none</div></div>
+
+<div id="catalog"><button class="panel-toggle" onclick="this.parentElement.classList.toggle('collapsed')">&minus;</button>
+<span style="color:#CC79A7;font-weight:bold;font-size:11px">CATALOG</span>
+<input id="catalog-search" type="text" placeholder="Search ~908 entries..." style="background:#1a1a1a;color:#fff;border:1px solid #CC79A7;border-radius:5px;padding:3px 6px;font-size:11px;font-family:inherit;width:calc(100% - 60px)">
+<span id="catalog-status" style="font-size:9px;color:#888;margin-left:4px">entries</span>
+<div id="catalog-results" style="max-height:80px;overflow-y:auto;font-size:10px;color:#ccc;background:#1a1a1a;border:1px solid #555;border-radius:5px;padding:3px 6px;min-height:16px;margin-top:3px"></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){try{if(typeof THREE==='undefined')throw'no THREE';}catch(e){document.getElementById('cdn-fail').style.display='flex';}})();
+
+// ═══════════════════════════════════════════════════════════════════
+// 1. TOKEN META — 12 IMASM base tokens
+// ═══════════════════════════════════════════════════════════════════
+const TOKEN_META = {
+    "VINIT":   { "glyph": "⊢", "work": false },
+    "TANCH":   { "glyph": "⊣", "work": false },
+    "AFWD":    { "glyph": ">", "work": true  },
+    "AREV":    { "glyph": "<", "work": true  },
+    "CLINK":   { "glyph": "=", "work": true  },
+    "IMSCRIB": { "glyph": "⊙", "work": false },
+    "FSPLIT":  { "glyph": "◇", "work": false },
+    "EVALT":   { "glyph": "+", "work": true  },
+    "EVALF":   { "glyph": "×", "work": true  },
+    "FFUSE":   { "glyph": "●", "work": false },
+    "ENGAGR":  { "glyph": "⊞", "work": true  },
+    "IFIX":    { "glyph": "¬", "work": true  }
+};
+const GLYPH_TO_TOKEN = Object.fromEntries(
+    Object.entries(TOKEN_META).map(([n,m])=>[m.glyph,n])
+);
+
+// ═══════════════════════════════════════════════════════════════════
+// 2. DIALECTS — 8 canonical rulesets + KNOT_MAP (p,q)
+//    Each dialect has a (p,q) torus knot. p=toroidal wraps, q=poloidal wraps.
+// ═══════════════════════════════════════════════════════════════════
+const DIALECTS = [
+    { name:"canonical",       desc:"Standard gate thresholds",            g1p:"odot", g1m:3, g2p:"Omega", g2m:3, g3p:"Phi", g3m:3, seq:true  },
+    { name:"low_gate",        desc:"Easy thresholds (all ≥1)",            g1p:"odot", g1m:1, g2p:"Omega", g2m:1, g3p:"Phi", g3m:1, seq:true  },
+    { name:"strict_frobenius",desc:"Only full Frobenius (all ≥4)",        g1p:"odot", g1m:4, g2p:"Omega", g2m:4, g3p:"Phi", g3m:4, seq:true  },
+    { name:"inverted_gates",  desc:"Gates checked reverse order",         g1p:"Omega",g1m:3, g2p:"Phi",   g2m:3, g3p:"odot",g3m:3, seq:true  },
+    { name:"no_ordering",     desc:"All gates independent",               g1p:"odot", g1m:3, g2p:"Omega", g2m:3, g3p:"Phi", g3m:3, seq:false },
+    { name:"high_gate",       desc:"Very strict (odot≥5,Omega≥5,Phi≥4)", g1p:"odot", g1m:5, g2p:"Omega", g2m:5, g3p:"Phi", g3m:4, seq:true  },
+    { name:"winding_first",   desc:"Omega is gate 1",                     g1p:"Omega",g1m:3, g2p:"odot",  g2m:3, g3p:"Phi", g3m:3, seq:true  },
+    { name:"t_structural",    desc:"Th topology is gate 1",               g1p:"T",    g1m:4, g2p:"odot", g2m:3, g3p:"Omega",g3m:3, seq:true  }
+];
+// (p,q) torus knot per dialect — p=toroidal windings, q=poloidal windings
+// Co-prime pairs ensure a single closed curve. Non-co-prime gives multi-component links.
+const KNOT_MAP = [
+    {p:1,q:1},  // U₀ canonical: trivial knot
+    {p:1,q:2},  // U₁ low_gate: figure-8-like
+    {p:2,q:3},  // U₂ strict_frobenius: trefoil cousin
+    {p:3,q:2},  // U₃ inverted_gates: reverse trefoil
+    {p:2,q:5},  // U₄ no_ordering: complex weave
+    {p:3,q:5},  // U₅ high_gate: dense knot
+    {p:5,q:2},  // U₆ winding_first: toroidal-dominant
+    {p:1,q:3}   // U₇ t_structural: poloidal-dominant
+];
+const PRIM_NAMES = ["D","Th","R","Phi","f","K","G","Gm","odot","H","S","Omega"];
+
+// ─── Token structural tuples (numerical) per 12 primitives ───
+const TOKEN_TUPLES = {
+    "VINIT":[0,0,0,0,0,0,0,0,0,0,0,0],
+    "TANCH":[0,0,0,0,0,0,0,0,0,0,0,0],
+    "AFWD":[2,3,1,2,1,2,1,1,2,1,0,1],
+    "AREV":[2,3,1,2,1,2,1,1,2,1,0,1],
+    "CLINK":[3,4,2,3,2,3,2,2,3,2,1,2],
+    "IMSCRIB":[4,4,3,4,2,3,2,3,4,3,1,3],
+    "FSPLIT":[2,2,1,1,0,1,1,1,1,1,1,0],
+    "EVALT":[3,3,2,3,1,2,2,2,3,2,1,2],
+    "EVALF":[3,3,2,3,1,2,2,2,3,2,1,2],
+    "FFUSE":[2,2,1,1,0,1,1,1,1,1,1,0],
+    "ENGAGR":[4,4,3,4,2,4,2,3,4,3,2,3],
+    "IFIX":[1,1,0,1,0,0,0,0,0,0,0,0]
+};
+
+function evalTokenGates(tokName,dIdx){
+    const d=DIALECTS[dIdx], tup=TOKEN_TUPLES[tokName]||[0,0,0,0,0,0,0,0,0,0,0,0];
+    const pMap={D:0,Th:1,R:2,Phi:3,f:4,K:5,G:6,Gm:7,odot:8,H:9,S:10,Omega:11};
+    const v1=tup[pMap[d.g1p]]||0, v2=tup[pMap[d.g2p]]||0, v3=tup[pMap[d.g3p]]||0;
+    let g1=v1>=d.g1m;
+    let g2,g3;
+    if(d.seq){ g2=g1&&(v2>=d.g2m); g3=g2&&(v3>=d.g3m); }
+    else { g2=v2>=d.g2m; g3=v3>=d.g3m; }
+    return {g1,g2,g3, level:(g1?1:0)+(g2?1:0)+(g3?1:0), v1,v2,v3, g1p:d.g1p,g2p:d.g2p,g3p:d.g3p, g1m:d.g1m,g2m:d.g2m,g3m:d.g3m};
+}
+
+function tokenColor(tokName,dIdx){
+    if(tokName==="IMSCRIB") return {color:0xffd700,emissive:0x8a6a10,emissiveIntensity:0.35,glevel:3};
+    const g=evalTokenGates(tokName,dIdx);
+    switch(g.level){
+        case 3: return {color:0x39FF14,emissive:0x39FF14,emissiveIntensity:0.35,glevel:3};
+        case 2: return {color:0x00BFFF,emissive:0x00BFFF,emissiveIntensity:0.25,glevel:2};
+        case 1: return {color:0xFF8800,emissive:0xFF8800,emissiveIntensity:0.15,glevel:1};
+        default: return {color:0x444444,emissive:0x000000,emissiveIntensity:0,glevel:0};
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// 3. PROGRAMS — demo sequences
+// ═══════════════════════════════════════════════════════════════════
+const PROGRAMS={
+"agent_loop":["VINIT","IMSCRIB","FSPLIT","EVALT","CLINK","FFUSE","IFIX","ENGAGR","AREV","CLINK","TANCH"],
+"bootstrap_loop":["IMSCRIB","AREV","FSPLIT","AFWD","FFUSE","CLINK","IFIX","IMSCRIB"],
+"replicative_opening":["IMSCRIB","FSPLIT","FFUSE","IMSCRIB"],
+"I_Dialetheic_Bootstrap":["IMSCRIB","EVALT","FSPLIT","EVALF","FFUSE","ENGAGR","IFIX","IMSCRIB"],
+"II_Void_Genesis":["VINIT","FSPLIT","EVALT","FFUSE","EVALF","CLINK","IFIX","IMSCRIB"],
+"III_Anchor_Protocol":["TANCH","AFWD","EVALT","AREV","EVALF","CLINK","IFIX","TANCH"],
+"IV_Dual_Bootstrap":["IMSCRIB","AFWD","FFUSE","FSPLIT","AREV","CLINK","IFIX","IMSCRIB"],
+"V_Linear_Chain":["IFIX","IFIX","IFIX","IFIX","IFIX","IFIX","IFIX","IFIX"],
+"VI_Empty_Bootstrap":["VINIT","IMSCRIB","VINIT","IMSCRIB","VINIT","IMSCRIB","VINIT","IMSCRIB"],
+"VII_Parakernel":["ENGAGR","AFWD","FSPLIT","EVALT","FFUSE","EVALF","IFIX","ENGAGR"],
+"VIII_Frobenius_Kernel":["FSPLIT","FFUSE","FSPLIT","FFUSE"],
+"IX_Chiral_Pairs":["AFWD","AREV","AFWD","AREV","AFWD","AREV","AFWD","AREV"],
+"X_Truth_Machine":["IMSCRIB","FSPLIT","EVALT","IFIX","IMSCRIB","FSPLIT","EVALF","IFIX"],
+"XI_Eternal_Return":["TANCH","TANCH","TANCH","TANCH"],
+"egg_arm_N":["FSPLIT","IMSCRIB","FFUSE"],
+"egg_arm_T":["FSPLIT","EVALT","EVALF","FFUSE"],
+"egg_arm_B":["FSPLIT","EVALT","EVALF","ENGAGR","FFUSE"],
+"Verticullum":["ENGAGR","FSPLIT","EVALT","FFUSE","FSPLIT","EVALF","FFUSE","IMSCRIB","CLINK","ENGAGR","IFIX"],
+"Chimerium":["ENGAGR","FSPLIT","EVALT","FFUSE","EVALF","FSPLIT","EVALT","EVALF","FFUSE","CLINK","IMSCRIB","ENGAGR","IFIX"],
+"Apertix":["VINIT","AFWD","IMSCRIB","FSPLIT","EVALT","EVALF","FFUSE","CLINK","ENGAGR","IFIX"],
+"Praxeum":["ENGAGR","EVALT","FFUSE","EVALF","ENGAGR","IFIX"],
+"Retiarius":["FSPLIT","EVALT","AFWD","FFUSE","FSPLIT","EVALF","AREV","FFUSE","IMSCRIB","ENGAGR","IFIX"],
+"Frigorix":["VINIT","AFWD","AREV","AFWD","AREV","AFWD","EVALT","FFUSE","TANCH"],
+"Bifrons":["FSPLIT","EVALT","EVALF","FFUSE","ENGAGR","FSPLIT","EVALT","EVALF","FFUSE"],
+"Punctum":["IMSCRIB","IFIX","IMSCRIB","IFIX","IMSCRIB"],
+"Syndexios":["ENGAGR","AFWD","CLINK","AREV","ENGAGR","IFIX","IMSCRIB","CLINK"],
+"Katachthon":["VINIT","FSPLIT","AFWD","FFUSE","AREV","CLINK","ENGAGR","IFIX","TANCH"],
+"Diabaton":["ENGAGR","FSPLIT","EVALT","EVALF","FFUSE","ENGAGR","FSPLIT","EVALT","EVALF","FFUSE","CLINK","IFIX"]
+};
+const CATALOG_WORDS={"the_open_problem_is_factored_apart":["AFWD","AFWD","AREV","AREV"],"measurement_does_not_collapse":["IMSCRIB","FSPLIT","EVALT","EVALF","FFUSE","IMSCRIB"],"the_counterpart_is_the_self":["IMSCRIB","AFWD","IMSCRIB","AREV"],"all_fixed_points_are_belnap":["ENGAGR","IFIX","ENGAGR","IFIX"],"the_serpent_eats_its_tail":["IMSCRIB","FSPLIT","FFUSE","IMSCRIB","CLINK"],"two_truths_one_body":["FSPLIT","EVALT","EVALF","FFUSE","CLINK"],"the_anchor_holds_the_void":["TANCH","VINIT","TANCH"],"frobenius_closes_the_loop":["IMSCRIB","FSPLIT","FFUSE","CLINK","IFIX","IMSCRIB"],"what_is_measured_is_the_measure":["IMSCRIB","EVALT","CLINK","IMSCRIB"],"dialetheia_enters_through_the_split":["FSPLIT","EVALT","EVALF","FFUSE","ENGAGR"],"every_imscription_is_an_oracle":["IMSCRIB","CLINK","IFIX","IMSCRIB"],"the_winding_number_is_truth":["AFWD","FFUSE","CLINK","IMSCRIB"],"a_paradox_is_a_fixed_point_of_negation":["ENGAGR","IFIX","ENGAGR"],"the_bead_walks_the_knot":["FSPLIT","AFWD","EVALT","CLINK","AREV","FFUSE","IMSCRIB"],"each_gate_is_a_turn_of_the_weave":["VINIT","AFWD","CLINK","AREV","TANCH"],"seven_gates_seven_windings":["IMSCRIB","FSPLIT","EVALT","EVALF","FFUSE","ENGAGR","CLINK","IFIX","IMSCRIB"],"the_split_arms_are_the_axioms":["FSPLIT","EVALT","EVALF","FFUSE"],"the_fuse_is_the_proof":["FFUSE","CLINK","IFIX"],"every_theta_is_an_omega":["ENGAGR","CLINK","IMSCRIB"],"the_dialect_changes_the_knot":["AFWD","FSPLIT","FFUSE","AREV"],"truth_is_a_four_valued_function":["EVALT","EVALF","ENGAGR","FFUSE","CLINK"],"the_bead_does_not_forget":["IMSCRIB","AFWD","CLINK","AREV","IMSCRIB","IFIX","IMSCRIB"],"what_loops_is_the_grammar":["IMSCRIB","CLINK","IMSCRIB","CLINK","IMSCRIB"],"the_torus_is_the_type_of_types":["IMSCRIB","FSPLIT","EVALT","EVALF","FFUSE","CLINK","ENGAGR","IMSCRIB"],"the_knot_is_the_program":["AFWD","AREV","AFWD","AREV","CLINK","IMSCRIB"],"every_catalog_entry_is_a_lens":["VINIT","IMSCRIB","CLINK","ENGAGR","IFIX","TANCH"],"belnap_is_the_fiducial":["ENGAGR","EVALT","EVALF","ENGAGR"],"the_dialectic_is_the_dialect":["AFWD","AREV","FSPLIT","FFUSE","CLINK"],"we_are_the_knot_we_tie":["IMSCRIB","FSPLIT","EVALT","EVALF","FFUSE","ENGAGR","CLINK","IFIX","IMSCRIB","IMSCRIB"]};
+
+// ═══════════════════════════════════════════════════════════════════
+// 4. HORN TORUS GEOMETRY — (p,q) torus knot engine
+// ═══════════════════════════════════════════════════════════════════
+const R = 2, LR = R/2;
+const KNOT_COLORS = [0xffffff,0x56B4E9,0xE69F00,0x009E73,0xCC79A7,0xF0E442,0xD55E00,0x0072B2];
+const KNOT_COLORS_HEX = ["#ffffff","#56B4E9","#E69F00","#009E73","#CC79A7","#F0E442","#D55E00","#0072B2"];
+
+// (p,q) torus knot on a horn torus (R=r=2): 
+//   θ(t) = p·t, φ(t) = q·t
+//   x = (R + R·cos(φ))·cos(θ)
+//   y = (R + R·cos(φ))·sin(θ)
+//   z = R·sin(φ)
+function hornKnot(t, p, q) {
+    const theta = p * t;
+    const phi = q * t;
+    return new THREE.Vector3(
+        (R + R * Math.cos(phi)) * Math.cos(theta),
+        (R + R * Math.cos(phi)) * Math.sin(theta),
+        R * Math.sin(phi)
+    );
+}
+// Station i of N on the (p,q) knot
+function knotStation(i, N, p, q) {
+    return hornKnot(2 * Math.PI * i / N, p, q);
+}
+
+// ─── Scene ───
+window.scene = new THREE.Scene();
+const scene = window.scene;
+scene.background = new THREE.Color(0x000000);
+const camera = new THREE.PerspectiveCamera(42, innerWidth/innerHeight, 0.1, 120);
+camera.position.set(10.5,6.5,9.0);
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+document.body.appendChild(renderer.domElement);
+const controls = new THREE.OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true;
+controls.dampingFactor=0.06;
+controls.target.set(0,0,0);
+controls.minDistance=3;
+controls.maxDistance=20;
+
+scene.add(new THREE.AmbientLight(0xffffff,0.45));
+const L1=new THREE.DirectionalLight(0xffffff,0.9); L1.position.set(5,8,6); scene.add(L1);
+const L2=new THREE.DirectionalLight(0xffffff,0.3); L2.position.set(-5,2,-3); scene.add(L2);
+
+// ─── Torus surface (transparent, wireframe) ───
+const tGeo=new THREE.BufferGeometry();
+const rSeg=60, tSeg=140;
+const vArr=[], iArr=[];
+function tp(u,v){ return new THREE.Vector3((R+R*Math.cos(v))*Math.cos(u),(R+R*Math.cos(v))*Math.sin(u),R*Math.sin(v)); }
+for(let j=0;j<=rSeg;j++){ const v=(j/rSeg)*Math.PI*2;
+  for(let i=0;i<=tSeg;i++){ const u=(i/tSeg)*Math.PI*2, p=tp(u,v); vArr.push(p.x,p.y,p.z); }}
+for(let j=0;j<rSeg;j++){ for(let i=0;i<tSeg;i++){ const a=j*(tSeg+1)+i, b=a+tSeg+1; iArr.push(a,b,a+1,b,b+1,a+1); }}
+tGeo.setAttribute('position',new THREE.Float32BufferAttribute(vArr,3));
+tGeo.setIndex(iArr); tGeo.computeVertexNormals();
+scene.add(new THREE.Mesh(tGeo,new THREE.MeshStandardMaterial({color:0x28304f,transparent:true,opacity:0.28,metalness:0.2,roughness:0.55,side:THREE.DoubleSide,depthWrite:false})));
+scene.add(new THREE.Mesh(tGeo,new THREE.MeshBasicMaterial({color:0x5a659c,wireframe:true,transparent:true,opacity:0.10})));
+
+// 16 poloidal rings
+const ringMat=new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0.15});
+for(let i=0;i<16;i++){ const u=i/16*Math.PI*2; const pts=[];
+  for(let j=0;j<=72;j++) pts.push(tp(u,j/72*Math.PI*2));
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),ringMat)); }
+
+// ─── THE KNOTS: Draw all 8 (p,q) torus knot curves ───
+const knotLineGroups = [];
+const KNOT_SAMPLES = 600;
+for(let d=0; d<8; d++){
+    const kn = KNOT_MAP[d];
+    const pts = [];
+    for(let k=0; k<=KNOT_SAMPLES; k++){
+        pts.push(hornKnot(2*Math.PI*k/KNOT_SAMPLES, kn.p, kn.q));
+    }
+    const line = new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints(pts),
+        new THREE.LineBasicMaterial({
+            color: KNOT_COLORS[d],
+            transparent: true,
+            opacity: (d===0 ? 0.6 : 0.15),  // U₀ active initially
+            linewidth: 1
+        })
+    );
+    scene.add(line);
+    knotLineGroups.push(line);
+}
+
+// ─── Evaluator spheres (same as before) ───
+const B4_COLOR={N:0x888888,T:0x0072B2,F:0xD55E00,B:0xE69F00};
+const CEN=new THREE.Vector3(LR,0,0);
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(LR,48,32),new THREE.MeshStandardMaterial({color:0xE69F00,transparent:true,opacity:0.20,metalness:0.2,roughness:0.5,side:THREE.DoubleSide,depthWrite:false,emissive:0xE69F00,emissiveIntensity:0.10})));
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(LR,48,32),new THREE.MeshStandardMaterial({color:0x0072B2,transparent:true,opacity:0.16,metalness:0.2,roughness:0.5,side:THREE.DoubleSide,depthWrite:false})).translateX(LR));
+
+const ALPHA=[0,2*Math.PI/3,4*Math.PI/3];
+const EV=ALPHA.map((a,i)=>{ const toks=['EVALT','EVALF','ENGAGR'], glyphs=['+','x','⊞'];
+    return {tok:toks[i],glyph:glyphs[i],p:new THREE.Vector3(LR+LR*Math.cos(a),LR*Math.sin(a),0)}; });
+const GREEN=0x009E73;
+{ const vA2=EV.map(e=>e.p.clone()); const cg=new THREE.BufferGeometry().setFromPoints(vA2); cg.setIndex([0,1,2]); cg.computeVertexNormals();
+  scene.add(new THREE.Mesh(cg,new THREE.MeshStandardMaterial({color:GREEN,transparent:true,opacity:0.12,side:THREE.DoubleSide,depthWrite:false,emissive:GREEN,emissiveIntensity:0.10})));
+  for(let e=0;e<3;e++){ const a=vA2[e], b=vA2[(e+1)%3];
+    scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([a,a.clone().lerp(b,0.5),b]),48,0.03,18,false),new THREE.MeshStandardMaterial({color:GREEN,transparent:true,opacity:0.85,metalness:0.35,roughness:0.25,emissive:GREEN,emissiveIntensity:0.3}))); }
+  vA2.forEach(p=>{const m=new THREE.Mesh(new THREE.SphereGeometry(0.12,16,16),new THREE.MeshStandardMaterial({color:GREEN,emissive:GREEN,emissiveIntensity:0.5})); m.position.copy(p); scene.add(m);});
+}
+{ const p=new THREE.Vector3(2*LR,0,0); const m=new THREE.Mesh(new THREE.SphereGeometry(0.1,18,18),new THREE.MeshStandardMaterial({color:0x0072B2,metalness:0.3,roughness:0.25})); m.position.copy(p); scene.add(m); }
+{ const p=new THREE.Vector3(0,0,0); const m=new THREE.Mesh(new THREE.SphereGeometry(0.1,18,18),new THREE.MeshStandardMaterial({color:0xE69F00,metalness:0.3,roughness:0.25})); m.position.copy(p); scene.add(m); }
+
+// ─── Program group ───
+const programGroup = new THREE.Group();
+scene.add(programGroup);
+
+// ─── IP bead ───
+let ipBead = new THREE.Mesh(new THREE.SphereGeometry(0.22,24,24),
+    new THREE.MeshStandardMaterial({color:0x39FF14,emissive:0x39FF14,emissiveIntensity:0.85,metalness:0.2,roughness:0.25}));
+let ipGlow = new THREE.Mesh(new THREE.SphereGeometry(0.35,16,16),
+    new THREE.MeshBasicMaterial({color:0x39FF14,transparent:true,opacity:0.22,depthWrite:false}));
+scene.add(ipBead); scene.add(ipGlow);
+const TRAIL_N=64;
+let trailPts=Array.from({length:TRAIL_N},()=>new THREE.Vector3());
+let trailLine=new THREE.Line(new THREE.BufferGeometry().setFromPoints(trailPts),
+    new THREE.LineBasicMaterial({color:0x39FF14,transparent:true,opacity:0.55}));
+scene.add(trailLine);
+
+// ─── Split arm beads ───
+let splitBead=new THREE.Mesh(new THREE.SphereGeometry(0.15,16,16),new THREE.MeshStandardMaterial({color:0xE69F00,emissive:0xE69F00,emissiveIntensity:0.6}));
+let splitGlow=new THREE.Mesh(new THREE.SphereGeometry(0.22,12,12),new THREE.MeshBasicMaterial({color:0xE69F00,transparent:true,opacity:0.18}));
+scene.add(splitBead);scene.add(splitGlow);
+const SPLIT_TRAIL_N=24;
+let splitTrailPts=Array.from({length:SPLIT_TRAIL_N},()=>new THREE.Vector3());
+let splitTrailLine=new THREE.Line(new THREE.BufferGeometry().setFromPoints(splitTrailPts),new THREE.LineBasicMaterial({color:0xE69F00,transparent:true,opacity:0.3}));
+scene.add(splitTrailLine);
+
+// ═══════════════════════════════════════════════════════════════════
+// 5. STATE
+// ═══════════════════════════════════════════════════════════════════
+let TOKENS=[], N=0, OFF=0;
+let IMSCRIB_I=-1, FSPLIT_I=-1, FFUSE_I=-1;
+let currentDialect=0;
+let currentProgram="agent_loop";
+let ip=0, tick=0, winding=0;
+let exec={stack:[],lastFired:-1,pulse:0,history:[],ip:0};
+let stationMeshes=[], stationGlyphs=[];
+
+function setIpWorld(p){ ipBead.position.copy(p); ipGlow.position.copy(p); }
+
+function updateExecHud(){
+    if(!TOKENS.length)return;
+    const glyphs=TOKENS.map(t=>t.glyph).join(' ');
+    document.getElementById('ip-line').textContent=glyphs;
+    document.getElementById('ip-meta').textContent='ip:'+exec.ip+' · tick:'+tick+' · winding:'+winding;
+    const kn=KNOT_MAP[currentDialect];
+    document.getElementById('knot-meta').textContent='(p,q)=('+kn.p+','+kn.q+') · trail: '+TRAIL_N+' beads';
+    const stackStr=exec.stack.length?exec.stack.map(s=>'<span style="color:'+B4_COLOR[s]+'">'+s+'</span>').join(' '):'—';
+    document.getElementById('stack-line').innerHTML='B4: ['+stackStr+']';
+}
+
+function updateGatePanel(){
+    const d=DIALECTS[currentDialect], kn=KNOT_MAP[currentDialect];
+    document.getElementById('dialect-name').textContent=d.name+' (U'+currentDialect+')';
+    document.getElementById('knot-info').textContent='(p,q)=('+kn.p+','+kn.q+') · winding: '+kn.p+'/'+kn.q+' toroidal/poloidal';
+    document.getElementById('gate-ordering').textContent=d.seq?'sequential: G1 → G2 → G3':'parallel: all independent';
+    const pNames={odot:"⊙",Omega:"Ω",Phi:"Φ",T:"Þ"};
+    const g=evalTokenGates("IMSCRIB",currentDialect);
+    let html='';
+    html+='<div class="gr '+(g.g1?'pass':'fail')+'"><span class="gl">G1: '+(pNames[g.g1p]||g.g1p)+' ≥ '+g.g1m+'</span><span class="gv">'+g.v1+'/'+g.g1m+' '+(g.g1?'✓':'✗')+'</span></div>';
+    html+='<div class="gr '+(g.g2?'pass':'fail')+'"><span class="gl">G2: '+(pNames[g.g2p]||g.g2p)+' ≥ '+g.g2m+'</span><span class="gv">'+g.v2+'/'+g.g2m+' '+(g.g2?'✓':'✗')+'</span></div>';
+    html+='<div class="gr '+(g.g3?'pass':'fail')+'"><span class="gl">G3: '+(pNames[g.g3p]||g.g3p)+' ≥ '+g.g3m+'</span><span class="gv">'+g.v3+'/'+g.g3m+' '+(g.g3?'✓':'✗')+'</span></div>';
+    const level=(g.g1?1:0)+(g.g2?1:0)+(g.g3?1:0);
+    html+='<div class="sub">verdict: '+level+'/3 gates · '+d.desc+'</div>';
+    document.getElementById('gate-content').innerHTML=html;
+    document.getElementById('dialect-desc').textContent=d.desc;
+
+    // Update knot legend
+    const kl=document.getElementById('knot-legend');
+    if(kl){
+        let lhtml='';
+        for(let i=0;i<8;i++){
+            const kn2=KNOT_MAP[i], col=KNOT_COLORS_HEX[i];
+            lhtml+='<div class="knot-row'+(i===currentDialect?' active':'')+'" data-dialect="'+i+'" onclick="setDialect('+i+')" style="border-left:3px solid '+col+'">';
+            lhtml+='<span class="kp">('+kn2.p+','+kn2.q+')</span><span class="kn">'+DIALECTS[i].name+'</span></div>';
+        }
+        kl.innerHTML=lhtml;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// 6. BUILD PROGRAM — stations on the active (p,q) torus knot
+// ═══════════════════════════════════════════════════════════════════
+function rebuildProgram(key){
+    key=key||currentProgram; currentProgram=key;
+    exec.ip=0; exec.lastFired=-1; exec.pulse=0; exec.stack=[]; exec.history=[];
+
+    function _disposeDeep(obj){
+        if(obj.children) for(let i=obj.children.length-1;i>=0;i--) _disposeDeep(obj.children[i]);
+        if(obj.geometry) obj.geometry.dispose();
+        if(obj.material){ if(Array.isArray(obj.material)) obj.material.forEach(m=>m.dispose()); else obj.material.dispose(); }
+    }
+    while(programGroup.children.length>0){ const obj=programGroup.children[0]; _disposeDeep(obj); programGroup.remove(obj); }
+
+    const rawTokens=PROGRAMS[key]||PROGRAMS["agent_loop"];
+    TOKENS=rawTokens.map(name=>{ const meta=TOKEN_META[name]; return {name, glyph:meta?meta.glyph:'?', work:meta?meta.work:false}; });
+    N=TOKENS.length; if(N===0){ updateGatePanel(); return; }
+
+    IMSCRIB_I=TOKENS.findIndex(t=>t.name==="IMSCRIB");
+    FSPLIT_I=TOKENS.findIndex(t=>t.name==="FSPLIT");
+    FFUSE_I=TOKENS.findIndex(t=>t.name==="FFUSE");
+
+    const kn=KNOT_MAP[currentDialect];
+    const p=kn.p, q=kn.q;
+
+    stationMeshes=[]; stationGlyphs=[];
+
+    // ─── Draw the active (p,q) knot tube (thicker) ───
+    const totalSamples=Math.max(600, N*60);
+    const ringPts=[];
+    for(let k=0;k<totalSamples;k++){
+        ringPts.push(hornKnot(2*Math.PI*k/totalSamples, p, q));
+    }
+    const tubeCurve=new THREE.CatmullRomCurve3(ringPts, true);
+    // Active knot tube — thicker, emissive
+    const activeTube=new THREE.Mesh(
+        new THREE.TubeGeometry(tubeCurve, totalSamples, 0.04, 8, true),
+        new THREE.MeshStandardMaterial({
+            color: KNOT_COLORS[currentDialect],
+            metalness: 0.4, roughness: 0.3,
+            emissive: KNOT_COLORS[currentDialect],
+            emissiveIntensity: 0.2
+        })
+    );
+    programGroup.add(activeTube);
+
+    // ─── Build stations along the (p,q) knot ───
+    TOKENS.forEach((tok, i)=>{
+        const tParam = 2*Math.PI*i/N;
+        const pos = hornKnot(tParam, p, q);
+        const tc = tokenColor(tok.name, currentDialect);
+
+        if(tok.name==="IMSCRIB"){
+            const m=new THREE.Mesh(new THREE.SphereGeometry(0.28,32,32),
+                new THREE.MeshStandardMaterial({color:0xffd700,emissive:0x8a6a10,emissiveIntensity:0.35,metalness:0.3,roughness:0.2}));
+            m.position.copy(pos); programGroup.add(m); stationMeshes[i]=m;
+            const g=glyphMark('⊙','#ffe08a',0.65);
+            // Offset glyph slightly along knot tangent
+            const t2=2*Math.PI*((i+0.5)%N)/N;
+            const p2=hornKnot(t2,p,q);
+            const tangent=new THREE.Vector3().copy(p2).sub(pos).normalize();
+            g.position.copy(pos).add(tangent.multiplyScalar(0.7));
+            programGroup.add(g); stationGlyphs[i]=g;
+        } else {
+            const m=new THREE.Mesh(new THREE.SphereGeometry(0.14,20,20),
+                new THREE.MeshStandardMaterial({color:tc.color,metalness:0.3,roughness:0.25,emissive:tc.emissive,emissiveIntensity:tc.emissiveIntensity}));
+            m.position.copy(pos); programGroup.add(m); stationMeshes[i]=m;
+            const gcol=tc.glevel>=2?'#39FF14':(tc.glevel>=1?'#FF8800':(tok.name==="ENGAGR"?'#E69F00':(tok.work?'#56B4E9':'#aaaaaa')));
+            const g=glyphMark(tok.glyph,gcol,0.46);
+            // Offset glyph outward from knot
+            const t2=2*Math.PI*((i+0.3)%N)/N;
+            const p2=hornKnot(t2,p,q);
+            const tangent=new THREE.Vector3().copy(p2).sub(pos).normalize();
+            // Offset perpendicular: cross tangent with radial
+            const radial=new THREE.Vector3(pos.x,pos.y,0).normalize();
+            const norm=new THREE.Vector3().crossVectors(tangent,radial).normalize();
+            g.position.copy(pos).add(norm.multiplyScalar(0.45));
+            programGroup.add(g); stationGlyphs[i]=g;
+        }
+    });
+
+    // Small position markers along knot
+    for(let i=0;i<N;i++){
+        const pos=hornKnot(2*Math.PI*i/N,p,q);
+        const marker=new THREE.Mesh(new THREE.SphereGeometry(0.03,6,6),
+            new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.35}));
+        marker.position.copy(pos); programGroup.add(marker);
+    }
+
+    // Reset IP
+    const startPos=hornKnot(0,p,q);
+    for(let i=0;i<TRAIL_N;i++) trailPts[i].copy(startPos);
+    trailLine.geometry.setFromPoints(trailPts);
+    setIpWorld(startPos);
+    splitBead.visible=false; splitGlow.visible=false; splitTrailLine.visible=false;
+
+    updateGatePanel();
+    updateExecHud();
+}
+
+// ─── Fire token — B4 stack evaluation ───
+function fireToken(idx){
+    if(idx<0||idx>=N)return;
+    exec.lastFired=idx; exec.pulse=1;
+    const tok=TOKENS[idx]; exec.ip=idx;
+    const g=evalTokenGates(tok.name,currentDialect);
+    let verdict;
+    if(tok.name==="IMSCRIB") verdict='T';
+    else if(tok.name==="FSPLIT"||tok.name==="FFUSE") verdict='T';
+    else if(tok.name==="ENGAGR") verdict='B';
+    else if(tok.name==="VINIT"||tok.name==="TANCH") verdict='N';
+    else { verdict=g.level>=3?'T':(g.level>=1?'F':'N'); if(tok.work&&g.level>=1) verdict='T'; }
+    exec.stack.push(verdict);
+    updateExecHud();
+}
+
+// ─── Step IP along the (p,q) knot ───
+function stepIP(){
+    if(N===0)return;
+    fireToken(exec.ip);
+    exec.ip=(exec.ip+1)%N; tick++;
+    if(exec.ip===0) winding++;
+    const kn=KNOT_MAP[currentDialect];
+    const pos=hornKnot(2*Math.PI*exec.ip/N, kn.p, kn.q);
+    setIpWorld(pos);
+    // Update trail
+    for(let i=0;i<TRAIL_N-1;i++) trailPts[i].copy(trailPts[i+1]);
+    trailPts[TRAIL_N-1].copy(pos);
+    trailLine.geometry.setFromPoints(trailPts);
+    updateExecHud();
+}
+
+// ─── Dialect change ───
+function setDialect(idx){
+    currentDialect=Math.min(idx,DIALECTS.length-1);
+    // Update knot line opacities
+    for(let d=0;d<8;d++){
+        knotLineGroups[d].material.opacity=(d===currentDialect?0.6:0.12);
+    }
+    // Rebuild program with new knot
+    rebuildProgram(currentProgram);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// 7. GLYPH HELPER
+// ═══════════════════════════════════════════════════════════════════
+function glyphMark(c,color,sz){
+    const canvas=document.createElement('canvas'); canvas.width=64; canvas.height=64;
+    const ctx=canvas.getContext('2d');
+    ctx.clearRect(0,0,64,64);
+    ctx.font='bold 48px system-ui,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.strokeStyle='rgba(0,0,0,0.9)'; ctx.lineWidth=8; ctx.strokeText(c,32,34);
+    ctx.fillStyle=color||'#fff'; ctx.fillText(c,32,34);
+    const tex=new THREE.CanvasTexture(canvas); tex.needsUpdate=true;
+    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,depthWrite:false,transparent:true,opacity:0.9}));
+    sp.scale.set(sz,sz,1); return sp;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// 8. ANIMATE LOOP — IP bead walks the (p,q) knot
+// ═══════════════════════════════════════════════════════════════════
+let autoStepInterval=null;
+function startAutoStep(ms){ stopAutoStep(); autoStepInterval=setInterval(()=>{
+    if(N>0&&document.getElementById('btn-play').textContent==='⏸') stepIP();
+},ms||600);}
+function stopAutoStep(){ if(autoStepInterval){clearInterval(autoStepInterval);autoStepInterval=null;} }
+function togglePlay(){
+    const btn=document.getElementById('btn-play');
+    if(btn.textContent==='⏸'){btn.textContent='▶';stopAutoStep();}
+    else{btn.textContent='⏸';startAutoStep(600);}
+}
+
+let frame=0;
+function animate(){
+    requestAnimationFrame(animate);
+    frame++; controls.update();
+
+    // IP bead animation — interpolate between stations along the knot curve
+    if(N>0&&ipBead.visible){
+        const kn=KNOT_MAP[currentDialect];
+        const prevIp=(exec.ip===0&&tick>0)?(N-1):(exec.ip>0?exec.ip-1:0);
+        const phase=(frame%60)/60;
+        const t0=2*Math.PI*prevIp/N, t1=2*Math.PI*exec.ip/N;
+        const t= t0 + (t1-t0+ (t1<t0?2*Math.PI:0))% (2*Math.PI)*phase;
+        const pos=hornKnot(t, kn.p, kn.q);
+        ipBead.position.copy(pos); ipGlow.position.copy(pos);
+        const pulse=0.15+0.1*Math.sin(frame*0.08);
+        ipGlow.material.opacity=pulse;
+    }
+
+    // Animate split arms
+    // (simple rotation animation if split exists)
+    renderer.render(scene,camera);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// 9. EVENT HANDLERS
+// ═══════════════════════════════════════════════════════════════════
+(function setupUI(){
+    const dsel=document.getElementById('dialect-sel');
+    if(dsel){
+        DIALECTS.forEach((d,i)=>{ const opt=document.createElement('option'); opt.value=i; opt.textContent=d.name+' (U'+i+') · ('+KNOT_MAP[i].p+','+KNOT_MAP[i].q+')'; dsel.appendChild(opt); });
+        dsel.value=currentDialect;
+        dsel.addEventListener('change',e=>{ setDialect(parseInt(e.target.value)); });
+    }
+
+    const psel=document.getElementById('program-select');
+    if(psel){
+        Object.keys(PROGRAMS).forEach(key=>{ const opt=document.createElement('option'); opt.value=key; opt.textContent=key; psel.appendChild(opt); });
+        psel.value=currentProgram;
+        psel.addEventListener('change',e=>{ rebuildProgram(e.target.value); });
+    }
+
+    const stepBtn=document.getElementById('btn-step');
+    if(stepBtn) stepBtn.addEventListener('click',()=>stepIP());
+
+    const playBtn=document.getElementById('btn-play');
+    if(playBtn) playBtn.addEventListener('click',togglePlay);
+
+    const resetBtn=document.getElementById('btn-reset');
+    if(resetBtn) resetBtn.addEventListener('click',()=>{
+        exec.ip=0; exec.lastFired=-1; exec.stack=[]; tick=0; winding=0;
+        rebuildProgram(currentProgram);
+    });
+
+    // Speed selector
+    const speedSel=document.getElementById('speed-sel');
+    if(speedSel) speedSel.addEventListener('change',e=>{
+        const mult=parseInt(e.target.value);
+        stopAutoStep();
+        startAutoStep(600/Math.max(1,mult));
+    });
+
+    // Catalog search
+    const catInput=document.getElementById('catalog-search');
+    const catResults=document.getElementById('catalog-results');
+    if(catInput&&catResults){
+        catInput.addEventListener('input',e=>{
+            const q=e.target.value.toLowerCase().trim();
+            if(q.length<2){ catResults.innerHTML=''; return; }
+            const matches=Object.keys(CATALOG_WORDS).filter(k=>k.toLowerCase().includes(q)).slice(0,30);
+            catResults.innerHTML=matches.map(k=>'<div class="cat-entry" data-key="'+k+'" style="cursor:pointer;padding:2px 4px;border-bottom:1px solid #333">'+k+'<span style="float:right;opacity:0.5;font-family:monospace;font-size:9px">'+CATALOG_WORDS[k].join(' ')+'</span></div>').join('');
+            catResults.querySelectorAll('.cat-entry').forEach(el=>{
+                el.addEventListener('click',()=>{
+                    rebuildProgram('catalog: '+el.dataset.key);
+                });
+            });
+        });
+    }
+
+    window.addEventListener('resize',()=>{
+        camera.aspect=innerWidth/innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(innerWidth,innerHeight);
+    });
+})();
+
+// ═══════════════════════════════════════════════════════════════════
+// 10. INIT
+// ═══════════════════════════════════════════════════════════════════
+// Build knot legend
+const kl=document.getElementById('knot-legend');
+if(kl){
+    let lhtml='';
+    for(let i=0;i<8;i++){
+        const kn=KNOT_MAP[i], col=KNOT_COLORS_HEX[i];
+        lhtml+='<div class="knot-row'+(i===0?' active':'')+'" data-dialect="'+i+'" style="border-left:3px solid '+col+'">';
+        lhtml+='<span class="kp">('+kn.p+','+kn.q+')</span><span class="kn">'+DIALECTS[i].name+'</span></div>';
+    }
+    kl.innerHTML=lhtml;
+    // Click handlers
+    kl.querySelectorAll('.knot-row').forEach(el=>{
+        el.addEventListener('click',()=>{ setDialect(parseInt(el.dataset.dialect)); });
+    });
+}
+
+rebuildProgram(currentProgram);
+startAutoStep(600);
+animate();
+
+</script>
+</body>
+</html>

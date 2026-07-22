@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dialect CFG Engine</title><style>
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b0b12;color:#f0ead8;font-family:'Courier New',monospace;overflow-x:hidden}
+#layout{display:grid;grid-template-columns:340px 1fr;height:100vh}
+#sidebar{background:#12101e;border-right:1px solid #2a2740;padding:16px;overflow-y:auto}
+#main{padding:20px;overflow-y:auto}
+h1{color:#e8b84b;font-size:18px;margin-bottom:2px}
+h2{color:#c8b8e0;font-size:14px;margin:12px 0 6px;border-bottom:1px solid #2a2740;padding-bottom:4px}
+select{width:100%;background:#1e1c2e;color:#f0ead8;border:1px solid #3a3550;border-radius:4px;padding:6px 8px;font-family:'Courier New',monospace;font-size:12px;margin-bottom:6px}
+select option{background:#1e1c2e}
+textarea{width:100%;background:#1e1c2e;color:#f0ead8;border:1px solid #3a3550;border-radius:4px;padding:6px 8px;font-family:'Courier New',monospace;font-size:11px;height:60px;margin:4px 0}
+.btn{background:#2a2740;color:#f0ead8;border:1px solid #5a659c;border-radius:4px;padding:5px 12px;cursor:pointer;font-size:11px;margin:2px}
+.btn:hover{background:#3a3550;border-color:#a84bb8}
+.tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;margin:2px;font-weight:bold}
+.tag-pass{background:#1a3a1a;color:#6f6;border:1px solid #2a5a2a}
+.tag-fail{background:#3a1a1a;color:#f66;border:1px solid #5a2a2a}
+.tag-par{background:#2a1a3a;color:#a8f;border:1px solid #3a2a5a}
+.tag-seq{background:#1a2a3a;color:#6af;border:1px solid #2a3a5a}
+#ruleset-box{background:#1a1828;border:1px solid #2a2740;border-radius:6px;padding:10px;margin:10px 0;font-size:11px;line-height:1.6}
+#ruleset-box .gr{display:flex;gap:6px;margin:2px 0}
+#ruleset-box .gl{color:#8a84b0;width:24px}
+#ruleset-box .gv{color:#f0ead8}
+#rslt-box{background:#1a1828;border:1px solid #2a2740;border-radius:6px;padding:10px;margin:10px 0;font-size:11px}
+#cfg-box{background:#1a1828;border:1px solid #2a2740;border-radius:6px;padding:10px;margin:10px 0;font-size:11px;line-height:1.6}
+#cfg-view{width:100%;height:480px;background:#0e0c18;border:1px solid #2a2740;border-radius:6px;position:relative;overflow:hidden}
+#cfg-view svg{width:100%;height:100%}
+.edge{stroke:#3a3550;stroke-width:1.5;fill:none}
+.edge.pass{stroke:#4a8}
+.edge.fail{stroke:#844;stroke-dasharray:4,3}
+.edge.back{stroke:#a84bb8;stroke-dasharray:2,2}
+text{font-family:'Courier New',monospace;font-size:8px;fill:#f0ead8;pointer-events:none}
+#legend{display:flex;gap:14px;margin:6px 0;font-size:10px;flex-wrap:wrap}
+#legend span{display:flex;align-items:center;gap:4px}
+.ld{width:10px;height:10px;border-radius:50%;display:inline-block}
+#tip{position:absolute;display:none;pointer-events:none;background:rgba(11,11,18,0.96);border:1px solid #5a659c;border-radius:6px;padding:8px 12px;color:#f0ead8;font-size:11px;max-width:280px;z-index:100;line-height:1.5}
+#stat-bar{display:flex;gap:12px;margin:6px 0;font-size:11px;color:#8a84b0;flex-wrap:wrap}
+
+</style></head><body>
+<div id="tip"></div><div id="layout">
+<div id="sidebar">
+<h1>&#x2299; Dialect CFG</h1>
+<div style="font-size:10px;color:#8a84b0;margin-bottom:10px">88 universes &middot; IMASM grammar</div>
+<h2>1. Select Universe</h2>
+<select id="dialectSel" onchange="updateDialect()">
+<option value="0">canonical (U_0)</option>
+<option value="1">low_gate (U_1)</option>
+<option value="2">strict_frobenius (U_2)</option>
+<option value="3">inverted_gates (U_3)</option>
+<option value="4">no_ordering (U_4)</option>
+<option value="5">high_gate (U_5)</option>
+<option value="6">winding_first (U_6)</option>
+<option value="7">t_structural (U_7)</option>
+<option value="8">chirality_first (U_8)</option>
+<option value="9">topology_universe (U_9)</option>
+<option value="10">scope_universe (U_10)</option>
+<option value="11">dimensional_gate (U_11)</option>
+<option value="12">kinetics_trap (U_12)</option>
+<option value="13">triple_criticality (U_13)</option>
+<option value="14">t_hybrid (U_14)</option>
+<option value="15">broadcast_universe (U_15)</option>
+<option value="16">t_inverted (U_16)</option>
+<option value="17">single_gate (U_17)</option>
+<option value="18">fidelity_universe (U_18)</option>
+<option value="19">stoichiometry_universe (U_19)</option>
+<option value="20">absorption_democracy (U_20)</option>
+<option value="21">absorption_monarchy (U_21)</option>
+<option value="22">absorption_inverted (U_22)</option>
+<option value="23">absorption_tensor_only (U_23)</option>
+<option value="24">absorption_chirality_first (U_24)</option>
+<option value="25">absorption_scope_empire (U_25)</option>
+<option value="26">absorption_topology_seal (U_26)</option>
+<option value="27">predator_universe (U_27)</option>
+<option value="28">prey_universe (U_28)</option>
+<option value="29">coupling_first (U_29)</option>
+<option value="30">coupling_maximal (U_30)</option>
+<option value="31">chirality_second (U_31)</option>
+<option value="32">dimensional_second (U_32)</option>
+<option value="33">topology_second (U_33)</option>
+<option value="34">fidelity_second (U_34)</option>
+<option value="35">scope_second (U_35)</option>
+<option value="36">composition_second (U_36)</option>
+<option value="37">winding_second (U_37)</option>
+<option value="38">kinetics_second (U_38)</option>
+<option value="39">chirality_third (U_39)</option>
+<option value="40">dimensional_third (U_40)</option>
+<option value="41">topology_third (U_41)</option>
+<option value="42">fidelity_third (U_42)</option>
+<option value="43">scope_third (U_43)</option>
+<option value="44">composition_third (U_44)</option>
+<option value="45">coupling_third (U_45)</option>
+<option value="46">kinetics_third (U_46)</option>
+<option value="47">parallel_canonical (U_47)</option>
+<option value="48">parallel_low (U_48)</option>
+<option value="49">parallel_high (U_49)</option>
+<option value="50">parallel_chirality (U_50)</option>
+<option value="51">parallel_topology (U_51)</option>
+<option value="52">parallel_scope (U_52)</option>
+<option value="53">parallel_broadcast (U_53)</option>
+<option value="54">parallel_dimensional (U_54)</option>
+<option value="55">parallel_kinetics (U_55)</option>
+<option value="56">triple_parity (U_56)</option>
+<option value="57">triple_topology (U_57)</option>
+<option value="58">triple_coupling (U_58)</option>
+<option value="59">triple_chirality (U_59)</option>
+<option value="60">triple_winding (U_60)</option>
+<option value="61">ordinal4_parity (U_61)</option>
+<option value="62">ordinal4_winding (U_62)</option>
+<option value="63">ordinal_swap (U_63)</option>
+<option value="64">ordinal_invert (U_64)</option>
+<option value="65">t_ceiling_topology (U_65)</option>
+<option value="66">t_ceiling_dimensional (U_66)</option>
+<option value="67">absorb_ep (U_67)</option>
+<option value="68">absorb_sub (U_68)</option>
+<option value="69">absorb_dual (U_69)</option>
+<option value="70">t_subset_th_sigma (U_70)</option>
+<option value="71">t_subset_th_omega (U_71)</option>
+<option value="72">t_subset_d_sigma (U_72)</option>
+<option value="73">mixed_gamma_th (U_73)</option>
+<option value="74">mixed_fidelity_coupling (U_74)</option>
+<option value="75">mixed_composition_kinetics (U_75)</option>
+<option value="76">g4_quad (U_76)</option>
+<option value="77">only_parity (U_77)</option>
+<option value="78">only_winding (U_78)</option>
+<option value="79">only_odot (U_79)</option>
+<option value="80">empty_gate (U_80)</option>
+<option value="81">dense_gates (U_81)</option>
+<option value="82">chirality_winding (U_82)</option>
+<option value="83">composition_scope (U_83)</option>
+<option value="84">fidelity_chirality (U_84)</option>
+<option value="85">t_broadcast (U_85)</option>
+<option value="86">absorb_broadcast (U_86)</option>
+<option value="87">the_all (U_87)</option>
+</select>
+<div id="ruleset-box">Select a universe to see its ruleset</div>
+<h2>2. Select IMASM Word</h2>
+<select id="wordSel" onchange="updateWord()">
+<option value="agent_loop">agent_loop (kernel)</option>
+<option value="bootstrap_loop">bootstrap_loop</option>
+<option value="I_Dialetheic_Bootstrap">I_Dialetheic_Bootstrap</option>
+<option value="II_Void_Genesis">II_Void_Genesis</option>
+<option value="III_Anchor_Protocol">III_Anchor_Protocol</option>
+<option value="IV_Dual_Bootstrap">IV_Dual_Bootstrap</option>
+<option value="V_Linear_Chain">V_Linear_Chain</option>
+<option value="VI_Empty_Bootstrap">VI_Empty_Bootstrap</option>
+<option value="VII_Parakernel">VII_Parakernel</option>
+<option value="VIII_Frobenius_Kernel">VIII_Frobenius_Kernel</option>
+<option value="IX_Chiral_Pairs">IX_Chiral_Pairs</option>
+<option value="X_Truth_Machine">X_Truth_Machine</option>
+<option value="XI_Eternal_Return">XI_Eternal_Return</option>
+<option value="XII_ROM_Burn">XII_ROM_Burn</option>
+<option value="agent_loop">agent_loop</option>
+<option value="bootstrap_loop">bootstrap_loop</option>
+<option value="custom">&mdash; custom &mdash;</option>
+</select>
+<textarea id="customWord" placeholder="VINIT IMSCRIB FSPLIT ..." oninput="onCustom()"></textarea>
+<button class="btn" onclick="evaluate()">&#x25b6; Evaluate</button>
+<h2>3. Gate Results</h2>
+<div id="rslt-box">Run evaluation</div>
+</div>
+<div id="main">
+<h1>CFG: Token Grammar &times; Dialect Ruleset</h1>
+<div id="stat-bar">Select universe + IMASM word, then Evaluate</div>
+<div id="legend">
+<span><span class="ld" style="background:#6af"></span>LOGICAL</span>
+<span><span class="ld" style="background:#a84bb8"></span>FROBENIUS</span>
+<span><span class="ld" style="background:#e8b84b"></span>DIALETHEIA</span>
+<span><span class="ld" style="background:#6f6"></span>LINEAR</span>
+<span><span style="color:#4a8">&mdash;</span> gate passes</span>
+<span><span style="color:#844">- -</span> gate fails</span>
+<span><span style="color:#a84bb8">..</span> cyclic wrap</span>
+</div>
+<div id="cfg-view"><svg id="cfgSvg"></svg></div>
+<h2>Grammar Details</h2>
+<div id="cfg-box">Run evaluation</div>
+</div></div>
+<script>
+// GATE_MAP: gate definitions for all 88 dialects
+const GATE_MAP = {"canonical": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "low_gate": {"g1_p": "Phi", "g1_m": 3.0, "g2_p": "odot", "g2_m": 1.0, "g3_p": "Omega", "g3_m": 3.0}, "strict_frobenius": {"g1_p": "f", "g1_m": 3.0, "g2_p": "Phi", "g2_m": 5.0, "g3_p": "Omega", "g3_m": 3.0}, "inverted_gates": {"g1_p": "odot", "g1_m": 2.0, "g2_p": "Phi", "g2_m": 5.0, "g3_p": "Omega", "g3_m": 3.0}, "no_ordering": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "high_gate": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.33, "g3_p": "Omega", "g3_m": 4.0}, "winding_first": {"g1_p": "Omega", "g1_m": 3.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Phi", "g3_m": 5.0}, "t_structural": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "chirality_first": {"g1_p": "H", "g1_m": 3.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "topology_universe": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 3.0, "g3_p": "Omega", "g3_m": 4.0}, "scope_universe": {"g1_p": "Phi", "g1_m": 3.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "dimensional_gate": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "kinetics_trap": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "K", "g3_m": 3.0}, "triple_criticality": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "t_hybrid": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "broadcast_universe": {"g1_p": "Phi", "g1_m": 3.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "t_inverted": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "single_gate": {"g1_p": "Phi", "g1_m": 3.0, "g2_p": "odot", "g2_m": 1.0, "g3_p": "Omega", "g3_m": 2.0}, "fidelity_universe": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "stoichiometry_universe": {"g1_p": "Sigma", "g1_m": 3.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "absorption_democracy": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "absorption_monarchy": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "absorption_inverted": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "absorption_tensor_only": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "absorption_chirality_first": {"g1_p": "H", "g1_m": 3.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "absorption_scope_empire": {"g1_p": "Phi", "g1_m": 3.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "absorption_topology_seal": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "predator_universe": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "prey_universe": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "coupling_first": {"g1_p": "R", "g1_m": 3.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "coupling_maximal": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "chirality_second": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 3.0, "g3_p": "Omega", "g3_m": 4.0}, "dimensional_second": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "topology_second": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "fidelity_second": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "scope_second": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "composition_second": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "winding_second": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "kinetics_second": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "K", "g3_m": 3.0}, "chirality_third": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "dimensional_third": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "topology_third": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "fidelity_third": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "scope_third": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "composition_third": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "coupling_third": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "kinetics_third": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "K", "g3_m": 3.0}, "parallel_canonical": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "parallel_low": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "parallel_high": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "parallel_chirality": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "parallel_topology": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "parallel_scope": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "parallel_broadcast": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "parallel_dimensional": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "parallel_kinetics": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "K", "g3_m": 3.0}, "triple_parity": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "triple_topology": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "triple_coupling": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "triple_chirality": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "triple_winding": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "ordinal4_parity": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "ordinal4_winding": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "ordinal_swap": {"g1_p": "Omega", "g1_m": 3.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Phi", "g3_m": 4.0}, "ordinal_invert": {"g1_p": "Sigma", "g1_m": 3.0, "g2_p": "Phi", "g2_m": 5.0, "g3_p": "odot", "g3_m": 2.0}, "t_ceiling_topology": {"g1_p": "Th", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Phi", "g3_m": 5.0}, "t_ceiling_dimensional": {"g1_p": "D", "g1_m": 3.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Phi", "g3_m": 5.0}, "absorb_ep": {"g1_p": "odot", "g1_m": 2.0, "g2_p": "Phi", "g2_m": 4.0, "g3_p": "Omega", "g3_m": 3.0}, "absorb_sub": {"g1_p": "odot", "g1_m": 2.0, "g2_p": "Phi", "g2_m": 4.0, "g3_p": "Omega", "g3_m": 3.0}, "absorb_dual": {"g1_p": "odot", "g1_m": 2.0, "g2_p": "Phi", "g2_m": 4.0, "g3_p": "Omega", "g3_m": 3.0}, "t_subset_th_sigma": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "t_subset_th_omega": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "t_subset_d_sigma": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "mixed_gamma_th": {"g1_p": "G", "g1_m": 3.0, "g2_p": "Th", "g2_m": 5.0, "g3_p": "odot", "g3_m": 2.0}, "mixed_fidelity_coupling": {"g1_p": "G", "g1_m": 3.0, "g2_p": "Th", "g2_m": 5.0, "g3_p": "odot", "g3_m": 2.0}, "mixed_composition_kinetics": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "K", "g3_m": 3.0}, "g4_quad": {"g1_p": "G", "g1_m": 3.0, "g2_p": "Phi", "g2_m": 5.0, "g3_p": "odot", "g3_m": 2.0}, "only_parity": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "only_winding": {"g1_p": "Omega", "g1_m": 3.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Phi", "g3_m": 5.0}, "only_odot": {"g1_p": "odot", "g1_m": 2.0, "g2_p": "Phi", "g2_m": 5.0, "g3_p": "Omega", "g3_m": 3.0}, "empty_gate": {"g1_p": "Phi", "g1_m": 0.0, "g2_p": "odot", "g2_m": 0.0, "g3_p": "Omega", "g3_m": 0.0}, "dense_gates": {"g1_p": "Phi", "g1_m": 5.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "chirality_winding": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "composition_scope": {"g1_p": "Phi", "g1_m": 3.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "fidelity_chirality": {"g1_p": "Phi", "g1_m": 3.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "t_broadcast": {"g1_p": "Phi", "g1_m": 4.0, "g2_p": "odot", "g2_m": 2.0, "g3_p": "Omega", "g3_m": 3.0}, "absorb_broadcast": {"g1_p": "odot", "g1_m": 2.0, "g2_p": "Phi", "g2_m": 4.0, "g3_p": "Omega", "g3_m": 3.0}, "the_all": {"g1_p": "odot", "g1_m": 2.0, "g2_p": "Phi", "g2_m": 5.0, "g3_p": "Omega", "g3_m": 3.0}};
+
+const DATA = [{"i": 0, "name": "canonical", "phase": 0, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Our dialect: Frobenius then self-modeling then winding", "x": 0.4679, "y": 0.0, "z": -1.2856, "theta": 0.0, "phi": 3.8397}, {"i": 1, "name": "low_gate", "phase": 0, "strict": 7.0, "tcnt": 5, "seq": 1, "desc": "Lowered thresholds: directional parity suffices", "x": 0.0303, "y": 0.0022, "z": -0.3473, "theta": 0.0714, "phi": 3.3161}, {"i": 2, "name": "strict_frobenius", "phase": 0, "strict": 11.0, "tcnt": 5, "seq": 1, "desc": "Frobenius gated by quantum fidelity", "x": 0.7072, "y": 0.1017, "z": -1.5321, "theta": 0.1428, "phi": 4.0143}, {"i": 3, "name": "inverted_gates", "phase": 0, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Self-modeling precedes Frobenius", "x": 0.4572, "y": 0.0995, "z": -1.2856, "theta": 0.2142, "phi": 3.8397}, {"i": 4, "name": "no_ordering", "phase": 0, "strict": 10.0, "tcnt": 5, "seq": 0, "desc": "All three gates fully independent", "x": 0.449, "y": 0.1318, "z": -1.2856, "theta": 0.2856, "phi": 3.8397}, {"i": 5, "name": "high_gate", "phase": 0, "strict": 11.33, "tcnt": 5, "seq": 1, "desc": "Strictest: max winding, full self-model, parity-perfect", "x": 0.754, "y": 0.2812, "z": -1.6036, "theta": 0.357, "phi": 4.0719}, {"i": 6, "name": "winding_first", "phase": 0, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Topological order: winding first", "x": 0.4256, "y": 0.1944, "z": -1.2856, "theta": 0.4284, "phi": 3.8397}, {"i": 7, "name": "t_structural", "phase": 0, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Time as geometry: T from structural primitives", "x": 0.4107, "y": 0.2242, "z": -1.2856, "theta": 0.4998, "phi": 3.8397}, {"i": 8, "name": "chirality_first", "phase": 1, "strict": 8.0, "tcnt": 5, "seq": 1, "desc": "Memory before closure: G1=H>=2-step", "x": 0.1015, "y": 0.0652, "z": -0.684, "theta": 0.5712, "phi": 3.4907}, {"i": 9, "name": "topology_universe", "phase": 1, "strict": 11.0, "tcnt": 5, "seq": 1, "desc": "Connectivity is the fundamental gate: G1=Th>=odot", "x": 0.5719, "y": 0.4281, "z": -1.5321, "theta": 0.6426, "phi": 4.0143}, {"i": 10, "name": "scope_universe", "phase": 1, "strict": 8.0, "tcnt": 5, "seq": 1, "desc": "Universality first: G1=G>=aleph", "x": 0.0912, "y": 0.079, "z": -0.684, "theta": 0.714, "phi": 3.4907}, {"i": 11, "name": "dimensional_gate", "phase": 1, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "State-space is first gate: G1=D>=infty", "x": 0.3309, "y": 0.3309, "z": -1.2856, "theta": 0.7854, "phi": 3.8397}, {"i": 12, "name": "kinetics_trap", "phase": 1, "strict": 8.0, "tcnt": 5, "seq": 1, "desc": "Slowness is a structural requirement", "x": 0.079, "y": 0.0912, "z": -0.684, "theta": 0.8568, "phi": 3.4907}, {"i": 13, "name": "triple_criticality", "phase": 1, "strict": 6.0, "tcnt": 5, "seq": 1, "desc": "Three rungs of odot criticality", "x": 0.0, "y": 0.0, "z": 0.0, "theta": 0.9282, "phi": 3.1416}, {"i": 14, "name": "t_hybrid", "phase": 1, "strict": 10.0, "tcnt": 8, "seq": 1, "desc": "T from 8 primitives: dynamics + geometry", "x": 0.253, "y": 0.3936, "z": -1.2856, "theta": 0.9996, "phi": 3.8397}, {"i": 15, "name": "broadcast_universe", "phase": 1, "strict": 8.0, "tcnt": 5, "seq": 1, "desc": "G1=G>=seq (sequential composition)", "x": 0.0578, "y": 0.1059, "z": -0.684, "theta": 1.071, "phi": 3.4907}, {"i": 16, "name": "t_inverted", "phase": 1, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "T from structural (non-dynamic) primitives", "x": 0.1944, "y": 0.4256, "z": -1.2856, "theta": 1.1424, "phi": 3.8397}, {"i": 17, "name": "single_gate", "phase": 1, "strict": 7.0, "tcnt": 5, "seq": 1, "desc": "Only G1 matters; G2/G3 trivial", "x": 0.0106, "y": 0.0285, "z": -0.3473, "theta": 1.2138, "phi": 3.3161}, {"i": 18, "name": "fidelity_universe", "phase": 1, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Quantum coherence is fundamental gate", "x": 0.1318, "y": 0.449, "z": -1.2856, "theta": 1.2852, "phi": 3.8397}, {"i": 19, "name": "stoichiometry_universe", "phase": 1, "strict": 8.0, "tcnt": 5, "seq": 1, "desc": "Heterogeneity is the first gate", "x": 0.0256, "y": 0.1179, "z": -0.684, "theta": 1.3566, "phi": 3.4907}, {"i": 20, "name": "absorption_democracy", "phase": 1, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "No absorptions -- pure lattice ops", "x": 0.0666, "y": 0.4631, "z": -1.2856, "theta": 1.428, "phi": 3.8397}, {"i": 21, "name": "absorption_monarchy", "phase": 1, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "odot, Sigma, Phi, Omega all absorb", "x": 0.0334, "y": 0.4667, "z": -1.2856, "theta": 1.4994, "phi": 3.8397}, {"i": 22, "name": "absorption_inverted", "phase": 1, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Trivial values absorb; complexity fragile", "x": 0.0, "y": 0.4679, "z": -1.2856, "theta": 1.5708, "phi": 3.8397}, {"i": 23, "name": "absorption_tensor_only", "phase": 1, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Absorption only under tensor", "x": -0.0334, "y": 0.4667, "z": -1.2856, "theta": 1.6422, "phi": 3.8397}, {"i": 24, "name": "absorption_chirality_first", "phase": 1, "strict": 8.0, "tcnt": 5, "seq": 1, "desc": "H absorbs; memory is dominant", "x": -0.0172, "y": 0.1194, "z": -0.684, "theta": 1.7136, "phi": 3.4907}, {"i": 25, "name": "absorption_scope_empire", "phase": 1, "strict": 8.0, "tcnt": 5, "seq": 1, "desc": "G absorbs; universal swallows particular", "x": -0.0256, "y": 0.1179, "z": -0.684, "theta": 1.785, "phi": 3.4907}, {"i": 26, "name": "absorption_topology_seal", "phase": 1, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Th absorbs; topology is destiny", "x": -0.1318, "y": 0.449, "z": -1.2856, "theta": 1.8564, "phi": 3.8397}, {"i": 27, "name": "predator_universe", "phase": 1, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Phi absorbs left only -- agency", "x": -0.1635, "y": 0.4384, "z": -1.2856, "theta": 1.9278, "phi": 3.8397}, {"i": 28, "name": "prey_universe", "phase": 1, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Phi absorbs right only -- passivity", "x": -0.1944, "y": 0.4256, "z": -1.2856, "theta": 1.9992, "phi": 3.8397}, {"i": 29, "name": "coupling_first", "phase": 2, "strict": 8.0, "tcnt": 5, "seq": 1, "desc": "Relation before closure: G1=R>=adjoint", "x": -0.0578, "y": 0.1059, "z": -0.684, "theta": 2.0706, "phi": 3.4907}, {"i": 30, "name": "coupling_maximal", "phase": 2, "strict": 9.0, "tcnt": 5, "seq": 1, "desc": "Only bilateral coupling suffices", "x": -0.1449, "y": 0.2254, "z": -1.0, "theta": 2.142, "phi": 3.6652}, {"i": 31, "name": "chirality_second", "phase": 2, "strict": 11.0, "tcnt": 5, "seq": 1, "desc": "After Frobenius you must remember", "x": -0.4281, "y": 0.5719, "z": -1.5321, "theta": 2.2134, "phi": 4.0143}, {"i": 32, "name": "dimensional_second", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "After Frobenius: infinite canvas", "x": -0.3064, "y": 0.3536, "z": -1.2856, "theta": 2.2848, "phi": 3.8397}, {"i": 33, "name": "topology_second", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "After Frobenius: topology determines trace", "x": -0.3309, "y": 0.3309, "z": -1.2856, "theta": 2.3562, "phi": 3.8397}, {"i": 34, "name": "fidelity_second", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "After Frobenius: only quantum traces", "x": -0.3536, "y": 0.3064, "z": -1.2856, "theta": 2.4276, "phi": 3.8397}, {"i": 35, "name": "scope_second", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "After Frobenius: universal scope", "x": -0.3746, "y": 0.2804, "z": -1.2856, "theta": 2.499, "phi": 3.8397}, {"i": 36, "name": "composition_second", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "After Frobenius: sequential composition", "x": -0.3936, "y": 0.253, "z": -1.2856, "theta": 2.5704, "phi": 3.8397}, {"i": 37, "name": "winding_second", "phase": 2, "strict": 9.0, "tcnt": 5, "seq": 1, "desc": "After Frobenius: topological sealing", "x": -0.2352, "y": 0.1284, "z": -1.0, "theta": 2.6418, "phi": 3.6652}, {"i": 38, "name": "kinetics_second", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "After Frobenius: slow kinetics", "x": -0.4256, "y": 0.1944, "z": -1.2856, "theta": 2.7132, "phi": 3.8397}, {"i": 39, "name": "chirality_third", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Eternal memory as terminal seal", "x": -0.4384, "y": 0.1635, "z": -1.2856, "theta": 2.7846, "phi": 3.8397}, {"i": 40, "name": "dimensional_third", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Holographic state-space as terminal seal", "x": -0.449, "y": 0.1318, "z": -1.2856, "theta": 2.856, "phi": 3.8397}, {"i": 41, "name": "topology_third", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Box-product topology as terminal seal", "x": -0.4572, "y": 0.0995, "z": -1.2856, "theta": 2.9274, "phi": 3.8397}, {"i": 42, "name": "fidelity_third", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Quantum coherence as terminal seal", "x": -0.4631, "y": 0.0666, "z": -1.2856, "theta": 2.9988, "phi": 3.8397}, {"i": 43, "name": "scope_third", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Universal scope as terminal seal", "x": -0.4667, "y": 0.0334, "z": -1.2856, "theta": 3.0702, "phi": 3.8397}, {"i": 44, "name": "composition_third", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Broadcast composition as terminal seal", "x": -0.4679, "y": 0.0, "z": -1.2856, "theta": 3.1416, "phi": 3.8397}, {"i": 45, "name": "coupling_third", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Bilateral coupling as terminal seal", "x": -0.4667, "y": -0.0334, "z": -1.2856, "theta": 3.213, "phi": 3.8397}, {"i": 46, "name": "kinetics_third", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Slow or trapped kinetics as terminal seal", "x": -0.4631, "y": -0.0666, "z": -1.2856, "theta": 3.2844, "phi": 3.8397}, {"i": 47, "name": "parallel_canonical", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 0, "desc": "Canonical gates in parallel: all independent", "x": -0.4572, "y": -0.0995, "z": -1.2856, "theta": 3.3558, "phi": 3.8397}, {"i": 48, "name": "parallel_low", "phase": 2, "strict": 7.0, "tcnt": 5, "seq": 0, "desc": "Low gates parallel: easiest O_inf access", "x": -0.0292, "y": -0.0086, "z": -0.3473, "theta": 3.4272, "phi": 3.3161}, {"i": 49, "name": "parallel_high", "phase": 2, "strict": 11.33, "tcnt": 5, "seq": 0, "desc": "High gates parallel: strictest but independent", "x": -0.754, "y": -0.2812, "z": -1.6036, "theta": 3.4986, "phi": 4.0719}, {"i": 50, "name": "parallel_chirality", "phase": 2, "strict": 8.0, "tcnt": 5, "seq": 0, "desc": "Chirality gates parallel: H, odot, Omega", "x": -0.1097, "y": -0.0501, "z": -0.684, "theta": 3.57, "phi": 3.4907}, {"i": 51, "name": "parallel_topology", "phase": 2, "strict": 11.0, "tcnt": 5, "seq": 0, "desc": "Topology gates parallel: Th, R, odot", "x": -0.627, "y": -0.3424, "z": -1.5321, "theta": 3.6414, "phi": 4.0143}, {"i": 52, "name": "parallel_scope", "phase": 2, "strict": 8.0, "tcnt": 5, "seq": 0, "desc": "Scope gates parallel: G, odot, Omega", "x": -0.1015, "y": -0.0652, "z": -0.684, "theta": 3.7128, "phi": 3.4907}, {"i": 53, "name": "parallel_broadcast", "phase": 2, "strict": 8.0, "tcnt": 5, "seq": 0, "desc": "Broadcast gates parallel: G, odot, Omega", "x": -0.0966, "y": -0.0723, "z": -0.684, "theta": 3.7842, "phi": 3.4907}, {"i": 54, "name": "parallel_dimensional", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 0, "desc": "Dimensional gates parallel: D, odot, Phi", "x": -0.3536, "y": -0.3064, "z": -1.2856, "theta": 3.8556, "phi": 3.8397}, {"i": 55, "name": "parallel_kinetics", "phase": 2, "strict": 8.0, "tcnt": 5, "seq": 0, "desc": "Kinetics gates parallel: K, odot, Omega", "x": -0.0853, "y": -0.0853, "z": -0.684, "theta": 3.927, "phi": 3.4907}, {"i": 56, "name": "triple_parity", "phase": 2, "strict": 12.0, "tcnt": 5, "seq": 1, "desc": "Parity ladder: directional, full, Frobenius-special", "x": -0.6549, "y": -0.7557, "z": -1.7321, "theta": 3.9984, "phi": 4.1888}, {"i": 57, "name": "triple_topology", "phase": 2, "strict": 12.0, "tcnt": 5, "seq": 1, "desc": "Topology ladder: bowtie, box, imscriptive", "x": -0.5993, "y": -0.8005, "z": -1.7321, "theta": 4.0698, "phi": 4.1888}, {"i": 58, "name": "triple_coupling", "phase": 2, "strict": 11.0, "tcnt": 5, "seq": 1, "desc": "Coupling ladder: adjoint to bilateral", "x": -0.3862, "y": -0.601, "z": -1.5321, "theta": 4.1412, "phi": 4.0143}, {"i": 59, "name": "triple_chirality", "phase": 2, "strict": 9.0, "tcnt": 5, "seq": 1, "desc": "Chirality ladder: 1-step, 2-step, eternal", "x": -0.1284, "y": -0.2352, "z": -1.0, "theta": 4.2126, "phi": 3.6652}, {"i": 60, "name": "triple_winding", "phase": 2, "strict": 9.0, "tcnt": 5, "seq": 1, "desc": "Winding ladder: Z2, integer, non-Abelian", "x": -0.1113, "y": -0.2437, "z": -1.0, "theta": 4.284, "phi": 3.6652}, {"i": 61, "name": "ordinal4_parity", "phase": 2, "strict": 12.0, "tcnt": 5, "seq": 1, "desc": "Ordinal-4: parity rung repeated -- 4 gates", "x": -0.3495, "y": -0.9369, "z": -1.7321, "theta": 4.3554, "phi": 4.1888}, {"i": 62, "name": "ordinal4_winding", "phase": 2, "strict": 9.0, "tcnt": 5, "seq": 1, "desc": "Ordinal-4: winding rung repeated -- 4 gates", "x": -0.0755, "y": -0.2571, "z": -1.0, "theta": 4.4268, "phi": 3.6652}, {"i": 63, "name": "ordinal_swap", "phase": 2, "strict": 9.0, "tcnt": 5, "seq": 1, "desc": "Swapped order: winding first, odot, parity", "x": -0.057, "y": -0.2618, "z": -1.0, "theta": 4.4982, "phi": 3.6652}, {"i": 64, "name": "ordinal_invert", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Inverted: stoichiometry, parity, odot", "x": -0.0666, "y": -0.4631, "z": -1.2856, "theta": 4.5696, "phi": 3.8397}, {"i": 65, "name": "t_ceiling_topology", "phase": 2, "strict": 9.0, "tcnt": 1, "seq": 1, "desc": "T-ceiling: Th capped at box product", "x": -0.0191, "y": -0.2673, "z": -1.0, "theta": 4.641, "phi": 3.6652}, {"i": 66, "name": "t_ceiling_dimensional", "phase": 2, "strict": 10.0, "tcnt": 2, "seq": 1, "desc": "T-ceiling: D finite, Th at crossing point", "x": -0.0, "y": -0.4679, "z": -1.2856, "theta": 4.7124, "phi": 3.8397}, {"i": 67, "name": "absorb_ep", "phase": 2, "strict": 9.0, "tcnt": 5, "seq": 1, "desc": "EP absorption: odot + EP rule enforced", "x": 0.0191, "y": -0.2673, "z": -1.0, "theta": 4.7838, "phi": 3.6652}, {"i": 68, "name": "absorb_sub", "phase": 2, "strict": 6.0, "tcnt": 5, "seq": 1, "desc": "Sub-critical: odot absorbs sub-critical", "x": 0.0, "y": -0.0, "z": 0.0, "theta": 4.8552, "phi": 3.1416}, {"i": 69, "name": "absorb_dual", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Dual: EP + sub-critical both absorb", "x": 0.0995, "y": -0.4572, "z": -1.2856, "theta": 4.9266, "phi": 3.8397}, {"i": 70, "name": "t_subset_th_sigma", "phase": 2, "strict": 10.0, "tcnt": 2, "seq": 0, "desc": "T: self-ref topology + heterogeneous (parallel)", "x": 0.1318, "y": -0.449, "z": -1.2856, "theta": 4.998, "phi": 3.8397}, {"i": 71, "name": "t_subset_th_omega", "phase": 2, "strict": 10.0, "tcnt": 2, "seq": 0, "desc": "T: self-ref topology + winding (parallel)", "x": 0.1635, "y": -0.4384, "z": -1.2856, "theta": 5.0694, "phi": 3.8397}, {"i": 72, "name": "t_subset_d_sigma", "phase": 2, "strict": 10.0, "tcnt": 2, "seq": 0, "desc": "T: infinite-dim + heterogeneous (parallel)", "x": 0.1944, "y": -0.4256, "z": -1.2856, "theta": 5.1408, "phi": 3.8397}, {"i": 73, "name": "mixed_gamma_th", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Universal range before self-ref topology", "x": 0.2242, "y": -0.4107, "z": -1.2856, "theta": 5.2122, "phi": 3.8397}, {"i": 74, "name": "mixed_fidelity_coupling", "phase": 2, "strict": 9.0, "tcnt": 5, "seq": 1, "desc": "Quantum before bilateral coupling", "x": 0.1449, "y": -0.2254, "z": -1.0, "theta": 5.2836, "phi": 3.6652}, {"i": 75, "name": "mixed_composition_kinetics", "phase": 2, "strict": 8.0, "tcnt": 5, "seq": 1, "desc": "Sequential before slow kinetics", "x": 0.0723, "y": -0.0966, "z": -0.684, "theta": 5.355, "phi": 3.4907}, {"i": 76, "name": "g4_quad", "phase": 2, "strict": 10.0, "tcnt": 5, "seq": 1, "desc": "Quad-gate: G, Phi, odot, Omega", "x": 0.3064, "y": -0.3536, "z": -1.2856, "theta": 5.4264, "phi": 3.8397}, {"i": 77, "name": "only_parity", "phase": 2, "strict": 5.0, "tcnt": 5, "seq": 0, "desc": "Single gate: Phi>=pmsym only", "x": 0.0215, "y": -0.0215, "z": 0.3473, "theta": 5.4978, "phi": 2.9671}, {"i": 78, "name": "only_winding", "phase": 2, "strict": 3.0, "tcnt": 5, "seq": 0, "desc": "Single gate: Omega>=Z only", "x": 0.2025, "y": -0.1755, "z": 1.0, "theta": 5.5692, "phi": 2.618}, {"i": 79, "name": "only_odot", "phase": 2, "strict": 2.0, "tcnt": 5, "seq": 0, "desc": "Single gate: odot>=c only", "x": 0.3746, "y": -0.2804, "z": 1.2856, "theta": 5.6406, "phi": 2.4435}, {"i": 80, "name": "empty_gate", "phase": 2, "strict": 0.0, "tcnt": 5, "seq": 0, "desc": "Zero gates -- all 17.28M types pass", "x": 0.8413, "y": -0.5406, "z": 1.7321, "theta": 5.712, "phi": 2.0944}, {"i": 81, "name": "dense_gates", "phase": 2, "strict": 12.0, "tcnt": 5, "seq": 1, "desc": "5 distinct primitives across 3 gate slots", "x": 0.8777, "y": -0.4792, "z": -1.7321, "theta": 5.7834, "phi": 4.1888}, {"i": 82, "name": "chirality_winding", "phase": 2, "strict": 9.0, "tcnt": 5, "seq": 1, "desc": "Eternal memory + topological protection", "x": 0.2437, "y": -0.1113, "z": -1.0, "theta": 5.8548, "phi": 3.6652}, {"i": 83, "name": "composition_scope", "phase": 2, "strict": 8.0, "tcnt": 5, "seq": 1, "desc": "Sequential composition across all scales", "x": 0.113, "y": -0.0422, "z": -0.684, "theta": 5.9262, "phi": 3.4907}, {"i": 84, "name": "fidelity_chirality", "phase": 2, "strict": 8.0, "tcnt": 5, "seq": 1, "desc": "Quantum enables structured memory", "x": 0.1157, "y": -0.034, "z": -0.684, "theta": 5.9976, "phi": 3.4907}, {"i": 85, "name": "t_broadcast", "phase": 2, "strict": 9.0, "tcnt": 1, "seq": 1, "desc": "T from broadcast composition (G>=broad)", "x": 0.2618, "y": -0.057, "z": -1.0, "theta": 6.069, "phi": 3.6652}, {"i": 86, "name": "absorb_broadcast", "phase": 2, "strict": 11.0, "tcnt": 1, "seq": 1, "desc": "EP absorption + broadcast T", "x": 0.7072, "y": -0.1017, "z": -1.5321, "theta": 6.1404, "phi": 4.0143}, {"i": 87, "name": "the_all", "phase": 2, "strict": 10.0, "tcnt": 12, "seq": 1, "desc": "odot->Phi->Omega->Th + 12-primitive T", "x": 0.4667, "y": -0.0334, "z": -1.2856, "theta": 6.2118, "phi": 3.8397}];
+const GLYPH = {"VINIT":"\u22a2","TANCH":"\u22a3","AFWD":">","AREV":"<","CLINK":"=",
+  "IMSCRIB":"\u2299","FSPLIT":"\u25c7","FFUSE":"\u25cf","EVALT":"+","EVALF":"\u00d7",
+  "ENGAGR":"\u229e","IFIX":"\u00ac"};
+const FAM = {"VINIT":0,"TANCH":0,"AFWD":0,"AREV":0,"CLINK":0,"IMSCRIB":0,
+  "FSPLIT":1,"FFUSE":1,"EVALT":2,"EVALF":2,"ENGAGR":2,"IFIX":3};
+const FAMC = ["#6af","#a84bb8","#e8b84b","#6f6"];
+const FAMN = ["LOGICAL","FROBENIUS","DIALETHEIA","LINEAR"];
+const PC = ["#e8b84b","#4ba8b8","#a84bb8"];
+
+// IMASM programs
+const CANON = {"I_Dialetheic_Bootstrap": "IMSCRIB EVALT FSPLIT EVALF FFUSE ENGAGR IFIX IMSCRIB", "II_Void_Genesis": "VINIT TANCH AFWD FSPLIT CLINK FFUSE IFIX IMSCRIB", "III_Anchor_Protocol": "TANCH AREV VINIT AFWD TANCH CLINK IFIX IMSCRIB", "IV_Dual_Bootstrap": "IMSCRIB AFWD FFUSE FSPLIT AREV CLINK IFIX IMSCRIB", "V_Linear_Chain": "IFIX IFIX IFIX IFIX IFIX IFIX IFIX IFIX", "VI_Empty_Bootstrap": "VINIT IMSCRIB VINIT IMSCRIB VINIT IMSCRIB VINIT IMSCRIB", "VII_Parakernel": "EVALF AREV FSPLIT EVALT AFWD FFUSE ENGAGR IFIX", "VIII_Frobenius_Kernel": "VINIT FSPLIT FFUSE TANCH", "IX_Chiral_Pairs": "AFWD AREV AFWD AREV AFWD AREV AFWD AREV", "X_Truth_Machine": "IMSCRIB FSPLIT EVALT IFIX IMSCRIB FSPLIT EVALF IFIX", "XI_Eternal_Return": "IMSCRIB AFWD AREV IMSCRIB AFWD AREV IMSCRIB AFWD", "XII_ROM_Burn": "EVALT IFIX EVALF IFIX ENGAGR IFIX IMSCRIB IFIX", "agent_loop": "VINIT IMSCRIB FSPLIT EVALT CLINK FFUSE IFIX ENGAGR AREV CLINK TANCH", "bootstrap_loop": "IMSCRIB AREV FSPLIT AFWD FFUSE CLINK IFIX IMSCRIB"};
+
+// IG Primitive ordinal values (from imas_ig.rs)
+function primOrd(name) {
+  const m = {"Phi":5,"odot":2,"Omega":3,"H":4,"G":3,"Th":5,"R":4,"f":3,"K":3,"D":3,"Sigma":3,"c":3};
+  return m[name] || 3;
+}
+
+// Evaluate an IG tuple against dialect gates (uses GATE_MAP)
+function evalGates(ig, dialect) {
+  const d = DATA[dialect];
+  const gm = GATE_MAP[d.name];
+  if (!gm) {
+    return {g1:{prim:"Phi",min:0,pass:false,val:0},
+            g2:{prim:"odot",min:0,pass:false,val:0},
+            g3:{prim:"Omega",min:0,pass:false,val:0},
+            seq:d.seq, all:false};
+  }
+  
+  // Map IG tuple values to ordinal numbers for gate checking
+  function getVal(prim) {
+    const igv = {"Phi":ig.P||0, "odot":ig.phi||0, "Omega":ig.omega||0,
+      "H":ig.H||ig.h||0, "G":ig.G||ig.g||0, "Th":ig.T||ig.t||0,
+      "R":ig.R||ig.r||0, "D":ig.D||ig.d||0, "f":ig.f||ig.F||0,
+      "K":ig.K||ig.k||0, "Sigma":ig.S||ig.s||0, "c":ig.C||ig.c||0};
+    return igv[prim] || 0;
+  }
+  
+  const g1_pass = getVal(gm.g1_p) >= gm.g1_m;
+  const g2_pass = getVal(gm.g2_p) >= gm.g2_m;
+  const g3_pass = getVal(gm.g3_p) >= gm.g3_m;
+  const all_pass = g1_pass && g2_pass && g3_pass;
+  
+  return {
+    g1:{prim:gm.g1_p, min:gm.g1_m, pass:g1_pass, val:getVal(gm.g1_p)},
+    g2:{prim:gm.g2_p, min:gm.g2_m, pass:g2_pass, val:getVal(gm.g2_p)},
+    g3:{prim:gm.g3_p, min:gm.g3_m, pass:g3_pass, val:getVal(gm.g3_p)},
+    seq:d.seq, all:all_pass
+  };
+}
+
+// Compute IG tuple from IMASM word
+function igFromWord(tokens) {
+  // Map token sequence to IG primitives using the Snapshot->IgTuple logic from imas_ig.rs
+  const n = tokens.length;
+  if (n === 0) return {};
+  
+  // Token diversity -> D
+  const unique = new Set(tokens);
+  const d_div = unique.size;
+  const D = d_div <= 2 ? 1 : d_div <= 5 ? 2 : d_div <= 9 ? 3 : 4;
+  
+  // Self-reference
+  const sr = tokens[0] === tokens[n-1];
+  
+  // Token families
+  let fams = [0,0,0,0];
+  let fsplit = false, ffuse = false;
+  for (const t of tokens) {
+    fams[FAM[t]]++;
+    if (t === "FSPLIT") fsplit = true;
+    if (t === "FFUSE") ffuse = true;
+  }
+  const fo = (fsplit && ffuse) ? 1 : 0;
+  const dc = tokens.includes("EVALT") && tokens.includes("EVALF") && tokens.includes("ENGAGR");
+  
+  // Period
+  let period = n;
+  for (let p = 1; p <= n; p++) {
+    if (n % p === 0) {
+      let ok = true;
+      for (let i = p; i < n && ok; i++) {
+        if (tokens[i] !== tokens[i-p]) ok = false;
+      }
+      if (ok) { period = p; break; }
+    }
+  }
+  
+  const ifix_count = tokens.filter(t => t === "IFIX").length;
+  
+  // Dimensionality
+  const d_val = D;
+  // Topology
+  const t_val = sr ? 5 : period === 1 ? 1 : period === 2 ? 3 : fo > 0 ? 4 : 2;
+  // Coupling
+  const r_val = fo === 1 ? 4 : fo === 2 ? 3 : 2;
+  // Parity
+  const p_val = fo === 1 ? 5 : 4;
+  // Fidelity
+  const f_val = dc ? 3 : period === 1 ? 1 : 2;
+  // Kinetics
+  const k_val = ifix_count >= 8 ? 4 : period <= 2 ? 3 : period <= 4 ? 2 : 1;
+  // Cardinality
+  const g_val = ifix_count >= 3 ? 3 : d_div <= 3 ? 1 : 2;
+  // Composition
+  const c_val = fo > 0 ? 3 : period === 1 ? 1 : 2;
+  // Criticality
+  const phi_val = sr && dc ? 2 : dc ? 4 : period === 1 ? 1 : 3;
+  // Chirality
+  const h_val = period === 1 ? 1 : period === 2 ? 2 : period <= 4 ? 3 : 4;
+  // Stoichiometry
+  const s_val = d_div >= 8 ? 3 : d_div >= 4 ? 2 : 1;
+  // Winding
+  const om_val = tokens.includes("AREV") ? 3 : fsplit ? 2 : 1;
+  
+  return {D:d_val, T:t_val, R:r_val, P:p_val, F:f_val, K:k_val, G:g_val, C:c_val,
+          phi:phi_val, H:h_val, S:s_val, omega:om_val,
+          p:p_val, f:f_val, k:k_val, g:g_val, c:c_val, h:h_val, s:s_val, d:d_val, t:t_val, r:r_val};
+}
+
+
+function getTokens() {
+  const sel = document.getElementById("wordSel").value;
+  if (sel === "custom") {
+    const raw = document.getElementById("customWord").value.trim().toUpperCase();
+    return raw ? raw.split(/\s+/) : [];
+  }
+  return CANON[sel].split(/\s+/);
+}
+
+function updateWord() {
+  const sel = document.getElementById("wordSel").value;
+  document.getElementById("customWord").style.display = sel === "custom" ? "block" : "none";
+  if (sel !== "custom") evaluate();
+}
+
+function onCustom() { evaluate(); }
+
+function updateDialect() { evaluate(); }
+
+function showRuleset(idx) {
+  const d = DATA[idx];
+  const box = document.getElementById("ruleset-box");
+  const gm = GATE_MAP[d.name];
+  
+  let g1g = "&#x03a6;", g2g = "&#x2299;", g3g = "&#x03a9;";
+  let g1m = 0, g2m = 0, g3m = 0;
+  if (gm) {
+    g1g = "&#x03a6;";
+    g2g = "&#x2299;";
+    g3g = "&#x03a9;";
+  }
+  
+  box.innerHTML = `
+    <div class="gr"><span class="gl">U<sub>${idx}</sub></span><span class="gv"><b>${d.name}</b></span></div>
+    <div class="gr"><span class="gl"></span><span style="color:#8a84b0;font-size:10px">${d.desc}</span></div>
+    <div class="gr" style="margin-top:6px"><span class="gl">G1</span>
+      <span class="gv">${gm ? "&#x03a6;" : g1g} &#x2265; ${gm ? gm.g1_m : 0} (${gm ? gm.g1_p : "?"})</span></div>
+    <div class="gr"><span class="gl">G2</span>
+      <span class="gv">${gm ? "&#x2299;" : g2g} &#x2265; ${gm ? gm.g2_m : 0} (${gm ? gm.g2_p : "?"})</span></div>
+    <div class="gr"><span class="gl">G3</span>
+      <span class="gv">${gm ? "&#x03a9;" : g3g} &#x2265; ${gm ? gm.g3_m : 0} (${gm ? gm.g3_p : "?"})</span></div>
+    <div class="gr"><span class="gl"></span>
+      <span class="gv"><span class="tag ${d.seq ? "tag-seq" : "tag-par"}">${d.seq ? "SEQUENTIAL" : "PARALLEL"}</span>
+      <span class="tag tag-info">T: ${d.tcnt} primitives</span>
+      <span class="tag tag-info">strictness ${d.strict}</span></div>
+  `;
+}
+
+// Token adjacency from composer.py
+function validTransition(from, to) {
+  const t1 = from, t2 = to;
+  if (t1 === "VINIT") return t2 !== "TANCH" && t2 !== "FFUSE";
+  if (t1 === "TANCH") return ["VINIT","IMSCRIB","AFWD"].includes(t2);
+  if (["AFWD","AREV","CLINK","IMSCRIB"].includes(t1)) return true;
+  if (t1 === "FSPLIT") return !["VINIT","TANCH","FSPLIT","FFUSE"].includes(t2);
+  if (t1 === "FFUSE") return true;
+  if (["EVALT","EVALF","ENGAGR"].includes(t1)) return t2 !== "VINIT";
+  if (t1 === "IFIX") return true;
+  return true;
+}
+
+function evaluate() {
+  const idx = parseInt(document.getElementById("dialectSel").value);
+  showRuleset(idx);
+  
+  const tokens = getTokens();
+  if (tokens.length === 0) {
+    document.getElementById("rslt-box").innerHTML = "No tokens to evaluate";
+    document.getElementById("cfg-box").innerHTML = "";
+    return;
+  }
+  
+  // Compute IG tuple
+  const ig = igFromWord(tokens);
+  
+  // Evaluate gates using GATE_MAP
+  const d = DATA[idx];
+  const ev = evalGates(ig, idx);
+  const g1_pass = ev.g1.pass;
+  const g2_pass = ev.g2.pass;
+  const g3_pass = ev.g3.pass;
+  const all_pass = ev.all;
+  const seq = ev.seq;
+  
+  // Build ordering message with actual primitives
+  let ordering_msg = "";
+  if (seq) {
+    if (!g1_pass) ordering_msg = "G1 " + ev.g1.prim + " fails \u2192 G2/G3 blocked (sequential)";
+    else if (!g2_pass) ordering_msg = "G2 " + ev.g2.prim + " fails \u2192 G3 blocked (sequential)";
+    else ordering_msg = "All sequential gates pass";
+  } else {
+    ordering_msg = "Parallel: gates independent";
+  }
+  
+  const prim_names = {D:"\u00d0",T:"\u00de",R:"\u0158",P:"\u03a6",F:"\u0192",
+    K:"\u00c7",G:"\u0393",C:"\u0262",phi:"\u2299",H:"\u0126",S:"\u03a3",omega:"\u03a9"};
+  
+  const ig_str = Object.entries(prim_names).map(([k,v]) => v + ":" + (ig[k]||"?")).join(" ");
+  
+  // Glyphs for gate primitives
+  const pglyph = {"Phi":"\u03a6","odot":"\u2299","Omega":"\u03a9","H":"\u0126",
+    "G":"\u0393","Th":"\u00de","R":"\u0158","D":"\u00d0","K":"\u00c7",
+    "f":"\u0192","Sigma":"\u03a3","c":"\u0262"};
+  
+  // Result box
+  const rslt = document.getElementById("rslt-box");
+  rslt.innerHTML = `
+    <div style="margin-bottom:6px"><b>IMASM Word</b>: ${tokens.join(" ")}</div>
+    <div style="margin-bottom:6px"><b>IG Tuple</b>: ${ig_str}</div>
+    <div style="margin:8px 0">
+      <span class="tag ${g1_pass ? "tag-pass" : "tag-fail"}">G1 ${g1_pass ? "PASS" : "FAIL"} (${pglyph[ev.g1.prim]||ev.g1.prim}:${ev.g1.val} >= ${ev.g1.min})</span>
+      <span class="tag ${g2_pass ? "tag-pass" : "tag-fail"}">G2 ${g2_pass ? "PASS" : "FAIL"} (${pglyph[ev.g2.prim]||ev.g2.prim}:${ev.g2.val} >= ${ev.g2.min})</span>
+      <span class="tag ${g3_pass ? "tag-pass" : "tag-fail"}">G3 ${g3_pass ? "PASS" : "FAIL"} (${pglyph[ev.g3.prim]||ev.g3.prim}:${ev.g3.val} >= ${ev.g3.min})</span>
+      <span class="tag ${all_pass ? "tag-pass" : "tag-fail"}">OVERALL ${all_pass ? "PASS" : "FAIL"}</span>
+    </div>
+    <div style="color:#8a84b0;font-size:10px">${ordering_msg} &middot; ${tokens.length} tokens &middot; ${seq ? "seq" : "par"} gates</div>
+    <div style="color:#5a659c;font-size:9px;margin-top:2px">U<sub>${idx}</sub> ${d.name} &middot; GATE_MAP: ${ev.g1.prim}>=${ev.g1.min} ${ev.g2.prim}>=${ev.g2.min} ${ev.g3.prim}>=${ev.g3.min}</div>
+  `;
+  
+  // Grammar details
+  drawCFG(tokens, ig, all_pass, seq, g1_pass, g2_pass, g3_pass, idx);
+}
+
+
+function drawCFG(tokens, ig, allPass, seq, g1p, g2p, g3p, idx) {
+  const svg = document.getElementById("cfgSvg");
+  const n = tokens.length;
+  const W = document.getElementById("cfg-view").clientWidth || 800;
+  const H = 480;
+  svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+  
+  let html = "";
+  
+  // Layout: place tokens in a bowtie/cycle pattern
+  const cx = W / 2, cy = H / 2;
+  const R = Math.min(W, H) * 0.38;
+  
+  // Positions: arrange in a circle (cyclic program)
+  const pos = [];
+  const startAngle = -Math.PI/2;
+  for (let i = 0; i < n; i++) {
+    const angle = startAngle + (2 * Math.PI * i / n);
+    pos.push({
+      x: cx + R * Math.cos(angle),
+      y: cy + R * Math.sin(angle)
+    });
+  }
+  
+  // Draw edges
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n; // cyclic - wraps around
+    const p1 = pos[i], p2 = pos[j];
+    const isCyclic = j === 0;
+    
+    // Determine if this edge is valid under the dialect
+    const from_tok = tokens[i], to_tok = tokens[j];
+    const valid = validTransition(from_tok, to_tok);
+    
+    const cls = valid ? (allPass ? "pass" : "fail") : "fail";
+    const edgeCls = `edge ${isCyclic ? "back" : cls}`;
+    
+    // Curved edge for visual clarity
+    const mx = (p1.x + p2.x) / 2;
+    const my = (p1.y + p2.y) / 2;
+    const dx = p2.x - p1.x;
+    const dy = p2.y - p1.y;
+    const len = Math.sqrt(dx*dx + dy*dy);
+    const nx = -dy/len * 10;
+    const ny = dx/len * 10;
+    
+    html += `<path class="${edgeCls}" d="M${p1.x},${p1.y} Q${mx+nx},${my+ny} ${p2.x},${p2.y}"/>`;
+    
+    // Edge label (Frobenius pair indicator)
+    if (from_tok === "FSPLIT" && to_tok === "FFUSE") {
+      html += `<text x="${mx+nx}" y="${my+ny-6}" fill="#a84bb8" font-size="7">FSPLIT→FFUSE</text>`;
+    }
+    if (from_tok === "FFUSE" && to_tok === "FSPLIT") {
+      html += `<text x="${mx+nx}" y="${my+ny-6}" fill="#a84bb8" font-size="7">FFUSE→FSPLIT</text>`;
+    }
+  }
+  
+  // Draw token nodes
+  for (let i = 0; i < n; i++) {
+    const t = tokens[i];
+    const p = pos[i];
+    const fam = FAM[t] || 0;
+    const col = FAMC[fam];
+    const glyph = GLYPH[t] || t;
+    
+    // Token pass/fail based on gate status
+    // For now, show based on overall pass
+    const isPass = allPass;
+    const r = isPass ? 16 : 12;
+    
+    // Draw node circle with gate-aware coloring
+    html += `<g class="token-node">`;
+    html += `<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="#1a1828" stroke="${col}" stroke-width="${isPass ? 2.5 : 1.5}" class="token-ring" opacity="${isPass ? 1 : 0.5}"/>`;
+    
+    // Gate badge
+    const badgeCol = allPass ? "#4a8" : "#844";
+    html += `<circle cx="${p.x+10}" cy="${p.y-10}" r="5" fill="${badgeCol}" opacity="0.8"/>`;
+    
+    // Token label
+    html += `<text x="${p.x}" y="${p.y+3}" text-anchor="middle" fill="${col}" font-size="11" font-weight="bold">${glyph}</text>`;
+    
+    // Index label below
+    html += `<text x="${p.x}" y="${p.y+r+12}" text-anchor="middle" fill="#5a659c" font-size="7">${i}</text>`;
+    html += `</g>`;
+  }
+  
+  // FSPLIT/FFUSE pair highlighting
+  let fsplitCount = tokens.filter(t => t === "FSPLIT").length;
+  let ffuseCount = tokens.filter(t => t === "FFUSE").length;
+  const balanced = fsplitCount === ffuseCount;
+  
+  html += `<text x="12" y="${H-12}" fill="#5a659c" font-size="9">FSplit:${fsplitCount} FFuse:${ffuseCount} ${balanced ? "(balanced)" : "(unbalanced)"}</text>`;
+  
+  // Title
+  const d = DATA[idx];
+  html += `<text x="${cx}" y="20" text-anchor="middle" fill="#e8b84b" font-size="13" font-weight="bold">${d.name} (U_${idx})</text>`;
+  html += `<text x="${cx}" y="34" text-anchor="middle" fill="#8a84b0" font-size="9">${n} tokens &middot; ${allPass ? "ALL GATES PASS" : "GATE VIOLATION"}${seq ? " &middot; sequential" : " &middot; parallel"}</text>`;
+  
+  svg.innerHTML = html;
+  
+  // Grammar details box
+  const box = document.getElementById("cfg-box");
+  const families = {};
+  for (const t of tokens) { families[FAMN[FAM[t]]] = (families[FAMN[FAM[t]]] || 0) + 1; }
+  const famStr = Object.entries(families).map(([k,v]) => k + ":" + v).join(" ");
+  
+  box.innerHTML = `
+    <div><b>Token sequence</b>: ${tokens.join(" &rarr; ")} (cyclic)</div>
+    <div><b>Families</b>: ${famStr}</div>
+    <div><b>Token diversity</b>: ${new Set(tokens).size} / ${tokens.length}</div>
+    <div><b>FSPLIT/FFUSE balance</b>: ${fsplitCount}/${ffuseCount} ${balanced ? '<span style="color:#6f6">OK</span>' : '<span style="color:#f66">MISMATCH</span>'}</div>
+    <div style="margin-top:4px"><b>Gate-constrained CFG production rules:</b></div>
+  `;
+  
+  // Show valid token transitions (CFG productions)
+  const allTokens = Object.keys(GLYPH);
+  let prodCount = 0;
+  for (const from of allTokens) {
+    const validTo = allTokens.filter(to => validTransition(from, to));
+    const fromGlyph = GLYPH[from] || from;
+    const toStr = validTo.map(t => GLYPH[t] || t).join(" ");
+    if (validTo.length > 0) {
+      box.innerHTML += `<div style="font-size:9px;color:#8a84b0;margin-left:12px">${fromGlyph} &rarr; ${toStr}</div>`;
+      prodCount += validTo.length;
+    }
+  }
+  box.innerHTML += `<div style="margin-top:4px"><span class="tag tag-info">${prodCount} productions across ${allTokens.length} nonterminals</span></div>`;
+}
+
+window.onload = function() {
+  // Show first dialect
+  showRuleset(0);
+  // Auto-select canonical program
+  document.getElementById("wordSel").value = "agent_loop";
+  evaluate();
+};
+</script>
+</body></html>
