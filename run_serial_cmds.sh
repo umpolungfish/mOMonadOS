@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Pipe REPL commands into mOMonadOS via -serial stdio.
-# Usage: ./run_serial_cmds.sh "d2048 tower" "d2048 redei" ...
+# Usage: ./run_serial_cmds.sh "sic d16" "sic calibrate" ...
+#        FILTER='/TOWER ASCENT/,/^⊙/p' ./run_serial_cmds.sh "d2048 tower"
+# Output passes through whole unless FILTER is set to a sed program.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -21,4 +23,4 @@ ELF="target/x86_64-unknown-none/${PROFILE}/momonados"
   -display none \
   -no-reboot \
   -device isa-debug-exit,iobase=0xf4,iosize=4 \
-  -serial stdio 2>&1 | sed -n '/═══ d=2048/,/^⊙/p; /TOWER ASCENT/,/^⊙/p; /C16 LAYER/,/^⊙/p; /C32 = HILBERT/,/^⊙/p; /REDEI/,/^⊙/p; /NEXT EAGLE/,/^⊙/p'
+  -serial stdio 2>&1 | { if [ -n "${FILTER:-}" ]; then sed -n "$FILTER"; else cat; fi; }

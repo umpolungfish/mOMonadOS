@@ -1,7 +1,3 @@
-Zero warnings, and two of the three kinds are answered rather than obeyed.
+The sic verbs are discoverable and the serial runner stops swallowing their output.
 
-The Shavian identifiers in imas_ig.rs tripped the archaic-script lint. The glyph is the name; spelling the primitives in Latin would be a different notation, so the lint is allowed at the crate root with that reason stated. The same holds in constant_closure.rs, where W, Z and H are the particles and alpha_G is the gravitational coupling: the capital carries the name, so the style lint is answered once at module level rather than by renaming four functions into something that no longer says what they compute.
-
-The rest were genuine and are gone: class_group and fundamental_unit were imported into sic_moduli.rs and never used once the accessors took over, and riemann_sic.rs imported Vec it never names.
-
-Release build is clean and the boot image answers: sic d16 still reports the raw sixteen, the class group of two, and the corrected eight.
+run_serial_cmds.sh piped everything through a sed program written for the d2048 sections, so any other command's output vanished; the filter is now opt-in through FILTER and output passes through by default. The sic fallback help listed two verbs where there are ten, so the moduli commands could not be found from inside the REPL. quadratic.rs gains ray_order_at, which is what lets the d=16 tower print computed orders instead of a written-out table.

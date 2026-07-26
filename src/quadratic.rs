@@ -746,6 +746,13 @@ pub fn ray_data_at(d: i64, m: i64) -> RayData {
     }
 }
 
+/// The order of the wide ray class group at the modulus (m), computed.
+/// For an inert 2 the ideal p_2^k is the rational ideal (2^k), so the tower
+/// at p_2^k is read off by calling this with m = 2^k.
+pub fn ray_order_at(d: i64, m: i64) -> i64 {
+    ray_data_at(d, m).ray_order
+}
+
 /// Does the sigma-coinvariant identity hold at d: corrected count = d/2.
 pub fn identity_holds(d: i64) -> bool {
     let r = ray_data(d);

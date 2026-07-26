@@ -17,6 +17,7 @@ use crate::{
     frobenius_unify, clay_witness, belnap_sic_bridge, belnap_c4, sic_compute,
     dialect_expansion, divisor_ring, mersenne_parallel, bifurcation_test, entropy, d12_sic, d2048_sic, d2048_sieve,
     sic_moduli,
+    riemann_sic,
     witness_vessel, ask,
 };
 use crate::tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
@@ -243,7 +244,55 @@ pub fn repl(k: &mut Kernel) {
                     "grammar" => sprintln!("{}", crate::sic_moduli::grammar_encoding()),
                     "lean" => sprintln!("{}", crate::sic_moduli::lean_reference()),
                     "" => print_sic(),
-                    _ => sprintln!("sic [verify | bridge] — SIC-POVM d=12 commands"),
+                    _ => {
+                        sprintln!("sic — SIC-POVM commands");
+                        sprintln!("  sic verify      d=12 existence report");
+                        sprintln!("  sic bridge      Belnap/SIC bridge");
+                        sprintln!("  sic moduli      moduli-field report, all sections");
+                        sprintln!("  sic d16         the d=16 settlement");
+                        sprintln!("  sic d20         the d=20 anomaly");
+                        sprintln!("  sic calibrate   calibration table, computed from d");
+                        sprintln!("  sic scope       where the coinvariant identity holds");
+                        sprintln!("  sic d2048       propagation to d=2048");
+                        sprintln!("  sic grammar     structural tuple");
+                        sprintln!("  sic lean        Lean cross-reference");
+                    },
+                }
+            }
+            "riemann" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" => sprintln!("{}", crate::riemann_sic::full_report()),
+                    "opcodes" => sprintln!("{}", crate::riemann_sic::opcode_map()),
+                    "frobenius" => sprintln!("{}", crate::riemann_sic::frobenius_report()),
+                    "registers" => sprintln!("{}", crate::riemann_sic::register_states()),
+                    "bootstrap" => sprintln!("{}", crate::riemann_sic::bootstrap_table()),
+                    "kernel" => sprintln!("{}", crate::riemann_sic::momad_kernel_map()),
+                    "entropy" => sprintln!("{}", crate::riemann_sic::entropy_report()),
+                    "topology" => sprintln!("{}", crate::riemann_sic::topology_report()),
+                    "sixteen3" => sprintln!("{}", crate::riemann_sic::sixteen3_breakdown()),
+                    "rotat" => sprintln!("{}", crate::riemann_sic::rotat_audit()),
+                    "grammar" => sprintln!("{}", crate::riemann_sic::grammar_encoding()),
+                    "lean" => sprintln!("{}", crate::riemann_sic::lean_reference()),
+                    "sic" => sprintln!("{}", crate::riemann_sic::sic_povm_structural_probe()),
+                    "hilbert" => sprintln!("{}", crate::riemann_sic::hilbert_polya_connection()),
+                    _ => {
+                        sprintln!("riemann — Riemann-SIC spectral correspondence");
+                        sprintln!("  riemann            full protocol report (all sections)");
+                        sprintln!("  riemann opcodes    opcode → domain mapping");
+                        sprintln!("  riemann frobenius  Frobenius split/fuse structure");
+                        sprintln!("  riemann registers  Belnap register states");
+                        sprintln!("  riemann bootstrap  bootstrap sequence table");
+                        sprintln!("  riemann kernel     m⊙² kernel components");
+                        sprintln!("  riemann entropy    entropy analysis");
+                        sprintln!("  riemann topology   program topology report");
+                        sprintln!("  riemann sixteen3   SIXTEEN_3 trilattice breakdown");
+                        sprintln!("  riemann rotat      ROTAT orbit audit");
+                        sprintln!("  riemann grammar    structural tuple + per-primitive justification");
+                        sprintln!("  riemann lean       Lean 4 cross-reference");
+                        sprintln!("  riemann sic        SIC-POVM structural probe");
+                        sprintln!("  riemann hilbert    Hilbert-Pólya spectral connection");
+                    }
                 }
             }
             "entropy" => {
@@ -593,7 +642,7 @@ Stopped after {} ticks.", ran);
                     sprintln!("Usage: boot shunt <1-{}>", SHUNTED_COUNT);
                 }
             }
-                        "watch" => {
+            "watch" => {
                 let arg = parts.next().unwrap_or("").trim();
                 let refresh: u64 = arg.parse().ok().unwrap_or(10);
                 let name = if k.snapshot.is_some() { "current" } else { "(none)" };
@@ -607,7 +656,7 @@ Stopped after {} ticks.", ran);
                 sprintln!("Stopped after {} ticks.", ran);
                 print_status(k);
             }
-                        "graph" => {
+            "graph" => {
                 manus::draw_token_graph(&k);
                 sprintln!();
             }
