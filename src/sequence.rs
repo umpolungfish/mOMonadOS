@@ -291,7 +291,16 @@ impl MiniKernel {
     fn register_scores(&self) -> Scores {
         // TOKEN_REG_AFFINITY[token][reg]: how strongly does register reg's
         // post-execution value vote for token?
-        // Columns: R0(Dim×Crit), R1(Top×Wind), R2(Kin×Fid), R3(Chir×Par).
+        //
+        // Columns R0-R3 are the tuple pairs: R0(Dim×Crit), R1(Top×Wind),
+        // R2(Kin×Fid), R3(Chir×Par).
+        //
+        // Columns R4-R7 are the closure witnesses IMSCRIB writes: diversity,
+        // self-reference, Frobenius order, dialetheia completeness. They vote
+        // rather than gate, and they vote in the same manner as R0-R3, so the
+        // witness block mirrors the tuple block rather than carrying invented
+        // weights of its own. Σ=𐑕 on that reading: parallel components in a
+        // symmetric structure, not an asymmetric control signal.
         const TOKEN_REG_AFFINITY: [[i32; 4]; 12] = [
             // R0  R1  R2  R3
             [  2,  0,  0,  1 ], // VINIT
@@ -308,11 +317,14 @@ impl MiniKernel {
             [  0,  0,  3,  1 ], // IFIX
         ];
         let rv = [b4_score(self.r[0]), b4_score(self.r[1]),
-                  b4_score(self.r[2]), b4_score(self.r[3])];
+                  b4_score(self.r[2]), b4_score(self.r[3]),
+                  b4_score(self.r[4]), b4_score(self.r[5]),
+                  b4_score(self.r[6]), b4_score(self.r[7])];
         let mut s: Scores = [0; 12];
         for tok in 0..12 {
             for reg in 0..4 {
-                s[tok] += TOKEN_REG_AFFINITY[tok][reg] * rv[reg];
+                // tuple block and witness block, the second mirroring the first
+                s[tok] += TOKEN_REG_AFFINITY[tok][reg] * (rv[reg] + rv[reg + 4]);
             }
         }
         s
