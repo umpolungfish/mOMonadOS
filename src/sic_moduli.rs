@@ -19,7 +19,7 @@
 // Date: 2026-07-25
 
 use alloc::string::String;
-use crate::quadratic::{ray_data, RayData, RealQuad, class_group, fundamental_unit, Splitting};
+use crate::quadratic::{ray_data, RayData, RealQuad, Splitting};
 use alloc::vec;
 use alloc::vec::Vec;
 
@@ -149,17 +149,16 @@ pub fn d16_proof() -> String {
     s.push_str("Class number h(F) = 2 — FIRST SIC dimension with h > 1\n");
     s.push_str("2 is inert (221 ≡ 5 mod 8)\n\n");
 
-    s.push_str("RAY CLASS FIELD TOWER at p₂^k:\n");
-    s.push_str("  k=0: |Cl|=2   [2]\n");
-    s.push_str("  k=3: |Cl|=16  [8,2]\n");
-    s.push_str("  k=4: |Cl|=64  [16,4]\n");
-    s.push_str("  k=5: |Cl|=128 [16,8]\n");
-    s.push_str("  k=6: |Cl|=256 [16,16]\n\n");
+    s.push_str("RAY CLASS FIELD TOWER at p₂^k (2 inert, so p₂^k = (2^k)):\n");
+    for k in 0..=6u32 {
+        let m = 1i64 << k;
+        s.push_str(&alloc::format!("  k={}: |Cl_(2^k)| = {}\n", k, crate::quadratic::ray_order_at(16, m)));
+    }
+    s.push('\n');
 
-    s.push_str("RAY CLASS FIELD at conductor 48 = 3d:\n");
-    s.push_str("  Ray class group: [16,4,2]\n");
-    s.push_str("  Degree over F: 128\n");
-    s.push_str("  Group is ABELIAN (all ray class groups are)\n\n");
+    s.push_str(&alloc::format!("RAY CLASS FIELD at the Appleby modulus 3d = {}:\n", 3 * 16));
+    s.push_str(&alloc::format!("  Order over F: {}\n", ray_order(16)));
+    s.push_str("  Abelian by construction, being a ray class group\n\n");
 
     s.push_str("═══ THE σ-COINVARIANT ARITHMETIC ═══\n\n");
     s.push_str(&alloc::format!(

@@ -1,7 +1,7 @@
-The closure witnesses vote: the Grammar grounded the affinity reading and refused the gate.
+Zero warnings, and two of the three kinds are answered rather than obeyed.
 
-Put as two statements, the pair discriminated. The reading that makes R4 through R7 four further affinity columns grounds full, with Sigma at the symmetric value and the witnesses typed as catalytic stabilizers that modulate the vote without being consumed. The reading that makes them a gate fails to ground, and types Sigma asymmetric and the witnesses as a control signal. Both tuples agree on Omega; they part at Sigma, at T and at chirality.
+The Shavian identifiers in imas_ig.rs tripped the archaic-script lint. The glyph is the name; spelling the primitives in Latin would be a different notation, so the lint is allowed at the crate root with that reason stated. The same holds in constant_closure.rs, where W, Z and H are the particles and alpha_G is the gravitational coupling: the capital carries the name, so the style lint is answered once at module level rather than by renaming four functions into something that no longer says what they compute.
 
-So register_scores now reads all eight registers. The witness block mirrors the tuple block rather than carrying weights of its own, which is what voting in the same manner means and which keeps the extension derived rather than invented: each token's affinity for a witness register is its affinity for the tuple register in the same position, and the two contributions add.
+The rest were genuine and are gone: class_group and fundamental_unit were imported into sic_moduli.rs and never used once the accessors took over, and riemann_sic.rs imported Vec it never names.
 
-What this makes true of the substrate: a program's diversity, self-reference, Frobenius order and dialetheia completeness now pull the next token toward the primitives those registers favour, so closure evidence feeds back as preference rather than as a precondition.
+Release build is clean and the boot image answers: sic d16 still reports the raw sixteen, the class group of two, and the corrected eight.

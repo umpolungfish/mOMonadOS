@@ -1,4 +1,9 @@
 // Scratch f64 math for no_std kernel
+// W, Z and H are the particles, and alpha_G is the gravitational coupling:
+// the capital is the name, so the identifiers keep it and the style lint is
+// answered here rather than obeyed one function at a time.
+#![allow(non_snake_case)]
+
 fn f64_powi(x: f64, n: i32) -> f64 {
     let mut r = 1.0_f64;
     let mut b = x;

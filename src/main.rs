@@ -1,4 +1,8 @@
 #![no_std]
+// The IG primitives are Shavian glyphs and the glyph is the name; spelling them
+// in Latin would be a different notation, so the lint is answered rather than
+// obeyed.
+#![allow(uncommon_codepoints)]
 #![no_main]
 #![feature(abi_x86_interrupt)]
 #![allow(dead_code)]
@@ -54,6 +58,7 @@ mod d2048_sic;
 mod d2048_sieve;
 mod quadratic;
 mod sic_moduli;
+mod riemann_sic;
 mod witness_vessel;
 mod ask;
 mod proof;
