@@ -114,6 +114,12 @@ struct MiniKernel {
     stack: [B4; 64],
     sp:    usize,
     r:     [B4; 4],  // R0=Dim×Crit  R1=Top×Wind  R2=Kin×Fid  R3=Chir×Par
+    /// Saved right-branch values, one per open fork, exactly as the kernel's
+    /// fork_stack holds `right_val`. FFUSE joins the linear left with the value
+    /// recorded by its *matching* FSPLIT, which is not in general the second
+    /// item on the stack.
+    fork:  [B4; 16],
+    fd:    usize,
 }
 
 impl MiniKernel {
@@ -121,6 +127,8 @@ impl MiniKernel {
         Self {
             stack: [B4::N; 64],
             sp: 0,
+            fork: [B4::N; 16],
+            fd: 0,
             r: [
                 tuple_to_b4(tuple.d,   tuple.phi),
                 tuple_to_b4(tuple.t,   tuple.omega),
@@ -132,6 +140,17 @@ impl MiniKernel {
 
     fn push(&mut self, v: B4) {
         if self.sp < 64 { self.stack[self.sp] = v; self.sp += 1; }
+    }
+
+    /// Open a fork, recording the split-time value.
+    fn push_fork(&mut self, v: B4) {
+        if self.fd < 16 { self.fork[self.fd] = v; self.fd += 1; }
+    }
+
+    /// Close a fork, returning its recorded value; N when none is open, which
+    /// is the kernel's behaviour for an unmatched FFUSE.
+    fn pop_fork(&mut self) -> B4 {
+        if self.fd == 0 { B4::N } else { self.fd -= 1; self.fork[self.fd] }
     }
     fn pop(&mut self) -> B4 {
         if self.sp > 0 { self.sp -= 1; self.stack[self.sp] } else { B4::N }
@@ -166,15 +185,18 @@ impl MiniKernel {
                 self.r[3] = b4_join(self.r[3], self.peek());
             }
             Token::Fsplit  => {
-                // kernel: copy top, save as right_val; simplified: just copy
+                // kernel: record the split-time value as this fork's right_val,
+                // then duplicate it for the left branch.
                 let v = self.peek();
+                self.push_fork(v);
                 self.push(v);
             }
             Token::Ffuse   => {
-                // kernel: join linear left with saved right_val; simplified: join top two
-                let a = self.pop();
-                let b = self.pop();
-                self.push(b4_join(a, b));
+                // kernel: join the linear left with the right_val of the
+                // matching fork, falling back to N when no fork is open.
+                let left = self.pop();
+                let right = self.pop_fork();
+                self.push(b4_join(left, right));
             }
             Token::Evalt   => {
                 let v = self.pop();
@@ -194,13 +216,16 @@ impl MiniKernel {
                 self.r[2] = b4_join(self.r[2], v);
             }
             Token::Fsplit3 => {
+                // Three-way fork; on the B4 stack the value semantics are those
+                // of FSPLIT, and the fork discipline is the same.
                 let v = self.peek();
+                self.push_fork(v);
                 self.push(v);
             }
             Token::Ffuse3  => {
-                let a = self.pop();
-                let b = self.pop();
-                self.push(b4_join(a, b));
+                let left = self.pop();
+                let right = self.pop_fork();
+                self.push(b4_join(left, right));
             }
             Token::Evali   => {
                 let v = self.pop();
