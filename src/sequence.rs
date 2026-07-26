@@ -193,6 +193,41 @@ impl MiniKernel {
                 let v = self.pop();
                 self.r[2] = b4_join(self.r[2], v);
             }
+            Token::Fsplit3 => {
+                let v = self.peek();
+                self.push(v);
+            }
+            Token::Ffuse3  => {
+                let a = self.pop();
+                let b = self.pop();
+                self.push(b4_join(a, b));
+            }
+            Token::Evali   => {
+                let v = self.pop();
+                self.push(if v == B { B } else { N });
+            }
+            Token::Tneg    => {
+                let v = self.pop();
+                self.push(v.bnot());
+            }
+            Token::Ineg    => {
+                let v = self.pop();
+                self.push(v.bnot());
+            }
+            Token::Rotat   => {
+                // ROTAT — cyclic shift of stack by k (default 1) mod depth.
+                let k_val = self.pop();
+                let k = (k_val as u8 as usize).max(1);
+                let n = self.sp;
+                if n > 1 {
+                    let k = k % n;
+                    if k != 0 {
+                        self.stack[..n].reverse();
+                        self.stack[..k].reverse();
+                        self.stack[k..n].reverse();
+                    }
+                }
+            }
         }
     }
 

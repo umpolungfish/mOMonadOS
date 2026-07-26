@@ -1,15 +1,7 @@
-vita: seed is the only entropy, and every seed owns its word
+The SIC moduli program computes its arithmetic instead of carrying a table.
 
-Three fixes proven live in QEMU:
-- mark/reset heap scope around each turn (heap_mark/heap_reset on the bump
-  allocator): the turn is transient, print then roll back. Six-plus
-  consecutive turns, no exhaustion (was: panic on the fourth).
-- no default seed: seed and word are 1:1, so an unseeded `vita` draws from
-  rdtsc, the machine's moment. Three bare turns, three words.
-- splitmix64 seed mix: `seed | 1` had collapsed every even seed onto its
-  odd neighbor (2 and 3 spoke the same word). Each u64 now lands on its
-  own xorshift orbit.
+quadratic.rs derives everything from d: the squarefree core of (d-3)(d+1), the discriminant, the class number by cycles of reduced indefinite forms, the fundamental unit as the unit of least omega-coefficient, the unit group of O/mO by enumeration, and the wide ray class group at the Appleby modulus as an extension of the class group, with the sigma-action carried through to the coinvariant count. sic_moduli.rs now reads those values through accessors rather than constants, and identity_holds computes the verdict where it previously restated the shape rule; the shape rule survives as identity_predicted, so the two can be held against each other.
 
-Result: (seed, temp) -> turn is a pure function on the metal. vita 666 0.9
-reproduces its certified turn exactly, run after run; temperature reshapes
-the seed-to-word map and adds no nondeterminism.
+The construction reproduces the independently computed counts at d = 4, 8, 12, 16, 20, 24, 28, 32, 36, 40 and 48. Two limits are named in the source rather than hidden. At d = 44 it under-counts, because the extension class is not the one the order-two model assumes. Where the class number is neither one nor two the extension is not modelled and the count falls back to the product, which is an upper bound; the single prediction mismatch in the range, at d = 64, sits in such a field and is a limit of the program rather than a counterexample to the rule.
+
+The d=20 counts are corrected while I am here: the raw coinvariant order is sixteen and the corrected count eight, not eight and four.

@@ -155,6 +155,12 @@ pub fn token_meaning(tok: Token) -> &'static str {
         Token::Ifix   => "branched hydrophobic (rigid)",
         Token::Imscrib=> "cyclic (constrained)",
         Token::Ffuse  => "fuse (reserved)",
+        Token::Fsplit3 => "3-way fork (reserved)",
+        Token::Ffuse3  => "3-way fuse (reserved)",
+        Token::Tneg    => "negation (reserved)",
+        Token::Ineg    => "con-negation (reserved)",
+        Token::Evali   => "information gate (reserved)",
+        Token::Rotat   => "cyclic shift (reserved)",
     }
 }
 

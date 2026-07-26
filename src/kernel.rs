@@ -218,6 +218,28 @@ impl Kernel {
         n // unmatched
     }
 
+    /// Find matching FFUSE3 for FSPLIT3 at split_ip via balanced parenthesis scan.
+    pub fn find_matching_ffuse3(&self, split_ip: usize) -> usize {
+        let mut depth = 1u32;
+        let n = self.program.len();
+        if n == 0 { return 0; }
+        let mut i = (split_ip + 1) % n;
+        let start = i;
+        loop {
+            match self.program.get(i) {
+                Some(Token::Fsplit3) => depth += 1,
+                Some(Token::Ffuse3)  => {
+                    depth -= 1;
+                    if depth == 0 { return i; }
+                }
+                _ => {}
+            }
+            i = (i + 1) % n;
+            if i == start { break; }
+        }
+        n // unmatched
+    }
+
     /// One Frobenius tick. Returns false if halted.
     pub fn tick(&mut self) -> bool {
         if self.phase == Phase::Halt || self.halted { return false; }
@@ -329,6 +351,53 @@ impl Kernel {
                 let addr = self.registers.read(0) as usize;
                 let val  = self.stack.pop();
                 self.memory.write(addr, val);
+            }
+            Token::Fsplit3 => {
+                // 3-way fork (T/F/I arms). In B4 context, same as Fsplit.
+                let v = self.stack.peek();
+                let ffuse_ip = self.find_matching_ffuse3(self.ip);
+                let resume = if ffuse_ip + 1 >= self.program.len() { 0 }
+                             else { ffuse_ip + 1 };
+                self.push_fork(resume);
+                if let Some(frame) = self.fork_top_mut() {
+                    frame.right_val = v;
+                    frame.right_set = true;
+                }
+                self.stack.push(v);
+            }
+            Token::Ffuse3 => {
+                // 3-way fuse. In B4 context, same as Ffuse.
+                let left = self.stack.pop();
+                if let Some(frame) = self.pop_fork() {
+                    let right = if frame.right_set { frame.right_val } else { B4::N };
+                    self.stack.push(b4_join(left, right));
+                    next_ip = frame.resume_ip;
+                } else {
+                    self.stack.push(left);
+                }
+            }
+            Token::Evali => {
+                // Evaluate on Information axis: keep B (both), everything else -> N.
+                let v = self.stack.pop();
+                self.stack.push(if v == B4::B { B4::B } else { B4::N });
+            }
+            Token::Tneg => {
+                let v = self.stack.pop();
+                self.stack.push(v.bnot());
+            }
+            Token::Ineg => {
+                // Con-negation: swap evidence bits (collapses to bnot in B4).
+                let v = self.stack.pop();
+                self.stack.push(v.bnot());
+            }
+            Token::Rotat => {
+                // ROTAT — the first op-opcode: cyclic shift of the program-ring
+                // by k, here realized as stack rotation. Pops k (default 1) and
+                // rotates the remaining stack data by k positions mod depth.
+                // The ring automorphism: ROTAT^n = identity.
+                let k_val = self.stack.pop();
+                let k = (k_val as u8 as usize).max(1);
+                self.stack.rotate(k);
             }
         }
 

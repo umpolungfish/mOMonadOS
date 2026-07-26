@@ -16,6 +16,7 @@ use crate::{
     sequence, boot, cr3echrz, canonical_ordinal, clay_status, sic_povm,
     frobenius_unify, clay_witness, belnap_sic_bridge, belnap_c4, sic_compute,
     dialect_expansion, divisor_ring, mersenne_parallel, bifurcation_test, entropy, d12_sic, d2048_sic, d2048_sieve,
+    sic_moduli,
     witness_vessel, ask,
 };
 use crate::tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
@@ -233,6 +234,14 @@ pub fn repl(k: &mut Kernel) {
                 match sub {
                     "verify" => sprintln!("{}", crate::sic_compute::sic_full_report()),
                     "bridge" => sprintln!("{}", crate::belnap_sic_bridge::bridge_report()),
+                    "moduli" => sprintln!("{}", crate::sic_moduli::full_report()),
+                    "d16" => sprintln!("{}", crate::sic_moduli::d16_proof()),
+                    "d20" => sprintln!("{}", crate::sic_moduli::d20_anomaly()),
+                    "calibrate" => sprintln!("{}", crate::sic_moduli::calibration_report()),
+                    "scope" => sprintln!("{}", crate::sic_moduli::scope_report()),
+                    "d2048" => sprintln!("{}", crate::sic_moduli::d2048_propagation()),
+                    "grammar" => sprintln!("{}", crate::sic_moduli::grammar_encoding()),
+                    "lean" => sprintln!("{}", crate::sic_moduli::lean_reference()),
                     "" => print_sic(),
                     _ => sprintln!("sic [verify | bridge] — SIC-POVM d=12 commands"),
                 }

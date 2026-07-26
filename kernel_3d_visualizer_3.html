@@ -1523,10 +1523,10 @@
             "AREV":    { "glyph": "<", "work": true  },
             "CLINK":   { "glyph": "=", "work": true  },
             "IMSCRIB": { "glyph": "⊙", "work": false },
-            "FSPLIT":  { "glyph": "◇", "work": false },
+            "FSPLIT":  { "glyph": "∈", "work": false },
             "EVALT":   { "glyph": "+", "work": true  },
             "EVALF":   { "glyph": "×", "work": true  },
-            "FFUSE":   { "glyph": "●", "work": false },
+            "FFUSE":   { "glyph": "∋", "work": false },
             "ENGAGR":  { "glyph": "⊞", "work": true  },
             "IFIX":    { "glyph": "¬", "work": true  }
         };
@@ -1711,6 +1711,7 @@
         const GLYPH_TO_TOKEN = Object.fromEntries(
             Object.entries(TOKEN_META).map(([name, m]) => [m.glyph, name])
         );
+        GLYPH_TO_TOKEN['◇'] = 'FSPLIT'; GLYPH_TO_TOKEN['●'] = 'FFUSE';
         // The live catalog registry: name -> glyph string, one entry per catalog object,
         // embedded directly (from ~/ob3ect/digital/*/*_ob3ect.json, ~908 entries, verified
         // every glyph is in the 12-token base alphabet above). Short (avg 14 tokens), so cheap to ship inline

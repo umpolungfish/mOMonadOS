@@ -146,6 +146,20 @@ impl B4Stack {
     pub fn depth(&self) -> usize { self.top }
 
     pub fn clear(&mut self) { self.top = 0; }
+
+    /// ROTAT — cyclic shift of the stack by k positions (mod depth).
+    /// The element at position i moves to position (i + k) % depth.
+    pub fn rotate(&mut self, k: usize) {
+        let n = self.top;
+        if n <= 1 { return; }
+        let k = k % n;
+        if k == 0 { return; }
+        // Cyclic shift right by k: reverse whole, reverse first k, reverse rest
+        self.data[..n].reverse();
+        self.data[..k].reverse();
+        self.data[k..n].reverse();
+    }
+
 }
 
 /// 8 × B4 register file.

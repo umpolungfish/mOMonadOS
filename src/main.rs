@@ -52,6 +52,8 @@ mod entropy;
 mod d12_sic;
 mod d2048_sic;
 mod d2048_sieve;
+mod quadratic;
+mod sic_moduli;
 mod witness_vessel;
 mod ask;
 mod proof;
