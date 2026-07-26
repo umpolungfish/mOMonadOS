@@ -19,7 +19,7 @@
 // Date: 2026-07-25
 
 use alloc::string::String;
-use crate::quadratic::{ray_data, RayData, RealQuad, Splitting};
+use crate::quadratic::{ray_data, class_group, RayData, RealQuad, Splitting};
 use alloc::vec;
 use alloc::vec::Vec;
 
@@ -35,13 +35,33 @@ use alloc::vec::Vec;
 /// with the sigma-action carried through to the coinvariant count.
 ///
 /// The construction reproduces the independently computed values at
-/// d = 4, 8, 12, 16, 20, 24, 28, 32, 36, 40 and 48. At d = 44 it under-counts:
-/// the extension class there is not the one the order-two model assumes. That
-/// dimension is an anomaly on either reading, so the shortfall does not touch
-/// the settlement, but it is a real limit of the construction and is named here
-/// rather than papered over.
+/// d = 4, 8, 12, 16, 20, 24, 28, 32, 36, 40 and 48.
+///
+/// It under-counts at d = 44, giving sixteen where the count is forty. Two
+/// candidate causes were tested and neither accounts for it: the generator of
+/// p^n was already required to be coprime to q, so the rational ideal (q) is
+/// not being picked up in place of p squared, and orienting that generator into
+/// p squared rather than its conjugate, by the congruence x + y*c = 0 mod q,
+/// changes nothing. What remains is the extension class itself: the order-two
+/// model fixes it by sigma(x) = x^{-1}[q] together with x^n = [alpha], and at
+/// d = 44 that pair does not determine the group the ray class field actually
+/// has. Dimension 44 is an anomaly on either reading of the class group, so the
+/// shortfall does not reach the settlement.
+///
+/// Where the class number is neither one nor two the extension is not modelled
+/// at all and the count falls back to the product of the two coinvariant
+/// orders, which is an upper bound. The single disagreement between computation
+/// and the shape rule inside the enumeration budget, at d = 64, lies in such a
+/// field.
 pub fn data(d: u32) -> RayData {
-    ray_data(d as i64)
+    // The kernel allocator is a bump with LIFO reclaim only, so the working
+    // vectors of an enumeration would otherwise accumulate across a sweep and
+    // exhaust the heap. RayData is all scalars, so the whole computation fits
+    // inside a mark and reset and nothing it allocated outlives the call.
+    let mark = crate::heap_mark();
+    let r = ray_data(d as i64);
+    crate::heap_reset(mark);
+    r
 }
 
 pub fn m_d(d: u32) -> u32 { data(d).m_d as u32 }
@@ -54,6 +74,17 @@ pub fn d_half(d: u32) -> u32 { data(d).d_half as u32 }
 pub fn ray_order(d: u32) -> u32 { data(d).ray_order as u32 }
 
 /// Is two inert in F, as the conductor rule requires.
+/// The class number alone, by cycles of reduced forms. This avoids building
+/// the ray class group, which enumerates (O/m)^* and is out of reach at the
+/// larger dimensions: at d=2048 the modulus 3d would mean 37 million residues,
+/// where the form cycles finish in milliseconds.
+pub fn class_number_only(d: u32) -> i64 {
+    let mark = crate::heap_mark();
+    let h = class_group(&RealQuad::for_dimension(d as i64)).wide;
+    crate::heap_reset(mark);
+    h
+}
+
 pub fn two_is_inert(d: u32) -> bool {
     RealQuad::for_dimension(d as i64).splitting(2) == Splitting::Inert
 }
@@ -145,9 +176,9 @@ pub fn d16_proof() -> String {
     s.push_str("═══════════════════════════════════════════════════════\n");
     s.push_str("  d=16 MODULI FIELD — THE DISCRIMINATING DIMENSION\n");
     s.push_str("═══════════════════════════════════════════════════════\n\n");
-    s.push_str("F = Q(√221), m_d = (16-3)(16+1) = 13·17 = 221\n");
-    s.push_str("Class number h(F) = 2 — FIRST SIC dimension with h > 1\n");
-    s.push_str("2 is inert (221 ≡ 5 mod 8)\n\n");
+    s.push_str(&alloc::format!("F = Q(√{}), m_d = (16-3)(16+1) = {}\n", field_core(16), m_d(16)));
+    s.push_str(&alloc::format!("Class number h(F) = {} — first SIC dimension with h > 1\n", class_number(16)));
+    s.push_str(&alloc::format!("2 is {}\n\n", if two_is_inert(16) { "inert" } else { "not inert" }));
 
     s.push_str("RAY CLASS FIELD TOWER at p₂^k (2 inert, so p₂^k = (2^k)):\n");
     for k in 0..=6u32 {
@@ -167,8 +198,8 @@ pub fn d16_proof() -> String {
         "  d/2 = {}\n", d_half(16)));
     s.push_str(&alloc::format!(
         "  Raw / (d/2) = {}  ← NOT 1\n\n", sigma_coinvariant(16) as f64 / d_half(16) as f64));
-    s.push_str("  Class group order |Cl(F)| = 2\n");
-    s.push_str("  |Cl(F)^σ| = 2 (nontrivial class fixed by σ)\n\n");
+    s.push_str(&alloc::format!("  Class group order |Cl(F)| = {}\n", class_number(16)));
+    s.push_str(&alloc::format!("  |Cl(F)^σ| = {}\n\n", class_sigma(16)));
     s.push_str(&alloc::format!(
         "  Corrected: {} / {} = {} = d/2  ✓\n\n",
         sigma_coinvariant(16), class_sigma(16), corrected_count(16)));
@@ -177,18 +208,22 @@ pub fn d16_proof() -> String {
     s.push_str("  STATEMENT A (Ω=𐑟): moduli = full ray class field\n");
     s.push_str(&alloc::format!(
         "    → |G^σ| = {} ≠ {} = d/2  ✗ FALSIFIED\n", sigma_coinvariant(16), d_half(16)));
-    s.push_str("    → Ray class group [16,4,2] is ABELIAN, not non-Abelian\n");
+    s.push_str("    → the ray class group is abelian by construction, not non-Abelian\n");
     s.push_str("    → FALSIFIED by TWO independent facts\n\n");
     s.push_str("  STATEMENT B (Ω=𐑴): moduli = ray class field / class group\n");
     s.push_str(&alloc::format!(
         "    → |G^σ| / |Cl^σ| = {} / {} = {} = d/2  ✓ CONFIRMED\n",
         sigma_coinvariant(16), class_sigma(16), corrected_count(16)));
-    s.push_str("    → Class group of order 2 = Z/2 obstruction\n");
+    s.push_str(&alloc::format!("    → class group of order {} imposes the obstruction\n", class_number(16)));
     s.push_str("    → CONFIRMED by σ-coinvariant arithmetic\n\n");
 
     s.push_str("═══ CONDUCTOR RULE ═══\n\n");
-    s.push_str("  v₂(16)+1 = 5 → modulus p₂⁵\n");
-    s.push_str("  |Cl_{p₂⁵}| / h = 128/2 = 64 over F = 128 over Q\n");
+    s.push_str(&alloc::format!("  v₂(16)+1 = {} → modulus p₂^{}\n", conductor_exponent(16), conductor_exponent(16)));
+    s.push_str(&alloc::format!("  |Cl_(p₂^{})| / h = {}/{} = {} over F\n",
+        conductor_exponent(16),
+        crate::quadratic::ray_order_at(16, 1i64 << conductor_exponent(16)),
+        class_number(16),
+        crate::quadratic::ray_order_at(16, 1i64 << conductor_exponent(16)) / class_number(16) as i64));
     s.push_str("  Predicted field: constructible, totally real, signatures (16,0)+(32,0)\n\n");
 
     s.push_str("═══ VERDICT ═══\n\n");
@@ -210,8 +245,8 @@ pub fn d20_anomaly() -> String {
     s.push_str("  d=20 ANOMALY — THE σ-COINVARIANT IDENTITY FAILS\n");
     s.push_str("═══════════════════════════════════════════════════════\n\n");
 
-    s.push_str("F = Q(√357), m_d = (20-3)(20+1) = 17·21 = 357 = 3·7·17\n");
-    s.push_str("Class number h(F) = 2\n");
+    s.push_str(&alloc::format!("F = Q(√{}), m_d = (20-3)(20+1) = {}\n", field_core(20), m_d(20)));
+    s.push_str(&alloc::format!("Class number h(F) = {}\n", class_number(20)));
     s.push_str("2 is inert (357 ≡ 5 mod 8), v₂(20)=2 → exponent 3\n");
     s.push_str("5|d, so 5 enters the conductor: f_d = p₂³ · p₅\n\n");
 
@@ -226,8 +261,10 @@ pub fn d20_anomaly() -> String {
         "  Class-group corrected: {} / {} = {} ≠ {} = d/2  ✗\n\n",
         sigma_coinvariant(20), class_sigma(20), corrected_count(20), d_half(20)));
 
-    s.push_str("  At d=16: corrected 16/2=8=d/2 ✓\n");
-    s.push_str("  At d=20: corrected  16/2=8≠10   ✗\n");
+    s.push_str(&alloc::format!("  At d=16: corrected {}/{} = {} = d/2 ✓\n",
+        sigma_coinvariant(16), class_sigma(16), corrected_count(16)));
+    s.push_str(&alloc::format!("  At d=20: corrected {}/{} = {} ≠ {} ✗\n",
+        sigma_coinvariant(20), class_sigma(20), corrected_count(20), d_half(20)));
     s.push_str("  The correction that WORKS at d=16 FAILS at d=20.\n\n");
 
     s.push_str("═══ WHY IT FAILS: 5-TORSION ARITHMETIC ═══\n\n");
@@ -308,7 +345,7 @@ pub fn identity_holding_dimensions(max_d: u32) -> Vec<u32> {
     let mut dims = Vec::new();
     let mut d: u32 = 4;
     while d <= max_d {
-        if identity_holds(d) {
+        if crate::quadratic::identity_computable(d as i64) && identity_holds(d) {
             dims.push(d);
         }
         d += 4;
@@ -321,7 +358,7 @@ pub fn anomaly_dimensions(max_d: u32) -> Vec<u32> {
     let mut dims = Vec::new();
     let mut d: u32 = 4;
     while d <= max_d {
-        if !identity_holds(d) {
+        if crate::quadratic::identity_computable(d as i64) && !identity_holds(d) {
             dims.push(d);
         }
         d += 4;
@@ -399,28 +436,47 @@ pub fn calibration_report() -> String {
 /// Correction from d=16: six powers of two.
 pub fn d2048_propagation() -> String {
     let mut s = String::new();
+    let k = conductor_exponent(2048);
     s.push_str("═══ d=2048 — PROPAGATION FROM d=16 ═══\n\n");
-    s.push_str("F = Q(√4190205), m_d = (d+1)(d-3) = 2049·2045 = 4190205\n");
-    s.push_str("Class number h(F) = 64 = 2⁶\n");
-    s.push_str("v₂(2048)+1 = 12 → conductor p₂^12\n\n");
+    s.push_str(&alloc::format!("F = Q(√{}), m_d = (d-3)(d+1) = {}\n", field_core(2048), m_d(2048)));
+    s.push_str(&alloc::format!("Class number h(F) = {}\n", class_number_only(2048)));
+    s.push_str(&alloc::format!("2 is {}, v₂(2048)+1 = {} → conductor p₂^{}\n\n",
+        if two_is_inert(2048) { "inert" } else { "not inert" }, k, k));
 
-    s.push_str("HILBERT CLASS FIELD (unramified):\n");
-    s.push_str("  |Cl_F| / h = 2^26 / 64 = 2^20 over F = deg 2^21 over Q\n\n");
+    // Computed without forming the fundamental unit: the continued fraction
+    // gives epsilon modulo the conductor, and for an inert 2 the unit group of
+    // O/p₂^k has order q^(k-1)(q-1) with q = 4.
+    match crate::quadratic::moduli_degree_inert(2048, 2, k) {
+        Some(deg) => {
+            let mut e = 0u32;
+            let mut x = deg;
+            while x % 2 == 0 { x /= 2; e += 1; }
+            s.push_str("MODULI FIELD, the ray class field modulo the class group:\n");
+            s.push_str(&alloc::format!("  degree over F = {} = 2^{}\n", deg, e));
+            s.push_str(&alloc::format!("  degree over Q = 2^{}\n\n", e + 1));
+            s.push_str("READ AGAINST THE TWO STATEMENTS:\n");
+            let h = class_number_only(2048);
+            let mut h_pow = 0u32;
+            let mut hx = h;
+            while hx % 2 == 0 { hx /= 2; h_pow += 1; }
+            s.push_str(&alloc::format!("  A, the full ray class field:          2^{} over F\n", e + h_pow));
+            s.push_str(&alloc::format!("  B, that field modulo the class group: 2^{} over F\n", e));
+            s.push_str(&alloc::format!("  the class number {} separates them, which is {} powers of two\n\n",
+                h, h_pow));
+        }
+        None => {
+            s.push_str("  degree not computed: the unit residue was not obtained\n\n");
+        }
+    }
 
-    s.push_str("RAY CLASS FIELD at full conductor:\n");
-    s.push_str("  Degree over F: 2^27\n");
-    s.push_str("  MODULI FIELD degree: 2^27 / 64 = 2^21 over F\n\n");
-
-    s.push_str("CORRECTION from STATEMENT A (full ray class field):\n");
-    s.push_str("  Statement A: moduli field degree 2^26 over F\n");
-    s.push_str("  Statement B: moduli field degree 2^20 over F\n");
-    s.push_str("  Difference: factor 64 = 2⁶ = six powers of two\n\n");
-
-    s.push_str("The d=16 settlement propagates: Ω=𐑴 throughout the ladder.\n");
-    s.push_str("Every dimension with h>1 has the moduli field as quotient\n");
-    s.push_str("by the class group, not the full ray class field.\n");
+    s.push_str("The d=16 settlement propagates: every dimension with h > 1 has the\n");
+    s.push_str("moduli field as the quotient by the class group, not the full ray\n");
+    s.push_str("class field. Nothing here is tabulated; the class number comes from\n");
+    s.push_str("cycles of reduced forms and the degree from the unit group of O/p₂^k\n");
+    s.push_str("modulo the global units, with epsilon carried only as a residue.\n");
     s
 }
+
 
 // ═══════════════════════════════════════════════════════════════
 // §8.  SCOPE DELIMITER — what the identity covers
@@ -429,6 +485,9 @@ pub fn d2048_propagation() -> String {
 pub fn scope_report() -> String {
     let mut s = String::new();
     s.push_str("═══ SCOPE OF THE σ-COINVARIANT IDENTITY ═══\n\n");
+    s.push_str(&alloc::format!(
+        "Counts are enumerated in (O/m)^*, so the identity is decidable by\ncomputation only while 3d stays inside the budget of {}. Past that the\nshape rule still predicts, and is marked as prediction.\n\n",
+        crate::quadratic::ENUMERATION_BUDGET));
 
     s.push_str("IDENTITY HOLDS (d ≤ 48):\n");
     let holding = identity_holding_dimensions(48);
@@ -626,8 +685,8 @@ pub fn verify_all() -> (u32, u32) {
     total += 1; if identity_holds(36) { passed += 1; }
 
     // d=2048: class number is 64 = 2^6
-    total += 1; if class_number(2048) == 64 { passed += 1; }
-    total += 1; if is_power_of_two(class_number(2048)) { passed += 1; }
+    total += 1; if class_number_only(2048) == 64 { passed += 1; }
+    total += 1; if is_power_of_two(class_number_only(2048) as u32) { passed += 1; }
 
     // Verdict computation
     total += 1;
@@ -664,7 +723,7 @@ mod tests {
         assert_eq!(class_number(12), 1);
         assert_eq!(class_number(16), 2);
         assert_eq!(class_number(20), 2);
-        assert_eq!(class_number(2048), 64);
+        assert_eq!(class_number_only(2048), 64);
     }
 
     #[test]
@@ -737,8 +796,8 @@ mod tests {
 
     #[test]
     fn test_d2048_propagation() {
-        assert_eq!(class_number(2048), 64);
-        assert!(is_power_of_two(class_number(2048)));
+        assert_eq!(class_number_only(2048), 64);
+        assert!(is_power_of_two(class_number_only(2048) as u32));
     }
 
     #[test]

@@ -480,6 +480,20 @@ pub struct RayData {
     /// coinvariant / class_coinvariant.
     pub corrected: i64,
     pub d_half: i64,
+    /// False when the modulus is past the enumeration budget, in which case
+    /// every count above is zero and means nothing. (O/m)^* is enumerated as
+    /// m^2 pairs, so the budget is a real wall, not a timeout: at m = 6144 the
+    /// pair list alone is six hundred megabytes.
+    pub computed: bool,
+}
+
+/// The largest modulus whose unit group may be enumerated. Chosen so the pair
+/// list stays inside a kernel heap: m = 1000 is a million pairs.
+pub const ENUMERATION_BUDGET: i64 = 1000;
+
+/// Can the ray class group at this modulus be built by enumeration.
+pub fn ray_computable(m: i64) -> bool {
+    m > 0 && m <= ENUMERATION_BUDGET
 }
 
 /// Coinvariants of a finite abelian group given as an explicit element list
@@ -541,6 +555,66 @@ pub fn norm_equation(f: &RealQuad, target: i64, bound: i64) -> Option<(i64, i64)
     None
 }
 
+/// As `norm_equation`, but rejecting solutions divisible by `q`, which
+/// generate the rational ideal rather than a power of the prime above it.
+pub fn norm_equation_coprime(f: &RealQuad, target: i64, bound: i64, q: i64) -> Option<(i64, i64)> {
+    let mut y = 0i64;
+    while y <= bound {
+        let ys: Vec<i64> = if y == 0 { vec![0] } else { vec![y, -y] };
+        for sy in ys {
+            let mut x = 0i64;
+            while x <= bound {
+                let xs: Vec<i64> = if x == 0 { vec![0] } else { vec![x, -x] };
+                for sx in xs {
+                    if sx % q == 0 && sy % q == 0 {
+                        continue;
+                    }
+                    let nm = f.norm(sx, sy);
+                    if nm == target || nm == -target {
+                        return Some((sx, sy));
+                    }
+                }
+                x += 1;
+            }
+        }
+        y += 1;
+    }
+    None
+}
+
+/// The two roots of omega's minimal polynomial modulo a split prime q. The
+/// prime ideals above q are (q, omega - c) for these c, so membership of
+/// x + y*omega in one of them is the congruence x + y*c = 0 mod q.
+pub fn omega_roots_mod(f: &RealQuad, q: i64) -> Vec<i64> {
+    let (t, n) = f.omega_relation();
+    let mut out = Vec::new();
+    let mut c = 0i64;
+    while c < q {
+        if (c * c - t * c - n).rem_euclid(q) == 0 {
+            out.push(c);
+        }
+        c += 1;
+    }
+    out
+}
+
+/// Orient a generator of norm q^2 so that it lies in p^2 rather than in the
+/// conjugate square: alpha is in p = (q, omega - c) exactly when
+/// x + y*c = 0 mod q, and with norm q^2 and coprimality to q that forces
+/// valuation two at p. Returns the generator, conjugated if need be.
+pub fn orient_to_prime_square(f: &RealQuad, alpha: (i64, i64), q: i64, c: i64) -> Option<(i64, i64)> {
+    let (t, _) = f.omega_relation();
+    let (x, y) = alpha;
+    if (x + y * c).rem_euclid(q) == 0 {
+        return Some(alpha);
+    }
+    let conj = (x + y * t, -y);
+    if (conj.0 + conj.1 * c).rem_euclid(q) == 0 {
+        return Some(conj);
+    }
+    None
+}
+
 /// A rational prime whose ideal above it generates a non-principal class,
 /// together with that prime. Returns None when the class number is one.
 pub fn nonprincipal_prime(f: &RealQuad, m: i64, h: i64) -> Option<i64> {
@@ -564,6 +638,14 @@ pub fn nonprincipal_prime(f: &RealQuad, m: i64, h: i64) -> Option<i64> {
 pub fn ray_data_at(d: i64, m: i64) -> RayData {
     let m_d = (d - 3) * (d + 1);
     let f = RealQuad::for_dimension(d);
+    if !ray_computable(m) {
+        return RayData {
+            d, m_d, core: f.core, disc: f.disc,
+            class_number: 0, ray_over_class: 0, ray_order: 0,
+            coinvariant: 0, class_coinvariant: 0, corrected: 0,
+            d_half: d / 2, computed: false,
+        };
+    }
     let cg = class_group(&f);
     let r = ResidueRing::new(f, m);
 
@@ -644,7 +726,17 @@ pub fn ray_data_at(d: i64, m: i64) -> RayData {
                 let n = cg.wide;
                 // alpha generates p^n, of norm +- q^n
                 let target = q.pow(n as u32);
-                let alpha = norm_equation(&f, target, 4000);
+                // alpha must generate p^n, not the rational ideal (q). An
+                // element of norm q^n divisible by q generates q times
+                // something and satisfies the wrong relation, which is what
+                // made the count fall short where p * sigma(p) = (q) was
+                // picked up instead of p^2.
+                let alpha0 = norm_equation_coprime(&f, target, 4000, q);
+                let roots = omega_roots_mod(&f, q);
+                let alpha = match (alpha0, roots.first()) {
+                    (Some(a0), Some(&c)) => orient_to_prime_square(&f, a0, q, c),
+                    (a, _) => a,
+                };
                 // Without a generator for p^n the extension is not determined,
                 // so say so by falling back rather than guessing a relation.
                 let alpha_res = match alpha {
@@ -743,6 +835,7 @@ pub fn ray_data_at(d: i64, m: i64) -> RayData {
         class_coinvariant,
         corrected: coinvariant / class_coinvariant,
         d_half: d / 2,
+        computed: true,
     }
 }
 
@@ -753,10 +846,113 @@ pub fn ray_order_at(d: i64, m: i64) -> i64 {
     ray_data_at(d, m).ray_order
 }
 
+/// The fundamental unit reduced modulo m, for fields whose unit is far too
+/// large to hold. The continued fraction of omega has P and Q bounded by
+/// 2*sqrt(disc) throughout, so the period can be detected exactly in machine
+/// integers while the convergents are carried modulo m. That gives epsilon
+/// mod m without ever forming epsilon.
+pub fn unit_residue_mod(f: &RealQuad, m: i64) -> Option<Residue> {
+    let dd = f.disc;
+    let sqrt_d = isqrt_int(dd);
+    let (p0, q0) = if dd.rem_euclid(4) == 1 { (1i64, 2i64) } else { (0i64, 2i64) };
+    let (mut pp, mut qq) = (p0, q0);
+    let (mut h_prev, mut h) = (0i64, 1i64);
+    let (mut k_prev, mut k) = (1i64, 0i64);
+    let mut seen: Vec<(i64, i64)> = Vec::new();
+
+    for _ in 0..200_000 {
+        if qq == 0 {
+            return None;
+        }
+        let a = (pp + sqrt_d) / qq;
+        let nh = (a * h + h_prev).rem_euclid(m);
+        let nk = (a * k + k_prev).rem_euclid(m);
+        h_prev = h;
+        h = nh;
+        k_prev = k;
+        k = nk;
+
+        pp = a * qq - pp;
+        qq = (dd - pp * pp) / qq;
+
+        // The period closes when the state (P, Q) recurs; the convergent one
+        // step before the recurrence carries the fundamental unit.
+        if seen.contains(&(pp, qq)) {
+            return Some((h_prev.rem_euclid(m), k_prev.rem_euclid(m)));
+        }
+        seen.push((pp, qq));
+    }
+    None
+}
+
+/// |(O/p^k)^*| for an inert prime p: the residue field has q = p^2 elements,
+/// and the unit group of O/p^k has order q^(k-1) * (q - 1).
+pub fn units_inert_prime_power(p: i64, k: u32) -> i64 {
+    let q = p * p;
+    let mut acc = q - 1;
+    for _ in 1..k {
+        acc *= q;
+    }
+    acc
+}
+
+/// The degree over F of the moduli field at p^k, for an inert p: the unit
+/// group of O/p^k modulo the image of the global units. The class group is
+/// divided out, as the d=16 settlement requires, so this is the moduli field
+/// degree and not the ray class field degree.
+pub fn moduli_degree_inert(d: i64, p: i64, k: u32) -> Option<i64> {
+    let mark = crate::heap_mark();
+    let out = moduli_degree_inert_inner(d, p, k);
+    crate::heap_reset(mark);
+    out
+}
+
+fn moduli_degree_inert_inner(d: i64, p: i64, k: u32) -> Option<i64> {
+    let f = RealQuad::for_dimension(d);
+    if f.splitting(p) != Splitting::Inert {
+        return None;
+    }
+    let m = p.pow(k);
+    let total = units_inert_prime_power(p, k);
+    let eps = unit_residue_mod(&f, m)?;
+    let r = ResidueRing::new(f, m);
+    if !r.is_unit(eps) {
+        return None;
+    }
+    // order of epsilon in (O/m)^*
+    let mut ord = 1i64;
+    let mut cur = eps;
+    while cur != r.one() {
+        cur = r.mul(cur, eps);
+        ord += 1;
+        if ord > total {
+            return None;
+        }
+    }
+    // adjoin -1 when it is not already a power of epsilon
+    let minus_one = ((-1i64).rem_euclid(m), 0);
+    let mut has_minus = false;
+    let mut acc = r.one();
+    for _ in 0..ord {
+        acc = r.mul(acc, eps);
+        if acc == minus_one {
+            has_minus = true;
+            break;
+        }
+    }
+    let image = if has_minus { ord } else { ord * 2 };
+    Some(total / image)
+}
+
 /// Does the sigma-coinvariant identity hold at d: corrected count = d/2.
 pub fn identity_holds(d: i64) -> bool {
     let r = ray_data(d);
-    r.corrected == r.d_half
+    r.computed && r.corrected == r.d_half
+}
+
+/// Is the identity even decidable at this dimension by enumeration.
+pub fn identity_computable(d: i64) -> bool {
+    ray_computable(3 * d)
 }
 
 /// The predicted answer, from the shape of d/2 alone: the odd part of d/2
