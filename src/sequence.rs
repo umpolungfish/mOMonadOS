@@ -113,7 +113,17 @@ fn b4_score(v: B4) -> i32 {
 struct MiniKernel {
     stack: [B4; 64],
     sp:    usize,
-    r:     [B4; 4],  // R0=Dim×Crit  R1=Top×Wind  R2=Kin×Fid  R3=Chir×Par
+    /// Eight registers, because the layer is CL8NK and eight is the Grammar's
+    /// number, not an implementation convenience. R0-R3 are seeded from the
+    /// tuple; R4-R7 are where IMSCRIB writes the closure witnesses, exactly as
+    /// the kernel writes them: token diversity, self-reference, Frobenius
+    /// order, dialetheia completeness. A four-wide file cannot hold them, and
+    /// an evaluator that cannot hold them cannot imscribe.
+    r:     [B4; 8],
+    /// IFIX stores to memory at the address in R0, as in the kernel.
+    mem:   [B4; 16],
+    /// The self-imscription of the program being run, read by IMSCRIB.
+    snap:  Option<crate::kernel::Snapshot>,
     /// Saved right-branch values, one per open fork, exactly as the kernel's
     /// fork_stack holds `right_val`. FFUSE joins the linear left with the value
     /// recorded by its *matching* FSPLIT, which is not in general the second
@@ -129,11 +139,21 @@ impl MiniKernel {
             sp: 0,
             fork: [B4::N; 16],
             fd: 0,
+            mem: [B4::N; 16],
+            snap: None,
             r: [
                 tuple_to_b4(tuple.d,   tuple.phi),
                 tuple_to_b4(tuple.t,   tuple.omega),
                 tuple_to_b4(tuple.k,   tuple.f),
                 tuple_to_b4(tuple.h,   tuple.p),
+                // The four slots the paired packing used to drop: R the
+                // adjoint, Γ the maximal, Ç, and Σ the one-to-one. R and Σ are
+                // the adjointness and self-reference of the tuple, so leaving
+                // them out removed exactly what closure is stated in.
+                tuple_to_b4(tuple.r,   tuple.s),
+                tuple_to_b4(tuple.g,   tuple.c),
+                B4::N,
+                B4::N,
             ],
         }
     }
@@ -160,6 +180,9 @@ impl MiniKernel {
     }
 
     fn run(&mut self, prog: &Program) {
+        // The closure witnesses are static in the program, so imscription has
+        // something true to write the moment the program is known.
+        self.snap = Some(crate::kernel::self_imscribe(prog));
         for tok in prog.as_slice() { self.step(*tok); }
     }
 
@@ -181,8 +204,16 @@ impl MiniKernel {
                 self.r[3] = b4_meet(self.r[1], self.r[2]);
             }
             Token::Imscrib => {
-                // kernel: R4-R7 from snapshot; here: R3 accumulates stack top
-                self.r[3] = b4_join(self.r[3], self.peek());
+                // kernel: R4-R7 from the self-imscription of the running
+                // program. The witnesses are static in the program, so the
+                // mini evaluator computes the same four and writes the same
+                // four places.
+                if let Some(snap) = self.snap {
+                    self.r[4] = B4::from_u8(snap.token_diversity as u8 & 3);
+                    self.r[5] = if snap.self_ref { B4::T } else { B4::F };
+                    self.r[6] = if snap.frobenius_order > 0 { B4::T } else { B4::F };
+                    self.r[7] = if snap.dialetheia_complete { B4::T } else { B4::F };
+                }
             }
             Token::Fsplit  => {
                 // kernel: record the split-time value as this fork's right_val,
@@ -211,9 +242,10 @@ impl MiniKernel {
                 self.r[1] = b4_join(self.r[1], B);
             }
             Token::Ifix    => {
-                // kernel: store to memory[R0]; here: accumulate into R2
+                // kernel: store to memory at the address held in R0.
+                let addr = (self.r[0] as usize) & 15;
                 let v = self.pop();
-                self.r[2] = b4_join(self.r[2], v);
+                self.mem[addr] = v;
             }
             Token::Fsplit3 => {
                 // Three-way fork; on the B4 stack the value semantics are those
