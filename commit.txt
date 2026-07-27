@@ -1,17 +1,17 @@
-A word that is not a braid on n strands is refused, not truncated.
+The evaluation point is stated as a winding, because it is one.
 
-B_n has generators sigma_1 .. sigma_{n-1}, so on three strands there is no
-sigma_3. Given one, the evaluator stopped at it and returned the product of the
-prefix, while the writhe was still summed over the whole word. A 33-crossing
-word containing sigma_3 on three strands reported the invariant of its first
-five crossings, and reported it in the same format and with the same confidence
-as a correct answer. Nothing about the output said a word had been discarded.
+The report read "V at t=e^(2 pi i/5)" — the same number written in the units the
+model does not use, in a kernel that had just been converted to carry phases as
+rational turns. It reads "V at t = 1/5 winding" now, taken from the lattice
+constant rather than spelled out.
 
-validate_braid_word rejects with the offending generator, the range that does
-exist, and the strand count the word actually needs. The matrix loop skips
-rather than breaks, so a missed validation degrades visibly instead of
-plausibly.
+The value's own phase is reported in windings as well, which makes the
+chirality verdict self-evidencing. The knots that cannot be told from their
+mirror come out at exactly 1/2 and 0/1, the only self-inverse windings, and a
+separated one lands off-lattice. The criterion is now visible in the output
+instead of resting on a tolerance applied to an imaginary part somewhere out of
+sight.
 
-The same fix in both ports, which now agree on the word that surfaced it: read
-on four strands rather than three it gives -0.809017 -1.314328i, the trefoil's
-value at this root.
+winding_of snaps to the lattice when the value is on it, trying the
+denominators the model actually uses, and falls back to thousandths rather than
+claiming an exactness it does not have.

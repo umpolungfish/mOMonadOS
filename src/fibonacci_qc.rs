@@ -1906,8 +1906,14 @@ pub fn repl_jones(n: usize, word: &[i32]) {
     let v = jones_polynomial(n, word);
     let writhe: i32 = word.iter().map(|g| if *g > 0 { 1 } else { -1 }).sum();
     sprintln!("  braid      : {} strands, {} crossings, writhe {}", n, word.len(), writhe);
-    sprintln!("  V at t=e^(2 pi i/5) : {:.6} {:+.6}i", v.re, v.im);
+    // The evaluation point is a winding, not a radian expression: t sits at
+    // 1/5 of a turn. Printing e^(2 pi i/5) states the same number in the units
+    // the model does not use.
+    sprintln!("  V at t = {}/{} winding : {:.6} {:+.6}i",
+              WIND_JONES_ROOT.num, WIND_JONES_ROOT.den, v.re, v.im);
     sprintln!("  |V|        : {:.6}", v.norm());
+    let vw = winding_of(v);
+    sprintln!("  phase      : {}/{} winding", vw.num, vw.den);
     if fabs(v.im) < 1e-9 {
         sprintln!("  chirality  : not separated at this root (value is real)");
     } else {
@@ -1950,4 +1956,24 @@ pub fn repl_winding() {
     sprintln!("");
     sprintln!("  Self-inverse windings are 0 and 1/2 only, which are the real values.");
     sprintln!("  A knot invariant landing there is one the mirror cannot be told from.");
+}
+
+
+/// The winding a complex value sits at, as an exact rational where one is
+/// near: the model's phases are tenths, so that is the denominator to try.
+pub fn winding_of(z: Complex) -> Winding {
+    if z.norm() < 1e-15 { return Winding::zero(); }
+    let turns = atan2(z.im, z.re) / TWO_PI;
+    // snap to the lattice when we are on it, which is the ordinary case
+    for den in [1i64, 2, 4, 5, 10, 20, 40] {
+        let x = turns * den as f64;
+        let near = if x >= 0.0 { (x + 0.5) as i64 } else { (x - 0.5) as i64 };
+        if fabs(x - near as f64) < 1e-9 {
+            return Winding::new(near, den);
+        }
+    }
+    // off-lattice: report in thousandths rather than pretend to be exact
+    let x = turns * 1000.0;
+    let near = if x >= 0.0 { (x + 0.5) as i64 } else { (x - 0.5) as i64 };
+    Winding::new(near, 1000)
 }

@@ -560,7 +560,7 @@ wins outright, so the braid gets shorter as well as more accurate.
 
 Phases are carried in **windings**, one winding being a full turn, because every phase
 native to the model is an exact multiple of a tenth of one: θ_τ and R^{ττ}_1 at 4/10,
-R^{ττ}_τ at −3/10, the Jones root at 2/10, the framing phase at −1/10, the loop value's
+R^{ττ}_τ at −3/10, the Jones root at 1/5, which is 2/10, the framing phase at −1/10, the loop value's
 phase at 5/10. Radians would convert those exact rationals into transcendentals,
 multiply them, and then measure the drift; as rational turns they compose by integer
 arithmetic and close exactly. The braid generator's eigenvalues, 4/10 and −3/10,

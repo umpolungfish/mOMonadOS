@@ -487,7 +487,7 @@ of the exponents, so every permutation of a word passes it.
 
 ### `fibqc jones <strands> <generators...>` and `fibqc knot [name]`
 
-Jones polynomial of the braid closure at t = e^{2πi/5}. This is the invariant Fibonacci
+Jones polynomial of the braid closure at 1/5 of a winding (t = e^{2πi/5} in radian notation). This is the invariant Fibonacci
 anyons exist to compute: SU(2)₃ Chern-Simons *is* that evaluation, so the braid
 representation performs it rather than simulating it.
 
@@ -495,10 +495,15 @@ representation performs it rather than simulating it.
 ⊙> fibqc knot trefoil
 trefoil — closure of a 2-strand braid
   braid      : 2 strands, 3 crossings, writhe 3
-  V at t=e^(2 pi i/5) : -0.809017 -1.314328i
+  V at t = 1/5 winding : -0.809017 -1.314328i
   |V|        : 1.543362
   chirality  : SEPARATED from mirror (mirror value is the conjugate)
 ```
+
+The value's own phase is reported in windings too, which makes the chirality verdict
+readable rather than asserted: the knots that cannot be told from their mirror sit at
+exactly 1/2 and 0, the only self-inverse windings, while a separated one lands
+off-lattice.
 
 `fibqc knot` with no argument lists the census. `fibqc jones 2 1 1 1` takes an arbitrary
 braid, strand count first.
