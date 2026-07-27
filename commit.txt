@@ -1,32 +1,8 @@
-Phases are held in windings, where one winding is a full turn.
+The kernel docs carry the winding lattice.
 
-Every phase native to this model is an exact multiple of a tenth of a turn:
-theta_tau and R^{tau tau}_1 at 4/10, R^{tau tau}_tau at -3/10, the Jones root
-at 2/10, the framing phase at -1/10, the loop value's phase at 5/10, the
-modular T diagonal at 0 and 4/10, the F eigenvalues at 0 and 5/10. Carrying
-these in radians converts exact rationals into transcendentals, multiplies
-them, and then measures the drift.
-
-`Winding` holds a phase as a rational number of turns and composes by integer
-arithmetic. jones_polynomial now builds both prefactors from it: alpha^writhe
-is one exact rational scaling rather than `writhe` complex multiplications, and
-the loop value splits into an exact half-turn phase times a real magnitude, so
-the phase accumulates nothing. The unknot comes back at exactly zero error, the
-real-valued knots at 1e-17 to 1e-16, and the T(2,n) period-ten closure holds to
-1e-15.
-
-The braid generator's eigenvalues, 4/10 and -3/10, generate the tenths. That is
-the same fact as det(sigma_1) being a primitive tenth root of unity, which was
-noted earlier only as a weak checksum; it is the lattice.
-
-What this states plainly is why compilation is hard at all. T is 1/8 of a turn
-and S is 1/4, and 1/8 is not a multiple of 1/10, so no braid reaches the T gate
-exactly at any length. Solovay-Kitaev exists to approach an incommensurable
-point on a commensurate lattice, and what makes the approach possible is the
-non-commutativity rather than the phases.
-
-Winding::is_self_inverse is the chirality criterion from the lattice rather
-than a tolerance on an imaginary part: 0 and 1/2 are the only self-inverse
-windings, and those are exactly the real values a mirror cannot be told from.
-
-`fibqc winding` prints the lattice.
+USER_GUIDE.md gains fibqc winding with the full table, and both documents now
+state why compiling is hard in the form the lattice gives it: T is 1/8 of a
+turn against a lattice of tenths, so no braid reaches it exactly at any length.
+The README's module section explains why phases are held as rational turns
+rather than radians, which is that radians convert exact rationals into
+transcendentals, multiply them, and then measure the drift.

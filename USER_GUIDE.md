@@ -523,6 +523,47 @@ under t⁵ = 1.
 σ₁ here is the negative crossing in the standard Jones orientation, and the word is
 mirrored internally to compensate.
 
+### `fibqc winding`
+
+Prints the model's phase lattice in windings, where one winding is a full turn.
+
+Every phase native to the model is an exact multiple of a **tenth of a turn**:
+
+| constant | winding | tenths |
+|----------|---------|--------|
+| θ_τ topological spin | 2/5 | 4 |
+| R^{ττ}_1 | 2/5 | 4 |
+| R^{ττ}_τ | −3/10 | −3 |
+| t Jones root | 1/5 | 2 |
+| α framing phase | −1/10 | −1 |
+| −φ loop value (phase of) | 1/2 | 5 |
+| modular T diagonal | 0, 2/5 | 0, 4 |
+| F eigenvalues | 0, 1/2 | 0, 5 |
+
+The braid generator's two eigenvalues are 4/10 and −3/10, and those generate the
+tenths. That is the same fact as det(σ₁) being a primitive tenth root of unity, which
+is why that determinant makes such a weak checksum: it is the lattice, and everything
+lives on it.
+
+**Why compilation is hard, in one line.** The gates that are not multiples of a tenth
+are exactly the ones not native to the model: T is 1/8 of a turn and S is 1/4. Since
+1/8 is not a multiple of 1/10, no braid reaches the T gate exactly at any length.
+Solovay-Kitaev exists to approach an incommensurable point on a commensurate lattice,
+and what makes the approach possible is the non-commutativity of the generators, not
+their phases.
+
+**Why some chirality cannot be seen.** The only self-inverse windings are 0 and 1/2,
+which are precisely the real values. A knot invariant landing there is one the mirror
+cannot be told from, and `Winding::is_self_inverse` is the criterion the kernel uses,
+taken from the lattice rather than from a tolerance on an imaginary part.
+
+Holding phases this way is also why the arithmetic is exact. Radians turn these
+rationals into transcendentals, multiply them, and then measure the drift; as rational
+turns they compose by integer arithmetic. `α^writhe` is one exact scaling rather than
+`writhe` complex multiplications, and the loop value splits into an exact half-turn
+phase times a real magnitude, so the phase accumulates nothing. The unknot returns
+exactly zero error and the period-ten closure of the T(2,n) family holds to 1e-15.
+
 ### Note on piping
 
 The serial console drops the first character of the first line, so

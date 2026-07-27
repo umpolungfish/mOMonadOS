@@ -558,6 +558,21 @@ row gains nothing, because the fuse needs enough dictionary to compile the survi
 residual and 4842 entries do not supply it. `T` is the case where no correction is appended at all, a different tied base simply
 wins outright, so the braid gets shorter as well as more accurate.
 
+Phases are carried in **windings**, one winding being a full turn, because every phase
+native to the model is an exact multiple of a tenth of one: θ_τ and R^{ττ}_1 at 4/10,
+R^{ττ}_τ at −3/10, the Jones root at 2/10, the framing phase at −1/10, the loop value's
+phase at 5/10. Radians would convert those exact rationals into transcendentals,
+multiply them, and then measure the drift; as rational turns they compose by integer
+arithmetic and close exactly. The braid generator's eigenvalues, 4/10 and −3/10,
+generate the tenths, which is the same fact as det(σ₁) being a primitive tenth root of
+unity.
+
+This also states why compiling is hard: T is 1/8 of a turn and S is 1/4, and 1/8 is not
+a multiple of 1/10, so no braid reaches the T gate exactly at any length. Solovay-Kitaev
+approaches an incommensurable point on a commensurate lattice, and what makes that
+possible is the non-commutativity rather than the phases. `fibqc winding` prints the
+lattice.
+
 Braid generators are projected onto the nearest unitary as they are built. Coming
 straight out of the F-move sum they sit about 1.4e-13 off unitary, and braid words
 accumulate that at a flat rate per generator, independent of word length, because the
