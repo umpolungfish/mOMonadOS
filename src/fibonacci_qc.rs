@@ -1909,7 +1909,7 @@ pub fn repl_jones(n: usize, word: &[i32]) {
     }
     let v = jones_polynomial(n, word);
     let writhe: i32 = word.iter().map(|g| if *g > 0 { 1 } else { -1 }).sum();
-    sprintln!("  braid      : {} strands, {} crossings, writhe {}", n, word.len(), writhe);
+    sprintln!("  writhe     : {}", writhe);
     // The evaluation point is a winding, not a radian expression: t sits at
     // 1/5 of a turn. Printing e^(2 pi i/5) states the same number in the units
     // the model does not use.

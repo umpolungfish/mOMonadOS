@@ -1,9 +1,15 @@
-The validator reports the strand count the whole word needs, briefly.
+jones takes a braid word and nothing else.
 
-It returned the first out-of-range generator, so appending a sigma_4 to a word
-that already failed on sigma_3 left the requirement stuck at four strands and
-the message stopped tracking the word. It returns the largest now.
+The strand count was a required argument that the word already determines:
+sigma_k needs k+1 strands, always. Requiring it created a number the caller
+could get wrong, and getting it wrong produced a rejection rather than an
+answer — so the interface asked for information it held, then refused work when
+the two disagreed. Three rounds went into improving that refusal before the
+argument itself was the problem.
 
-Output across fibqc cut down: the rejection is one line rather than seven, the
-unknot note one rather than three, and `fibqc winding` states the lattice
-without narrating it. B_2 no longer describes itself as having sigma_1..sigma_1.
+It is inferred now. `fibqc jones 1 1 1` is the trefoil, `fibqc jones 1 -2 1 -2`
+the figure-eight. There is no strand count to mismatch, so the whole error path
+is gone rather than better worded.
+
+validate_braid_word stays for callers that fix n themselves, where a
+disagreement is still a real fault worth refusing.

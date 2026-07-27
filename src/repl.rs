@@ -194,7 +194,7 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("fibqc verify              — algebra self-check (F/R symbols, S/T, braid unitarity)");
                         sprintln!("fibqc compile <gates>     — compile a circuit over H T S X to a braid word");
                         sprintln!("fibqc compile <gates> <n> — same, with gate net depth n (default 10, max 12)");
-                        sprintln!("fibqc jones <strands> <gens...>  — Jones polynomial of the braid closure");
+                        sprintln!("fibqc jones <gens...>    — Jones polynomial; strands implied by the word");
                         sprintln!("fibqc knot [name]        — Jones value for a knot from the census");
                         sprintln!("fibqc winding            — the phase lattice, in windings");
                         sprintln!("");
@@ -236,18 +236,17 @@ pub fn repl(k: &mut Kernel) {
                     "jones" => {
                         let tail: Vec<&str> = parts.collect();
                         let joined = tail.join(" ");
-                        let toks: Vec<&str> = joined.split_whitespace().collect();
-                        if toks.is_empty() {
-                            sprintln!("fibqc jones <strands> <generators...>   e.g. `fibqc jones 2 1 1 1`");
+                        let word: Vec<i32> = joined.split_whitespace()
+                            .filter_map(|t| t.parse::<i32>().ok()).collect();
+                        if word.is_empty() {
+                            sprintln!("fibqc jones <generators...>   e.g. `fibqc jones 1 1 1`");
+                            sprintln!("Strand count is implied: sigma_k needs k+1 strands.");
                         } else {
-                            let n: usize = toks[0].parse().unwrap_or(0);
-                            let word: Vec<i32> = toks[1..].iter()
-                                .filter_map(|t| t.parse::<i32>().ok()).collect();
-                            if n == 0 {
-                                sprintln!("strand count must be a positive integer");
-                            } else {
-                                crate::fibonacci_qc::repl_jones(n, &word);
-                            }
+                            // The word fixes the strand count. Asking for it
+                            // separately only creates a number to get wrong.
+                            let n = word.iter().map(|g| g.unsigned_abs() as usize).max()
+                                        .unwrap_or(0) + 1;
+                            crate::fibonacci_qc::repl_jones(n, &word);
                         }
                     }
                     "knot" => {
