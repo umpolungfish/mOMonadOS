@@ -1,21 +1,17 @@
-The winding lattice becomes load-bearing, and the suite checks it.
+A word that is not a braid on n strands is refused, not truncated.
 
-Holding the lattice in constants that only the Jones prefactors and a print
-statement consulted left it decorative: it could be dropped without anything
-failing, and it was, once, in the course of an evening. theta(j) already
-computed h = j(j+1)/(k+2), a rational number of turns, and then pushed it
-through radians; it now returns that rational directly as a Winding, and the
-R-symbol for the tau channel is WIND_R_TAU rather than a hand-written
-7*pi/5. Removing the lattice now breaks the algebra.
+B_n has generators sigma_1 .. sigma_{n-1}, so on three strands there is no
+sigma_3. Given one, the evaluator stopped at it and returned the product of the
+prefix, while the writhe was still summed over the whole word. A 33-crossing
+word containing sigma_3 on three strands reported the invariant of its first
+five crossings, and reported it in the same format and with the same confidence
+as a correct answer. Nothing about the output said a word had been discarded.
 
-verify_all gains a tenth check as its tenth entry: every phase native to the
-model must land on the tenths of a winding, the declared theta must agree with
-the computed one, and 0 and 1/2 must be the only self-inverse windings. This is
-an invariant of the theory rather than a convenience, since the braid
-generator's eigenvalues are 4/10 and -3/10 and they generate the lattice. If a
-phase ever leaves the tenths, either the level changed or something is being
-computed in the wrong units, and both should be loud.
+validate_braid_word rejects with the offending generator, the range that does
+exist, and the strand count the word actually needs. The matrix loop skips
+rather than breaks, so a missed validation degrades visibly instead of
+plausibly.
 
-Regression after rewiring: all ten checks pass on the metal, the generator
-defect holds at 3.3e-16, the five Jones values are unchanged with the unknot at
-exactly zero error, and T still compiles to 5.4143e-6.
+The same fix in both ports, which now agree on the word that surfaced it: read
+on four strands rather than three it gives -0.809017 -1.314328i, the trefoil's
+value at this root.

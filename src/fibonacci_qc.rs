@@ -959,8 +959,14 @@ fn apply_word_to_sigmas(
     for i in 0..dim { result[i][i] = Complex::one(); }
 
     for &g in word {
+        if g == 0 { continue; }
         let k = (g.unsigned_abs() as usize) - 1;
-        if k >= sigmas.len() { break; }
+        // Callers MUST validate with `validate_braid_word` first. Breaking here
+        // silently truncated the word at the first out-of-range generator and
+        // returned the product of the prefix, which then got reported as the
+        // invariant of the whole braid. Skip instead of truncating so a missed
+        // validation degrades visibly rather than plausibly.
+        if k >= sigmas.len() { continue; }
         let s = &sigmas[k];
         if g < 0 {
             let s_dag = conjugate_transpose_matrix(s);
@@ -998,6 +1004,20 @@ fn quantum_trace(n: usize, word: &[i32]) -> Complex {
     };
 
     t1 + Complex::new(PHI, 0.0) * t2
+}
+
+/// Is every generator in `word` a braid generator on `n` strands?
+///
+/// The braid group B_n has generators sigma_1 .. sigma_{n-1}, so on 3 strands
+/// there is no sigma_3. A word carrying one is not a braid on those strands and
+/// no invariant of it exists to compute. Returns the offending generator.
+pub fn validate_braid_word(n: usize, word: &[i32]) -> Result<(), i32> {
+    let max = if n == 0 { 0 } else { n - 1 };
+    for &g in word {
+        if g == 0 { return Err(0); }
+        if (g.unsigned_abs() as usize) > max { return Err(g); }
+    }
+    Ok(())
 }
 
 /// Compute the Jones polynomial of the braid closure at t = e^{2πi/5}.
@@ -1869,6 +1889,20 @@ pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize) {
 /// value means the invariant cannot see the chirality here, NOT that the knot
 /// is amphichiral: the cinquefoil is chiral and evaluates real.
 pub fn repl_jones(n: usize, word: &[i32]) {
+    if let Err(bad) = validate_braid_word(n, word) {
+        if bad == 0 {
+            sprintln!("  generator 0 is not a braid generator; they are numbered from 1");
+        } else {
+            sprintln!("  sigma_{} does not exist on {} strands.", bad.abs(), n);
+            sprintln!("  B_{} has generators sigma_1 .. sigma_{}. This word needs at",
+                      n, if n == 0 { 0 } else { n - 1 });
+            sprintln!("  least {} strands.", bad.abs() + 1);
+            sprintln!("  No invariant is computed: the word is not a braid on {} strands,", n);
+            sprintln!("  and truncating it at the bad generator would report the invariant");
+            sprintln!("  of a prefix as though it were the whole.");
+        }
+        return;
+    }
     let v = jones_polynomial(n, word);
     let writhe: i32 = word.iter().map(|g| if *g > 0 { 1 } else { -1 }).sum();
     sprintln!("  braid      : {} strands, {} crossings, writhe {}", n, word.len(), writhe);
