@@ -18,6 +18,7 @@ use crate::{
     dialect_expansion, divisor_ring, mersenne_parallel, bifurcation_test, entropy, d12_sic, d2048_sic, d2048_sieve,
     sic_moduli,
     riemann_sic,
+    riemann_hilbert,
     witness_vessel, ask,
 };
 use crate::tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
@@ -274,8 +275,8 @@ pub fn repl(k: &mut Kernel) {
                     "rotat" => sprintln!("{}", crate::riemann_sic::rotat_audit()),
                     "grammar" => sprintln!("{}", crate::riemann_sic::grammar_encoding()),
                     "lean" => sprintln!("{}", crate::riemann_sic::lean_reference()),
-                    "sic" => sprintln!("{}", crate::riemann_sic::sic_povm_structural_probe()),
-                    "hilbert" => sprintln!("{}", crate::riemann_sic::hilbert_polya_connection()),
+                    "sic" => sprintln!("{}", crate::riemann_sic::run_sic_verify()),
+                    "hilbert" => sprintln!("{}", crate::riemann_hilbert::run_hilbert()),
                     _ => {
                         sprintln!("riemann — Riemann-SIC spectral correspondence");
                         sprintln!("  riemann            full protocol report (all sections)");
@@ -290,8 +291,8 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("  riemann rotat      ROTAT orbit audit");
                         sprintln!("  riemann grammar    structural tuple + per-primitive justification");
                         sprintln!("  riemann lean       Lean 4 cross-reference");
-                        sprintln!("  riemann sic        SIC-POVM structural probe");
-                        sprintln!("  riemann hilbert    Hilbert-Pólya spectral connection");
+                        sprintln!("  riemann sic        d=12 SIC-POVM Gerzon inverse numerical verification");
+                        sprintln!("  riemann hilbert    Zauner Hamiltonian H_Z eigenvalue computation");
                     }
                 }
             }
