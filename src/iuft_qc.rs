@@ -69,15 +69,15 @@ impl IuftQcGate {
         let a = self.to_su2();
         let b = other.to_su2();
 
-        // tr(U†V) = Σ_ij conj(U_ij) * V_ij
-        // For 2x2: conj(a00)*b00 + conj(a01)*b10 + conj(a10)*b01 + conj(a11)*b11
-        let trace_re = a[0][0] * b[0][0] + a[0][1] * b[0][1]  // conj(a00)*b00
-                      + a[0][2] * b[1][0] + a[0][3] * b[1][1]  // conj(a01)*b10
-                      + a[1][0] * b[0][2] + a[1][1] * b[0][3]  // conj(a10)*b01
-                      + a[1][2] * b[1][2] + a[1][3] * b[1][3]; // conj(a11)*b11
+        // tr(U†V) = conj(u00)*v00 + conj(u10)*v10 + conj(u01)*v01 + conj(u11)*v11
+        // Storage: a = [[u00_re, u00_im, u01_re, u01_im], [u10_re, u10_im, u11_re, u11_im]]
+        let trace_re = a[0][0] * b[0][0] + a[0][1] * b[0][1]  // conj(u00)*v00
+                      + a[1][0] * b[1][0] + a[1][1] * b[1][1]  // conj(u10)*v10
+                      + a[0][2] * b[0][2] + a[0][3] * b[0][3]  // conj(u01)*v01
+                      + a[1][2] * b[1][2] + a[1][3] * b[1][3]; // conj(u11)*v11
         let trace_im = a[0][0] * b[0][1] - a[0][1] * b[0][0]
-                      + a[0][2] * b[1][1] - a[0][3] * b[1][0]
-                      + a[1][0] * b[0][3] - a[1][1] * b[0][2]
+                      + a[1][0] * b[1][1] - a[1][1] * b[1][0]
+                      + a[0][2] * b[0][3] - a[0][3] * b[0][2]
                       + a[1][2] * b[1][3] - a[1][3] * b[1][2];
 
         let trace_mod = sqrt(trace_re * trace_re + trace_im * trace_im);

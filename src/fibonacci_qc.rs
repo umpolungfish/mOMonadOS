@@ -795,13 +795,120 @@ pub fn synthesize_gate(n: usize, word: &[i32]) -> Result<Vec<Vec<Complex>>, Stri
     Ok(u)
 }
 
-/// Compute the Jones polynomial (normalized Markov trace) from a braid.
+/// Braid generators in both total-charge sectors on n strands.
+///
+/// The quantum trace runs over BOTH sectors: tau^n -> 1 (dimension F_{n-1},
+/// weight 1) and tau^n -> tau (dimension F_n, weight phi). The second is
+/// realized as the vacuum sector on n+1 strands acted on by the first n-1
+/// generators only, since tau^n -> tau is the same space as tau^{n+1} -> 1
+/// with the extra strand left alone.
+fn sector_reps(n: usize) -> (Vec<Vec<Vec<Complex>>>, Vec<Vec<Vec<Complex>>>) {
+    let (_, sig1) = braid_representation(n);
+    let (_, sig2) = braid_representation(n + 1);
+    let sig2_trunc = if n >= 2 { sig2[..n - 1].to_vec() } else { vec![] };
+    (sig1, sig2_trunc)
+}
+
+/// Apply a braid word to a set of sigma generators, returning the resulting matrix.
+/// Right-multiplies: U = sigma_{g_k} * ... * sigma_{g_1} * I
+fn apply_word_to_sigmas(
+    sigmas: &[Vec<Vec<Complex>>],
+    word: &[i32],
+    dim: usize,
+) -> Vec<Vec<Complex>> {
+    let mut result = vec![vec![Complex::zero(); dim]; dim];
+    for i in 0..dim { result[i][i] = Complex::one(); }
+
+    for &g in word {
+        let k = (g.unsigned_abs() as usize) - 1;
+        if k >= sigmas.len() { break; }
+        let s = &sigmas[k];
+        if g < 0 {
+            let s_dag = conjugate_transpose_matrix(s);
+            result = multiply_matrices(&s_dag, &result);
+        } else {
+            result = multiply_matrices(s, &result);
+        }
+    }
+
+    result
+}
+
+/// Weighted quantum trace over both total-charge sectors: tr_1 + phi * tr_tau.
+///
+/// Applies the braid word to the fusion space and computes the trace in both
+/// sectors, weighted by quantum dimension phi for the tau-sector. This is the
+/// trace that makes the Jones polynomial a Markov invariant.
+fn quantum_trace(n: usize, word: &[i32]) -> Complex {
+    let (s1, s2) = sector_reps(n);
+    let d1 = if s1.is_empty() { 0 } else { s1[0].len() };
+    let d2 = if s2.is_empty() { 0 } else { s2[0].len() };
+
+    let t1 = if d1 > 0 {
+        let u = apply_word_to_sigmas(&s1, word, d1);
+        matrix_trace(&u)
+    } else {
+        Complex::one() // no strands: trace of identity on 1-dim space
+    };
+
+    let t2 = if d2 > 0 {
+        let u = apply_word_to_sigmas(&s2, word, d2);
+        matrix_trace(&u)
+    } else {
+        Complex::zero()
+    };
+
+    t1 + Complex::new(PHI, 0.0) * t2
+}
+
+/// Compute the Jones polynomial of the braid closure at t = e^{2πi/5}.
+///
+/// This is the evaluation Fibonacci anyons perform natively: SU(2) level 3
+/// Chern-Simons gives the Jones polynomial at the fifth root of unity, and
+/// the braid representation IS that evaluation rather than a simulation of it.
+///
+/// The two normalization constants are forced, not fitted. Requiring the
+/// unknot to evaluate to 1 in its three Markov presentations (empty word
+/// on one strand, sigma_1 and sigma_1^{-1} on two) determines both:
+///   alpha = e^{-iπ/5}  (tenth root of unity, the framing phase)
+///   beta  = -φ         (negative of the loop value)
+///
+/// No knot was used to fix them — every knot after that is a prediction.
+///
+/// HANDEDNESS: sigma_1 in this module is the NEGATIVE crossing in the
+/// standard Jones orientation, so the word is mirrored internally.
+/// The convention is visible only on chiral knots.
+///
+/// A single root of unity is not a complete invariant: T(2,9), T(2,11),
+/// and 8_19 all evaluate to 1 here, as the unknot does.
 pub fn jones_polynomial(n: usize, word: &[i32]) -> Complex {
-    let u = evaluate_braid_word(n, word);
-    let d = u.len();
-    if d == 0 { return Complex::one(); }
-    let tr = matrix_trace(&u);
-    tr / Complex::new(d as f64, 0.0)
+    // Mirror: sigma_1 here is the negative crossing in standard Jones orientation
+    let mirrored: Vec<i32> = word.iter().map(|&g| -g).collect();
+
+    // Framing phase: alpha = e^{-i*pi/5}, a tenth root of unity
+    let alpha = Complex::from_polar(1.0, -PI / 5.0);
+
+    // Loop value: beta = -phi
+    let beta = Complex::new(-PHI, 0.0);
+
+    // Writhe of the mirrored word
+    let writhe: i32 = mirrored.iter().map(|&g| if g > 0 { 1 } else { -1 }).sum();
+
+    // Quantum trace ratio: Z(word) / Z(empty)
+    let z_word = quantum_trace(n, &mirrored);
+    let z_empty = quantum_trace(n, &[]);
+    let z = if z_empty.norm_sq() < 1e-24 {
+        Complex::one()
+    } else {
+        // z_empty is real and positive for n >= 1
+        Complex::new(z_word.re / z_empty.re, z_word.im / z_empty.re)
+    };
+
+    // V = alpha^writhe * beta^{n-1} * Z(word)/Z(empty)
+    let alpha_pow = complex_pow(alpha, writhe);
+    let beta_pow = complex_pow(beta, (n as i32) - 1);
+
+    alpha_pow * beta_pow * z
 }
 
 /// Braid statistics: unitary, eigenvalues, trace, dimension
