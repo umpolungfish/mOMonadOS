@@ -525,7 +525,8 @@ immediately verifiable** without touching any other source file.
 `fibonacci_qc.rs` carries the SU(2)_3 anyon algebra, the braid group representation on
 fusion trees, and a Solovay-Kitaev compiler that takes a standard gate down to a braid
 word. All numerical data is derived from closed formulas in-code; nothing is asserted
-from memory. `verify_all()` runs at boot.
+from memory. `verify_all()` runs at boot, and the whole module is reachable from the
+REPL as `fibqc` (see USER_GUIDE.md).
 
 Compilation splits and fuses rather than ranking. Several braid words routinely sit at
 the same distance from the target; each seeds a different trajectory and leaves a residual

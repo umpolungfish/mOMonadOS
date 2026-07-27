@@ -417,3 +417,75 @@ YM Witness: AFWD→FSPLIT→EVALT→AREV→FFUSE→EVALF→CLINK→IFIX (8 tok, 
 ```
 
 ---
+
+
+## Fibonacci Anyon Quantum Computer
+
+`fibonacci_qc.rs` carries the SU(2)₃ anyon algebra, the braid representation on fusion
+trees, and a Solovay-Kitaev compiler that reduces a standard gate to a braid word.
+Fibonacci anyons are computationally universal, and the fusion space V_n has dimension
+F_{n-1}, so four anyons carry one qubit.
+
+### `fibqc verify`
+
+Runs the algebra self-check: F unitary, the pentagon form, the Yang-Baxter braid
+relation, spin-statistics, S unitary, charge conjugation, the TQFT identities, the
+Verlinde formula, and the Artin relations up to eight strands.
+
+The pentagon entry checks more than `F² = I`. That identity alone is satisfied by four
+numbers that merely square to the identity, so the check also verifies what the
+pentagon forces: that F is real and symmetric with nonvanishing off-diagonal,
+anti-diagonal in the sense d = −a, and normalized to a² + b² = 1. Together these pin
+the entries.
+
+### `fibqc compile <gates> [depth]`
+
+Compiles a circuit over `H`, `T`, `S`, `X` to a braid word.
+
+```
+⊙> fibqc compile T S
+Building gate net (depth 10)...
+  net: 4842 entries, 1704 KB (heap 2164 of 8192 KB)
+  single arm : error 7.260095e-4  length 1094
+  split+fused: error 7.260095e-4  length 1094
+  gain       : 1.0x
+  unitary    : true
+  word check : PASS (residual 5.40e-14)
+  heap peak  : 2602 of 8192 KB
+```
+
+The circuit compiles as ONE unitary rather than gate by gate, so the approximation
+error is incurred once instead of accumulating across the gates.
+
+A trailing integer sets the gate net depth, as in `fibqc compile T S 12`. The default
+is 10 and 12 is the hard ceiling, for reasons of memory rather than time: the net costs
+1.7 MB at depth 10 and 6.9 MB at depth 12 against the 8 MB bump arena, and depth 12
+peaks at 8156 KB, a margin of 36 KB. The command reports its own high-water mark and
+scopes itself with `heap_mark`/`heap_reset`, so a second invocation starts from the
+same place. Exhausting the arena returns null and takes the kernel down without
+printing, which is why the usage line is there.
+
+### What the two error lines mean
+
+Several braid words routinely sit at the same distance from the target. Each seeds a
+different trajectory and leaves a residual rotation pointing its own way. `single arm`
+is what one of them achieves alone; `split+fused` follows every tied word as a separate
+branch and then has the arms that lost compile the residual left by the arm that won,
+appending it, so the composite beats every arm it was chosen from.
+
+Depth matters to whether the fuse fires at all. `T S` gains nothing at depth 10 and
+25.4× at depth 12, because compiling the survivor's residual needs more dictionary than
+4842 entries supply. A flat row means dictionary-limited, not converged.
+
+### `word check`
+
+The reported unitary is verified against its own printed word by resynthesizing the
+word from scratch, agreeing to about 1e-13. The determinant identity
+`det(braid) = det(σ₁)^(sum of exponents)` is NOT used: `det(σ₁)` is a primitive tenth
+root of unity, so that test passes by chance one time in ten, and it sees only the sum
+of the exponents, so every permutation of a word passes it.
+
+### Note on piping
+
+The serial console drops the first character of the first line, so
+`printf "fibqc verify\n" | ./run.sh` arrives as `ibqc`. Send a bare newline first.
