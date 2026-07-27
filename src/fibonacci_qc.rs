@@ -1011,13 +1011,21 @@ fn quantum_trace(n: usize, word: &[i32]) -> Complex {
 /// The braid group B_n has generators sigma_1 .. sigma_{n-1}, so on 3 strands
 /// there is no sigma_3. A word carrying one is not a braid on those strands and
 /// no invariant of it exists to compute. Returns the offending generator.
+/// On failure returns the LARGEST offending generator, not the first, so the
+/// strand count it implies is the one the whole word actually needs. Reporting
+/// the first is worse than useless when a word carries several: appending a
+/// sigma_4 to a word that already failed on sigma_3 leaves the requirement
+/// unchanged at four strands, and the message stops tracking the word.
 pub fn validate_braid_word(n: usize, word: &[i32]) -> Result<(), i32> {
     let max = if n == 0 { 0 } else { n - 1 };
+    let mut worst: i32 = 0;
     for &g in word {
         if g == 0 { return Err(0); }
-        if (g.unsigned_abs() as usize) > max { return Err(g); }
+        if (g.unsigned_abs() as usize) > max && g.abs() > worst.abs() {
+            worst = g;
+        }
     }
-    Ok(())
+    if worst != 0 { Err(worst) } else { Ok(()) }
 }
 
 /// Compute the Jones polynomial of the braid closure at t = e^{2πi/5}.
@@ -1891,15 +1899,11 @@ pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize) {
 pub fn repl_jones(n: usize, word: &[i32]) {
     if let Err(bad) = validate_braid_word(n, word) {
         if bad == 0 {
-            sprintln!("  generator 0 is not a braid generator; they are numbered from 1");
+            sprintln!("  generator 0 does not exist; they number from 1");
         } else {
-            sprintln!("  sigma_{} does not exist on {} strands.", bad.abs(), n);
-            sprintln!("  B_{} has generators sigma_1 .. sigma_{}. This word needs at",
-                      n, if n == 0 { 0 } else { n - 1 });
-            sprintln!("  least {} strands.", bad.abs() + 1);
-            sprintln!("  No invariant is computed: the word is not a braid on {} strands,", n);
-            sprintln!("  and truncating it at the bad generator would report the invariant");
-            sprintln!("  of a prefix as though it were the whole.");
+            let top = if n == 0 { 0 } else { n - 1 };
+            sprintln!("  sigma_{} needs {} strands, not {}. B_{} tops out at sigma_{}.",
+                      bad.abs(), bad.abs() + 1, n, n, top);
         }
         return;
     }
@@ -1920,42 +1924,31 @@ pub fn repl_jones(n: usize, word: &[i32]) {
         sprintln!("  chirality  : SEPARATED from mirror (mirror value is the conjugate)");
     }
     if fabs(v.re - 1.0) < 1e-9 && fabs(v.im) < 1e-9 {
-        sprintln!("  fiber      : unknot Jones fiber at this root. The braid endures.");
+        sprintln!("  note       : 1, as the unknot gives. One root is not a complete invariant.");
     }
 }
 
 
 /// Print the model's phase lattice in windings.
 pub fn repl_winding() {
-    sprintln!("Phase lattice, in WINDINGS (one winding = a full turn)");
-    sprintln!("");
-    sprintln!("  constant                        winding    tenths");
+    sprintln!("Phase lattice — one winding is a full turn.");
     let rows: [(&str, Winding); 6] = [
-        ("theta_tau  topological spin", WIND_THETA_TAU),
-        ("R^{tau tau}_1", WIND_R_VACUUM),
-        ("R^{tau tau}_tau", WIND_R_TAU),
-        ("t          Jones root", WIND_JONES_ROOT),
-        ("alpha      framing phase", WIND_FRAMING),
-        ("-phi       loop value (phase)", WIND_LOOP_PHASE),
+        ("theta_tau", WIND_THETA_TAU),
+        ("R^tt_1", WIND_R_VACUUM),
+        ("R^tt_tau", WIND_R_TAU),
+        ("Jones root t", WIND_JONES_ROOT),
+        ("framing alpha", WIND_FRAMING),
+        ("-phi (phase)", WIND_LOOP_PHASE),
     ];
     for (name, w) in rows.iter() {
-        sprintln!("  {:30} {:>3}/{:<3}  {:>6}", name, w.num, w.den, w.num * 10 / w.den);
+        sprintln!("  {:14} {:>3}/{:<3}", name, w.num, w.den);
     }
-    sprintln!("");
-    sprintln!("  Every phase native to the model is an exact multiple of 1/10 turn.");
-    sprintln!("  The braid generator's eigenvalues are 4/10 and -3/10, which generate");
-    sprintln!("  the tenths; that is the same fact as det(sigma_1) being a primitive");
-    sprintln!("  tenth root of unity.");
-    sprintln!("");
-    sprintln!("  The gates that are NOT tenths are the ones not native to the model:");
-    sprintln!("    T gate   1/8 turn");
-    sprintln!("    S gate   1/4 turn");
-    sprintln!("  1/8 is not a multiple of 1/10, so no braid reaches T exactly at any");
-    sprintln!("  length. That incommensurability IS the compilation problem, and what");
-    sprintln!("  makes it approachable is the non-commutativity, not the phases.");
-    sprintln!("");
-    sprintln!("  Self-inverse windings are 0 and 1/2 only, which are the real values.");
-    sprintln!("  A knot invariant landing there is one the mirror cannot be told from.");
+    sprintln!("Every native phase is a multiple of 1/10 turn; sigma_1's eigenvalues");
+    sprintln!("are 4/10 and -3/10 and generate it.");
+    sprintln!("T is 1/8 and S is 1/4. 1/8 is not a multiple of 1/10, so no braid");
+    sprintln!("reaches T exactly at any length. That is why compilation exists.");
+    sprintln!("Self-inverse windings are 0 and 1/2 only — the real values, which a");
+    sprintln!("mirror cannot be told from.");
 }
 
 
