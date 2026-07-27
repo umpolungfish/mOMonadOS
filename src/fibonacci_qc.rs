@@ -882,20 +882,31 @@ impl GateNet {
             }
         }
 
+        // The frontier is a RANGE OF INDICES into `entries`, not a second copy
+        // of them. Cloning each level into `entries` and keeping the same
+        // vectors as the frontier doubled the live word storage, and the words
+        // are the bulk of the net: in-kernel the depth-10 net costs megabytes,
+        // where an ideal-packing estimate suggests a fraction of that. On a
+        // bump allocator that never frees, the duplicate is what puts the
+        // deeper nets out of reach.
         let mut entries2: Vec<(Vec<i32>, Matrix2)> = Vec::new();
         let mut seen2: Vec<u64> = Vec::new();
-        let mut frontier2: Vec<(Vec<i32>, Matrix2)> = vec![(vec![], Matrix2::identity())];
 
-        entries2.push((vec![], Matrix2::identity()));
+        entries2.push((Vec::new(), Matrix2::identity()));
         seen2.push(Self::projective_key(&Matrix2::identity()));
+        let (mut lo, mut hi) = (0usize, 1usize);   // current frontier: entries2[lo..hi]
 
-        for _ in 0..max_depth {
-            let mut next2 = Vec::new();
-            for (word, gate) in &frontier2 {
-                let last = if word.is_empty() { 0 } else { word[word.len() - 1] };
+        'build: for _ in 0..max_depth {
+            for idx in lo..hi {
+                let last = {
+                    let w = &entries2[idx].0;
+                    if w.is_empty() { 0 } else { w[w.len() - 1] }
+                };
+                let gate = entries2[idx].1;
+                let word_len = entries2[idx].0.len();
                 for (gi, &g) in gens.iter().enumerate() {
-                    if !word.is_empty() && g == -last { continue; }
-                    let new_gate = gen_mats[gi].mul(*gate);
+                    if word_len > 0 && g == -last { continue; }
+                    let new_gate = gen_mats[gi].mul(gate);
                     let key = Self::projective_key(&new_gate);
                     // sorted membership: a linear `contains` here is O(n) per
                     // candidate, which at depth 12 is ~1e8 comparisons behind
@@ -904,17 +915,16 @@ impl GateNet {
                         Ok(_) => continue,
                         Err(pos) => seen2.insert(pos, key),
                     }
-                    let mut new_word = word.clone();
+                    let mut new_word = Vec::with_capacity(word_len + 1);
+                    new_word.extend_from_slice(&entries2[idx].0);
                     new_word.push(g);
-                    next2.push((new_word, new_gate));
-                    if entries2.len() + next2.len() >= max_gates { break; }
+                    entries2.push((new_word, new_gate));
+                    if entries2.len() >= max_gates { break 'build; }
                 }
-                if entries2.len() + next2.len() >= max_gates { break; }
             }
-            if next2.is_empty() { break; }
-            for e in &next2 { entries2.push(e.clone()); }
-            frontier2 = next2;
-            if entries2.len() >= max_gates { break; }
+            if entries2.len() == hi { break; }   // no new nodes at this level
+            lo = hi;
+            hi = entries2.len();
         }
 
         GateNet { entries: entries2 }
@@ -1519,9 +1529,11 @@ pub fn run_sample_circuit() {
 /// the approximation error is incurred once instead of accumulating across the
 /// gates, and the braid comes out shorter.
 ///
-/// `net_depth` sizes the gate net, which is the memory-dominant structure: it
-/// costs roughly 0.6 MB at depth 10 and 2.1 MB at depth 12, against a 4 MB
-/// bump allocator, so 10 is the default and 12 is the practical ceiling.
+/// `net_depth` sizes the gate net, which is the memory-dominant structure.
+/// Measured in-kernel it costs 1.7 MB at depth 10 and 6.9 MB at depth 12
+/// against an 8 MB bump arena, peaking at 8156 KB in the latter case, a margin
+/// of 36 KB. So 10 is the default and 12 is the hard ceiling, not merely the
+/// practical one.
 pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize) {
     let mut target = Matrix2::identity();
     let mut named = false;
@@ -1544,9 +1556,19 @@ pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize) {
         return;
     }
 
+    // The arena is a bump allocator: it reclaims only in LIFO order and the
+    // fuse allocates thousands of word vectors on top of the net. Scope the
+    // whole compile so a second invocation starts from the same place, and
+    // report the high-water mark, since running out returns null and dies
+    // without a message.
+    let mark = crate::heap_mark();
+    let (used0, total) = crate::heap_used();
+
     sprintln!("Building gate net (depth {})...", net_depth);
     let net = GateNet::build(net_depth, 200000);
-    sprintln!("  net: {} entries", net.entries.len());
+    let (used1, _) = crate::heap_used();
+    sprintln!("  net: {} entries, {} KB (heap {} of {} KB)",
+              net.entries.len(), (used1 - used0) / 1024, used1 / 1024, total / 1024);
 
     let (w0, g0, _) = solovay_kitaev(&target, sk_depth, &net);
     let e0 = Matrix2::projective_distance(&target, &g0);
@@ -1569,6 +1591,8 @@ pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize) {
         }
         Err(e) => sprintln!("  word check : synthesis failed: {}", e),
     }
+    let (peak, total2) = crate::heap_used();
+    sprintln!("  heap peak  : {} of {} KB", peak / 1024, total2 / 1024);
 
     sprintln!("  braid word ({} generators):", w1.len());
     let mut line = String::new();
@@ -1577,4 +1601,6 @@ pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize) {
         if (i + 1) % 24 == 0 { sprintln!("    {}", line); line.clear(); }
     }
     if !line.is_empty() { sprintln!("    {}", line); }
+
+    crate::heap_reset(mark);
 }

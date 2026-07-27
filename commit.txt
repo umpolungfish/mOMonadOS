@@ -1,31 +1,24 @@
-The compiler splits over the tied bases and fuses, and the generators are
-projected back onto unitarity.
+The gate net stops storing every word twice, and depth 12 fits.
 
-Several braid words sit at the same distance from a target, and the code that
-was meant to try each of them lived behind a condition that never held, since
-approximate_gate always passes a prebuilt net. Three successive rewrites of that
-block produced byte-identical output, which read as convergence and was in fact
-dead code. solovay_kitaev_arm now names which tied base a branch takes and
-carries it the whole way down so branches stay apart, and sk_split_fuse has the
-arms that lost compile the residual left by the arm that won.
+The build cloned each level into `entries` and then kept the same vectors as the
+frontier, so every braid word was live in two places at once. On a bump
+allocator that reclaims only in LIFO order that duplicate is what put the deeper
+nets out of reach. The frontier is now a range of indices into `entries`: the
+depth-10 net drops from 3553 KB to 1704 KB and the compile peak from 4451 KB to
+2602 KB, with output bit-identical.
 
-projective_distance no longer evaluates sqrt(1 - |tr|/n). That form subtracts
-two numbers agreeing to fifteen digits: it carries a few percent of error at
-1e-5 and floors to exactly zero below 1e-8, which is inside the range these
-braids reach, so it reported perfect gates that were not perfect. Removing the
-optimal phase and comparing elementwise never forms that difference.
+Depth 12 now runs in-kernel. It costs 6864 KB and peaks at 8156 KB of the 8192
+KB arena, a margin of 36 KB, so it is the hard ceiling rather than the practical
+one. The figures previously recorded in the README and the help text were host
+estimates assuming ideal packing and were low by roughly a factor of three;
+they are replaced by measurements.
 
-The generators came out of the F-move sum 1.4e-13 off unitary, flat in strand
-count, and the braid words accumulated that at a constant rate per generator
-regardless of length. Constant rather than growing is the signature of a defect
-at the source, so one Newton step onto the nearest unitary moves every word at
-once: generators to 3.3e-16 and per-generator accumulation from 5e-14 to 5e-17.
+`fibqc` scopes itself with heap_mark/heap_reset and reports its own high-water
+mark. Running out returned null and took the kernel down without printing
+anything, which is what the silent fifteen-minute deaths were.
 
-check_pentagon tested only F^2 = I. It now also checks what the pentagon forces,
-real and symmetric with nonvanishing off-diagonal, anti-diagonal, normalized,
-and is labelled for what it verifies.
-
-fibqc reaches all of this from the REPL; the module was wired to a boot line and
-nothing else. The net build used a linear membership scan, ~1e8 comparisons at
-depth 12 behind software floats, and closest_arm walked the net twice per
-lookup. Both are single-pass now.
+The result this makes reachable: T·S gains 25.4x at depth 12, from 1.978e-4 to
+7.792e-6. At depth 10 the same row gains nothing at all. The fuse needs enough
+dictionary to compile the surviving arm's residual, and 4842 entries do not
+supply it, so the flat row at depth 10 was dictionary-limited rather than
+converged.

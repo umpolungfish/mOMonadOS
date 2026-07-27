@@ -199,7 +199,9 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("rather than accumulating gate by gate. Several braid words sit at the");
                         sprintln!("same distance from the target; each is followed as a separate arm, then");
                         sprintln!("the arms that lost compile the residual left by the arm that won.");
-                        sprintln!("Net memory: ~0.6 MB at depth 10, ~2.1 MB at depth 12 (4 MB bump total).");
+                        sprintln!("Net memory, measured in-kernel: 1.7 MB at depth 10, 6.9 MB at depth 12,");
+                        sprintln!("against an 8 MB bump arena. Depth 12 peaks at 8156 KB, a 36 KB margin,");
+                        sprintln!("so it is the hard ceiling. The command reports its own high-water mark.");
                     }
                     "verify" => {
                         sprintln!("Fibonacci anyon algebra verified = {}", crate::fibonacci_qc::verify_all());

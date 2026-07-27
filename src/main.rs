@@ -130,6 +130,16 @@ pub fn heap_mark() -> usize {
 pub fn heap_reset(mark: usize) {
     ALLOCATOR.next.store(mark, Ordering::Relaxed);
 }
+/// Bytes currently handed out, and the arena total. A bump allocator that has
+/// run out returns null and the allocation error path takes the kernel down
+/// without a message, so anything heavy should report this rather than let
+/// exhaustion look like a hang.
+pub fn heap_used() -> (usize, usize) {
+    let next = ALLOCATOR.next.load(Ordering::Relaxed);
+    let end = ALLOCATOR.end.load(Ordering::Relaxed);
+    let start = unsafe { core::ptr::addr_of!(HEAP_STORAGE.0) as usize };
+    (next.saturating_sub(start), end.saturating_sub(start))
+}
 
 // ─── Kernel stack + bare-metal entry ─────────────────────────
 

@@ -534,7 +534,9 @@ carrying the arm index down the whole recursion so branches stay apart, and `sk_
 then has the arms that lost compile the residual left by the arm that won, appending it.
 The composite beats every arm it was chosen from. Measured on one net at recursion depth 3,
 against the same net without the split: 5.8× on `T`, 521× on `T·S`, 4.8× on `H·T`, 31× on
-`H`. `T` is the case where no correction is appended at all, a different tied base simply
+`H`. In-kernel at depth 12, `T·S` gains 25.4× (1.98e-4 to 7.79e-6); at depth 10 the same
+row gains nothing, because the fuse needs enough dictionary to compile the survivor's
+residual and 4842 entries do not supply it. `T` is the case where no correction is appended at all, a different tied base simply
 wins outright, so the braid gets shorter as well as more accurate.
 
 Braid generators are projected onto the nearest unitary as they are built. Coming
