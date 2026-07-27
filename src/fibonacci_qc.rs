@@ -329,8 +329,14 @@ pub const QUANTUM_DIMS: [f64; 2] = [1.0, PHI];
 /// Topological spins: theta_j = exp(2*pi*i * j*(j+1)/(k+2))
 /// theta_0 = 1, theta_1 = exp(4*pi*i/5)
 pub fn theta(j: usize) -> Complex {
-    let h = (j * (j + 1)) as f64 / (K + 2) as f64;
-    Complex::from_polar(1.0, TWO_PI * h)
+    // h = j(j+1)/(k+2) is a RATIONAL number of turns, so take it as one rather
+    // than pushing it through radians: theta_tau is exactly 2/5 of a winding.
+    theta_winding(j).to_complex()
+}
+
+/// The topological spin as an exact winding, h = j(j+1)/(k+2) turns.
+pub fn theta_winding(j: usize) -> Winding {
+    Winding::new((j * (j + 1)) as i64, (K + 2) as i64)
 }
 
 /// R-symbols: R^{tau,tau}_c
@@ -341,8 +347,8 @@ pub fn r_symbol(a: usize, b: usize, c: usize) -> Complex {
         if c == VACUUM {
             theta(TAU)
         } else {
-            // R^{tau,tau}_tau = exp(7*pi*i/5)
-            Complex::from_polar(1.0, 7.0 * PI / 5.0)
+            // R^{tau,tau}_tau = 7/10 of a winding, exactly
+            WIND_R_TAU.to_complex()
         }
     } else {
         Complex::one()
@@ -698,6 +704,45 @@ pub fn check_pentagon() -> bool {
 
     involution && real && symmetric && off_diag_nonzero
         && anti_diagonal && normalized && scale
+}
+
+/// Every phase native to the model lands on the tenths of a winding.
+///
+/// This is an invariant of the theory, not a convenience: the braid generator's
+/// eigenvalues are 4/10 and -3/10 and they generate the lattice, which is the
+/// same fact as det(sigma_1) being a primitive tenth root of unity. If a phase
+/// here ever leaves the tenths, either the level changed or something is being
+/// computed in the wrong units.
+pub fn check_winding_lattice() -> bool {
+    let tol = 1e-12;
+    let on_tenths = |z: Complex| -> bool {
+        // phase in turns, times ten, must be an integer
+        // no_std: round by truncating toward zero after a half-step nudge
+        let turns = atan2(z.im, z.re) / TWO_PI;
+        let x = turns * 10.0;
+        let nearest = if x >= 0.0 { (x + 0.5) as i64 } else { (x - 0.5) as i64 };
+        fabs(x - nearest as f64) < 1e-9
+    };
+    // the declared lattice must agree with the computed constants
+    if (theta_winding(TAU).num, theta_winding(TAU).den)
+        != (WIND_THETA_TAU.num, WIND_THETA_TAU.den) { return false; }
+    let checks = [
+        theta(TAU),
+        r_symbol(TAU, TAU, VACUUM),
+        r_symbol(TAU, TAU, TAU),
+        WIND_JONES_ROOT.to_complex(),
+        WIND_FRAMING.to_complex(),
+        Complex::new(-PHI, 0.0),
+    ];
+    for z in checks.iter() {
+        if z.norm() < tol { return false; }
+        if !on_tenths(*z) { return false; }
+    }
+    // and the self-inverse windings are exactly 0 and 1/2
+    Winding::new(0, 1).is_self_inverse()
+        && Winding::new(1, 2).is_self_inverse()
+        && !Winding::new(1, 5).is_self_inverse()
+        && !Winding::new(3, 10).is_self_inverse()
 }
 
 /// Largest departure from unitarity across the braid generators on `n` strands.
@@ -1641,7 +1686,7 @@ fn complex_pow(c: Complex, exp: i32) -> Complex {
 
 /// Run all verification checks and return results
 pub fn verify_all() -> bool {
-    let checks: [(&str, bool); 9] = [
+    let checks: [(&str, bool); 10] = [
         ("F unitary", check_f_unitary()),
         ("Pentagon form (F^2=I, anti-diag, a^2+b^2=1)", check_pentagon()),
         ("Braid relation (Y-B)", check_braid_relation() < 1e-9),
@@ -1651,6 +1696,7 @@ pub fn verify_all() -> bool {
         ("TQFT identities", check_tqft_identities()),
         ("Verlinde formula", check_verlinde()),
         ("Braid Artin B_n<=8", check_braid_artin(8)),
+        ("Phase lattice = tenths of a winding", check_winding_lattice()),
     ];
 
     let mut all_pass = true;

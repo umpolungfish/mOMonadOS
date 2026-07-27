@@ -1,8 +1,21 @@
-The kernel docs carry the winding lattice.
+The winding lattice becomes load-bearing, and the suite checks it.
 
-USER_GUIDE.md gains fibqc winding with the full table, and both documents now
-state why compiling is hard in the form the lattice gives it: T is 1/8 of a
-turn against a lattice of tenths, so no braid reaches it exactly at any length.
-The README's module section explains why phases are held as rational turns
-rather than radians, which is that radians convert exact rationals into
-transcendentals, multiply them, and then measure the drift.
+Holding the lattice in constants that only the Jones prefactors and a print
+statement consulted left it decorative: it could be dropped without anything
+failing, and it was, once, in the course of an evening. theta(j) already
+computed h = j(j+1)/(k+2), a rational number of turns, and then pushed it
+through radians; it now returns that rational directly as a Winding, and the
+R-symbol for the tau channel is WIND_R_TAU rather than a hand-written
+7*pi/5. Removing the lattice now breaks the algebra.
+
+verify_all gains a tenth check as its tenth entry: every phase native to the
+model must land on the tenths of a winding, the declared theta must agree with
+the computed one, and 0 and 1/2 must be the only self-inverse windings. This is
+an invariant of the theory rather than a convenience, since the braid
+generator's eigenvalues are 4/10 and -3/10 and they generate the lattice. If a
+phase ever leaves the tenths, either the level changed or something is being
+computed in the wrong units, and both should be loud.
+
+Regression after rewiring: all ten checks pass on the metal, the generator
+defect holds at 3.3e-16, the five Jones values are unchanged with the unknot at
+exactly zero error, and T still compiles to 5.4143e-6.
