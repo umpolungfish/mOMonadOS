@@ -1897,6 +1897,22 @@ pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize) {
 /// value means the invariant cannot see the chirality here, NOT that the knot
 /// is amphichiral: the cinquefoil is chiral and evaluates real.
 pub fn repl_jones(n: usize, word: &[i32]) {
+    // Scope the arena. Both sectors build F(n) x F(n) complex matrices for
+    // every generator, which is ~600 KB at ten strands, and the bump allocator
+    // reclaims only in LIFO order — so without this each invocation kept its
+    // representation forever and a handful of calls exhausted the 8 MB.
+    let mark = crate::heap_mark();
+
+    // The fusion space is F(n-1) and the matrices are its square, so cost grows
+    // exponentially. Refuse past the point where a single call cannot fit
+    // rather than dying inside an allocation.
+    if n > 16 {
+        sprintln!("  {} strands: fusion space is F({}), and the braid matrices are",
+                  n, n - 1);
+        sprintln!("  its square. That does not fit the 8 MB arena. Cap is 16.");
+        crate::heap_reset(mark);
+        return;
+    }
     if let Err(bad) = validate_braid_word(n, word) {
         if bad == 0 {
             sprintln!("  generator 0 does not exist; they number from 1");
@@ -1905,6 +1921,7 @@ pub fn repl_jones(n: usize, word: &[i32]) {
             sprintln!("  sigma_{} needs {} strands, not {}. B_{} tops out at sigma_{}.",
                       bad.abs(), bad.abs() + 1, n, n, top);
         }
+        crate::heap_reset(mark);
         return;
     }
     let v = jones_polynomial(n, word);
@@ -1926,6 +1943,7 @@ pub fn repl_jones(n: usize, word: &[i32]) {
     if fabs(v.re - 1.0) < 1e-9 && fabs(v.im) < 1e-9 {
         sprintln!("  note       : 1, as the unknot gives. One root is not a complete invariant.");
     }
+    crate::heap_reset(mark);
 }
 
 

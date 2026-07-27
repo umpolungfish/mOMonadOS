@@ -1,15 +1,15 @@
-jones takes a braid word and nothing else.
+jones stops leaking the arena.
 
-The strand count was a required argument that the word already determines:
-sigma_k needs k+1 strands, always. Requiring it created a number the caller
-could get wrong, and getting it wrong produced a rejection rather than an
-answer — so the interface asked for information it held, then refused work when
-the two disagreed. Three rounds went into improving that refusal before the
-argument itself was the problem.
+repl_compile scoped itself with heap_mark/heap_reset; repl_jones never did. Both
+sectors build F(n) x F(n) complex matrices for every generator, about 600 KB at
+ten strands, and the bump allocator reclaims only in LIFO order — so each
+invocation kept its representation forever. Ten calls in a row exhausted the
+8 MB and the allocator then failed a zero-byte request, which is what
+"memory allocation of 0 bytes failed" was.
 
-It is inferred now. `fibqc jones 1 1 1` is the trefoil, `fibqc jones 1 -2 1 -2`
-the figure-eight. There is no strand count to mismatch, so the whole error path
-is gone rather than better worded.
+Scoped now, so the sequence that panicked runs indefinitely and interleaves with
+other calls without growth.
 
-validate_braid_word stays for callers that fix n themselves, where a
-disagreement is still a real fault worth refusing.
+Also capped at 16 strands. The fusion space is F(n-1) and the matrices are its
+square, so the cost is exponential and a single call can exceed the arena on its
+own. Refusing with the reason beats dying inside an allocation.
