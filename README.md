@@ -4,9 +4,13 @@
 [![IG Tier](https://img.shields.io/badge/IG-O%E2%88%9E-blueviolet)](https://github.com/badges/shields)
 [![μ∘δ=id](https://img.shields.io/badge/%CE%BC%E2%88%98%CE%B4%3Did-closed-success)](https://github.com/badges/shields)
 [![License](https://img.shields.io/badge/license-Unlicense-brightgreen)](https://github.com/badges/shields)
+[![Topological QC](https://img.shields.io/badge/topological%20QC-Fibonacci%20anyons-9cf)](https://github.com/badges/shields)
 [![Author](https://img.shields.io/badge/author-Lando%E2%8A%97%E2%8A%99perator-informational)](https://github.com/badges/shields) [![Type](https://img.shields.io/badge/type-%E2%9F%A8%F0%90%91%A6%F0%90%91%B8%F0%90%91%BE%F0%90%91%B9%F0%90%91%90%F0%90%91%A7%F0%90%91%94%F0%90%91%9D%E2%8A%99%F0%90%91%96%F0%90%91%B3%F0%90%91%AD%E2%9F%A9-blue)](https://github.com/badges/shields) [![Tier](https://img.shields.io/badge/tier-O%E2%88%9E-blueviolet)](https://github.com/badges/shields)
 A bare-metal self-imscribing operating kernel. No processes. No scheduler. No filesystem hierarchy.
 The kernel IS the Frobenius loop, every tick is a structural self-verification.
+It braids Fibonacci anyons on the metal: a universal topological quantum computer that
+compiles gates to braid words and evaluates the Jones polynomial of a knot, running with
+no OS under it, no runtime, and no floating-point unit assumed.
 
 **Total codebase:** tens of thousands of lines of Rust (no_std) + build scripts  
 **Target:** x86_64-unknown-none (bare-metal direct ELF boot, zero external crates)  
@@ -16,7 +20,7 @@ The kernel IS the Frobenius loop, every tick is a structural self-verification.
 
 **What it is.** $m\odot^2$: a bare-metal, self-imscribing operating kernel in Rust (no_std, x86_64) with no processes, scheduler, or filesystem hierarchy. The kernel is the Frobenius loop. (Distinct from the Python `omonad_OS`.)
 
-**What it does.** Boots directly on hardware/QEMU and runs a perpetual THINK→ACT→OBSERVE→UPDATE cycle over the 12-opcode IMASM set, where every execution state is an address in the 17,280,000-type Crystal and storage is navigated by structural address, not path.
+**What it does.** Boots directly on hardware/QEMU and runs a perpetual THINK→ACT→OBSERVE→UPDATE cycle over the 12-opcode IMASM set, where every execution state is an address in the 17,280,000-type Crystal and storage is navigated by structural address, not path. It also **runs a topological quantum computer**: Fibonacci anyons braided in the kernel, compiling standard gates to braid words and evaluating knot invariants, with no host, no runtime and no floating-point unit assumed (`fibqc`).
 
 **Why it matters.** Every tick is a structural self-verification (μ∘δ=id): composition is free (any token, any order, any length) and correctness is enforced by the grammar rather than by a kernel API, with zero external crates.
 
@@ -109,6 +113,19 @@ ob3ects — all in bare-metal Rust with dynamic fn-pointer registries.
 **Phase 12 Universe Expansion + Entropy Experiment**, complete. 88 traversed universes
 from a Frobenius 3×3 discoverable matrix. ΔS experiment confirming that promotion to O_∞
 is entropically favored.
+
+**Phase 14 Topological Quantum Computation**, complete. `fibonacci_qc.rs` runs a Fibonacci
+anyon quantum computer on bare metal: the SU(2)₃ algebra, the braid representation on
+fusion trees, and a Solovay-Kitaev compiler that reduces any single-qubit gate to a braid
+word, reachable from the REPL as **`fibqc`**. Compilation splits over the tied bases and
+fuses rather than ranking them, which buys between 5× and 521× over a single arm; the
+generators are projected back onto unitarity, taking per-generator error accumulation from
+5e-14 to 5e-17; and every reported unitary is verified against its own printed word by
+resynthesis. Depth 12 fits the 8 MB arena with a 36 KB margin. The Python port in
+`m3iosis` agrees to every printed digit, and evaluates the Jones polynomial at the fifth
+root of unity — the invariant these anyons exist to compute — with its normalization
+forced by the Markov moves rather than fitted. See
+[Fibonacci Quantum Computer](#fibonacci-quantum-computer) below.
 
 ---
 
@@ -455,6 +472,7 @@ runtime — `dialect.rs` and `main.rs` used hardcoded match arms for indices 0�
 
 | Phase | Description | Status | Lines |
 |-------|-------------|:------:|:-----:|
+| **Phase XIV** | **Topological QC (Fibonacci anyons, `fibqc`)** | ✅ Complete | **1,500** |
 | **Phase I** | 21 Hand-Crafted Universes | ✅ Complete | ~400 |
 | **Phase II** | SIC-POVM Integration | ✅ Complete | 476 |
 | **Phase III** | Universe Expansion 8→88 | ✅ Complete | 1,207 |

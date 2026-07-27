@@ -194,6 +194,8 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("fibqc verify              — algebra self-check (F/R symbols, S/T, braid unitarity)");
                         sprintln!("fibqc compile <gates>     — compile a circuit over H T S X to a braid word");
                         sprintln!("fibqc compile <gates> <n> — same, with gate net depth n (default 10, max 12)");
+                        sprintln!("fibqc jones <strands> <gens...>  — Jones polynomial of the braid closure");
+                        sprintln!("fibqc knot [name]        — Jones value for a knot from the census");
                         sprintln!("");
                         sprintln!("The circuit compiles as ONE unitary, so the error is incurred once");
                         sprintln!("rather than accumulating gate by gate. Several braid words sit at the");
@@ -227,6 +229,48 @@ pub fn repl(k: &mut Kernel) {
                             } else {
                                 crate::fibonacci_qc::repl_compile(&gates.join(" "), depth, 3);
                             }
+                        }
+                    }
+                    "jones" => {
+                        let tail: Vec<&str> = parts.collect();
+                        let joined = tail.join(" ");
+                        let toks: Vec<&str> = joined.split_whitespace().collect();
+                        if toks.is_empty() {
+                            sprintln!("fibqc jones <strands> <generators...>   e.g. `fibqc jones 2 1 1 1`");
+                        } else {
+                            let n: usize = toks[0].parse().unwrap_or(0);
+                            let word: Vec<i32> = toks[1..].iter()
+                                .filter_map(|t| t.parse::<i32>().ok()).collect();
+                            if n == 0 {
+                                sprintln!("strand count must be a positive integer");
+                            } else {
+                                crate::fibonacci_qc::repl_jones(n, &word);
+                            }
+                        }
+                    }
+                    "knot" => {
+                        let name = parts.next().unwrap_or("").trim();
+                        // braid words for a small census; the closure of each is the knot
+                        let table: [(&str, usize, &[i32]); 7] = [
+                            ("unknot",       1, &[]),
+                            ("trefoil",      2, &[1,1,1]),
+                            ("trefoil*",     2, &[-1,-1,-1]),
+                            ("figure-eight", 3, &[1,-2,1,-2]),
+                            ("cinquefoil",   2, &[1,1,1,1,1]),
+                            ("7_1",          2, &[1,1,1,1,1,1,1]),
+                            ("8_19",         3, &[1,1,1,2,1,1,1,2]),
+                        ];
+                        if name.is_empty() {
+                            sprintln!("fibqc knot <name>   known:");
+                            for (nm, n, w) in table.iter() {
+                                sprintln!("    {:14} {} strands, {} crossings", nm, n, w.len());
+                            }
+                        } else if let Some((nm, n, w)) =
+                            table.iter().find(|(nm, _, _)| *nm == name) {
+                            sprintln!("{} — closure of a {}-strand braid", nm, n);
+                            crate::fibonacci_qc::repl_jones(*n, w);
+                        } else {
+                            sprintln!("fibqc: no knot named '{}'. Try `fibqc knot`.", name);
                         }
                     }
                     other => sprintln!("fibqc: unknown subcommand '{}'. Try `fibqc help`.", other),

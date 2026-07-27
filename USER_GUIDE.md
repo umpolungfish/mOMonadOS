@@ -485,6 +485,44 @@ word from scratch, agreeing to about 1e-13. The determinant identity
 root of unity, so that test passes by chance one time in ten, and it sees only the sum
 of the exponents, so every permutation of a word passes it.
 
+### `fibqc jones <strands> <generators...>` and `fibqc knot [name]`
+
+Jones polynomial of the braid closure at t = e^{2πi/5}. This is the invariant Fibonacci
+anyons exist to compute: SU(2)₃ Chern-Simons *is* that evaluation, so the braid
+representation performs it rather than simulating it.
+
+```
+⊙> fibqc knot trefoil
+trefoil — closure of a 2-strand braid
+  braid      : 2 strands, 3 crossings, writhe 3
+  V at t=e^(2 pi i/5) : -0.809017 -1.314328i
+  |V|        : 1.543362
+  chirality  : SEPARATED from mirror (mirror value is the conjugate)
+```
+
+`fibqc knot` with no argument lists the census. `fibqc jones 2 1 1 1` takes an arbitrary
+braid, strand count first.
+
+The two normalization constants are forced rather than fitted: requiring the unknot to
+evaluate to 1 in its three Markov presentations is two constraints in two unknowns, and
+it returns the framing phase e^{−iπ/5} and the loop value −φ, which are the constants
+the theory names. Verified against exact values for the trefoil, its mirror, the
+figure-eight and the cinquefoil.
+
+The chirality verdict is decidable from the value alone, and necessarily: the Jones
+polynomial has integer coefficients and mirroring acts by t → t⁻¹, which on the unit
+circle is conjugation, so V(K*) = conj(V(K)) and a mirror pair separates exactly when
+the imaginary part is nonzero. **A real value means the invariant cannot see the
+chirality at this root, not that the knot is amphichiral.** The cinquefoil is chiral and
+evaluates real.
+
+One root is not a complete invariant, and the command says so when it matters: 8₁₉
+evaluates to 1 exactly as the unknot does, because t³ + t⁵ − t⁸ collapses to t³ + 1 − t³
+under t⁵ = 1.
+
+σ₁ here is the negative crossing in the standard Jones orientation, and the word is
+mirrored internally to compensate.
+
 ### Note on piping
 
 The serial console drops the first character of the first line, so

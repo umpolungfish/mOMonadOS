@@ -1,15 +1,23 @@
-fibqc is documented where the commands are documented.
+The kernel computes knot invariants, and says what it cannot see.
 
-USER_GUIDE.md lists every REPL command and had no entry for fibqc at all, and
-the README described fibonacci_qc.rs without ever naming the command that
-reaches it. Both fixed.
+jones_polynomial was in the module and reachable from nothing. `fibqc jones`
+takes an arbitrary braid and `fibqc knot` runs a small census, so the invariant
+these anyons exist to compute is now available from the REPL rather than only
+from the Python port. Validated against exact values for the trefoil, its
+mirror, the figure-eight and the cinquefoil.
 
-The guide entry covers what the two error lines mean, since the split-and-fuse
-distinction is not self-explanatory from the output, and records that a flat
-`gain: 1.0x` means dictionary-limited rather than converged, which is the
-reading the depth-10 T·S row invites and gets wrong. It states the depth ceiling
-as a memory fact with the measured figures rather than a vague practical limit,
-notes that the arena reports its own high-water mark because exhaustion is
-otherwise silent, explains why the word check is a resynthesis rather than the
-determinant identity, and warns about the serial console eating the first
-character when the REPL is driven by pipe.
+The chirality verdict is decidable from the value alone and necessarily so:
+integer coefficients plus t^-1 = conj(t) on the unit circle give
+V(K*) = conj(V(K)), so a mirror pair separates exactly when the imaginary part
+is nonzero. The report says "not separated at this root" rather than
+"amphichiral", because those are different claims and the cinquefoil is the
+case that distinguishes them: it is chiral and evaluates real.
+
+When a value comes out at 1 the report names the limitation outright, since
+8_19 collapses to the unknot's value under t^5 = 1 and a silent coincidence
+there would be read as an identification.
+
+The QC is also raised out of the middle of the README into the header, the
+overview, the badges and the phase table. It was documented at the depth of an
+implementation note while being the thing the kernel does that nothing else on
+bare metal does.

@@ -1711,3 +1711,30 @@ pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize) {
 
     crate::heap_reset(mark);
 }
+
+
+/// Report the Jones polynomial of a braid closure, with the chirality verdict.
+///
+/// Chirality is decidable from the value alone, and necessarily so: the Jones
+/// polynomial has integer coefficients and mirroring acts by t -> t^-1, which
+/// on the unit circle is conjugation. So V(K*) = conj(V(K)), and a mirror pair
+/// is separated at this root exactly when the imaginary part is nonzero. A real
+/// value means the invariant cannot see the chirality here, NOT that the knot
+/// is amphichiral: the cinquefoil is chiral and evaluates real.
+pub fn repl_jones(n: usize, word: &[i32]) {
+    let v = jones_polynomial(n, word);
+    let writhe: i32 = word.iter().map(|g| if *g > 0 { 1 } else { -1 }).sum();
+    sprintln!("  braid      : {} strands, {} crossings, writhe {}", n, word.len(), writhe);
+    sprintln!("  V at t=e^(2 pi i/5) : {:.6} {:+.6}i", v.re, v.im);
+    sprintln!("  |V|        : {:.6}", v.norm());
+    if fabs(v.im) < 1e-9 {
+        sprintln!("  chirality  : not separated at this root (value is real)");
+    } else {
+        sprintln!("  chirality  : SEPARATED from mirror (mirror value is the conjugate)");
+    }
+    if fabs(v.re - 1.0) < 1e-9 && fabs(v.im) < 1e-9 {
+        sprintln!("  note       : evaluates to 1, as the unknot does. One root of unity");
+        sprintln!("               is not a complete invariant: 8_19 collapses here too,");
+        sprintln!("               since t^3 + t^5 - t^8 becomes t^3 + 1 - t^3 under t^5=1.");
+    }
+}
