@@ -768,7 +768,7 @@ pub fn catalog_systems() -> Vec<String> {
                      "clink_layer6_meiosis",
                      "clink_layer7_tissue",
                      "temporal_mathematics", "schrodinger", "heat_diffusion",
-                     "navier_stokes", "wave_equation", "einstein",
+                     "navier_stokes", "wave_equation", "einstein", "graviton", "photon",
                      "universal_imscriptive_grammar", "o_inf", "o_0", "yhwh"];
     for rn in &ref_names {
         if let Some(_) = catalog::lookup(rn) {

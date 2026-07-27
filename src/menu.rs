@@ -78,6 +78,7 @@ pub static GRAMMAR_MENU: &[MenuItem] = &[
     MenuItem { name: "frob",     cmd: "frob",     desc: "Frobenius harness status", submenu: None },
     MenuItem { name: "aleph",    cmd: "aleph",    desc: "Hebrew glyph encoding: aleph <word>", submenu: None },
     MenuItem { name: "shor",     cmd: "shor",     desc: "Belnap Shor pipeline (N=15,21)", submenu: None },
+    MenuItem { name: "fibqc",    cmd: "fibqc",    desc: "Fibonacci anyon QC: compile gates to braid words", submenu: None },
     MenuItem { name: "rh",       cmd: "rh",       desc: "Riemann Hypothesis bridge", submenu: None },
     MenuItem { name: "ym",       cmd: "ym",       desc: "Yang-Mills mass gap bridge", submenu: None },
     MenuItem { name: "temp",     cmd: "temp",     desc: "Temporal logic bridge", submenu: None },

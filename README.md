@@ -520,6 +520,36 @@ Instead, `eval_gate_spec()` dynamically reads the `GateSpec { prim, min_ord }` f
 compares ordinals. This means **any new universe added to `universe_expansion.rs` is
 immediately verifiable** without touching any other source file.
 
+## Fibonacci Quantum Computer
+
+`fibonacci_qc.rs` carries the SU(2)_3 anyon algebra, the braid group representation on
+fusion trees, and a Solovay-Kitaev compiler that takes a standard gate down to a braid
+word. All numerical data is derived from closed formulas in-code; nothing is asserted
+from memory. `verify_all()` runs at boot.
+
+Compilation splits and fuses rather than ranking. Several braid words routinely sit at
+the same distance from the target; each seeds a different trajectory and leaves a residual
+rotation pointing its own way. `solovay_kitaev_arm` follows each as a separate branch,
+carrying the arm index down the whole recursion so branches stay apart, and `sk_split_fuse`
+then has the arms that lost compile the residual left by the arm that won, appending it.
+The composite beats every arm it was chosen from. Measured on one net at recursion depth 3,
+against the same net without the split: 5.8× on `T`, 521× on `T·S`, 4.8× on `H·T`, 31× on
+`H`. `T` is the case where no correction is appended at all, a different tied base simply
+wins outright, so the braid gets shorter as well as more accurate.
+
+Braid generators are projected onto the nearest unitary as they are built. Coming
+straight out of the F-move sum they sit about 1.4e-13 off unitary, and braid words
+accumulate that at a flat rate per generator, independent of word length, because the
+defect is in the generators rather than in the multiplication. One Newton step takes the
+generators to 3.3e-16 and the per-generator accumulation from 5e-14 to 5e-17.
+
+`Matrix2::projective_distance` measures up to a global phase, because a braid realizes its
+gate only up to a phase and that phase is not observable. It removes the optimal phase and
+compares elementwise rather than evaluating `sqrt(1 - |tr(V†U)|/n)`. The closed form is
+correct analytically but subtracts two numbers agreeing to fifteen digits, so it carries a
+few percent of error at 1e-5 and collapses to exactly zero below about 1e-8, which is
+inside the range these braids reach. It reports perfect gates that are not perfect.
+
 ## Repository Structure
 
 ```
@@ -561,7 +591,9 @@ mOMonadOS/
     frobenius_unify.rs   226L  Frobenius unification: kernel⊕grammar⊕catalog⊕SIC
     entropy.rs           311L  Entropy experiment: ΔS vs tier promotion
     universe_expansion.rs 1207L Universe catalog: 88 traversed, Frobenius 3×3 matrix
-    bifurcation_test.rs   79L  Structural bifurcation under dialect switching    cr3echrz/
+    bifurcation_test.rs   79L  Structural bifurcation under dialect switching
+    fibonacci_qc.rs     1423L  Fibonacci anyon quantum computer: SU(2)_3 algebra, braid representation, Solovay-Kitaev gate compiler (split-and-fuse over tied bases)
+    cr3echrz/
       mod.rs               22L  Module root
       shared.rs           293L  Opcode registry, grammar mappings, dynamic domains
       p3theorem.rs        943L  7-theorem unified engine (Collatz→Baum-Connes)
@@ -597,7 +629,7 @@ mOMonadOS/
   momonados.ld                 Linker script (PVH note → boot32 → text → rodata → bss)
   build_bootimage.sh           ELF kernel builder (cargo build, single step)
   run.sh                       QEMU launcher (PVH direct ELF boot, no OVMF)
-  Cargo.toml                   Rust project manifest, empty [dependencies]
+  Cargo.toml                   Rust project manifest; libm plus imasm_core (no_std, default-features off)
   Makefile                     Build convenience targets
 ```
 
@@ -618,10 +650,14 @@ QEMU writes 0x10 to the `isa-debug-exit` port and exits cleanly.
 
 ## Target
 
-`x86_64-unknown-none`, no OS, no std, **zero external crates**.
+`x86_64-unknown-none`, no OS, no std.
 Static BSS bump allocator (4 MB).  Boot: PVH ELF note → 32-bit `_start` stub
 (page tables + long-mode) → naked `_rust_start` (establishes RSP) → `kmain()`.
-`Cargo.toml [dependencies]` is empty.
+Dependencies are `libm` for the transcendentals the float paths need and the
+local `imasm_core`, both `no_std`. Because the crate targets bare metal,
+`cargo test` cannot run: the host test target pulls in a second `core` and
+collides on lang items. Numerical work is verified by building the module
+against `std` in a separate harness.
 
 ## Requirements
 

@@ -1,7 +1,31 @@
-The d=2048 degree is computed in the kernel, and the heap survives the sweeps.
+The compiler splits over the tied bases and fuses, and the generators are
+projected back onto unitarity.
 
-The propagation report had both 2^20 and 2^21 in it and neither was computed. Both are now derived from d: the class number by cycles of reduced forms, and the degree as the unit group of O/p2^k modulo the global units, where the conductor exponent comes from v2(d)+1 and the unit group order from q^(k-1)(q-1) for an inert two. The fundamental unit at that discriminant is far too large to hold, so it is never formed; the continued fraction of omega has P and Q bounded throughout, which lets the period be found exactly while the convergents are carried modulo the conductor, giving epsilon as a residue. The result is 2^20 over F, matching the value reached by the other route.
+Several braid words sit at the same distance from a target, and the code that
+was meant to try each of them lived behind a condition that never held, since
+approximate_gate always passes a prebuilt net. Three successive rewrites of that
+block produced byte-identical output, which read as convergence and was in fact
+dead code. solovay_kitaev_arm now names which tied base a branch takes and
+carries it the whole way down so branches stay apart, and sk_split_fuse has the
+arms that lost compile the residual left by the arm that won.
 
-Two failures found on the way. The report reached the class number through ray_data, which enumerates the unit group of O/m as m^2 pairs: at m = 6144 that is six hundred megabytes, and the kernel panicked. Enumeration now has a budget and RayData carries a flag saying whether it was computed, with the scope report marking what falls outside. Second, the allocator is a bump with LIFO reclaim only, so the working vectors of a sweep accumulated until the heap was gone; since RayData is all scalars, each computation now runs inside heap_mark and heap_reset.
+projective_distance no longer evaluates sqrt(1 - |tr|/n). That form subtracts
+two numbers agreeing to fifteen digits: it carries a few percent of error at
+1e-5 and floors to exactly zero below 1e-8, which is inside the range these
+braids reach, so it reported perfect gates that were not perfect. Removing the
+optimal phase and comparing elementwise never forms that difference.
 
-d=44 is documented rather than fixed. Requiring the generator coprime to q and orienting it into p squared both leave the count at sixteen against forty, so what remains is the extension class, which the order-two model does not determine there.
+The generators came out of the F-move sum 1.4e-13 off unitary, flat in strand
+count, and the braid words accumulated that at a constant rate per generator
+regardless of length. Constant rather than growing is the signature of a defect
+at the source, so one Newton step onto the nearest unitary moves every word at
+once: generators to 3.3e-16 and per-generator accumulation from 5e-14 to 5e-17.
+
+check_pentagon tested only F^2 = I. It now also checks what the pentagon forces,
+real and symmetric with nonvanishing off-diagonal, anti-diagonal, normalized,
+and is labelled for what it verifies.
+
+fibqc reaches all of this from the REPL; the module was wired to a boot line and
+nothing else. The net build used a linear membership scan, ~1e8 comparisons at
+depth 12 behind software floats, and closest_arm walked the net twice per
+lookup. Both are single-pass now.

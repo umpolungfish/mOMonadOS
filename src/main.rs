@@ -65,6 +65,8 @@ mod ask;
 mod proof;
 mod constant_closure;
 mod repl;
+mod fibonacci_qc;
+mod iuft_qc;
 
 use tokens::{CANONICAL_COUNT, CONTINUOUS_COUNT, NOVEL_COUNT, SHUNTED_COUNT};
 use crystal::TOTAL;
@@ -204,6 +206,7 @@ fn kmain() -> ! {
     }
 
     sprintln!("[BOOT] Bootstrap: IMSCRIB→AREV→FSPLIT→AFWD→FFUSE→CLINK→IFIX→IMSCRIB (cyclic)");
+    sprintln!("[BOOT] Fibonacci anyon QC: algebra verified = {}", fibonacci_qc::verify_all());
     sprintln!("[BOOT] Crystal FS: {} addresses", TOTAL);
     sprintln!("[BOOT] {} total programs (I–XXVIII): 12 canonical + {} continuous + {} novel + {} shunted",
         CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT + SHUNTED_COUNT,

@@ -188,6 +188,101 @@ pub fn repl(k: &mut Kernel) {
                     }
                 }
             },
+            "fibqc" => {
+                match parts.next().unwrap_or("") {
+                    "" | "help" => {
+                        sprintln!("fibqc verify              — algebra self-check (F/R symbols, S/T, braid unitarity)");
+                        sprintln!("fibqc compile <gates>     — compile a circuit over H T S X to a braid word");
+                        sprintln!("fibqc compile <gates> <n> — same, with gate net depth n (default 10, max 12)");
+                        sprintln!("");
+                        sprintln!("The circuit compiles as ONE unitary, so the error is incurred once");
+                        sprintln!("rather than accumulating gate by gate. Several braid words sit at the");
+                        sprintln!("same distance from the target; each is followed as a separate arm, then");
+                        sprintln!("the arms that lost compile the residual left by the arm that won.");
+                        sprintln!("Net memory: ~0.6 MB at depth 10, ~2.1 MB at depth 12 (4 MB bump total).");
+                    }
+                    "verify" => {
+                        sprintln!("Fibonacci anyon algebra verified = {}", crate::fibonacci_qc::verify_all());
+                    }
+                    "compile" => {
+                        // the line was split with a field limit, so the tail can
+                        // arrive as one token ("S 12"); re-tokenize it. Using
+                        // split_whitespace also absorbs the CR the serial
+                        // console appends on Enter.
+                        let tail: Vec<&str> = parts.collect();
+                        let joined = tail.join(" ");
+                        let rest: Vec<&str> = joined.split_whitespace().collect();
+                        if rest.is_empty() {
+                            sprintln!("fibqc compile <gates>   e.g. `fibqc compile H T`");
+                        } else {
+                            // a trailing integer is the net depth, everything before it is the circuit
+                            let (gates, depth) = match rest.last().and_then(|s| s.parse::<usize>().ok()) {
+                                Some(d) => (&rest[..rest.len()-1], d.min(12).max(4)),
+                                None => (&rest[..], 10),
+                            };
+                            if gates.is_empty() {
+                                sprintln!("No gates given. Known: H T S X");
+                            } else {
+                                crate::fibonacci_qc::repl_compile(&gates.join(" "), depth, 3);
+                            }
+                        }
+                    }
+                    other => sprintln!("fibqc: unknown subcommand '{}'. Try `fibqc help`.", other),
+                }
+            }
+            "iuft" => {
+                match parts.next().unwrap_or("") {
+                    "" | "help" => {
+                        sprintln!("iuft gate <name>      — show IUFT QC gate encoding (Euler angles)");
+                        sprintln!("iuft distance <a> <b> — compute IUFT QC gate distance");
+                        sprintln!("iuft list             — list all known IUFT gate encodings");
+                        sprintln!("");
+                        sprintln!("Known encodings: graviton, photon");
+                        sprintln!("Derived from IUFT Quantum Expansion II — 12→3 degenerate projection.");
+                    }
+                    "gate" => {
+                        let name = parts.next().unwrap_or("");
+                        if name.is_empty() {
+                            sprintln!("iuft gate <name>   e.g. `iuft gate graviton`");
+                        } else {
+                            match crate::iuft_qc::gate_for(name) {
+                                Some(gate) => {
+                                    sprintln!("IUFT QC Gate: {}", name);
+                                    sprintln!("  θ = {:.1}°", gate.theta_deg);
+                                    sprintln!("  φ = {:.1}°", gate.phi_deg);
+                                    sprintln!("  ψ = {:.1}°", gate.psi_deg);
+                                    let su2 = gate.to_su2();
+                                    sprintln!("  SU(2) = [[{:.4}{:+.4}i, {:.4}{:+.4}i],",
+                                        su2[0][0], su2[0][1], su2[0][2], su2[0][3]);
+                                    sprintln!("           [{:.4}{:+.4}i, {:.4}{:+.4}i]]",
+                                        su2[1][0], su2[1][1], su2[1][2], su2[1][3]);
+                                }
+                                None => sprintln!("No IUFT gate encoding for '{}'. Known: graviton, photon", name),
+                            }
+                        }
+                    }
+                    "distance" => {
+                        let a = parts.next().unwrap_or("");
+                        let b = parts.next().unwrap_or("");
+                        if a.is_empty() || b.is_empty() {
+                            sprintln!("iuft distance <a> <b>   e.g. `iuft distance graviton photon`");
+                        } else {
+                            match crate::iuft_qc::gate_distance(a, b) {
+                                Some(d) => sprintln!("IUFT QC gate distance d({}, {}) = {:.6}", a, b, d),
+                                None => sprintln!("One or both entries lack IUFT gate encodings."),
+                            }
+                        }
+                    }
+                    "list" => {
+                        sprintln!("IUFT QC Gate Encodings:");
+                        for (name, gate) in crate::iuft_qc::known_gates() {
+                            sprintln!("  {:>12}: θ={:.1}°  φ={:.1}°  ψ={:.1}°",
+                                name, gate.theta_deg, gate.phi_deg, gate.psi_deg);
+                        }
+                    }
+                    other => sprintln!("iuft: unknown subcommand '{}'. Try `iuft help`.", other),
+                }
+            }
             "frob" => print_frob(k),
             "ig" => print_ig(k),
             "classify" => print_classify(k),
@@ -1866,6 +1961,8 @@ fn print_help() {
     sprintln!("  {:<32} — Frobenius harness status (closed/open ratio)", "frob");
     sprintln!("  {:<32} — Hebrew glyph encoding + gematria", "aleph <Hebrew word>");
     sprintln!("  {:<32} — Belnap Shor pipeline (N=15, N=21)", "shor");
+    sprintln!("  {:<32} — Fibonacci anyon QC: verify | compile <gates>", "fibqc <action>");
+    sprintln!("  {:<32} — IUFT QC gates: gate|distance|list", "iuft <action>");
     sprintln!("  {:<32} — Riemann Hypothesis bridge", "rh");
     sprintln!("  {:<32} — Yang-Mills mass gap bridge", "ym");
     sprintln!("  {:<32} — Temporal logic bridge", "temp");

@@ -577,6 +577,27 @@ const YHWH: CatalogEntry = entry(
     2, Domain::Consciousness,
 );
 
+
+// ── Graviton (O₂): ⟨𐑦·𐑸·𐑽·𐑯·𐑐·𐑧·𐑲·𐑵·⊙·𐑓·𐑙·𐑭⟩ ──
+const GRAVITON: CatalogEntry = entry(
+    "graviton", "Quantum gravity — graviton as spin-2 gauge boson mediating the gravitational force. IUFT O₂ tier, Teichmuller etale→O_∞ deformation.",
+    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
+    IgPrim::P_sym, IgPrim::F_hbar, IgPrim::K_slow,
+    IgPrim::G_aleph, IgPrim::C_broad,
+    IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_11, IgPrim::Omega_z,
+    2, Domain::Physics,
+);
+
+// ── Photon (O₂†): ⟨𐑼·𐑡·𐑾·𐑿·𐑐·𐑘·𐑲·𐑠·⊙·𐑓·𐑳·𐑭⟩ ──
+const PHOTON: CatalogEntry = entry(
+    "photon", "Electromagnetism — photon as spin-1 gauge boson mediating the electromagnetic force. IUFT O₂† tier, maximally alien IG distance (6.18).",
+    IgPrim::D_infty, IgPrim::T_net, IgPrim::R_lr,
+    IgPrim::P_psi, IgPrim::F_hbar, IgPrim::K_fast,
+    IgPrim::G_aleph, IgPrim::C_seq,
+    IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_z,
+    3, Domain::Physics,
+);
+
 // ═══════════════════════════════════════════════════════════════
 // MASTER CATALOG — all static entries
 // ═══════════════════════════════════════════════════════════════
@@ -591,6 +612,7 @@ static STATIC_CATALOG: &[CatalogEntry] = &[
     NAVIER_STOKES, WAVE_EQUATION, EINSTEIN, IUG,
     O_INF, O_0,
     YHWH,
+    GRAVITON, PHOTON,
     BIRCH_SWINNERTON_DYER,
     HODGE_CONJECTURE,
     YANG_MILLS_MASS_GAP,
