@@ -1,23 +1,32 @@
-The kernel computes knot invariants, and says what it cannot see.
+Phases are held in windings, where one winding is a full turn.
 
-jones_polynomial was in the module and reachable from nothing. `fibqc jones`
-takes an arbitrary braid and `fibqc knot` runs a small census, so the invariant
-these anyons exist to compute is now available from the REPL rather than only
-from the Python port. Validated against exact values for the trefoil, its
-mirror, the figure-eight and the cinquefoil.
+Every phase native to this model is an exact multiple of a tenth of a turn:
+theta_tau and R^{tau tau}_1 at 4/10, R^{tau tau}_tau at -3/10, the Jones root
+at 2/10, the framing phase at -1/10, the loop value's phase at 5/10, the
+modular T diagonal at 0 and 4/10, the F eigenvalues at 0 and 5/10. Carrying
+these in radians converts exact rationals into transcendentals, multiplies
+them, and then measures the drift.
 
-The chirality verdict is decidable from the value alone and necessarily so:
-integer coefficients plus t^-1 = conj(t) on the unit circle give
-V(K*) = conj(V(K)), so a mirror pair separates exactly when the imaginary part
-is nonzero. The report says "not separated at this root" rather than
-"amphichiral", because those are different claims and the cinquefoil is the
-case that distinguishes them: it is chiral and evaluates real.
+`Winding` holds a phase as a rational number of turns and composes by integer
+arithmetic. jones_polynomial now builds both prefactors from it: alpha^writhe
+is one exact rational scaling rather than `writhe` complex multiplications, and
+the loop value splits into an exact half-turn phase times a real magnitude, so
+the phase accumulates nothing. The unknot comes back at exactly zero error, the
+real-valued knots at 1e-17 to 1e-16, and the T(2,n) period-ten closure holds to
+1e-15.
 
-When a value comes out at 1 the report names the limitation outright, since
-8_19 collapses to the unknot's value under t^5 = 1 and a silent coincidence
-there would be read as an identification.
+The braid generator's eigenvalues, 4/10 and -3/10, generate the tenths. That is
+the same fact as det(sigma_1) being a primitive tenth root of unity, which was
+noted earlier only as a weak checksum; it is the lattice.
 
-The QC is also raised out of the middle of the README into the header, the
-overview, the badges and the phase table. It was documented at the depth of an
-implementation note while being the thing the kernel does that nothing else on
-bare metal does.
+What this states plainly is why compilation is hard at all. T is 1/8 of a turn
+and S is 1/4, and 1/8 is not a multiple of 1/10, so no braid reaches the T gate
+exactly at any length. Solovay-Kitaev exists to approach an incommensurable
+point on a commensurate lattice, and what makes the approach possible is the
+non-commutativity rather than the phases.
+
+Winding::is_self_inverse is the chirality criterion from the lattice rather
+than a tolerance on an imaginary part: 0 and 1/2 are the only self-inverse
+windings, and those are exactly the real values a mirror cannot be told from.
+
+`fibqc winding` prints the lattice.

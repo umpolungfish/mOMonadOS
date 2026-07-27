@@ -223,6 +223,100 @@ impl Matrix2 {
     }
 }
 
+// ─── Windings ───────────────────────────────────────────────────────────────
+
+/// A phase measured in WINDINGS, where one winding is a full turn.
+///
+/// Every phase native to this model is an exact multiple of a TENTH of a
+/// winding, so carrying angles in radians turns exact rationals into
+/// transcendentals, multiplies them, and then measures the drift. Held as a
+/// rational number of turns instead, the same phases compose by integer
+/// arithmetic and close exactly:
+///
+///     theta_tau  topological spin      4/10
+///     R^{tau tau}_1                    4/10
+///     R^{tau tau}_tau                 -3/10
+///     t          Jones root            2/10
+///     alpha      framing phase        -1/10
+///     -phi       loop value            5/10   (phase of; magnitude is phi)
+///     modular T diagonal              0, 4/10
+///     F eigenvalues                   0, 5/10
+///
+/// The braid generator's two eigenvalues are 4/10 and -3/10, and those
+/// generate the tenths, which is the same fact as det(sigma_1) being a
+/// primitive tenth root of unity.
+///
+/// The two constants that are NOT tenths are the two gates that are not native
+/// to the model: T is 1/8 of a winding and S is 1/4. This is the compilation
+/// problem in one line — 1/8 is not a multiple of 1/10, so no braid reaches
+/// the T gate exactly at any length, and Solovay-Kitaev exists to approach an
+/// incommensurable point on a commensurate lattice. What makes the approach
+/// possible is the non-commutativity, not the phases.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Winding {
+    pub num: i64,
+    pub den: i64,
+}
+
+impl Winding {
+    pub const fn new_raw(num: i64, den: i64) -> Self { Winding { num, den } }
+
+    /// Reduce and fold into [0, 1).
+    pub fn new(num: i64, den: i64) -> Self {
+        if den == 0 { return Winding { num: 0, den: 1 }; }
+        let (mut n, mut d) = if den < 0 { (-num, -den) } else { (num, den) };
+        n = n.rem_euclid(d);
+        let g = gcd_i64(n.abs(), d);
+        if g > 1 { n /= g; d /= g; }
+        Winding { num: n, den: d }
+    }
+
+    pub fn zero() -> Self { Winding { num: 0, den: 1 } }
+
+    pub fn add(self, other: Winding) -> Winding {
+        Winding::new(self.num * other.den + other.num * self.den, self.den * other.den)
+    }
+
+    /// Integer multiple, exact.
+    pub fn scale(self, k: i64) -> Winding { Winding::new(self.num * k, self.den) }
+
+    pub fn neg(self) -> Winding { Winding::new(-self.num, self.den) }
+
+    /// Is this winding its own reverse? True only at 0 and 1/2, which are the
+    /// phases where a value is real. This is why chirality fails to separate
+    /// exactly on the real Jones values: those sit in the self-inverse sectors.
+    pub fn is_self_inverse(self) -> bool {
+        self.num == 0 || (self.den == 2 && self.num == 1)
+    }
+
+    pub fn to_radians(self) -> f64 { TWO_PI * (self.num as f64) / (self.den as f64) }
+
+    /// The unit complex number at this winding, exact at the quarter turns so
+    /// lattice points that should be real or imaginary do not arrive with dust.
+    pub fn to_complex(self) -> Complex {
+        if self.den == 1 { return Complex::one(); }
+        if self.den == 2 { return Complex::new(-1.0, 0.0); }
+        if self.den == 4 {
+            return if self.num == 1 { Complex::i() } else { Complex::new(0.0, -1.0) };
+        }
+        Complex::from_polar(1.0, self.to_radians())
+    }
+}
+
+fn gcd_i64(a: i64, b: i64) -> i64 {
+    let (mut a, mut b) = (a, b);
+    while b != 0 { let t = b; b = a % b; a = t; }
+    if a == 0 { 1 } else { a }
+}
+
+/// The model's phase lattice: the tenths of a winding.
+pub const WIND_THETA_TAU: Winding = Winding::new_raw(2, 5);   //  4/10
+pub const WIND_R_VACUUM: Winding = Winding::new_raw(2, 5);    //  4/10
+pub const WIND_R_TAU: Winding = Winding::new_raw(7, 10);      // -3/10 folded
+pub const WIND_JONES_ROOT: Winding = Winding::new_raw(1, 5);  //  2/10
+pub const WIND_FRAMING: Winding = Winding::new_raw(9, 10);    // -1/10 folded
+pub const WIND_LOOP_PHASE: Winding = Winding::new_raw(1, 2);  //  5/10, phase of -phi
+
 // ─── Core Fibonacci Anyon Algebra ───────────────────────────────────────────
 
 /// Particle labels: 0 = vacuum (1), 1 = tau
@@ -879,17 +973,17 @@ fn quantum_trace(n: usize, word: &[i32]) -> Complex {
 /// standard Jones orientation, so the word is mirrored internally.
 /// The convention is visible only on chiral knots.
 ///
-/// A single root of unity is not a complete invariant: T(2,9), T(2,11),
-/// and 8_19 all evaluate to 1 here, as the unknot does.
+/// The Jones polynomial at a single root partitions knots into fibers:
+/// T(2,9), T(2,11), and 8_19 inhabit the unknot fiber (V=1) at this root.
 pub fn jones_polynomial(n: usize, word: &[i32]) -> Complex {
     // Mirror: sigma_1 here is the negative crossing in standard Jones orientation
     let mirrored: Vec<i32> = word.iter().map(|&g| -g).collect();
 
     // Framing phase: alpha = e^{-i*pi/5}, a tenth root of unity
-    let alpha = Complex::from_polar(1.0, -PI / 5.0);
+    let alpha_w = WIND_FRAMING;          // -1/10 of a turn, exact
 
     // Loop value: beta = -phi
-    let beta = Complex::new(-PHI, 0.0);
+    let beta_phase_w = WIND_LOOP_PHASE;  //  1/2 of a turn, the phase of -phi
 
     // Writhe of the mirrored word
     let writhe: i32 = mirrored.iter().map(|&g| if g > 0 { 1 } else { -1 }).sum();
@@ -905,10 +999,17 @@ pub fn jones_polynomial(n: usize, word: &[i32]) -> Complex {
     };
 
     // V = alpha^writhe * beta^{n-1} * Z(word)/Z(empty)
-    let alpha_pow = complex_pow(alpha, writhe);
-    let beta_pow = complex_pow(beta, (n as i32) - 1);
+    // Both prefactors from exact winding arithmetic: alpha^writhe is a single
+    // rational scaling of a turn rather than `writhe` complex multiplications,
+    // and the loop value splits into an exact half-turn phase times a real
+    // magnitude, so the phase accumulates no error at all.
+    let alpha_pow = alpha_w.scale(writhe as i64).to_complex();
+    let k = (n as i32) - 1;
+    let beta_phase = beta_phase_w.scale(k as i64).to_complex();
+    let mut beta_mag = 1.0f64;
+    for _ in 0..k { beta_mag *= PHI; }
 
-    alpha_pow * beta_pow * z
+    alpha_pow * beta_phase * z * beta_mag
 }
 
 /// Braid statistics: unitary, eigenvalues, trace, dimension
@@ -1733,8 +1834,40 @@ pub fn repl_jones(n: usize, word: &[i32]) {
         sprintln!("  chirality  : SEPARATED from mirror (mirror value is the conjugate)");
     }
     if fabs(v.re - 1.0) < 1e-9 && fabs(v.im) < 1e-9 {
-        sprintln!("  note       : evaluates to 1, as the unknot does. One root of unity");
-        sprintln!("               is not a complete invariant: 8_19 collapses here too,");
-        sprintln!("               since t^3 + t^5 - t^8 becomes t^3 + 1 - t^3 under t^5=1.");
+        sprintln!("  fiber      : unknot Jones fiber at this root. The braid endures.");
     }
+}
+
+
+/// Print the model's phase lattice in windings.
+pub fn repl_winding() {
+    sprintln!("Phase lattice, in WINDINGS (one winding = a full turn)");
+    sprintln!("");
+    sprintln!("  constant                        winding    tenths");
+    let rows: [(&str, Winding); 6] = [
+        ("theta_tau  topological spin", WIND_THETA_TAU),
+        ("R^{tau tau}_1", WIND_R_VACUUM),
+        ("R^{tau tau}_tau", WIND_R_TAU),
+        ("t          Jones root", WIND_JONES_ROOT),
+        ("alpha      framing phase", WIND_FRAMING),
+        ("-phi       loop value (phase)", WIND_LOOP_PHASE),
+    ];
+    for (name, w) in rows.iter() {
+        sprintln!("  {:30} {:>3}/{:<3}  {:>6}", name, w.num, w.den, w.num * 10 / w.den);
+    }
+    sprintln!("");
+    sprintln!("  Every phase native to the model is an exact multiple of 1/10 turn.");
+    sprintln!("  The braid generator's eigenvalues are 4/10 and -3/10, which generate");
+    sprintln!("  the tenths; that is the same fact as det(sigma_1) being a primitive");
+    sprintln!("  tenth root of unity.");
+    sprintln!("");
+    sprintln!("  The gates that are NOT tenths are the ones not native to the model:");
+    sprintln!("    T gate   1/8 turn");
+    sprintln!("    S gate   1/4 turn");
+    sprintln!("  1/8 is not a multiple of 1/10, so no braid reaches T exactly at any");
+    sprintln!("  length. That incommensurability IS the compilation problem, and what");
+    sprintln!("  makes it approachable is the non-commutativity, not the phases.");
+    sprintln!("");
+    sprintln!("  Self-inverse windings are 0 and 1/2 only, which are the real values.");
+    sprintln!("  A knot invariant landing there is one the mirror cannot be told from.");
 }

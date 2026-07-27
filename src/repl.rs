@@ -196,6 +196,7 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("fibqc compile <gates> <n> — same, with gate net depth n (default 10, max 12)");
                         sprintln!("fibqc jones <strands> <gens...>  — Jones polynomial of the braid closure");
                         sprintln!("fibqc knot [name]        — Jones value for a knot from the census");
+                        sprintln!("fibqc winding            — the phase lattice, in windings");
                         sprintln!("");
                         sprintln!("The circuit compiles as ONE unitary, so the error is incurred once");
                         sprintln!("rather than accumulating gate by gate. Several braid words sit at the");
@@ -205,6 +206,7 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("against an 8 MB bump arena. Depth 12 peaks at 8156 KB, a 36 KB margin,");
                         sprintln!("so it is the hard ceiling. The command reports its own high-water mark.");
                     }
+                    "winding" => crate::fibonacci_qc::repl_winding(),
                     "verify" => {
                         sprintln!("Fibonacci anyon algebra verified = {}", crate::fibonacci_qc::verify_all());
                     }
@@ -251,7 +253,7 @@ pub fn repl(k: &mut Kernel) {
                     "knot" => {
                         let name = parts.next().unwrap_or("").trim();
                         // braid words for a small census; the closure of each is the knot
-                        let table: [(&str, usize, &[i32]); 7] = [
+                        let table: [(&str, usize, &[i32]); 9] = [
                             ("unknot",       1, &[]),
                             ("trefoil",      2, &[1,1,1]),
                             ("trefoil*",     2, &[-1,-1,-1]),
@@ -259,6 +261,8 @@ pub fn repl(k: &mut Kernel) {
                             ("cinquefoil",   2, &[1,1,1,1,1]),
                             ("7_1",          2, &[1,1,1,1,1,1,1]),
                             ("8_19",         3, &[1,1,1,2,1,1,1,2]),
+                            ("T(2,9)",       2, &[1,1,1,1,1,1,1,1,1]),
+                            ("T(2,10)",      2, &[1,1,1,1,1,1,1,1,1,1]),
                         ];
                         if name.is_empty() {
                             sprintln!("fibqc knot <name>   known:");
