@@ -102,6 +102,42 @@ pub fn cycle_report(word: &str) {
     }
 }
 
+/// Opcode-to-opcode transitions counted ON THE RING.
+///
+/// A word is a cycle and ROTAT is the cyclic shift, so a word of length n has n
+/// transitions, not n-1. The one a linear read drops is the wrap from the last
+/// opcode back to the first, and in IMASM that is overwhelmingly TANCH -> VINIT:
+/// the anchor returning to the source. Across k programs a linear read loses
+/// exactly k such edges, and a table built without them can show a rule as
+/// universal that the closing edges break.
+pub fn transitions_report(word: &str) {
+    let steps = parse_glyph_word(&normalize(word));
+    let n = steps.len();
+    if n == 0 { sprintln!("  no IMASM glyphs in that word"); return; }
+    sprintln!("word   : {}   length {}", render(&steps), n);
+    sprintln!("  ring transitions   : {}", n);
+    sprintln!("  linear would give  : {}   (drops the closing edge)", n - 1);
+    sprintln!("  closing edge       : {} -> {}",
+              steps[n - 1].glyph(), steps[0].glyph());
+    sprintln!("");
+    // count them, most frequent first, without allocating a map
+    let mut seen: Vec<((char, char), u32)> = Vec::new();
+    for i in 0..n {
+        let key = (steps[i].glyph(), steps[(i + 1) % n].glyph());
+        if let Some(e) = seen.iter_mut().find(|e| e.0 == key) { e.1 += 1; }
+        else { seen.push((key, 1)); }
+    }
+    seen.sort_by(|a, b| b.1.cmp(&a.1));
+    sprintln!("  transitions:");
+    for ((a, b), c) in seen.iter() {
+        sprintln!("    {} -> {}   {}", a, b, c);
+    }
+    sprintln!("");
+    sprintln!("  Anything read from ABSOLUTE position on a ring measures the cut,");
+    sprintln!("  not the word: matrix rows, tetraktys tiers, odd against even.");
+    sprintln!("  One rotation moves every value into a different row.");
+}
+
 /// Was anything counted, then cleared with nothing banked behind it?
 ///
 /// AREV empties the register and leaves open frames alone, so a result fused

@@ -204,6 +204,18 @@ pub fn repl(k: &mut Kernel) {
                     crate::lattice_flow::cycle_report(w);
                 }
             }
+            "trans" => {
+                let tail: Vec<&str> = parts.collect();
+                let word = tail.join(" ");
+                let w = word.trim();
+                if w.is_empty() {
+                    sprintln!("trans <word>     — transitions counted on the RING");
+                    sprintln!("A word is a cycle, so it has as many transitions as opcodes.");
+                    sprintln!("A linear read drops the closing edge, usually TANCH -> VINIT.");
+                } else {
+                    crate::lattice_flow::transitions_report(w);
+                }
+            }
             "banked" => {
                 let tail: Vec<&str> = parts.collect();
                 let word = tail.join(" ");
@@ -2082,6 +2094,7 @@ fn print_help() {
     sprintln!("  {:<32} — walk an IMASM word around its ROTAT orbit", "cycle <word>");
     sprintln!("  {:<32} — where the weight moves through an IMASM word", "weight <word>");
     sprintln!("  {:<32} — was a count cleared with nothing banked?", "banked <word>");
+    sprintln!("  {:<32} — transitions counted on the ring, closing edge included", "trans <word>");
     sprintln!("  {:<32} — IUFT QC gates: gate|distance|list", "iuft <action>");
     sprintln!("  {:<32} — Riemann Hypothesis bridge", "rh");
     sprintln!("  {:<32} — Yang-Mills mass gap bridge", "ym");
