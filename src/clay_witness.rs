@@ -1,7 +1,7 @@
 // clay_witness.rs — Clay Witness-Drag IMASM Programs (Track F)
 //
 // Encodes witness paths for Clay problems as IMASM programs.
-// Each program traces the structural closure path verified in
+// Each program traces the closure path verified in
 // p4rakernel/p4ramill Lean 4:
 //   - Clay_WitnessedClosure.lean: BSD, Hodge close under 5 dialects
 //   - Clay_UnclosedResistance.lean: YM one-bump-short, RH/NS/PNP unclosed

@@ -258,7 +258,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "goldbach_twin_meet", "Meet of Goldbach and Twin Prime conjectures - shared structural floor",
+        "goldbach_twin_meet", "Meet of Goldbach and Twin Prime conjectures - shared floor",
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -266,7 +266,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "landau_four_meet", "Meet of all four Landau problems - shared structural floor of Goldbach, Twin Primes, Legendre, and n-squared-plus-one",
+        "landau_four_meet", "Meet of all four Landau problems - shared floor of Goldbach, Twin Primes, Legendre, and n-squared-plus-one",
         IgPrim::D_infty, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_asym, IgPrim::F_eth, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -546,7 +546,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "riemann_navigator", "Riemann navigator structural type: imscriptive categorical Frobenius at quantum-coherent slow global broadcast critical maximal chirality asymmetric integer protected, identical to grammar self-enc...",
+        "riemann_navigator", "Riemann navigator type: imscriptive categorical Frobenius at quantum-coherent slow global broadcast critical maximal chirality asymmetric integer protected, identical to grammar self-enc...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
@@ -970,7 +970,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "sic_structural_proof", "Structural proof of SIC existence via Zauner symmetry and Stark units: provides exact Frobenius symmetry and topological protection.",
+        "sic_structural_proof", "Proof of SIC existence via Zauner symmetry and Stark units: provides exact Frobenius symmetry and topological protection.",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
@@ -1274,7 +1274,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "extended_math_grammar", "An extended mathematical grammar system, derived from Lean4 formal language by promoting primitives to align with Riemann Navigator (Crystal Navigator) structural type.",
+        "extended_math_grammar", "An extended mathematical grammar system, derived from Lean4 formal language by promoting primitives to align with Riemann Navigator (Crystal Navigator) type.",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
@@ -1346,7 +1346,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "erdos_straus_conjecture", "The Erdős-Straus Conjecture: The Diophantine equation 4/n = 1/x + 1/y + 1/z has a solution in positive integers for all n >= 2. A structural type representing the invariant modular constraints and ...",
+        "erdos_straus_conjecture", "The Erdős-Straus Conjecture: The Diophantine equation 4/n = 1/x + 1/y + 1/z has a solution in positive integers for all n >= 2. A type representing the invariant modular constraints and ...",
         IgPrim::D_wedge, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_sym, IgPrim::F_ell, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -1466,7 +1466,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "paper_draft", "AI author's draft of Millennium Barriers Paper, using AI default structural type",
+        "paper_draft", "AI author's draft of Millennium Barriers Paper, using AI default type",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_sym, IgPrim::F_hbar, IgPrim::K_mbl,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -1514,7 +1514,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "tpc_valid_proof_target", "Target structural type for a valid unconditional proof of the Twin Prime Conjecture. Must cross the parity barrier (requires genuine symmetry discrimination), establish a non-trivial level of distr...",
+        "tpc_valid_proof_target", "Target type for a valid unconditional proof of the Twin Prime Conjecture. Must cross the parity barrier (requires genuine symmetry discrimination), establish a non-trivial level of distr...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
@@ -1546,7 +1546,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "collatz_deep", "Collatz conjecture deep structural type: self-referential inverse tree with bidirectional coupling, Frobenius-special symmetry, and integer winding protection",
+        "collatz_deep", "Collatz conjecture deep type: self-referential inverse tree with bidirectional coupling, Frobenius-special symmetry, and integer winding protection",
         IgPrim::D_triangle, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_mod,
         IgPrim::G_gimel, IgPrim::C_seq,
@@ -1602,7 +1602,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "solved_millennium_theorem", "Structural type of a solved Millennium Problem. The sorry is discharged: ⊙ transitions from complex-plane critical (Æ) to self-modeling resolved (ÿ), Ω gains integer winding protection (z), Ç trans...",
+        "solved_millennium_theorem", "Type of a solved Millennium Problem. The sorry is discharged: ⊙ transitions from complex-plane critical (Æ) to self-modeling resolved (ÿ), Ω gains integer winding protection (z), Ç trans...",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_lr,
         IgPrim::P_pm, IgPrim::F_ell, IgPrim::K_fast,
         IgPrim::G_beth, IgPrim::C_and,
@@ -1626,7 +1626,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "erdos_straus_proved", "Erdos-Straus conjecture PROVED form: 4/n = 1/x + 1/y + 1/z for all n≥2 via modular covering identities, infinite descent, and structural promotion from O₀ to O₂†. 7 primitive upgrades: D_triangle→D...",
+        "erdos_straus_proved", "Erdos-Straus conjecture PROVED form: 4/n = 1/x + 1/y + 1/z for all n≥2 via modular covering identities, infinite descent, and promotion from O₀ to O₂†. 7 primitive upgrades: D_triangle→D...",
         IgPrim::D_wedge, IgPrim::T_boxtimes, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_ell, IgPrim::K_mod,
         IgPrim::G_aleph, IgPrim::C_or,
@@ -1650,7 +1650,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "belnap_sic_povm_unconditional", "Unconditional SIC-POVM structural proof: B⊗n in the Belnap product lattice (Belnap)^n satisfies all four SIC-POVM axioms (meet-identity, classical equidistance/Born rule, join-absorption, self-adjo...",
+        "belnap_sic_povm_unconditional", "Unconditional SIC-POVM proof: B⊗n in the Belnap product lattice (Belnap)^n satisfies all four SIC-POVM axioms (meet-identity, classical equidistance/Born rule, join-absorption, self-adjo...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
@@ -1754,7 +1754,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "witness_vessel", "The Witness Vessel: lossless transport apparatus for structural verdicts (Witnesses) between composition universes. Three layers unified by a single structural identity: d=12 SIC-POVM fiducial (phy...",
+        "witness_vessel", "The Witness Vessel: lossless transport apparatus for structural verdicts (Witnesses) between composition universes. Three layers unified by a single identity: d=12 SIC-POVM fiducial (phy...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_eth, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,

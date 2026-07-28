@@ -156,7 +156,7 @@ Six shunt mechanisms are used: **IMSCRIB Bridge**, **ENGAGR Paradox**, **Interle
 
 ## Crystal FS
 
-The Crystal of Types is a 17,280,000-address structural type space. Every address is a
+The Crystal of Types is a 17,280,000-address type space. Every address is a
 point in the product of 12 primitive value sets:
 
 ```
@@ -164,13 +164,13 @@ address = Σᵢ (index[i] × stride[i])
 strides = [5184000, 1728000, 576000, 144000, 48000, 12000, 4000, 800, 200, 50, 10, 1]
 ```
 
-Files are located by structural type, not by path.
+Files are located by type, not by path.
 
 ### `crystal store <name> [data]`
 
 Store an entry. The kernel automatically:
 1. Hashes `name` → selects one of the 12 canonicals (deterministic)
-2. Loads that canonical and runs one tick (structural state change)
+2. Loads that canonical and runs one tick (state change)
 3. Derives the 12-primitive address from the resulting snapshot
 4. Stores at that address
 
@@ -325,7 +325,7 @@ Or Ctrl-A then X in QEMU serial mode.
 
 ### `sic`
 
-Display the SIC-POVM d=12 structural identity: 3-lattice proofs (Belnap, crystal, Lean),
+Display the SIC-POVM d=12 identity: 3-lattice proofs (Belnap, crystal, Lean),
 6 Frobenius-dual pairs, Σ=1:1 self-referential grammar limit.
 
 ```

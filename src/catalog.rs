@@ -187,7 +187,7 @@ pub fn score_omega(v: IgPrim) -> f32 {
 // ═══════════════════════════════════════════════════════════════
 
 /// Default per-primitive weights for tuple_distance.
-/// Computed from relative importance of each primitive to structural identity.
+/// Computed from relative importance of each primitive to identity.
 /// Weights can be overridden at runtime for domain-specific analysis.
 #[derive(Copy, Clone, Debug)]
 pub struct DistanceWeights {
@@ -242,7 +242,7 @@ pub struct CatalogEntry {
     pub name: &'static str,
     /// Human-readable description.
     pub description: &'static str,
-    /// The 12-primitive structural tuple.
+    /// The 12-primitive tuple.
     pub tuple: IgTuple,
     /// Ouroboricity tier (O_0=0, O_1=1, O_2=2, O_2d=3, O_inf=4).
     pub tier: u8,
@@ -558,7 +558,7 @@ const O_INF: CatalogEntry = entry(
 
 // ── O₀ minimum (reference floor) ──
 const O_0: CatalogEntry = entry(
-    "o_0", "O₀ baseline — the structural floor, minimum on all primitives",
+    "o_0", "O₀ baseline — the floor, minimum on all primitives",
     IgPrim::D_wedge, IgPrim::T_net, IgPrim::R_super,
     IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_fast,
     IgPrim::G_beth, IgPrim::C_and,

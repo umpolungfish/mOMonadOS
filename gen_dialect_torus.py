@@ -17,7 +17,7 @@ D = [
 ("no_ordering",0,10.0,5,0,"All three gates fully independent"),
 ("high_gate",0,11.33,5,1,"Strictest: max winding, full self-model, parity-perfect"),
 ("winding_first",0,10.0,5,1,"Topological order: winding first"),
-("t_structural",0,10.0,5,1,"Time as geometry: T from structural primitives"),
+("t_structural",0,10.0,5,1,"Time as geometry: T from primitives"),
 # Phase I — Hand-crafted (U_8..U_28)
 ("chirality_first",1,8.0,5,1,"Memory before closure: G1=H>=2-step"),
 ("topology_universe",1,11.0,5,1,"Connectivity is the fundamental gate: G1=Th>=odot"),

@@ -231,7 +231,7 @@ pub fn d16_proof() -> String {
     s.push_str("  Ω = 𐑴 (Z2 parity-protected)\n");
     s.push_str("  The class group of order 2 imposes a discrete Z/2 obstruction\n");
     s.push_str("  that blocks deformation to the trivial state.\n");
-    s.push_str("  This is the structural content of the d=16 settlement.\n");
+    s.push_str("  This is the content of the d=16 settlement.\n");
     s
 }
 
@@ -524,7 +524,7 @@ pub fn scope_report() -> String {
 // §9.  STRUCTURAL GRAMMAR ENCODING
 // ═══════════════════════════════════════════════════════════════
 
-/// The d=16 moduli field structural type:
+/// The d=16 moduli field type:
 /// ⟨Ð=𐑨 T=𐑸 Ř=𐑾 Φ=𐑹 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ɢ=𐑠 φ̂=⊙ Ħ=𐑫 Σ=𐑳 Ω=𐑴⟩
 ///
 /// Key points:

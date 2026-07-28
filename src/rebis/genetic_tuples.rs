@@ -1,7 +1,7 @@
 //! genetic_tuples.rs — Generative Tuple Construction for Gene→Protein Pipeline
 //! Port of rhr_p4rky/genetic_tuples.py
 //!
-//! Each stage's structural tuple is a FUNCTION of sequence-derived features.
+//! Each stage's tuple is a FUNCTION of sequence-derived features.
 //! The mapping from pipeline string names to IG primitive Unicode values is
 //! defined here, along with per-stage tuple generators that inspect:
 //!   - Amino acid composition

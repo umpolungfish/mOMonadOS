@@ -394,7 +394,7 @@ pub const OUROBORIC_O2: [&str; 12] = [
     "𐑦", "𐑸", "𐑽", "𐑹", "𐑐", "𐑧", "𐑲", "𐑠", "⊙", "𐑖", "𐑳", "𐑭"
 ];
 
-/// Structural distance from O₂ to O_∞ (the Sophick gap): 3 primitives differ
+/// Distance from O₂ to O_∞ (the Sophick gap): 3 primitives differ
 pub const STRUCTURAL_DISTANCE_O2_TO_OINF: f64 = 3.0;
 
 /// Gap primitives: R, H, Omega — the 3 that must be promoted
@@ -465,7 +465,7 @@ pub fn sophick_report() -> alloc::string::String {
         out.push_str(g);
     }
     out.push_str("⟩\n\n");
-    out.push_str(&alloc::format!("  Structural distance O₂→O_∞: {:.4}\n", STRUCTURAL_DISTANCE_O2_TO_OINF));
+    out.push_str(&alloc::format!("  Distance O₂→O_∞: {:.4}\n", STRUCTURAL_DISTANCE_O2_TO_OINF));
     out.push_str("  Gap primitives: R(dagger→LR), H(2→inf), Omega(Z→NA)\n\n");
 
     let results = run_all_eagle_cycles();

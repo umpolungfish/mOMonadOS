@@ -1,6 +1,6 @@
 // sic_povm.rs — SIC-POVM d=12 Structural Module
 //
-// Encodes the machine-verified structural identities from
+// Encodes the machine-verified identities from
 // p4rakernel/p4ramill and dumpdir_sic_lean:
 //
 //   SIC_POVM_Functor.lean:     Crystal of Types → d=12 SIC-POVM forced

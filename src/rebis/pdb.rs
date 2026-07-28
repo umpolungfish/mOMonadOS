@@ -253,7 +253,7 @@ pub fn validate_structure(
         .collect();
     let correct = pred_set.intersection(&actual_set).count();
 
-    // Frobenius check: does the contact map satisfy structural closure?
+    // Frobenius check: does the contact map satisfy closure?
     // For PDB validation, this means: predicted contacts that are correct
     // form a subset that can reconstruct the fold topology.
     let frobenius_ok = correct > 0 && correct as f64 / predicted.len().max(1) as f64 >= 0.3;

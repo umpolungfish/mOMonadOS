@@ -1,13 +1,13 @@
 use crate::sprintln;
 // rebis/ligand.rs — PDB-Aware Ligand Design from Catalytic Sites
-// Port of red-hot_rebis/rhr_p4rky ligand pipeline (structural types)
+// Port of red-hot_rebis/rhr_p4rky ligand pipeline (types)
 //
 // The ligand pipeline designs small molecules that fit catalytic active sites.
 // Uses IG structural typing to characterize: binding mode (via R coupling),
 // electronic complementarity (via P sym/F quantum), and steric fit (via K kinetics).
 // The full Python pipeline (ligand_from_active_site.py, ligand_improvements.py,
 // ligand_combinatorial.py, ligand_heterocycles.py, ligand_sicpovm.py) is 300K+
-// — this Rust module provides the structural type system and key entry points.
+// — this Rust module provides the type system and key entry points.
 
 use alloc::vec::Vec;
 use alloc::string::String;
@@ -248,7 +248,7 @@ pub fn print_ligand_suggestions(site_name: &str, residues: &[&str]) {
 //   - IMASM structural optimization
 //   - Heterocycle substitution scoring
 //   - ADMET property prediction
-// This Rust module provides the IG structural type foundation.
+// This Rust module provides the IG type foundation.
 
 pub fn run_ligand_pipeline(pdb_path: &str) -> Vec<LigandResult> {
     // Entry point — delegates to simplified scoring

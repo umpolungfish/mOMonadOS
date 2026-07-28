@@ -399,7 +399,7 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("  sic calibrate   calibration table, computed from d");
                         sprintln!("  sic scope       where the coinvariant identity holds");
                         sprintln!("  sic d2048       propagation to d=2048");
-                        sprintln!("  sic grammar     structural tuple");
+                        sprintln!("  sic grammar     tuple");
                         sprintln!("  sic lean        Lean cross-reference");
                     },
                 }
@@ -433,7 +433,7 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("  riemann topology   program topology report");
                         sprintln!("  riemann sixteen3   SIXTEEN_3 trilattice breakdown");
                         sprintln!("  riemann rotat      ROTAT orbit audit");
-                        sprintln!("  riemann grammar    structural tuple + per-primitive justification");
+                        sprintln!("  riemann grammar    tuple + per-primitive justification");
                         sprintln!("  riemann lean       Lean 4 cross-reference");
                         sprintln!("  riemann sic        d=12 SIC-POVM Gerzon inverse numerical verification");
                         sprintln!("  riemann hilbert    Zauner Hamiltonian H_Z eigenvalue computation");
@@ -1155,9 +1155,9 @@ Stopped after {} ticks.", ran);
                     "verify" => {
                         let u = k.active_dialect;
                         // Optional catalog name: "ruleset verify birch_swinnerton_dyer"
-                        // checks a named catalog entry's *static* structural tuple instead
+                        // checks a named catalog entry's *static* tuple instead
                         // of the kernel's own live execution snapshot. Added 2026-06-16
-                        // alongside U8 so externally-defined structural types (e.g. the
+                        // alongside U8 so externally-defined types (e.g. the
                         // Clay Millennium problems) can be checked directly, not just
                         // whatever program the kernel happens to be running.
                         let name_arg = parts.next().unwrap_or("").trim();

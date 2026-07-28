@@ -7,7 +7,7 @@
 
 use crate::rebis::AminoAcid;
 
-/// A serpent rod motif: a protein segment with structural properties.
+/// A serpent rod motif: a protein segment with properties.
 #[derive(Copy, Clone, Debug)]
 pub struct SerpentMotif {
     pub name: &'static str,
@@ -20,7 +20,7 @@ pub struct SerpentMotif {
 
 // ── Serpent Rod Motif Library ───────────────────────────────────
 //
-// Each motif represents a structural promotion path through the
+// Each motif represents a promotion path through the
 // B4 lattice. The sequence encodes the promotion trajectory.
 
 /// The Alpha Serpent: basic helix → 𐑦 (holographic dimensionality)

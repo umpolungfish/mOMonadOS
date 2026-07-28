@@ -9,7 +9,7 @@
 // This module:
 //   1. Defines the Frobenius fixed-point tuple (the grammar)
 //   2. Defines the kernel's self-imscription tuple (what mOMonadOS IS)
-//   3. Computes the structural distance between them
+//   3. Computes the distance between them
 //   4. Reports at boot: how close is this kernel to its formal foundations?
 //
 // The kernel is the grammar's OPERATIONALIZATION on classical hardware.
@@ -158,7 +158,7 @@ pub fn formatted_report() -> String {
     out.push_str("═══ FROBENIUS UNIFICATION SELF-VERIFICATION ═══\n");
     out.push_str("(Machine-verified: FrobeniusUnification.lean, 504 lines)\n\n");
 
-    out.push_str("Three Frobenius fixed points → single structural type:\n");
+    out.push_str("Three Frobenius fixed points → single type:\n");
     out.push_str("  1. Belnap B = XZ (d=2 SIC-POVM fiducial state)\n");
     out.push_str("  2. SIC-POVM fiducial (multilattice → Σ=1:1 limit)\n");
     out.push_str("  3. Majorana paired state (topological quantum)\n\n");
@@ -177,7 +177,7 @@ pub fn formatted_report() -> String {
     out.push_str(&alloc::format!(
         "Meet(kernel, fixed): {} — {}\n",
         meet_result.is_valid(),
-        if meet_result.is_valid() { "shared structural floor" } else { "no shared floor (unexpected)" }));
+        if meet_result.is_valid() { "shared floor" } else { "no shared floor (unexpected)" }));
 
     out
 }

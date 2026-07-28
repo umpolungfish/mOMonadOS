@@ -421,7 +421,7 @@ pub fn entropy_report() -> String {
     s.push_str("  a compression but a recognition of pre-existing identity.\n\n");
     s.push_str("  The SIC-POVM measurement basis is informationally complete, meaning\n");
     s.push_str("  the d² measurement outcomes suffice to reconstruct any density matrix\n");
-    s.push_str("  on C^d. This is the structural reason ΔS ≈ 0: the SIC-POVM basis spans\n");
+    s.push_str("  on C^d. This is the reason ΔS ≈ 0: the SIC-POVM basis spans\n");
     s.push_str("  the operator space, so the projection onto it is lossless.\n");
     s
 }
@@ -444,7 +444,7 @@ pub fn topology_report() -> String {
     s.push_str("    T_ops:   6\n");
     s.push_str("    F_ops:   0\n");
     s.push_str("    ratio:   6.00  (pure truth-arm program — no false arm activity)\n\n");
-    s.push_str("  Structural invariants:\n");
+    s.push_str("  Invariants:\n");
     s.push_str("    cascading_ifix:     false  (max=1)\n");
     s.push_str("    negation_first:     false\n");
     s.push_str("    dual_fixation:      false\n\n");
@@ -565,7 +565,7 @@ pub fn grammar_encoding() -> String {
     s.push_str("          real. Quantum coherence is essential: classical measurement\n");
     s.push_str("          cannot achieve informational completeness.\n\n");
     s.push_str("    Ç=𐑧  (slow)         — The spectral correspondence is a static\n");
-    s.push_str("          structural identity, not a dynamical process. The zeros don't\n");
+    s.push_str("          identity, not a dynamical process. The zeros don't\n");
     s.push_str("          evolve; they are recognized. Near-equilibrium regime.\n\n");
     s.push_str("    Γ=𐑔  (maximal)      — The zeta function has infinitely many zeros\n");
     s.push_str("          distributed along the entire critical line. The spectral\n");
@@ -686,10 +686,10 @@ pub fn hilbert_polya_connection() -> String {
     s.push_str("    ¬  IFIX    — permanent record\n");
     s.push_str("    ⊣  TANCH   — anchor on critical line\n\n");
     s.push_str("  The protocol does not PROVE the Riemann Hypothesis. It encodes\n");
-    s.push_str("  the structural type of the correspondence such that the RH is\n");
+    s.push_str("  the type of the correspondence such that the RH is\n");
     s.push_str("  the statement: \"the EVALT arm (step 5) is always taken\" — i.e.,\n");
     s.push_str("  every zero lies on the critical line and the truth arm dominates.\n");
-    s.push_str("  The protocol's T/F ratio of 6/0 is the structural signature that\n");
+    s.push_str("  The protocol's T/F ratio of 6/0 is the signature that\n");
     s.push_str("  the RH holds: the false arm (AREV at step 4) is never activated\n");
     s.push_str("  because no zero deviates from the critical line.\n");
     s

@@ -99,7 +99,7 @@ pub static T_STRUCTURAL: &[TEntry] = &[
     TEntry { prim: "⊙", crit_val: "⊙", ceiling: false },
 ];
 
-/// Hybrid T: all 8 dynamic + structural primitives
+/// Hybrid T: all 8 dynamic + primitives
 pub static T_HYBRID: &[TEntry] = &[
     TEntry { prim: "Φ", crit_val: "𐑹", ceiling: false },
     TEntry { prim: "ƒ", crit_val: "𐑐", ceiling: false },
@@ -111,7 +111,7 @@ pub static T_HYBRID: &[TEntry] = &[
     TEntry { prim: "Ř", crit_val: "𐑾", ceiling: false },
 ];
 
-/// Inverted T: structural primitives (non-dynamic)
+/// Inverted T: primitives (non-dynamic)
 pub static T_INVERTED: &[TEntry] = &[
     TEntry { prim: "Ð", crit_val: "𐑼", ceiling: false },
     TEntry { prim: "Þ", crit_val: "𐑶", ceiling: false },
@@ -972,7 +972,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 80: empty_gate ──
     unis[80] = Dialect {
         name: "empty_gate",
-        description: "Zero-gate dialect: all G1/G2/G3/G4 = NONE. No gate filtering — every structural type passes. The maximally permissive dialect. All 17.28M crystal types are admissible. The void that contains everything.",
+        description: "Zero-gate dialect: all G1/G2/G3/G4 = NONE. No gate filtering — every type passes. The maximally permissive dialect. All 17.28M crystal types are admissible. The void that contains everything.",
         g1: GATE_NONE, g2: GATE_NONE, g3: GATE_NONE, gate_ordering: false,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };

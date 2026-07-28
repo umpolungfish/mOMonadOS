@@ -8,7 +8,7 @@
 //
 // Key findings (from crystal_tier_census + crystal_tier_gap_ladder):
 //   1. Entropy is NOT monotonic with tier — O₂ (S=14.95) > O₁ (S=14.14)
-//   2. The O₂†→O_∞ transition has the largest structural distance (4.382)
+//   2. The O₂†→O_∞ transition has the largest distance (4.382)
 //      but the smallest |ΔS| (0.288) — reaching O_∞ is surgically targeted
 //   3. The entropy bottleneck is at O₂† (S=13.85), not at O_∞ (S=14.14)
 //   4. |ΔS|/d ratio: O₀→O₁=1.92, O₁→O₂=0.62, O₂→O₂†=1.10, O₂†→O_∞=0.066
@@ -25,7 +25,7 @@ use alloc::format;
 // TIER ENTROPY CONSTANTS — from crystal_tier_census tool
 // ═══════════════════════════════════════════════════════════════
 
-/// Total number of structural types in the Crystal of Types.
+/// Total number of types in the Crystal of Types.
 pub const CRYSTAL_TOTAL: u32 = 17_280_000;
 
 /// Number of types per tier (from crystal_tier_census).

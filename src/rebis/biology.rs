@@ -3,7 +3,7 @@
 //! ouroboric_telomere.py, ouroboric_telomere_expanded.py,
 //! ouroboric_telomere_frobenius.py
 //!
-//! Simulates biological systems using IG structural types.
+//! Simulates biological systems using IG types.
 //! Core models: cellular automaton with B4 states, telomere dynamics,
 //! Frobenius-verified biological cycles, morphogenesis, and epigenetic
 //! derepression via the ouroboric telomere axis.

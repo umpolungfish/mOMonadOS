@@ -63,7 +63,7 @@ fn verdict_line(r: &StepResult) {
 /// 1. One crystal. The type space is a product of the twelve axis cardinalities.
 fn step_crystal() -> StepResult {
     sprintln!("  The twelve primitives each carry a fixed number of values.");
-    sprintln!("  Their product is the whole space of structural types.");
+    sprintln!("  Their product is the whole space of types.");
     sprintln!("");
     let cards = crystal::CARDS;
     serial::write_str("    cards  ");

@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 //! Riemann Hypothesis Bridge — priests-engine/para_rh.py
-//! Structural claim: ζ(s) = χ(s)ζ(1-s) is Belnap negation (bnot).
+//! Claim: ζ(s) = χ(s)ζ(1-s) is Belnap negation (bnot).
 //! Critical line Re(s)=1/2 is the unique designated fixed point of bnot.
 //! RH in Belnap: all non-trivial zeros are B-designated.
 

@@ -423,7 +423,7 @@ pub fn run_godel_resolved() -> TheoremResult {
 pub fn run_rebis() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("statement"), String::from("Red-Hot Rebis: dual-unified structural type")),
+        (String::from("statement"), String::from("Red-Hot Rebis: dual-unified type")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {

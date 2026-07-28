@@ -118,13 +118,13 @@ pub static DECAY_SERIES: &[DecaySeries] = &[
     },
 ];
 
-// ─── Element → approximate structural tuple ──────────────────────────────────
-// Simplified: maps element symbol to an IgTuple capturing the structural type.
+// ─── Element → approximate tuple ──────────────────────────────────
+// Simplified: maps element symbol to an IgTuple capturing the type.
 // Derived from elem2imasm.py derive_tuple() logic.
 // Stable isotopes end at ⊙ self-referentiality.
 
 fn element_tuple(sym: &str) -> IgTuple {
-    // Map element symbol to a structural tuple based on periodicity
+    // Map element symbol to a tuple based on periodicity
     match sym {
         // Noble gases: fully symmetric, high criticality
         "Rn" => IgTuple { d: IgPrim::D_odot, t: IgPrim::T_odot, r: IgPrim::R_lr, p: IgPrim::P_sym, f: IgPrim::F_ell, k: IgPrim::K_mod, g: IgPrim::G_aleph, c: IgPrim::C_broad, phi: IgPrim::Phi_crit, h: IgPrim::H0, s: IgPrim::S_11, omega: IgPrim::Omega_0 },

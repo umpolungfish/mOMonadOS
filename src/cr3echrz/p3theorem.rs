@@ -928,7 +928,7 @@ pub static THEOREM_BOOTSTRAP_MILLENNIUM: &[TheoremRegEntry] = &[
     },
     TheoremRegEntry {
         name: "rebis",
-        description: "Rebis — dual-unified structural type",
+        description: "Rebis — dual-unified type",
         phase_count: 44,
         example_params: "",
         runner: rebis_runner,

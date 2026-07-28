@@ -1,7 +1,7 @@
 // rebis/pipeline.rs — IG Promotion Pipeline
 //
 // Port of compute_promotions.py and pipeline/auto_imscriber.py.
-// Computes the structural promotions needed to lift a source
+// Computes the promotions needed to lift a source
 // tuple to a target tuple. Maps primitives to their ordinal gaps.
 
 use crate::imas_ig::IgPrim;

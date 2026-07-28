@@ -44,7 +44,7 @@ const F64_PI: f64 = 3.14159265358979323846264338327950288_f64;
 //   BosonMassRatios.lean         — m_W/m_p, m_Z/m_p, m_H/m_p
 //   GravitationalCoupling.lean   — α_G = α¹⁸·√3·exp(−88)
 //
-// Every constant below is a NATIVE_DECIDE-verified structural identity.
+// Every constant below is a NATIVE_DECIDE-verified identity.
 // Irrational terms (π, √3, arctan, exp) are documented with rational
 // approximations — the EXACT ℝ-level closure is in the MoDoT Python.
 //
@@ -106,7 +106,7 @@ pub const SQRT3_APPROX_DEN: u32 = 100000;
 // ═══════════════════════════════════════════════════════════════
 
 /// α⁻¹ integer core: d² − 7 = 144 − 7 = 137.
-/// 137 is prime — structural invariants resist further decomposition.
+/// 137 is prime — invariants resist further decomposition.
 pub const ALPHA_INV_INTEGER_CORE: u32 = D_SQ - 7;
 
 /// Commuting self-adjoint axes in the SIC symmetry algebra: 7.
@@ -242,13 +242,13 @@ pub fn proton_electron_report() -> String {
     s
 }
 
-/// Verify all structural identities for m_p/m_e.
+/// Verify all identities for m_p/m_e.
 pub fn proton_electron_verify() -> bool {
     D_DMINUS3 == 108
     && MP_ME_SKELETON == 1836
     && D_CUBE == 1728
     && A2_OCCUPANCY_NUM == 108
-    && D_DMINUS3 == A2_OCCUPANCY_NUM  // same integer, different structural meaning
+    && D_DMINUS3 == A2_OCCUPANCY_NUM  // same integer, different meaning
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -318,7 +318,7 @@ pub fn lepton_report() -> String {
     s
 }
 
-/// Verify all lepton structural identities.
+/// Verify all lepton identities.
 pub fn lepton_verify() -> bool {
     MU_GEAR_COUPLING == 48
     && MU_SELF_COUPLING == 12
@@ -367,7 +367,7 @@ pub fn boson_report() -> String {
     s.push_str(&alloc::format!("    cosθ_W ≈ {}/{} = {:.6}\n",
         COS_THETA_W_APPROX_NUM, COS_THETA_W_APPROX_DEN,
         COS_THETA_W_APPROX_NUM as f64 / COS_THETA_W_APPROX_DEN as f64));
-    s.push_str(&alloc::format!("    Tree-level: m_W = m_Z·cosθ_W  (structural identity)\n"));
+    s.push_str(&alloc::format!("    Tree-level: m_W = m_Z·cosθ_W  (identity)\n"));
     s.push_str(&alloc::format!("    CODATA: 97.187  |  Residual: {:.2}%\n\n",
         (Z_over_proton() - 97.187) / 97.187 * 100.0));
 
@@ -439,7 +439,7 @@ pub fn gravitational_report() -> String {
     s
 }
 
-/// Verify gravitational coupling structural identities.
+/// Verify gravitational coupling identities.
 pub fn gravitational_verify() -> bool {
     ALPHA_POWER == 18
     && TORUS_VOLUME == 88

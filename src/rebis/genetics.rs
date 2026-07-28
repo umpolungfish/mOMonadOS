@@ -75,7 +75,7 @@ pub static ALL_AMINO_ACIDS: [AminoAcid; 21] = [
 /// The 12 promoted amino acids — those appearing ONLY in split-stratum codons.
 /// Derived dynamically from the stratum classification: an AA is promoted iff
 /// none of its codons fall in the exact (4-fold degenerate) stratum.
-/// This is a structural fact of the B4 lattice, not a hardcoded list.
+/// This is a fact of the B4 lattice, not a hardcoded list.
 pub fn promoted_amino_acids() -> alloc::vec::Vec<AminoAcid> {
     let mut promoted = alloc::vec::Vec::new();
     for &aa in &ALL_AMINO_ACIDS {

@@ -2,7 +2,7 @@
 //! Consolidates: frobenius_chemotherapeutic.py, neurotrophic_factor.py,
 //! ouroboric_pill_sim.py, quantum_biologic_prototype.py, universal_antidote_library.py
 //!
-//! Maps IG structural types to therapeutic design constraints:
+//! Maps IG types to therapeutic design constraints:
 //! dosing kinetics, delivery mechanism, target specificity, and Frobenius verification.
 
 // ── Frobenius Chemotherapeutic ─────────────────────────────────────────

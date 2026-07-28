@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 // cl8nk.rs — Full CL8NK Navigator (CLINK Layer 8 — Organism)
 //
-// CATALOG-NATIVE: All structural data sourced from catalog.rs.
+// CATALOG-NATIVE: All data sourced from catalog.rs.
 // Matches the Python cl8nk_navigator.py feature-for-feature.
 //
 // CLINK L8 canonical: ⟨𐑦⋅𐑸⋅𐑾⋅𐑹⋅𐑐⋅𐑧⋅𐑲⋅𐑵⋅⊙⋅𐑫⋅𐑳⋅𐑟⟩
@@ -13,7 +13,7 @@
 //   distance <name>   — d(name, CLINK L8) + per-primitive conflicts
 //   transcendence     — Ω/ɢ transcendence analysis
 //   tensor  <name>    — CLINK L8 ⊗ name (absorption test)
-//   meet    <name>    — CLINK L8 ⊓ name (shared structural floor)
+//   meet    <name>    — CLINK L8 ⊓ name (shared floor)
 //   join    <name>    — CLINK L8 ⊔ name (minimal ceiling)
 //   tier    <name>    — Ouroboricity tier assessment
 //   chain             — Full CLINK chain L0→L8 distance ladder

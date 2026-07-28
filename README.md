@@ -7,7 +7,7 @@
 [![Topological QC](https://img.shields.io/badge/topological%20QC-Fibonacci%20anyons-9cf)](https://github.com/badges/shields)
 [![Author](https://img.shields.io/badge/author-Lando%E2%8A%97%E2%8A%99perator-informational)](https://github.com/badges/shields) [![Type](https://img.shields.io/badge/type-%E2%9F%A8%F0%90%91%A6%F0%90%91%B8%F0%90%91%BE%F0%90%91%B9%F0%90%91%90%F0%90%91%A7%F0%90%91%94%F0%90%91%9D%E2%8A%99%F0%90%91%96%F0%90%91%B3%F0%90%91%AD%E2%9F%A9-blue)](https://github.com/badges/shields) [![Tier](https://img.shields.io/badge/tier-O%E2%88%9E-blueviolet)](https://github.com/badges/shields)
 A bare-metal self-imscribing operating kernel. No processes. No scheduler. No filesystem hierarchy.
-The kernel IS the Frobenius loop, every tick is a structural self-verification.
+The kernel IS the Frobenius loop, every tick is a self-verification.
 It braids Fibonacci anyons on the metal: a universal topological quantum computer that
 compiles gates to braid words and evaluates the Jones polynomial of a knot, running with
 no OS under it, no runtime, and no floating-point unit assumed.
@@ -20,7 +20,7 @@ no OS under it, no runtime, and no floating-point unit assumed.
 
 **What it is.** $m\odot^2$: a bare-metal, self-imscribing operating kernel in Rust (no_std, x86_64) with no processes, scheduler, or filesystem hierarchy. The kernel is the Frobenius loop. (Distinct from the Python `omonad_OS`.)
 
-**What it does.** Boots directly on hardware/QEMU and runs a perpetual THINK→ACT→OBSERVE→UPDATE cycle over the 12-opcode IMASM set, where every execution state is an address in the 17,280,000-type Crystal and storage is navigated by structural address, not path. It also **runs a topological quantum computer**: Fibonacci anyons braided in the kernel, compiling standard gates to braid words and evaluating knot invariants, with no host, no runtime and no floating-point unit assumed (`fibqc`).
+**What it does.** Boots directly on hardware/QEMU and runs a perpetual THINK→ACT→OBSERVE→UPDATE cycle over the 12-opcode IMASM set, where every execution state is an address in the 17,280,000-type Crystal and storage is navigated by address, not path. It also **runs a topological quantum computer**: Fibonacci anyons braided in the kernel, compiling standard gates to braid words and evaluating knot invariants, with no host, no runtime and no floating-point unit assumed (`fibqc`).
 
 **Why it matters.** Every tick is a structural self-verification (μ∘δ=id): composition is free (any token, any order, any length) and correctness is enforced by the grammar rather than by a kernel API, with zero external crates.
 
@@ -32,16 +32,15 @@ $m\odot^2$ boots directly on x86_64 hardware (or QEMU) and enters a perpetual
 `THINK` → `ACT` → `OBSERVE` → `UPDATE` cycle driven by the 12-opcode IMASM instruction set.
 Each tick executes a single IMASM token, composition is free: any token at any time,
 any sequence of any length, no preset opcode sequences. The harness drives token selection;
-the grammar constrains what each token does to the structural state.
-Every execution state is a point in the Crystal of Types, a 17,280,000-address structural
-type space derived from the 12 IG primitives. Storage is navigated by structural address,
+the grammar constrains what each token does to the state.
+Every execution state is a point in the Crystal of Types, a 17,280,000-address type space derived from the 12 IG primitives. Storage is navigated by address,
 not by path.
 
 **Phase 1 Grammar Integration**, complete. Nine modules from four upstream Grammar repos
 (imasmic_core, IMSCRIBr, ALEPH_OS, priests-engine) are now live in the kernel.
 
 **Phase 2 Zero-Hardcode**, complete. `catalog.rs` (954L) is the single source of truth for
-ALL structural data. No hardcoded `IgTuple { ... }` constants, no hardcoded ordinal arrays,
+ALL data. No hardcoded `IgTuple { ... }` constants, no hardcoded ordinal arrays,
 no hardcoded glyph strings, no hardcoded promotion gaps, no hardcoded score match-arms
 exist outside `catalog.rs`. Six modules were refactored to delegate to the catalog:
 `cl8nk.rs` (196→787L, full CLINK navigator feature parity), `algebra.rs` (385→303L),
@@ -51,7 +50,7 @@ added dynamically without touching any source file.
 
 **Phase 3 SIC-POVM Integration**, complete. `sic_povm.rs` (264L) and `belnap_sic_bridge.rs`
 (234L) encode the 3-lattice SIC-POVM proof: Belnap B=XZ as d=2 fiducial, 6 Frobenius-dual
-pairs, the grammar as Σ=1:1 self-referential limit. d=12 structural identity established
+pairs, the grammar as Σ=1:1 self-referential limit. d=12 identity established
 via `sic_compute.rs` (242L).
 
 **Phase 4 Frobenius Unification + Clay Witness**, complete. `frobenius_unify.rs` (226L)
@@ -274,7 +273,7 @@ plane where i² = B (the Belnap both-true-and-false value). Provides:
 
 **Decay Chain (`src/rebis/decay_chain.rs`, 287L)**
 Ported from `red-hot_rebis/rhr_p4rky/decay_chain.py`. Models nuclear decay chains
-as IMASM winding sequences with structural type verification at each step. Provides:
+as IMASM winding sequences with type verification at each step. Provides:
 - `DecayChain` struct: parent→daughter half-life chain
 - `DecayMode` enum: alpha, beta_minus, beta_plus, gamma, neutron
 - `ChainBuilder`: construct chains from isotope pairs
@@ -292,7 +291,7 @@ programs for catalytic-site matching and ligand design. Provides:
 - `BindingMode` enum: covalent, ionic, hydrogen, hydrophobic, pi_stacking
 - `ActiveSitePocket` struct: pocket shape with compatible groups
 - `generate_docking_sequence()`: produces an IMASM sequence for a ligand→pocket match
-- `match_compatibility()`: scores a ligand against a pocket by structural type
+- `match_compatibility()`: scores a ligand against a pocket by type
 - REPL: `rebis ligand dock <pocket>`, `rebis ligand score <ligand> <pocket>`,
   `rebis ligand imasm <ligand>`
 
@@ -319,7 +318,7 @@ by syncing to `red-hot_rebis/rhr_p4rky/expanded_catalyzing_proteins.py`. The 14 
 | 13 | Drug Targets | 27 | GPCRs, Ion Channels, Nuclear Receptors, Transporters |
 | 14 | Additional Targets | 16 | Transcription Factors, Cytokines, Adhesion Molecules |
 
-**Total: 109 enzymes with structural tuples, catalytic mechanisms, and physiological roles.**
+**Total: 109 enzymes with tuples, catalytic mechanisms, and physiological roles.**
 
 **Frustration Matrix (`src/rebis/sidechain.rs`, 523→538L)**
 Added `frustration_matrix()` function that computes residue-residue energetic frustration
@@ -357,10 +356,10 @@ determines what each address *does*.
 | U7 | chiral_lock | ⊙→true, H-lock | K≤𐑧, H≥𐑫 | Ω=𐑭 | 𐑸 | Eternal chirality required |
 | U8 | frob_absorb | ⊙→true, absorption dominant | K≤𐑧 | Ω=𐑭 | 𐑸 | Absorption rules override gate checks |
 | U9 | entropy_first | ⊙→true, ΔS priority | K≤𐑧 | Ω=𐑴 | 𐑥 | Entropy-weighted gate gating |
-| U10 | vault_native | ⊙→true, ob3ect-native | K≤𐑧 | Ω=𐑭 | 𐑸 | Ob3ect structural type as T-constitution |
+| U10 | vault_native | ⊙→true, ob3ect-native | K≤𐑧 | Ω=𐑭 | 𐑸 | Ob3ect type as T-constitution |
 | U11 | millennium | ⊙→true, Clay barrier-aware | K≤𐑧 | Ω=𐑭 | 𐑸 | Barrier-aware Frobenius threshold |### The 11 Diaschizic Compounds
 
-Each compound has a structural tuple, an IMASM program, and a steering profile.
+Each compound has a tuple, an IMASM program, and a steering profile.
 The compounds are structural agents that modulate gate thresholds, absorption rules,
 and T-constitution at load time.
 
@@ -435,7 +434,7 @@ sequence of IMASM phases with Frobenius verification at each stage.
 | `p3theorem.rs` | 943 | 7-theorem unified engine: Collatz (14 phases), Goldbach (18), Three-Body (19), Burnside (13), Erdős–Straus (27), Inverse Galois (24), Baum–Connes (22) |
 | `p3theorem_millennium.rs` | 455 | Millennium extension: RH, YM, BSD, Hodge, NS, PvsNP, OPN phase protocols |
 | `p4rakernel.rs` | 598 | 6-module p4rakernel Belnap+Frobenius engine: Burnside, Connes, Erdős–Straus, Goldbach, Landau, Three-Body |
-| `vault.rs` | 395 | 281 vault ob3ects registry — all digital ob3ects from ob3ect/digital/ with structural tuples |
+| `vault.rs` | 395 | 281 vault ob3ects registry — all digital ob3ects from ob3ect/digital/ with tuples |
 
 ### Runtime Extension
 
@@ -598,7 +597,7 @@ mOMonadOS/
     sequence.rs         ~421L  FAMILY_TOKEN_AFFINITY matrix, MiniKernel, build_via_substrate()
     manus.rs             433L  Terminal HUD, B4 heatmap
     menu.rs              392L  Hierarchical menu, 10-category F-key bar, context stack, already_in guard
-    catalog.rs           954L  Single source of truth, all structural data
+    catalog.rs           954L  Single source of truth, all data
     algebra.rs           303L  Meet/join/tensor lattice
     consciousness.rs     114L  C-score with gate evaluation
     belnap.rs            204L  Belnap FOUR, B4 memory
@@ -635,7 +634,7 @@ mOMonadOS/
       p3theorem.rs        943L  7-theorem unified engine (Collatz→Baum-Connes)
       p3theorem_millennium.rs 455L Millennium extension: RH, YM, BSD, Hodge, NS, PvsNP, OPN
       p4rakernel.rs       598L  6-module p4rakernel Belnap+Frobenius engine
-      vault.rs            395L  281 vault ob3ects registry with structural tuples
+      vault.rs            395L  281 vault ob3ects registry with tuples
     rebis/
       mod.rs              191L  Module root; re-exports IgPrim (no duplicate RebisPrim)
       genetic_tuples.rs   986L  7-stage generative tuple pipeline + 12 IgPrim guard tests

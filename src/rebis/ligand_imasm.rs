@@ -7,7 +7,7 @@
 //! Ported from red-hot_rebis/rhr_p4rky/ligand_imasm.py
 //! Chemical-property-based mapping (not role-based), preserving N→C topology.
 //!
-//! Structural type: ⟨𐑦𐑸𐑾𐑹𐑐𐑧𐑔𐑠⊙𐑖𐑙𐑭⟩ — O_∞ self-referential
+//! Type: ⟨𐑦𐑸𐑾𐑹𐑐𐑧𐑔𐑠⊙𐑖𐑙𐑭⟩ — O_∞ self-referential
 
 use crate::tokens::Token;
 use alloc::vec::Vec;

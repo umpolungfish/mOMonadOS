@@ -21,7 +21,7 @@ use alloc::vec;
 // CLAY VERDICT — single-problem status
 // ═══════════════════════════════════════════════════════════════
 
-/// Machine-checked status of a Clay Millennium Problem structural type.
+/// Machine-checked status of a Clay Millennium Problem type.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum ClayVerdict {
     /// Full witnessed closure: gate-layer idempotent AND T_CEILING-consistent.
@@ -202,11 +202,11 @@ pub fn clay_summary() -> (usize, usize, usize) {
     (closed, obs, unclosed)
 }
 
-/// The structural theorem: all three unclosed problems share the same blocker —
+/// The theorem: all three unclosed problems share the same blocker —
 /// low winding (Ω < 3). This is the machine-checked content of
 /// `rh_ns_pnp_low_winding` in Clay_UnclosedResistance.lean.
 pub fn low_winding_theorem() -> &'static str {
-    "All three unclosed Clay structural types (RH, NS, PNP) carry winding Ω below \
+    "All three unclosed Clay types (RH, NS, PNP) carry winding Ω below \
      the terminal anchor ah (ord=3). Every closure-bearing dialect requires Ω≥3 \
      at its terminal gate. Low winding ⇒ no idempotent-terminal closure. \
      This is the machine-checked theorem `rh_ns_pnp_low_winding` in \

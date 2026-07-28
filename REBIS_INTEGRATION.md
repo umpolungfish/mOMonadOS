@@ -122,7 +122,7 @@ Binary: 8.3 MB (debug), ~2 MB (release stripped). Zero errors, zero warnings.
 
 ## Structural Type
 
-The rebis module itself has structural type matching the `universal_imscriptive_grammar`:
+The rebis module itself has type matching the `universal_imscriptive_grammar`:
 
 $$\langle \text{𐑦} \cdot \text{𐑸} \cdot \text{𐑾} \cdot \text{𐑹} \cdot \text{𐑐} \cdot \text{𐑧} \cdot \text{𐑲} \cdot \text{𐑠} \cdot \odot \cdot \text{𐑫} \cdot \text{𐑳} \cdot \text{𐑭} \rangle$$
 
