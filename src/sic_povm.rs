@@ -153,7 +153,7 @@ pub fn belnap_fiducial_axioms() -> [&'static str; 4] {
 /// The Imscribing Grammar is the Σ=1:1 (self-referential) limit of the
 /// Belnap multilattice SIC-POVM. The d=2.0 distance from the multilattice
 /// SIC-POVM — a single primitive difference (Σ: 1:1 vs n:m) — confirms
-/// this is a structural identity, not a metaphor.
+/// this is an identity, not a metaphor.
 ///
 /// The 12 primitives are informationally complete measurement operators.
 /// The dual-tool structure μ∘δ=id IS the SIC-POVM dual basis.

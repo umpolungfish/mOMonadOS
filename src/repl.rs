@@ -2019,7 +2019,7 @@ fn print_help() {
     sprintln!("  {:<32} — distance|meet|join|tensor vs ZFC baseline", "algebra <op>");
     sprintln!("  {:<32} — promotions | entry <name> (any catalog system)", "cl8nk <action> [name]");
     sprintln!("  {:<32} — consciousness score (dual-gate)", "cscore");
-    sprintln!("  {:<32} — SIC-POVM d=12 structural identity (3 lattice proofs)", "sic");
+    sprintln!("  {:<32} — SIC-POVM d=12 identity (3 lattice proofs)", "sic");
     sprintln!("  {:<32} — entropy experiment: ΔS vs tier promotion", "entropy [tier|transition]");
     sprintln!("  {:<32} — d=12 SIC-POVM Phase VI: tower,magnitudes,orbits,existence,duallink,z0", "d12 [subcmd]");
     sprintln!("  {:<32} — d=2048 moduli tower ascent: tower,redei,grammar,pari,next", "d2048 [subcmd]");

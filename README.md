@@ -22,7 +22,7 @@ no OS under it, no runtime, and no floating-point unit assumed.
 
 **What it does.** Boots directly on hardware/QEMU and runs a perpetual THINK→ACT→OBSERVE→UPDATE cycle over the 12-opcode IMASM set, where every execution state is an address in the 17,280,000-type Crystal and storage is navigated by address, not path. It also **runs a topological quantum computer**: Fibonacci anyons braided in the kernel, compiling standard gates to braid words and evaluating knot invariants, with no host, no runtime and no floating-point unit assumed (`fibqc`).
 
-**Why it matters.** Every tick is a structural self-verification (μ∘δ=id): composition is free (any token, any order, any length) and correctness is enforced by the grammar rather than by a kernel API, with zero external crates.
+**Why it matters.** Every tick is a self-verification (μ∘δ=id): composition is free (any token, any order, any length) and correctness is enforced by the grammar rather than by a kernel API, with zero external crates.
 
 **How to use it.** Build the no_std ELF and boot under QEMU (see below).
 
@@ -396,7 +396,7 @@ compound load <name>             → Load compound's IMASM program into executio
 
 ### Structural Type of Cross-Dialect Navigation
 
-The act of navigating between dialects has its own structural type, **\(O_\infty\)** (d=1
+The act of navigating between dialects has its own type, **\(O_\infty\)** (d=1
 from universal grammar, only Γ differs: 𐑲 universal range vs 𐑔 mesoscale).
 Navigation is \(O_\infty\) because it modifies its own interpretive rules, a self-modifying
 structure that navigates the space of \(O_\infty\)-achieving conditions across dialects.
