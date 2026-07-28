@@ -1,25 +1,16 @@
-Banking a result before reversing it becomes a strategy, not just a reading.
+A pass because nothing was at risk is marked as one.
 
-AREV empties the register and leaves open frames alone, so a result fused back
-to depth zero is exposed to the next reversal while the same result held one
-level up survives it. A program that establishes something, then reverses, then
-bounds must open the region that will HOLD the result before the region that
-COMPUTES it, and close them in that order. The Erdos-Turan proof does exactly
-that: card_unorderedPairs is a `have` still in scope when the calc runs, so the
-reversal inside the chain cannot reach it. The `have` is the outer frame.
+banked_count_check flagged only a clear that loses weight with nothing behind
+it, so a word whose clears never fire read identically to a word that banked
+correctly. Those are different facts and the difference is the whole content of
+the check.
 
-Three places, so it is enforced where it is cheap and available where it is
-wanted.
+Three verdicts now instead of two. Weight cleared with nothing banked, which is
+the failure. Weight that survived a live clear by being held in a frame, which
+is the technique working. And nothing ever at risk, reported with the deposits
+made and the steps left inert after a fixation, since that is usually why: a
+word that commits early leaves its whole second region unexecuted, and its
+reversal never fires.
 
-banked_count_check in lattice_flow reports every CLEAR that loses weight with
-nothing banked behind it, with the remedy attached. Reachable as the
-banked_count grammar tool, so the agents and MoDoT both have it; 50 grammar
-tools now, registry 30 of 30, deep check green.
-
-ob3ect carries it as Phase 9b of the report and on the artifact, so a generated
-program says whether it lost a count to a clear. The design prompt gains the
-strategy under EDGE ROUTING, with the wrong and right arrangements written out,
-so programs are built that way rather than only checked afterwards.
-
-The kernel gains `banked <word>`, which reads the flat arrangement as four
-units cleared at the AREV and the nested one as clean.
+ob3ect marks the vacuous case ○ against ✓ for an earned pass, and the kernel
+says VACUOUS rather than OK.

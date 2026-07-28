@@ -119,9 +119,12 @@ pub fn banked_report(word: &str) {
     let mut frames: Vec<[u32; 4]> = Vec::new();
     let mut fixed = false;
     let mut exposed: Vec<(usize, char, u32)> = Vec::new();
+    let mut live_clears = 0u32;
+    let mut inert = 0u32;
+    let mut deposits = 0u32;
 
     for (i, t) in steps.iter().enumerate() {
-        if fixed && !matches!(t, Token16_3::Ifix | Token16_3::Imscrib) { continue; }
+        if fixed && !matches!(t, Token16_3::Ifix | Token16_3::Imscrib) { inert += 1; continue; }
         match t {
             Token16_3::Fsplit3 => frames.push([0; 4]),
             Token16_3::Ffuse3 => {
@@ -137,8 +140,9 @@ pub fn banked_report(word: &str) {
             Token16_3::Arev | Token16_3::Vinit => {
                 let lost: u32 = reg.iter().sum();
                 let banked: u32 = frames.iter().map(|f| f.iter().sum::<u32>()).sum();
-                if lost > 0 && banked == 0 {
-                    exposed.push((i + 1, t.glyph(), lost));
+                if lost > 0 {
+                    live_clears += 1;
+                    if banked == 0 { exposed.push((i + 1, t.glyph(), lost)); }
                 }
                 reg = [0; 4];
                 if matches!(t, Token16_3::Vinit) { frames.clear(); }
@@ -151,6 +155,7 @@ pub fn banked_report(word: &str) {
                     Token16_3::Evali => &[2, 3],
                     _ => &[],
                 };
+                if !touched.is_empty() { deposits += 1; }
                 for &j in touched {
                     reg[j] += 1;
                     if let Some(f) = frames.last_mut() { f[j] += 1; }
@@ -160,8 +165,13 @@ pub fn banked_report(word: &str) {
     }
 
     sprintln!("word   : {}", render(&steps));
-    if exposed.is_empty() {
-        sprintln!("  OK — nothing counted was exposed to a clear");
+    if exposed.is_empty() && live_clears == 0 {
+        // Passing because nothing was ever at risk is not the same as passing
+        // because the frame held.
+        sprintln!("  VACUOUS — no clear ever fired against a live register");
+        sprintln!("    {} deposit(s), {} step(s) inert after a fixation", deposits, inert);
+    } else if exposed.is_empty() {
+        sprintln!("  OK — weight survived {} live clear(s) by being banked", live_clears);
     } else {
         let total: u32 = exposed.iter().map(|e| e.2).sum();
         sprintln!("  {} unit(s) cleared with nothing banked behind them:", total);
