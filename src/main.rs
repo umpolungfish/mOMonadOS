@@ -66,6 +66,8 @@ mod proof;
 mod constant_closure;
 mod repl;
 mod fibonacci_qc;
+mod lattice_flow;
+mod triple_frame;
 mod iuft_qc;
 
 use tokens::{CANONICAL_COUNT, CONTINUOUS_COUNT, NOVEL_COUNT, SHUNTED_COUNT};

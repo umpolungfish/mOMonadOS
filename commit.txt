@@ -1,21 +1,26 @@
-The Triple Frame module says where its numbers come from.
+The kernel can cycle a word and account for its weight.
 
-check_frobenius reported a rho that was either copied from the Python
-implementation or invented by a length heuristic, in the same field, with
-nothing distinguishing them. Reported as "12/12 Frobenius-closed, same rho
-values as Python", which is a table lookup returning Python's own numbers: it
-cannot disagree, so it is not a check on anything.
+cycle walks a word around its ROTAT orbit. Every rotation is the same object,
+so the verdict and the topology hold across it while the final register does
+not, and the report ends with the map from cut to landing register. That map is
+the whole point: the phase is the only handle on where a word comes to rest.
 
-FrobeniusResult now carries rho_provenance, and the reports print it. A
-tabulated value says so and says it was not independently computed. The
-heuristic says it is not a spectral radius.
+weight counts what the union throws away. The fork is a set and the fuse a
+union, so a finished walk keeps which base values were touched and nothing else.
+This records deposits, the clears that empty the register while frames keep what
+they banked, and the fuse restoring exactly what a clear destroyed. The lift of
+OR to weights is max rather than sum, since adding counts each deposit twice,
+once landing in the register and again when its frame closes; at weights zero
+and one the accounting reduces to the set semantics exactly.
 
-Because it is not one. compute_rho was documented as "approximate spectral
-radius from adjacency structure" and computes sqrt(n) scaled by the
-split-to-fuse fraction, with no adjacency matrix and no eigenvalue anywhere in
-it. Renamed estimate_rho_by_length and documented for what it does, since under
-the old name a custom word returned an invented number wearing the name of the
-quantity the table holds.
+Two movements carrying no weight are reported because a final register hides
+both. SEED, where AFWD or IMSCRIB assigns T to an empty register directly, so a
+walk can land in T having carried nothing. INERT, where IFIX has fixed the
+register and everything but IFIX and IMSCRIB is a no-op.
 
-sqrt_f32 was a hand-rolled Newton loop on the premise that no_std has no sqrt.
-The crate already depends on libm and fibonacci_qc.rs uses it throughout.
+The k=11 cut of the worked example is the case: it begins with the fixation, so
+eleven of thirteen steps are inert and the T is seeded rather than carried.
+Nothing moved because nothing ran.
+
+Uses imasm_core's 16_3 machine rather than a second copy of the rules, and
+reproduces the Python readouts digit for digit.

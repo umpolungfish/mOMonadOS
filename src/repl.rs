@@ -188,6 +188,34 @@ pub fn repl(k: &mut Kernel) {
                     }
                 }
             },
+            "cycle" => {
+                let tail: Vec<&str> = parts.collect();
+                let word = tail.join(" ");
+                let w = word.trim();
+                if w.is_empty() {
+                    sprintln!("cycle <word>     — walk a word around its ROTAT orbit");
+                    sprintln!("weight <word>    — where the weight moves through it");
+                    sprintln!("");
+                    sprintln!("A word is a ring and ROTAT is the cyclic shift, so every");
+                    sprintln!("rotation is the same object. The verdict and the topology hold");
+                    sprintln!("across the orbit; the final register does not, which makes the");
+                    sprintln!("phase the only handle on where a word comes to rest.");
+                } else {
+                    crate::lattice_flow::cycle_report(w);
+                }
+            }
+            "weight" => {
+                let tail: Vec<&str> = parts.collect();
+                let word = tail.join(" ");
+                let w = word.trim();
+                if w.is_empty() {
+                    sprintln!("weight <word>    — where the weight moves through an IMASM word");
+                    sprintln!("The fork is a set and the fuse a union, so a finished walk keeps");
+                    sprintln!("which values were touched and nothing else. This counts.");
+                } else {
+                    crate::lattice_flow::weight_report(w);
+                }
+            }
             "fibqc" => {
                 match parts.next().unwrap_or("") {
                     "" | "help" => {
@@ -440,6 +468,33 @@ pub fn repl(k: &mut Kernel) {
                     }
                 }
             }
+            "triple" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "report" => sprintln!("{}", crate::triple_frame::full_report()),
+                    "expand" => {
+                        let name = parts.next().unwrap_or("sure");
+                        sprintln!("{}", crate::triple_frame::expand_report(name));
+                    }
+                    "verify" => sprintln!("{}", crate::triple_frame::verify_report()),
+                    "word" => {
+                        let var = parts.next().unwrap_or("B");
+                        sprintln!("{}", crate::triple_frame::word_report(var));
+                    }
+                    "types" => sprintln!("{}", crate::triple_frame::types_report()),
+                    "cycle" => sprintln!("{}", crate::triple_frame::cycle_report()),
+                    "path" => sprintln!("{}", crate::triple_frame::path_report()),
+                    "bridge" => sprintln!("{}", crate::triple_frame::bridge_report()),
+                    "check" => {
+                        let w = parts.next().unwrap_or("");
+                        sprintln!("{}", crate::triple_frame::check_report(w));
+                    }
+                    "tuple" => sprintln!("{}", crate::triple_frame::TRIPLE_FRAME_TUPLE),
+                    "help" | "--help" | "-h" => sprintln!("{}", crate::triple_frame::triple_help()),
+                    _ => sprintln!("{}", crate::triple_frame::triple_help()),
+                }
+            }
+
             "entropy" => {
                 let sub = parts.next().unwrap_or("");
                 match sub {
@@ -2011,6 +2066,8 @@ fn print_help() {
     sprintln!("  {:<32} — Hebrew glyph encoding + gematria", "aleph <Hebrew word>");
     sprintln!("  {:<32} — Belnap Shor pipeline (N=15, N=21)", "shor");
     sprintln!("  {:<32} — Fibonacci anyon QC: verify | compile <gates>", "fibqc <action>");
+    sprintln!("  {:<32} — walk an IMASM word around its ROTAT orbit", "cycle <word>");
+    sprintln!("  {:<32} — where the weight moves through an IMASM word", "weight <word>");
     sprintln!("  {:<32} — IUFT QC gates: gate|distance|list", "iuft <action>");
     sprintln!("  {:<32} — Riemann Hypothesis bridge", "rh");
     sprintln!("  {:<32} — Yang-Mills mass gap bridge", "ym");
@@ -2020,6 +2077,7 @@ fn print_help() {
     sprintln!("  {:<32} — promotions | entry <name> (any catalog system)", "cl8nk <action> [name]");
     sprintln!("  {:<32} — consciousness score (dual-gate)", "cscore");
     sprintln!("  {:<32} — SIC-POVM d=12 identity (3 lattice proofs)", "sic");
+    sprintln!("  {:<32} — Triple Frame vN superoperator algebra: report|verify|cycle|bridge", "triple [subcmd]");
     sprintln!("  {:<32} — entropy experiment: ΔS vs tier promotion", "entropy [tier|transition]");
     sprintln!("  {:<32} — d=12 SIC-POVM Phase VI: tower,magnitudes,orbits,existence,duallink,z0", "d12 [subcmd]");
     sprintln!("  {:<32} — d=2048 moduli tower ascent: tower,redei,grammar,pari,next", "d2048 [subcmd]");

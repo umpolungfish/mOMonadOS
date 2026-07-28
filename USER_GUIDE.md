@@ -573,3 +573,55 @@ exactly zero error and the period-ten closure of the T(2,n) family holds to 1e-1
 
 The serial console drops the first character of the first line, so
 `printf "fibqc verify\n" | ./run.sh` arrives as `ibqc`. Send a bare newline first.
+
+
+## Lattice cycling and weight flow
+
+### `cycle <word>`
+
+Walks an IMASM word around its ROTAT orbit. A word is a ring and ROTAT is the
+cyclic shift, so every rotation is the same object: the verdict and the topology
+hold across the whole orbit, and the **final register does not**. That makes the
+phase the only handle on where a word comes to rest, and the report ends with
+the map from cut to landing register.
+
+```
+⊙> cycle ⊢⊙=>◇+×<⊞●×¬⊣
+  landing register by cut:
+    A      at k = 0, 1, 2, 3, 4, 12
+    Ftf    at k = 5, 6, 7, 8
+    F      at k = 9, 10
+    T      at k = 11
+```
+
+◇ and ● are accepted for ∈ and ∋, since a word copied out of a bootstrap report
+is in the 12-op alphabet while the machine reads the trilattice one.
+
+### `weight <word>`
+
+The machine holds each open fork as a set and closes it with a union. Union is
+idempotent, so a finished walk knows which base values were touched and nothing
+else: not how many times, not by which arm, not whether a value reached the end
+or was destroyed and restored on the way. This counts.
+
+Weight banked in a frame survives a clear that empties the register; weight left
+in the open does not. The lift of OR to weights is max rather than sum, so the
+fuse **restores** what a clear destroyed instead of adding to it, and at weights
+zero and one the accounting reduces to the set semantics exactly.
+
+Two movements carry no weight and are reported because they are otherwise
+invisible in a final register. **SEED**: AFWD and IMSCRIB put T into an empty
+register directly, so a walk can land in T having carried nothing. **INERT**:
+after IFIX every token but IFIX and IMSCRIB is a no-op.
+
+```
+⊙> weight ¬⊣⊢⊙=>◇+×<⊞●×
+     4 ⊙  SEED T into an empty register, no weight
+  final    : T
+  surviving: none
+  deposits 0  cleared 0  restored 0  seeded 1  inert 11
+```
+
+That word is the k=11 cut above. It starts with ¬, which fixes the register, so
+eleven of thirteen steps are inert and the T is placed by the seed rule rather
+than carried by anything. Nothing moved because nothing ran.
