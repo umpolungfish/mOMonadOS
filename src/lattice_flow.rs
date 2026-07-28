@@ -172,6 +172,16 @@ pub fn banked_report(word: &str) {
         sprintln!("    {} deposit(s), {} step(s) inert after a fixation", deposits, inert);
     } else if exposed.is_empty() {
         sprintln!("  OK — weight survived {} live clear(s) by being banked", live_clears);
+        // The second, independent fact. Banking asks whether a frame was open
+        // at the clear; surplus asks where the splits fell between deposits of
+        // the same value. A word can bank correctly and still lose a count.
+        let mut surplus = 0u32;
+        for j in 0..4 { if reg[j] > 1 { surplus += reg[j] - 1; } }
+        if surplus > 0 {
+            sprintln!("    up to {} unit(s) of repeat deposit may be flattened by a", surplus);
+            sprintln!("    fold between sibling regions: the fold keeps the larger,");
+            sprintln!("    not the sum. Deposits in ONE region keep both.");
+        }
     } else {
         let total: u32 = exposed.iter().map(|e| e.2).sum();
         sprintln!("  {} unit(s) cleared with nothing banked behind them:", total);
