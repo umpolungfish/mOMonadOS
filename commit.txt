@@ -1,26 +1,25 @@
-The kernel can cycle a word and account for its weight.
+Banking a result before reversing it becomes a strategy, not just a reading.
 
-cycle walks a word around its ROTAT orbit. Every rotation is the same object,
-so the verdict and the topology hold across it while the final register does
-not, and the report ends with the map from cut to landing register. That map is
-the whole point: the phase is the only handle on where a word comes to rest.
+AREV empties the register and leaves open frames alone, so a result fused back
+to depth zero is exposed to the next reversal while the same result held one
+level up survives it. A program that establishes something, then reverses, then
+bounds must open the region that will HOLD the result before the region that
+COMPUTES it, and close them in that order. The Erdos-Turan proof does exactly
+that: card_unorderedPairs is a `have` still in scope when the calc runs, so the
+reversal inside the chain cannot reach it. The `have` is the outer frame.
 
-weight counts what the union throws away. The fork is a set and the fuse a
-union, so a finished walk keeps which base values were touched and nothing else.
-This records deposits, the clears that empty the register while frames keep what
-they banked, and the fuse restoring exactly what a clear destroyed. The lift of
-OR to weights is max rather than sum, since adding counts each deposit twice,
-once landing in the register and again when its frame closes; at weights zero
-and one the accounting reduces to the set semantics exactly.
+Three places, so it is enforced where it is cheap and available where it is
+wanted.
 
-Two movements carrying no weight are reported because a final register hides
-both. SEED, where AFWD or IMSCRIB assigns T to an empty register directly, so a
-walk can land in T having carried nothing. INERT, where IFIX has fixed the
-register and everything but IFIX and IMSCRIB is a no-op.
+banked_count_check in lattice_flow reports every CLEAR that loses weight with
+nothing banked behind it, with the remedy attached. Reachable as the
+banked_count grammar tool, so the agents and MoDoT both have it; 50 grammar
+tools now, registry 30 of 30, deep check green.
 
-The k=11 cut of the worked example is the case: it begins with the fixation, so
-eleven of thirteen steps are inert and the T is seeded rather than carried.
-Nothing moved because nothing ran.
+ob3ect carries it as Phase 9b of the report and on the artifact, so a generated
+program says whether it lost a count to a clear. The design prompt gains the
+strategy under EDGE ROUTING, with the wrong and right arrangements written out,
+so programs are built that way rather than only checked afterwards.
 
-Uses imasm_core's 16_3 machine rather than a second copy of the rules, and
-reproduces the Python readouts digit for digit.
+The kernel gains `banked <word>`, which reads the flat arrangement as four
+units cleared at the AREV and the nested one as clean.

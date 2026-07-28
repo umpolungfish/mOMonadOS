@@ -102,6 +102,77 @@ pub fn cycle_report(word: &str) {
     }
 }
 
+/// Was anything counted, then cleared with nothing banked behind it?
+///
+/// AREV empties the register and leaves open frames alone, so a result fused
+/// back to depth zero is exposed to the next reversal, while the same result
+/// held one level up survives it. A program that establishes something, then
+/// reverses, then bounds must open the region that will HOLD the result before
+/// the region that COMPUTES it, and close them in that order.
+pub fn banked_report(word: &str) {
+    let steps = parse_glyph_word(&normalize(word));
+    if steps.is_empty() {
+        sprintln!("  no IMASM glyphs in that word");
+        return;
+    }
+    let mut reg = [0u32; 4];
+    let mut frames: Vec<[u32; 4]> = Vec::new();
+    let mut fixed = false;
+    let mut exposed: Vec<(usize, char, u32)> = Vec::new();
+
+    for (i, t) in steps.iter().enumerate() {
+        if fixed && !matches!(t, Token16_3::Ifix | Token16_3::Imscrib) { continue; }
+        match t {
+            Token16_3::Fsplit3 => frames.push([0; 4]),
+            Token16_3::Ffuse3 => {
+                if let Some(closed) = frames.pop() {
+                    for j in 0..4 {
+                        if closed[j] > reg[j] { reg[j] = closed[j]; }
+                        if let Some(o) = frames.last_mut() {
+                            if closed[j] > o[j] { o[j] = closed[j]; }
+                        }
+                    }
+                }
+            }
+            Token16_3::Arev | Token16_3::Vinit => {
+                let lost: u32 = reg.iter().sum();
+                let banked: u32 = frames.iter().map(|f| f.iter().sum::<u32>()).sum();
+                if lost > 0 && banked == 0 {
+                    exposed.push((i + 1, t.glyph(), lost));
+                }
+                reg = [0; 4];
+                if matches!(t, Token16_3::Vinit) { frames.clear(); }
+            }
+            Token16_3::Ifix => fixed = true,
+            _ => {
+                let touched: &[usize] = match t {
+                    Token16_3::Evalt => &[0],
+                    Token16_3::Evalf => &[1],
+                    Token16_3::Evali => &[2, 3],
+                    _ => &[],
+                };
+                for &j in touched {
+                    reg[j] += 1;
+                    if let Some(f) = frames.last_mut() { f[j] += 1; }
+                }
+            }
+        }
+    }
+
+    sprintln!("word   : {}", render(&steps));
+    if exposed.is_empty() {
+        sprintln!("  OK — nothing counted was exposed to a clear");
+    } else {
+        let total: u32 = exposed.iter().map(|e| e.2).sum();
+        sprintln!("  {} unit(s) cleared with nothing banked behind them:", total);
+        for (step, g, w) in exposed.iter() {
+            sprintln!("    step {} {} cleared {} with nothing behind it", step, g, w);
+        }
+        sprintln!("  open the region that HOLDS the result before the region that");
+        sprintln!("  COMPUTES it, and close them in that order.");
+    }
+}
+
 /// Count what the union throws away.
 pub fn weight_report(word: &str) {
     let steps = parse_glyph_word(&normalize(word));

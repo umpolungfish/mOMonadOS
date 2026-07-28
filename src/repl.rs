@@ -204,6 +204,19 @@ pub fn repl(k: &mut Kernel) {
                     crate::lattice_flow::cycle_report(w);
                 }
             }
+            "banked" => {
+                let tail: Vec<&str> = parts.collect();
+                let word = tail.join(" ");
+                let w = word.trim();
+                if w.is_empty() {
+                    sprintln!("banked <word>    — was anything counted, then cleared");
+                    sprintln!("with nothing banked behind it? AREV empties the register and");
+                    sprintln!("leaves open frames alone, so a result fused to depth zero is");
+                    sprintln!("exposed to the next reversal.");
+                } else {
+                    crate::lattice_flow::banked_report(w);
+                }
+            }
             "weight" => {
                 let tail: Vec<&str> = parts.collect();
                 let word = tail.join(" ");
@@ -2068,6 +2081,7 @@ fn print_help() {
     sprintln!("  {:<32} — Fibonacci anyon QC: verify | compile <gates>", "fibqc <action>");
     sprintln!("  {:<32} — walk an IMASM word around its ROTAT orbit", "cycle <word>");
     sprintln!("  {:<32} — where the weight moves through an IMASM word", "weight <word>");
+    sprintln!("  {:<32} — was a count cleared with nothing banked?", "banked <word>");
     sprintln!("  {:<32} — IUFT QC gates: gate|distance|list", "iuft <action>");
     sprintln!("  {:<32} — Riemann Hypothesis bridge", "rh");
     sprintln!("  {:<32} — Yang-Mills mass gap bridge", "ym");
