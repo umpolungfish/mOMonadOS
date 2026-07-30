@@ -1,16 +1,17 @@
-Accept the grammar-tool names for the QC commands, and list them in the menu
+List every REPL command in the menu, and guard it
 
-An agent typed `quantum_compile H` and `jones_polynomial AFWD AREV` and got
-"Unknown: quantum_compile". Both operations exist — as `fibqc compile` and
-`fibqc jones` — so the same thing had two vocabularies and the caller had to know
-which surface it was standing on. Both names now work at the top level, and the
-jones path says what it wants when handed opcode names instead of integers rather
-than failing blankly.
+The menu is what a user reads to find out what the kernel does, and it had
+drifted 33 commands behind the dispatch. sic, d12, d2048, triple, iuft, riemann,
+braid-grammar, distance, join, sigma, clay, psm, entropy, mersearch, cycle,
+weight, banked, trans, arev, ask, spine, vessel, vita, whoami, ruleset,
+absorption, replicative and quit all worked and none were listed.
 
-Also added to GRAMMAR_MENU: quantum_compile, jones_polynomial, bg, hqe, dyson,
-troq, afdmc, hop, manifold — the arms that worked but were undiscoverable.
+All 33 added, with descriptions taken from the code rather than invented — most
+came from the unreferenced print_help, which had them and never displayed them.
+Two new categories carry the ones that had no home: IMASM for the word walks and
+Kernel for the utilities.
 
-Recorded because it cost a rebuild: `fn print_help` in repl.rs has no callers.
-The live help is menu.rs::print_help_topic over GRAMMAR_MENU, so nine lines added
-to print_help never appeared. It now carries a comment saying so, and
-#[allow(dead_code)] rather than a silent warning.
+check_menu_coverage.py fails on any command that is neither listed nor named as
+an alias in its primary entry's description, so `d2048 … (alias d2k)` covers d2k
+without its own line. Verified in both directions: it passes on the current tree
+and fails when a MenuItem is removed.

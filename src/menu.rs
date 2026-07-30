@@ -23,6 +23,8 @@ pub static MAIN_MENU: &[MenuItem] = &[
     MenuItem { name: "Programs", cmd: "programs",  desc: "Program loading (list, canonical, continuous, novel, shunt)", submenu: Some(PROGRAMS_MENU) },
     MenuItem { name: "Crystal",  cmd: "crystal",  desc: "Crystal FS (decode, store, find, name)", submenu: Some(CRYSTAL_MENU) },
     MenuItem { name: "Grammar",  cmd: "grammar",  desc: "Grammar bridges (ig, classify, frob, aleph, shor, rh, ym)", submenu: Some(GRAMMAR_MENU) },
+    MenuItem { name: "IMASM",    cmd: "imasm",    desc: "IMASM word walks (cycle, weight, banked, trans, arev)", submenu: Some(IMASM_MENU) },
+    MenuItem { name: "Kernel",   cmd: "kernel",   desc: "Kernel utilities (ask, spine, vessel, vita, whoami, ruleset)", submenu: Some(KERNEL_MENU) },
     MenuItem { name: "Rebis",    cmd: "rebis",    desc: "Red-Hot Rebis (codon, translate, genetics, materials, bio, tx)", submenu: Some(REBIS_MENU) },
     MenuItem { name: "Dialect", cmd: "dialect",  desc: "Cross-dialect (ruleset, jump, seal, compound, whoami)", submenu: Some(DIALECT_MENU) },
     MenuItem { name: "ParaASM",  cmd: "parasm",   desc: "ParaASM (test, frob, kernel, load)", submenu: Some(PARASM_MENU) },
@@ -72,6 +74,26 @@ pub static CRYSTAL_MENU: &[MenuItem] = &[
     MenuItem { name: "find",     cmd: "crystal find",  desc: "List stored entries", submenu: None },
 ];
 
+pub static IMASM_MENU: &[MenuItem] = &[
+    MenuItem { name: "cycle", cmd: "cycle", desc: "walk an IMASM word around its ROTAT orbit (glyphs only)", submenu: None },
+    MenuItem { name: "weight", cmd: "weight", desc: "where the weight moves through an IMASM word", submenu: None },
+    MenuItem { name: "banked", cmd: "banked", desc: "was a count cleared with nothing banked?", submenu: None },
+    MenuItem { name: "trans", cmd: "trans", desc: "transitions counted on the ring, closing edge included", submenu: None },
+    MenuItem { name: "arev", cmd: "arev", desc: "H hop: read snapshot through the R1<->R2 mirror", submenu: None },
+];
+
+pub static KERNEL_MENU: &[MenuItem] = &[
+    MenuItem { name: "ask", cmd: "ask", desc: "kernel structural ask (dry). Full wet: host ./ask --file | -i", submenu: None },
+    MenuItem { name: "spine", cmd: "spine", desc: "manuscript spine: PROVE->UNIFY->PORT x vessel (no Python)", submenu: None },
+    MenuItem { name: "vessel", cmd: "vessel", desc: "witness-vessel transport: Clay payloads x 88 dialects, frob-gated", submenu: None },
+    MenuItem { name: "vita", cmd: "vita", desc: "one certified turn from the on-board vae_vita trunk", submenu: None },
+    MenuItem { name: "whoami", cmd: "whoami", desc: "IG tuple under the active ruleset", submenu: None },
+    MenuItem { name: "ruleset", cmd: "ruleset", desc: "show the active ruleset", submenu: None },
+    MenuItem { name: "absorption", cmd: "absorption", desc: "list all absorption rules", submenu: None },
+    MenuItem { name: "replicative", cmd: "replicative", desc: "load the program targeting O_inf_dag (R2) deliberately", submenu: None },
+    MenuItem { name: "quit", cmd: "quit", desc: "halt the kernel (aliases exit, halt)", submenu: None },
+];
+
 pub static GRAMMAR_MENU: &[MenuItem] = &[
     MenuItem { name: "ig",       cmd: "ig",       desc: "IG tuple + crystal address", submenu: None },
     MenuItem { name: "classify", cmd: "classify", desc: "Nearest-catalog classification", submenu: None },
@@ -97,6 +119,20 @@ pub static GRAMMAR_MENU: &[MenuItem] = &[
         MenuItem { name: "c4",       cmd: "c4",       desc: "Belnap C₄ complex plane (i²=B)", submenu: None },
     MenuItem { name: "cscore",   cmd: "cscore",   desc: "Consciousness score (dual-gate)", submenu: None },
     MenuItem { name: "constants", cmd: "constants", desc: "MoDoT constant closure: fine-structure, proton-electron, lepton, boson, gravity", submenu: None },
+    MenuItem { name: "sic", cmd: "sic", desc: "SIC-POVM d=12 identity (3 lattice proofs)", submenu: None },
+    MenuItem { name: "d12", cmd: "d12", desc: "d=12 SIC-POVM Phase VI: tower,magnitudes,orbits,existence,duallink,z0", submenu: None },
+    MenuItem { name: "d2048", cmd: "d2048", desc: "d=2048 moduli tower ascent: tower,redei,grammar,pari,next (alias d2k)", submenu: None },
+    MenuItem { name: "triple", cmd: "triple", desc: "Triple Frame vN superoperator algebra: report|verify|cycle|bridge", submenu: None },
+    MenuItem { name: "iuft", cmd: "iuft", desc: "IUFT QC gates: gate|distance|list", submenu: None },
+    MenuItem { name: "riemann", cmd: "riemann", desc: "Riemann-SIC report; sub-actions available", submenu: None },
+    MenuItem { name: "braid-grammar", cmd: "braid-grammar", desc: "braid word to grammar tuple (alias bg)", submenu: None },
+    MenuItem { name: "distance", cmd: "distance", desc: "Hamming + weighted distance vs the ZFC baseline tuple (alias dist)", submenu: None },
+    MenuItem { name: "join", cmd: "join", desc: "join of the active IG tuple with the ZFC baseline", submenu: None },
+    MenuItem { name: "sigma", cmd: "sigma", desc: "sigma <n> — analyze the Sigma(n) divisor ring", submenu: None },
+    MenuItem { name: "clay", cmd: "clay", desc: "Clay Millennium structural status (machine-checked)", submenu: None },
+    MenuItem { name: "psm", cmd: "psm", desc: "dialetheic alignment + measurement tests", submenu: None },
+    MenuItem { name: "entropy", cmd: "entropy", desc: "entropy experiment: dS vs tier promotion", submenu: None },
+    MenuItem { name: "mersearch", cmd: "mersearch", desc: "Mersenne parallel search: run|search (alias msearch)", submenu: None },
 ];
 
 pub static REBIS_MENU: &[MenuItem] = &[
