@@ -520,6 +520,97 @@ pub fn repl(k: &mut Kernel) {
                 }
             }
 
+            // ── m3iosis tool ports (native Rust implementations) ──────
+            "hqe" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "report" => sprintln!("{}", crate::hqe::full_report()),
+                    "distance" => {
+                        let t1 = parts.next().unwrap_or(crate::hqe::TUPLE_HQE);
+                        let t2 = parts.next().unwrap_or(crate::afdmc::TUPLE_AFDMC);
+                        sprintln!("d({}, {}) = {:.4}", t1, t2, crate::hqe::tuple_distance(t1, t2));
+                    }
+                    "cscore" => sprintln!("C-score: {:.4}", crate::hqe::consciousness_score(crate::hqe::TUPLE_HQE)),
+                    "meet" => {
+                        let t2 = parts.next().unwrap_or(crate::afdmc::TUPLE_AFDMC);
+                        sprintln!("meet: ⟨{}⟩", crate::hqe::quantale_meet(crate::hqe::TUPLE_HQE, t2));
+                    }
+                    "join" => {
+                        let t2 = parts.next().unwrap_or(crate::afdmc::TUPLE_AFDMC);
+                        sprintln!("join: ⟨{}⟩", crate::hqe::quantale_join(crate::hqe::TUPLE_HQE, t2));
+                    }
+                    "tuple" => sprintln!("{}", crate::hqe::TUPLE_HQE),
+                    _ => sprintln!("{}", crate::hqe::full_report()),
+                }
+            }
+            "dyson" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "report" => sprintln!("{}", crate::dyson::full_report()),
+                    "tuple" => sprintln!("{}", crate::dyson::TUPLE_DRDA),
+                    _ => sprintln!("{}", crate::dyson::full_report()),
+                }
+            }
+            "afdmc" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "report" => sprintln!("{}", crate::afdmc::full_report()),
+                    "tuple" => sprintln!("{}", crate::afdmc::TUPLE_AFDMC),
+                    _ => sprintln!("{}", crate::afdmc::full_report()),
+                }
+            }
+            "troq" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "report" => sprintln!("{}", crate::troq::full_report()),
+                    "expand" => {
+                        let axis = parts.next().unwrap_or("⊙");
+                        for line in crate::troq::expand_axis(axis) {
+                            sprintln!("  {}", line);
+                        }
+                    }
+                    "tuple" => sprintln!("{}", crate::troq::TUPLE_TROQ),
+                    _ => sprintln!("{}", crate::troq::full_report()),
+                }
+            }
+            "hop" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "report" => sprintln!("{}", crate::hop::full_report()),
+                    "manifest" => {
+                        let t = parts.next().unwrap_or(crate::hqe::TUPLE_HQE);
+                        sprintln!("{}", crate::hop::manifest(t));
+                    }
+                    "matrix" => sprintln!("{}", crate::hop::framework_matrix()),
+                    "hop" => {
+                        let origin = parts.next().unwrap_or(crate::hqe::TUPLE_HQE);
+                        let target = parts.next().unwrap_or(crate::afdmc::TUPLE_AFDMC);
+                        sprintln!("{}", crate::hop::hop(origin, target));
+                    }
+                    _ => sprintln!("{}", crate::hop::full_report()),
+                }
+            }
+            "braid-grammar" | "bg" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "report" => sprintln!("{}", crate::braid_grammar::full_report()),
+                    "tuple" => {
+                        let word = parts.next().unwrap_or("1 2 1");
+                        let strands: usize = parts.next().and_then(|s| s.parse().ok()).unwrap_or(3);
+                        let bw = crate::braid_grammar::BraidWord::from_string(word, strands);
+                        sprintln!("⟨{}⟩", bw.to_grammar_tuple());
+                    }
+                    _ => sprintln!("{}", crate::braid_grammar::full_report()),
+                }
+            }
+            "manifold" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "report" => sprintln!("{}", crate::manifold::full_report()),
+                    _ => sprintln!("{}", crate::manifold::full_report()),
+                }
+            }
+
             "entropy" => {
                 let sub = parts.next().unwrap_or("");
                 match sub {

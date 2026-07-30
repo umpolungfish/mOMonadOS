@@ -1,21 +1,18 @@
-Transitions are counted on the ring, and a statistic can be asked whether it
-survives rotation.
+Rebuild: nine QC modules were in source and unreachable
 
-A word is a cycle and ROTAT is the cyclic shift, so a word of length n has n
-transitions rather than n-1. The one a linear read drops is the wrap from the
-last opcode to the first, and in IMASM that is overwhelmingly TANCH -> VINIT,
-the anchor returning to the source. Across k programs a linear read loses
-exactly k such edges, all of them closing edges, and a table built without them
-can show a rule as universal that the closing edges break. That is what a
-130-transition count over 142 opcodes in twelve programs was: 142 minus twelve.
+braid_grammar, afdmc, hop, troq, manifold, dyson, hqe, repl and main were all
+newer than the built ELF, repl.rs by several hours. Their REPL arms existed in
+source and answered "Unknown: bg" in the running kernel, so the whole
+m3iosis-mirror surface was present and not callable.
 
-rotation_invariant takes any statistic over a word and runs it around the orbit.
-Anything read from absolute position measures the cut rather than the word:
-matrix rows, tetraktys tiers, odd against even positions. One rotation moves
-every value into a different row. The total ordinal of a word survives; the sum
-over even positions takes a different value at nearly every cut.
+Rebuilt. All ten QC commands now respond: fibqc, bg, shor, iuft, hqe, dyson,
+troq, afdmc, hop, manifold, triple.
 
-Both reachable as the imasm_transitions grammar tool, which reports the ring
-count, the linear count, the closing edge, and whether each of the two
-statistics most often read off a word is invariant. The kernel carries the same
-as `trans`.
+Worth recording from the retest: `bg tuple` gives the same tuple with Omega = awe
+for all three spellings of the identity braid on seven strands. The Python bridge
+got that wrong until today, because it summed eigenvalue phases wrapped into
+[0,360) and an eigenvalue at zero-from-below contributed a spurious full turn.
+The kernel computes topological_spin as writhe*2/5 mod 1 — a closed form in the
+writhe that never diagonalises anything — so it cannot acquire that error.
+
+The help block does not list bg, hqe, dyson, troq, hop or afdmc yet.

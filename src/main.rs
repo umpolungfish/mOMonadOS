@@ -70,6 +70,15 @@ mod lattice_flow;
 mod triple_frame;
 mod iuft_qc;
 
+// ── m3iosis tool ports (native Rust implementations) ────────
+mod hqe;
+mod dyson;
+mod afdmc;
+mod troq;
+mod hop;
+mod braid_grammar;
+mod manifold;
+
 use tokens::{CANONICAL_COUNT, CONTINUOUS_COUNT, NOVEL_COUNT, SHUNTED_COUNT};
 use crystal::TOTAL;
 use kernel::Kernel;
