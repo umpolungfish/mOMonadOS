@@ -78,6 +78,7 @@ mod troq;
 mod hop;
 mod braid_grammar;
 mod manifold;
+mod kernel_torus;
 
 use tokens::{CANONICAL_COUNT, CONTINUOUS_COUNT, NOVEL_COUNT, SHUNTED_COUNT};
 use crystal::TOTAL;
@@ -228,6 +229,9 @@ fn kmain() -> ! {
 
     sprintln!("[BOOT] Bootstrap: IMSCRIB→AREV→FSPLIT→AFWD→FFUSE→CLINK→IFIX→IMSCRIB (cyclic)");
     sprintln!("[BOOT] Fibonacci anyon QC: algebra verified = {}", fibonacci_qc::verify_all());
+    // ── Kernel torus winding display (Track A) ──
+    let torus_map = kernel_torus::TorusMap::new(&kernel_torus::agent_loop_program());
+    kernel_torus::display_banner(&torus_map);
     sprintln!("[BOOT] Crystal FS: {} addresses", TOTAL);
     sprintln!("[BOOT] {} total programs (I–XXVIII): 12 canonical + {} continuous + {} novel + {} shunted",
         CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT + SHUNTED_COUNT,

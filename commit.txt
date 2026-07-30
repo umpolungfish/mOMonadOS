@@ -1,18 +1,16 @@
-Rebuild: nine QC modules were in source and unreachable
+Accept the grammar-tool names for the QC commands, and list them in the menu
 
-braid_grammar, afdmc, hop, troq, manifold, dyson, hqe, repl and main were all
-newer than the built ELF, repl.rs by several hours. Their REPL arms existed in
-source and answered "Unknown: bg" in the running kernel, so the whole
-m3iosis-mirror surface was present and not callable.
+An agent typed `quantum_compile H` and `jones_polynomial AFWD AREV` and got
+"Unknown: quantum_compile". Both operations exist — as `fibqc compile` and
+`fibqc jones` — so the same thing had two vocabularies and the caller had to know
+which surface it was standing on. Both names now work at the top level, and the
+jones path says what it wants when handed opcode names instead of integers rather
+than failing blankly.
 
-Rebuilt. All ten QC commands now respond: fibqc, bg, shor, iuft, hqe, dyson,
-troq, afdmc, hop, manifold, triple.
+Also added to GRAMMAR_MENU: quantum_compile, jones_polynomial, bg, hqe, dyson,
+troq, afdmc, hop, manifold — the arms that worked but were undiscoverable.
 
-Worth recording from the retest: `bg tuple` gives the same tuple with Omega = awe
-for all three spellings of the identity braid on seven strands. The Python bridge
-got that wrong until today, because it summed eigenvalue phases wrapped into
-[0,360) and an eigenvalue at zero-from-below contributed a spurious full turn.
-The kernel computes topological_spin as writhe*2/5 mod 1 — a closed form in the
-writhe that never diagonalises anything — so it cannot acquire that error.
-
-The help block does not list bg, hqe, dyson, troq, hop or afdmc yet.
+Recorded because it cost a rebuild: `fn print_help` in repl.rs has no callers.
+The live help is menu.rs::print_help_topic over GRAMMAR_MENU, so nine lines added
+to print_help never appeared. It now carries a comment saying so, and
+#[allow(dead_code)] rather than a silent warning.

@@ -241,6 +241,45 @@ pub fn repl(k: &mut Kernel) {
                     crate::lattice_flow::weight_report(w);
                 }
             }
+            // The grammar-tool layer calls these `quantum_compile` and
+            // `jones_polynomial`, and an agent that knows those names typed them
+            // here and got "Unknown: quantum_compile". Same operations, two
+            // vocabularies; accept both rather than make the caller learn which
+            // surface it is standing on.
+            "quantum_compile" => {
+                let tail: Vec<&str> = parts.collect();
+                let joined = tail.join(" ");
+                let rest: Vec<&str> = joined.split_whitespace().collect();
+                if rest.is_empty() {
+                    sprintln!("quantum_compile <gates> [depth]   e.g. `quantum_compile H T`");
+                    sprintln!("Known gates: H T S X. Depth 4..12, default 10.");
+                } else {
+                    let (gates, depth) = match rest.last().and_then(|s| s.parse::<usize>().ok()) {
+                        Some(d) => (&rest[..rest.len() - 1], d.min(12).max(4)),
+                        None => (&rest[..], 10),
+                    };
+                    if gates.is_empty() {
+                        sprintln!("No gates given. Known: H T S X");
+                    } else {
+                        crate::fibonacci_qc::repl_compile(&gates.join(" "), depth, 3);
+                    }
+                }
+            }
+            "jones_polynomial" => {
+                let tail: Vec<&str> = parts.collect();
+                let joined = tail.join(" ");
+                let word: Vec<i32> = joined.split_whitespace()
+                    .filter_map(|t| t.parse::<i32>().ok()).collect();
+                if word.is_empty() {
+                    sprintln!("jones_polynomial <generators...>   e.g. `jones_polynomial 1 1 1`");
+                    sprintln!("Signed Artin generators, integers. Strands are implied:");
+                    sprintln!("sigma_k needs k+1. IMASM opcode names are not accepted here.");
+                } else {
+                    let n = word.iter().map(|g| g.unsigned_abs() as usize).max()
+                                .unwrap_or(0) + 1;
+                    crate::fibonacci_qc::repl_jones(n, &word);
+                }
+            }
             "fibqc" => {
                 match parts.next().unwrap_or("") {
                     "" | "help" => {
@@ -2140,6 +2179,10 @@ fn handle_jump(k: &mut Kernel, rest: &str) {
 
 // ─── Helpers ──────────────────────────────────────────────────
 
+// NOTE: unreferenced. The live help is menu.rs::print_help_topic / GRAMMAR_MENU;
+// additions here are never displayed. Kept only because removing it is a
+// separate decision from the one this comment exists to prevent.
+#[allow(dead_code)]
 fn print_help() {
     sprintln!("mOMonadOS REPL commands:");
     sprintln!();
@@ -2181,7 +2224,7 @@ fn print_help() {
     sprintln!("  {:<32} — Frobenius harness status (closed/open ratio)", "frob");
     sprintln!("  {:<32} — Hebrew glyph encoding + gematria", "aleph <Hebrew word>");
     sprintln!("  {:<32} — Belnap Shor pipeline (N=15, N=21)", "shor");
-    sprintln!("  {:<32} — Fibonacci anyon QC: verify | compile <gates>", "fibqc <action>");
+    sprintln!("  {:<32} — Fibonacci anyon QC: verify | compile <gates> | jones | knot | winding", "fibqc <action>");
     sprintln!("  {:<32} — walk an IMASM word around its ROTAT orbit", "cycle <word>");
     sprintln!("  {:<32} — where the weight moves through an IMASM word", "weight <word>");
     sprintln!("  {:<32} — was a count cleared with nothing banked?", "banked <word>");
