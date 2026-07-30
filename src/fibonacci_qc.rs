@@ -37,19 +37,19 @@ pub const K: usize = 3;
 pub const D: f64 = 1.902113032590307;
 
 /// φ⁻¹ = 1/φ = φ - 1
-pub const PHI_INV: f64 = 0.6180339887498949;
+pub const PHI_INV: f64 = PHI - 1.0;
 
 /// φ^{-1/2} = 1/√φ
 pub const PHI_INV_SQRT: f64 = 0.7861513777574684;
 
 /// π constant (libm doesn't provide it)
-pub const PI: f64 = 3.14159265358979323846;
+pub const PI: f64 = core::f64::consts::PI;
 
 /// 2π
-pub const TWO_PI: f64 = 6.28318530717958647692;
+pub const TWO_PI: f64 = 2.0 * PI;
 
 /// ln(2) for log2 computation
-pub const LN_2: f64 = 0.6931471805599453;
+pub const LN_2: f64 = core::f64::consts::LN_2;
 
 // ─── Complex Number Type ────────────────────────────────────────────────────
 
@@ -1713,8 +1713,21 @@ fn complex_pow(c: Complex, exp: i32) -> Complex {
 // ─── Verification Suite ─────────────────────────────────────────────────────
 
 /// Run all verification checks and return results
+/// Verify that all constants derivable from PHI are consistent with their
+/// defining formulas. D = √(1+φ²), φ⁻¹ = φ−1 = 1/φ, φ^{-1/2} = 1/√φ.
+pub fn check_constants() -> bool {
+    let tol = 1e-12;
+    let d_computed = libm::sqrt(1.0 + PHI * PHI);
+    let phi_inv_computed = 1.0 / PHI;
+    let phi_inv_sqrt_computed = 1.0 / libm::sqrt(PHI);
+    (PHI_INV - (PHI - 1.0)).abs() < tol
+        && (PHI_INV - phi_inv_computed).abs() < tol
+        && (D - d_computed).abs() < tol
+        && (PHI_INV_SQRT - phi_inv_sqrt_computed).abs() < tol
+}
+
 pub fn verify_all() -> bool {
-    let checks: [(&str, bool); 10] = [
+    let checks: [(&str, bool); 11] = [
         ("F unitary", check_f_unitary()),
         ("Pentagon form (F^2=I, anti-diag, a^2+b^2=1)", check_pentagon()),
         ("Braid relation (Y-B)", check_braid_relation() < 1e-9),
@@ -1725,6 +1738,7 @@ pub fn verify_all() -> bool {
         ("Verlinde formula", check_verlinde()),
         ("Braid Artin B_n<=8", check_braid_artin(8)),
         ("Phase lattice = tenths of a winding", check_winding_lattice()),
+        ("Constants derivable from PHI", check_constants()),
     ];
 
     let mut all_pass = true;
