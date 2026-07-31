@@ -1,10 +1,11 @@
-Drop four module-level allows the crate root already carries
+Short names for the two most-typed quantum commands
 
-main.rs has #![allow(uncommon_codepoints)] with the reason written above it: the IG
-primitives are Shavian glyphs and the glyph is the name, so the lint is answered rather
-than obeyed. The same attribute was repeated in triple_frame, hqe, kernel_torus and ovm,
-where it does nothing — the lint is crate-level only — and each repetition warned about
-being ignored.
+quantum_compile and jones_polynomial were chosen so an agent that knew the grammar-tool
+names would find them in the kernel. That reason still holds, but they are long to type
+for the two commands most likely to be typed repeatedly.
 
-Removed from the four modules. The crate-level allow is unchanged and is the one that
-does the work. Build is warning-free.
+qc and jp are the primary names now. Both long forms remain as match arms, so nothing
+that used them breaks and the grammar-name mapping is intact. Top-level qc was free; the
+existing qc is a subcommand of rebis materials.
+
+Verified: qc H T 4, jp 1 1 1, quantum_compile H 4 and jones_polynomial 1 1 all run.

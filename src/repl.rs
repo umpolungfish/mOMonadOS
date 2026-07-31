@@ -253,12 +253,12 @@ pub fn repl(k: &mut Kernel) {
             // here and got "Unknown: quantum_compile". Same operations, two
             // vocabularies; accept both rather than make the caller learn which
             // surface it is standing on.
-            "quantum_compile" => {
+            "qc" | "quantum_compile" => {
                 let tail: Vec<&str> = parts.collect();
                 let joined = tail.join(" ");
                 let rest: Vec<&str> = joined.split_whitespace().collect();
                 if rest.is_empty() {
-                    sprintln!("quantum_compile <gates> [depth]   e.g. `quantum_compile H T`");
+                    sprintln!("qc <gates> [depth]   e.g. `qc H T`   (alias quantum_compile)");
                     sprintln!("Known gates: H T S X. Depth 4..12, default 10.");
                 } else {
                     let (gates, depth) = match rest.last().and_then(|s| s.parse::<usize>().ok()) {
@@ -272,13 +272,13 @@ pub fn repl(k: &mut Kernel) {
                     }
                 }
             }
-            "jones_polynomial" => {
+            "jp" | "jones_polynomial" => {
                 let tail: Vec<&str> = parts.collect();
                 let joined = tail.join(" ");
                 let word: Vec<i32> = joined.split_whitespace()
                     .filter_map(|t| t.parse::<i32>().ok()).collect();
                 if word.is_empty() {
-                    sprintln!("jones_polynomial <generators...>   e.g. `jones_polynomial 1 1 1`");
+                    sprintln!("jp <generators...>   e.g. `jp 1 1 1`   (alias jones_polynomial)");
                     sprintln!("Signed Artin generators, integers. Strands are implied:");
                     sprintln!("sigma_k needs k+1. IMASM opcode names are not accepted here.");
                 } else {
