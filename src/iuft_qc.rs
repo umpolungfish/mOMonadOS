@@ -263,6 +263,15 @@ pub const GRAMMAR_GATE: IuftQcGate = IuftQcGate::new(90.0, 45.0, 90.0);
 /// HSOA gate — Holomorphic Semiotic Operator Algebra
 pub const HSOA_GATE: IuftQcGate = IuftQcGate::new(120.0, 270.0, 180.0);
 
+/// Monad gate — categorical monad SU(2) encoding. Catalog: ⟨𐑼𐑶𐑽𐑬𐑐𐑧𐑲𐑝⊙𐑓𐑳𐑷⟩
+pub const MONAD_GATE: IuftQcGate = IuftQcGate::new(120.0, 140.0, 90.0);
+
+/// Topos gate — elementary topos SU(2) encoding. Catalog: ⟨𐑨𐑰𐑩𐑗𐑱𐑪𐑔𐑝⊙𐑫𐑙𐑷⟩
+pub const TOPOS_GATE: IuftQcGate = IuftQcGate::new(20.0, 120.0, 90.0);
+
+/// Poincaré-Hopf gate — index-sum-to-Euler-characteristic SU(2) encoding. Catalog: ⟨𐑦𐑸𐑽𐑯𐑐𐑧𐑲𐑵⊙𐑫𐑳𐑴⟩
+pub const POINCARE_HOPF_GATE: IuftQcGate = IuftQcGate::new(140.0, 290.0, 90.0);
+
 // ═══════════════════════════════════════════════════════════════
 // LOOKUP FUNCTIONS
 // ═══════════════════════════════════════════════════════════════
@@ -281,6 +290,9 @@ pub fn gate_for(name: &str) -> Option<IuftQcGate> {
         "CLINK L8" | "clink_l8" | "CLINK_L8" => Some(CLINK_L8_GATE),
         "grammar" | "IG" | "imscribing_grammar" => Some(GRAMMAR_GATE),
         "HSOA" | "hsoa" | "holomorphic_semiotic_operator_algebra" => Some(HSOA_GATE),
+        "monad" => Some(MONAD_GATE),
+        "topos" | "elementary_topos" => Some(TOPOS_GATE),
+        "poincare_hopf_theorem" | "poincare_hopf" => Some(POINCARE_HOPF_GATE),
         _ => {
             // Fall back: try to find in catalog and encode on the fly
             crate::catalog::catalog_entries(None)
@@ -314,6 +326,9 @@ pub fn known_gates() -> &'static [(&'static str, &'static IuftQcGate)] {
         ("CLINK L8", &CLINK_L8_GATE),
         ("grammar",  &GRAMMAR_GATE),
         ("HSOA",     &HSOA_GATE),
+        ("monad",    &MONAD_GATE),
+        ("topos",    &TOPOS_GATE),
+        ("poincare_hopf_theorem", &POINCARE_HOPF_GATE),
     ]
 }
 
