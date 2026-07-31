@@ -24,7 +24,7 @@
 //   pdb.rs — PDB structure validation (CA atom, contacts, precision/recall)
 //   antibody.rs — Antibody CDR design (12↔12 bijection, epitope, full antibody)
 //   materials.rs — IG material forge (MetaCell, Alloy, ThermalRectifier, NonQubitQC)
-//   biology.rs — Biological simulation (TissueGrid, Telomere, FrobeniusBioSim)
+//   biology.rs — Biological computation (TissueGrid, Telomere, FrobeniusBioSim)
 //   therapeutics.rs — Therapeutic design (Chemotherapeutic, OuroboricPill, Antidote)
 
 pub mod codon;

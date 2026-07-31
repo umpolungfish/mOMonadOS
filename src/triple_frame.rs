@@ -474,7 +474,7 @@ impl TripleFrameAlgebra {
         }).collect()
     }
 
-    /// Simulate the tuple↔word round-trip (IMASM cycle).
+    /// Execute the tuple↔word round-trip (IMASM cycle).
     /// Returns (n_exact, n_ambiguous, note).
     pub fn imasm_cycle() -> (usize, usize, String) {
         // Ř maps to both ear and tot — structurally identical programs

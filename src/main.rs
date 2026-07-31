@@ -71,6 +71,7 @@ mod triple_frame;
 mod iuft_qc;
 
 // ── m3iosis tool ports (native Rust implementations) ────────
+mod stark;
 mod hqe;
 mod dyson;
 mod afdmc;
@@ -79,6 +80,7 @@ mod hop;
 mod braid_grammar;
 mod manifold;
 mod kernel_torus;
+mod ovm;
 
 use tokens::{CANONICAL_COUNT, CONTINUOUS_COUNT, NOVEL_COUNT, SHUNTED_COUNT};
 use crystal::TOTAL;

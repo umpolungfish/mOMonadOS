@@ -45,9 +45,9 @@ impl MaterialSpec {
     }
 }
 
-/// Result of a material simulation run.
+/// Result of a material computation run.
 #[derive(Clone, Debug)]
-pub struct SimulationResult {
+pub struct MaterialResult {
     pub material_name: alloc::string::String,
     pub cycles: usize,
     pub frobenius_maintained: bool,
@@ -372,7 +372,7 @@ impl EagleCycleParams {
     }
 }
 
-/// Eagle Cycle simulation result.
+/// Eagle Cycle computation result.
 #[derive(Clone, Debug)]
 pub struct EagleCycleResult {
     pub material_name: alloc::string::String,
@@ -404,7 +404,7 @@ pub const GAP_PRIMITIVES: [(&str, &str, &str); 3] = [
     ("Ω", "𐑭", "𐑟"),   // Z → non-Abelian
 ];
 
-/// Run Eagle Cycle simulation for a named material.
+/// Run Eagle Cycle computation for a named material.
 pub fn run_eagle_cycle(name: &str, tuple: &[&str; 12], params: &EagleCycleParams) -> EagleCycleResult {
     let mut frob = 0.5;
     let total = params.albedo_steps + params.citrinitas_steps + params.rubedo_steps;
@@ -535,7 +535,7 @@ impl OuroboricAlloy {
     }
 
     /// Run mechanical test: apply cyclic stress and track damage.
-    pub fn run_mechanical_test(&mut self, stress_amplitude_mpa: f64, cycles: usize) -> SimulationResult {
+    pub fn run_mechanical_test(&mut self, stress_amplitude_mpa: f64, cycles: usize) -> MaterialResult {
         let mut damage = 0.0;
         let mut frob = self.frobenius_score;
         for i in 0..cycles {
@@ -549,7 +549,7 @@ impl OuroboricAlloy {
         }
         self.damage_fraction = if damage > 1.0 { 1.0 } else { damage };
         self.frobenius_score = if frob < 0.0 { 0.0 } else { frob };
-        SimulationResult {
+        MaterialResult {
             material_name: alloc::format!("ouroboric_alloy_n{}", self.n_grains),
             cycles: self.cycles, frobenius_maintained: self.frobenius_score > 0.5,
             final_stress_mpa: stress_amplitude_mpa * (1.0 - self.damage_fraction),

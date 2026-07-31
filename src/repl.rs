@@ -15,11 +15,11 @@ use crate::{
     para_category, algebra, catalog, cl8nk, consciousness, rebis, dialect, menu,
     sequence, boot, cr3echrz, canonical_ordinal, clay_status, sic_povm,
     frobenius_unify, clay_witness, belnap_sic_bridge, belnap_c4, sic_compute,
-    dialect_expansion, divisor_ring, mersenne_parallel, bifurcation_test, entropy, d12_sic, d2048_sic, d2048_sieve,
+    dialect_expansion, divisor_ring, mersenne_parallel, bifurcation_test, entropy, d12_sic, d2048_sic, d2048_sieve, stark,
     sic_moduli,
     riemann_sic,
     riemann_hilbert,
-    witness_vessel, ask,
+    witness_vessel, ask, ovm,
 };
 use crate::tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
 use crate::crystal::{CrystalStore, decode, encode, indices_from_program, TOTAL};
@@ -103,6 +103,13 @@ pub fn repl(k: &mut Kernel) {
 
         let mut parts = line.splitn(4, ' ');
         let cmd = parts.next().unwrap_or("");
+        // A category shortcut must only fire on a BARE category name. Without this,
+        // any line whose first token is a category ("crystal indices …") is caught by
+        // the shortcut arm below, which enters the context and `continue`s, swallowing
+        // the subcommand. That made `crystal indices` — the mu leg, words -> crystal
+        // indices, the measurement that makes mu∘delta = id checkable rather than
+        // asserted — implemented but unreachable from the REPL.
+        let bare_category = line.trim().split_whitespace().count() == 1;
 
         // ── Menu Navigation ────────────────────────────────
         match cmd {
@@ -110,7 +117,7 @@ pub fn repl(k: &mut Kernel) {
             ".." | "back" => {
                 if ctx_stack.depth > 0 {
                     let popped = ctx_stack.pop();
-                    sprintln!("← returned from {}", popped.map(|c| c.name).unwrap_or("?"));
+                    sprintln!("← returned from {}", popped);
                 } else {
                     sprintln!("Already at top level.");
                 }
@@ -147,8 +154,8 @@ pub fn repl(k: &mut Kernel) {
             // Enter category by shortcut (case-insensitive, names that don't conflict with commands)
             s if {
                 let lower = s.to_lowercase();
-                lower == "exec" || lower == "status" || lower == "programs" || lower == "crystal"
-                    || lower == "grammar" || lower == "rebis" || lower == "dialect" || lower == "parasm" || lower == "cr3echrz" || lower == "clay"
+                bare_category && (lower == "exec" || lower == "status" || lower == "programs" || lower == "crystal"
+                    || lower == "grammar" || lower == "rebis" || lower == "dialect" || lower == "parasm" || lower == "cr3echrz" || lower == "clay")
             } => {
                 let already_in = ctx_stack.current()
                     .map(|c| c.name.to_lowercase() == cmd.to_lowercase())
@@ -560,6 +567,30 @@ pub fn repl(k: &mut Kernel) {
             }
 
             // ── m3iosis tool ports (native Rust implementations) ──────
+            "ovm" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "eigen" => {
+                        let x: f64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(0.0);
+                        let y: f64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(0.0);
+                        let z: f64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(0.0);
+                        let norm: f64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(1.0);
+                        let trace: f64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(1.0);
+                        sprintln!("{}", crate::ovm::ovm_eigen(x, y, z, norm, trace));
+                    }
+                    "frame" => {
+                        let name = parts.next().unwrap_or("");
+                        sprintln!("{}", crate::ovm::ovm_frame(name));
+                    }
+                    "overlap" => {
+                        let name = parts.next().unwrap_or("");
+                        sprintln!("{}", crate::ovm::ovm_overlap(name));
+                    }
+                    "belnap" => sprintln!("{}", crate::ovm::ovm_belnap()),
+                    "help" | "--help" | "-h" | "" => sprintln!("{}", crate::ovm::ovm_help()),
+                    name => sprintln!("{}", crate::ovm::ovm_compute(name)),
+                }
+            }
             "hqe" => {
                 let sub = parts.next().unwrap_or("");
                 match sub {
@@ -768,6 +799,57 @@ pub fn repl(k: &mut Kernel) {
                     "verify" | "full" => sprintln!("{}", crate::d2048_sic::d2048_full_report()),
                     "" => sprintln!("{}", crate::d2048_sic::d2048_summary()),
                     _ => sprintln!("d2048 [tower|c16|c32|ramified|redei|grammar|pari|next|sieve|verify]"),
+                }
+            }
+            "stark" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "formula" => {
+                        let arg = parts.next().unwrap_or("");
+                        if let Ok(d) = arg.parse::<u32>() {
+                            sprintln!("{}", crate::stark::stark_formula(d));
+                        } else {
+                            sprintln!("Usage: stark formula <d>");
+                        }
+                    }
+                    "fibqc" => {
+                        let arg = parts.next().unwrap_or("");
+                        if let Ok(d) = arg.parse::<u32>() {
+                            sprintln!("{}", crate::stark::stark_fibqc(d));
+                        } else if arg.is_empty() {
+                            sprintln!("{}", crate::stark::stark_fibqc(48));
+                        } else {
+                            sprintln!("Usage: stark fibqc [d]");
+                        }
+                    }
+                    "tower" => {
+                        let arg = parts.next().unwrap_or("");
+                        if let Ok(k) = arg.parse::<u32>() {
+                            sprintln!("{}", crate::stark::stark_tower(Some(k)));
+                        } else if arg.is_empty() {
+                            sprintln!("{}", crate::stark::stark_tower(None));
+                        } else {
+                            sprintln!("Usage: stark tower [k]");
+                        }
+                    }
+                    "exponents" | "exp" => {
+                        let arg1 = parts.next().unwrap_or("");
+                        let arg2 = parts.next().unwrap_or("");
+                        if let Ok(d) = arg1.parse::<u32>() {
+                            if let Ok(k) = arg2.parse::<u32>() {
+                                sprintln!("{}", crate::stark::stark_exponents(d, Some(k)));
+                            } else if arg2.is_empty() {
+                                sprintln!("{}", crate::stark::stark_exponents(d, None));
+                            } else {
+                                sprintln!("Usage: stark exponents <d> [k]");
+                            }
+                        } else {
+                            sprintln!("Usage: stark exponents <d> [k]");
+                        }
+                    }
+                    "verify" => sprintln!("{}", crate::stark::stark_verify()),
+                    "" => sprintln!("{}", crate::stark::stark_summary()),
+                    _ => sprintln!("stark [formula|fibqc|tower|exponents|verify]"),
                 }
             }
             "d12" => {
@@ -1875,7 +1957,7 @@ fn read_line<'a>(buf: &'a mut [u8], history: &mut History, ctx: &ContextStack) -
                 let line_str = core::str::from_utf8(&buf[..len]).unwrap_or("");
                 if let Some(completion) = tab_complete(line_str, ctx) {
                     // Replace buffer with completion
-                    let comp_bytes = completion.as_bytes();
+                    let comp_bytes: &[u8] = completion.as_bytes();
                     let n = comp_bytes.len().min(max_len);
                     buf[..n].copy_from_slice(&comp_bytes[..n]);
                     len = n;
@@ -3823,7 +3905,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                     sprintln!("
 ══ Quick Reference ══");
                     sprintln!("  rebis material forge [name|--all]  — forge materials from IG tuples");
-                    sprintln!("  rebis material alloy               — Ouroboric alloy simulation");
+                    sprintln!("  rebis material alloy               — Ouroboric alloy computation");
                     sprintln!("  rebis material thermal             — Thermal rectifier design");
                     sprintln!("  rebis material qc                  — Non-qubit QC paradigm table");
                     sprintln!("  rebis material sophick             — Sophick Forge Eagle Cycle");
@@ -3956,7 +4038,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                     let mut tel = crate::rebis::biology::OuroboricTelomere::new(5000);
                     let divs: usize = rest.parse().unwrap_or(20);
                     tel.run(divs);
-                    sprintln!("══ Ouroboric Telomere Simulation ══");
+                    sprintln!("══ Ouroboric Telomere Computation ══");
                     sprintln!("{}", tel.report());
                 }
                 "frob" | _ => {

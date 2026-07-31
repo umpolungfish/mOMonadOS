@@ -554,7 +554,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "lattice_qcd_approach", "Lattice QCD approach to Yang-Mills mass gap: discrete spacetime regularization with Wilson loops, Monte Carlo simulations, continuum limit extrapolation",
+        "lattice_qcd_approach", "Lattice QCD approach to Yang-Mills mass gap: discrete spacetime regularization with Wilson loops, Monte Carlo computations, continuum limit extrapolation",
         IgPrim::D_wedge, IgPrim::T_net, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_trap,
         IgPrim::G_beth, IgPrim::C_and,

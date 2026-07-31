@@ -112,7 +112,7 @@ impl HadronState {
     }
 }
 
-/// Frobenius check on hadronic state: simulate fsplit/ffuse.
+/// Frobenius check on hadronic state: execute fsplit/ffuse.
 fn check_hadron_frobenius(confinement: B4, parity: B4) -> bool {
     // fsplit: (confinement, parity) → (c1,c2), (p1,p2)
     let (c1, c2) = crate::rebis::frob_filter::fsplit_b4(confinement);

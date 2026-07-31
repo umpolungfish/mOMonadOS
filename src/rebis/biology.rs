@@ -1,9 +1,9 @@
-//! biology.rs — IG-Structured Biological Simulation (FULL PORT)
+//! biology.rs — IG-Structured Biological Computation (FULL PORT)
 //! Consolidates: biology_sim.py, biology_sim_frobenius_exact.py,
 //! ouroboric_telomere.py, ouroboric_telomere_expanded.py,
 //! ouroboric_telomere_frobenius.py
 //!
-//! Simulates biological systems using IG types.
+//! Computes biological systems using IG types using IG types.
 //! Core models: cellular automaton with B4 states, telomere dynamics,
 //! Frobenius-verified biological cycles, morphogenesis, and epigenetic
 //! derepression via the ouroboric telomere axis.
@@ -223,7 +223,7 @@ impl ATMSignalingState {
     }
 }
 
-// ── Full Ouroboric Telomere Simulation ─────────────────────────────────
+// ── Full Ouroboric Telomere Computation ─────────────────────────────────
 
 /// Complete ouroboric telomere: shelterin → ATM → epigenetic → hTERT → extension
 #[derive(Clone, Debug)]
@@ -324,9 +324,9 @@ impl OuroboricTelomere {
     }
 }
 
-// ── Frobenius-Exact Bio Simulation ─────────────────────────────────────
+// ── Frobenius-Exact Bio Computation ─────────────────────────────────────
 
-/// A Frobenius-verified biological simulation.
+/// A Frobenius-verified biological computation.
 #[derive(Clone, Debug)]
 pub struct FrobeniusBioSim {
     pub grid: TissueGrid,
@@ -343,7 +343,7 @@ impl FrobeniusBioSim {
                          cycle_count: 0, closure_ratio: 0.0 }
     }
 
-    /// Run simulation with Frobenius verification at each step.
+    /// Run computation with Frobenius verification at each step.
     pub fn run(&mut self, cycles: usize) {
         for _ in 0..cycles {
             let before = self.grid.state_counts();

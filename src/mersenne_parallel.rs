@@ -302,7 +302,7 @@ pub fn parallel_search(p_start: usize, p_end: usize, num_splits: usize)
     
     // In the kernel model, FSPLIT forks into num_splits parallel branches.
     // Each branch calls search_range on its slice. FFUSE joins results.
-    // Here we simulate this sequentially for the bare-metal implementation;
+    // Here we execute this sequentially for the bare-metal implementation;
     // the structural model is the same — the fork/join IS the parallelism.
     
     for (start, end) in &ranges {

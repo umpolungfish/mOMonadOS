@@ -580,7 +580,7 @@ pub fn dialetheic_image(r0: B4) -> B4 {
 /// ∀r: if r=B then FSPLIT(r)→(T,F) with T≠F; if r≠B then both outputs equal.
 pub fn b_is_only_bifurcation_point() -> bool {
     for &r in &[B4::N, B4::T, B4::F, B4::B] {
-        // simulate fsplit
+        // execute fsplit
         let (d1, d2) = if r == B4::B { (B4::T, B4::F) } else { (r, r) };
         if r == B4::B && d1 == d2 { return false; }
         if r != B4::B && d1 != d2 { return false; }

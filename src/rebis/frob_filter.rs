@@ -32,9 +32,9 @@ impl FrobeniusFilter {
     /// Add an element to the filter and verify it.
     pub fn push(&mut self, value: B4) {
         if self.count >= 64 { return; }
-        // Simulate fsplit: split a B4 value into two components
+        // Execute fsplit: split a B4 value into two components
         let (c1, c2) = fsplit_b4(value);
-        // Simulate ffuse: recombine
+        // Execute ffuse: recombine
         let result = ffuse_b4(c1, c2);
         let passes = result == value;
         let invariant = if passes { 0 }

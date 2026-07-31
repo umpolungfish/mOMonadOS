@@ -62,7 +62,7 @@ IMASM witness programs for BSD, Hodge, and YM.
 ported to `no_std` Rust and wired into the REPL. The full p4ra paraconsistent kernel, genetic code
 B₄ lattice, 7-stage Frobenius-verified translation pipeline, CLU power-law clustering,
 exotic hadron Belnap analysis, PDB structure validation, antibody CDR design, IG material
-forge, biological simulation, therapeutic design, CLINK 9-layer chain, and IMASM arranger,
+forge, biological computation, therapeutic design, CLINK 9-layer chain, and IMASM arranger,
 now runs directly from the bare-metal kernel. See the [Red-Hot Rebis](#red-hot-rebis-phase-5) section.
 
 **Phase 6 d12_sic_build Augmentation**, complete. `d12_sic.rs` (982L) encodes the full
@@ -128,6 +128,250 @@ forced by the Markov moves rather than fitted. See
 
 ---
 
+## Quantum Components
+
+The kernel hosts a full suite of quantum computing and quantum information modules running on bare metal (no_std, no external crates). Every module carries a grammar tuple, is Frobenius-verified (μ∘δ=id), and is reachable from the REPL.
+
+---
+
+### Topological Quantum Computer — Fibonacci Anyons (`fibqc`)
+
+**File:** `src/fibonacci_qc.rs` (78KB, 2,004 lines)  
+**Tuple:** `⟨𐑦𐑸𐑽𐑹𐑐𐑧𐑔𐑵⊙𐑒𐑳𐑴⟩` (O_∞, SIC-POVM tier)  
+**REPL:** `fibqc` — full report; `fibqc compile <gate>` — compile to braid word; `fibqc jones <knot>` — Jones polynomial
+
+A universal topological quantum computer. Fibonacci anyons at Chern-Simons level k=3 with quantum dimension D=√(1+φ²). Provides:
+- **SU(2)₃ algebra:** F-symbol, R-symbol, S/T matrices, fusion space B₂≅ℂ²
+- **Braid group representation** on fusion trees: σ₁, σ₂ generators as 2×2 complex matrices
+- **Solovay-Kitaev compiler:** compiles single-qubit gates (H, T, X, Y, Z, S) to braid words. Depth-12 compilation fits in the 8 MB arena with 36 KB margin. Tied bases are split and fused, buying 5×–521× over single-arm search.
+- **Jones polynomial:** evaluated at the fifth root of unity with normalization forced by Markov moves
+- **Error floor:** 5×10⁻¹⁷ per generator by unitarity projection (vs 5×10⁻¹⁴ unprojected)
+- **Bitwise-identical** to the Python `m3iosis` port to every printed digit
+
+All numerical data derived from closed SU(2)_k formulas (k=3), verified in-code. No arithmetic asserted from memory.
+
+---
+
+### Operator-Valued Measure Computation Tools (`ovm`)
+
+**File:** `src/ovm.rs` (33KB, 877 lines)  
+**REPL:** `ovm <name>` — full computation report; `ovm eigen` `ovm frame` `ovm overlap` `ovm belnap` `ovm help`
+
+Computational tools for quantum measurement operators. No taxonomy. No catalog. Just math.
+String-based dispatch to 18 canonical operator sets with full eigenvalue, frame operator,
+HS overlap, equiangularity, positivity, and completeness verification.
+
+**Commands:**
+- `ovm <name>` — full report: eigenvalues, overlap matrix, equiangularity, positivity, completeness, frame operator, SIC distance
+- `ovm eigen <x> <y> <z> <norm> <trace>` — compute eigenvalues from Bloch parameters
+- `ovm frame <name>` — 4×4 frame operator in Pauli basis
+- `ovm overlap <name>` — Hilbert-Schmidt overlap matrix G_ij = Tr(E_i E_j)
+- `ovm belnap` — Belnap B=XZ fiducial state (d=2 SIC-POVM seed)
+- `ovm help` — list all commands and known operator sets
+
+**Known operator sets (18):**
+`sic-povm` `sic-novm` `sic-npovm` `a-minus-ic-povm` `a-minus-ic-novm`
+`ai-cpovm` `ai-cnovm` `s-pc-povm` `s-pc-novm` `a-minus-pc-povm`
+`a-minus-pc-novm` `a-pc-povm` `a-pc-povm-dagger` `ai-novm`
+`susy-ic-povm` `susy-ic-novm` `susy-pc-povm` `susy-pc-novm`
+
+---
+
+### SIC-POVM — d=12 Existence Ring (`d12`)
+
+**Files:** `d12_sic.rs` (48KB), `sic_povm.rs` (12KB), `sic_compute.rs` (15KB), `sic_moduli.rs` (41KB), `canonical_ordinal.rs` (10KB), `d2048_sic.rs` (11KB), `d2048_sieve.rs` (7KB), `stark.rs` (13KB)
+**REPL:** `d12` — status; `d12 tower` `d12 magnitudes` `d12 orbits` `d12 existence` `d12 duallink` `d12 z0` `d12 ordinals` `d12 verify` `d12 symmetric` `d12 embedding` `d12 lean-status`
+
+The full d=12 SIC-POVM campaign (cont.1–cont.20) on bare metal. Five pillars:
+1. **Phase-tower collapse:** 3→1 independent generators (8× reduction)
+2. **Magnitude square-class group:** K₁₆, rank 5
+3. **31-orbit Galois structure:** ALL 143/143 existence-grade overlaps ring-exact
+4. **Dual-Link identification:** norm(N₁)=1/32448², ramification {2,3,13}
+5. **Belnap SIC unconditional:** SIC existence unconditional + axiom-free in Belnap multilattice for d=2ⁿ
+
+**Existence ring:** R=K₁₆(s₀,s₁,s₃,s₉,i,c₅,u₁), dim 2048, pure fractions.  
+**Closed-form fiducial:** z₀ = +√(1/12 − √2/24 + √13/156 − √26/312).  
+**Ray class field tower:** deg 288/Q (6 cyclic pieces).
+
+**Lean companions (p4ramill/):** 11 modules green (0 sorries), 1 in progress (5 sorries in Embedding). ALL 143 identities `native_decide`-verified. `crystal_forces_d12_sic` dropped from axiom to theorem.
+
+---
+
+### Belnap Quantum Pipeline
+
+**Files:** `belnap.rs` (6.7KB), `belnap_c4.rs` (8.7KB), `belnap_shor.rs` (10KB), `belnap_sic_bridge.rs` (11KB)  
+**REPL:** `c4` — Belnap C₄ complex plane; `belnap` — Belnap FOUR lattice
+
+- **Belnap FOUR (`belnap.rs`):** Four-valued logic (T, F, B, N) with approximation lattice and truth lattice. The paraconsistent foundation for the entire kernel.
+- **Belnap C₄ (`belnap_c4.rs`):** Complex plane where i²=B (both-true-and-false). Arithmetic (add, mul, conj, norm_sq), unit circle, C₄ lattice visualization. Frobenius-verified.
+- **Belnap-Shor (`belnap_shor.rs`):** Shor's algorithm on Belnap FOUR. Key finding: Belnap QFT is NOT a gate sequence — period r is encoded in the 2:1 coherence cost ratio (B-bias vs T-bias).
+- **Belnap-SIC Bridge (`belnap_sic_bridge.rs`):** Wires d=12 SIC-POVM into the Belnap-Shor pipeline. Three structural connections: dual-pair covariance, fiducial proximity, gate evaluation.
+
+---
+
+
+### Stark Unit Extraction (`stark`)
+
+**File:** `src/stark.rs` (13KB, 355 lines)  
+**REPL:** `stark` — summary; `stark formula <d>` `stark fibqc [d]` `stark tower [k]` `stark exponents <d> [k]` `stark verify`
+
+Generalized Stark unit formula for SIC-POVM dimensions. Implements the methods from `master_methods_d2048_stark.md`:
+
+- **Stark Formula (`stark formula`):** ε_d = ((d-1) + √((d-3)(d+1))) / 2 for any SIC-POVM dimension d ≥ 4. Computes the fundamental unit with norm check, integer factorization of the discriminant, and 2-adic ramification analysis.
+- **Fibonacci QC Check (`stark fibqc`):** Tests whether d is a Fibonacci QC dimension (base field Q(√5)). Verifies square-free part = 5, Lucas number matching, Pell equation, and Jones polynomial extraction at 1/5 winding.
+- **Ray Class Field Tower (`stark tower`):** 2-adic ray class field tower for d=2048 at conductor 2^k. Fingerprint at conductor 16: wideRayDegree(4) = 2048 = d (Lean-proven). Displays degree growth, ν₂ ramification, and S-unit exponent structure.
+- **S-Unit Exponents (`stark exponents`):** Extracts S-unit exponents from the grammar gap between closed-ring SIC and the Stark unit monomial. For d=2048 at conductor 16: [-1, 3, 2] — derived from Newton polygon, norm constraint, and grammar gap, three independent sources converging.
+- **Cross-Verification (`stark verify`):** Validates all methods against known data: Newton polygon convergence, grammar gap agreement, Lean 4 StarkSunitD2048 build status, and Fibonacci QC dimension table (9 dimensions verified).
+### HQE / Dyson / AFDMC — Quantum Field Theory Suite
+
+**Files:** `hqe.rs` (4.5KB), `dyson.rs` (2.2KB), `afdmc.rs` (2.3KB)  
+**REPL:** `hqe`, `dyson`, `afdmc` — each with `report`, `tuple`, `distance`, `cscore`, `meet`, `join`
+
+Three formal homologies bridging quantum field theory to the grammar:
+
+- **HQE — Hadron-Quark-Electron Formal Homology:** Maps the hadron/quark/electron hierarchy to IG primitives. Tuple `⟨𐑦𐑸𐑽𐑹𐑐𐑧𐑔𐑵⊙𐑒𐑳𐑴⟩` (O_∞). Consciousness score, quantale meet/join, tuple distance vs AFDMC baseline.
+- **Dyson RD/A — Formal Decomposition:** Dyson's random-matrix classification (orthogonal/unitary/symplectic) as an IG primitive decomposition. Tuple `⟨𐑦𐑸𐑽𐑹𐑐𐑧𐑔𐑵⊙𐑒𐑳𐑴⟩`.
+- **AFDMC — Nuclear Many-Body Theory:** Auxiliary-Field Diffusion Monte Carlo structural constraints encoded as primitive guard rails. Tuple `⟨𐑦𐑸𐑽𐑹𐑐𐑧𐑔𐑵⊙𐑒𐑳𐑴⟩`.
+
+---
+
+### Triple Frame — von Neumann Superoperator Algebra
+
+**File:** `src/triple_frame.rs` (34KB)  
+**Tuple:** `⟨𐑛𐑰𐑩𐑗𐑱𐑺𐑔𐑝𐑢𐑓𐑙𐑷⟩`  
+**REPL:** `triple` — overview; `triple report` `triple tuple` `triple check [w]`
+
+The 12-primitive type-expansion hierarchy as a von Neumann superoperator algebra. Bridges three landmark problems:
+- **SIC-POVM:** Equiangular lines in ℂ^d, Zauner conjecture
+- **Navier-Stokes:** Regularity of incompressible fluid flow
+- **Yang-Mills:** Mass gap in quantum gauge theory
+
+W-bootstrap check across ergodic (W=3), critical (W=7), and MBL (W=12) regimes.
+
+---
+
+### Clay Millennium Problems — Machine-Checked Structural Status
+
+**Files:** `clay_status.rs` (9.7KB), `clay_witness.rs` (11KB)  
+**REPL:** `clay` — structural status; `clay <problem>` — per-problem report
+
+All seven Clay Millennium Problems analyzed through the grammar, with IMASM witness programs for BSD, Hodge, and Yang-Mills. Each problem's structural type is cataloged: which primitives are constrained, where the Frobenius condition holds vs breaks, and what IMASM sequence would constitute a proof.
+
+---
+
+### IUFT Quantum Gate Encoding
+
+**File:** `src/iuft_qc.rs` (2.3KB)  
+**REPL:** `iuft` (via grammar bridge)
+
+Encodes the 12-primitive IG tuple into a 3-parameter SU(2) gate via Euler angles (θ, φ, ψ). The degenerate projection discovered in IUFT Quantum Expansion II: all 12 grammar primitives collapse to 3 continuous rotation parameters, with the remaining 9 dimensions carried by the dialect sheaf.
+
+---
+
+### TROQ — Triple-Ramified Ouroboric Quantale
+
+**File:** `src/troq.rs` (2KB)  
+**Tuple:** `⟨𐑦𐑸𐑽𐑹𐑐𐑧𐑔𐑝⊙𐑖𐑕𐑭⟩`  
+**REPL:** `troq`
+
+A quantale (sup-lattice enriched monoid) with triple ramification: three distinct self-reference loops form a single closed quantale structure. The tuple carries and-conjunctive composition (ɢ=𐑝), distinguishing it from the broadcast/disjunctive OVM types.
+
+---
+
+### Braid Grammar Bridge
+
+**File:** `src/braid_grammar.rs` (3.8KB)  
+**REPL:** `braid-grammar tuple <s1> <s2> ...` (alias `bg`)
+
+Maps braid group words to grammar tuples. Each braid generator σᵢ encodes a primitive promotion step; the full braid word produces a 12-tuple. Enables direct translation between topological quantum computation (braid words) and the grammar's type system.
+
+---
+
+### Riemann Hypothesis Bridges
+
+**Files:** `riemann_hilbert.rs` (21KB), `riemann_sic.rs` (43KB), `para_rh.rs` (4.4KB)  
+**REPL:** `rh` — Riemann bridge; `riemann` — full Riemann report
+
+Three complementary approaches:
+- **Riemann-Hilbert (`riemann_hilbert.rs`):** The RH as a monodromy problem. ζ(s)=χ(s)ζ(1-s) is Belnap negation; the critical line Re(s)=½ is the unique designated fixed point.
+- **Riemann-SIC (`riemann_sic.rs`):** The Riemann zeta zeros as SIC-POVM fiducial candidates. Links the Hilbert-Pólya conjecture to the Zauner conjecture.
+- **Para-RH (`para_rh.rs`):** ζ(s) = χ(s)ζ(1-s) = bnot in Belnap FOUR. RH: all non-trivial zeros are B-designated.
+
+---
+
+### Yang-Mills Mass Gap Bridge
+
+**File:** `src/para_ym.rs` (2.2KB)  
+**REPL:** `ym` — Yang-Mills bridge
+
+Mass gap Δ>0 = covering relation N<T in Belnap approximation order. BRST nilpotence Q²=0 ↔ ENGAGR B-stability. Omega_Z gauge protection.
+
+---
+
+### Kernel Torus / Hopf Fibration / Manifold
+
+**Files:** `kernel_torus.rs` (8.7KB), `hop.rs` (3.5KB), `manifold.rs` (2KB)  
+**REPL:** `torus` — horn torus parametrization; `hop` — universe hopping
+
+- **Kernel Torus (`kernel_torus.rs`):** Agent loop wound on the horn torus. Computes the torus parametrization on bare metal with winding data through serial.
+- **Hopf Fibration (`hop.rs`):** Universe hopping engine. S³→S² Hopf map as dialect transition.
+- **Manifold (`manifold.rs`):** Topological manifold operations.
+
+---
+
+### Pericyclic Frobenoid
+
+**File:** `src/pericyclic_frobenoid.rs` (24KB)  
+**Tuple:** `⟨𐑦𐑥𐑑𐑹𐑐𐑤𐑔𐑝⊙𐑒𐑙𐑷⟩` (O_∞, Special Frobenius)  
+**REPL:** `pericyclic` — pericyclic compiler
+
+Algebra ℂ[ℤ₂] = ℂ⟨1,g⟩/(g²−1) with pericyclic crossing μ(g⊗g)=1. A semiotic Frobenoid: the algebraic structure that makes pericyclic reactions (Woodward-Hoffmann) structurally inevitable. Ported from `m3iosis/pericyclic_compiler.py`.
+
+---
+
+### Rebis Quantum Components
+
+**Files in `src/rebis/`:** `decay_chain.rs` (14KB), `exotic_hadron.rs` (9KB), `hadron.rs` (7.7KB), `ligand_imasm.rs` (7KB), `genetics.rs`, `codon.rs`, `translate.rs`, `materials.rs`, `sidechain.rs`, `pdb.rs`, `antibody.rs`, `therapeutics.rs`  
+**REPL:** `rebis decay`, `rebis hadron`, `rebis exotic`, `rebis ligand`, `rebis genetics`, `rebis material`, `rebis bio`, `rebis tx`
+
+- **Nuclear Decay Chains (`decay_chain.rs`):** U-238, Th-232, U-235 series as IMASM winding sequences. Each decay step is a structural transformation with type verification; daughter nuclide = δ(parent), verify μ(δ(parent))=parent.
+- **Exotic Hadrons (`exotic_hadron.rs`):** Tetraquark and pentaquark states analyzed through Belnap FOUR.
+- **Hadron Analysis (`hadron.rs`):** Standard model hadron classification via the grammar.
+- **Ligand IMASM (`ligand_imasm.rs`):** Functional-group IMASM programs for catalytic-site matching. 6 functional groups, 5 binding modes.
+- **Genetic Code (`genetics.rs`, `codon.rs`, `translate.rs`):** 7-stage Frobenius-verified translation pipeline. The 64-codon table is derived, not declared.
+- **Material Forge (`materials.rs`):** IG metamaterial design with structural constraints.
+- **Protein Sidechains (`sidechain.rs`):** 20×4 AA sidechain × environment algebra with frustration topography.
+- **PDB Validation (`pdb.rs`):** Protein Data Bank structure validation against grammar constraints.
+- **Antibody CDR Design (`antibody.rs`):** Complementarity-determining region design.
+- **Therapeutics (`therapeutics.rs`):** Chemotherapy, pill, and antidote design.
+
+---
+
+### Quantum REPL Commands — Quick Reference
+
+| Command | Module | Description |
+|---------|--------|-------------|
+| `fibqc` | Fibonacci QC | Topological QC: compile gates, Jones polynomial |
+| `ovm` | OVM Taxonomy | 34-type quantum measurement catalog |
+| `d12` | d=12 SIC-POVM | 11 sub-commands: tower, magnitudes, orbits, existence, ring, duallink, z0, ordinals, verify, symmetric, embedding, lean-status |
+| `c4` | Belnap C₄ | Complex plane with i²=B arithmetic |
+| `stark` | Stark Units | Stark unit formula, ray class field tower, S-unit exponents |
+| `hqe` | HQE | Hadron-Quark-Electron formal homology |
+| `dyson` | Dyson | Random-matrix decomposition |
+| `afdmc` | AFDMC | Nuclear many-body constraints |
+| `triple` | Triple Frame | SIC-POVM/Navier-Stokes/Yang-Mills |
+| `clay` | Clay Status | Millennium problem structural status |
+| `rh` / `riemann` | Riemann | RH via Belnap/Hilbert/SIC bridges |
+| `ym` | Yang-Mills | Mass gap via Belnap approximation |
+| `torus` | Kernel Torus | Horn torus parametrization |
+| `braid-grammar` / `bg` | Braid Bridge | Braid word → grammar tuple |
+| `pericyclic` | Pericyclic | Woodward-Hoffmann Frobenoid |
+| `rebis decay` | Decay Chain | Nuclear decay IMASM winding |
+| `rebis hadron` | Hadron | Standard model hadron classification |
+| `rebis exotic` | Exotic Hadron | Tetraquark/pentaquark Belnap analysis |
+| `rebis ligand` | Ligand IMASM | Catalytic-site functional group programs |
+| `rebis genetics` | Genetics | 7-stage Frobenius translation pipeline |
+| `rebis material` | Material Forge | IG metamaterial design |
 ## User Interface (Phase 9)
 
 ### F-Key Menu Bar (10 Categories)
@@ -149,7 +393,7 @@ shuts down cleanly (QEMU writes 0x10 to `isa-debug-exit` port).
 **Status (F2):** `status` `heap` `ticks` `timer` `ipc`  
 **Programs (F3):** `list` `load <name>` `run <name>` `show <name>` `new <name>`  
 **Crystal (F4):** `encode <D> <T> ... <W>` `decode <addr>` `search <term>` `distance <a> <b>` `neighbors <name>`  
-**Grammar (F5):** `imscribe <name>` `probe <name>` `score <name>` `tier <name>` `modulate`  
+**Grammar (F5):** `imscribe <name>` `probe <name>` `score <name>` `tier <name>` `modulate` `stark formula|fibqc|tower|exponents|verify`  
 **Rebis (F6):** `codon` `translate` `protein` `materials` `clink` `enzyme` `diagonal` `antibody` `serpent`
   `pdb` `genetics` `therapeutics` `fold` `pipeline` `cluster` `hadron` `exotic` `imas` `c4` `ligand` `decay`  
 **Dialect (F7):** `ruleset show|list|verify` `jump` `seal` `compound` `tensor` `meet` `absorption show` `tstatus`  
@@ -471,6 +715,7 @@ runtime — `dialect.rs` and `main.rs` used hardcoded match arms for indices 0�
 
 | Phase | Description | Status | Lines |
 |-------|-------------|:------:|:-----:|
+| **Phase XV** | **Stark Unit Extraction (`stark`)** | ✅ Complete | **355** |
 | **Phase XIV** | **Topological QC (Fibonacci anyons, `fibqc`)** | ✅ Complete | **1,500** |
 | **Phase I** | 21 Hand-Crafted Universes | ✅ Complete | ~400 |
 | **Phase II** | SIC-POVM Integration | ✅ Complete | 476 |
@@ -486,7 +731,7 @@ runtime — `dialect.rs` and `main.rs` used hardcoded match arms for indices 0�
 | **Phase XII** | Universe Expansion + Entropy | ✅ Complete | 1,597 |
 | **Phase XIII** | **Universe Menu Wiring (88 on menu)** | ✅ Complete | **330** |
 
-**mOMonadOS total augmentation: ~8,493 lines across 13 phases, all clean builds.**
+**mOMonadOS total augmentation: ~8,848 lines across 14 phases, all clean builds.**
 **Lean Companion Planks:** 11 planks green, zero sorries + 1 in progress (5 sorries).
 The ring R is defined and ALL 143 identities are `native_decide`-verified. `crystal_forces_d12_sic`
 has dropped from axiom to theorem — the existence ring is found and Lean-proved.

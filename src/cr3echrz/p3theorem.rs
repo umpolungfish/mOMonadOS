@@ -524,7 +524,8 @@ pub type TheoremFn = fn(&str) -> TheoremResult;
 pub struct TheoremRegEntry {
     pub name: &'static str,
     pub description: &'static str,
-    pub phase_count: usize,
+    /// Catalog entry name for tuple lookup (phases, status derived from catalog).
+    pub catalog_name: &'static str,
     pub example_params: &'static str,
     pub runner: TheoremFn,
 }
@@ -566,7 +567,12 @@ pub fn list_theorems() -> String {
     let reg = ensure_theorems();
     let mut out = String::from("Registered Theorems (dynamic registry):\n");
     for e in reg.iter() {
-        out.push_str(&format!("  {:20} — {} ({} phases)\n", e.name, e.description, e.phase_count));
+        let phases = if let Some(cat) = crate::catalog::lookup(e.catalog_name) {
+            cat.tuple.phases()
+        } else {
+            0
+        };
+        out.push_str(&format!("  {:20} — {} ({} phases)\n", e.name, e.description, phases));
     }
     out
 }
@@ -575,7 +581,23 @@ pub fn list_theorems() -> String {
 pub fn run_theorem(name: &str, params: &str) -> TheoremResult {
     let reg = ensure_theorems();
     if let Some(entry) = reg.iter().find(|e| e.name == name) {
-        (entry.runner)(params)
+        let mut result = (entry.runner)(params);
+        // ── OVERRIDE hardcoded values with catalog-computed ones ──
+        // The individual run_* functions may still have legacy hardcodes,
+        // but the dispatch layer overrides them with computed values
+        // from the catalog tuple — the single source of truth.
+        if let Some(cat) = crate::catalog::lookup(entry.catalog_name) {
+            // Compute phases from catalog tuple (never hardcoded)
+            result.phases = cat.tuple.phases();
+            // Compute B4 status from tuple properties
+            result.status = compute_status_from_tuple(&cat.tuple);
+            result.status_name = compute_status_name(result.status, &cat.tuple).into();
+            // Frobenius: verify actual tuple properties, not verify_usize(1,1)
+            let mut v = FrobeniusVerifier::new();
+            verify_tuple_frobenius(&mut v, &cat.tuple);
+            result.frobenius_pass = v.all_pass();
+        }
+        result
     } else {
         TheoremResult {
             name: "Unknown".into(),
@@ -604,6 +626,79 @@ pub fn format_theorem_result(r: &TheoremResult) -> String {
         }
     }
     out
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════
+// COMPUTE-FROM-TUPLE HELPERS — single source of truth, never hardcoded
+// ═══════════════════════════════════════════════════════════════════════
+
+use crate::imas_ig::IgTuple;
+
+/// Compute B4 status from tuple properties.
+/// ⊙=critical + Ω=non-Abelian → B4::B (dialetheic barrier)
+/// Φ=Frobenius-special → B4::T (closed)
+/// ⊙=sub-critical → B4::T (determined)
+/// Default → B4::B (open)
+pub fn compute_status_from_tuple(tuple: &IgTuple) -> B4 {
+    use crate::imas_ig::IgPrim;
+    if tuple.phi == IgPrim::Phi_crit && tuple.omega == IgPrim::Omega_na {
+        B4::B  // O_inf: both closed and open (dialetheic barrier)
+    } else if tuple.p == IgPrim::P_pmsym {
+        B4::T  // Frobenius-special: closed
+    } else if tuple.phi == IgPrim::𐑢 {
+        B4::T  // Sub-critical: determined
+    } else {
+        B4::B  // Default: open question / barrier
+    }
+}
+
+/// Compute status name from B4 status and tuple.
+pub fn compute_status_name(status: B4, tuple: &IgTuple) -> &'static str {
+    use crate::imas_ig::IgPrim;
+    match status {
+        B4::B if tuple.phi == IgPrim::Phi_crit && tuple.omega == IgPrim::Omega_na =>
+            "BOTH (O_inf barrier)",
+        B4::B => "BOTH (barrier)",
+        B4::T if tuple.p == IgPrim::P_pmsym => "TRUE (Frobenius-closed)",
+        B4::T => "TRUE (proved)",
+        B4::F => "FALSE",
+        B4::N => "UNKNOWN",
+    }
+}
+
+/// Real Frobenius verification on a catalog tuple.
+/// Verifies: μ∘δ structural closure — each primitive's ordinal is
+/// self-consistent within the tuple lattice.
+pub fn verify_tuple_frobenius(v: &mut FrobeniusVerifier, tuple: &IgTuple) {
+    use crate::imas_ig::IgPrim;
+    // Verify criticality + parity consistency: if ⊙=critical, Φ must be ≥ partial
+    if tuple.phi == IgPrim::Phi_crit || tuple.phi == IgPrim::𐑮 || tuple.phi == IgPrim::Phi_ep {
+        // At criticality, parity must be at least partial
+        let ok = tuple.p.ordinal() >= IgPrim::P_pm.ordinal();
+        v.verify_usize(if ok { 1 } else { 0 }, 1);
+    }
+    // Verify winding + topology consistency
+    if tuple.omega == IgPrim::Omega_na {
+        // Non-Abelian winding requires odot topology or bowtie
+        let ok = tuple.t == IgPrim::T_odot || tuple.t == IgPrim::T_bowtie;
+        v.verify_usize(if ok { 1 } else { 0 }, 1);
+    }
+    // Verify Frobenius-special: Φ=𐑹 implies Ω ≥ Z
+    if tuple.p == IgPrim::P_pmsym {
+        let ok = tuple.omega.ordinal() >= IgPrim::Omega_z.ordinal();
+        v.verify_usize(if ok { 1 } else { 0 }, 1);
+    }
+    // Verify self-referential closure: ⊙=critical implies Ħ=eternal
+    if tuple.phi == IgPrim::Phi_crit {
+        let ok = tuple.h == IgPrim::H_inf;
+        v.verify_usize(if ok { 1 } else { 0 }, 1);
+    }
+    // Verify holographic bound: Ð=imscriptive implies Þ=odot
+    if tuple.d == IgPrim::D_odot {
+        let ok = tuple.t == IgPrim::T_odot;
+        v.verify_usize(if ok { 1 } else { 0 }, 1);
+    }
 }
 
 // ─── Theorem runner wrappers (parse params, call implementation) ─────
@@ -653,49 +748,49 @@ pub static THEOREM_BOOTSTRAP: &[TheoremRegEntry] = &[
     TheoremRegEntry {
         name: "collatz",
         description: "Collatz Conjecture (3n+1 problem)",
-        phase_count: 14,
+    catalog_name: "collatz_conjecture",
         example_params: "27",
         runner: collatz_runner,
     },
     TheoremRegEntry {
         name: "goldbach",
         description: "Goldbach's Conjecture — every even n >= 4 is sum of two primes",
-        phase_count: 18,
+    catalog_name: "goldbach_conjecture",
         example_params: "100",
         runner: goldbach_runner,
     },
     TheoremRegEntry {
         name: "three_body",
         description: "Three-Body Problem — Hamiltonian non-integrability",
-        phase_count: 19,
+    catalog_name: "three_body_problem",
         example_params: "",
         runner: three_body_runner,
     },
     TheoremRegEntry {
         name: "burnside",
         description: "Bounded Burnside Problem — B(m,n) group finiteness",
-        phase_count: 13,
+    catalog_name: "bounded_burnside_problem",
         example_params: "2 5",
         runner: burnside_runner,
     },
     TheoremRegEntry {
         name: "erdos_straus",
         description: "Erdos-Straus Conjecture — 4/n = 1/x + 1/y + 1/z",
-        phase_count: 27,
+    catalog_name: "erdos_straus_conjecture",
         example_params: "73",
         runner: erdos_straus_runner,
     },
     TheoremRegEntry {
         name: "inverse_galois",
         description: "Inverse Galois Problem — every finite group as Galois group over Q",
-        phase_count: 24,
+    catalog_name: "inverse_galois_problem",
         example_params: "Sn",
         runner: inverse_galois_runner,
     },
     TheoremRegEntry {
         name: "baum_connes",
         description: "Baum-Connes Conjecture — assembly map isomorphism",
-        phase_count: 22,
+    catalog_name: "connes_embedding_problem",
         example_params: "a-T-menable",
         runner: baum_connes_runner,
     },
@@ -796,147 +891,147 @@ pub static THEOREM_BOOTSTRAP_MILLENNIUM: &[TheoremRegEntry] = &[
     TheoremRegEntry {
         name: "riemann",
         description: "Riemann Hypothesis — all non-trivial zeros on Re(s)=1/2",
-        phase_count: 42,
+    catalog_name: "riemann_navigator",
         example_params: "",
         runner: riemann_runner,
     },
     TheoremRegEntry {
         name: "yang_mills",
         description: "Yang-Mills Mass Gap — SU(N) quantum with positive mass gap",
-        phase_count: 48,
+    catalog_name: "yang_mills_mass_gap",
         example_params: "",
         runner: yang_mills_runner,
     },
     TheoremRegEntry {
         name: "hodge",
         description: "Hodge Conjecture — algebraic cycles on projective varieties",
-        phase_count: 36,
+    catalog_name: "hodge_conjecture",
         example_params: "",
         runner: hodge_runner,
     },
     TheoremRegEntry {
         name: "navier_stokes",
         description: "Navier-Stokes — smooth solutions for all time in R3",
-        phase_count: 40,
+    catalog_name: "navier_stokes",
         example_params: "",
         runner: navier_stokes_runner,
     },
     TheoremRegEntry {
         name: "pvsnp",
         description: "P vs NP — deterministic polynomial time vs nondeterministic",
-        phase_count: 38,
+    catalog_name: "p_vs_np",
         example_params: "",
         runner: pvsnp_runner,
     },
     TheoremRegEntry {
         name: "opn",
         description: "Odd Perfect Numbers — no odd perfect numbers exist",
-        phase_count: 44,
+    catalog_name: "odd_perfect_number_conjecture",
         example_params: "",
         runner: opn_runner,
     },
     TheoremRegEntry {
         name: "bsd",
         description: "Birch-Swinnerton-Dyer — rank equals analytic rank",
-        phase_count: 46,
+    catalog_name: "birch_swinnerton_dyer",
         example_params: "",
         runner: bsd_runner,
     },
     TheoremRegEntry {
         name: "beal",
         description: "Beal Conjecture — A^x + B^y = C^z => gcd > 1 for x,y,z>2",
-        phase_count: 28,
+    catalog_name: "beal_conjecture",
         example_params: "",
         runner: beal_runner,
     },
     TheoremRegEntry {
         name: "twin_prime",
         description: "Twin Prime Conjecture — infinitely many (p, p+2)",
-        phase_count: 32,
+    catalog_name: "twin_prime_conjecture",
         example_params: "",
         runner: twin_prime_runner,
     },
     TheoremRegEntry {
         name: "hadwiger_nelson",
         description: "Hadwiger-Nelson — chromatic number of the plane",
-        phase_count: 26,
+    catalog_name: "hadwiger_nelson_problem",
         example_params: "",
         runner: hadwiger_nelson_runner,
     },
     TheoremRegEntry {
         name: "lonely_runner",
         description: "Lonely Runner — every runner is lonely at some time",
-        phase_count: 24,
+    catalog_name: "lonely_runner_conjecture",
         example_params: "",
         runner: lonely_runner_runner,
     },
     TheoremRegEntry {
         name: "cramer",
         description: "Cramér Conjecture — p_{n+1}-p_n = O((log p_n)^2)",
-        phase_count: 30,
+    catalog_name: "cramers_conjecture",
         example_params: "",
         runner: cramer_runner,
     },
     TheoremRegEntry {
         name: "perfect_cuboid",
         description: "Perfect Cuboid — integer-sided with integer diagonals",
-        phase_count: 34,
+    catalog_name: "perfect_cuboid",
         example_params: "",
         runner: perfect_cuboid_runner,
     },
     TheoremRegEntry {
         name: "sic_povm",
         description: "SIC-POVM — symmetric informationally complete POVMs in all d",
-        phase_count: 36,
+    catalog_name: "sic_povm",
         example_params: "",
         runner: sic_povm_runner,
     },
     TheoremRegEntry {
         name: "hecke_landau",
         description: "Hecke-Landau — eigenform correspondence + Siegel zero",
-        phase_count: 28,
+    catalog_name: "hecke_landau_conjecture",
         example_params: "",
         runner: hecke_landau_runner,
     },
     TheoremRegEntry {
         name: "solitary_10",
         description: "Solitary 10 — 10 is solitary (no friend)",
-        phase_count: 20,
+    catalog_name: "solitary_number_10",
         example_params: "",
         runner: solitary_10_runner,
     },
     TheoremRegEntry {
         name: "collatz_ops",
         description: "Collatz operational — run Collatz on any seed",
-        phase_count: 14,
+    catalog_name: "collatz_conjecture",
         example_params: "27",
         runner: collatz_ops_runner,
     },
     TheoremRegEntry {
         name: "cosmogeny",
         description: "Cosmogeny — structural genesis of 12-primitive grammar",
-        phase_count: 40,
+    catalog_name: "big_gdl_frobenius_cosmogeny",
         example_params: "",
         runner: cosmogeny_runner,
     },
     TheoremRegEntry {
         name: "godel",
         description: "Gödel Resolved — incompleteness via paraconsistent kernel",
-        phase_count: 38,
+    catalog_name: "godel_incompleteness_theorem",
         example_params: "",
         runner: godel_runner,
     },
     TheoremRegEntry {
         name: "rebis",
         description: "Rebis — dual-unified type",
-        phase_count: 44,
+    catalog_name: "rebis_transition_target",
         example_params: "",
         runner: rebis_runner,
     },
     TheoremRegEntry {
         name: "qg_unified",
         description: "QG Unified — SM+UG+T consummation at O_inf",
-        phase_count: 42,
+    catalog_name: "quantum_gravity_unified",
         example_params: "",
         runner: qg_unified_runner,
     },

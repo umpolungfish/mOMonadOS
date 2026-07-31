@@ -141,7 +141,7 @@ impl EpigeneticState {
     }
 }
 
-/// Quantum biologic simulation.
+/// Quantum biologic computation.
 #[derive(Clone, Debug)]
 pub struct QuantumBiologicSim {
     pub epigenetic: EpigeneticState,

@@ -447,4 +447,15 @@ impl IgTuple {
     pub fn crystal_address(&self) -> u32 {
         crate::crystal::encode(&self.to_crystal_indices())
     }
+
+    /// Compute the theorem phases count from this tuple.
+    /// Phases = sum of all 12 ordinal values, rounded to usize.
+    /// This is the ONE-AND-ONLY source of the phases count —
+    /// never hardcoded, always derived from the tuple.
+    pub fn phases(&self) -> usize {
+        let sum = self.d.ordinal() + self.t.ordinal() + self.r.ordinal() + self.p.ordinal()
+                + self.f.ordinal() + self.k.ordinal() + self.g.ordinal() + self.c.ordinal()
+                + self.phi.ordinal() + self.h.ordinal() + self.s.ordinal() + self.omega.ordinal();
+        (sum + 0.5) as usize
+    }
 }

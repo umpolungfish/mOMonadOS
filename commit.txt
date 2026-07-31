@@ -1,17 +1,28 @@
-List every REPL command in the menu, and guard it
+A Quantum category, and examples that are actually printed
 
-The menu is what a user reads to find out what the kernel does, and it had
-drifted 33 commands behind the dispatch. sic, d12, d2048, triple, iuft, riemann,
-braid-grammar, distance, join, sigma, clay, psm, entropy, mersearch, cycle,
-weight, banked, trans, arev, ask, spine, vessel, vita, whoami, ruleset,
-absorption, replicative and quit all worked and none were listed.
+Three separate problems, one visible symptom.
 
-All 33 added, with descriptions taken from the code rather than invented — most
-came from the unreferenced print_help, which had them and never displayed them.
-Two new categories carry the ones that had no home: IMASM for the word walks and
-Kernel for the utilities.
+The quantum commands had no home. fibqc, quantum_compile, jones_polynomial, bg, shor,
+iuft, hqe, dyson, troq, afdmc, hop, manifold, triple, sic, d12 and d2048 were scattered
+through the Grammar menu or nowhere, so nothing named the kernel's quantum surface as a
+surface. They are a Quantum category now, and they are removed from Grammar rather than
+listed twice.
 
-check_menu_coverage.py fails on any command that is neither listed nor named as
-an alias in its primary entry's description, so `d2048 … (alias d2k)` covers d2k
-without its own line. Verified in both directions: it passes on the current tree
-and fails when a MenuItem is removed.
+MenuItem has carried an `example` field all along and nothing ever read it. Every command
+had one; none was displayed. Both the category view and the single-command view print it
+now.
+
+The top-level help hardcoded about twenty commands out of ninety-two. It walks MAIN_MENU
+instead, so a command added to a menu appears without anyone editing the help text, and
+an unknown topic checks the menu for a category and then for a command before falling
+through to search.
+
+Two repairs came out of the build. src/ovm.rs had the whole impl BlochVec body duplicated
+— an orphaned copy of norm, normalize, dot, rot_z, rot_so3 and scale with no impl header,
+closing with a brace that matched nothing. It was a mis-offset insertion, twice, and it
+broke every downstream module.
+
+And build_bootimage.sh piped cargo into grep and then appended `|| true`, so the exit
+status was grep's and then discarded; it checked only that the ELF existed, which a stale
+one does. It printed Done over a failed compile. It now takes the status from PIPESTATUS
+and says the ELF is stale when the build fails.
