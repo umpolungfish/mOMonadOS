@@ -80,6 +80,7 @@ mod troq;
 mod hop;
 mod braid_grammar;
 mod braid_render;
+mod text;
 mod manifold;
 mod kernel_torus;
 mod ovm;

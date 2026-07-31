@@ -579,7 +579,7 @@ pub fn type_table() -> String {
     for tp in TYPE_PROGRAMS {
         out.push_str(&format!("{:<5} {:<5} {:<8} {:<5} {:<8.4} {}\n",
             tp.primitive_axis, tp.value_glyph, tp.shavian,
-            tp.n_ops(), tp.rho, &tp.domain_reading[..tp.domain_reading.len().min(45)]));
+            tp.n_ops(), tp.rho, crate::text::clip_ellipsis(tp.domain_reading, 45)));
     }
     out
 }

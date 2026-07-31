@@ -437,7 +437,7 @@ pub fn print_distance_matrix() {
     // Build header row
     let mut header = alloc::string::String::from(format!("{:>16}", ""));
     for (name, _) in gates {
-        header.push_str(&format!("{:>8}", &name[..name.len().min(7)]));
+        header.push_str(&format!("{:>8}", crate::text::clip(name, 7)));
     }
     sprintln!("{}", header);
     // Build each data row
