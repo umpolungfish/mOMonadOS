@@ -1,0 +1,273 @@
+// Draw a braid word.
+//
+// `qc` and `jp` print braid words as runs of signed integers. That is the exact
+// object and it is unreadable past a dozen crossings — a 385-generator word is
+// a wall of digits in which nothing about the braid is visible. The word is a
+// picture; this renders it as one, in two forms.
+//
+// The terminal form is a strand diagram, three rows per crossing, with the
+// under-strand broken at the crossing so over and under are distinguishable
+// rather than merely counted. The SVG form is the same diagram as a file: the
+// permutation is tracked so each physical strand keeps its colour from top to
+// bottom, which is what makes a long word legible at a glance.
+//
+// Both forms carry the crossing index in the gutter, because the reason to look
+// at a 385-crossing braid is almost always to find one specific crossing in it.
+
+use alloc::format;
+use alloc::string::String;
+use alloc::vec;
+use alloc::vec::Vec;
+
+/// Strands a word needs: sigma_k acts on k and k+1, so the largest generator
+/// fixes the count. A word with no generators is still a braid — on the two
+/// strands that would be its narrowest home.
+pub fn strands_for(word: &[i32]) -> usize {
+    let hi = word.iter().map(|g| g.unsigned_abs() as usize).max().unwrap_or(1);
+    (hi + 1).max(2)
+}
+
+/// The permutation a braid word induces, as `perm[position] = original strand`.
+/// Reading it top to bottom is reading which strand ends up where.
+pub fn permutation(word: &[i32], strands: usize) -> Vec<usize> {
+    let mut p: Vec<usize> = (0..strands).collect();
+    for &g in word {
+        let i = (g.unsigned_abs() as usize) - 1;
+        if i + 1 < strands { p.swap(i, i + 1); }
+    }
+    p
+}
+
+/// A braid is pure when every strand returns to its own position.
+pub fn is_pure(word: &[i32], strands: usize) -> bool {
+    permutation(word, strands).iter().enumerate().all(|(i, &s)| i == s)
+}
+
+pub fn writhe(word: &[i32]) -> i32 { word.iter().map(|g| g.signum()).sum() }
+
+/// Clamp a requested window to the word. Returns the half-open range actually
+/// drawn, so the caller can say what it left out instead of quietly truncating.
+pub fn window(len: usize, start: usize, count: usize) -> (usize, usize) {
+    let s = start.min(len);
+    let e = if count == 0 { len } else { (s + count).min(len) };
+    (s, e)
+}
+
+// ── terminal form ────────────────────────────────────────────────
+
+/// Strand diagram, three text rows per crossing.
+///
+/// Strand k sits in column 2k. A crossing between k and k+1 replaces those two
+/// columns for its three rows: the strands part, cross, and rejoin. The
+/// over-strand's diagonal runs unbroken through the middle row; the under one
+/// is absent there. That break is the whole content of the sign — without it a
+/// crossing and its inverse draw identically.
+pub fn ascii(word: &[i32], strands: usize, start: usize, end: usize) -> String {
+    let w = if strands == 0 { 1 } else { 2 * strands - 1 };
+    let mut out = String::new();
+
+    out.push_str("      ");
+    for k in 0..strands {
+        out.push_str(&format!("{}", (k + 1) % 10));
+        if k + 1 < strands { out.push(' '); }
+    }
+    out.push('\n');
+
+    for idx in start..end {
+        let g = word[idx];
+        let i = (g.unsigned_abs() as usize) - 1;
+        let (a, m, b) = (2 * i, 2 * i + 1, 2 * i + 2);
+
+        for row in 0..3usize {
+            let mut cells: Vec<char> = (0..w)
+                .map(|c| if c % 2 == 0 { '│' } else { ' ' })
+                .collect();
+            if b < w {
+                match row {
+                    0 => { cells[a] = '╲'; cells[b] = '╱'; }
+                    1 => {
+                        cells[a] = ' ';
+                        cells[b] = ' ';
+                        // The strand that stays whole through the middle is the
+                        // one on top: '╲' runs left-over-right, '╱' right-over-left.
+                        cells[m] = if g > 0 { '╲' } else { '╱' };
+                    }
+                    _ => { cells[a] = '╱'; cells[b] = '╲'; }
+                }
+            }
+            let body: String = cells.into_iter().collect();
+            if row == 1 {
+                out.push_str(&format!("{:>5} {}  σ{}{}\n",
+                    idx, body, i + 1, if g > 0 { "" } else { "⁻¹" }));
+            } else {
+                out.push_str(&format!("      {}\n", body));
+            }
+        }
+    }
+    out
+}
+
+// ── SVG form ─────────────────────────────────────────────────────
+
+const PALETTE: [&str; 8] = [
+    "#c0392b", "#2471a3", "#1e8449", "#b7950b",
+    "#7d3c98", "#117a65", "#ba4a00", "#34495e",
+];
+
+const DX: i32 = 44;   // strand spacing
+const DY: i32 = 30;   // one crossing
+const MARGIN: i32 = 34;
+const LW: i32 = 3;    // strand width
+const HALO: i32 = 9;  // over-strand halo: what cuts the gap in the under strand
+
+fn xof(col: i32, k: usize) -> i32 { col + DX * k as i32 }
+
+/// Horizontal advance from one folded column to the next: the strands, the
+/// crossing-index gutter, and air between.
+fn col_advance(strands: usize) -> i32 {
+    DX * (strands.saturating_sub(1)) as i32 + 74
+}
+
+/// The braid as a standalone SVG document.
+///
+/// Over/under is drawn the way it is drawn on paper: the under strand is laid
+/// down whole, then the over strand is stroked twice — once wide in the
+/// background colour, once at width in its own. The wide pass erases the under
+/// strand exactly where it passes beneath, so the gap follows the curve without
+/// anyone having to split it.
+///
+/// Colour follows the strand, not the position: the permutation is carried
+/// along so the line leaving the top at position 3 is the same colour wherever
+/// it arrives at the bottom.
+///
+/// `fold` wraps the braid into columns of that many crossings, read left to
+/// right. A compiled circuit runs to hundreds of generators, and one column of
+/// those is a page thirty thousand pixels tall — an image in the sense that a
+/// filing cabinet is a book. Folded, the same word is a figure. The strand
+/// entering a column at position k is the one that left the previous column
+/// there, and the labels at each column's head and foot say which. `fold` of 0
+/// draws the single column.
+pub fn svg(word: &[i32], strands: usize, start: usize, end: usize, fold: usize) -> String {
+    let rows = end.saturating_sub(start);
+    let per = if fold == 0 { rows.max(1) } else { fold };
+    let cols = if rows == 0 { 1 } else { (rows + per - 1) / per };
+    let adv = col_advance(strands);
+    let width = MARGIN * 2 + adv * cols as i32 - (adv - DX * (strands.saturating_sub(1)) as i32) + 46;
+    let height = MARGIN * 2 + DY * (per.min(rows.max(1)) as i32 + 2);
+    let bg = "#ffffff";
+
+    // Which strand sits in each position at the top of the drawn window. The
+    // window may begin mid-word, so replay the prefix rather than assume identity.
+    let mut perm: Vec<usize> = permutation(&word[..start], strands);
+
+    let mut s = String::new();
+    s.push_str(&format!(
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{}\" height=\"{}\" \
+viewBox=\"0 0 {} {}\">\n",
+        width, height, width, height));
+    s.push_str(&format!(
+        "<title>braid word, {} generators on {} strands</title>\n",
+        word.len(), strands));
+    s.push_str(&format!(
+        "<desc>writhe {}, {} braid, crossings {} to {}{}</desc>\n",
+        writhe(word),
+        if is_pure(word, strands) { "pure" } else { "non-pure" },
+        start, end,
+        if cols > 1 { format!(", folded into {} columns of {}", cols, per) }
+        else { String::new() }));
+    s.push_str(&format!("<rect width=\"100%\" height=\"100%\" fill=\"{}\"/>\n", bg));
+    s.push_str("<g stroke-linecap=\"round\" fill=\"none\">\n");
+
+    for c in 0..cols {
+        let x0 = MARGIN + adv * c as i32;
+        let lo = start + c * per;
+        let hi = (lo + per).min(end);
+        let mut y = MARGIN;
+
+        // Lead-in, labelled with the strand each line arrives as.
+        for k in 0..strands {
+            s.push_str(&format!(
+                "<path d=\"M {} {} L {} {}\" stroke=\"{}\" stroke-width=\"{}\"/>\n",
+                xof(x0, k), y, xof(x0, k), y + DY, PALETTE[perm[k] % 8], LW));
+            s.push_str(&format!(
+                "<text x=\"{}\" y=\"{}\" font-family=\"monospace\" font-size=\"11\" \
+text-anchor=\"middle\" fill=\"#555\" stroke=\"none\">{}</text>\n",
+                xof(x0, k), y - 8, perm[k] + 1));
+        }
+        y += DY;
+
+        for idx in lo..hi {
+            let g = word[idx];
+            let i = (g.unsigned_abs() as usize) - 1;
+            let (xa, xb) = (xof(x0, i), xof(x0, i + 1));
+            let (y0, y1) = (y, y + DY);
+
+            for k in 0..strands {
+                if k == i || k == i + 1 { continue; }
+                s.push_str(&format!(
+                    "<path d=\"M {} {} L {} {}\" stroke=\"{}\" stroke-width=\"{}\"/>\n",
+                    xof(x0, k), y0, xof(x0, k), y1, PALETTE[perm[k] % 8], LW));
+            }
+
+            // The two legs of the crossing, as S-curves.
+            let lr = format!("M {} {} C {} {} {} {} {} {}",
+                             xa, y0, xa, y0 + DY / 2, xb, y1 - DY / 2, xb, y1);
+            let rl = format!("M {} {} C {} {} {} {} {} {}",
+                             xb, y0, xb, y0 + DY / 2, xa, y1 - DY / 2, xa, y1);
+            let (under, over, cu, co) = if g > 0 {
+                (rl, lr, PALETTE[perm[i + 1] % 8], PALETTE[perm[i] % 8])
+            } else {
+                (lr, rl, PALETTE[perm[i] % 8], PALETTE[perm[i + 1] % 8])
+            };
+            s.push_str(&format!("<path d=\"{}\" stroke=\"{}\" stroke-width=\"{}\"/>\n",
+                                under, cu, LW));
+            // Butt caps on the halo. With the round caps the group sets, the halo
+            // overhangs its own endpoints by half its width and erases the tip of
+            // the segment feeding into the crossing — every strand arrived at
+            // every crossing with a nick out of it.
+            s.push_str(&format!(
+                "<path d=\"{}\" stroke=\"{}\" stroke-width=\"{}\" stroke-linecap=\"butt\"/>\n",
+                over, bg, HALO));
+            s.push_str(&format!("<path d=\"{}\" stroke=\"{}\" stroke-width=\"{}\"/>\n",
+                                over, co, LW));
+
+            s.push_str(&format!(
+                "<text x=\"{}\" y=\"{}\" font-family=\"monospace\" font-size=\"9\" \
+fill=\"#999\" stroke=\"none\">{}{}</text>\n",
+                xof(x0, strands.saturating_sub(1)) + 12, y0 + DY / 2 + 3,
+                idx, if g > 0 { "" } else { "\u{2212}" }));
+
+            perm.swap(i, i + 1);
+            y = y1;
+        }
+
+        for k in 0..strands {
+            s.push_str(&format!(
+                "<path d=\"M {} {} L {} {}\" stroke=\"{}\" stroke-width=\"{}\"/>\n",
+                xof(x0, k), y, xof(x0, k), y + DY, PALETTE[perm[k] % 8], LW));
+            s.push_str(&format!(
+                "<text x=\"{}\" y=\"{}\" font-family=\"monospace\" font-size=\"11\" \
+text-anchor=\"middle\" fill=\"#555\" stroke=\"none\">{}</text>\n",
+                xof(x0, k), y + DY + 14, perm[k] + 1));
+        }
+    }
+
+    s.push_str("</g>\n</svg>\n");
+    s
+}
+
+/// Word summary, printed above either form.
+pub fn header(word: &[i32], strands: usize, start: usize, end: usize) -> String {
+    let mut s = format!(
+        "  {} generators on {} strands, writhe {}, {} braid\n",
+        word.len(), strands, writhe(word),
+        if is_pure(word, strands) { "pure" } else { "non-pure" });
+    let p = permutation(word, strands);
+    s.push_str("  permutation:");
+    for &v in &p { s.push_str(&format!(" {}", v + 1)); }
+    s.push('\n');
+    if start > 0 || end < word.len() {
+        s.push_str(&format!("  drawing crossings {}..{} of {}\n", start, end, word.len()));
+    }
+    s
+}

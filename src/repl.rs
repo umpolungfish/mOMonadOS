@@ -257,8 +257,18 @@ pub fn repl(k: &mut Kernel) {
                 let tail: Vec<&str> = parts.collect();
                 let joined = tail.join(" ");
                 let rest: Vec<&str> = joined.split_whitespace().collect();
+                // `draw` / `svg` in front of the circuit renders the word it
+                // compiles to instead of listing it as integers. The word is
+                // built inside the compile's heap scope and dies with it, so
+                // the choice has to travel in rather than the word travelling out.
+                let mut render = 0u8;
+                let rest: Vec<&str> = match rest.split_first() {
+                    Some((&"draw", tail)) => { render = 1; tail.to_vec() }
+                    Some((&"svg", tail))  => { render = 2; tail.to_vec() }
+                    _ => rest,
+                };
                 if rest.is_empty() {
-                    sprintln!("qc <gates> [depth]   e.g. `qc H T 8`, `qc HTSX`, `qc XTT4`");
+                    sprintln!("qc [draw|svg] <gates> [depth]   e.g. `qc H T 8`, `qc HTSX`, `qc draw XTT4`");
                     sprintln!("Known gates: H T S X — spaces optional, case free.");
                     sprintln!("Depth is any positive integer (default 10); the search");
                     sprintln!("stops early if the gate net outgrows the arena.");
@@ -283,7 +293,68 @@ pub fn repl(k: &mut Kernel) {
                     if spec.trim().is_empty() {
                         sprintln!("No gates given. Known: H T S X");
                     } else {
-                        crate::fibonacci_qc::repl_compile(&spec, depth, 3);
+                        crate::fibonacci_qc::repl_compile(&spec, depth, 3, render);
+                    }
+                }
+            }
+            // A braid word printed as signed integers is exact and unreadable.
+            // `bi` draws it: strand diagram in the terminal, SVG when asked for
+            // a file. Both take the same window, because the reason to look at a
+            // 385-crossing word is usually to find one crossing in it.
+            "bi" | "braid_image" => {
+                let tail: Vec<&str> = parts.collect();
+                let joined = tail.join(" ");
+                let toks: Vec<&str> = joined
+                    .split(|c: char| c.is_whitespace() || c == ',')
+                    .filter(|t| !t.is_empty())
+                    .collect();
+                let (mut as_svg, mut start, mut count) = (false, 0usize, 0usize);
+                // Long words fold into columns by default; `/N` sets the column
+                // height, `/0` forces the single tall column.
+                let mut fold: usize = 48;
+                let mut word: Vec<i32> = Vec::new();
+                let mut bad: Option<&str> = None;
+                for t in &toks {
+                    match *t {
+                        "svg" => as_svg = true,
+                        "ascii" | "draw" => as_svg = false,
+                        _ => {
+                            if let Some(n) = t.strip_prefix('/') {
+                                match n.parse::<usize>() {
+                                    Ok(f) => fold = f,
+                                    Err(_) => bad = Some(t),
+                                }
+                            } else if let Some((a, b)) = t.split_once(':') {
+                                // `12:40` — forty crossings from the twelfth.
+                                match (a.parse::<usize>(), b.parse::<usize>()) {
+                                    (Ok(x), Ok(y)) => { start = x; count = y; }
+                                    _ => bad = Some(t),
+                                }
+                            } else if let Ok(g) = t.parse::<i32>() {
+                                if g == 0 { bad = Some(t); } else { word.push(g); }
+                            } else {
+                                bad = Some(t);
+                            }
+                        }
+                    }
+                }
+                if let Some(t) = bad {
+                    sprintln!("bi: '{}' is not a generator, a window, or svg/ascii.", t);
+                } else if word.is_empty() {
+                    sprintln!("bi [svg] <generators> [start:count]");
+                    sprintln!("  e.g. `bi 1 2 1`, `bi 1 -2 1 -2`, `bi svg 1 2 1 2 1`");
+                    sprintln!("  Generators are signed Artin: k is sigma_k, -k its inverse.");
+                    sprintln!("  A window like `40:24` draws 24 crossings from the 40th.");
+                    sprintln!("  SVG folds into columns of 48; `/N` sets that, `/0` is one column.");
+                    sprintln!("  For a compiled circuit use `qc draw <gates>` or `qc svg <gates>`.");
+                } else {
+                    let strands = crate::braid_render::strands_for(&word);
+                    let (a, b) = crate::braid_render::window(word.len(), start, count);
+                    if as_svg {
+                        sprint!("{}", crate::braid_render::svg(&word, strands, a, b, fold));
+                    } else {
+                        sprint!("{}", crate::braid_render::header(&word, strands, a, b));
+                        sprint!("{}", crate::braid_render::ascii(&word, strands, a, b));
                     }
                 }
             }
@@ -343,7 +414,7 @@ pub fn repl(k: &mut Kernel) {
                             if gates.is_empty() {
                                 sprintln!("No gates given. Known: H T S X");
                             } else {
-                                crate::fibonacci_qc::repl_compile(&gates.join(" "), depth, 3);
+                                crate::fibonacci_qc::repl_compile(&gates.join(" "), depth, 3, 0);
                             }
                         }
                     }

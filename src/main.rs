@@ -79,6 +79,7 @@ mod afdmc;
 mod troq;
 mod hop;
 mod braid_grammar;
+mod braid_render;
 mod manifold;
 mod kernel_torus;
 mod ovm;

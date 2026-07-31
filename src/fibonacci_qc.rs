@@ -23,7 +23,7 @@ use alloc::string::String;
 use alloc::format;
 use libm::{sqrt, sin, cos, fabs, atan2, acos, asin};
 
-use crate::sprintln;
+use crate::{sprint, sprintln};
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -1843,7 +1843,10 @@ pub fn run_sample_circuit() {
 /// against an 8 MB bump arena, peaking at 8156 KB in the latter case, a margin
 /// of 36 KB. So 10 is the default and 12 is the hard ceiling, not merely the
 /// practical one.
-pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize) {
+/// `render`: 0 prints the word as integers, 1 draws it, 2 emits SVG. The word
+/// lives inside the heap scope this function opens and is dropped with it, so
+/// the drawing happens here rather than being handed back.
+pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize, render: u8) {
     let mut target = Matrix2::identity();
     let mut named = false;
     // One gate per character. Splitting on whitespace made `qc XTT` an unknown
@@ -1923,13 +1926,26 @@ pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize) {
     let (peak, total2) = crate::heap_used();
     sprintln!("  heap peak  : {} of {} KB", peak / 1024, total2 / 1024);
 
-    sprintln!("  braid word ({} generators):", w1.len());
-    let mut line = String::new();
-    for (i, g) in w1.iter().enumerate() {
-        line.push_str(&format!("{} ", g));
-        if (i + 1) % 24 == 0 { sprintln!("    {}", line); line.clear(); }
+    let strands = crate::braid_render::strands_for(&w1);
+    match render {
+        1 => {
+            sprintln!("  braid word ({} generators):", w1.len());
+            sprint!("{}", crate::braid_render::header(&w1, strands, 0, w1.len()));
+            sprint!("{}", crate::braid_render::ascii(&w1, strands, 0, w1.len()));
+        }
+        2 => {
+            sprint!("{}", crate::braid_render::svg(&w1, strands, 0, w1.len(), 48));
+        }
+        _ => {
+            sprintln!("  braid word ({} generators):", w1.len());
+            let mut line = String::new();
+            for (i, g) in w1.iter().enumerate() {
+                line.push_str(&format!("{} ", g));
+                if (i + 1) % 24 == 0 { sprintln!("    {}", line); line.clear(); }
+            }
+            if !line.is_empty() { sprintln!("    {}", line); }
+        }
     }
-    if !line.is_empty() { sprintln!("    {}", line); }
 
     crate::heap_reset(mark);
 }

@@ -1,18 +1,34 @@
-qc: gates need no separators
+Draw the braid word
 
-`qc XTT 4` answered "Unknown gate 'XTT'". The spec was split on whitespace and each
-token matched whole against H/T/S/X, so a run of gates typed together became one
-nonexistent gate name. Nothing about a circuit requires the spaces.
+qc and jp print braid words as runs of signed integers. That is the exact object and it
+is unreadable past a dozen crossings; a compiled circuit runs to hundreds, and what comes
+out is a wall of digits in which nothing about the braid is visible. A braid word is a
+picture. This draws it.
 
-The spec is now read one gate per character. Whitespace is still accepted and skipped,
-case is free, and an unrecognised character is named on its own rather than dragging the
-whole run into the error. `qc H T S X 4`, `qc HTSX 4` and `qc htsx 4` give the same braid
-word, error and length.
+`bi <generators>` gives a strand diagram in the terminal, three rows per crossing, with
+the under-strand absent at the middle row. That break is the whole content of the sign:
+without it a crossing and its inverse draw identically and the diagram degrades into a
+count. The crossing index sits in the gutter, since the reason to look at a 385-crossing
+word is usually to find one crossing in it, and a window like `40:24` draws
+twenty-four crossings from the fortieth.
 
-The depth followed from the same principle: if gates need no separator, neither does the
-count after them. A trailing run of digits with no separate depth token is read as the
-depth, so `qc XTT4` and `qc XTT 4` agree.
+`bi svg` gives the same braid as a file. Over and under are drawn the way they are drawn
+on paper: the under strand is laid down whole, then the over strand is stroked twice, once
+wide in the background colour and once at width in its own, so the gap follows the curve
+without anyone having to split it. Colour follows the strand rather than the position —
+the permutation is carried along, so the line leaving the top at position three is the
+same colour wherever it arrives at the bottom, and a long word's structure is readable.
 
-Usage text updated. It still advertised "Depth 4..12", which stopped being true when the
-clamp came out — depth is any positive integer now, and the net stops on its own when it
-outgrows the arena.
+Long words fold into columns of 48. Unfolded, the 897-generator word `qc XTT 4` compiles
+to is 202 by 27038 pixels: an image in the sense that a filing cabinet is a book. Folded
+it is 3118 by 1568, and the shape of the Solovay-Kitaev output is visible in it — long
+helices on one pair of strands, then a hand-off to the other. `/N` sets the column height
+and `/0` restores the single column.
+
+`qc draw` and `qc svg` render what they compile. The word lives inside the compile's heap
+scope and dies with it, so the choice travels in rather than the word travelling out.
+
+Checked against σ1σ2σ1 on three strands: permutation 3 2 1, writhe 3. Checked crossing by
+crossing on 1 2 -1 -2 1 2 -1 that the strand drawn whole through each crossing is the one
+the sign puts on top, and that the rendered SVG's colours agree with the permutation the
+word induces.
