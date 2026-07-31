@@ -131,7 +131,7 @@ pub fn construct_sic_povm_d2() -> [QubitOp; 4] {
 
 /// Build SIC-NOVM: tetrahedron with Bloch norms > 1/2 for negative eigenvalues.
 pub fn construct_sic_novm_d2() -> [QubitOp; 4] {
-    let r3 = libm::sqrt(3.0);
+    let _r3 = libm::sqrt(3.0);
     let n = 0.693;
     let tr = 0.5;
     let vertices = [

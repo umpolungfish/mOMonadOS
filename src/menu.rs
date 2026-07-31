@@ -4,8 +4,6 @@
 #![allow(dead_code)]
 
 extern crate alloc;
-use crate::serial;
-use crate::sprintln;
 
 // ─── Menu Item ─────────────────────────────────────────────
 
@@ -78,10 +76,10 @@ pub static CRYSTAL_MENU: &[MenuItem] = &[
 ];
 
 pub static IMASM_MENU: &[MenuItem] = &[
-    MenuItem { name: "cycle", cmd: "cycle", desc: "walk an IMASM word around its ROTAT orbit (glyphs only)", example: "cycle 𐑦𐑸𐑽𐑹𐑐𐑧𐑔𐑵⊙𐑒𐑳𐑴", submenu: None },
-    MenuItem { name: "weight", cmd: "weight", desc: "where the weight moves through an IMASM word", example: "weight 𐑦𐑸𐑽𐑹", submenu: None },
-    MenuItem { name: "banked", cmd: "banked", desc: "was a count cleared with nothing banked?", example: "banked", submenu: None },
-    MenuItem { name: "trans", cmd: "trans", desc: "transitions counted on the ring, closing edge included", example: "trans 𐑦𐑸𐑽𐑹", submenu: None },
+    MenuItem { name: "cycle", cmd: "cycle", desc: "walk an IMASM word around its ROTAT orbit (glyphs only)", example: "cycle ⊢⊙∈+×∋=¬⊣", submenu: None },
+    MenuItem { name: "weight", cmd: "weight", desc: "where the weight moves through an IMASM word", example: "weight ⊢⊙∈+×∋=¬⊣", submenu: None },
+    MenuItem { name: "banked", cmd: "banked", desc: "was a count cleared with nothing banked?", example: "banked ⊢⊙∈+×∋=¬⊣", submenu: None },
+    MenuItem { name: "trans", cmd: "trans", desc: "transitions counted on the ring, closing edge included", example: "trans ⊢⊙∈+×∋=¬⊣", submenu: None },
     MenuItem { name: "arev", cmd: "arev", desc: "H hop: read snapshot through the R1<->R2 mirror", example: "arev", submenu: None },
 ];
 
@@ -89,8 +87,8 @@ pub static KERNEL_MENU: &[MenuItem] = &[
     MenuItem { name: "ask", cmd: "ask", desc: "kernel structural ask (dry). Full wet: host ./ask --file | -i", example: "ask What is the distance to CLINK L8?", submenu: None },
     MenuItem { name: "spine", cmd: "spine", desc: "manuscript spine: PROVE->UNIFY->PORT x vessel (no Python)", example: "spine", submenu: None },
     MenuItem { name: "vessel", cmd: "vessel", desc: "witness-vessel transport: Clay payloads x 88 dialects, frob-gated", example: "vessel", submenu: None },
-    MenuItem { name: "vita", cmd: "vita", desc: "one certified turn from the on-board vae_vita trunk", example: "vita", submenu: None },
-    MenuItem { name: "whoami", cmd: "whoami", desc: "IG tuple under the active ruleset", example: "whoami", submenu: None },
+    MenuItem { name: "vita", cmd: "vita", desc: "one certified turn from the on-board vae_vita trunk (needs --features vita)", example: "vita", submenu: None },
+    MenuItem { name: "whoami", cmd: "whoami", desc: "IG tuple under the active ruleset", example: "whoami --ruleset", submenu: None },
     MenuItem { name: "ruleset", cmd: "ruleset", desc: "show the active ruleset", example: "ruleset", submenu: None },
     MenuItem { name: "absorption", cmd: "absorption", desc: "list all absorption rules", example: "absorption", submenu: None },
     MenuItem { name: "replicative", cmd: "replicative", desc: "load the program targeting O_inf_dag (R2) deliberately", example: "replicative", submenu: None },
@@ -104,6 +102,7 @@ pub static QUANTUM_MENU: &[MenuItem] = &[
     MenuItem { name: "bg",         cmd: "bg",         desc: "Braid word to grammar tuple (alias braid-grammar); winding is a closed form in the writhe", example: "bg tuple 1,2,1 3", submenu: None },
     MenuItem { name: "shor",       cmd: "shor",       desc: "Belnap Shor pipeline, N=15 and N=21", example: "shor", submenu: None },
     MenuItem { name: "iuft",       cmd: "iuft",       desc: "IUFT QC gates — the 12->3 Euler-angle SU(2) encoding of an IG tuple", example: "iuft list", submenu: None },
+    MenuItem { name: "teich",      cmd: "teich",      desc: "IUFT <-> IUTT bridge: Teichmuller deformation paths as gate trajectories", example: "teich canonical", submenu: None },
     MenuItem { name: "hqe",        cmd: "hqe",        desc: "Holonomic quasi-ergodic quantale, MBL holonomy", example: "hqe report", submenu: None },
     MenuItem { name: "dyson",      cmd: "dyson",      desc: "Dyson beta-ensemble, double-ramified cycle", example: "dyson report", submenu: None },
     MenuItem { name: "troq",       cmd: "troq",       desc: "Triple-ramified ouroboric quantale", example: "troq report", submenu: None },

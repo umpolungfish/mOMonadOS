@@ -4,11 +4,9 @@
 #![allow(dead_code)]
 use alloc::string::String;
 use alloc::string::ToString;
-use alloc::vec::Vec;
-use alloc::vec;
 use alloc::format;
 use core::f64::consts::PI;
-use libm::{sqrt, exp, log, fabs, pow};
+use libm::{exp, log, fabs, pow};
 
 pub const TUPLE_DRDA: &str = "𐑼𐑸𐑾𐑹𐑞𐑧𐑔𐑠⊙𐑖𐑳𐑭";
 pub const NAME: &str = "DRDA";

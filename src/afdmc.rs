@@ -4,10 +4,8 @@
 #![allow(dead_code)]
 use alloc::string::String;
 use alloc::string::ToString;
-use alloc::vec::Vec;
-use alloc::vec;
 use alloc::format;
-use libm::{sqrt, exp, fabs};
+use libm::exp;
 
 pub const TUPLE_AFDMC: &str = "𐑼𐑸𐑽𐑹𐑐𐑧𐑔𐑠⊙𐑖𐑳𐑭";
 pub const NAME: &str = "AFDMC";
@@ -19,8 +17,8 @@ pub const VERSION: &str = "2.0-enterprise";
 
 pub struct Cohomology { pub h0: f64, pub h1: f64, pub h2: f64, pub h3: f64 }
 impl Cohomology {
-    pub fn new(W: f64, Wc: f64) -> Self {
-        let wr = W / Wc;
+    pub fn new(w: f64, wc: f64) -> Self {
+        let wr = w / wc;
         let h0 = if wr > 1.0 { 1.0 - exp(-(wr-1.0)*2.0) } else { exp(-(1.0-wr)*3.0)*0.2 };
         let h1 = exp(-(wr-1.0)*(wr-1.0)*4.0)*0.8;
         let h2 = if wr > 1.0 { 1.0 - exp(-(wr-1.0)*1.5) } else { exp((wr-1.0)*2.0)*0.1 };
@@ -43,8 +41,8 @@ impl Cohomology {
 
 pub struct SpectralSeq { pub collapsed: bool, pub order: usize }
 impl SpectralSeq {
-    pub fn new(W: f64, Wc: f64) -> Self {
-        let wr = W / Wc;
+    pub fn new(w: f64, wc: f64) -> Self {
+        let wr = w / wc;
         let diffs = [if wr>1.0{0.05}else{0.8}, if wr>1.0{0.03}else{0.6}, if wr>0.8{0.01}else{0.4}];
         let coll = diffs.iter().all(|d| *d < 0.1);
         let ord = if coll { 2 } else if diffs[0] < 0.3 { 3 } else { 4 };
@@ -59,11 +57,11 @@ impl SpectralSeq {
 
 pub struct MBLPhase { pub disorder: f64, pub ergodic: bool, pub coho: Cohomology, pub spec: SpectralSeq }
 impl MBLPhase {
-    pub fn probe(W: f64) -> Self {
-        let coho = Cohomology::new(W, 8.0);
-        let spec = SpectralSeq::new(W, 8.0);
+    pub fn probe(w: f64) -> Self {
+        let coho = Cohomology::new(w, 8.0);
+        let spec = SpectralSeq::new(w, 8.0);
         let ergodic = coho.classification() == "Ergodic";
-        MBLPhase { disorder: W, ergodic, coho, spec }
+        MBLPhase { disorder: w, ergodic, coho, spec }
     }
 }
 
@@ -77,8 +75,8 @@ pub fn full_report() -> String {
     s.push_str(&format!("Tuple: ⟨{}⟩\n", TUPLE_AFDMC));
     s.push_str("──────────────────────────────────────\n");
     s.push_str("Phase          H⁰      H¹      H²      H³     Class          E₂_col  Order\n");
-    for (lbl, W) in [("Ergodic     ",3.0),("Critical    ",7.0),("MBL (frozen)",12.0),("Deep MBL    ",20.0)] {
-        let p = MBLPhase::probe(W);
+    for (lbl, w) in [("Ergodic     ",3.0),("Critical    ",7.0),("MBL (frozen)",12.0),("Deep MBL    ",20.0)] {
+        let p = MBLPhase::probe(w);
         s.push_str(&format!("{}{:.3}   {:.3}   {:.3}   {:.3}   {:<14} {}      E_{}\n",
             lbl, p.coho.h0, p.coho.h1, p.coho.h2, p.coho.h3, p.coho.classification(),
             p.spec.collapsed, p.spec.order));
@@ -99,31 +97,31 @@ pub fn json_report() -> String {
     let mut s = String::new();
     s.push_str("{");
     s.push_str(&format!("\"name\":\"{}\",\"version\":\"{}\",\"tuple\":\"{}\",\"phases\":[", NAME, VERSION, TUPLE_AFDMC));
-    for (i, W) in [3.0, 7.0, 12.0, 20.0].iter().enumerate() {
+    for (i, w) in [3.0, 7.0, 12.0, 20.0].iter().enumerate() {
         if i>0 { s.push_str(","); }
-        let p = MBLPhase::probe(*W);
+        let p = MBLPhase::probe(*w);
         s.push_str(&format!("{{\"W\":{},\"h0\":{:.3},\"h1\":{:.3},\"h2\":{:.3},\"h3\":{:.3},\"class\":\"{}\",\"E2_collapsed\":{}}}",
-            W, p.coho.h0, p.coho.h1, p.coho.h2, p.coho.h3, p.coho.classification(), p.spec.collapsed));
+            w, p.coho.h0, p.coho.h1, p.coho.h2, p.coho.h3, p.coho.classification(), p.spec.collapsed));
     }
     s.push_str("]}");
     s
 }
 
-pub fn report_phase(W: f64) -> String {
-    let p = MBLPhase::probe(W);
+pub fn report_phase(w: f64) -> String {
+    let p = MBLPhase::probe(w);
     format!("W={}: H⁰={:.3} H¹={:.3} H²={:.3} H³={:.3} χ={:.3} class={} E₂_coll={} E₂_order={} idempotent={}",
-        W, p.coho.h0, p.coho.h1, p.coho.h2, p.coho.h3, p.coho.euler_char(),
+        w, p.coho.h0, p.coho.h1, p.coho.h2, p.coho.h3, p.coho.euler_char(),
         p.coho.classification(), p.spec.collapsed, p.spec.order, p.spec.is_idempotent())
 }
 
 pub fn report_mbl_critical() -> String {
     let mut s = String::new();
     s.push_str("MBL Phase Scan (W=0..16):\n");
-    for W_int in 0..=16 {
-        let W = W_int as f64;
-        let p = MBLPhase::probe(W);
+    for w_int in 0..=16 {
+        let w = w_int as f64;
+        let p = MBLPhase::probe(w);
         let bar: String = (0..((p.coho.betti_sum()*10.0) as usize)).map(|_| '█').collect();
-        s.push_str(&format!("  W={:3.0} {} ({})\n", W, bar, p.coho.classification()));
+        s.push_str(&format!("  W={:3.0} {} ({})\n", w, bar, p.coho.classification()));
     }
     s
 }
@@ -133,8 +131,8 @@ pub fn help_text() -> &'static str {
      afdmc              full report\n\
      afdmc summary      one-line summary\n\
      afdmc json         JSON structured output\n\
-     afdmc phase <W>    cohomology at disorder W\n\
-     afdmc mbl          MBL phase scan W=0..16\n\
+     afdmc phase <w>    cohomology at disorder w\n\
+     afdmc mbl          MBL phase scan w=0..16\n\
      afdmc tuple        tuple constant"
 }
 
@@ -148,8 +146,8 @@ pub fn dispatch<'a>(sub: &str, mut args: impl Iterator<Item=&'a str>) -> String 
         "summary" => summary_report(),
         "json" => json_report(),
         "phase" => {
-            let W: f64 = args.next().and_then(|v| v.parse().ok()).unwrap_or(7.0);
-            report_phase(W)
+            let w: f64 = args.next().and_then(|v| v.parse().ok()).unwrap_or(7.0);
+            report_phase(w)
         }
         "mbl" => report_mbl_critical(),
         "tuple" => TUPLE_AFDMC.to_string(),

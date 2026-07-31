@@ -1,28 +1,24 @@
-A Quantum category, and examples that are actually printed
+Fix the examples, and a UTF-8 panic the examples exposed
 
-Three separate problems, one visible symptom.
+The IMASM examples were Shavian tuples. `cycle 𐑦𐑸𐑽𐑹𐑐𐑧𐑔𐑵⊙𐑒𐑳𐑴` is a twelve-primitive IG
+tuple, not an IMASM word, and the kernel refuses it — IMASM words are the twelve opcode
+glyphs. cycle, weight, banked and trans now show ⊢⊙∈+×∋=¬⊣, which runs and reports period
+9. whoami showed `whoami`, which prints its own usage line; it needs a flag.
 
-The quantum commands had no home. fibqc, quantum_compile, jones_polynomial, bg, shor,
-iuft, hqe, dyson, troq, afdmc, hop, manifold, triple, sic, d12 and d2048 were scattered
-through the Grammar menu or nowhere, so nothing named the kernel's quantum surface as a
-surface. They are a Quantum category now, and they are removed from Grammar rather than
-listed twice.
+Running every example is what found the rest.
 
-MenuItem has carried an `example` field all along and nothing ever read it. Every command
-had one; none was displayed. Both the category view and the single-command view print it
-now.
+`hqe` panicked the kernel: "byte index 1 is not a char boundary". Slot i of a tuple was
+being taken as `&s[i..=i]`, a BYTE slice, and every Shavian glyph is four bytes wide, so
+the second slot landed inside the first glyph. The same pattern was in hop.rs and in
+pericyclic_frobenoid.rs at three more sites. All five now index by character.
 
-The top-level help hardcoded about twenty commands out of ninety-two. It walks MAIN_MENU
-instead, so a command added to a menu appears without anyone editing the help text, and
-an unknown topic checks the menu for a category and then for a command before falling
-through to search.
+`vita` answered Unknown while sitting in the menu: its arm is behind
+#[cfg(feature = "vita")], so it is absent from a default build. The coverage guard counted
+it because it reads the source, where the arm is present whatever the cfg. The guard now
+detects cfg-gated arms and requires the feature be named in the description.
 
-Two repairs came out of the build. src/ovm.rs had the whole impl BlochVec body duplicated
-— an orphaned copy of norm, normalize, dot, rot_z, rot_so3 and scale with no impl header,
-closing with a brace that matched nothing. It was a mis-offset insertion, twice, and it
-broke every downstream module.
+`teich` had appeared in the dispatch with no menu entry. The guard caught it; it is in the
+Quantum category now.
 
-And build_bootimage.sh piped cargo into grep and then appended `|| true`, so the exit
-status was grep's and then discarded; it checked only that the ELF existed, which a stale
-one does. It printed Done over a failed compile. It now takes the status from PIPESTATUS
-and says the ELF is stale when the build fails.
+Also in ovm.rs: the whole impl BlochVec body was duplicated as an orphan with no impl
+header, which broke the build for every downstream module.

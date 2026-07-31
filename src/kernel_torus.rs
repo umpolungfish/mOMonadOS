@@ -17,7 +17,7 @@
 use core::f64::consts::PI;
 use crate::{sprint, sprintln};
 use libm::{cos, sin, sqrt};
-use alloc::string::{String, ToString};
+use alloc::string::String;
 use alloc::vec::Vec;
 use alloc::format;
 

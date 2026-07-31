@@ -119,7 +119,7 @@ pub fn stark_fibqc(d: u32) -> String {
         }
         s.push_str("\n  Jones polynomial at 1/5 winding directly extracts ε_d.\n");
         s.push_str("  Use: quantum_compile → jones_polynomial at t=1/5 winding\n");
-    } else if let Some((l, idx, fib)) = lucas_match {
+    } else if let Some((_l, idx, _fib)) = lucas_match {
         s.push_str(&format!("⚠ d = {} has d-1 = {} = L_{} but m_d is NOT 5·k²\n\n", d, n, 2*idx));
         s.push_str("  This dimension has Lucas-number structure but a different\n");
         s.push_str("  square-free part in the discriminant.\n");
@@ -164,7 +164,7 @@ pub fn stark_tower(k: Option<u32>) -> String {
         s.push_str("  k | cond | deg/F | ν₂ | notes\n");
         s.push_str("  --|------|-------|----|------\n");
         for i in 0..=k as usize {
-            let (ki, cond, deg, note) = tower[i];
+            let (ki, _cond, deg, note) = tower[i];
             let nu2 = trailing_zeros(deg as u64);
             let marker = if ki == 4 { " ★" } else if ki == 12 { " ◆" } else { "" };
             s.push_str(&format!("  {} | 2^{} | {} | {} | {}{}\n",

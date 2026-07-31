@@ -494,6 +494,50 @@ pub fn repl(k: &mut Kernel) {
                     other => sprintln!("iuft: unknown subcommand '{}'. Try `iuft help`.", other),
                 }
             }
+            "teich" => {
+                match parts.next().unwrap_or("") {
+                    "" | "help" => {
+                        sprintln!("teich path <a> <b>    — Teichmuller deformation path between two universes");
+                        sprintln!("teich ladder           — crystal tier ladder with gate-space jumps");
+                        sprintln!("teich canonical        — canonical IUFT paths: monad/topos/Poincare-Hopf/grammar/CLINK");
+                        sprintln!("teich tier <tier>      — approximate SU(2) gate for an ouroboricity tier");
+                        sprintln!("");
+                        sprintln!("Bridges IUFT (Frobenius) <-> IUTT (Teichmuller): promotion paths as gate trajectories.");
+                        sprintln!("Etale = pinned primitives unchanged. Anabelian = core structure transforms.");
+                    }
+                    "path" => {
+                        let a = parts.next().unwrap_or("");
+                        let b = parts.next().unwrap_or("");
+                        if a.is_empty() || b.is_empty() {
+                            sprintln!("teich path <source> <target>   e.g. `teich path monad imscribing_grammar`");
+                        } else {
+                            crate::iuft_teichmuller::print_teichmuller_report(a, b);
+                        }
+                    }
+                    "ladder" => {
+                        crate::iuft_teichmuller::print_tier_ladder();
+                    }
+                    "canonical" => {
+                        crate::iuft_teichmuller::print_canonical_paths();
+                    }
+                    "tier" => {
+                        let tier = parts.next().unwrap_or("");
+                        if tier.is_empty() {
+                            sprintln!("teich tier <tier>   e.g. `teich tier O_inf`");
+                            sprintln!("Tiers: O_0, O_1, O_2, O_2d, O_inf");
+                        } else {
+                            match crate::iuft_teichmuller::tier_to_gate(tier) {
+                                Some(gate) => {
+                                    sprintln!("Tier {} -> SU(2) gate: theta={:.1} phi={:.1} psi={:.1}",
+                                        tier, gate.theta_deg, gate.phi_deg, gate.psi_deg);
+                                }
+                                None => sprintln!("Unknown tier: {}. Use O_0, O_1, O_2, O_2d, or O_inf.", tier),
+                            }
+                        }
+                    }
+                    other => sprintln!("teich: unknown subcommand. Try `teich help`.",),
+                }
+            }
             "classify" => print_classify(k),
             "arev" => {
                 match parts.next().unwrap_or("") {

@@ -54,18 +54,17 @@ fn glyph_value(slot: &str, g: &str) -> f64 {
 fn glyph_vals(t: &str) -> [f64; 12] {
     let s = t.trim().trim_matches(|c| c == '⟨' || c == '⟩');
     let mut v = [0.0; 12];
-    for i in 0..12 {
-        if i < s.len() {
-            let ch = &s[i..=i];
-            v[i] = glyph_value(&SLOT_NAMES[i], ch);
-        }
+    // by character, not by byte: a Shavian glyph is four bytes wide
+    let mut buf = [0u8; 4];
+    for (i, ch) in s.chars().take(12).enumerate() {
+        v[i] = glyph_value(&SLOT_NAMES[i], ch.encode_utf8(&mut buf));
     }
     v
 }
 
-fn tuple_char(t: &str, i: usize) -> &str {
+fn tuple_char(t: &str, i: usize) -> char {
     let s = t.trim().trim_matches(|c| c == '⟨' || c == '⟩');
-    if i < s.len() { &s[i..=i] } else { "?" }
+    s.chars().nth(i).unwrap_or('?')
 }
 
 // ── Distance ─────────────────────────────────────────────────
@@ -84,8 +83,10 @@ pub fn hamming_distance(t1: &str, t2: &str) -> usize {
     let s1 = t1.trim().trim_matches(|c| c == '⟨' || c == '⟩');
     let s2 = t2.trim().trim_matches(|c| c == '⟨' || c == '⟩');
     let mut h = 0;
+    let a: alloc::vec::Vec<char> = s1.chars().take(12).collect();
+    let b: alloc::vec::Vec<char> = s2.chars().take(12).collect();
     for i in 0..12 {
-        if i < s1.len() && i < s2.len() && s1[i..=i] != s2[i..=i] {
+        if i < a.len() && i < b.len() && a[i] != b[i] {
             h += 1;
         }
     }

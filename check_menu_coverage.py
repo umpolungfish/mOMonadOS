@@ -29,6 +29,20 @@ for m in re.finditer(r'^            "([a-z0-9_\-]+)"((?:\s*\|\s*"[a-z0-9_\-?.]+"
 listed = set(re.findall(r'cmd:\s*"([a-z0-9_\-]+)"', menu))
 descs = " ".join(re.findall(r'desc:\s*"([^"]*)"', menu))
 
+# An arm behind #[cfg(feature = "...")] is not in the default build, so a menu
+# entry for it promises a command the kernel will answer "Unknown" to. `vita` was
+# exactly this: listed, counted as covered, and absent at runtime.
+gated = set()
+for m in re.finditer(r'#\[cfg\(feature\s*=\s*"[^"]+"\)\]\s*\n\s*"([a-z0-9_\-]+)"', repl):
+    gated.add(m.group(1))
+promised = sorted(c for c in (listed & gated) if "feature" not in descs)
+if promised:
+    print(f"{len(promised)} menu entry/entries are cfg-gated and absent from a default build:")
+    for c in promised:
+        print(f"  {c}")
+    print("\nName the feature in the description, or drop the entry.")
+    sys.exit(1)
+
 missing = sorted(c for c in arms - listed if c not in descs)
 if missing:
     print(f"{len(missing)} REPL command(s) unreachable from the menu:")

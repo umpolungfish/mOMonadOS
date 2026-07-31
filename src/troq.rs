@@ -8,7 +8,7 @@ use alloc::vec::Vec;
 use alloc::vec;
 use alloc::format;
 use core::f64::consts::PI;
-use libm::{sqrt, fabs, sin, cos, floor};
+use libm::{sqrt, fabs, cos, floor};
 
 pub const TUPLE_TROQ: &str = "𐑦𐑸𐑽𐑹𐑐𐑧𐑔𐑝⊙𐑖𐑕𐑭";
 pub const NAME: &str = "TROQ";

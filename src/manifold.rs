@@ -1,12 +1,10 @@
 // manifold.rs — Topological Manifold Operations (native mOMonadOS port)
 #![allow(dead_code)]
 use alloc::string::String;
-use alloc::string::ToString;
-use alloc::vec::Vec;
 use alloc::vec;
 use alloc::format;
 use core::f64::consts::PI;
-use libm::{sqrt, exp, cos, sin, fabs, log, pow};
+use libm::{sqrt, exp, cos, log, pow};
 
 pub enum Manifold { Sphere, Torus, Projective, Disc, Punctured, G(usize) }
 impl Manifold {

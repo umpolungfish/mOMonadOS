@@ -2,11 +2,10 @@
 // Map Fibonacci braid words → Imscribing Grammar tuples.
 #![allow(dead_code)]
 use alloc::string::String;
-use alloc::string::ToString;
 use alloc::vec::Vec;
 use alloc::vec;
 use alloc::format;
-use libm::{fabs, fmod, cos, sqrt};
+use libm::{fabs, fmod, cos};
 
 pub struct BraidWord {
     pub strands: usize,

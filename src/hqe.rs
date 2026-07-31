@@ -4,11 +4,9 @@
 #![allow(dead_code, uncommon_codepoints)]
 use alloc::string::String;
 use alloc::string::ToString;
-use alloc::vec::Vec;
-use alloc::vec;
 use alloc::format;
 use core::f64::consts::PI;
-use libm::{sqrt, cos, sin, fabs, floor, exp, log};
+use libm::{sqrt, cos, fabs, floor};
 
 pub const TUPLE_HQE: &str = "𐑦𐑸𐑽𐑹𐑐𐑘𐑔𐑝⊙𐑫𐑕𐑟";
 pub const NAME: &str = "HQE";
@@ -39,10 +37,24 @@ fn glyph_value(slot: &str, g: &str) -> f64 {
     }
 }
 
-fn glyph_vals(t: &str) -> [f64;12] {
+/// The twelve glyphs of a tuple, as chars.
+///
+/// These were being taken with `&s[i..=i]`, a BYTE slice. Every Shavian glyph is
+/// four bytes in UTF-8, so byte 1 lands inside the first glyph and the kernel
+/// panicked: "byte index 1 is not a char boundary". Slot i is the i-th character,
+/// never the i-th byte.
+fn glyph_chars(t: &str) -> [char; 12] {
     let s = t.trim().trim_matches(|c| c=='⟨'||c=='⟩');
+    let mut out = ['\0'; 12];
+    for (i, c) in s.chars().take(12).enumerate() { out[i] = c; }
+    out
+}
+
+fn glyph_vals(t: &str) -> [f64;12] {
+    let g = glyph_chars(t);
     let mut v=[0.0;12];
-    for i in 0..12 { v[i]=glyph_value(&SLOT_NAMES[i], &s[i..=i]); }
+    let mut buf = [0u8; 4];
+    for i in 0..12 { v[i]=glyph_value(&SLOT_NAMES[i], g[i].encode_utf8(&mut buf)); }
     v
 }
 
@@ -53,22 +65,20 @@ pub fn tuple_distance(t1: &str, t2: &str) -> f64 {
 
 pub fn quantale_meet(t1: &str, t2: &str) -> String {
     let v1=glyph_vals(t1); let v2=glyph_vals(t2);
+    let g1=glyph_chars(t1); let g2=glyph_chars(t2);
     let mut r=String::new();
     for i in 0..12 {
-        let c1=&t1.trim().trim_matches(|c|c=='⟨'||c=='⟩')[i..=i];
-        let c2=&t2.trim().trim_matches(|c|c=='⟨'||c=='⟩')[i..=i];
-        r.push_str(if v1[i]<=v2[i]{c1}else{c2});
+        r.push(if v1[i]<=v2[i]{g1[i]}else{g2[i]});
     }
     r
 }
 
 pub fn quantale_join(t1: &str, t2: &str) -> String {
     let v1=glyph_vals(t1); let v2=glyph_vals(t2);
+    let g1=glyph_chars(t1); let g2=glyph_chars(t2);
     let mut r=String::new();
     for i in 0..12 {
-        let c1=&t1.trim().trim_matches(|c|c=='⟨'||c=='⟩')[i..=i];
-        let c2=&t2.trim().trim_matches(|c|c=='⟨'||c=='⟩')[i..=i];
-        r.push_str(if v1[i]>=v2[i]{c1}else{c2});
+        r.push(if v1[i]>=v2[i]{g1[i]}else{g2[i]});
     }
     r
 }
@@ -99,14 +109,14 @@ impl BerryHolonomy {
 // ═══════════════════════════════════════════════════════════
 
 pub struct MBLStats { pub gap_ratio_mean: f64, pub ergodic: bool, pub phase: &'static str }
-pub fn mbl_diagnostics(W: f64) -> MBLStats {
-    let (r, ergodic, phase) = if W < 1.0 {
+pub fn mbl_diagnostics(w: f64) -> MBLStats {
+    let (r, ergodic, phase) = if w < 1.0 {
         (0.60, true, "GOE-like")
-    } else if W < 3.5 {
+    } else if w < 3.5 {
         (0.53, true, "ergodic")
-    } else if W < 8.0 {
+    } else if w < 8.0 {
         (0.45, false, "MBL-transition")
-    } else if W < 20.0 {
+    } else if w < 20.0 {
         (0.39, false, "MBL-frozen")
     } else {
         (0.386, false, "Poisson-localized")
@@ -194,10 +204,10 @@ pub fn report_berry(dim: usize, seed: u64) -> String {
         bh.chern_number(), bh.phase, seed)
 }
 
-pub fn report_mbl(W: f64) -> String {
-    let m = mbl_diagnostics(W);
+pub fn report_mbl(w: f64) -> String {
+    let m = mbl_diagnostics(w);
     format!("MBL(W={:.1}): ⟨r⟩={:.4} {}  phase={}",
-        W, m.gap_ratio_mean, if m.ergodic {"ergodic"} else {"frozen"}, m.phase)
+        w, m.gap_ratio_mean, if m.ergodic {"ergodic"} else {"frozen"}, m.phase)
 }
 
 pub fn report_score(tuple: &str) -> String {
@@ -218,7 +228,7 @@ pub fn help_text() -> &'static str {
      hqe summary        one-line summary\n\
      hqe json           JSON structured output\n\
      hqe berry <dim> [seed]  Berry holonomy (U(N) trace, c₁)\n\
-     hqe mbl <W>        MBL diagnostics at disorder W\n\
+     hqe mbl <w>        MBL diagnostics at disorder w\n\
      hqe score [tuple]  consciousness/emergence score\n\
      hqe dist <t1> <t2> tuple distance + meet/join\n\
      hqe meet <t1> <t2> quantale meet of two tuples\n\
@@ -241,8 +251,8 @@ pub fn dispatch<'a>(sub: &str, mut args: impl Iterator<Item=&'a str>) -> String 
             report_berry(dim, seed)
         }
         "mbl" => {
-            let W: f64 = args.next().and_then(|v| v.parse().ok()).unwrap_or(3.0);
-            report_mbl(W)
+            let w: f64 = args.next().and_then(|v| v.parse().ok()).unwrap_or(3.0);
+            report_mbl(w)
         }
         "score" => {
             let t = args.next().unwrap_or(TUPLE_HQE);

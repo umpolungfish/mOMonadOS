@@ -3,8 +3,6 @@
 #![allow(dead_code)]
 use alloc::string::String;
 use alloc::string::ToString;
-use alloc::vec::Vec;
-use alloc::vec;
 use alloc::format;
 use libm::{sqrt, fabs};
 
@@ -37,9 +35,12 @@ fn glyph_val(c: &str) -> f64 {
 }
 
 fn vec_from(s: &str) -> [f64;12] {
+    // Slot i is the i-th CHARACTER. `&c[i..=i]` is a byte slice, and every Shavian
+    // glyph is four bytes, so it panics on the second slot.
     let c = s.trim().trim_matches(|c| c=='⟨'||c=='⟩');
     let mut v=[0.0;12];
-    for i in 0..12 { v[i]=glyph_val(&c[i..=i]); }
+    let mut buf=[0u8;4];
+    for (i, ch) in c.chars().take(12).enumerate() { v[i]=glyph_val(ch.encode_utf8(&mut buf)); }
     v
 }
 
@@ -99,7 +100,7 @@ pub fn hop(origin: &str, target: &str) -> String {
 
 pub fn hop_named(origin_name: &str, target_name: &str) -> String {
     match (find_framework(origin_name), find_framework(target_name)) {
-        (Some((on, ot)), Some((tn, tt))) => hop(ot, tt),
+        (Some((_on, ot)), Some((_tn, tt))) => hop(ot, tt),
         (None, _) => format!("Unknown origin framework: '{}'. Try: hop list", origin_name),
         (_, None) => format!("Unknown target framework: '{}'. Try: hop list", target_name),
     }
