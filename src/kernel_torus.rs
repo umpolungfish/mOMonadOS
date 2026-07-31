@@ -12,7 +12,7 @@
 //
 // Author: Math⊙perator (Lando⊗⊙perator team)
 
-#![allow(dead_code, uncommon_codepoints)]
+#![allow(dead_code)]
 
 use core::f64::consts::PI;
 use crate::{sprint, sprintln};

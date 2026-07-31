@@ -1,24 +1,10 @@
-Fix the examples, and a UTF-8 panic the examples exposed
+Drop four module-level allows the crate root already carries
 
-The IMASM examples were Shavian tuples. `cycle 𐑦𐑸𐑽𐑹𐑐𐑧𐑔𐑵⊙𐑒𐑳𐑴` is a twelve-primitive IG
-tuple, not an IMASM word, and the kernel refuses it — IMASM words are the twelve opcode
-glyphs. cycle, weight, banked and trans now show ⊢⊙∈+×∋=¬⊣, which runs and reports period
-9. whoami showed `whoami`, which prints its own usage line; it needs a flag.
+main.rs has #![allow(uncommon_codepoints)] with the reason written above it: the IG
+primitives are Shavian glyphs and the glyph is the name, so the lint is answered rather
+than obeyed. The same attribute was repeated in triple_frame, hqe, kernel_torus and ovm,
+where it does nothing — the lint is crate-level only — and each repetition warned about
+being ignored.
 
-Running every example is what found the rest.
-
-`hqe` panicked the kernel: "byte index 1 is not a char boundary". Slot i of a tuple was
-being taken as `&s[i..=i]`, a BYTE slice, and every Shavian glyph is four bytes wide, so
-the second slot landed inside the first glyph. The same pattern was in hop.rs and in
-pericyclic_frobenoid.rs at three more sites. All five now index by character.
-
-`vita` answered Unknown while sitting in the menu: its arm is behind
-#[cfg(feature = "vita")], so it is absent from a default build. The coverage guard counted
-it because it reads the source, where the arm is present whatever the cfg. The guard now
-detects cfg-gated arms and requires the feature be named in the description.
-
-`teich` had appeared in the dispatch with no menu entry. The guard caught it; it is in the
-Quantum category now.
-
-Also in ovm.rs: the whole impl BlochVec body was duplicated as an orphan with no impl
-header, which broke the build for every downstream module.
+Removed from the four modules. The crate-level allow is unchanged and is the one that
+does the work. Build is warning-free.

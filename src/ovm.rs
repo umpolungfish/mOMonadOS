@@ -12,7 +12,6 @@
 // Date: 2026-07-31 (rewritten as computation tools)
 
 #![allow(dead_code)]
-#![allow(uncommon_codepoints)]
 
 use alloc::string::String;
 use alloc::vec::Vec;

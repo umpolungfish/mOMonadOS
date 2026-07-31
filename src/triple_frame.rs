@@ -17,7 +17,6 @@
 // Port:  Python → Rust (no_std for mOMonadOS), 2026-07
 
 #[allow(dead_code)]
-#[allow(uncommon_codepoints)]
 
 use alloc::string::String;
 use alloc::string::ToString;

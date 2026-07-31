@@ -1,7 +1,7 @@
 // hqe.rs — Holonomic Quasi-Ergodic Quantale (enterprise-grade toolset)
 // Tuple: ⟨𐑦𐑸𐑽𐑹𐑐𐑘𐑔𐑝⊙𐑫𐑕𐑟⟩ (O_∞, Special Frobenius, non-Abelian, MBL-frozen)
 // Enterprise upgrade: full command dispatch, multiple report formats, catalog integration
-#![allow(dead_code, uncommon_codepoints)]
+#![allow(dead_code)]
 use alloc::string::String;
 use alloc::string::ToString;
 use alloc::format;

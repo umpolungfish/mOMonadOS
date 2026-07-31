@@ -535,7 +535,7 @@ pub fn repl(k: &mut Kernel) {
                             }
                         }
                     }
-                    other => sprintln!("teich: unknown subcommand. Try `teich help`.",),
+                    _other => sprintln!("teich: unknown subcommand. Try `teich help`.",),
                 }
             }
             "classify" => print_classify(k),

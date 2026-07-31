@@ -28,13 +28,9 @@
 
 use alloc::vec::Vec;
 use alloc::string::String;
-use alloc::format;
-use alloc::vec;
 
-use crate::iuft_qc::{IuftQcGate, encode, encode_entry, gate_for, gate_distance, nearest_known};
+use crate::iuft_qc::{IuftQcGate, encode_entry, gate_for, gate_distance};
 use crate::imas_ig::{IgPrim, IgTuple};
-use crate::catalog::{CatalogEntry, ord_index, ord_gap, D_ORD, P_ORD, H_ORD, OMEGA_ORD,
-                       C_ORD, PHI_ORD, F_ORD, K_ORD, G_ORD};
 use crate::sprintln;
 
 // ═══════════════════════════════════════════════════════════════
