@@ -381,21 +381,35 @@ pub fn repl(k: &mut Kernel) {
             "iuft" => {
                 match parts.next().unwrap_or("") {
                     "" | "help" => {
-                        sprintln!("iuft gate <name>      — show IUFT QC gate encoding (Euler angles)");
-                        sprintln!("iuft distance <a> <b> — compute IUFT QC gate distance");
-                        sprintln!("iuft list             — list all known IUFT gate encodings");
+                        sprintln!("iuft gate <name>         — show IUFT QC gate encoding (Euler angles)");
+                        sprintln!("iuft encode <name>       — compute IUFT gate from catalog entry on-the-fly");
+                        sprintln!("iuft tuple <12-glyphs>   — encode an arbitrary 12-glyph tuple");
+                        sprintln!("iuft report <name>       — full gate report (SU(2), Bloch, unitarity)");
+                        sprintln!("iuft distance <a> <b>    — compute IUFT QC gate distance");
+                        sprintln!("iuft matrix              — full distance matrix over known gates");
+                        sprintln!("iuft list                — list all known IUFT gate encodings");
+                        sprintln!("iuft verify [name]       — verify encoding consistency (hardcoded vs computed)");
                         sprintln!("");
-                        sprintln!("Known encodings: graviton, photon");
-                        sprintln!("Derived from IUFT Quantum Expansion II — 12→3 degenerate projection.");
+                        sprintln!("Hardcoded: graviton, photon, electron, neutron, proton, ZFC, CLINK L8, grammar, HSOA");
+                        sprintln!("Any catalog entry can be encoded on-the-fly via 'iuft encode <name>'.");
+                        sprintln!("Derived from IUFT Quantum Expansion II — 12->3 degenerate projection.");
                     }
-                    "gate" => {
+                    "gate" | "report" => {
                         let name = parts.next().unwrap_or("");
                         if name.is_empty() {
                             sprintln!("iuft gate <name>   e.g. `iuft gate graviton`");
                         } else {
+                            crate::iuft_qc::print_gate_report(name);
+                        }
+                    }
+                    "encode" => {
+                        let name = parts.next().unwrap_or("");
+                        if name.is_empty() {
+                            sprintln!("iuft encode <name>   encode any catalog entry e.g. `iuft encode electron`");
+                        } else {
                             match crate::iuft_qc::gate_for(name) {
                                 Some(gate) => {
-                                    sprintln!("IUFT QC Gate: {}", name);
+                                    sprintln!("IUFT QC Gate (encoded): {}", name);
                                     sprintln!("  θ = {:.1}°", gate.theta_deg);
                                     sprintln!("  φ = {:.1}°", gate.phi_deg);
                                     sprintln!("  ψ = {:.1}°", gate.psi_deg);
@@ -404,8 +418,9 @@ pub fn repl(k: &mut Kernel) {
                                         su2[0][0], su2[0][1], su2[0][2], su2[0][3]);
                                     sprintln!("           [{:.4}{:+.4}i, {:.4}{:+.4}i]]",
                                         su2[1][0], su2[1][1], su2[1][2], su2[1][3]);
+                                    sprintln!("  Unitary: {}", crate::iuft_qc::verify_unitary(&gate));
                                 }
-                                None => sprintln!("No IUFT gate encoding for '{}'. Known: graviton, photon", name),
+                                None => sprintln!("No encoding found for '{}'.", name),
                             }
                         }
                     }
@@ -421,6 +436,9 @@ pub fn repl(k: &mut Kernel) {
                             }
                         }
                     }
+                    "matrix" => {
+                        crate::iuft_qc::print_distance_matrix();
+                    }
                     "list" => {
                         sprintln!("IUFT QC Gate Encodings:");
                         for (name, gate) in crate::iuft_qc::known_gates() {
@@ -428,11 +446,54 @@ pub fn repl(k: &mut Kernel) {
                                 name, gate.theta_deg, gate.phi_deg, gate.psi_deg);
                         }
                     }
+                    "tuple" => {
+                        let glyph_str = parts.next().unwrap_or("");
+                        if glyph_str.is_empty() {
+                            sprintln!("iuft tuple <12-glyphs>   e.g. `iuft tuple ⟨...⟩`");
+                            sprintln!("Encodes an arbitrary 12-glyph string into an IUFT gate.");
+                            sprintln!("Example: pass a 12-glyph tuple string like the graviton tuple.");
+                        } else {
+                            let rest: alloc::vec::Vec<&str> = core::iter::once(glyph_str).chain(parts).collect();
+                            let glyphs = rest.join(" ");
+                            match crate::iuft_qc::encode_glyphs(&glyphs) {
+                                Some(gate) => {
+                                    sprintln!("IUFT QC Gate (from tuple):");
+                                    sprintln!("  θ = {:.1}°", gate.theta_deg);
+                                    sprintln!("  φ = {:.1}°", gate.phi_deg);
+                                    sprintln!("  ψ = {:.1}°", gate.psi_deg);
+                                    let su2 = gate.to_su2();
+                                    sprintln!("  SU(2) = [[{:.4}{:+.4}i, {:.4}{:+.4}i],",
+                                        su2[0][0], su2[0][1], su2[0][2], su2[0][3]);
+                                    sprintln!("           [{:.4}{:+.4}i, {:.4}{:+.4}i]]",
+                                        su2[1][0], su2[1][1], su2[1][2], su2[1][3]);
+                                    sprintln!("  Unitary: {}", crate::iuft_qc::verify_unitary(&gate));
+                                    let (nearest, dist) = crate::iuft_qc::nearest_known(&gate);
+                                    sprintln!("  Nearest known: {} (d={:.4})", nearest, dist);
+                                }
+                                None => sprintln!("Failed to parse glyph string. Need exactly 12 Shavian glyphs + ⊙."),
+                            }
+                        }
+                    }
+                    "verify" => {
+                        let name = parts.next().unwrap_or("");
+                        if name.is_empty() {
+                            sprintln!("Encoding consistency check (hardcoded vs computed encode):");
+                            for (ename, _) in crate::iuft_qc::known_gates() {
+                                match crate::iuft_qc::verify_encoding_consistency(ename) {
+                                    Some(d) => sprintln!("  {:>12}: d(hardcoded, computed) = {:.6}", ename, d),
+                                    None => sprintln!("  {:>12}: (no catalog entry for comparison)", ename),
+                                }
+                            }
+                        } else {
+                            match crate::iuft_qc::verify_encoding_consistency(name) {
+                                Some(d) => sprintln!("iuft verify {}: d(hardcoded, computed) = {:.6}", name, d),
+                                None => sprintln!("Cannot verify '{}': no catalog entry or no hardcoded gate.", name),
+                            }
+                        }
+                    }
                     other => sprintln!("iuft: unknown subcommand '{}'. Try `iuft help`.", other),
                 }
             }
-            "frob" => print_frob(k),
-            "ig" => print_ig(k),
             "classify" => print_classify(k),
             "arev" => {
                 match parts.next().unwrap_or("") {

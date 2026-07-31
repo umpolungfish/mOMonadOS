@@ -866,7 +866,14 @@ pub fn ovm_help() -> String {
     out.push_str("                         — compute eigenvalues from Bloch parameters\n");
     out.push_str("ovm frame <name>         — frame operator S (4×4 in Pauli basis)\n");
     out.push_str("ovm overlap <name>       — HS overlap matrix G_ij = Tr(E_i E_j)\n");
+    out.push_str("ovm measure|map <name>   — measurement map M: B_sa→ℝ^m, adjoint M†, kernel\n");
     out.push_str("ovm belnap               — Belnap B=XZ fiducial state\n");
+    out.push_str("ovm spectral <name>      — spectral decomposition & operator properties\n");
+    out.push_str("ovm born <name> <sx> <sy> <sz>\n");
+    out.push_str("                         — Born rule probabilities for state (sx,sy,sz)\n");
+    out.push_str("ovm duals <name>         — frame dual operators (conical 2-design duals)\n");
+    out.push_str("ovm cycle <name> <sx> <sy> <sz>\n");
+    out.push_str("                         — full measure→reconstruct cycle\n");
     out.push_str("ovm help                 — this help\n\n");
     out.push_str("Known operator sets:\n");
     for n in ops_names() {
@@ -875,3 +882,695 @@ pub fn ovm_help() -> String {
     out
 }
 
+// ═══════════════════════════════════════════════════════════════
+// MEASUREMENT MAP — §5.2-5.6 of OVM_MASTER_MATHEMATICS
+// ═══════════════════════════════════════════════════════════════
+
+/// Compute the Pauli-basis coefficients of a QubitOp.
+/// E = (trace_coeff/2)·I + (bloch_norm/2)·(x·σ_x + y·σ_y + z·σ_z)
+/// Returns [a_0, a_1, a_2, a_3] where E = Σ a_j σ_j, σ_0 = I.
+pub fn pauli_coeffs(op: &QubitOp) -> [f64; 4] {
+    [
+        op.trace_coeff / 2.0,
+        op.bloch_norm * op.bloch_vec.x / 2.0,
+        op.bloch_norm * op.bloch_vec.y / 2.0,
+        op.bloch_norm * op.bloch_vec.z / 2.0,
+    ]
+}
+
+/// Compute the measurement map M: B_sa(ℂ²) → ℝ^m.
+/// M is an m×4 matrix. Row k contains the Pauli coefficients of E_k:
+/// M_{k,a} = coefficient of σ_a in E_k (with σ_0 = I).
+/// For any observable X = Σ x_a σ_a: (M·X)_k = Tr(E_k X) / 2.
+pub fn measurement_map(ops: &[QubitOp]) -> Vec<[f64; 4]> {
+    ops.iter().map(|op| pauli_coeffs(op)).collect()
+}
+
+/// Compute the adjoint M†: ℝ^m → B_sa(ℂ²) with respect to the HS inner product.
+/// M† = (1/2) M^T in the Pauli basis, because Tr(σ_a σ_b) = 2δ_{ab}.
+/// For any vector y ∈ ℝ^m: M†(y) = Σ_{k,a} (1/2) M_{k,a} y_k σ_a.
+pub fn measurement_adjoint(ops: &[QubitOp]) -> [[f64; 4]; 4] {
+    let m = measurement_map(ops);
+    let n = m.len();
+    let mut adj = [[0.0f64; 4]; 4];
+    // adj[a][k] = (1/2) * M[k][a]
+    for k in 0..n {
+        for a in 0..4 {
+            adj[a][k] = m[k][a] / 2.0;
+        }
+    }
+    adj
+}
+
+/// Compute M†M: B_sa → B_sa (4×4 positive semidefinite).
+/// M†M = (1/2) M^T M in the Pauli basis.
+/// The eigenvalues of M†M determine measurement resolution.
+pub fn mtm_matrix(ops: &[QubitOp]) -> [[f64; 4]; 4] {
+    let m = measurement_map(ops);
+    let n = m.len();
+    let mut mtm = [[0.0f64; 4]; 4];
+    for a in 0..4 {
+        for b in 0..4 {
+            let mut sum = 0.0;
+            for k in 0..n {
+                sum += m[k][a] * m[k][b];
+            }
+            mtm[a][b] = sum / 2.0;  // from the (1/2) factor in M†
+        }
+    }
+    mtm
+}
+
+/// Compute the kernel of M†M: the subspace of B_sa that the measurement cannot resolve.
+/// Returns (kernel_dim, kernel_basis_indices) where indices 0=I,1=σ_x,2=σ_y,3=σ_z.
+/// Theoretical result (§5.5): ker(M†M) = span{I} when Σ E_k ∝ I.
+pub fn kernel_analysis(ops: &[QubitOp]) -> (usize, Vec<usize>, [f64; 4]) {
+    let mtm = mtm_matrix(ops);
+    // For a 4×4 real symmetric matrix we can do power iteration to get eigenvalues
+    // Simpler: check diagonal dominance and compute trace
+    let mut trace = 0.0;
+    let mut diag = [0.0f64; 4];
+    for a in 0..4 {
+        diag[a] = mtm[a][a];
+        trace += diag[a];
+    }
+    
+    // For typical OVMs with Σ E_k = I/d, the I-component is dominant
+    // Identify near-zero eigenvalues by checking diagonal entries
+    let threshold = trace * 1e-6;
+    let mut kernel_dim = 0usize;
+    let mut kernel_indices = Vec::new();
+    for a in 0..4 {
+        if diag[a] < threshold {
+            kernel_dim += 1;
+            kernel_indices.push(a);
+        }
+    }
+    (kernel_dim, kernel_indices, diag)
+}
+
+/// Compute M M^T: ℝ^m → ℝ^m (m×m Gram matrix of measurement vectors).
+/// (M M^T)_{ij} = (1/2) Tr(E_i E_j). Relates to the HS overlap via factor 1/2.
+pub fn mmt_matrix(ops: &[QubitOp]) -> Vec<Vec<f64>> {
+    let m = ops.len();
+    let mut mmt = Vec::with_capacity(m);
+    for i in 0..m {
+        let mut row = Vec::with_capacity(m);
+        for j in 0..m {
+            row.push(ops[i].hs_inner(&ops[j]) / 2.0);
+        }
+        mmt.push(row);
+    }
+    mmt
+}
+
+/// Full measurement report: measurement map M, adjoint M†, M†M, M M^T,
+/// kernel analysis, and sensitivity eigenvalues.
+pub fn ovm_measurement_report(name: &str) -> String {
+    let ops = match ops_by_name(name) {
+        Some(o) => o,
+        None => return format!("Unknown set: '{}'. Use 'ovm help' for known names.\n", name),
+    };
+    let m_len = ops.len();
+    let mut out = String::new();
+    out.push_str(&format!("═══ Measurement Map Analysis: {} ═══\n\n", name));
+
+    // ── Measurement Map M ──
+    let mm = measurement_map(&ops);
+    out.push_str(&format!("── Measurement Map M ({}×4) ──\n", m_len));
+    out.push_str("  M_{k,a} = coefficient of σ_a in E_k  (σ₀=I, σ₁=σ_x, σ₂=σ_y, σ₃=σ_z)\n");
+    for k in 0..m_len {
+        out.push_str(&format!("  E_{}: [", k));
+        for a in 0..4 {
+            if a > 0 { out.push_str(", "); }
+            out.push_str(&format!("{:.6}", mm[k][a]));
+        }
+        out.push_str("]\n");
+    }
+
+    // ── Adjoint M† ──
+    let adj = measurement_adjoint(&ops);
+    out.push_str("\n── Adjoint M† = (1/2)M^T (4×m) ──\n");
+    out.push_str("  M†_{a,k} = M_{k,a}/2  (HS metric: Tr(σ_a σ_b)=2δ_{ab})\n");
+    for a in 0..4 {
+        out.push_str(&format!("  σ_{}: [", a));
+        for k in 0..m_len {
+            if k > 0 { out.push_str(", "); }
+            out.push_str(&format!("{:.6}", adj[a][k]));
+        }
+        out.push_str("]\n");
+    }
+
+    // ── M†M ──
+    let mtm = mtm_matrix(&ops);
+    out.push_str("\n── M†M (4×4) ──\n");
+    out.push_str("  M†M = (1/2) M^T M\n");
+    for a in 0..4 {
+        out.push_str("  [");
+        for b in 0..4 {
+            if b > 0 { out.push_str(", "); }
+            out.push_str(&format!("{:.6}", mtm[a][b]));
+        }
+        out.push_str("]\n");
+    }
+
+    // ── Kernel Analysis ──
+    let (kdim, kindices, diag) = kernel_analysis(&ops);
+    out.push_str(&format!("\n── Kernel Analysis ──\n"));
+    out.push_str(&format!("  Diagonal M†M: [{:.6}, {:.6}, {:.6}, {:.6}]\n",
+        diag[0], diag[1], diag[2], diag[3]));
+    out.push_str(&format!("  Kernel dim: {}  (theoretical: 1 = span{{I}})\n", kdim));
+    if !kindices.is_empty() {
+        let names = ["I", "σ_x", "σ_y", "σ_z"];
+        out.push_str("  Kernel directions: ");
+        for (i, &idx) in kindices.iter().enumerate() {
+            if i > 0 { out.push_str(", "); }
+            out.push_str(names[idx]);
+        }
+        out.push_str("\n");
+    }
+    out.push_str("  Theoretical: ker(M†M) = span{I} when ΣE_k ∝ I (§5.5)\n");
+
+    // ── Sensitivity: eigenvalues of M†M ──
+    out.push_str("\n── Measurement Sensitivity (§5.6) ──\n");
+    // Use frame eigenvalues as proxy (they're the diagonal of the frame operator,
+    // which is related to M†M). The actual eigenvalues need full diagonalization.
+    // For d=2 OVMs, SIC-POVM ideal: {1/2, 1/6, 1/6, 1/6} for M†M
+    out.push_str("  (M†M eigenvalues ≈ diagonal for near-diagonal M†M)\n");
+    let n_resolved = 4 - kdim;
+    out.push_str(&format!("  Resolvable directions: {}/4\n", n_resolved));
+    if kdim >= 1 && kindices.contains(&0) {
+        out.push_str("  Identity-blind: measurement cannot resolve Tr(ρ) (fixed by normalization)\n");
+    }
+
+    // ── M M^T ──
+    let mmt = mmt_matrix(&ops);
+    out.push_str(&format!("\n── M M^T ({}×{}) ──\n", m_len, m_len));
+    out.push_str("  (M M^T)_{ij} = (1/2) Tr(E_i E_j) = G_{ij}/2\n");
+    for i in 0..m_len {
+        out.push_str("  [");
+        for j in 0..m_len {
+            if j > 0 { out.push_str(", "); }
+            out.push_str(&format!("{:.6}", mmt[i][j]));
+        }
+        out.push_str("]\n");
+    }
+
+    // ── Galois connection verification ──
+    out.push_str("\n── Galois Connection (M ⊣ M†) ──\n");
+    out.push_str("  ⟨M X, y⟩_ℝ^m = ⟨X, M† y⟩_HS for all X∈B_sa, y∈ℝ^m\n");
+    out.push_str("  Verified by construction: M† = (1/2)M^T in Pauli basis\n");
+    out.push_str("  HS factor 2 from Tr(σ_a σ_b)=2δ_{ab} for all a,b∈{0,1,2,3}\n");
+
+    out
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// SPECTRAL CALCULATORS — Operator spectral theory for OVMs
+// ═══════════════════════════════════════════════════════════════
+// Eigenprojectors, spectral decomposition, Born rule,
+// frame duals, state reconstruction, expectation/variance,
+// purity, commutators, uncertainty relations.
+// These make OVMs actually useful for quantum measurement.
+// ═══════════════════════════════════════════════════════════════
+
+/// Eigenprojectors of a qubit operator.
+/// E = (tr/2)I + (r/2)(n·σ) has eigenprojectors:
+///   Π₁ = (I + n̂·σ)/2  (projector onto λ₁ = (tr+r)/2 eigenspace)
+///   Π₂ = (I − n̂·σ)/2  (projector onto λ₂ = (tr−r)/2 eigenspace)
+/// For r=0 (degenerate): both projectors are I/2.
+pub fn eigenprojectors(op: &QubitOp) -> (QubitOp, QubitOp) {
+    if op.bloch_norm < 1e-12 {
+        // Degenerate operator: proportional to identity
+        let half = QubitOp {
+            trace_coeff: 1.0, bloch_norm: 0.0,
+            bloch_vec: BlochVec::new(0.0, 0.0, 0.0),
+        };
+        return (half, half);
+    }
+    let n_hat = op.bloch_vec.normalize();
+    let plus = QubitOp {
+        trace_coeff: 1.0,
+        bloch_norm: 1.0,
+        bloch_vec: n_hat,
+    };
+    let minus = QubitOp {
+        trace_coeff: 1.0,
+        bloch_norm: 1.0,
+        bloch_vec: BlochVec::new(-n_hat.x, -n_hat.y, -n_hat.z),
+    };
+    (plus, minus)
+}
+
+/// Spectral decomposition: A = λ₁·Π₁ + λ₂·Π₂.
+/// Returns (λ₁, Π₁, λ₂, Π₂).
+pub fn spectral_decomposition(op: &QubitOp) -> (f64, QubitOp, f64, QubitOp) {
+    let (l1, l2) = op.eigenvalues();
+    let (p1, p2) = eigenprojectors(op);
+    (l1, p1, l2, p2)
+}
+
+/// Construct density matrix from Bloch vector.
+/// ρ = (I + x·σ_x + y·σ_y + z·σ_z)/2
+/// Constraint: x² + y² + z² ≤ 1 (pure state at equality).
+pub fn construct_density_matrix(bloch_x: f64, bloch_y: f64, bloch_z: f64) -> QubitOp {
+    let r_sq = bloch_x*bloch_x + bloch_y*bloch_y + bloch_z*bloch_z;
+    if r_sq > 1.000001 {
+        // Clamp to Bloch sphere surface
+        let s = 1.0 / libm::sqrt(r_sq);
+        return QubitOp {
+            trace_coeff: 1.0,
+            bloch_norm: 1.0,
+            bloch_vec: BlochVec::new(bloch_x * s, bloch_y * s, bloch_z * s),
+        };
+    }
+    QubitOp {
+        trace_coeff: 1.0,
+        bloch_norm: libm::sqrt(r_sq),
+        bloch_vec: BlochVec::new(bloch_x, bloch_y, bloch_z),
+    }
+}
+
+/// Born rule: p_k = Tr(ρ E_k) for k = 0..m−1.
+/// Uses the Hilbert-Schmidt inner product.
+pub fn born_probabilities(state: &QubitOp, povm: &[QubitOp]) -> Vec<f64> {
+    povm.iter().map(|ek| state.hs_inner(ek)).collect()
+}
+
+/// Expectation value ⟨A⟩_ρ = Tr(ρ A).
+pub fn expectation(state: &QubitOp, observable: &QubitOp) -> f64 {
+    state.hs_inner(observable)
+}
+
+/// Variance Var_ρ(A) = Tr(ρ A²) − ⟨A⟩².
+/// For qubit with A = (tr/2)I + (r/2)(n·σ):
+///   A² = ((tr²+r²)/4)I + (tr·r/2)(n·σ)
+///   Tr(ρ A²) = (tr²+r²)/4 + (tr·r/2)(n_ρ·n_A)·(r_ρ/2)·2
+///            = (tr²+r²)/4 + tr·r·(n_ρ·n_A)·r_ρ/2 / 2 ... 
+/// Use Pauli-basis computation for exactness.
+pub fn variance(state: &QubitOp, observable: &QubitOp) -> f64 {
+    let a_sq = operator_square(observable);
+    let exp_a = expectation(state, observable);
+    let exp_a_sq = expectation(state, &a_sq);
+    let var = exp_a_sq - exp_a * exp_a;
+    if var < 0.0 && var > -1e-12 { 0.0 } else { var }
+}
+
+/// Square of a qubit operator: A².
+/// A = a₀ I + a·σ → A² = (a₀² + |a|²) I + 2a₀ a·σ
+/// where a₀ = tr/2, a = (r/2)·n̂.
+pub fn operator_square(op: &QubitOp) -> QubitOp {
+    let a0 = op.trace_coeff / 2.0;
+    let ax = op.bloch_norm * op.bloch_vec.x / 2.0;
+    let ay = op.bloch_norm * op.bloch_vec.y / 2.0;
+    let az = op.bloch_norm * op.bloch_vec.z / 2.0;
+    let a_sq_norm = ax*ax + ay*ay + az*az;
+    QubitOp {
+        trace_coeff: 2.0 * (a0*a0 + a_sq_norm),
+        bloch_norm: 2.0 * a0 * libm::sqrt(ax*ax + ay*ay + az*az),
+        bloch_vec: BlochVec::new(ax, ay, az),
+    }
+}
+
+/// Standard deviation ΔA = √Var(A).
+pub fn std_dev(state: &QubitOp, observable: &QubitOp) -> f64 {
+    libm::sqrt(variance(state, observable))
+}
+
+/// Purity Tr(ρ²) = (1 + |r|²)/2 where |r| is the Bloch norm.
+/// Pure state: purity = 1. Maximally mixed: purity = 1/2.
+pub fn purity(state: &QubitOp) -> f64 {
+    (1.0 + state.bloch_norm * state.bloch_norm) / 2.0
+}
+
+/// Commutator [A, B] = AB − BA.
+/// For qubits: [a₀I + a·σ, b₀I + b·σ] = 2i (a×b)·σ
+/// Returns the commutator as a Bloch vector: (2(a×b)) with trace=0.
+/// Note: this is i×[A,B] (the anti-Hermitian part); the actual commutator
+/// is i times the cross-product operator.
+pub fn commutator_bloch(a: &QubitOp, b: &QubitOp) -> BlochVec {
+    let ax = a.bloch_norm * a.bloch_vec.x;
+    let ay = a.bloch_norm * a.bloch_vec.y;
+    let az = a.bloch_norm * a.bloch_vec.z;
+    let bx = b.bloch_norm * b.bloch_vec.x;
+    let by = b.bloch_norm * b.bloch_vec.y;
+    let bz = b.bloch_norm * b.bloch_vec.z;
+    // a×b
+    BlochVec::new(
+        ay * bz - az * by,
+        az * bx - ax * bz,
+        ax * by - ay * bx,
+    )
+}
+
+/// Commutator magnitude |[A,B]| for uncertainty relation.
+pub fn commutator_norm(a: &QubitOp, b: &QubitOp) -> f64 {
+    let cross = commutator_bloch(a, b);
+    // |[A,B]| = 2|cross| in the Bloch representation
+    // The actual commutator has eigenvalues ±2|cross|
+    cross.norm()
+}
+
+/// Robertson uncertainty: ΔA·ΔB ≥ |⟨[A,B]⟩|/2.
+/// Returns (ΔA·ΔB, lower_bound, satisfied).
+pub fn uncertainty_product(state: &QubitOp, a: &QubitOp, b: &QubitOp) -> (f64, f64, bool) {
+    let da = std_dev(state, a);
+    let db = std_dev(state, b);
+    let cross = commutator_bloch(a, b);
+    // ⟨i[A,B]⟩_ρ = 2(cross·r_ρ) where cross = a×b, r_ρ = state Bloch vector
+    let bound = libm::fabs(state.bloch_vec.x * cross.x + state.bloch_vec.y * cross.y + state.bloch_vec.z * cross.z);
+    let product = da * db;
+    (product, bound, product >= bound - 1e-12)
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FRAME DUALS & STATE RECONSTRUCTION
+// ═══════════════════════════════════════════════════════════════
+
+/// Invert a 4×4 matrix (Gaussian elimination with partial pivoting).
+/// Returns None if singular.
+fn invert_4x4(m: &[[f64; 4]; 4]) -> Option<[[f64; 4]; 4]> {
+    let n = 4usize;
+    // Augmented matrix [M | I]
+    let mut a = [[0.0f64; 8]; 4];
+    for i in 0..n {
+        for j in 0..n {
+            a[i][j] = m[i][j];
+            a[i][j + n] = if i == j { 1.0 } else { 0.0 };
+        }
+    }
+    // Forward elimination
+    for col in 0..n {
+        // Find pivot
+        let mut pivot_row = col;
+        let mut pivot_val = libm::fabs(a[col][col]);
+        for row in (col+1)..n {
+            let v = libm::fabs(a[row][col]);
+            if v > pivot_val {
+                pivot_val = v;
+                pivot_row = row;
+            }
+        }
+        if pivot_val < 1e-14 { return None; }
+        if pivot_row != col {
+            a.swap(col, pivot_row);
+        }
+        // Eliminate below
+        for row in (col+1)..n {
+            let factor = a[row][col] / a[col][col];
+            for j in col..(2*n) {
+                a[row][j] -= factor * a[col][j];
+            }
+        }
+    }
+    // Back substitution
+    for col in (0..n).rev() {
+        for row in (0..col).rev() {
+            let factor = a[row][col] / a[col][col];
+            for j in col..(2*n) {
+                a[row][j] -= factor * a[col][j];
+            }
+        }
+    }
+    // Normalize
+    let mut inv = [[0.0f64; 4]; 4];
+    for i in 0..n {
+        let div = a[i][i];
+        for j in 0..n {
+            inv[i][j] = a[i][j + n] / div;
+        }
+    }
+    Some(inv)
+}
+
+/// Frame duals Ẽ_k = S^{-1}(E_k) for d=2.
+/// Computes: S = Σ |E_i⟩⟩⟨⟨E_i| (4×4 frame operator),
+/// then S^{-1}, then applies to each E_i in Pauli-basis vectorization.
+/// Returns the dual frame operators as QubitOp.
+pub fn frame_duals_d2(ops: &[QubitOp]) -> Option<Vec<QubitOp>> {
+    let s = frame_operator_matrix(ops);
+    let s_inv = invert_4x4(&s)?;
+
+    // For each E_k, compute vectorized form v = [tr/√2, r·n_x/√2, r·n_y/√2, r·n_z/√2]
+    // Then v_dual = S^{-1} · v
+    // Then reconstruct QubitOp from v_dual
+    let mut duals = Vec::with_capacity(ops.len());
+    for op in ops {
+        let v = [
+            op.trace_coeff / libm::sqrt(2.0),
+            op.bloch_norm * op.bloch_vec.x / libm::sqrt(2.0),
+            op.bloch_norm * op.bloch_vec.y / libm::sqrt(2.0),
+            op.bloch_norm * op.bloch_vec.z / libm::sqrt(2.0),
+        ];
+        let mut v_dual = [0.0f64; 4];
+        for i in 0..4 {
+            for j in 0..4 {
+                v_dual[i] += s_inv[i][j] * v[j];
+            }
+        }
+        // Reconstruct: trace = v_dual[0]·√2, bloch = [v_dual[1], v_dual[2], v_dual[3]]·√2
+        let tr_dual = v_dual[0] * libm::sqrt(2.0);
+        let bx = v_dual[1] * libm::sqrt(2.0);
+        let by = v_dual[2] * libm::sqrt(2.0);
+        let bz = v_dual[3] * libm::sqrt(2.0);
+        let b_norm = libm::sqrt(bx*bx + by*by + bz*bz);
+        duals.push(QubitOp {
+            trace_coeff: tr_dual,
+            bloch_norm: b_norm,
+            bloch_vec: if b_norm > 1e-12 {
+                BlochVec::new(bx/b_norm, by/b_norm, bz/b_norm)
+            } else {
+                BlochVec::new(0.0, 0.0, 0.0)
+            },
+        });
+    }
+    Some(duals)
+}
+
+/// State reconstruction from measurement probabilities.
+/// ρ = Σ_k p_k · Ẽ_k  where Ẽ_k are the frame duals.
+/// The result may have trace slightly ≠ 1 due to numerical error.
+pub fn reconstruct_state(probs: &[f64], duals: &[QubitOp]) -> QubitOp {
+    let n = probs.len().min(duals.len());
+    let mut rho = QubitOp {
+        trace_coeff: 0.0, bloch_norm: 0.0,
+        bloch_vec: BlochVec::new(0.0, 0.0, 0.0),
+    };
+    // Accumulate in Pauli coefficient space for precision
+    let mut coeffs = [0.0f64; 4]; // [tr/2, r·n_x/2, r·n_y/2, r·n_z/2]
+    for k in 0..n {
+        let pk = probs[k];
+        let pc = pauli_coeffs(&duals[k]);
+        for a in 0..4 {
+            coeffs[a] += pk * pc[a];
+        }
+    }
+    rho.trace_coeff = coeffs[0] * 2.0;
+    let bx = coeffs[1] * 2.0;
+    let by = coeffs[2] * 2.0;
+    let bz = coeffs[3] * 2.0;
+    let bn = libm::sqrt(bx*bx + by*by + bz*bz);
+    rho.bloch_norm = bn;
+    if bn > 1e-12 {
+        rho.bloch_vec = BlochVec::new(bx/bn, by/bn, bz/bn);
+    }
+    rho
+}
+
+// ═══════════════════════════════════════════════════════════════
+// OVM SPECTRAL REPORT — Full spectral analysis
+// ═══════════════════════════════════════════════════════════════
+
+/// Full spectral report for a named operator set.
+/// Computes: eigenprojectors, spectral decomposition, frame duals,
+/// and tests state reconstruction for Belnap B=XZ state.
+pub fn ovm_spectral_report(name: &str) -> String {
+    let ops = match ops_by_name(name) {
+        Some(o) => o,
+        None => return format!("Unknown set: '{}'. Use 'ovm help' for known names.\n", name),
+    };
+    let m_len = ops.len();
+    let mut out = String::new();
+    out.push_str(&format!("═══ OVM Spectral Report: {} ═══\n\n", name));
+    out.push_str(&format!("Operators: m={}\n", m_len));
+
+    // ── Spectral Decomposition ──
+    out.push_str("\n── Spectral Decomposition (each E_k = λ₁Π₁ + λ₂Π₂) ──\n");
+    for (k, op) in ops.iter().enumerate() {
+        let (l1, p1, l2, p2) = spectral_decomposition(op);
+        out.push_str(&format!("  E_{}: λ₁={:.6} Π₁=[tr={:.4}, n=({:.3},{:.3},{:.3})]  λ₂={:.6} Π₂=[tr={:.4}, n=({:.3},{:.3},{:.3})]\n",
+            k, l1, p1.trace_coeff, p1.bloch_vec.x, p1.bloch_vec.y, p1.bloch_vec.z,
+            l2, p2.trace_coeff, p2.bloch_vec.x, p2.bloch_vec.y, p2.bloch_vec.z));
+    }
+
+    // ── Frame Duals ──
+    out.push_str("\n── Frame Duals Ẽ_k = S^{-1}(E_k) ──\n");
+    match frame_duals_d2(&ops) {
+        Some(duals) => {
+            for (k, d) in duals.iter().enumerate() {
+                let (l1, l2) = d.eigenvalues();
+                out.push_str(&format!("  Ẽ_{}: tr={:.6} r={:.6} n=({:.3},{:.3},{:.3})  λ=[{:.6},{:.6}]\n",
+                    k, d.trace_coeff, d.bloch_norm, d.bloch_vec.x, d.bloch_vec.y, d.bloch_vec.z, l1, l2));
+            }
+            // Verify duality: Tr(E_i Ẽ_j) = δ_{ij}
+            out.push_str("\n  Duality check Tr(E_i Ẽ_j):\n");
+            for i in 0..m_len.min(duals.len()) {
+                out.push_str("    [");
+                for j in 0..m_len.min(duals.len()) {
+                    if j > 0 { out.push_str(", "); }
+                    let val = ops[i].hs_inner(&duals[j]);
+                    out.push_str(&format!("{:.6}", val));
+                }
+                out.push_str("]\n");
+            }
+        }
+        None => {
+            out.push_str("  Frame operator singular — duals cannot be computed.\n");
+        }
+    }
+
+    // ── State Reconstruction Test ──
+    out.push_str("\n── State Reconstruction Test (Belnap B=XZ) ──\n");
+    let belnap = construct_belnap_b_xz();
+    let probs = born_probabilities(&belnap, &ops);
+    out.push_str("  Born probabilities for B=XZ:\n");
+    for (k, p) in probs.iter().enumerate() {
+        out.push_str(&format!("    p_{} = {:.6}\n", k, p));
+    }
+    out.push_str(&format!("    Σ p_k = {:.6} (should = 1.0)\n", probs.iter().sum::<f64>()));
+
+    match frame_duals_d2(&ops) {
+        Some(duals) => {
+            let rho_recon = reconstruct_state(&probs, &duals);
+            let (l1, l2) = rho_recon.eigenvalues();
+            out.push_str(&format!("\n  Reconstructed state: tr={:.6} r={:.6} n=({:.3},{:.3},{:.3})\n",
+                rho_recon.trace_coeff, rho_recon.bloch_norm,
+                rho_recon.bloch_vec.x, rho_recon.bloch_vec.y, rho_recon.bloch_vec.z));
+            out.push_str(&format!("  Eigenvalues: [{:.6}, {:.6}]\n", l1, l2));
+            out.push_str(&format!("  Purity: {:.6} (original: {:.6})\n", purity(&rho_recon), purity(&belnap)));
+            let fid = belnap.hs_inner(&rho_recon);
+            out.push_str(&format!("  HS fidelity Tr(ρ_orig ρ_recon): {:.6} (ideal=1.0)\n", fid));
+            let d = (belnap.trace_coeff - rho_recon.trace_coeff).abs()
+                + (belnap.bloch_norm - rho_recon.bloch_norm).abs()
+                + (belnap.bloch_vec.x - rho_recon.bloch_vec.x).abs()
+                + (belnap.bloch_vec.y - rho_recon.bloch_vec.y).abs()
+                + (belnap.bloch_vec.z - rho_recon.bloch_vec.z).abs();
+            out.push_str(&format!("  Reconstruction error (L1): {:.6}\n", d));
+        }
+        None => {
+            out.push_str("  Cannot reconstruct — frame singular.\n");
+        }
+    }
+
+    out
+}
+
+/// Born rule measurement report for a named OVM on a given state.
+pub fn ovm_born_report(name: &str, sx: f64, sy: f64, sz: f64) -> String {
+    let ops = match ops_by_name(name) {
+        Some(o) => o,
+        None => return format!("Unknown set: '{}'. Use 'ovm help' for known names.\n", name),
+    };
+    let state = construct_density_matrix(sx, sy, sz);
+    let probs = born_probabilities(&state, &ops);
+    let mut out = String::new();
+    out.push_str(&format!("═══ Born Rule Measurement: {} ═══\n\n", name));
+    out.push_str(&format!("State Bloch: ({:.4}, {:.4}, {:.4})  r={:.4}\n",
+        state.bloch_vec.x, state.bloch_vec.y, state.bloch_vec.z, state.bloch_norm));
+    let (sl1, sl2) = state.eigenvalues();
+    out.push_str(&format!("State evals: [{:.6}, {:.6}]  Purity: {:.4}\n\n", sl1, sl2, purity(&state)));
+    out.push_str("── Outcome Probabilities p_k = Tr(ρ E_k) ──\n");
+    let mut total = 0.0f64;
+    for (k, p) in probs.iter().enumerate() {
+        out.push_str(&format!("  p_{} = {:.6}\n", k, p));
+        total += p;
+    }
+    out.push_str(&format!("\n  Σ p_k = {:.6} (should = 1.0 for POVM)\n", total));
+    out.push_str(&format!("  Deviation from 1: {:.2e}\n", (total - 1.0).abs()));
+
+    // Expectation value of each operator
+    out.push_str("\n── Expectation Values ⟨E_k⟩ = p_k ──\n");
+    for (k, op) in ops.iter().enumerate() {
+        let exp = expectation(&state, op);
+        let var = variance(&state, op);
+        out.push_str(&format!("  ⟨E_{}⟩ = {:.6}  Var = {:.6}  σ = {:.6}\n",
+            k, exp, var, libm::sqrt(var)));
+    }
+
+    out
+}
+
+/// OVM measurement with state reconstruction — full cycle test.
+pub fn ovm_measure_cycle(name: &str, sx: f64, sy: f64, sz: f64) -> String {
+    let ops = match ops_by_name(name) {
+        Some(o) => o,
+        None => return format!("Unknown set: '{}'. Use 'ovm help' for known names.\n", name),
+    };
+    let state = construct_density_matrix(sx, sy, sz);
+    let probs = born_probabilities(&state, &ops);
+    let mut out = String::new();
+    out.push_str(&format!("═══ Measure→Reconstruct Cycle: {} ═══\n\n", name));
+
+    out.push_str(&format!("Original state: Bloch=({:.4},{:.4},{:.4}) r={:.4} purity={:.4}\n",
+        state.bloch_vec.x, state.bloch_vec.y, state.bloch_vec.z,
+        state.bloch_norm, purity(&state)));
+
+    match frame_duals_d2(&ops) {
+        Some(duals) => {
+            let rho_recon = reconstruct_state(&probs, &duals);
+            out.push_str(&format!("Reconstructed:   Bloch=({:.4},{:.4},{:.4}) r={:.4} purity={:.4}\n",
+                rho_recon.bloch_vec.x, rho_recon.bloch_vec.y, rho_recon.bloch_vec.z,
+                rho_recon.bloch_norm, purity(&rho_recon)));
+
+            let fid = state.hs_inner(&rho_recon);
+            out.push_str(&format!("\nHS Fidelity Tr(ρ·ρ_recon) = {:.6}\n", fid));
+            out.push_str(&format!("Trace fidelity: {:.6} (1.0 = perfect)\n", rho_recon.trace_coeff));
+
+            out.push_str("\n── Born Probabilities ──\n");
+            for (k, p) in probs.iter().enumerate() {
+                out.push_str(&format!("  p_{} = {:.6}\n", k, p));
+            }
+            out.push_str(&format!("  Σ = {:.6}\n", probs.iter().sum::<f64>()));
+        }
+        None => {
+            out.push_str("Cannot reconstruct — frame singular.\n");
+        }
+    }
+
+    out
+}
+
+/// Report frame dual operators for a named OVM.
+pub fn ovm_duals_report(name: &str) -> String {
+    let ops = match ops_by_name(name) {
+        Some(o) => o,
+        None => return format!("Unknown OVM: {}\n", name),
+    };
+    let mut out = String::new();
+    out.push_str(&format!("═══ Frame Duals: {} ═══\n\n", name));
+    match frame_duals_d2(&ops) {
+        Some(duals) => {
+            out.push_str(&format!("{} frame dual operators (conical 2-design):\n\n", duals.len()));
+            for (k, d) in duals.iter().enumerate() {
+                out.push_str(&format!("  D_{}: {:#?}
+", k, d));
+            }
+            // Verify: Tr(D_i E_j) = δ_{ij}
+            out.push_str("\n── Verification: Tr(D_i E_j) = δ_{ij} ──\n");
+            let m = duals.len().min(ops.len()).min(6);
+            for i in 0..m {
+                for j in 0..m {
+                    let tr = duals[i].hs_inner(&ops[j]);
+                    let expected = if i == j { 1.0 } else { 0.0 };
+                    let ok = if (tr - expected).abs() < 1e-6 { "\u{2713}" } else { "\u{2717}" };
+                    out.push_str(&format!("  Tr(D_{} E_{}) = {:.6} (expected {:.0}) {}\n", i, j, tr, expected, ok));
+                }
+            }
+        }
+        None => {
+            out.push_str("Frame is singular — no duals exist.\n");
+        }
+    }
+    out
+}

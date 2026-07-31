@@ -405,18 +405,21 @@ pub fn alpha_power_18_approx() -> f64 {
     f64_powi(1.0 / 137.0_f64, 18)
 }
 
-/// α_G full structural estimate: (1/137.036)¹⁸ × √3 × exp(−88).
+/// α_G full structural estimate: α¹⁸ × √3.
+/// Note: 18·ln(α) ≈ −88, matching the horn torus volume 88 = 12² − 7·8.
+/// The torus volume 88 lives in the EXPLANATION, not as a separate factor.
 pub fn alpha_G_estimate() -> f64 {
     let alpha_inv = 137.035999084;  // CODATA 2022
     let alpha = 1.0 / alpha_inv;
-    f64_powi(alpha, 18) * f64_sqrt(3.0_f64) * f64_exp(-88.0_f64)
+    f64_powi(alpha, 18) * f64_sqrt(3.0_f64)
 }
 /// Gravitational coupling report.
 pub fn gravitational_report() -> String {
     let mut s = String::new();
     s.push_str("═══ GRAVITATIONAL COUPLING (GravitationalCoupling.lean) ═══\n\n");
 
-    s.push_str(&alloc::format!("  α_G = α¹⁸ · √3 · exp(−88)\n\n"));
+    s.push_str(&alloc::format!("  α_G = α¹⁸ · √3\n"));
+    s.push_str("  (18·ln(α) ≈ −88 = torus volume 12² − 7·8)\n\n");
     s.push_str(&alloc::format!("  Gravitational rank:      {} (3 valence quarks)\n", GRAV_RANK));
     s.push_str(&alloc::format!("  Emission channels:       {} (6 Frobenius-dual pairs)\n", EMISSION_CHANNELS));
     s.push_str(&alloc::format!("  α exponent:              {} = {} × {}\n\n", ALPHA_POWER, GRAV_RANK, EMISSION_CHANNELS));
@@ -425,17 +428,19 @@ pub fn gravitational_report() -> String {
 
     s.push_str(&alloc::format!("  137⁻¹⁸ = {:.4e}  (integer core estimate)\n", alpha_power_18_approx()));
     s.push_str(&alloc::format!("  √3 = {:.6}\n", f64_sqrt(3.0_f64)));
-    s.push_str(&alloc::format!("  exp(−88) = {:.4e}\n\n", f64_exp(-88.0_f64)));
+    s.push_str(&alloc::format!("  α¹⁸ = {:.4e} ≈ exp(−88) = {:.4e}\n\n",
+        alpha_power_18_approx(), f64_exp(-88.0_f64)));
 
     let ag = alpha_G_estimate();
-    s.push_str(&alloc::format!("  α_G = α¹⁸·√3·exp(−88) ≈ {:.4e}\n", ag));
+    s.push_str(&alloc::format!("  α_G = α¹⁸·√3 ≈ {:.4e}\n", ag));
     s.push_str("  CODATA 2022:           5.904 × 10⁻³⁹\n");
     s.push_str(&alloc::format!("  Residual:               {:.2}%\n\n",
         (ag - 5.904e-39).abs() / 5.904e-39 * 100.0));
 
     s.push_str("  The hierarchy problem: gravity is weak because\n");
-    s.push_str("  the horn torus has large volume (88 = 12² − 7·8).\n");
-    s.push_str("  This is structural, not accidental.\n");
+    s.push_str("  α¹⁸ ≈ exp(−88) — the horn torus volume (88 = 12² − 7·8).\n");
+    s.push_str("  Gravity is weak because α is small, raised to the 18th\n");
+    s.push_str("  power. The exponent 88 is structural, not accidental.\n");
     s
 }
 

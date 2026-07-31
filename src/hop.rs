@@ -1,4 +1,5 @@
-// hop.rs — Universe Hopping Engine (native mOMonadOS port)
+// hop.rs — Universe Hopping Engine (enterprise-grade toolset)
+// Enterprise upgrade: full dispatch, named-framework hopping, distance matrix, catalog bridge
 #![allow(dead_code)]
 use alloc::string::String;
 use alloc::string::ToString;
@@ -17,6 +18,13 @@ pub const FRAMEWORKS: &[(&str, &str, &str)] = &[
     ("dyson", "𐑼𐑸𐑾𐑹𐑞𐑧𐑔𐑠⊙𐑖𐑳𐑭", "Dyson β-ensemble DR cycle"),
     ("troq", "𐑦𐑸𐑽𐑹𐑐𐑧𐑔𐑝⊙𐑖𐑕𐑭", "Triple-Ramified Ouroboric Quantale"),
 ];
+
+pub const NAME: &str = "HOP";
+pub const VERSION: &str = "2.0-enterprise";
+
+// ═══════════════════════════════════════════════════════════
+// Tuple Operations
+// ═══════════════════════════════════════════════════════════
 
 fn glyph_val(c: &str) -> f64 {
     match c {"𐑛"=>1.0,"𐑨"=>2.0,"𐑼"=>3.0,"𐑦"=>4.0,"𐑡"=>1.0,"𐑰"=>2.0,"𐑥"=>3.0,"𐑶"=>4.0,"𐑸"=>5.0,
@@ -40,9 +48,21 @@ pub fn distance(t1: &str, t2: &str) -> f64 {
     let mut tot=0.0; for i in 0..12 { let d=fabs(v1[i]-v2[i]); tot+=d*d; } sqrt(tot)
 }
 
+// ═══════════════════════════════════════════════════════════
+// Framework Operations
+// ═══════════════════════════════════════════════════════════
+
+pub fn find_framework(name: &str) -> Option<(&'static str, &'static str)> {
+    for (nm, tu, _) in FRAMEWORKS {
+        if *nm == name { return Some((nm, tu)); }
+    }
+    None
+}
+
 pub fn manifest(t: &str) -> String {
+    let s_clean = t.trim().trim_matches(|c| c=='⟨'||c=='⟩');
     let mut s = String::new();
-    s.push_str(&format!("Manifest ⟨{}⟩:\n", t.trim().trim_matches(|c| c=='⟨'||c=='⟩')));
+    s.push_str(&format!("Manifest ⟨{}⟩:\n", s_clean));
     let mut best=""; let mut bd=f64::MAX;
     for (nm, tu, _) in FRAMEWORKS {
         let d=distance(t,tu);
@@ -55,6 +75,9 @@ pub fn manifest(t: &str) -> String {
 
 pub fn framework_matrix() -> String {
     let mut s = String::new();
+    s.push_str(&format!("{:>10}", ""));
+    for (nm,_,_) in FRAMEWORKS { s.push_str(&format!(" {:>6}", nm)); }
+    s.push_str("\n");
     for (nm,tu,_) in FRAMEWORKS {
         s.push_str(&format!("{:10}", nm));
         for (_,tu2,_) in FRAMEWORKS { s.push_str(&format!(" {:6.2}", distance(tu, tu2))); }
@@ -65,15 +88,142 @@ pub fn framework_matrix() -> String {
 
 pub fn hop(origin: &str, target: &str) -> String {
     let mut s = String::new();
-    s.push_str(&format!("Hop: ⟨{}⟩ → ⟨{}⟩  d={:.4}\n", origin, target, distance(origin, target)));
+    let orig_name = if origin.len() > 4 { "custom" } else { origin };
+    let targ_name = if target.len() > 4 { "custom" } else { target };
+    let d = distance(origin, target);
+    s.push_str(&format!("Hop: {} → {}  d={:.4}\n", orig_name, targ_name, d));
+    s.push_str(&format!("  origin: ⟨{}⟩\n", origin.trim().trim_matches(|c| c=='⟨'||c=='⟩')));
+    s.push_str(&format!("  target: ⟨{}⟩\n", target.trim().trim_matches(|c| c=='⟨'||c=='⟩')));
     s
 }
 
+pub fn hop_named(origin_name: &str, target_name: &str) -> String {
+    match (find_framework(origin_name), find_framework(target_name)) {
+        (Some((on, ot)), Some((tn, tt))) => hop(ot, tt),
+        (None, _) => format!("Unknown origin framework: '{}'. Try: hop list", origin_name),
+        (_, None) => format!("Unknown target framework: '{}'. Try: hop list", target_name),
+    }
+}
+
+// ═══════════════════════════════════════════════════════════
+// Reports
+// ═══════════════════════════════════════════════════════════
+
 pub fn full_report() -> String {
     let mut s = String::new();
-    s.push_str(&format!("Hop Engine: {} frameworks\n", FRAMEWORKS.len()));
-    for (nm, tu, desc) in FRAMEWORKS { s.push_str(&format!("  {:10} ⟨{}⟩  — {}\n", nm, tu, desc)); }
-    s.push_str("\nMatrix:\n"); s.push_str(&framework_matrix());
-    s.push_str("\n"); s.push_str(&hop(FRAMEWORKS[0].1, FRAMEWORKS[1].1));
+    s.push_str(&format!("=== Universe Hopping Engine {} v{} ===\n", NAME, VERSION));
+    s.push_str(&format!("Frameworks: {}\n", FRAMEWORKS.len()));
+    s.push_str("──────────────────────────────────────\n");
+    for (nm, tu, desc) in FRAMEWORKS {
+        s.push_str(&format!("  {:10} ⟨{}⟩\n           {}\n", nm, tu, desc));
+    }
+    s.push_str("──────────────────────────────────────\n");
+    s.push_str(&format!("Min inter-framework distance: {:.2}\n", min_inter_framework_distance()));
+    s.push_str(&format!("Max inter-framework distance: {:.2}\n", max_inter_framework_distance()));
     s
+}
+
+pub fn summary_report() -> String {
+    format!("HOP v{}: {} frameworks | min_d={:.2} max_d={:.2}",
+        VERSION, FRAMEWORKS.len(), min_inter_framework_distance(), max_inter_framework_distance())
+}
+
+pub fn json_report() -> String {
+    let mut s = String::new();
+    s.push_str(&format!("{{\"name\":\"{}\",\"version\":\"{}\",\"n_frameworks\":{},\"frameworks\":[",
+        NAME, VERSION, FRAMEWORKS.len()));
+    for (i, (nm, tu, desc)) in FRAMEWORKS.iter().enumerate() {
+        if i>0 { s.push_str(","); }
+        s.push_str(&format!("{{\"name\":\"{}\",\"tuple\":\"{}\",\"description\":\"{}\"}}", nm, tu, desc));
+    }
+    s.push_str("]}");
+    s
+}
+
+pub fn min_inter_framework_distance() -> f64 {
+    let mut min_d = f64::MAX;
+    for (_, t1, _) in FRAMEWORKS {
+        for (_, t2, _) in FRAMEWORKS {
+            if t1 != t2 {
+                let d = distance(t1, t2);
+                if d < min_d { min_d = d; }
+            }
+        }
+    }
+    min_d
+}
+
+pub fn max_inter_framework_distance() -> f64 {
+    let mut max_d = 0.0;
+    for (_, t1, _) in FRAMEWORKS {
+        for (_, t2, _) in FRAMEWORKS {
+            let d = distance(t1, t2);
+            if d > max_d { max_d = d; }
+        }
+    }
+    max_d
+}
+
+pub fn find_closest(t: &str) -> String {
+    let mut best_name = "";
+    let mut best_dist = f64::MAX;
+    for (nm, tu, _) in FRAMEWORKS {
+        let d = distance(t, tu);
+        if d < best_dist { best_dist = d; best_name = nm; }
+    }
+    format!("Closest to custom tuple: {} (d={:.4})", best_name, best_dist)
+}
+
+pub fn help_text() -> &'static str {
+    "HOP — Universe Hopping Engine\n\
+     hop                  full framework report\n\
+     hop summary          one-line summary\n\
+     hop json             JSON structured output\n\
+     hop list             list all framework names\n\
+     hop matrix           inter-framework distance matrix\n\
+     hop manifest <tuple>  find closest framework to a tuple\n\
+     hop hop <from> <to>   distance between two named frameworks\n\
+     hop dist <t1> <t2>    distance between two tuples\n\
+     hop closest <tuple>   find nearest framework"
+}
+
+// ═══════════════════════════════════════════════════════════
+// Command Dispatch
+// ═══════════════════════════════════════════════════════════
+
+pub fn dispatch<'a>(sub: &str, mut args: impl Iterator<Item=&'a str>) -> String {
+    match sub {
+        "" | "report" | "full" => full_report(),
+        "summary" => summary_report(),
+        "json" => json_report(),
+        "list" => {
+            let mut s = format!("{} frameworks: ", FRAMEWORKS.len());
+            for (i, (nm, _, _)) in FRAMEWORKS.iter().enumerate() {
+                if i>0 { s.push_str(", "); }
+                s.push_str(nm);
+            }
+            s
+        }
+        "matrix" => framework_matrix(),
+        "manifest" => {
+            let t = args.next().unwrap_or("𐑦𐑸𐑽𐑹𐑐𐑘𐑔𐑝⊙𐑫𐑕𐑟");
+            manifest(t)
+        }
+        "hop" => {
+            let origin = args.next().unwrap_or("hqe");
+            let target = args.next().unwrap_or("afdmc");
+            hop_named(origin, target)
+        }
+        "dist" | "distance" => {
+            let t1 = args.next().unwrap_or("𐑦𐑸𐑽𐑹𐑐𐑘𐑔𐑝⊙𐑫𐑕𐑟");
+            let t2 = args.next().unwrap_or("𐑼𐑸𐑽𐑹𐑐𐑧𐑔𐑠⊙𐑖𐑳𐑭");
+            format!("d={:.4}", distance(t1, t2))
+        }
+        "closest" => {
+            let t = args.next().unwrap_or("𐑦𐑸𐑽𐑹𐑐𐑘𐑔𐑝⊙𐑫𐑕𐑟");
+            find_closest(t)
+        }
+        "help" | "--help" | "-h" => help_text().to_string(),
+        _ => format!("HOP: unknown sub-command '{}'. Try: hop help", sub),
+    }
 }
