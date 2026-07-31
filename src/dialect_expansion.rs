@@ -632,7 +632,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 40: dimensional_third ──
     unis[40] = Dialect {
         name: "dimensional_third",
-        description: "Holographic dimensionality as the terminal seal: G1=Φ≥𐑹, G2=⊙≥⊙, G3=Ð≥𐑦 (imscriptive/holographic). Only self-written state spaces achieve O_∞.",
+        description: "Imscriptive dimensionality as the terminal seal: G1=Φ≥𐑹, G2=⊙≥⊙, G3=Ð≥𐑦 (imscriptive). Only self-written state spaces achieve O_∞.",
         g1: g_phi_5, g2: g_odot_2, g3: g_d_4, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };

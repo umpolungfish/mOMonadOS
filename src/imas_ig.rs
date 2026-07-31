@@ -39,7 +39,7 @@ pub struct IgTuple {
 #[repr(u8)]
 pub enum IgPrim {
     // D (Dimensionality)
-    D_odot    = 0,  // 𐑦 self-written holographic
+    D_odot    = 0,  // 𐑦 self-written imscriptive
     D_wedge   = 1,  // 𐑛 0d point
     D_triangle = 2, // 𐑨 2d surface
     D_infty   = 3,  // 𐑼 infinite-dim

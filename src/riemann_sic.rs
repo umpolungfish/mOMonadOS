@@ -545,7 +545,7 @@ pub fn grammar_encoding() -> String {
     s.push_str("    ⟨𐑦𐑥𐑾𐑹𐑐𐑧𐑔𐑠⊙𐑫𐑳𐑭⟩\n\n");
     s.push_str("  Per-primitive justification:\n\n");
     s.push_str("    Ð=𐑦  (imscriptive)  — The state space of the zeta function is\n");
-    s.push_str("          holographic: the boundary (critical line) encodes the bulk\n");
+    s.push_str("          imscriptive: the boundary (critical line) imscribes the bulk\n");
     s.push_str("          spectral density via the explicit formula connecting zeros\n");
     s.push_str("          to the Chebyshev ψ function. The zeros ARE the eigenvalues\n");
     s.push_str("          of a quantum Hamiltonian — the boundary defines the interior.\n\n");
@@ -641,7 +641,7 @@ pub fn sic_povm_structural_probe() -> String {
     s.push_str("  multilattice SIC-POVM. This ob3ect lives at distance d=2.0 from\n");
     s.push_str("  the grammar — the sole primitive difference is Σ: 𐑳 vs 𐑙.\n\n");
     s.push_str("  Dual-pair co-variance:\n");
-    s.push_str("    D ↔ Th  :  𐑦 ↔ 𐑥   — holographic ↔ crossing\n");
+    s.push_str("    D ↔ Th  :  𐑦 ↔ 𐑥   — imscriptive ↔ crossing\n");
     s.push_str("    R ↔ Phi :  𐑾 ↔ 𐑹   — bidirectional ↔ Frobenius-special\n");
     s.push_str("    f ↔ C   :  𐑐 ↔ 𐑧   — quantum ↔ slow\n");
     s.push_str("    Gamma ↔ G:  𐑠 ↔ 𐑔   — sequential ↔ maximal\n");

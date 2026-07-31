@@ -32,13 +32,13 @@ use crate::catalog;
 // converge to this type. Proven equal in FrobeniusUnification.lean.
 //
 // Tuple: ⟨𐑦𐑸𐑾𐑹𐑐𐑧𐑔𐑠⊙𐑖𐑙𐑭⟩
-// D=𐑦 (holographic)  T=𐑸 (self-ref)  R=𐑾 (bidirectional)  P=𐑹 (±ˢ)
+// D=𐑦 (imscriptive)  T=𐑸 (self-ref)  R=𐑾 (bidirectional)  P=𐑹 (±ˢ)
 // F=𐑐 (quantum)     K=𐑧 (slow)      G=𐑔 (mesoscale)      Gm=𐑠 (sequential)
 // Ph=⊙ (critical)    H=𐑖 (2-step)    S=𐑙 (1:1)           Ω=𐑭 (integer)
 
 pub fn frobenius_fixed_tuple() -> IgTuple {
     IgTuple {
-        d: IgPrim::D_odot,    // 𐑦 — holographic, state-space is self-written
+        d: IgPrim::D_odot,    // 𐑦 — imscriptive, state-space is self-written
         t: IgPrim::T_odot,    // 𐑸 — self-referential topology (Axiom C)
         r: IgPrim::R_lr,      // 𐑾 — bidirectional feedback coupling
         p: IgPrim::P_pmsym,   // 𐑹 — Frobenius-special: μ∘δ=id exactly

@@ -449,7 +449,7 @@ pub fn full_report() -> String {
     s.push_str("  Primitive Decomposition:\n");
     s.push_str("  ──── ────── ──────────  ─────────────────────────────────────\n");
     let readings: [&str; 12] = [
-        "Holographic boundary: V=L(x) ∧ selfmodel(x)",
+        "Imscriptive boundary: V=L(x) ∧ selfmodel(x)",
         "Pericyclic crossing: cross(x,y) ∧ ¬ meet(x,y)",
         "Categorical functoriality: Fun(x,y) ∧ Nat(y,z) → Fun(x,z)",
         "Frobenius-special parity: ℤ₂(x) ∧ μ∘δ=id",

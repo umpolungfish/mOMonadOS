@@ -99,7 +99,7 @@ pub fn indices_from_program(
     // fams = number of the 4 families present. A completeness predicate, not a size.
     let fams = (l > 0) as u32 + (f > 0) as u32 + (d > 0) as u32 + (x > 0) as u32;
 
-    // D — nesting depth. if' = holographic (boundary encodes bulk, self-imscription).
+    // D — nesting depth. if' = imscriptive (boundary imscribes bulk, self-imscription).
     let dim = if self_ref { 3 } else if frobenius_order >= 2 { 2 }
               else if frobenius_order == 1 { 1 } else { 0 };
 

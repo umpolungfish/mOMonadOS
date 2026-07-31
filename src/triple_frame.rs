@@ -9,7 +9,7 @@
 // Core primitives:
 //   - Type expansion: primitive_value → IMASM program (strange loop)
 //   - Protocol A: emergence/annihilation at exceptional point (ρ=2.2800)
-//   - Protocol B: holographic boundary-bulk round-trip (ρ=2.2581)
+//   - Protocol B: imscriptive boundary-bulk round-trip (ρ=2.2581)
 //   - Frobenius closure: μ∘δ=id verification
 //   - IMASM cycle: tuple ↔ word round-trip (11/12 axes bijective)
 //
@@ -45,7 +45,7 @@ pub enum Opcode {
     AFWD,     // >  — unitary evolution
     AREV,     // <  — adjoint symmetry
     IFIX,     // ¬  — trace record
-    TANCH,    // ⊣  — holographic boundary closure
+    TANCH,    // ⊣  — imscriptive boundary closure
 }
 
 impl Opcode {
@@ -140,14 +140,14 @@ static TYPE_PROGRAMS: &[TypeProgram] = &[
         opcodes: &[VINIT, IMSCRIB, FSPLIT, EVALT, AFWD, CLINK,
                     IFIX, AREV, EVALF, FFUSE, IMSCRIB, TANCH],
         rho: 2.2242,
-        domain_reading: "Holographic dimensionality: bulk→boundary→reconstruction",
+        domain_reading: "Imscriptive dimensionality: bulk→boundary→reconstruction",
     },
     TypeProgram {
         shavian: "are", primitive_axis: "Þ", value_glyph: "𐑸",
         opcodes: &[VINIT, IMSCRIB, AFWD, IFIX, FSPLIT, EVALT,
                     CLINK, AREV, FFUSE, ENGAGR, TANCH],
         rho: 2.2791,
-        domain_reading: "Holographic topology: boundary↔bulk imscriptive closure",
+        domain_reading: "Imscriptive topology: boundary↔bulk closure",
     },
     TypeProgram {
         shavian: "ear", primitive_axis: "Ř", value_glyph: "𐑽",
@@ -247,7 +247,7 @@ pub static PROTOCOL_B: &[Opcode] = &[
     EVALF, FFUSE, CLINK, ENGAGR, IFIX, TANCH,
 ];
 pub const PROTOCOL_B_RHO: f32 = 2.2581;
-pub const PROTOCOL_B_ARM: &str = "AFWD→EVALT→AREV→EVALF (holographic round-trip)";
+pub const PROTOCOL_B_ARM: &str = "AFWD→EVALT→AREV→EVALF (imscriptive round-trip)";
 
 pub static ROOT_WORD: &[Opcode] = &[
     VINIT, IMSCRIB, IFIX, FSPLIT, AFWD, EVALT,
@@ -615,7 +615,7 @@ pub fn full_report() -> String {
              Word: {}\n\
              ρ={}, verdict={}, arm={}\n\
          \n\
-           Protocol B (holographic round-trip):\n\
+           Protocol B (imscriptive round-trip):\n\
              Word: {}\n\
              ρ={}, verdict={}, arm={}\n\
          \n\

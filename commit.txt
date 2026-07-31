@@ -1,14 +1,15 @@
-Truncate strings by character, not by byte
+Say imscriptive
 
-`triple` died on "byte index 45 is not a char boundary; it is inside '→'". The type
-expansion table clipped each domain reading with `&s[..s.len().min(45)]`, and byte 45 of
-that row lands in the middle of an arrow.
+The kernel described its own Ð=𐑦 primitive, its ⊣ closure and its Protocol B round-trip as
+holographic. That is the borrowed word, and the framework has its own: the boundary
+imscribes the bulk. Fifteen sites in hand-written kernel prose now say so, including the
+one that read "boundary↔bulk imscriptive closure" — which had both words, doing one job.
 
-This is the third crash of this shape — hqe, hop and pericyclic_frobenoid all byte-sliced
-Shavian tuples — so the fix is a place to put it rather than another local repair.
-`text::clip` takes characters and cannot split one. `text::clip_ellipsis` marks what it
-dropped, so a truncated reading is not read as a complete one.
+Two neighbours went with it. `crystal.rs` and `riemann_sic.rs` had the boundary *encoding*
+the bulk; imscription is not encoding.
 
-Counting characters is also what the surrounding format wanted. `{:>8}` counts characters,
-so the byte-length clip in the IUFT distance matrix header mis-aligned every column whose
-gate name was not pure ASCII. That site is on the same helper now.
+Two uses stay. `constant_closure.rs` cites holographic dark energy, which is the standard
+cosmological term and not a description of this framework — renaming it would break the
+reference. And `catalog_ask_subset.rs` mirrors the canonical IG_catalog.json, so its
+wording belongs to the catalog and has to change there and be regenerated, not be edited
+in the copy.

@@ -330,7 +330,7 @@ pub fn cl8nk_formula(key: &str, val: IgPrim) -> Option<FormulaEntry> {
 pub fn atom_desc(atom: &str) -> &'static str {
     match atom {
         "HOLOGRAPHIC_STATE"       => "V=L(x) self-writing state-space — Axiom C (D=𐑦)",
-        "HOLOBOUND"               => "holographic bound_⊙/bulk encoding — T=𐑸",
+        "HOLOBOUND"               => "imscriptive bound_⊙/bulk imscription — T=𐑸",
         "LR_DUAL"                 => "lateral relational duality — R=𐑾",
         "PM_Z2"                   => "ℤ₂ parity with Frobenius μ∘δ=id — P=𐑹",
         "SEQAX"                   => "sequentiality axiom, directed time — C=𐑠",

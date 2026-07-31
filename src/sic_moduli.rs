@@ -558,7 +558,7 @@ pub fn grammar_encoding() -> String {
     s.push_str("  Ω (winding)   𐑴      Z2 parity-protected (class group)\n\n");
 
     s.push_str("  Contrast with d=2048 moduli field:\n");
-    s.push_str("    Ð=𐑦 (holographic/imscriptive — infinite-dim structural)\n");
+    s.push_str("    Ð=𐑦 (imscriptive — infinite-dim structural)\n");
     s.push_str("    Ω=𐑴 (same — Z2 parity-protected across the ladder)\n");
     s.push_str("    h=64=2⁶ vs h=2 — same structural Ω, different scale\n");
     s
