@@ -1,11 +1,18 @@
-Short names for the two most-typed quantum commands
+Stop the compile while there is heap left to say why
 
-quantum_compile and jones_polynomial were chosen so an agent that knew the grammar-tool
-names would find them in the kernel. That reason still holds, but they are long to type
-for the two commands most likely to be typed repeatedly.
+`qc H T X S T T H X X X 13` panicked with "memory allocation of 0 bytes failed" after
+reporting a successful compile. Two separate faults.
 
-qc and jp are the primary names now. Both long forms remain as match arms, so nothing
-that used them breaks and the grammar-name mapping is intact. Top-level qc was free; the
-existing qc is a subcommand of rebis materials.
+The bump allocator returned null for a zero-size request. With the arena nearly full the
+alignment round-up alone pushes past the end, so a zero-byte allocation failed and the
+error path named a size nobody had asked for. A zero-size allocation now returns a
+dangling but correctly aligned pointer, which is what it is.
 
-Verified: qc H T 4, jp 1 1 1, quantum_compile H 4 and jones_polynomial 1 1 all run.
+And the depth ceiling of 12 was measured against a short circuit. A ten-gate target at
+the same depth builds a 16956-entry net taking 6864 KB of 8192, and the fuse and the
+synthesis then run out partway through. The compile now checks headroom after the net is
+built and stops while it can still report, naming a lower depth to retry from.
+
+Verified: the failing case reports 866 KB left and suggests depth 10; at depth 10 the
+same circuit compiles to error 1.37e-4 with an 11.3x gain, and short circuits at depth 8
+are unaffected.

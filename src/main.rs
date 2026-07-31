@@ -111,6 +111,14 @@ unsafe impl core::alloc::GlobalAlloc for BumpAllocator {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
         let align = layout.align();
         let size  = layout.size();
+        // A zero-size request must never fail. With the heap nearly full the
+        // alignment round-up alone can push past `end`, and returning null for a
+        // zero-byte allocation surfaced as "memory allocation of 0 bytes failed"
+        // — a panic that named a size nobody had asked for. Hand back a dangling
+        // but correctly aligned pointer, which is what a zero-size allocation is.
+        if size == 0 {
+            return align as *mut u8;
+        }
         loop {
             let cur     = self.next.load(Ordering::Relaxed);
             let aligned = (cur + align - 1) & !(align - 1);

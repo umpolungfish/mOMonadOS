@@ -1866,6 +1866,23 @@ pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize) {
     sprintln!("  net: {} entries, {} KB (heap {} of {} KB)",
               net.entries.len(), (used1 - used0) / 1024, used1 / 1024, total / 1024);
 
+    // The fuse allocates thousands of word vectors on top of the net, and the
+    // synthesis another pass on top of that. The depth ceiling of 12 was measured
+    // against a short circuit; a ten-gate target at the same depth builds a net
+    // that leaves no room, and the arena then dies partway through printing —
+    // reported as an allocation failure for a size nobody asked for. Stop here
+    // instead, while there is still enough heap to say why.
+    let headroom = total.saturating_sub(used1);
+    if headroom < total / 5 {
+        sprintln!("  STOP: {} KB left of {} KB — not enough to fuse and synthesize.",
+                  headroom / 1024, total / 1024);
+        sprintln!("  The net for this circuit at depth {} is too large. Retry with a",
+                  net_depth);
+        sprintln!("  lower depth: `qc {} {}` and work up.", spec, net_depth.saturating_sub(2));
+        crate::heap_reset(mark);
+        return;
+    }
+
     let (w0, g0, _) = solovay_kitaev(&target, sk_depth, &net);
     let e0 = Matrix2::projective_distance(&target, &g0);
     let (w1, g1, _) = sk_split_fuse(&target, sk_depth, &net, 8);
