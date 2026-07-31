@@ -1,18 +1,18 @@
-Stop the compile while there is heap left to say why
+qc: gates need no separators
 
-`qc H T X S T T H X X X 13` panicked with "memory allocation of 0 bytes failed" after
-reporting a successful compile. Two separate faults.
+`qc XTT 4` answered "Unknown gate 'XTT'". The spec was split on whitespace and each
+token matched whole against H/T/S/X, so a run of gates typed together became one
+nonexistent gate name. Nothing about a circuit requires the spaces.
 
-The bump allocator returned null for a zero-size request. With the arena nearly full the
-alignment round-up alone pushes past the end, so a zero-byte allocation failed and the
-error path named a size nobody had asked for. A zero-size allocation now returns a
-dangling but correctly aligned pointer, which is what it is.
+The spec is now read one gate per character. Whitespace is still accepted and skipped,
+case is free, and an unrecognised character is named on its own rather than dragging the
+whole run into the error. `qc H T S X 4`, `qc HTSX 4` and `qc htsx 4` give the same braid
+word, error and length.
 
-And the depth ceiling of 12 was measured against a short circuit. A ten-gate target at
-the same depth builds a 16956-entry net taking 6864 KB of 8192, and the fuse and the
-synthesis then run out partway through. The compile now checks headroom after the net is
-built and stops while it can still report, naming a lower depth to retry from.
+The depth followed from the same principle: if gates need no separator, neither does the
+count after them. A trailing run of digits with no separate depth token is read as the
+depth, so `qc XTT4` and `qc XTT 4` agree.
 
-Verified: the failing case reports 866 KB left and suggests depth 10; at depth 10 the
-same circuit compiles to error 1.37e-4 with an 11.3x gain, and short circuits at depth 8
-are unaffected.
+Usage text updated. It still advertised "Depth 4..12", which stopped being true when the
+clamp came out — depth is any positive integer now, and the net stops on its own when it
+outgrows the arena.

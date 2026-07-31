@@ -89,8 +89,8 @@ use kernel::Kernel;
 // ─── Bump allocator (no external crates) ─────────────────────
 
 #[repr(C, align(4096))]
-struct HeapStorage([u8; 8 * 1024 * 1024]);
-static mut HEAP_STORAGE: HeapStorage = HeapStorage([0; 8 * 1024 * 1024]);
+struct HeapStorage([u8; 48 * 1024 * 1024]);
+static mut HEAP_STORAGE: HeapStorage = HeapStorage([0; 48 * 1024 * 1024]);
 
 struct BumpAllocator {
     next: AtomicUsize,
@@ -206,7 +206,11 @@ fn kmain() -> ! {
     interrupts::init(100);
     sprintln!("[BOOT] Interrupts online — PIT 100Hz, PIC remapped");
 
-    sprintln!("[BOOT] Heap: 8MB static BSS");
+    {
+        // was hardcoded to "8MB" and stayed there after the arena grew
+        let (_, total) = heap_used();
+        sprintln!("[BOOT] Heap: {}MB static BSS", total / (1024 * 1024));
+    }
 
     let mut k = Kernel::new();
     k.boot();

@@ -97,7 +97,7 @@ pub static KERNEL_MENU: &[MenuItem] = &[
 
 pub static QUANTUM_MENU: &[MenuItem] = &[
     MenuItem { name: "fibqc",      cmd: "fibqc",      desc: "Fibonacci anyon QC: verify | compile | jones | knot | winding (see also qc, jp)", example: "fibqc verify", submenu: None },
-    MenuItem { name: "qc", cmd: "qc", desc: "Compile a circuit over H T S X to a braid word (aliases quantum_compile, fibqc compile)", example: "qc H T 8", submenu: None },
+    MenuItem { name: "qc", cmd: "qc", desc: "Compile a circuit over H T S X to a braid word; spaces optional (aliases quantum_compile, fibqc compile)", example: "qc HTSX 8", submenu: None },
     MenuItem { name: "jp", cmd: "jp", desc: "Jones polynomial at the 1/5 winding; signed Artin generators (alias jones_polynomial)", example: "jp 1 1 1", submenu: None },
     MenuItem { name: "bg",         cmd: "bg",         desc: "Braid word to grammar tuple (alias braid-grammar); winding is a closed form in the writhe", example: "bg tuple 1,2,1 3", submenu: None },
     MenuItem { name: "shor",       cmd: "shor",       desc: "Belnap Shor pipeline, N=15 and N=21", example: "shor", submenu: None },

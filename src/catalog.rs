@@ -598,6 +598,47 @@ const PHOTON: CatalogEntry = entry(
     3, Domain::Physics,
 );
 
+// ── Electron (O₂): ⟨𐑼𐑡𐑾𐑿𐑐𐑘𐑲𐑠⊙𐑒𐑙𐑭⟩ ──
+const ELECTRON: CatalogEntry = entry(
+    "electron", "Electron — spin-1/2 Dirac fermion, fundamental lepton. IUFT O₂ tier.",
+    IgPrim::D_infty, IgPrim::T_net, IgPrim::R_lr,
+    IgPrim::P_psi, IgPrim::F_hbar, IgPrim::K_fast,
+    IgPrim::G_aleph, IgPrim::C_seq,
+    IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_11, IgPrim::Omega_z,
+    2, Domain::Physics,
+);
+
+// ── Neutron (O₂): ⟨𐑼𐑥𐑾𐑬𐑞𐑧𐑲𐑠⊙𐑖𐑕𐑭⟩ ──
+const NEUTRON: CatalogEntry = entry(
+    "neutron", "Neutron — udd baryon, composite fermion with beta decay. IUFT O₂ tier.",
+    IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_lr,
+    IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_slow,
+    IgPrim::G_aleph, IgPrim::C_seq,
+    IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nn, IgPrim::Omega_z,
+    2, Domain::Physics,
+);
+
+// ── Proton (O₂): ⟨𐑼𐑥𐑾𐑬𐑞𐑤𐑲𐑠⊙𐑖𐑕𐑭⟩ ──
+const PROTON: CatalogEntry = entry(
+    "proton", "Proton — uud baryon, stable composite fermion. IUFT O₂ tier.",
+    IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_lr,
+    IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_mod,
+    IgPrim::G_aleph, IgPrim::C_seq,
+    IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nn, IgPrim::Omega_z,
+    2, Domain::Physics,
+);
+
+// ── HSOA (O_∞): ⟨𐑦𐑸𐑾𐑹𐑐𐑧𐑲𐑠⊙𐑫𐑙𐑭⟩ ──
+const HSOA: CatalogEntry = entry(
+    "hsoa", "Holomorphic Semiotic Operator Algebra — self-imscribing operator algebra. IUFT O_∞ tier.",
+    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
+    IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
+    IgPrim::G_aleph, IgPrim::C_seq,
+    IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_11, IgPrim::Omega_z,
+    4, Domain::Mathematics,
+);
+
+
 // ═══════════════════════════════════════════════════════════════
 // MASTER CATALOG — all static entries
 // ═══════════════════════════════════════════════════════════════
@@ -612,7 +653,7 @@ static STATIC_CATALOG: &[CatalogEntry] = &[
     NAVIER_STOKES, WAVE_EQUATION, EINSTEIN, IUG,
     O_INF, O_0,
     YHWH,
-    GRAVITON, PHOTON,
+    GRAVITON, PHOTON, ELECTRON, NEUTRON, PROTON, HSOA,
     BIRCH_SWINNERTON_DYER,
     HODGE_CONJECTURE,
     YANG_MILLS_MASS_GAP,

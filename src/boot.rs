@@ -44,17 +44,24 @@ _start:
     or      eax, 3
     mov     DWORD PTR [_boot_pdpt], eax
 
-    /* PD entries: eight 2MB identity-mapped huge pages (covers 0–16MB;
-       the vita build's baked weights push the image + BSS past 8MB)    */
+    /* PD entries: fill all 512, identity-mapping 0–1GB in 2MB huge pages.
+       Eight entries were hardcoded here, covering 0–16MB, which fixed the
+       heap at whatever fit under that line — growing the arena past it
+       faulted before the first serial byte. The page directory is a full
+       4KB (512 entries), so filling it costs nothing and takes the ceiling
+       off the arena. Mapping beyond installed RAM is harmless; nothing
+       touches it.                                                        */
     /* PS=bit2, RW=bit1, P=bit0; bit2=PS for huge pages in PDE         */
-    mov     DWORD PTR [_boot_pd + 0x00], 0x000083
-    mov     DWORD PTR [_boot_pd + 0x08], 0x200083
-    mov     DWORD PTR [_boot_pd + 0x10], 0x400083
-    mov     DWORD PTR [_boot_pd + 0x18], 0x600083
-    mov     DWORD PTR [_boot_pd + 0x20], 0x800083
-    mov     DWORD PTR [_boot_pd + 0x28], 0xA00083
-    mov     DWORD PTR [_boot_pd + 0x30], 0xC00083
-    mov     DWORD PTR [_boot_pd + 0x38], 0xE00083
+    mov     edi, offset _boot_pd
+    mov     eax, 0x000083
+    mov     ecx, 512
+2:
+    mov     DWORD PTR [edi], eax
+    mov     DWORD PTR [edi + 4], 0
+    add     eax, 0x200000
+    add     edi, 8
+    dec     ecx
+    jnz     2b
 
     /* CR3 = PML4 */
     mov     eax, offset _boot_pml4

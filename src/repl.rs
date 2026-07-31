@@ -258,17 +258,32 @@ pub fn repl(k: &mut Kernel) {
                 let joined = tail.join(" ");
                 let rest: Vec<&str> = joined.split_whitespace().collect();
                 if rest.is_empty() {
-                    sprintln!("qc <gates> [depth]   e.g. `qc H T`   (alias quantum_compile)");
-                    sprintln!("Known gates: H T S X. Depth 4..12, default 10.");
+                    sprintln!("qc <gates> [depth]   e.g. `qc H T 8`, `qc HTSX`, `qc XTT4`");
+                    sprintln!("Known gates: H T S X — spaces optional, case free.");
+                    sprintln!("Depth is any positive integer (default 10); the search");
+                    sprintln!("stops early if the gate net outgrows the arena.");
                 } else {
-                    let (gates, depth) = match rest.last().and_then(|s| s.parse::<usize>().ok()) {
-                        Some(d) => (&rest[..rest.len() - 1], d.min(12).max(4)),
-                        None => (&rest[..], 10),
+                    let (gates, mut depth) = match rest.last().and_then(|s| s.parse::<usize>().ok()) {
+                        Some(d) => (&rest[..rest.len() - 1], d.max(1)),
+                        None => (&rest[..], 0),
                     };
-                    if gates.is_empty() {
+                    // Gates need no separators, so the depth need not be separated
+                    // either: `qc XTT4` reads the trailing digits as the depth.
+                    let mut spec = gates.join(" ");
+                    if depth == 0 {
+                        let digits = spec.len() - spec.trim_end_matches(|c: char| c.is_ascii_digit()).len();
+                        if digits > 0 && digits < spec.len() {
+                            if let Ok(d) = spec[spec.len() - digits..].parse::<usize>() {
+                                depth = d.max(1);
+                                spec.truncate(spec.len() - digits);
+                            }
+                        }
+                        if depth == 0 { depth = 10; }
+                    }
+                    if spec.trim().is_empty() {
                         sprintln!("No gates given. Known: H T S X");
                     } else {
-                        crate::fibonacci_qc::repl_compile(&gates.join(" "), depth, 3);
+                        crate::fibonacci_qc::repl_compile(&spec, depth, 3);
                     }
                 }
             }
@@ -322,7 +337,7 @@ pub fn repl(k: &mut Kernel) {
                         } else {
                             // a trailing integer is the net depth, everything before it is the circuit
                             let (gates, depth) = match rest.last().and_then(|s| s.parse::<usize>().ok()) {
-                                Some(d) => (&rest[..rest.len()-1], d.min(12).max(4)),
+                                Some(d) => (&rest[..rest.len()-1], d.max(1)),
                                 None => (&rest[..], 10),
                             };
                             if gates.is_empty() {

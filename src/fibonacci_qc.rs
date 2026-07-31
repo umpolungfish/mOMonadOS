@@ -1137,6 +1137,8 @@ pub fn pauli_z() -> Matrix2 {
 /// A gate net entry: braid word + corresponding unitary (as Matrix2)
 pub struct GateNet {
     pub entries: Vec<(Vec<i32>, Matrix2)>,
+    /// true when growth stopped on the arena rather than on max_depth
+    pub reached_cap: bool,
 }
 
 impl GateNet {
@@ -1176,6 +1178,7 @@ impl GateNet {
         entries2.push((Vec::new(), Matrix2::identity()));
         seen2.push(Self::projective_key(&Matrix2::identity()));
         let (mut lo, mut hi) = (0usize, 1usize);   // current frontier: entries2[lo..hi]
+        let mut capped = false;
 
         'build: for _ in 0..max_depth {
             for idx in lo..hi {
@@ -1201,6 +1204,16 @@ impl GateNet {
                     new_word.push(g);
                     entries2.push((new_word, new_gate));
                     if entries2.len() >= max_gates { break 'build; }
+                    // Grow until the arena says stop, not until a fixed depth.
+                    // The caller cannot know in advance how large a net a given
+                    // circuit needs, and refusing to build is worse than building
+                    // a smaller one: a truncated net costs accuracy, not
+                    // correctness. Reserve room for the fuse and the synthesis,
+                    // which allocate on top of whatever is left here.
+                    if entries2.len() % 256 == 0 {
+                        let (used, total) = crate::heap_used();
+                        if total.saturating_sub(used) < total / 3 { capped = true; break 'build; }
+                    }
                 }
             }
             if entries2.len() == hi { break; }   // no new nodes at this level
@@ -1208,7 +1221,7 @@ impl GateNet {
             hi = entries2.len();
         }
 
-        GateNet { entries: entries2 }
+        GateNet { entries: entries2, reached_cap: capped }
     }
 
     /// Projective key: normalize to SU(2), fix the phase, hash the rounded entries.
@@ -1833,12 +1846,17 @@ pub fn run_sample_circuit() {
 pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize) {
     let mut target = Matrix2::identity();
     let mut named = false;
-    for tok in spec.split_whitespace() {
-        let g = match tok {
-            "H" | "h" => hadamard(),
-            "T" | "t" => t_gate(),
-            "S" | "s" => s_gate(),
-            "X" | "x" => pauli_x(),
+    // One gate per character. Splitting on whitespace made `qc XTT` an unknown
+    // gate called "XTT" — but nothing about a circuit needs the spaces, and a
+    // caller typing a run of gates should not have to space them out. Whitespace
+    // is still allowed and simply skipped.
+    for ch in spec.chars() {
+        if ch.is_whitespace() { continue; }
+        let g = match ch {
+            'H' | 'h' => hadamard(),
+            'T' | 't' => t_gate(),
+            'S' | 's' => s_gate(),
+            'X' | 'x' => pauli_x(),
             other => {
                 sprintln!("Unknown gate '{}'. Known: H T S X", other);
                 return;
@@ -1861,6 +1879,8 @@ pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize) {
     let (used0, total) = crate::heap_used();
 
     sprintln!("Building gate net (depth {})...", net_depth);
+    // The depth used to be clamped to 12 before it got here, so a larger request
+    // was silently rewritten. It is honoured now; the net stops on the arena.
     let net = GateNet::build(net_depth, 200000);
     let (used1, _) = crate::heap_used();
     sprintln!("  net: {} entries, {} KB (heap {} of {} KB)",
@@ -1872,15 +1892,11 @@ pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize) {
     // that leaves no room, and the arena then dies partway through printing —
     // reported as an allocation failure for a size nobody asked for. Stop here
     // instead, while there is still enough heap to say why.
-    let headroom = total.saturating_sub(used1);
-    if headroom < total / 5 {
-        sprintln!("  STOP: {} KB left of {} KB — not enough to fuse and synthesize.",
-                  headroom / 1024, total / 1024);
-        sprintln!("  The net for this circuit at depth {} is too large. Retry with a",
-                  net_depth);
-        sprintln!("  lower depth: `qc {} {}` and work up.", spec, net_depth.saturating_sub(2));
-        crate::heap_reset(mark);
-        return;
+    // The net self-limits on the arena, so a requested depth that does not fit is
+    // built as deep as it can be rather than refused. Say so when that happens.
+    if net.reached_cap {
+        sprintln!("  net capped by arena at {} KB free; effective depth below {}",
+                  total.saturating_sub(used1) / 1024, net_depth);
     }
 
     let (w0, g0, _) = solovay_kitaev(&target, sk_depth, &net);
