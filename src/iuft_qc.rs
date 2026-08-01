@@ -230,63 +230,42 @@ pub fn sensitivity(tuple: &IgTuple) -> IuftSensitivity {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// REFERENCE NAMES
+// WHERE THE HARDCODED GATES WERE
 // ═══════════════════════════════════════════════════════════════
 //
-// There were twelve hardcoded gates here, angle triples written out beside the
-// encoder that computes them. They had drifted: the graviton's differed from
-// its own catalog tuple by 0.397 and the electron's by 0.629, and the
-// electron's comment said why — "using encode: θ=180°, φ=105°, ψ=90° — but we
-// refine from IUFT expansion". A refinement of a computed value by hand is a
-// second source of truth, and the second source is the one that goes stale.
+// Twelve angle triples used to sit here, written out beside the encoder that
+// computes them. They had drifted: the graviton's differed from its own catalog
+// tuple by 0.397 and the electron's by 0.629, and the electron's comment said
+// why — "using encode: θ=180°, φ=105°, ψ=90° — but we refine from IUFT
+// expansion". A hand refinement of a computed value is a second source of
+// truth, and the second source is the one that goes stale.
 //
-// Three of the twelve could never have been checked at all: their names had no
-// catalog entry under that spelling, so the consistency check silently reported
-// "no catalog entry for comparison" and moved on.
+// They also shadowed the encoder. `gate_for` checked the table first, so
+// `iuft encode graviton` printed the hand-written triple under the word
+// "encoded" and never touched the tuple.
 //
-// Nothing is hardcoded now. Every gate comes from the tuple through `encode`.
-// What is left below is a list of handles and the catalog names they stand for
-// — which entries to look at, never what the answer is.
-
-/// Resolve a typed handle to the catalog entry that carries the tuple.
-///
-/// Only names with no entry of their own are aliased. `grammar` and
-/// `imscribing_grammar` are both real entries with different tuples, so they
-/// stay distinct; `IG` is not an entry and points at the latter.
-pub fn resolve(name: &str) -> &str {
-    match name {
-        "ZFC" | "zfc" | "ZFC_fe" | "zfc_fe"          => "ZFC_set_theory",
-        "CLINK L8" | "CLINK_L8"                       => "clink_l8",
-        "IG"                                          => "imscribing_grammar",
-        "HSOA" | "hsoa"                               => "holomorphic_semiotic_operator_algebra",
-        "neutron"                                     => "neutron_baryon",
-        "poincare_hopf"                               => "poincare_hopf_theorem",
-        other => other,
-    }
-}
-
-/// The handles `iuft list`, `iuft matrix` and `nearest_known` range over.
-/// A reading list, not a table of values.
-pub fn reference_names() -> &'static [&'static str] {
-    &[
-        "graviton", "photon", "electron", "neutron", "proton",
-        "ZFC", "CLINK L8", "grammar", "HSOA",
-        "monad", "topos", "poincare_hopf_theorem",
-    ]
-}
+// And they made the consistency check vacuous. For a name with no triple,
+// `gate_for` fell through to the catalog, the check encoded the same entry a
+// second time, and the two agreed exactly. `iuft verify yhwh` printed 0.000000
+// and meant nothing by it.
+//
+// Nothing is hardcoded now, and no hand-picked reference list replaced it
+// either. Names go through `catalog::lookup`, which already carries the
+// kernel's own normalisation and aliases, and every gate comes from the tuple
+// through `encode`.
 
 // ═══════════════════════════════════════════════════════════════
 // LOOKUP FUNCTIONS
 // ═══════════════════════════════════════════════════════════════
 
-/// The IUFT QC gate for a name: resolve the handle, take the catalog tuple,
-/// encode. There is no other path — a gate this kernel reports is a gate it
+/// The IUFT QC gate for a name: look the name up in the catalog, take its
+/// tuple, encode. There is no other path — a gate this kernel reports is one it
 /// computed from the catalog this session.
+///
+/// `catalog::lookup` does the name handling, so "CLINK L8", "clink_l8" and
+/// "CLINK-L8" all arrive at the same entry without a second alias table here.
 pub fn gate_for(name: &str) -> Option<IuftQcGate> {
-    let key = resolve(name);
-    crate::catalog::catalog_entries(None)
-        .find(|e| e.name == key)
-        .map(|e| encode_entry(&e))
+    crate::catalog::lookup(name).map(|e| encode_entry(&e))
 }
 
 pub fn gate_for_entry(entry: &CatalogEntry) -> Option<IuftQcGate> {
@@ -304,18 +283,25 @@ pub fn gate_distance(name_a: &str, name_b: &str) -> Option<f64> {
 // DISTANCE MATRIX
 // ═══════════════════════════════════════════════════════════════
 
-/// The reference handles that resolve, with their gates encoded from the
-/// catalog. A name whose entry is missing is dropped rather than defaulted, so
-/// a gap shows up as an absence and not as a value.
-pub fn reference_gates() -> Vec<(&'static str, IuftQcGate)> {
-    reference_names().iter()
-        .filter_map(|&n| gate_for(n).map(|g| (n, g)))
+/// Every catalog entry in a domain, with its gate. `None` takes the whole
+/// catalog. The selection is the catalog's, not a list kept here.
+pub fn gates_in(domain: Option<crate::catalog::Domain>) -> Vec<(&'static str, IuftQcGate)> {
+    crate::catalog::catalog_entries(domain)
+        .map(|e| (e.name, encode_entry(e)))
         .collect()
 }
 
-/// Compute a full pairwise distance matrix over the reference gates.
-pub fn distance_matrix() -> Vec<Vec<f64>> {
-    let gates = reference_gates();
+/// The gates named on a command line, in the order given. A name that does not
+/// resolve is dropped, and the caller can see that from the count.
+pub fn gates_named(names: &[&str]) -> Vec<(alloc::string::String, IuftQcGate)> {
+    use alloc::string::ToString;
+    names.iter()
+        .filter_map(|&n| gate_for(n).map(|g| (n.to_string(), g)))
+        .collect()
+}
+
+/// Pairwise distance matrix over the gates handed in.
+pub fn distance_matrix(gates: &[(alloc::string::String, IuftQcGate)]) -> Vec<Vec<f64>> {
     let n = gates.len();
     let mut matrix = Vec::with_capacity(n);
     for i in 0..n {
@@ -328,16 +314,17 @@ pub fn distance_matrix() -> Vec<Vec<f64>> {
     matrix
 }
 
-/// Find the nearest reference gate to a given gate.
+/// The catalog entry whose gate is nearest a given gate.
+///
+/// This used to range over twelve hand-picked names, which made "nearest known"
+/// mean "nearest of twelve". It ranges over the catalog now, so the answer is
+/// the nearest entry the kernel actually holds.
 pub fn nearest_known(gate: &IuftQcGate) -> (&'static str, f64) {
     let mut best_name = "";
     let mut best_dist = f64::INFINITY;
-    for (name, kg) in reference_gates() {
-        let d = gate.distance_to(&kg);
-        if d < best_dist {
-            best_dist = d;
-            best_name = name;
-        }
+    for e in crate::catalog::catalog_entries(None) {
+        let d = gate.distance_to(&encode_entry(e));
+        if d < best_dist { best_dist = d; best_name = e.name; }
     }
     (best_name, best_dist)
 }
@@ -364,51 +351,58 @@ pub fn verify_unitary(gate: &IuftQcGate) -> bool {
 /// Verify the encoding round-trip for a hardcoded gate:
 /// encode(gate's owning tuple) ≈ gate.
 pub fn verify_one(name: &str) {
-    let key = resolve(name);
-    match gate_for(name) {
-        Some(g) => {
-            if key != name { sprintln!("  {} resolves to catalog entry '{}'", name, key); }
-            sprintln!("  {:>22}: θ={:6.1}°  φ={:6.1}°  ψ={:6.1}°   unitary={}",
-                      key, g.theta_deg, g.phi_deg, g.psi_deg, verify_unitary(&g));
+    match crate::catalog::lookup(name) {
+        Some(e) => {
+            let g = encode_entry(&e);
+            if e.name != name { sprintln!("  '{}' is catalog entry '{}'", name, e.name); }
+            sprintln!("  {:>28}: θ={:6.1}°  φ={:6.1}°  ψ={:6.1}°   unitary={}",
+                      e.name, g.theta_deg, g.phi_deg, g.psi_deg, verify_unitary(&g));
         }
-        None => sprintln!("  {:>22}: no catalog entry (handle resolves to '{}')", name, key),
+        None => sprintln!("  no catalog entry for '{}'", name),
     }
 }
 
 /// What is left to check once nothing is hardcoded.
 ///
-/// The old check measured a hand-written angle triple against the computed one.
-/// It could not answer for a name that had no hardcoded triple: `gate_for` fell
-/// through to the catalog, the check encoded the same entry a second time, and
-/// the two agreed to the last bit. `iuft verify yhwh` printed 0.000000 and meant
-/// nothing by it.
+/// The old check measured a hand-written angle triple against the computed one,
+/// and could not answer for a name that had no triple: it encoded the same
+/// entry twice and reported perfect agreement. The triples are gone, so that
+/// question is gone with them.
 ///
-/// The triples are gone, so that question is gone. Two real ones remain. Every
-/// reference handle must resolve to a catalog entry and encode to a unitary
-/// gate. And the encoding is a 12→3 projection, which is degenerate by
-/// construction — where it sends two different tuples to the same gate is worth
-/// seeing, because that is the projection's kernel showing itself.
-pub fn verify_references() {
-    sprintln!("Reference encodings (computed from the catalog, nothing hardcoded):");
-    for &n in reference_names() { verify_one(n); }
+/// Two real ones remain, and they range over the whole catalog rather than a
+/// hand-picked dozen. Every entry must encode to a unitary gate. And the
+/// encoding is a 12→3 projection, degenerate by construction, so where it sends
+/// different tuples to the same gate is the projection's kernel showing itself
+/// — worth counting, not worth hiding.
+pub fn verify_catalog() {
+    let gates = gates_in(None);
+    let mut non_unitary = 0usize;
+    for (name, g) in &gates {
+        if !verify_unitary(g) {
+            sprintln!("  NOT UNITARY: {} (θ={:.1}° φ={:.1}° ψ={:.1}°)",
+                      name, g.theta_deg, g.phi_deg, g.psi_deg);
+            non_unitary += 1;
+        }
+    }
+    sprintln!("Unitarity: {} of {} catalog gates unitary.",
+              gates.len() - non_unitary, gates.len());
 
-    let gates = reference_gates();
-    sprintln!("Degeneracy of the 12→3 projection:");
-    let mut found = false;
+    let mut collisions = 0usize;
+    let mut shown = 0usize;
     for i in 0..gates.len() {
         for j in (i + 1)..gates.len() {
-            let d = gates[i].1.distance_to(&gates[j].1);
-            if d < 1e-9 {
-                sprintln!("  {} and {} encode to the same gate (d={:.2e})",
-                          gates[i].0, gates[j].0, d);
-                found = true;
+            if gates[i].1.distance_to(&gates[j].1) < 1e-9 {
+                collisions += 1;
+                if shown < 12 {
+                    sprintln!("  {} = {}", gates[i].0, gates[j].0);
+                    shown += 1;
+                }
             }
         }
     }
-    if !found {
-        sprintln!("  no collisions among the {} reference gates", gates.len());
-    }
-    sprintln!("Resolved {} of {} handles.", gates.len(), reference_names().len());
+    sprintln!("Degeneracy of the 12→3 projection: {} colliding pairs among {} entries{}",
+              collisions, gates.len(),
+              if collisions > shown { " (first 12 shown)" } else { "" });
 }
 
 /// Print a full IUFT gate report to serial.
@@ -436,26 +430,31 @@ pub fn print_gate_report(name: &str) {
     }
 }
 
-/// Print distance matrix over all known gates.
-pub fn print_distance_matrix() {
-    let gates = reference_gates();
-    let matrix = distance_matrix();
+/// Print the distance matrix over the named entries.
+pub fn print_distance_matrix(names: &[&str]) {
+    let gates = gates_named(names);
+    if gates.is_empty() {
+        sprintln!("iuft matrix <name> <name> ...   e.g. `iuft matrix graviton photon electron`");
+        sprintln!("Any catalog entry works; names go through the catalog's own aliases.");
+        return;
+    }
+    let matrix = distance_matrix(&gates);
     sprintln!("IUFT Gate Distance Matrix (projective SU(2) distance):");
-    // Build header row
     let mut header = alloc::string::String::from(format!("{:>16}", ""));
     for (name, _) in &gates {
         header.push_str(&format!("{:>8}", crate::text::clip(name, 7)));
     }
     sprintln!("{}", header);
-    // Build each data row
     for i in 0..gates.len() {
-        let mut row = alloc::string::String::from(format!("{:>16}", gates[i].0));
+        let mut row = alloc::string::String::from(
+            format!("{:>16}", crate::text::clip(&gates[i].0, 15)));
         for j in 0..gates.len() {
             row.push_str(&format!("{:>8.4}", matrix[i][j]));
         }
         sprintln!("{}", row);
     }
 }
+
 // ═══════════════════════════════════════════════════════════════
 // GLYPH PARSING: arbitrary 12-glyph tuple → IUFT gate
 // ═══════════════════════════════════════════════════════════════

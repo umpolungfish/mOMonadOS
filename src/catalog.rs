@@ -820,6 +820,25 @@ fn ensure_catalog() -> &'static mut Vec<CatalogEntry> {
     }
 }
 
+/// Parse a domain name off a command line. Empty or unrecognised means the
+/// whole catalog, so a typo widens the view rather than silently emptying it.
+pub fn parse_domain(s: &str) -> Option<Domain> {
+    match s.trim().to_lowercase().as_str() {
+        "mathematics" | "math"   => Some(Domain::Mathematics),
+        "physics"                => Some(Domain::Physics),
+        "biology" | "bio"        => Some(Domain::Biology),
+        "consciousness"          => Some(Domain::Consciousness),
+        "language"               => Some(Domain::Language),
+        "civilization"           => Some(Domain::Civilization),
+        "computation" | "comp"   => Some(Domain::Computation),
+        "theology"               => Some(Domain::Theology),
+        "alchemy"                => Some(Domain::Alchemy),
+        "ecology"                => Some(Domain::Ecology),
+        "general"                => Some(Domain::General),
+        _ => None,
+    }
+}
+
 /// Look up a catalog entry by name. Returns None if not found.
 /// Handles common aliases automatically.
 pub fn lookup(name: &str) -> Option<CatalogEntry> {
