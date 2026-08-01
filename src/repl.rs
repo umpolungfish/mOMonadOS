@@ -987,12 +987,34 @@ pub fn repl(k: &mut Kernel) {
                     "ll" => {
                         let p_str = parts.next().unwrap_or("");
                         if let Ok(p) = p_str.parse::<usize>() {
-                            sprintln!("Running Lucas-Lehmer for M_{}...", p);
-                            let result = crate::mersenne_parallel::lucas_lehmer(p);
-                            if result {
-                                sprintln!("M_{} is PRIME!", p);
+                            use crate::mersenne_parallel as mp;
+                            if p >= 2 && !mp::exponent_is_prime(p) {
+                                // No arithmetic needed: a factor of p gives a
+                                // factor of M_p. Say which, so the answer is
+                                // checkable rather than merely asserted.
+                                let mut d = 2usize;
+                                while p % d != 0 { d += 1; }
+                                sprintln!("M_{} is composite — the exponent is: {} = {} x {}.",
+                                          p, p, d, p / d);
+                                sprintln!("  2^{} - 1 divides 2^{} - 1, so no Lucas-Lehmer is needed.", d, p);
+                                sprintln!("  (Lucas-Lehmer is stated for prime exponents.)");
                             } else {
-                                sprintln!("M_{} is composite.", p);
+                                let need = mp::lucas_lehmer_heap_estimate(p);
+                                let (used, total) = crate::heap_used();
+                                let free = total.saturating_sub(used);
+                                if need > free {
+                                    sprintln!("M_{} needs about {} MiB of heap; {} MiB free of {} MiB.",
+                                              p, need / (1024 * 1024),
+                                              free / (1024 * 1024), total / (1024 * 1024));
+                                    sprintln!("  Refusing rather than exhausting the heap mid-test.");
+                                } else {
+                                    sprintln!("Running Lucas-Lehmer for M_{}...", p);
+                                    if mp::lucas_lehmer(p) {
+                                        sprintln!("M_{} is PRIME!", p);
+                                    } else {
+                                        sprintln!("M_{} is composite.", p);
+                                    }
+                                }
                             }
                         } else {
                             sprintln!("Usage: mersearch ll <exponent>");

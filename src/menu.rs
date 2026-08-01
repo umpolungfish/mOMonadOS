@@ -156,7 +156,7 @@ pub static GRAMMAR_MENU: &[MenuItem] = &[
     MenuItem { name: "clay", cmd: "clay", desc: "Clay Millennium structural status (machine-checked)", example: "clay", submenu: None },
     MenuItem { name: "psm", cmd: "psm", desc: "dialetheic alignment + measurement tests", example: "psm test", submenu: None },
     MenuItem { name: "entropy", cmd: "entropy", desc: "entropy experiment: dS vs tier promotion", example: "entropy tier", submenu: None },
-    MenuItem { name: "mersearch", cmd: "mersearch", desc: "Mersenne parallel search: run|search (alias msearch)", example: "mersearch", submenu: None },
+    MenuItem { name: "mersearch", cmd: "mersearch", desc: "Mersenne search: run|ll. Composite exponents answer at once (alias msearch)", example: "msearch ll 2213", submenu: None },
 ];
 
 pub static REBIS_MENU: &[MenuItem] = &[

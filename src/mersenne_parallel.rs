@@ -127,11 +127,12 @@ impl BigUint {
     /// Reduce self modulo M_p = 2^p - 1 using: x mod (2^p-1) = (x & (2^p-1)) + (x >> p)
     pub fn mod_mersenne(&mut self, p: usize) {
         while self.bit_len() > p {
+            // `low` was a second full clone of self, then assigned straight back
+            // over it. Masking in place is the same value for half the churn,
+            // and on a bump heap that only reclaims LIFO the churn is the cost.
             let mut high = self.clone();
-            let mut low = self.clone();
-            low.and_low_p_bits(p);
             high.shr_assign(p);
-            *self = low;
+            self.and_low_p_bits(p);
             self.add_assign(&high);
         }
         // One final check: if self == M_p, reduce to 0
@@ -169,13 +170,40 @@ impl BigUint {
 /// Lucas-Lehmer primality test for Mersenne number M_p = 2^p - 1.
 /// Returns true if M_p is prime, false if composite.
 /// Uses the optimized modulo reduction for M_p.
+/// Is the exponent itself prime? Trial division to √p — for any p the kernel
+/// can hold, this is a few dozen divisions.
+pub fn exponent_is_prime(p: usize) -> bool {
+    if p < 2 { return false; }
+    if p % 2 == 0 { return p == 2; }
+    let mut d = 3usize;
+    while d * d <= p {
+        if p % d == 0 { return false; }
+        d += 2;
+    }
+    true
+}
+
+/// Peak limb-buffer demand of a run at exponent `p`, in bytes.
+/// Each winding allocates the squared value and a shifted clone, and a bump
+/// heap that only reclaims its most recent block cannot give those back.
+pub fn lucas_lehmer_heap_estimate(p: usize) -> usize {
+    let limbs = p.div_ceil(64);
+    // per winding: s² (2 limbs wide) + one clone of it, 8 bytes a limb
+    limbs.saturating_mul(8 * 4).saturating_mul(p.saturating_sub(2))
+}
+
 pub fn lucas_lehmer(p: usize) -> bool {
     if p == 2 { return true; }  // M_2 = 3 is prime
     if p < 2 { return false; }
-    
-    // Small prime check for exponent
-    if p > 2 && p % 2 == 0 { return false; }
-    
+
+    // M_p is composite whenever p is: for p = ab with a > 1, 2^a − 1 divides
+    // 2^p − 1. The old guard tested only p % 2, so every odd composite
+    // exponent — 1331 = 11³, 1337 = 7·191, 13333 = 67·199 — ran the full
+    // big-integer test to reach an answer trial division gives at once.
+    // Lucas-Lehmer is defined for prime p; running it elsewhere is not merely
+    // wasteful, it is outside the theorem.
+    if !exponent_is_prime(p) { return false; }
+
     let mut s = BigUint::from_u64(4);  // s_0 = 4
     
     for _ in 0..(p - 2) {
