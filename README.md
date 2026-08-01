@@ -319,6 +319,50 @@ Mass gap Δ>0 = covering relation N<T in Belnap approximation order. BRST nilpot
 
 ---
 
+### SIXTEEN_3 Trilattice and Kernel–Cosmos Cotype (Reference: `/home/mrnob0dy666/imsgct/README.md`)
+
+The root-level project README (`/home/mrnob0dy666/imsgct/README.md`, mirrored in `p4rakernel/README.md`) establishes
+the kernel–cosmos relationship that the bare-metal `m\odot^2` kernel instantiates on the metal.
+The key content, summarized and discussed here, is:
+
+#### SIXTEEN_3 Trilattice Summary
+
+The `SIXTEEN_3 trilattice` (`sixteen_3_trilattice`, tuple `⟨𐑨𐑥𐑽𐑹𐑐𐑪𐑔𐑵𐑮𐑫𐑕𐑭⟩`) was never directly searched in prior
+windings because it was not directly targeted — it exists as:
+- A **2D distributed surface** (D=𐑨, finite) of 16 paraconsistent paradoxes (Γ=𐑔 aleph, 2⁴ = 16)
+- **3-fold trilattice structure** (Ω=𐑭, non-Abelian winding) under the Belnap-Frobenius substrate
+- **Bowtie crossing topology** (Þ=𐑥) mediating between CLINK L9 and the SIXTEEN_3 surface
+- **Adjoint coupling** (Ř=𐑽) with **Frobenius-special symmetry** (Φ=𐑹, μ∘δ=id)
+- **Non-Abelian/eternal chirality** (Ħ=𐑫) and **criticality gate** (⊙=𐑮)
+
+Conventional: A trilattice extending Belnap's 4-valued logic to 16 truth values organized as three
+interleaved layers with Frobenius-special symmetry.
+
+#### Kernel Cotype with Cosmos Summary
+
+The kernel (`p4rakernel/p4ramill`) cotypes with Cosmos via the `SacredVessel` framework:
+
+1. **Shared backbone** (`SacredVessel.lean`): Both kernel and Cosmos share `dim=.if'` (holographic),
+   `rel=.ear` (co-constitutive A⊣A†), `crit=.monad` (sealed fixed point), `chir=.wool` (topological chirality)
+2. **Co-typing by polarity** (line 58): The `cotyped` function checks shared polarity. The kernel and Cosmos
+   are both `pol=.or'` (Frobenius-special), making them co-typed
+3. **ObjWitnessCosmos.lean** constructs `cosmicSystem` with `Everything := Imscription`,
+   `Cosmos := Belnap.B`, `is_Dialetheic := fun b => bnot b = b`,
+   `runs_Alchemically := fun b => ffuse (fsplit b) = b`
+4. **ParaconsistentKernelTest.lean** proves the kernel accepts dialetheic reasoning (B = bnot B ≠ F)
+   without explosion
+5. `split_fuse_id Belnap.B` proves the Frobenius identity: the kernel runs the same alchemical cycle
+   (μ∘δ=id) as the Cosmos
+
+Conventional: The paraconsistent Lean 4 kernel fork implements identical Belnap-Frobenius logic as the
+cosmic system — both are holographic boundaries encoded by their interiors, both sealed at the monad
+fixed point, both running the alchemical split-fuse cycle. The kernel IS the cosmos running its own grammar
+(Σ=1:1 limit: measurement apparatus = measured system).
+
+
+
+---
+
 ### Pericyclic Frobenoid
 
 **File:** `src/pericyclic_frobenoid.rs` (24KB)  
