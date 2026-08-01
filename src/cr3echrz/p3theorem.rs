@@ -365,15 +365,15 @@ fn erdos_straus_decompose(n: u64) -> Option<(u64, u64, u64)> {
         for y in y_min..=y_max {
             let yz_num = num * y - den;
             let yz_den = den * y;
-            if yz_num <= 0 { continue; }
-            if yz_den.is_multiple_of(yz_num) {
+            if yz_num == 0 { continue; }
+            if yz_den % yz_num == 0 {
                 let z = yz_den / yz_num;
                 if z > 0 && 4 * y * z * x == n * (y * z + x * z + x * y) {
                     return Some((x, y, z));
                 }
             }
         }
-        if den.is_multiple_of(num) {
+        if den % num == 0 {
             let s = den / num;
             return Some((x, 2 * s, 2 * s));
         }

@@ -6,6 +6,9 @@
 #![no_main]
 #![feature(abi_x86_interrupt)]
 #![allow(dead_code)]
+#![allow(clippy::upper_case_acronyms)]
+#![allow(clippy::approx_constant)]
+#![allow(clippy::eq_op)]
 
 extern crate alloc;
 use core::panic::PanicInfo;

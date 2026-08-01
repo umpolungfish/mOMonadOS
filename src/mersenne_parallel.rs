@@ -268,7 +268,7 @@ pub fn is_prime_exponent(n: usize) -> bool {
     if n % 2 == 0 || n % 3 == 0 { return false; }
     let mut i = 5;
     while i * i <= n {
-        if n.is_multiple_of(i) || n % (i + 2) == 0 { return false; }
+        if n % i == 0 || n % (i + 2) == 0 { return false; }
         i += 6;
     }
     true

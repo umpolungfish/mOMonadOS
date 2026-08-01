@@ -36,7 +36,7 @@ pub fn divisors(n: u64) -> Vec<u64> {
     }
     let limit = sqrt(n as f64) as u64;
     for d in 1..=limit {
-        if n.is_multiple_of(d) {
+        if n % d == 0 {
             result.push(d);
             let complement = n / d;
             if complement != d {
@@ -76,7 +76,7 @@ pub fn prime_factors(mut n: u64) -> Vec<(u64, u32)> {
     let mut d: u64 = 3;
     while d * d <= n {
         count = 0;
-        while n.is_multiple_of(d) {
+        while n % d == 0 {
             n /= d;
             count += 1;
         }
@@ -98,7 +98,7 @@ fn exponent_vector(x: u64, primes: &[(u64, u32)]) -> Vec<u32> {
     for &(p, _) in primes {
         let mut e = 0u32;
         let mut y = x;
-        while y.is_multiple_of(p) {
+        while y % p == 0 {
             e += 1;
             y /= p;
         }
@@ -267,7 +267,7 @@ pub fn analyze(n: u64) -> DivisorRingResult {
     for i in 0..k {
         let a = ordered[i];
         let b = ordered[(i + 1) % k];
-        if (a != 0 && b.is_multiple_of(a)) || (b != 0 && a.is_multiple_of(b)) {
+        if (a != 0 && b % a == 0) || (b != 0 && a % b == 0) {
             bonds += 1;
         }
     }

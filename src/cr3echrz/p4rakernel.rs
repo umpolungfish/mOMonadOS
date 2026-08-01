@@ -34,7 +34,7 @@ fn is_prime(n: u64) -> bool {
     if n % 2 == 0 || n % 3 == 0 { return false; }
     let mut i = 5;
     while i * i <= n {
-        if n.is_multiple_of(i) || n % (i + 2) == 0 { return false; }
+        if n % i == 0 || n % (i + 2) == 0 { return false; }
         i += 6;
     }
     true
@@ -202,8 +202,8 @@ pub fn run_p4ra_erdos_straus(n: u64) -> P4RAResult {
             if y == 0 { continue; }
             let yz_num = num * y - den;
             let yz_den = den * y;
-            if yz_num <= 0 { continue; }
-            if yz_den.is_multiple_of(yz_num) {
+            if yz_num == 0 { continue; }
+            if yz_den % yz_num == 0 {
                 let z = yz_den / yz_num;
                 if z > 0 && 4 * y * z * x == n * (y * z + x * z + x * y) {
                     found = Some((x, y, z));
@@ -211,7 +211,7 @@ pub fn run_p4ra_erdos_straus(n: u64) -> P4RAResult {
                 }
             }
         }
-        if den.is_multiple_of(num) {
+        if den % num == 0 {
             let s = den / num;
             found = Some((x, 2 * s, 2 * s));
             break;

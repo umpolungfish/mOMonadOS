@@ -317,7 +317,7 @@ fn factor_string(n: u64) -> String {
     let mut d: u64 = 2;
     while d * d <= m {
         let mut count = 0;
-        while m.is_multiple_of(d) {
+        while m % d == 0 {
             m /= d;
             count += 1;
         }
