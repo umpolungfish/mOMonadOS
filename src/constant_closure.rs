@@ -4,7 +4,7 @@
 // answered here rather than obeyed one function at a time.
 #![allow(non_snake_case)]
 
-fn f64_powi(x: f64, n: i32) -> f64 {
+pub fn f64_powi(x: f64, n: i32) -> f64 {
     let mut r = 1.0_f64;
     let mut b = x;
     let mut e = n;
@@ -16,14 +16,14 @@ fn f64_powi(x: f64, n: i32) -> f64 {
     r
 }
 
-fn f64_sqrt(x: f64) -> f64 {
+pub fn f64_sqrt(x: f64) -> f64 {
     if x <= 0.0 { return 0.0; }
     let mut z = x;
     for _ in 0..10 { z = (z + x / z) * 0.5; }
     z
 }
 
-fn f64_exp(x: f64) -> f64 {
+pub fn f64_exp(x: f64) -> f64 {
     let mut r = 1.0_f64;
     let mut t = 1.0_f64;
     for i in 1..20 {
@@ -649,4 +649,167 @@ pub fn residual_source_verify() -> bool {
     && ALPHA_INV_RESIDUAL_PPM < 0.01
     && MP_ME_RESIDUAL_PPM < 0.01
     && STRUCTURALLY_EXACT_PARAMS.len() == 6
+}
+
+// ═══════════════════════════════════════════════════════════════
+// §7. WINDING-PARAMETERIZED CONSTANTS — omega = 2*pi
+// ═══════════════════════════════════════════════════════════════
+//
+// The winding is the fundamental unit of angle. One winding omega = 2*pi.
+// All formulas are rewritten with omega rather than pi:
+//   pi -> omega/2, 2*pi -> omega, e^{-88*pi} -> e^{-44*omega}
+//   arctan(x) -> arctan(x)/omega  (in windings)
+//
+// Rational winding check: a value is real exactly when its winding is
+// 0 or 1/2 (self-inverse). Closure and periodicity are visible in the
+// denominator. When a constant will not sit on a rational lattice,
+// that is the finding -- the observable may still collapse to an
+// exact algebraic form (e.g., cos^2(tilt)=16/17, lambda=3/sqrt(178)).
+//
+// Author: Lando-tensor-odotperator (Math-odotperator)
+// Date: 2025-01-20
+
+/// omega = 2*pi -- one full winding in radians. The fundamental angle unit.
+pub const F64_OMEGA: f64 = 6.283185307179586476925286766559005768_f64;
+
+/// pi = omega/2.
+pub fn omega_half() -> f64 { F64_OMEGA * 0.5 }
+
+/// Convert radians to windings: w = theta / omega.
+pub fn to_windings(radians: f64) -> f64 { radians / F64_OMEGA }
+
+/// Convert windings to radians: theta = w * omega.
+pub fn from_windings(w: f64) -> f64 { w * F64_OMEGA }
+
+/// arctan(x) in windings (the fundamental angle representation).
+pub fn arctan_in_windings(x: f64) -> f64 {
+    let abs_x = if x < 0.0 { -x } else { x };
+    let recip = abs_x > 1.0;
+    let y = if recip { 1.0 / abs_x } else { abs_x };
+    let y2 = y * y;
+    let mut term = y;
+    let mut sum = y;
+    for k in 1..15 {
+        term *= -y2 * (2 * k - 1) as f64 / (2 * k + 1) as f64;
+        sum += term;
+    }
+    let atan = if recip { F64_PI / 2.0 - sum } else { sum };
+    let atan = if x < 0.0 { -atan } else { atan };
+    atan / F64_OMEGA
+}
+
+// --- FUNDAMENTAL ANGLES IN WINDINGS ---
+
+/// Inflation tilt: arctan(1/4) in windings.
+/// cos^2(tilt) = 16/17 (exact rational -- Pythagorean triple 1:4:sqrt(17)).
+pub fn tilt_windings() -> f64 { arctan_in_windings(0.25) }
+
+/// Cabbibo angle theta_C = arctan(3/13) in windings.
+/// lambda = sin(theta_C) = 3/sqrt(178) (exact radical).
+pub fn theta_C_windings() -> f64 { arctan_in_windings(3.0 / 13.0) }
+
+/// CP-violating phase delta_CP = arctan(3/2) in windings.
+pub fn delta_CP_windings() -> f64 { arctan_in_windings(3.0 / 2.0) }
+
+/// Weinberg angle theta_W at M_Z in windings (sin^2 theta_W = 3/13).
+pub fn theta_W_windings() -> f64 {
+    let sin_theta_w = f64_sqrt(SIN2_THETA_W_NUM as f64 / SIN2_THETA_W_DEN as f64);
+    let x = sin_theta_w;
+    let x2 = x * x;
+    let mut term = x;
+    let mut sum = x;
+    for k in 1..12 {
+        term *= x2 * (2 * k - 1) as f64 * (2 * k - 1) as f64
+              / ((2 * k) as f64 * (2 * k + 1) as f64);
+        sum += term;
+    }
+    sum / F64_OMEGA
+}
+
+// --- BOSON MASSES: WINDING FORM ---
+
+/// m_W/m_p = d*(gear + omega/2) -- winding-parameterized.
+/// Contrast with: d*(gear + pi) -- the pi-form.
+pub fn W_over_proton_omega() -> f64 {
+    D_SIC as f64 * (GEAR as f64 + omega_half())
+}
+
+/// m_Z/m_p = d*(gear + omega/2)/cos theta_W.
+pub fn Z_over_proton_omega() -> f64 {
+    W_over_proton_omega() / (COS_THETA_W_APPROX_NUM as f64 / COS_THETA_W_APPROX_DEN as f64)
+}
+
+/// m_H/m_p = d*(2*gear + omega/2).
+pub fn H_over_proton_omega() -> f64 {
+    D_SIC as f64 * (2.0 * GEAR as f64 + omega_half())
+}
+
+// --- COSMOLOGICAL CONSTANT: WINDING FORM ---
+
+/// rho_Lambda/rho_Planck = e^{-44*omega} / 744 -- winding-parameterized.
+/// Equivalent to e^{-88*pi} / 744.
+pub fn rho_lambda_over_rho_planck_omega() -> f64 {
+    f64_exp(-44.0 * F64_OMEGA) / 744.0
+}
+
+/// Verify e^{-44*omega} = e^{-88*pi} to kernel precision.
+pub fn winding_cosmology_verify() -> bool {
+    (f64_exp(-44.0 * F64_OMEGA) - f64_exp(-88.0 * F64_PI)).abs() < 1e-10
+}
+
+// --- NEUTRINO MASS RATIOS ---
+
+/// Neutrino mass hierarchy: m1 : m2 : m3 = 1 : gear : gear^2 = 1 : 4 : 16.
+pub const NU_MASS_RATIO_1: u32 = 1;
+pub const NU_MASS_RATIO_2: u32 = GEAR;      // 4
+pub const NU_MASS_RATIO_3: u32 = GEAR * GEAR; // 16
+
+/// See-saw scale: M_UV = 1.03e12 GeV.
+pub const SEESAW_SCALE_GEV: f64 = 1.03e12;
+
+// --- WINDING REPORT ---
+
+/// Full winding-parameterized constant report.
+pub fn winding_report() -> String {
+    let mut s = String::new();
+    s.push_str("=== WINDING-PARAMETERIZED CONSTANTS (omega = 2*pi) ===\n\n");
+    s.push_str(&alloc::format!("  omega          = {:.12} rad\n", F64_OMEGA));
+    s.push_str(&alloc::format!("  omega/2 = pi   = {:.12}\n\n", omega_half()));
+
+    s.push_str("--- ANGLE WINDINGS ---\n");
+    s.push_str(&alloc::format!("  tilt   arctan(1/4)/omega  = {:.9}  cos^2=16/17 (EXACT)\n", tilt_windings()));
+    s.push_str(&alloc::format!("  theta_C arctan(3/13)/omega = {:.9}  lambda=3/sqrt(178)\n", theta_C_windings()));
+    s.push_str(&alloc::format!("  delta_CP arctan(3/2)/omega = {:.9}\n", delta_CP_windings()));
+    s.push_str(&alloc::format!("  theta_W arcsin(sqrt(3/13))/omega = {:.9}  sin^2=3/13\n\n", theta_W_windings()));
+
+    s.push_str("--- BOSON MASSES (omega form) ---\n");
+    s.push_str(&alloc::format!("  m_W/m_p = d*(gear+omega/2) = {:.6}\n", W_over_proton_omega()));
+    s.push_str(&alloc::format!("  m_Z/m_p = d*(gear+omega/2)/cW = {:.6}\n", Z_over_proton_omega()));
+    s.push_str(&alloc::format!("  m_H/m_p = d*(2*gear+omega/2) = {:.6}\n\n", H_over_proton_omega()));
+
+    s.push_str("--- COSMOLOGY (omega form) ---\n");
+    s.push_str(&alloc::format!("  rho_Lambda/rho_Pl = e^{{-44}}*omega/744 = {:.6e}\n", rho_lambda_over_rho_planck_omega()));
+    s.push_str(&alloc::format!("  VERIFY e^{{-44}}*omega = e^{{-88}}*pi: {}\n\n", winding_cosmology_verify()));
+
+    s.push_str("--- NEUTRINO HIERARCHY ---\n");
+    s.push_str(&alloc::format!("  m1:m2:m3 = 1:gear:gear^2 = {}:{}:{}\n", NU_MASS_RATIO_1, NU_MASS_RATIO_2, NU_MASS_RATIO_3));
+    s.push_str(&alloc::format!("  See-saw scale M_UV ~ {:.2e} GeV\n\n", SEESAW_SCALE_GEV));
+
+    s.push_str("KEY FINDING: No angle is a rational winding at small denominator.\n");
+    s.push_str("Yet observables collapse to exact algebraic forms:\n");
+    s.push_str("  cos^2(tilt)=16/17  lambda=3/sqrt(178)  sin^2(theta_W)=3/13  m_nu=1:4:16\n");
+    s
+}
+
+/// Verify winding parameterization identities.
+pub fn winding_verify() -> bool {
+    (F64_OMEGA - 2.0 * F64_PI).abs() < 1e-12
+    && (omega_half() - F64_PI).abs() < 1e-12
+    && winding_cosmology_verify()
+    && tilt_windings() > 0.03 && tilt_windings() < 0.05
+    && theta_C_windings() > 0.03 && theta_C_windings() < 0.05
+    && delta_CP_windings() > 0.14 && delta_CP_windings() < 0.17
+    && theta_W_windings() > 0.07 && theta_W_windings() < 0.09
+    && W_over_proton_omega() > 80.0 && W_over_proton_omega() < 90.0
+    && NU_MASS_RATIO_3 == 16
 }

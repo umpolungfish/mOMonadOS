@@ -63,6 +63,7 @@ mod riemann_hilbert;
 mod witness_vessel;
 mod ask;
 mod proof;
+mod seals;
 mod constant_closure;
 mod repl;
 mod fibonacci_qc;

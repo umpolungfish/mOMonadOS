@@ -195,6 +195,12 @@ pub fn repl(k: &mut Kernel) {
                     }
                 }
             },
+            "seals" => {
+                match parts.next().unwrap_or("") {
+                    "" | "list" => crate::seals::list_seals(),
+                    other => crate::seals::dispatch_seal(other),
+                }
+            },
             "cycle" => {
                 let tail: Vec<&str> = parts.collect();
                 let word = tail.join(" ");
@@ -393,188 +399,11 @@ pub fn repl(k: &mut Kernel) {
                     }
                     "winding" => crate::fibonacci_qc::repl_winding(),
                     "verify" => {
-                        sprintln!("Fibonacci anyon algebra verified = {}", crate::fibonacci_qc::verify_all());
-                    }
-                    "compile" => {
-                        // the line was split with a field limit, so the tail can
-                        // arrive as one token ("S 12"); re-tokenize it. Using
-                        // split_whitespace also absorbs the CR the serial
-                        // console appends on Enter.
-                        let tail: Vec<&str> = parts.collect();
-                        let joined = tail.join(" ");
-                        let rest: Vec<&str> = joined.split_whitespace().collect();
-                        if rest.is_empty() {
-                            sprintln!("fibqc compile <gates>   e.g. `fibqc compile H T`");
-                        } else {
-                            // a trailing integer is the net depth, everything before it is the circuit
-                            let (gates, depth) = match rest.last().and_then(|s| s.parse::<usize>().ok()) {
-                                Some(d) => (&rest[..rest.len()-1], d.max(1)),
-                                None => (&rest[..], 10),
-                            };
-                            if gates.is_empty() {
-                                sprintln!("No gates given. Known: H T S X");
-                            } else {
-                                crate::fibonacci_qc::repl_compile(&gates.join(" "), depth, 3, 0);
-                            }
-                        }
-                    }
-                    "jones" => {
-                        let tail: Vec<&str> = parts.collect();
-                        let joined = tail.join(" ");
-                        let word: Vec<i32> = joined.split_whitespace()
-                            .filter_map(|t| t.parse::<i32>().ok()).collect();
-                        if word.is_empty() {
-                            sprintln!("fibqc jones <generators...>   e.g. `fibqc jones 1 1 1`");
-                            sprintln!("Strand count is implied: sigma_k needs k+1 strands.");
-                        } else {
-                            // The word fixes the strand count. Asking for it
-                            // separately only creates a number to get wrong.
-                            let n = word.iter().map(|g| g.unsigned_abs() as usize).max()
-                                        .unwrap_or(0) + 1;
-                            crate::fibonacci_qc::repl_jones(n, &word);
-                        }
-                    }
-                    "knot" => {
-                        let name = parts.next().unwrap_or("").trim();
-                        // braid words for a small census; the closure of each is the knot
-                        let table: [(&str, usize, &[i32]); 9] = [
-                            ("unknot",       1, &[]),
-                            ("trefoil",      2, &[1,1,1]),
-                            ("trefoil*",     2, &[-1,-1,-1]),
-                            ("figure-eight", 3, &[1,-2,1,-2]),
-                            ("cinquefoil",   2, &[1,1,1,1,1]),
-                            ("7_1",          2, &[1,1,1,1,1,1,1]),
-                            ("8_19",         3, &[1,1,1,2,1,1,1,2]),
-                            ("T(2,9)",       2, &[1,1,1,1,1,1,1,1,1]),
-                            ("T(2,10)",      2, &[1,1,1,1,1,1,1,1,1,1]),
-                        ];
-                        if name.is_empty() {
-                            sprintln!("fibqc knot <name>   known:");
-                            for (nm, n, w) in table.iter() {
-                                sprintln!("    {:14} {} strands, {} crossings", nm, n, w.len());
-                            }
-                        } else if let Some((nm, n, w)) =
-                            table.iter().find(|(nm, _, _)| *nm == name) {
-                            sprintln!("{} — closure of a {}-strand braid", nm, n);
-                            crate::fibonacci_qc::repl_jones(*n, w);
-                        } else {
-                            sprintln!("fibqc: no knot named '{}'. Try `fibqc knot`.", name);
-                        }
-                    }
-                    other => sprintln!("fibqc: unknown subcommand '{}'. Try `fibqc help`.", other),
-                }
-            }
-            "iuft" => {
-                match parts.next().unwrap_or("") {
-                    "" | "help" => {
-                        sprintln!("iuft gate <name>         — show IUFT QC gate encoding (Euler angles)");
-                        sprintln!("iuft encode <name>       — compute IUFT gate from catalog entry on-the-fly");
-                        sprintln!("iuft tuple <12-glyphs>   — encode an arbitrary 12-glyph tuple");
-                        sprintln!("iuft report <name>       — full gate report (SU(2), Bloch, unitarity)");
-                        sprintln!("iuft distance <a> <b>    — compute IUFT QC gate distance");
-                        sprintln!("iuft matrix              — full distance matrix over known gates");
-                        sprintln!("iuft list                — list all known IUFT gate encodings");
-                        sprintln!("iuft verify [name]       — verify encoding consistency (hardcoded vs computed)");
-                        sprintln!("");
-                        sprintln!("Hardcoded: graviton, photon, electron, neutron, proton, ZFC, CLINK L8, grammar, HSOA");
-                        sprintln!("Any catalog entry can be encoded on-the-fly via 'iuft encode <name>'.");
-                        sprintln!("Derived from IUFT Quantum Expansion II — 12->3 degenerate projection.");
-                    }
-                    "gate" | "report" => {
                         let name = parts.next().unwrap_or("");
                         if name.is_empty() {
-                            sprintln!("iuft gate <name>   e.g. `iuft gate graviton`");
+                            crate::iuft_qc::verify_references();
                         } else {
-                            crate::iuft_qc::print_gate_report(name);
-                        }
-                    }
-                    "encode" => {
-                        let name = parts.next().unwrap_or("");
-                        if name.is_empty() {
-                            sprintln!("iuft encode <name>   encode any catalog entry e.g. `iuft encode electron`");
-                        } else {
-                            match crate::iuft_qc::gate_for(name) {
-                                Some(gate) => {
-                                    sprintln!("IUFT QC Gate (encoded): {}", name);
-                                    sprintln!("  θ = {:.1}°", gate.theta_deg);
-                                    sprintln!("  φ = {:.1}°", gate.phi_deg);
-                                    sprintln!("  ψ = {:.1}°", gate.psi_deg);
-                                    let su2 = gate.to_su2();
-                                    sprintln!("  SU(2) = [[{:.4}{:+.4}i, {:.4}{:+.4}i],",
-                                        su2[0][0], su2[0][1], su2[0][2], su2[0][3]);
-                                    sprintln!("           [{:.4}{:+.4}i, {:.4}{:+.4}i]]",
-                                        su2[1][0], su2[1][1], su2[1][2], su2[1][3]);
-                                    sprintln!("  Unitary: {}", crate::iuft_qc::verify_unitary(&gate));
-                                }
-                                None => sprintln!("No encoding found for '{}'.", name),
-                            }
-                        }
-                    }
-                    "distance" => {
-                        let a = parts.next().unwrap_or("");
-                        let b = parts.next().unwrap_or("");
-                        if a.is_empty() || b.is_empty() {
-                            sprintln!("iuft distance <a> <b>   e.g. `iuft distance graviton photon`");
-                        } else {
-                            match crate::iuft_qc::gate_distance(a, b) {
-                                Some(d) => sprintln!("IUFT QC gate distance d({}, {}) = {:.6}", a, b, d),
-                                None => sprintln!("One or both entries lack IUFT gate encodings."),
-                            }
-                        }
-                    }
-                    "matrix" => {
-                        crate::iuft_qc::print_distance_matrix();
-                    }
-                    "list" => {
-                        sprintln!("IUFT QC Gate Encodings:");
-                        for (name, gate) in crate::iuft_qc::known_gates() {
-                            sprintln!("  {:>12}: θ={:.1}°  φ={:.1}°  ψ={:.1}°",
-                                name, gate.theta_deg, gate.phi_deg, gate.psi_deg);
-                        }
-                    }
-                    "tuple" => {
-                        let glyph_str = parts.next().unwrap_or("");
-                        if glyph_str.is_empty() {
-                            sprintln!("iuft tuple <12-glyphs>   e.g. `iuft tuple ⟨...⟩`");
-                            sprintln!("Encodes an arbitrary 12-glyph string into an IUFT gate.");
-                            sprintln!("Example: pass a 12-glyph tuple string like the graviton tuple.");
-                        } else {
-                            let rest: alloc::vec::Vec<&str> = core::iter::once(glyph_str).chain(parts).collect();
-                            let glyphs = rest.join(" ");
-                            match crate::iuft_qc::encode_glyphs(&glyphs) {
-                                Some(gate) => {
-                                    sprintln!("IUFT QC Gate (from tuple):");
-                                    sprintln!("  θ = {:.1}°", gate.theta_deg);
-                                    sprintln!("  φ = {:.1}°", gate.phi_deg);
-                                    sprintln!("  ψ = {:.1}°", gate.psi_deg);
-                                    let su2 = gate.to_su2();
-                                    sprintln!("  SU(2) = [[{:.4}{:+.4}i, {:.4}{:+.4}i],",
-                                        su2[0][0], su2[0][1], su2[0][2], su2[0][3]);
-                                    sprintln!("           [{:.4}{:+.4}i, {:.4}{:+.4}i]]",
-                                        su2[1][0], su2[1][1], su2[1][2], su2[1][3]);
-                                    sprintln!("  Unitary: {}", crate::iuft_qc::verify_unitary(&gate));
-                                    let (nearest, dist) = crate::iuft_qc::nearest_known(&gate);
-                                    sprintln!("  Nearest known: {} (d={:.4})", nearest, dist);
-                                }
-                                None => sprintln!("Failed to parse glyph string. Need exactly 12 Shavian glyphs + ⊙."),
-                            }
-                        }
-                    }
-                    "verify" => {
-                        let name = parts.next().unwrap_or("");
-                        if name.is_empty() {
-                            sprintln!("Encoding consistency check (hardcoded vs computed encode):");
-                            for (ename, _) in crate::iuft_qc::known_gates() {
-                                match crate::iuft_qc::verify_encoding_consistency(ename) {
-                                    Some(d) => sprintln!("  {:>12}: d(hardcoded, computed) = {:.6}", ename, d),
-                                    None => sprintln!("  {:>12}: (no catalog entry for comparison)", ename),
-                                }
-                            }
-                        } else {
-                            match crate::iuft_qc::verify_encoding_consistency(name) {
-                                Some(d) => sprintln!("iuft verify {}: d(hardcoded, computed) = {:.6}", name, d),
-                                None => sprintln!("Cannot verify '{}': no catalog entry or no hardcoded gate.", name),
-                            }
+                            crate::iuft_qc::verify_one(name);
                         }
                     }
                     other => sprintln!("iuft: unknown subcommand '{}'. Try `iuft help`.", other),

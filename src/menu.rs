@@ -30,8 +30,25 @@ pub static MAIN_MENU: &[MenuItem] = &[
     MenuItem { name: "Dialect", cmd: "dialect",  desc: "Cross-dialect (ruleset, jump, seal, compound, whoami)", example: "", submenu: Some(DIALECT_MENU) },
     MenuItem { name: "ParaASM",  cmd: "parasm",   desc: "ParaASM (test, frob, kernel, load)", example: "", submenu: Some(PARASM_MENU) },
     MenuItem { name: "Cr3echrz", cmd: "cr3echrz", desc: "Theorem engine + p4rakernel (cr3, p4ra)", example: "", submenu: Some(CR3ECHRZ_MENU) },
+    MenuItem { name: "Seals",    cmd: "seals",     desc: "Sealed proofs — walk constant closure proofs step by step", example: "", submenu: Some(SEALS_MENU) },
+
     MenuItem { name: "Proof",    cmd: "proof",    desc: "Guided proofs — walk a proof step by step on the kernel", example: "", submenu: Some(PROOF_MENU) },
     MenuItem { name: "Help",     cmd: "help",     desc: "Help system (help <topic> for details)", example: "help fibqc", submenu: None },
+];
+
+pub static SEALS_MENU: &[MenuItem] = &[
+    MenuItem { name: "list",           cmd: "seals list",           desc: "List all 10 sealed proofs", example: "seals list", submenu: None },
+    MenuItem { name: "fine-structure", cmd: "seals fine-structure", desc: "α⁻¹ = d²−7 + arctan(1/4)/(4√3) + α²·d (3 steps)", example: "seals fine-structure", submenu: None },
+    MenuItem { name: "proton",         cmd: "seals proton",         desc: "m_p/m_e = d³ + d(d−3) + α-dressing (2 steps)", example: "seals proton", submenu: None },
+    MenuItem { name: "lepton",         cmd: "seals lepton",         desc: "m_μ/m_e (exact rational), m_τ/m_e (2 steps)", example: "seals lepton", submenu: None },
+    MenuItem { name: "boson",          cmd: "seals boson",          desc: "m_W, m_Z, m_H — π + ω forms (2 steps)", example: "seals boson", submenu: None },
+    MenuItem { name: "gravity",        cmd: "seals gravity",        desc: "α_G = α¹⁸·√3 (1 step)", example: "seals gravity", submenu: None },
+    MenuItem { name: "weinberg",       cmd: "seals weinberg",       desc: "sin²θ_W = 3/13 (exact rational, 1 step)", example: "seals weinberg", submenu: None },
+    MenuItem { name: "cosmology",      cmd: "seals cosmology",      desc: "ρ_Λ/ρ_Pl = e^{-44ω}/744 (1 step)", example: "seals cosmology", submenu: None },
+    MenuItem { name: "neutrino",       cmd: "seals neutrino",       desc: "m₁:m₂:m₃ = 1:4:16 (1 step)", example: "seals neutrino", submenu: None },
+    MenuItem { name: "winding",        cmd: "seals winding",        desc: "ω = 2π — all angles in windings (1 step)", example: "seals winding", submenu: None },
+    MenuItem { name: "residuals",      cmd: "seals residuals",      desc: "Where every remainders comes from (1 step)", example: "seals residuals", submenu: None },
+    MenuItem { name: "all",            cmd: "seals all",            desc: "GRAND SEAL — walk through all 10", example: "seals all", submenu: None },
 ];
 
 pub static PROOF_MENU: &[MenuItem] = &[
