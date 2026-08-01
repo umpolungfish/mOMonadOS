@@ -15,7 +15,7 @@ impl Rat {
     pub const ONE:  Rat = Rat { num: 1, den: 1 };
 
     fn gcd_u64(mut a: u64, mut b: u64) -> u64 {
-        if a == 0 { return b; } if b == 0 { return a; }
+        if a == 0 { return b; } else if b == 0 { return a; }
         let shift = (a | b).trailing_zeros();
         a >>= a.trailing_zeros();
         while b != 0 {

@@ -5,7 +5,6 @@ use crate::tokens::{period as tok_period, signature, Program, Token};
 /// Address = Σᵢ (primitive_index[i] × STRIDE[i])
 /// Strides: [5184000, 1728000, 576000, 144000, 48000, 12000, 4000, 800, 200, 50, 10, 1]
 /// Cardinalities (D,T,R,P,F,K,G,C,Phi,H,S,Omega): [4,5,4,5,3,5,3,4,5,4,3,4]
-
 /// Total number of distinct types in the crystal.
 /// Computed from the product of all primitive family cardinalities.
 /// CARDS = [4,5,4,5,3,5,3,4,5,4,3,4]; product = 17_280_000.

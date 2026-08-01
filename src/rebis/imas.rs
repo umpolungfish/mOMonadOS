@@ -53,13 +53,13 @@ pub fn fingerprint(arr: &[u8]) -> StructFingerprint {
     let mut frob = 0u8;
     let mut hs=false; let mut hf=false;
     for i in 0..n {
-        if arr[i]==FSPLIT {hs=true;} if arr[i]==FFUSE {hf=true;}
+        if arr[i]==FSPLIT {hs=true;} else if arr[i]==FFUSE {hf=true;}
         if i+1<n && arr[i]==FSPLIT && arr[i+1]==FFUSE {frob=1;}
         if i+1<n && arr[i]==FFUSE && arr[i+1]==FSPLIT {frob=2;}
     }
     if hs&&hf&&frob==0 {frob=3;}
     let mut ht=false; let mut he=false; let mut hg=false;
-    for &t in arr { if t==EVALT {ht=true;} if t==EVALF {he=true;} if t==ENGAGR {hg=true;} }
+    for &t in arr { if t==EVALT {ht=true;} else if t==EVALF {he=true;} else if t==ENGAGR {hg=true;} }
     let dial = ht&&he&&hg;
     let period = if n<=1 {n as u8} else {
         let mut p=1u8;
@@ -129,7 +129,7 @@ pub fn canonical_sequence(idx: usize) -> Option<&'static [u8]> {
 
 pub fn has_frobenius_pair(arr: &[u8]) -> bool {
     let mut saw=false;
-    for &t in arr { if t==FSPLIT {saw=true;} if t==FFUSE&&saw {return true;} }
+    for &t in arr { if t==FSPLIT {saw=true;} else if t==FFUSE&&saw {return true;} }
     false
 }
 

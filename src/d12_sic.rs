@@ -40,7 +40,6 @@ use alloc::string::String;
 /// Phase generators: u2,u6,u8,u10 are roots of unity (zeta12 powers).
 /// u7 is the other root of u1's quartic; u9 from u3's quartic;
 /// u11 = q(u5) exactly (deg-63 polynomial, 78-bit denoms, 2^-5300).
-
 pub const PHASE_GENERATOR_COUNT: u32 = 12;
 pub const INDEPENDENT_PHASE_GENERATORS: u32 = 1;  // u1 only
 pub const UNITY_PHASES: u32 = 4;  // u2,u6,u8,u10 = zeta12 powers
@@ -107,7 +106,6 @@ pub fn phase_tower_collapse_report() -> String {
 ///
 /// All 12 sqrt(N_k) in K16(sqrt N0,sqrt N1,sqrt N3,sqrt N5,sqrt N9)
 /// Field degree: 16 × 2^5 = 512 over Q.
-
 pub const MAG_CLASS_RANK: u32 = 5;
 pub const MAG_CLASS_BASIS: [&str; 5] = ["N0", "N1", "N3", "N5", "N9"];
 pub const MAG_FIELD_DEGREE: u32 = 512;
@@ -209,7 +207,6 @@ Conjugate-pair pattern [1,0,1,0,1,0] reproduced exactly.
 ///   deg 8:  9 orbits  (32 overlays total)
 ///   deg 16: 11 orbits (48 overlays total)
 ///   deg 32: 5 orbits  (40 overlays total)
-
 pub const TOTAL_OVERLAPS: u32 = 143;
 pub const ORBIT_COUNT: u32 = 31;
 pub const MAX_OVERLAP_DEGREE: u32 = 32;
@@ -261,7 +258,6 @@ pub const A6_STRATUM_COUNT: u32 = 12;
 /// Flip-audit capstone (branch_probe12): 128 of 256 branch combinations
 /// are harmless -> ANY ring homomorphism R -> C sends the formal coordinate
 /// tuple to a genuine d=12 SIC fiducial vector.
-
 pub const EXISTENCE_RING_DIM_Q: u32 = 2048;
 pub const EXISTENCE_RING_FIELD: &str = "K16(s0,s1,s3,s9,i,c5,u1)";
 pub const EXISTENCE_RING_BASE: &str = "K16 = Q[g]/(g^16-10g^14+40g^12-90g^10+126g^8-96g^6+25g^4+2g^2+1)";
@@ -396,7 +392,6 @@ Generator: gen_lean_existence.py (re-verify gate, pure fractions)
 ///
 /// The d=12 SIC fiducial thus provides the first CONCRETE realization
 /// of the Dual-Link SIC-POVM at a dimension beyond d=2 (Belnap B=XZ).
-
 pub const DUAL_LINK_NORM_N1_DENOM: u32 = 32448;
 pub const DUAL_LINK_RAMIFICATION: [u32; 3] = [2, 3, 13];
 /// 32448 = 2^6 × 3 × 13^2
@@ -451,7 +446,6 @@ pub fn dual_link_report() -> String {
 ///   2. mod_sum:             |z0|^2 + |z6|^2 = 1/6 + (1/78)sqrt13
 ///   3. mod_prod:            |z0|^2 * |z6|^2 = 7/1872 + (1/1872)sqrt13
 ///   4. mod_prod_in_base:    product lies in Q(sqrt13) (sqrt2,sqrt26 vanish)
-
 pub const SYMMETRIC_MODULI_FIELD: &str = "Q(sqrt2, sqrt13)";
 pub const SYMMETRIC_MODULI_DEGREE: u32 = 4;
 pub const SYMMETRIC_MODULI_COUNT: u32 = 2;  // z0, z6
@@ -513,7 +507,6 @@ pub fn symmetric_moduli_report() -> String {
 /// Lean.trustCompiler] -- no project axioms, no Stark shadow, no circularity.
 /// SIC_POVM_Functor.lean now IMPORTS the Embedding and delegates: the last
 /// non-shadow axiom of the SIC tree is retired.
-
 pub const EMBEDDING_SORRIES_REMAINING: u32 = 0;
 pub const EMBEDDING_INFRASTRUCTURE_DONE: bool = true;
 pub const EMBEDDING_HOM_TRANSFER_DONE: bool = true;
@@ -588,7 +581,6 @@ mod embedding_tests {
 ///
 /// Capstone: sic_no_condition (n : ℕ) : (mlOrbit n).card = 4 ^ n
 /// Zero sorries, zero axioms, machine-checked.
-
 pub const BELNAP_SIC_UNCONDITIONAL: bool = true;
 pub const BELNAP_SIC_DIM_FORMULA: &str = "d = 2^n (all n >= 0)";
 pub const BELNAP_SIC_CAPSTONE: &str = "sic_no_condition (n : Nat) : (mlOrbit n).card = 4 ^ n";
@@ -600,7 +592,6 @@ pub const BELNAP_SIC_CAPSTONE: &str = "sic_no_condition (n : Nat) : (mlOrbit n).
 ///   Tier 3: d=12 (THEOREM: existence ring + embedding capstone)
 ///   Tier 4: d=7 (nested SIC from {D,P} subset, Φ-gate selection)
 ///   Tier 5: general d (Z[1/d, zeta_d] embedding, Stark conjecture as B-state)
-
 pub const SIC_TIERS: [(&str, &str, &str); 6] = [
     ("Tier 0", "d=1",   "Trivial"),
     ("Tier 1", "d=2",   "Belnap B=XZ -- unconditional, degree 2"),
@@ -650,7 +641,6 @@ T-arm: unconditional proof (orbit cardinality = 4^n)
 ///
 /// Notable: ordinalK(air) = 9/2 (the only non-integer ordinal, from MBL).
 ///          ordinalPhi(roar) = 7/3 (complex-plane critical).
-
 pub const ORDINAL_GUARD_COUNT: u32 = 12;
 pub const ORDINAL_NONINTEGER_COUNT: u32 = 2;
 
@@ -702,7 +692,6 @@ Primitive families:
 /// All 12 coordinates z_k = sqrt(N_k) * u_k are radical-expressible.
 /// The full tower decomposes as 6 cyclic pieces (4 quadratic + 2 cubic)
 /// of degree 288 over Q (SIC_D12_RayTower.lean).
-
 pub const Z0_CLOSED_FORM: &str = "z0 = +sqrt(1/12 - sqrt(2)/24 + sqrt(13)/156 - sqrt(26)/312)";
 pub const FIDUCIAL_RADICAL_DEGREE: u32 = 288;
 pub const RAY_TOWER_CHUNKS: u32 = 6;
@@ -713,7 +702,6 @@ pub const RAY_TOWER_CUBIC: u32 = 2;
 /// z1 = sqrt(N1) * [(c + i*sqrt(4-c^2))/2]^(1/4)
 /// where c is a root of the solvable quartic 9x^4 - 368x^3 + 632x^2 + 960x - 1392
 /// (Galois group D4, solvable by radicals).
-
 pub const Z1_QUARTIC: &str = "9x^4 - 368x^3 + 632x^2 + 960x - 1392 (D4)";
 pub const Z1_CLOSED_FORM: &str = "z1 = sqrt(N1) * [(c + i*sqrt(4-c^2))/2]^(1/4)";
 

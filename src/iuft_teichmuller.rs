@@ -201,7 +201,6 @@ fn primitive_step_to_gate_delta(family: &str) -> (f64, f64, f64) {
 /// structure while changing ouroboricity tier. In gate space, this becomes
 /// a trajectory through SU(2) — the sequence of gate encodings along
 /// the promotion path.
-
 /// Look up a gate by name: hardcoded table first, then catalog encode.
 fn gate_or_encode(name: &str) -> Option<IuftQcGate> {
     if let Some(g) = gate_for(name) {

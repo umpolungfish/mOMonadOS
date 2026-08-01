@@ -270,7 +270,7 @@ pub fn period(prog: &Program) -> usize {
     let n = prog.len();
     if n == 0 { return 1; }
     for p in 1..=n {
-        if n % p == 0 {
+        if n.is_multiple_of(p) {
             let periodic = (p..n).all(|i| prog.get(i) == prog.get(i % p));
             if periodic { return p; }
         }

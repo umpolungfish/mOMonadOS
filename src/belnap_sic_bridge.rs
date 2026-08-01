@@ -132,7 +132,6 @@ pub fn parity_slot_symmetry() -> bool {
 /// "why 2:1?" coherence cost ratio in Belnap-Shor have the SAME
 /// structural origin — the T↔P parity gate, which forces the
 /// crystal geometry 3³×4⁵×5⁴ = 17.28M.
-
 /// Map a B4 state under measurement bias to a magnitude class index.
 /// B-bias → magnitude class 0 (basis N₀)
 /// T-bias → magnitude class 1 (basis N₁)

@@ -34,9 +34,9 @@ pub fn core(n: i64) -> i64 {
     let mut s: i64 = 1;
     let mut p: i64 = 2;
     while p * p <= n {
-        if n % p == 0 {
+        if n.is_multiple_of(p) {
             let mut e = 0;
-            while n % p == 0 {
+            while n.is_multiple_of(p) {
                 n /= p;
                 e += 1;
             }
@@ -138,7 +138,7 @@ impl RealQuad {
 
     /// Is the rational prime p inert, split, or ramified in F.
     pub fn splitting(&self, p: i64) -> Splitting {
-        if self.disc % p == 0 {
+        if self.disc.is_multiple_of(p) {
             return Splitting::Ramified;
         }
         // Kronecker symbol (disc / p)
@@ -324,7 +324,7 @@ pub fn class_group(f: &RealQuad) -> ClassGroup {
         }
         let mut a = 1i64;
         while a * a <= ac.abs() {
-            if ac % a == 0 {
+            if ac.is_multiple_of(a) {
                 for &sa in &[a, -a] {
                     let c = ac / sa;
                     let form = Form { a: sa, b, c };
@@ -566,7 +566,7 @@ pub fn norm_equation_coprime(f: &RealQuad, target: i64, bound: i64, q: i64) -> O
             while x <= bound {
                 let xs: Vec<i64> = if x == 0 { vec![0] } else { vec![x, -x] };
                 for sx in xs {
-                    if sx % q == 0 && sy % q == 0 {
+                    if sx.is_multiple_of(q) && sy.is_multiple_of(q) {
                         continue;
                     }
                     let nm = f.norm(sx, sy);

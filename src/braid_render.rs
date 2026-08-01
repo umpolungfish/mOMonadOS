@@ -16,7 +16,6 @@
 
 use alloc::format;
 use alloc::string::String;
-use alloc::vec;
 use alloc::vec::Vec;
 
 /// Strands a word needs: sigma_k acts on k and k+1, so the largest generator

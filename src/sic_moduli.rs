@@ -170,7 +170,6 @@ pub fn omega_from_verdict(v: Verdict) -> &'static str {
 /// The calibration dimensions (d=4,8,12) all have h=1, so A and B coincide
 /// and the identity is silent about the class group. d=16 is THE smallest
 /// dimension where h>1 AND the identity can adjudicate.
-
 pub fn d16_proof() -> String {
     let mut s = String::new();
     s.push_str("═══════════════════════════════════════════════════════\n");
@@ -534,7 +533,6 @@ pub fn scope_report() -> String {
 /// - φ̂=⊙ (self-modeling): structural SIC-POVM is the Σ=1:1 limit
 /// - ƒ=𐑐 (quantum): SIC-POVM is a quantum measurement
 /// - Ħ=𐑫 (eternal): class group is permanent, not finite-order
-
 pub fn grammar_encoding() -> String {
     let mut s = String::new();
     s.push_str("═══ STRUCTURAL GRAMMAR ENCODING ═══\n\n");
