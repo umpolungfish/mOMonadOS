@@ -167,22 +167,6 @@ impl BigUint {
 
 // ─── Lucas-Lehmer Test ─────────────────────────────────────────────────
 
-/// Lucas-Lehmer primality test for Mersenne number M_p = 2^p - 1.
-/// Returns true if M_p is prime, false if composite.
-/// Uses the optimized modulo reduction for M_p.
-/// Is the exponent itself prime? Trial division to √p — for any p the kernel
-/// can hold, this is a few dozen divisions.
-pub fn exponent_is_prime(p: usize) -> bool {
-    if p < 2 { return false; }
-    if p % 2 == 0 { return p == 2; }
-    let mut d = 3usize;
-    while d * d <= p {
-        if p % d == 0 { return false; }
-        d += 2;
-    }
-    true
-}
-
 /// Peak limb-buffer demand of a run at exponent `p`, in bytes.
 /// Each winding allocates the squared value and a shifted clone, and a bump
 /// heap that only reclaims its most recent block cannot give those back.
@@ -192,6 +176,9 @@ pub fn lucas_lehmer_heap_estimate(p: usize) -> usize {
     limbs.saturating_mul(8 * 4).saturating_mul(p.saturating_sub(2))
 }
 
+/// Lucas-Lehmer primality test for Mersenne number M_p = 2^p - 1.
+/// Returns true if M_p is prime, false if composite.
+/// Uses the optimized modulo reduction for M_p.
 pub fn lucas_lehmer(p: usize) -> bool {
     if p == 2 { return true; }  // M_2 = 3 is prime
     if p < 2 { return false; }
@@ -202,7 +189,7 @@ pub fn lucas_lehmer(p: usize) -> bool {
     // big-integer test to reach an answer trial division gives at once.
     // Lucas-Lehmer is defined for prime p; running it elsewhere is not merely
     // wasteful, it is outside the theorem.
-    if !exponent_is_prime(p) { return false; }
+    if !is_prime_exponent(p) { return false; }
 
     let mut s = BigUint::from_u64(4);  // s_0 = 4
     
@@ -274,12 +261,20 @@ pub fn search_range(p_start: usize, p_end: usize) -> Vec<CandidateResult> {
         // Quick check: if p is composite, M_p is composite
         if !is_prime_exponent(p) { continue; }
         
+        // A range is many tests, and on a bump heap the limb buffers of each
+        // one survive it. Summed over a range that is what exhausted the heap:
+        // no single exponent here is large, but a hundred of them are. Nothing
+        // a composite test allocates outlives the bool it returns, so the whole
+        // test is reclaimed and peak use is one exponent rather than the sum.
+        let mark = crate::heap_mark();
         let is_prime = lucas_lehmer(p);
         if is_prime {
-            // Compute M_p for display
+            // The decimal has to outlive the scope, so this one is kept.
+            // Mersenne primes are rare enough that keeping them costs nothing.
             let mp = mersenne_number_decimal(p);
             results.push(CandidateResult::Prime { p, mp_decimal: mp });
         } else {
+            crate::heap_reset(mark);
             results.push(CandidateResult::Composite { p });
         }
     }

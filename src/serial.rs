@@ -67,6 +67,23 @@ fn flush_buf(buf: &[u8; 14], fill: usize) {
     }
 }
 
+/// Decimal on the stack. The heap-exhaustion path cannot use `format!` — that
+/// allocates, and allocating is precisely what has just failed.
+pub fn write_dec(mut n: usize) {
+    let mut buf = [0u8; 20];
+    let mut i = buf.len();
+    if n == 0 {
+        write_byte(b'0');
+        return;
+    }
+    while n > 0 {
+        i -= 1;
+        buf[i] = b'0' + (n % 10) as u8;
+        n /= 10;
+    }
+    for b in &buf[i..] { write_byte(*b); }
+}
+
 pub fn write_str(s: &str) {
     let mut buf: [u8; 14] = [0; 14];
     let mut fill: usize = 0;

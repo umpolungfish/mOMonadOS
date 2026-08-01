@@ -976,7 +976,18 @@ pub fn repl(k: &mut Kernel) {
                         let args: Vec<&str> = parts.collect::<Vec<&str>>();
                         if args.len() >= 2 {
                             if let (Ok(start), Ok(end)) = (args[0].parse::<usize>(), args[1].parse::<usize>()) {
-                                sprintln!("{}", crate::mersenne_parallel::search_report(start, end));
+                                use crate::mersenne_parallel as mp;
+                                let (used, total) = crate::heap_used();
+                                let worst = (start..=end).filter(|q| mp::is_prime_exponent(*q))
+                                    .map(mp::lucas_lehmer_heap_estimate).max().unwrap_or(0);
+                                if worst > total.saturating_sub(used) {
+                                    sprintln!("Range needs about {} MiB at its largest prime exponent; {} MiB free.",
+                                              worst / (1024 * 1024),
+                                              total.saturating_sub(used) / (1024 * 1024));
+                                    sprintln!("  Narrow the range or lower the upper bound.");
+                                } else {
+                                    sprintln!("{}", mp::search_report(start, end));
+                                }
                             } else {
                                 sprintln!("Usage: mersearch run <start> <end>");
                             }
@@ -988,7 +999,7 @@ pub fn repl(k: &mut Kernel) {
                         let p_str = parts.next().unwrap_or("");
                         if let Ok(p) = p_str.parse::<usize>() {
                             use crate::mersenne_parallel as mp;
-                            if p >= 2 && !mp::exponent_is_prime(p) {
+                            if p >= 2 && !mp::is_prime_exponent(p) {
                                 // No arithmetic needed: a factor of p gives a
                                 // factor of M_p. Say which, so the answer is
                                 // checkable rather than merely asserted.

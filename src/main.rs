@@ -5,6 +5,7 @@
 #![allow(uncommon_codepoints)]
 #![no_main]
 #![feature(abi_x86_interrupt)]
+#![feature(alloc_error_handler)]
 #![allow(dead_code)]
 #![allow(clippy::upper_case_acronyms)]
 #![allow(clippy::approx_constant)]
@@ -129,6 +130,9 @@ unsafe impl core::alloc::GlobalAlloc for BumpAllocator {
             let cur     = self.next.load(Ordering::Relaxed);
             let aligned = (cur + align - 1) & !(align - 1);
             let new     = aligned + size;
+            // Null here reaches `alloc_error` below, which reports the real
+            // layout. Nothing is printed at this point so a caller that
+            // handles the null itself is not made to look like a crash.
             if new > self.end.load(Ordering::Relaxed) { return core::ptr::null_mut(); }
             if self.next.compare_exchange_weak(
                 cur, new, Ordering::Relaxed, Ordering::Relaxed,
@@ -296,6 +300,33 @@ fn panic(info: &PanicInfo) -> ! {
     serial::write_str("\n[PANIC] ");
     sprint!("{}", info.message());
     sprintln!();
+    loop { unsafe { core::arch::asm!("hlt", options(nostack, nomem, preserves_flags)); } }
+}
+
+/// Report heap exhaustion ourselves.
+///
+/// The default handler reaches the panic through `__rust_alloc_error_handler`,
+/// an internal symbol that takes the size and align as loose integers. Under
+/// this build — `build-std` with fat LTO — that call arrives with a size of
+/// zero however large the failed request was: an allocation of 1264 bytes
+/// against 552 free reported itself as "memory allocation of 0 bytes failed",
+/// which sent every reader hunting for a zero-size bug that does not exist.
+///
+/// Taking the `Layout` here reads it directly instead of through that symbol,
+/// and the writes below never allocate, which matters when the reason we are
+/// here is that allocation just failed.
+#[alloc_error_handler]
+fn alloc_error(layout: Layout) -> ! {
+    let (used, total) = heap_used();
+    serial::write_str("\n[PANIC] heap exhausted — wanted ");
+    serial::write_dec(layout.size());
+    serial::write_str(" bytes (align ");
+    serial::write_dec(layout.align());
+    serial::write_str("), ");
+    serial::write_dec(total.saturating_sub(used));
+    serial::write_str(" free of ");
+    serial::write_dec(total);
+    serial::write_str("\n");
     loop { unsafe { core::arch::asm!("hlt", options(nostack, nomem, preserves_flags)); } }
 }
 
