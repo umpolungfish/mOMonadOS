@@ -274,14 +274,32 @@ pub fn repl(k: &mut Kernel) {
                     _ => rest,
                 };
                 if rest.is_empty() {
-                    sprintln!("qc [draw|svg] <gates> [depth]   e.g. `qc H T 8`, `qc HTSX`, `qc draw XTT4`");
+                    sprintln!("qc [draw|svg] <gates> [net_depth] [sk_depth]   e.g. `qc H T 8`, `qc HTSX 10 0`");
                     sprintln!("Known gates: H T S X — spaces optional, case free.");
                     sprintln!("Depth is any positive integer (default 10); the search");
                     sprintln!("stops early if the gate net outgrows the arena.");
                 } else {
-                    let (gates, mut depth) = match rest.last().and_then(|s| s.parse::<usize>().ok()) {
-                        Some(d) => (&rest[..rest.len() - 1], d.max(1)),
-                        None => (&rest[..], 0),
+                    // Trailing integers are the two depths: net depth, then SK
+                    // recursion depth. The recursion depth was pinned at 3 and
+                    // invisible, which made the net-depth sweep unreadable —
+                    // the reported error is the output of a 3-level recursion,
+                    // not the net's own nearest neighbour, and only the latter
+                    // is monotone in net size. `qc HTSX 10 0` asks the net
+                    // directly.
+                    let mut nums: Vec<usize> = Vec::new();
+                    let mut cut = rest.len();
+                    while cut > 0 {
+                        match rest[cut - 1].parse::<usize>() {
+                            Ok(v) if nums.len() < 2 => { nums.push(v); cut -= 1; }
+                            _ => break,
+                        }
+                    }
+                    nums.reverse();
+                    let mut sk_depth = 3usize;
+                    let (gates, mut depth) = match nums.len() {
+                        2 => { sk_depth = nums[1]; (&rest[..cut], nums[0].max(1)) }
+                        1 => (&rest[..cut], nums[0].max(1)),
+                        _ => (&rest[..], 0),
                     };
                     // Gates need no separators, so the depth need not be separated
                     // either: `qc XTT4` reads the trailing digits as the depth.
@@ -299,7 +317,7 @@ pub fn repl(k: &mut Kernel) {
                     if spec.trim().is_empty() {
                         sprintln!("No gates given. Known: H T S X");
                     } else {
-                        crate::fibonacci_qc::repl_compile(&spec, depth, 3, render);
+                        crate::fibonacci_qc::repl_compile(&spec, depth, sk_depth, render);
                     }
                 }
             }

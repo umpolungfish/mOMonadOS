@@ -1410,12 +1410,39 @@ pub fn solovay_kitaev_arm(
     net: &GateNet,
     arm: Option<usize>,
 ) -> (Vec<i32>, Matrix2, f64) {
+    sk_arm(target, depth, net, arm, true)
+}
+
+/// `top` marks the outermost call.
+///
+/// A level takes its base `g_u` from the level below, forms the residual
+/// target·g_u⁻¹, decomposes it as a group commutator and approximates the two
+/// factors in the same net. Those factors are unrelated to the target, so how
+/// well the net approximates them says nothing about how well it approximated
+/// the target — a better base can compose into a worse whole. That is why the
+/// reported error is not monotone in net size even though every lookup inside
+/// is an exhaustive scan of the entire net.
+///
+/// Declining a bad level looks free, since `g_u` is already computed and
+/// carries its own word. It is not free inside the recursion: the level above
+/// then builds on a different base, and measured over a net-depth sweep that
+/// made the two best rows five and six times worse. The comparison is only
+/// safe where nothing is built on top of it, so it happens at the outermost
+/// call and nowhere else. There it can only help — the result is the better of
+/// exactly what this function returned before and the base it was built from.
+fn sk_arm(
+    target: &Matrix2,
+    depth: usize,
+    net: &GateNet,
+    arm: Option<usize>,
+    top: bool,
+) -> (Vec<i32>, Matrix2, f64) {
     if depth == 0 {
         return net.closest_arm(target, arm);
     }
 
     // Base approximation
-    let (w_u, g_u, _) = solovay_kitaev_arm(target, depth - 1, net, arm);
+    let (w_u, g_u, _) = sk_arm(target, depth - 1, net, arm, false);
 
     // Residual R = target * g_u^{-1}
     let g_u_inv = g_u.inverse();
@@ -1425,8 +1452,8 @@ pub fn solovay_kitaev_arm(
     let (v_mat, w_mat) = gc_decompose(&residual);
 
     // Recursively approximate V and W
-    let (w_v, g_v, _) = solovay_kitaev_arm(&v_mat, depth - 1, net, arm);
-    let (w_w, g_w, _) = solovay_kitaev_arm(&w_mat, depth - 1, net, arm);
+    let (w_v, g_v, _) = sk_arm(&v_mat, depth - 1, net, arm, false);
+    let (w_w, g_w, _) = sk_arm(&w_mat, depth - 1, net, arm, false);
 
     // Combined gate: g_v * g_w * g_v† * g_w† * g_u
     let combined = g_v.mul(g_w).mul(g_v.conjugate_transpose())
@@ -1445,7 +1472,10 @@ pub fn solovay_kitaev_arm(
     word.extend_from_slice(&w_v);
 
     let err = Matrix2::projective_distance(target, &combined);
-    (word, combined, err)
+
+    // At the top only: keep the better of this level and its own base.
+    let err_u = Matrix2::projective_distance(target, &g_u);
+    if top && err_u < err { (w_u, g_u, err_u) } else { (word, combined, err) }
 }
 
 /// Split over the tied bases, then fuse — δ then μ, rather than a ranking.
@@ -1881,7 +1911,7 @@ pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize, render: u8) {
     let mark = crate::heap_mark();
     let (used0, total) = crate::heap_used();
 
-    sprintln!("Building gate net (depth {})...", net_depth);
+    sprintln!("Building gate net (depth {}, SK recursion {})...", net_depth, sk_depth);
     // The depth used to be clamped to 12 before it got here, so a larger request
     // was silently rewritten. It is honoured now; the net stops on the arena.
     let net = GateNet::build(net_depth, 200000);

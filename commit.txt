@@ -1,31 +1,32 @@
-Nothing hardcoded in the IUFT gates
+Expose the SK recursion depth, and guard only where it is safe
 
-Twelve angle triples sat in iuft_qc.rs beside the encoder that computes them, and they had
-drifted. The graviton's differed from its own catalog tuple by 0.397 and the electron's by
-0.629 — and the electron's comment said why: "using encode: θ=180°, φ=105°, ψ=90° — but we
-refine from IUFT expansion". A hand refinement of a computed value is a second source of
-truth, and the second source is the one that goes stale.
+`qc` swept over net depth showed error that was not monotone: a bigger net gave a worse
+answer, twice. The net is a breadth-first append, so net(d) is a prefix of net(d+1), and
+`closest_arm` is an exhaustive scan of every entry — so neither a non-nested net nor a
+greedy lookup can be the cause.
 
-They did more damage than drift. `gate_for` consulted the table first, so `iuft encode
-graviton` printed the hand-written triple under the word "encoded" and never reached the
-tuple. And they made the consistency check vacuous: for a name with no triple, `gate_for`
-fell through to the catalog, the check encoded the same entry a second time, and the two
-agreed to the last bit. `iuft verify yhwh` printed 0.000000 and meant nothing by it — the
-one line that looked like a pass was the only one carrying no information.
+The recursion depth was pinned at 3 and invisible, which is what made the sweep
+unreadable: the reported error is the output of a three-level Solovay-Kitaev, not the
+net's own nearest neighbour, and only the latter is monotone in net size. It is a second
+argument now, so `qc HTSX 10 0` asks the net directly. Swept that way the curve never
+rises, at any step, which locates the non-monotonicity in the recursion and nowhere else.
 
-The triples are gone and no reference list replaced them. Names go through
-`catalog::lookup`, which already holds the kernel's normalisation and aliases, so "CLINK
-L8", "clink_l8" and "CLINK-L8" reach one entry without a second alias table. `nearest_known`
-ranges over the catalog rather than twelve hand-picked names, which is what "nearest known"
-was supposed to mean. `iuft list [domain]` encodes whatever the catalog holds. `iuft matrix`
-takes the names to compare.
+The mechanism is intrinsic. A level takes its base from the level below, forms the
+residual target·g_u⁻¹, decomposes it as a group commutator and approximates the two
+factors in the same net. Those factors are unrelated to the target, so how well the net
+approximates them says nothing about how well it approximated the target, and a better
+base can compose into a worse whole. Every lookup being optimal does not make the
+composition monotone.
 
-`iuft verify` asks the two questions that survive. Every entry must encode to a unitary
-gate: 249 of 249 do. And the encoding is a 12→3 projection, degenerate by construction, so
-where it sends different tuples to the same gate is the projection's kernel showing itself:
-94 colliding pairs among 249 entries. Among them, neutron and proton, which both encode to
-θ=110.0° φ=260.0° ψ=90.0°. The hardcoded table had given them 75/285/90 and 72.3/30/90 —
-two hand-written values papering over a degeneracy the projection actually has.
+Declining a level that made things worse looks free, since the base is already computed
+and already carries its word. Inside the recursion it is not free: the level above then
+builds on a different base, and over the same sweep that made the two best rows five and
+six times worse. The comparison is only sound where nothing is built on top of it, so it
+happens at the outermost call and nowhere else. There it cannot lose — the result is the
+better of exactly what the function returned before and the base it came from.
 
-Also re-tokenizes the iuft tail. The line arrives split with a field limit, so `iuft matrix
-a b c` saw one name and `iuft verify CLINK L8` could not see an entry whose name has a space.
+Measured over the sweep it fires once, at depth 2, same error with the word down from ten
+generators to two. Every other row is unchanged, which is the guarantee showing up as
+data. It does not make the net-depth curve monotone and nothing cheap will: that would
+take keeping the best across several depths, which is post-selection rather than a better
+search.
