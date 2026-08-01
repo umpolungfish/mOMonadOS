@@ -258,7 +258,7 @@ fn kmain() -> ! {
     let torus_map = kernel_torus::TorusMap::new(&kernel_torus::agent_loop_program());
     kernel_torus::display_banner(&torus_map);
     sprintln!("[BOOT] Crystal FS: {} addresses", TOTAL);
-    sprintln!("[BOOT] {} total programs (I–XXVIII): 12 canonical + {} continuous + {} novel + {} shunted",
+    sprintln!("[BOOT] {} total programs (I–XXIX): 12 canonical + {} continuous + {} novel + {} shunted",
         CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT + SHUNTED_COUNT,
         CONTINUOUS_COUNT, NOVEL_COUNT, SHUNTED_COUNT);
     sprintln!();

@@ -283,13 +283,14 @@ pub fn period(prog: &Program) -> usize {
 //   XVIII — TANCH root-depth halt (HALT replacement)
 //   XIX   — IMSCRIB cyclic self-imscription (YIELD replacement)
 
-pub const NOVEL_COUNT: usize = 3;
+pub const NOVEL_COUNT: usize = 4;
 
 pub fn novel_name(i: usize) -> &'static str {
     match i {
         0 => "XVII_Nested_Fork_Labyrinth",
         1 => "XVIII_Terminal_Sink_Protocol",
         2 => "XIX_Mirrorgram",
+        3 => "XXIX_Ray_Cubic_Seal",
         _ => "Unknown",
     }
 }
@@ -328,6 +329,32 @@ pub fn novel_program(i: usize) -> Option<Program> {
             for t in [Token::Imscrib, Token::Fsplit, Token::Evalt,
                       Token::Evalf, Token::Ffuse, Token::Engagr,
                       Token::Clink, Token::Ifix, Token::Imscrib] {
+                p.push(t);
+            }
+        }
+        3 => {
+            // XXIX — Ray Cubic Seal
+            //
+            // The d=12 ray class cubic, theta^3 = 3*theta + 1, as it is actually
+            // proved in Imscribing/Millennium/SIC_D12_RayCubic.lean: the tower is
+            // never multiplied in. FSPLIT opens the frame; the three gap branches
+            // are deposited (EVALT/AFWD/CLINK, twice, then ENGAGR for the branch
+            // that holds four candidate exponent vectors at once); IMSCRIB
+            // recognises the value from structural position rather than computing
+            // it; AREV/EVALF is the reverse morphism, which clears; FFUSE restores
+            // everything the clear took, because it was banked inside the frame;
+            // IFIX records the result.
+            //
+            // Measured on this word: deposits 5, cleared 5, restored 5. The
+            // leading VINIT/TANCH is a closed frame, and with three anchors the
+            // count is odd, so the final register is phase-bearing under ROTAT
+            // (A at 4 cuts, F at 11, T at 3) while the verdict stays T at all 18.
+            for t in [Token::Vinit, Token::Tanch, Token::Fsplit,
+                      Token::Evalt, Token::Afwd, Token::Clink,
+                      Token::Evalt, Token::Afwd, Token::Clink,
+                      Token::Engagr, Token::Evalt, Token::Imscrib,
+                      Token::Arev, Token::Evalf, Token::Clink,
+                      Token::Ffuse, Token::Ifix, Token::Tanch] {
                 p.push(t);
             }
         }
