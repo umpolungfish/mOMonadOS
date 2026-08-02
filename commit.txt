@@ -1,32 +1,35 @@
-Expose the SK recursion depth, and guard only where it is safe
+insert: the one-glyph repair sweep, and the first byte the UART was eating
 
-`qc` swept over net depth showed error that was not monotone: a bigger net gave a worse
-answer, twice. The net is a breadth-first append, so net(d) is a prefix of net(d+1), and
-`closest_arm` is an exhaustive scan of every entry — so neither a non-nested net nor a
-greedy lookup can be the cause.
+A word that loses weight is rarely rewritten. It is repaired, and the repair is
+usually a single glyph in the right place, so the question "which glyph, where"
+is small enough to answer exactly rather than argue about: twelve glyphs at
+every position, each candidate walked and asked whether it holds.
 
-The recursion depth was pinned at 3 and invisible, which is what made the sweep
-unreadable: the reported error is the output of a three-level Solovay-Kitaev, not the
-net's own nearest neighbour, and only the latter is monotone in net size. It is a second
-argument now, so `qc HTSX 10 0` asks the net directly. Swept that way the curve never
-rises, at any step, which locates the non-monotonicity in the recursion and nowhere else.
+`insert <word>` reports every one that does. It counts distinct words, not
+distinct sites -- inserting a glyph beside an identical one yields the same word
+from two positions, and counting both would report a repair twice.
 
-The mechanism is intrinsic. A level takes its base from the level below, forms the
-residual target·g_u⁻¹, decomposes it as a group commutator and approximates the two
-factors in the same net. Those factors are unrelated to the target, so how well the net
-approximates them says nothing about how well it approximated the target, and a better
-base can compose into a worse whole. Every lookup being optimal does not make the
-composition monotone.
+`insert all` puts the same question to every program the kernel carries. The
+words are not typed in; each family hands over its programs and each is rendered
+from its own tokens. Of the forty, three hold, thirty-three never fire a clear
+at all, three are exposed and repairable, and XXIV_Heartbeat_Paradox is exposed
+with no repair whatsoever. That last one is the informative case: it has two
+independent clear sites rather than one, and a single glyph can only close one
+of them. Insert a gap-opener to close the first and five separate glyphs then
+close the second. What the sweep is really counting against is clear sites, and
+XXIV is the only program in the kernel with more than one.
 
-Declining a level that made things worse looks free, since the base is already computed
-and already carries its word. Inside the recursion it is not free: the level above then
-builds on a different base, and over the same sweep that made the two best rows five and
-six times worse. The comparison is only sound where nothing is built on top of it, so it
-happens at the outermost call and nowhere else. There it cannot lose — the result is the
-better of exactly what the function returned before and the base it came from.
+Splitting `banked_walk` from `banked_report` is what makes this possible -- the
+sweep tests verdicts instead of parsing printed text.
 
-Measured over the sweep it fires once, at depth 2, same error with the word down from ten
-generators to two. Every other row is unchanged, which is the guarantee showing up as
-data. It does not make the net-depth curve monotone and nothing cheap will: that would
-take keeping the best across several depths, which is post-selection rather than a better
-search.
+Underneath, a defect the sweep surfaced by being run on metal. Every first
+command lost its first character: `banked ...` arrived as `anked ...`. Nothing
+in the kernel was reading that byte. `qemu -serial stdio` delivers into the
+receive register before the guest ever touches the port, and enabling the FIFO
+in `serial::init` discards what is sitting there. Clearing fewer bits does not
+help; the enable alone does it. So the byte is read out before FCR is touched
+and handed back by `read_byte` in its proper place. Confirmed by probe: the
+pending byte was 0x41, the `A` that had been going missing.
+
+Both targets rebuilt, and `insert all` gives identical results hosted and bare
+metal.

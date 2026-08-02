@@ -28,8 +28,27 @@ unsafe fn outb(port: u16, val: u8) {
 }
 
 #[cfg(not(feature = "hosted"))]
+/// The byte the host handed the UART before the guest configured it.
+///
+/// `qemu -serial stdio` delivers into the receive register immediately, so a
+/// piped or fast-typed first character is already waiting when `init` runs --
+/// and enabling the FIFO discards it, which made every first command arrive a
+/// letter short (`banked ...` as `anked ...`). Reading it out before touching
+/// FCR preserves it; `read_byte` hands it back before going to the port, so
+/// the character reaches the line reader in its proper place.
+///
+/// The high bit distinguishes a stored NUL from an empty slot.
+static PENDING: core::sync::atomic::AtomicU16 =
+    core::sync::atomic::AtomicU16::new(0);
+
+#[cfg(not(feature = "hosted"))]
 pub fn init() {
     unsafe {
+        // Probe before configuring: did the host hand us a byte already?
+        if inb(COM1 + 5) & 0x01 != 0 {
+            let b = inb(COM1);
+            PENDING.store(0x100 | b as u16, core::sync::atomic::Ordering::Relaxed);
+        }
         outb(COM1 + 1, 0x00); // disable interrupts
         outb(COM1 + 3, 0x80); // enable DLAB
         outb(COM1 + 0, 0x01); // baud divisor lo = 1 → 115200
@@ -49,6 +68,7 @@ fn tx_ready() -> bool {
 #[inline]
 #[cfg(not(feature = "hosted"))]
 pub fn rx_ready() -> bool {
+    if PENDING.load(core::sync::atomic::Ordering::Relaxed) != 0 { return true; }
     unsafe { inb(COM1 + 5) & 0x01 != 0 }
 }
 
@@ -60,6 +80,8 @@ pub fn write_byte(b: u8) {
 
 #[cfg(not(feature = "hosted"))]
 pub fn read_byte() -> u8 {
+    let held = PENDING.swap(0, core::sync::atomic::Ordering::Relaxed);
+    if held != 0 { return (held & 0xff) as u8; }
     while !rx_ready() {}
     unsafe { inb(COM1) }
 }
