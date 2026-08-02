@@ -1,35 +1,81 @@
-insert: the one-glyph repair sweep, and the first byte the UART was eating
+The suite green again, and what the compile error had been hiding
 
-A word that loses weight is rarely rewritten. It is repaired, and the repair is
-usually a single glyph in the right place, so the question "which glyph, where"
-is small enough to answer exactly rather than argue about: twelve glyphs at
-every position, each candidate walked and asked whether it holds.
+The tests had not compiled since the `IgPrim` rename, so nothing in them had run
+for a long time and a pile of failures sat waiting behind the compile error.
+None of it was new breakage. It was tests drifting from the code over a stretch
+where nobody could run them. `tests/sic_povm_verify.rs` was worse than stale: it
+went in as a tool-call parse error and had never been valid Rust at any point in
+its history. It now runs the host-side SIC-POVM verification through
+`tests/sic_verify.py`.
 
-`insert <word>` reports every one that does. It counts distinct words, not
-distinct sites -- inserting a glyph beside an identical one yields the same word
-from two positions, and counting both would report a repair twice.
+The largest finding is that `belnap.rs` and `Belnap.lean` disagree about what
+`band` and `bor` name. The Lean, and the Python that mirrors it, use those names
+for the truth-functional conjunction and disjunction. This crate had been using
+them for the knowledge-order join and meet, which are a genuinely different pair
+of operations on the same bilattice, and nothing anywhere pinned them apart. So
+`belnap_c4.rs`, a line-for-line port of `belnap_c4.py`, had been computing its
+whole complex plane on the wrong axis, and `para_ym.rs` had been asking the
+knowledge axis to witness a BRST nilpotency only the truth axis can show, since
+the knowledge axis sends both B and T to B and cannot separate them. Both axes
+are real and both are wanted, so `band` and `bor` stay as they were, `truth_and`
+and `truth_or` carry the Lean tables, and the port binds its names to those at
+its import so it stays line-for-line with the Python it came from.
+`belnap_invariants` now asserts the two axes disagree, which is the check that
+was missing and would have caught this when it landed.
 
-`insert all` puts the same question to every program the kernel carries. The
-words are not typed in; each family hands over its programs and each is rendered
-from its own tokens. Of the forty, three hold, thirty-three never fire a clear
-at all, three are exposed and repairable, and XXIV_Heartbeat_Paradox is exposed
-with no repair whatsoever. That last one is the informative case: it has two
-independent clear sites rather than one, and a single glyph can only close one
-of them. Insert a gap-opener to close the first and five separate glyphs then
-close the second. What the sweep is really counting against is clear sites, and
-XXIV is the only program in the kernel with more than one.
+`WH2::Z` in `belnap_sic_bridge.rs` was implemented as `bnot`, which breaks the
+group law. With X swapping T and B, and XZ swapping T and F, closure forces Z to
+swap T with N and F with B, and there is no freedom in it. Restoring that makes
+the four displacements act simply transitively, so B is carried across the whole
+of B4, and once the vacuum drops out what is left is the three states the
+header had claimed all along. I first read the header and the orbit test as
+contradicting each other and went hunting for which to throw away, which is the
+wrong instinct in a four-valued setting and wrong on the facts besides. Both are
+true, of the raw action and of the orbit modulo vacuum respectively.
+`verify_b_fiducial` was iterating the non-identity displacements when what it
+wants is the non-vacuum images.
 
-Splitting `banked_walk` from `banked_report` is what makes this possible -- the
-sweep tests verdicts instead of parsing printed text.
+`witness_report` in `clay_witness.rs` returned early for any problem carrying no
+witness program, which put the low winding theorem out of reach for exactly the
+problems that are low winding, the only ones it speaks about.
 
-Underneath, a defect the sweep surfaced by being run on metal. Every first
-command lost its first character: `banked ...` arrived as `anked ...`. Nothing
-in the kernel was reading that byte. `qemu -serial stdio` delivers into the
-receive register before the guest ever touches the port, and enabling the FIFO
-in `serial::init` discards what is sitting there. Clearing fewer bits does not
-help; the enable alone does it. So the byte is read out before FCR is touched
-and handed back by `read_byte` in its proper place. Confirmed by probe: the
-pending byte was 0x41, the `A` that had been going missing.
+The kernel-state loop test in `parasm.rs` asserted all three registers stay B
+through a step. A step leaving all three at B would not have split anything. The
+invariant is that r0 comes back to B while r1 and r2 hold the split halves, so
+that is what it checks now, with the paradox count rising every step to show the
+loop is not decaying.
 
-Both targets rebuilt, and `insert all` gives identical results hosted and bare
-metal.
+`test_meet_exists` in `frobenius_unify.rs` asserted the kernel's meet with the
+Frobenius fixed point is clean. It cannot be, and should not be. The kernel sits
+off the fixed point in T, which is categorical, and that mismatch is the very
+thing `frobenius_identity_check` exists to count. A kernel whose meet with the
+fixed point came back clean would already be the fixed point. It now pins T as
+the only conflict, and F and G, being ordered, as taking the min instead.
+
+The genetics pipeline asserted monotonic advance of Omega across its stages,
+which is unsatisfiable for every possible `StageContext`, because the drop falls
+between two hardcoded stage values. The codon lattice carries Z2 from codon and
+anticodon parity, a symmetry of the code rather than of the nascent chain that
+follows it. The Python this came from reports regressions instead of gating on
+them, and even keeps a list of primitives allowed to regress, so the assertion
+was a hardening the original never made. An earlier attempt at this had given
+the default context a disulfide bond, quietly changing which protein the default
+models, and that is back where it was. The test now records the trajectory the
+pipeline actually has, and where it falls.
+
+The bifurcation module is where I was most wrong before I looked. Its tests
+encoded a hypothesis that low substrate weight yields a short cycle and high
+weight a long one. Sweeping the weight shows cycle length pinned at one across
+the whole range, every weight self-closing in a single step, and I took that to
+mean the substrate was inert and no w_c existed. Wrong, and measuring rather
+than reasoning is what showed it. There is a bifurcation and it is sharp. At
+zero weight the substrate vote is annihilated, the family matrix alone leads
+with IMSCRIB by a single point over AFWD, and the program is pure
+self-imscription carrying no advance. One unit of substrate vote overturns a
+one-point margin, so from weight one upward AFWD leads and the program advances,
+and it does not move again across the rest of the sweep. So w_c is one, and
+cycle length was the wrong observable to look for it with. Those tests also
+shared a process-wide `static mut` weight while running concurrently, racing
+each other, and they are serialized now.
+
+Both targets build clean and the whole suite passes.

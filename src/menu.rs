@@ -204,7 +204,7 @@ pub static PARASM_MENU: &[MenuItem] = &[
     MenuItem { name: "test",     cmd: "psm test",   desc: "Dialetheic alignment + measurement", example: "psm test", submenu: None },
     MenuItem { name: "frob",     cmd: "psm frob",   desc: "Frobenius identity cycle", example: "psm frob", submenu: None },
     MenuItem { name: "kernel",   cmd: "psm kernel", desc: "Kernel-state B3 invariant loop", example: "psm kernel 5", submenu: None },
-    MenuItem { name: "load",     cmd: "psm load",   desc: "Inline ParaASM program (; separator)", example: "psm load VINIT;AFWD;IFIX", submenu: None },
+    MenuItem { name: "load",     cmd: "psm load",   desc: "Inline ParaASM program (; separator)", example: "psm load ENGAGR %r0; FSPLIT %r0 %r1 %r2; FFUSE %r1 %r2 %r0; HALT", submenu: None },
 ];
 
 pub static CR3ECHRZ_MENU: &[MenuItem] = &[

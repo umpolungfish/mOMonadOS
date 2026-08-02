@@ -1,1 +1,10 @@
-PARSE ERROR: run_command arguments were truncated or malformed (Unterminated string starting at: line 1 column 13 (char 12)). Received 9768 chars. For large file content use run_command with a bash heredoc: run_command({"command": "cat > path <<\ENDOFFILE'ncontentnENDOFFILE}). First 120 chars of raw args: '{command: cat Host-side SIC-POVM verificat
+use std::process::Command;
+
+#[test]
+fn test_python_sic_povm_verification() {
+    let status = Command::new("python3")
+        .arg("tests/sic_verify.py")
+        .status()
+        .expect("failed to execute python3 tests/sic_verify.py");
+    assert!(status.success(), "Python verification script failed");
+}

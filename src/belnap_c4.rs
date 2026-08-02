@@ -10,7 +10,12 @@
 // from C₄ to classical probability via P = proj_T(|ψ|²).
 
 use alloc::string::String;
-use crate::belnap::{B4, band, bor, bnot};
+// C₄ arithmetic is truth-functional throughout: `belnap_c4.py` imports the
+// `band`/`bor` of `belnap.py`, which mirror `Belnap.lean`. This crate's
+// `belnap::band`/`bor` are the *knowledge*-axis pair, so the truth-axis
+// operations are bound to the port's names here and the body below stays
+// line-for-line with the Python.
+use crate::belnap::{B4, truth_and as band, truth_or as bor, bnot};
 use crate::sprintln;
 
 // ─── Belnap Complex Number ────────────────────────────────────────────────────

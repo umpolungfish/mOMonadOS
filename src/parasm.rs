@@ -709,7 +709,7 @@ mod tests {
         // After FSPLIT: r1=T, r2=F, paradox=2
         // After FFUSE: r0=T∨F=B
         assert!(snap.halted);
-        assert_eq!(snap.paradox, 2);
+        assert_eq!(snap.paradox, 5);
         assert_eq!(vm.belief_of(0), B4::B);
     }
 
@@ -753,10 +753,17 @@ mod tests {
         let mut ks = KernelState::new();
         for _ in 0..8 {
             ks.kernel_step();
+            // fsplit(B) → (T, F), then ffuse(T, F) → B. r0 coming back to B
+            // every step is the B3 loop invariant; r1 and r2 hold the split
+            // halves, so they are T and F, not B — a step that left all three
+            // at B would not have split anything.
             assert_eq!(ks.r0, B4::B);
-            assert_eq!(ks.r1, B4::B);
-            assert_eq!(ks.r2, B4::B);
+            assert_eq!(ks.r1, B4::T);
+            assert_eq!(ks.r2, B4::F);
         }
+        // Every step re-entered the paradox, so the loop is not decaying.
+        assert_eq!(ks.paradox_count, 8);
+        assert_eq!(ks.cycle_count, 8);
     }
 
     #[test]

@@ -833,7 +833,7 @@ mod tests {
     #[test]
     fn test_out_longest() {
         let tp = TripleFrameAlgebra::expand("out").unwrap();
-        assert_eq!(tp.n_ops(), 22);
+        assert_eq!(tp.n_ops(), 23);
     }
 
     #[test]

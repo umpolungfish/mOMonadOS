@@ -22,8 +22,11 @@ pub fn ym_vacuum_canonical() -> bool {
 
 /// BRST: Q²=0 ↔ ENGAGR(B)=B (stable), ENGAGR(T)=F (nilpotent).
 pub fn ym_brst_nilpotent() -> bool {
-    let q_b = B4::B.band(B4::B.bnot()); // ENGAGR(B)=B
-    let q_t = B4::T.band(B4::T.bnot()); // ENGAGR(T)=F
+    // Q(x) = x ∧ ¬x on the truth axis: B is its own contradiction and holds,
+    // T's contradiction goes definite. The knowledge axis sends both to B and
+    // so cannot witness nilpotency.
+    let q_b = B4::B.truth_and(B4::B.bnot()); // Q(B)=B
+    let q_t = B4::T.truth_and(B4::T.bnot()); // Q(T)=F
     // ffuse∘fsplit(B)=B
     let frob = {
         let (d1, d2) = if B4::B == B4::B { (B4::T, B4::F) } else { (B4::B, B4::B) };

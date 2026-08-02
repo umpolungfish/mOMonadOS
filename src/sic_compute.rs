@@ -14,7 +14,7 @@ impl Rat {
     pub const ZERO: Rat = Rat { num: 0, den: 1 };
     pub const ONE:  Rat = Rat { num: 1, den: 1 };
 
-    fn gcd_u64(mut a: u64, mut b: u64) -> u64 {
+    fn gcd_u128(mut a: u128, mut b: u128) -> u128 {
         if a == 0 { return b; } else if b == 0 { return a; }
         let shift = (a | b).trailing_zeros();
         a >>= a.trailing_zeros();
@@ -28,22 +28,22 @@ impl Rat {
 
     pub fn new(num: i128, den: u64) -> Self {
         if den == 0 { return Rat::ZERO; }
-        let g = Self::gcd_u64(num.unsigned_abs() as u64, den);
-        Rat { num: num / (g as i128), den: den / g }
+        let g = Self::gcd_u128(num.unsigned_abs(), den as u128);
+        Rat { num: num / (g as i128), den: (den as u128 / g) as u64 }
     }
 
     pub fn add(self, o: Rat) -> Rat {
         let d: u128 = (self.den as u128) * (o.den as u128);
         let n: i128 = (self.num as i128)*(o.den as i128) + (o.num as i128)*(self.den as i128);
-        let g = Self::gcd_u64(n.unsigned_abs() as u64, d as u64);
-        Rat { num: n / (g as i128), den: (d as u64) / g }
+        let g = Self::gcd_u128(n.unsigned_abs(), d);
+        Rat { num: n / (g as i128), den: (d / g) as u64 }
     }
     pub fn sub(self, o: Rat) -> Rat { self.add(Rat { num: -o.num, den: o.den }) }
     pub fn mul(self, o: Rat) -> Rat {
         let n: i128 = (self.num as i128)*(o.num as i128);
         let d: u128 = (self.den as u128)*(o.den as u128);
-        let g = Self::gcd_u64(n.unsigned_abs() as u64, d as u64);
-        Rat { num: n / (g as i128), den: (d as u64) / g }
+        let g = Self::gcd_u128(n.unsigned_abs(), d);
+        Rat { num: n / (g as i128), den: (d / g) as u64 }
     }
     pub fn neg(self) -> Rat { Rat { num: -self.num, den: self.den } }
     pub fn is_zero(self) -> bool { self.num == 0 }
@@ -235,7 +235,16 @@ pub fn sic_full_report() -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    #[test] fn test_kmul_id() { assert!(k16_eq(&kmul(&n0(),&n1()), &n1())); }
+    fn k16_one() -> K16 {
+        let mut a = [Rat::ZERO; 16];
+        a[0] = Rat::ONE;
+        a
+    }
+    #[test] fn test_kmul_id() {
+        let lhs = kmul(&k16_one(), &n1());
+        let rhs = n1();
+        assert!(k16_eq(&lhs, &rhs));
+    }
     #[test] fn test_magnitude_classes() { assert!(verify_all_magnitude_classes().0); }
     #[test] fn test_equiangularity() { assert!(verify_equiangularity_spot().0); }
     #[test] fn test_pr_symmetry() { for i in 0..8 { assert_eq!(PR_TAIL_HF[2*i], 0); } }

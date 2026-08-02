@@ -689,7 +689,13 @@ pub fn generate_all_stages(ctx: &StageContext) -> [IGTuple; 7] {
     ]
 }
 
-/// Verify monotonic advance: each stage's Ω ordinal must be ≥ prior.
+/// Verify monotonic advance: each stage's Ω ordinal is ≥ prior.
+///
+/// This is a predicate over any 7-stage pipeline, not an invariant of the
+/// gene→protein one. `genetic_tuples.py` reports regressions rather than
+/// gating on them, and even keeps an exception list of primitives allowed to
+/// regress — so a pipeline is not required to be monotonic. This one is not:
+/// see `omega_regressions`.
 pub fn verify_monotonic_advance(stages: &[IGTuple; 7]) -> bool {
     for i in 1..7 {
         if stages[i].o.ordinal() < stages[i-1].o.ordinal() {
@@ -697,6 +703,23 @@ pub fn verify_monotonic_advance(stages: &[IGTuple; 7]) -> bool {
         }
     }
     true
+}
+
+/// Where Ω falls: entry i is true when stage i+1's Ω ordinal is below stage i's.
+///
+/// The gene→protein pipeline drops twice, and both drops are hardcoded rather
+/// than context-driven, so no `StageContext` makes it monotonic. The drops sit
+/// where the modelled object changes kind: the codon lattice carries Z2 from
+/// codon↔anticodon parity, which is a symmetry of the *code* and not of the
+/// nascent chain that follows it; and secondary structure carries Z2 from helix
+/// chirality, which the tertiary fold's Ω is written to take from disulfide
+/// count alone.
+pub fn omega_regressions(stages: &[IGTuple; 7]) -> [bool; 6] {
+    let mut drops = [false; 6];
+    for i in 0..6 {
+        drops[i] = stages[i+1].o.ordinal() < stages[i].o.ordinal();
+    }
+    drops
 }
 
 /// Compute the crystal address for a tuple (simplified — full bijection in crystal.rs).
@@ -752,11 +775,20 @@ mod tests {
     }
 
     #[test]
-    fn test_monotonic_advance() {
+    fn test_omega_trajectory() {
         let ctx = StageContext::default();
         let stages = generate_all_stages(&ctx);
-        assert!(verify_monotonic_advance(&stages),
-            "Ω must be monotonic across pipeline stages");
+        let mut omega = [0u8; 7];
+        for (i, s) in stages.iter().enumerate() { omega[i] = s.o.ordinal(); }
+        // DNA and transcription carry no topological protection; the codon
+        // lattice carries Z2; the nascent chain carries none; secondary
+        // structure carries Z2; the default context has no disulfides, so the
+        // tertiary fold carries none; the monomer's quaternary Ω is Z2.
+        assert_eq!(omega, [0, 0, 1, 0, 1, 0, 1]);
+        // So the pipeline is not Ω-monotonic, and no StageContext makes it so —
+        // both drops are between hardcoded stage values.
+        assert!(!verify_monotonic_advance(&stages));
+        assert_eq!(omega_regressions(&stages), [false, false, true, false, true, false]);
     }
 
     #[test]

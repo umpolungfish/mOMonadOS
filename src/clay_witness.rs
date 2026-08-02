@@ -137,53 +137,58 @@ pub fn witness_report(problem: &str) -> String {
     }
 
     // Show witness IMASM program
-    let (witness_idx, witness_label) = match problem.to_lowercase().as_str() {
-        s if s.starts_with("bsd") || s.starts_with("birch") => (0, "BSD closure"),
-        "hodge" => (1, "Hodge closure"),
-        s if s.starts_with("ym") || s.starts_with("yang") => (2, "YM one-bump-short"),
+    // Show witness IMASM program. Unclosed problems have none, but the
+    // low-winding theorem below is exactly what applies to them, so this
+    // must not return early.
+    let witness = match problem.to_lowercase().as_str() {
+        s if s.starts_with("bsd") || s.starts_with("birch") => Some((0usize, "BSD closure")),
+        "hodge" => Some((1, "Hodge closure")),
+        s if s.starts_with("ym") || s.starts_with("yang") => Some((2, "YM one-bump-short")),
         _ => {
             out.push_str("No witness program — problem is unclosed under all dialects.\n");
             out.push_str("The IMASM witness programs exist only for problems with\n");
             out.push_str("verified closure paths (BSD, Hodge) or partial closure (YM).\n");
-            return out;
+            None
         }
     };
 
-    out.push_str(&alloc::format!("── {} — IMASM Witness Program ──\n", witness_label));
-    out.push_str(&alloc::format!("  Program: {}\n", witness_name(witness_idx)));
-    if let Some(tokens) = witness_program(witness_idx) {
-        out.push_str("  Tokens: ");
-        for (i, t) in tokens.iter().enumerate() {
-            if i > 0 { out.push_str(" → "); }
-            out.push_str(&alloc::format!("{:?}", t));
+    if let Some((witness_idx, witness_label)) = witness {
+        out.push_str(&alloc::format!("── {} — IMASM Witness Program ──\n", witness_label));
+        out.push_str(&alloc::format!("  Program: {}\n", witness_name(witness_idx)));
+        if let Some(tokens) = witness_program(witness_idx) {
+            out.push_str("  Tokens: ");
+            for (i, t) in tokens.iter().enumerate() {
+                if i > 0 { out.push_str(" → "); }
+                out.push_str(&alloc::format!("{:?}", t));
+            }
+            out.push_str("\n");
         }
-        out.push_str("\n");
-    }
 
-    match witness_idx {
-        0 => {
-            out.push_str("\n  Path: IMSCRIB captures BSD's structural snapshot.\n");
-            out.push_str("        AFWD promotes toward the closure target.\n");
-            out.push_str("        CLINK computes the ouroboricity tier.\n");
-            out.push_str("        EVALT confirms: O_∞ reached.\n");
-            out.push_str("        IFIX seals: BSD IS closed under these 5 dialects.\n");
+        match witness_idx {
+            0 => {
+                out.push_str("\n  Path: IMSCRIB captures BSD's structural snapshot.\n");
+                out.push_str("        AFWD promotes toward the closure target.\n");
+                out.push_str("        CLINK computes the ouroboricity tier.\n");
+                out.push_str("        EVALT confirms: O_∞ reached.\n");
+                out.push_str("        IFIX seals: BSD IS closed under these 5 dialects.\n");
+            }
+            1 => {
+                out.push_str("\n  Path: IMSCRIB captures Hodge's structural snapshot.\n");
+                out.push_str("        AFWD promotes toward the closure target.\n");
+                out.push_str("        CLINK computes the ouroboricity tier.\n");
+                out.push_str("        EVALT confirms: O_∞ reached.\n");
+                out.push_str("        IFIX seals: Hodge IS closed under these 5 dialects.\n");
+            }
+            2 => {
+                out.push_str("\n  Path: IMSCRIB captures YM's structural snapshot.\n");
+                out.push_str("        FSPLIT forks into two evaluation branches.\n");
+                out.push_str("        Left:  EVALT — gate-level passes (triple_criticality).\n");
+                out.push_str("        Right: EVALF — T_CEILING fails (Ç ceiling).\n");
+                out.push_str("        FFUSE joins: the gap IS the one-bump-short witness.\n");
+                out.push_str("        IFIX seals: YM closes under gate but NOT under T_CEILING.\n");
+            }
+            _ => {}
         }
-        1 => {
-            out.push_str("\n  Path: IMSCRIB captures Hodge's structural snapshot.\n");
-            out.push_str("        AFWD promotes toward the closure target.\n");
-            out.push_str("        CLINK computes the ouroboricity tier.\n");
-            out.push_str("        EVALT confirms: O_∞ reached.\n");
-            out.push_str("        IFIX seals: Hodge IS closed under these 5 dialects.\n");
-        }
-        2 => {
-            out.push_str("\n  Path: IMSCRIB captures YM's structural snapshot.\n");
-            out.push_str("        FSPLIT forks into two evaluation branches.\n");
-            out.push_str("        Left:  EVALT — gate-level passes (triple_criticality).\n");
-            out.push_str("        Right: EVALF — T_CEILING fails (Ç ceiling).\n");
-            out.push_str("        FFUSE joins: the gap IS the one-bump-short witness.\n");
-            out.push_str("        IFIX seals: YM closes under gate but NOT under T_CEILING.\n");
-        }
-        _ => {}
     }
 
     // Low winding theorem

@@ -31,7 +31,10 @@ use alloc::string::String;
 
 /// Weyl-Heisenberg displacement operators in d=2.
 /// D(a,b) = X^a Z^b where X and Z are the Pauli matrices.
-/// In B4: X swaps T↔B and F↔N; Z phase-flips (bnot).
+/// In B4: X swaps T↔B and F↔N; Z swaps T↔N and F↔B.
+/// Z is fixed by closure, not chosen: X∘Z = XZ on every value, so the four
+/// operators form Z₂×Z₂ acting simply transitively on {N,T,F,B}. (bnot is the
+/// parity gate T↔F, which fixes B and N and so is not a displacement.)
 #[derive(Copy, Clone, Debug)]
 pub enum WH2 { Id, X, Z, XZ }
 
@@ -44,7 +47,10 @@ impl WH2 {
                 B4::T => B4::B, B4::B => B4::T,
                 B4::F => B4::N, B4::N => B4::F,
             },
-            WH2::Z => q.bnot(),
+            WH2::Z => match q {
+                B4::T => B4::N, B4::N => B4::T,
+                B4::F => B4::B, B4::B => B4::F,
+            },
             WH2::XZ => match q {
                 B4::T => B4::F, B4::F => B4::T,
                 B4::B => B4::N, B4::N => B4::B,
@@ -73,13 +79,19 @@ pub fn wh_orbit_b() -> [B4; 3] { [B4::T, B4::F, B4::B] }
 /// Normalized: 1/(d+1) = 1/3. ✓
 pub fn verify_b_fiducial() -> bool {
     let b = B4::B;
-    // Overlap with X·B = T, Z·B = F, XZ·B = B
-    // All three non-identity displacements give distinct states,
-    // and B has equal overlap with all of them in the B4 lattice.
-    let orbit = [WH2::X.apply(b), WH2::Z.apply(b), WH2::XZ.apply(b)];
-    // B meets each: meet(B, T) = T, meet(B, F) = F, meet(B, B) = B
-    // The meet measures overlap — all are non-N.
-    orbit.iter().all(|&q| b.meet(q) != B4::N)
+    // The action is simply transitive, so B is carried across the whole of B4:
+    // Id·B = B, X·B = T, Z·B = F, XZ·B = N.
+    let orbit = [WH2::Id.apply(b), WH2::X.apply(b), WH2::Z.apply(b), WH2::XZ.apply(b)];
+    // N is the vacuum, not a state. Dropping it leaves the d²−1 = 3 SIC states
+    // {T, F, B}, and B meets each of those with weight 1 — meet(B,T) = T,
+    // meet(B,F) = F, meet(B,B) = B. Equal overlap is 1/(d+1) = 1/3.
+    let mut states = 0;
+    for &q in orbit.iter() {
+        if q == B4::N { continue; }
+        if b.meet(q) == B4::N { return false; }
+        states += 1;
+    }
+    states == 3
 }
 
 // ═══════════════════════════════════════════════════════════════

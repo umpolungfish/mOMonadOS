@@ -38,6 +38,36 @@ impl B4 {
     /// T ⊕ F = N (no shared ground).
     pub fn bor(self, other: B4) -> B4 { self.meet(other) }
 
+    /// Truth-functional conjunction — the bilattice's *other* axis.
+    /// Mirrors `Belnap.lean` `band` and `belnap.py` `band`: F absorbs,
+    /// B absorbs N. Distinct from `band` above, which is the knowledge
+    /// consensus: T ∧ F = F here, where T ⊗ F = B there.
+    pub fn truth_and(self, other: B4) -> B4 {
+        use B4::*;
+        match (self, other) {
+            (F, _) | (_, F) => F,
+            (B, T) | (T, B) | (B, N) | (N, B) => B,
+            (T, T) => T,
+            (T, N) | (N, T) => N,
+            (N, N) => N,
+            (B, B) => B,
+        }
+    }
+
+    /// Truth-functional disjunction. Mirrors `Belnap.lean` `bor`:
+    /// T absorbs, B absorbs N. T ∨ F = T here, where T ⊕ F = N for `bor`.
+    pub fn truth_or(self, other: B4) -> B4 {
+        use B4::*;
+        match (self, other) {
+            (T, _) | (_, T) => T,
+            (B, F) | (F, B) | (B, N) | (N, B) => B,
+            (F, F) => F,
+            (F, N) | (N, F) => N,
+            (N, N) => N,
+            (B, B) => B,
+        }
+    }
+
     /// Negation: swap T↔F, preserve N and B.
     pub fn bnot(self) -> B4 {
         let b = self as u8;
@@ -51,9 +81,9 @@ impl B4 {
     pub fn designated(self) -> bool { matches!(self, B4::T | B4::B) }
 
     /// Knowledge-order comparison: self ≤k other.
-    /// x ≤k y iff x ⊕ y = x (bor returns x).
+    /// x ≤k y iff x ⊓k y = x, and the knowledge glb is `meet`.
     pub fn approx_le(self, other: B4) -> bool {
-        self.bor(other) == self
+        self.meet(other) == self
     }
 
     /// Encode to WH2 pair: (is_true, is_false).
@@ -75,6 +105,8 @@ pub fn meet(a: B4, b: B4) -> B4 { a.meet(b) }
 pub fn join(a: B4, b: B4) -> B4 { a.join(b) }
 pub fn band(a: B4, b: B4) -> B4 { a.band(b) }
 pub fn bor(a: B4, b: B4) -> B4 { a.bor(b) }
+pub fn truth_and(a: B4, b: B4) -> B4 { a.truth_and(b) }
+pub fn truth_or(a: B4, b: B4) -> B4 { a.truth_or(b) }
 pub fn bnot(a: B4) -> B4 { a.bnot() }
 pub fn dialetheic(a: B4) -> bool { a.dialetheic() }
 pub fn designated(a: B4) -> bool { a.designated() }
@@ -222,4 +254,20 @@ fn belnap_invariants() {
     // bor: T ⊕ F = N, B ⊕ x = x
     assert_eq!(T.bor(F), N);
     assert_eq!(B.bor(T), T);
+    // The two axes are different operations, and nothing above would catch
+    // one being reached for in place of the other. T ∧ F = F and T ∨ F = T
+    // on the truth axis, against T ⊗ F = B and T ⊕ F = N on the knowledge one.
+    assert_eq!(T.truth_and(F), F);
+    assert_eq!(T.truth_or(F), T);
+    assert_ne!(T.truth_and(F), T.band(F));
+    assert_ne!(T.truth_or(F), T.bor(F));
+    // B absorbs N on both truth operations; F and T absorb respectively.
+    assert_eq!(B.truth_and(N), B);
+    assert_eq!(B.truth_or(N), B);
+    for &x in &[N, T, F, B] {
+        assert_eq!(F.truth_and(x), F);
+        assert_eq!(T.truth_or(x), T);
+        assert_eq!(x.truth_and(x), x);
+        assert_eq!(x.truth_or(x), x);
+    }
 }

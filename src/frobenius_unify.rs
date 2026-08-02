@@ -215,7 +215,25 @@ mod tests {
         let kernel = kernel_self_imscription();
         let fixed = frobenius_fixed_tuple();
         let meet_result = algebra::meet(&kernel, &fixed);
-        assert!(meet_result.is_valid());
+        // The kernel sits off the fixed point in T — 𐑶 box product against 𐑸
+        // self-referential — and T is categorical, so the meet carries exactly
+        // that one conflict. It is the mismatch frobenius_identity_check
+        // counts, not a defect in the meet: a kernel whose meet with the fixed
+        // point were clean would already be the fixed point.
+        assert!(!meet_result.is_valid());
+        let mut conflicting = 0;
+        for (i, &c) in meet_result.conflicts.iter().enumerate() {
+            if c {
+                conflicting += 1;
+                assert_eq!(i, 1, "only T may conflict with the fixed point");
+            }
+        }
+        assert_eq!(conflicting, 1);
+        // F and G differ too, but they are ordered, so they take the min
+        // instead of conflicting: classical hardware under quantum coherence
+        // is classical, and G_ORD runs aleph→gimel so universal is the floor.
+        assert_eq!(meet_result.tuple.f, IgPrim::F_ell);
+        assert_eq!(meet_result.tuple.g, IgPrim::G_aleph);
     }
 
     #[test]
