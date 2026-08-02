@@ -152,6 +152,7 @@ The kernel takes IMASM words as glyphs, never as opcode names.
     cycle ⊢⊣∈+>=+>=⊞+⊙<×=∋¬⊣      rotation census over every cut
     weight <word>                  linear walk from one cut
     banked <word>                  what survives a clear
+    insert <word>                  every one-glyph repair for an exposed word
 
 Program XXIX, `Ray_Cubic_Seal`, is the d=12 ray class cubic as an IMASM word:
 FSPLIT opens the frame, the gap branches deposit, ENGAGR holds the four

@@ -145,12 +145,27 @@ pub fn transitions_report(word: &str) {
 /// held one level up survives it. A program that establishes something, then
 /// reverses, then bounds must open the region that will HOLD the result before
 /// the region that COMPUTES it, and close them in that order.
-pub fn banked_report(word: &str) {
+/// What the banking walk found. Separated from the printing so a caller can
+/// test a word instead of reading about it -- `insert` sweeps hundreds of
+/// candidates and needs the verdict, not the paragraph. One walk, two callers.
+pub struct Banked {
+    pub exposed: Vec<(usize, char, u32)>,
+    pub live_clears: u32,
+    pub deposits: u32,
+    pub inert: u32,
+    pub reg: [u32; 4],
+}
+
+impl Banked {
+    /// Held across every clear that actually fired. Vacuous words are not OK:
+    /// nothing was ever at risk, so nothing was held.
+    pub fn holds(&self) -> bool { self.exposed.is_empty() && self.live_clears > 0 }
+    pub fn vacuous(&self) -> bool { self.exposed.is_empty() && self.live_clears == 0 }
+}
+
+pub fn banked_walk(word: &str) -> Option<Banked> {
     let steps = parse_glyph_word(&normalize(word));
-    if steps.is_empty() {
-        sprintln!("  no IMASM glyphs in that word");
-        return;
-    }
+    if steps.is_empty() { return None; }
     let mut reg = [0u32; 4];
     let mut frames: Vec<[u32; 4]> = Vec::new();
     let mut fixed = false;
@@ -200,6 +215,18 @@ pub fn banked_report(word: &str) {
         }
     }
 
+    Some(Banked { exposed, live_clears, deposits, inert, reg })
+}
+
+pub fn banked_report(word: &str) {
+    let steps = parse_glyph_word(&normalize(word));
+    let b = match banked_walk(word) {
+        Some(b) => b,
+        None => { sprintln!("  no IMASM glyphs in that word"); return; }
+    };
+    let (exposed, live_clears, deposits, inert, reg) =
+        (b.exposed, b.live_clears, b.deposits, b.inert, b.reg);
+
     sprintln!("word   : {}", render(&steps));
     if exposed.is_empty() && live_clears == 0 {
         // Passing because nothing was ever at risk is not the same as passing
@@ -227,6 +254,167 @@ pub fn banked_report(word: &str) {
         sprintln!("  open the region that HOLDS the result before the region that");
         sprintln!("  COMPUTES it, and close them in that order.");
     }
+}
+
+/// Every single-glyph insertion that turns an exposed word into one that holds.
+///
+/// A word that loses weight is not usually rewritten; it is repaired, and the
+/// repair is almost always one glyph in the right place. Rather than reason
+/// about which, this walks all twelve glyphs at every position and reports the
+/// ones that hold. The search is small -- twelve times length-plus-one -- and
+/// exact, so there is nothing to infer.
+pub fn insert_report(word: &str) {
+    let steps = parse_glyph_word(&normalize(word));
+    if steps.is_empty() { sprintln!("  no IMASM glyphs in that word"); return; }
+    let base = render(&steps);
+    let n = steps.len();
+
+    sprintln!("word   : {}   length {}", base, n);
+    match banked_walk(&base) {
+        Some(b) if b.holds()   => { sprintln!("  already holds — nothing to repair"); return; }
+        Some(b) if b.vacuous() => sprintln!("  vacuous: no clear ever fired, so nothing is at risk"),
+        Some(b) => {
+            let lost: u32 = b.exposed.iter().map(|e| e.2).sum();
+            sprintln!("  exposed: {} unit(s) cleared with nothing banked", lost);
+        }
+        None => return,
+    }
+
+    let glyphs = ['⊢', '⊙', '∈', '∋', '+', '×', '>', '<', '=', '⊞', '¬', '⊣'];
+    let chars: Vec<char> = base.chars().collect();
+
+    // Distinct words, not distinct sites. Inserting a glyph beside an identical
+    // one yields the same word from two positions, and counting both would
+    // report a repair twice and overstate how many ways out there are.
+    let mut seen: Vec<String> = Vec::new();
+    let mut tried = 0u32;
+
+    sprintln!("  insertions that hold:");
+    for pos in 0..=n {
+        for g in glyphs.iter() {
+            let mut cand = String::new();
+            for (k, c) in chars.iter().enumerate() {
+                if k == pos { cand.push(*g); }
+                cand.push(*c);
+            }
+            if pos == n { cand.push(*g); }
+            if seen.iter().any(|w| w == &cand) { continue; }
+            tried += 1;
+            if let Some(b) = banked_walk(&cand) {
+                if b.holds() {
+                    sprintln!("    {} at {:>2}   {}", g, pos, cand);
+                    seen.push(cand);
+                }
+            }
+        }
+    }
+    let found = seen.len();
+    if found == 0 {
+        sprintln!("    none — no single glyph repairs this word");
+    } else {
+        sprintln!("  {} distinct word(s) hold, of {} tried", found, tried);
+    }
+}
+
+/// How many distinct one-glyph insertions make `base` hold, without printing.
+fn repair_count(base: &str) -> usize {
+    let glyphs = ['⊢', '⊙', '∈', '∋', '+', '×', '>', '<', '=', '⊞', '¬', '⊣'];
+    let chars: Vec<char> = base.chars().collect();
+    let n = chars.len();
+    let mut seen: Vec<String> = Vec::new();
+    for pos in 0..=n {
+        for g in glyphs.iter() {
+            let mut cand = String::new();
+            for (k, c) in chars.iter().enumerate() {
+                if k == pos { cand.push(*g); }
+                cand.push(*c);
+            }
+            if pos == n { cand.push(*g); }
+            if seen.iter().any(|w| w == &cand) { continue; }
+            if let Some(b) = banked_walk(&cand) {
+                if b.holds() { seen.push(cand); }
+            }
+        }
+    }
+    seen.len()
+}
+
+/// Render a program as a glyph word, in the alphabet the walkers parse.
+fn program_word(p: &crate::tokens::Program) -> String {
+    let mut w = String::new();
+    for t in p.as_slice() { w.push_str(t.code()); }
+    normalize(&w)
+}
+
+/// Every built-in program, put to the same question.
+///
+/// The words are not typed in; the kernel hands over its own programs and each
+/// is rendered from its tokens. A word that holds is left alone, and a word
+/// that is exposed is asked how many single glyphs would close it -- which is
+/// the interesting number, because a word with no repair at all is exposed for
+/// a structural reason rather than a missing symbol.
+pub fn insert_sweep_all() {
+    use crate::tokens::*;
+
+    let families: [(&str, usize); 5] = [
+        ("canonical",  canonical_count()),
+        ("continuous", continuous_count()),
+        ("novel",      novel_count()),
+        ("shunted",    shunted_count()),
+        ("compound",   compound_count()),
+    ];
+
+    let mut total = 0u32;
+    let mut holding = 0u32;
+    let mut vacuous = 0u32;
+    let mut repairable = 0u32;
+    let mut stuck = 0u32;
+
+    for (fam, count) in families.iter() {
+        sprintln!("── {} ──", fam);
+        for i in 0..*count {
+            let prog = match *fam {
+                "canonical"  => canonical(i),
+                "continuous" => continuous_program(i),
+                "novel"      => novel_program(i),
+                "shunted"    => shunted_program(i),
+                _            => compound_program(i),
+            };
+            let prog = match prog { Some(p) => p, None => continue };
+            let name = match *fam {
+                "canonical"  => canonical_name(i),
+                "continuous" => continuous_name(i),
+                "novel"      => novel_name(i),
+                "shunted"    => shunted_name(i),
+                _            => compound_name(i),
+            };
+            let word = program_word(&prog);
+            if word.is_empty() { continue; }
+            total += 1;
+
+            match banked_walk(&word) {
+                Some(b) if b.holds() => {
+                    holding += 1;
+                    sprintln!("  {:<28} holds        {}", name, word);
+                }
+                Some(b) if b.vacuous() => {
+                    vacuous += 1;
+                    sprintln!("  {:<28} vacuous — no clear fired", name);
+                }
+                Some(b) => {
+                    let lost: u32 = b.exposed.iter().map(|e| e.2).sum();
+                    let r = repair_count(&word);
+                    if r == 0 { stuck += 1; } else { repairable += 1; }
+                    sprintln!("  {:<28} exposed {} — {} repair(s)   {}", name, lost, r, word);
+                }
+                None => { total -= 1; }
+            }
+        }
+    }
+
+    sprintln!("");
+    sprintln!("{} programs: {} hold, {} vacuous, {} exposed-and-repairable, {} exposed-with-no-repair",
+        total, holding, vacuous, repairable, stuck);
 }
 
 /// Count what the union throws away.

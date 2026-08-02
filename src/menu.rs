@@ -24,7 +24,7 @@ pub static MAIN_MENU: &[MenuItem] = &[
     MenuItem { name: "Crystal",  cmd: "crystal",  desc: "Crystal FS (decode, store, find, name)", example: "", submenu: Some(CRYSTAL_MENU) },
     MenuItem { name: "Grammar",  cmd: "grammar",  desc: "Grammar bridges (ig, classify, frob, aleph, shor, rh, ym)", example: "", submenu: Some(GRAMMAR_MENU) },
     MenuItem { name: "Quantum",  cmd: "quantum",  desc: "Quantum computation (fibqc, jones, braids, shor, iuft, sic, d12, d2048)", example: "help quantum", submenu: Some(QUANTUM_MENU) },
-    MenuItem { name: "IMASM",    cmd: "imasm",    desc: "IMASM word walks (cycle, weight, banked, trans, arev)", example: "", submenu: Some(IMASM_MENU) },
+    MenuItem { name: "IMASM",    cmd: "imasm",    desc: "IMASM word walks (cycle, weight, banked, insert, trans, arev)", example: "", submenu: Some(IMASM_MENU) },
     MenuItem { name: "Kernel",   cmd: "kernel",   desc: "Kernel utilities (ask, spine, vessel, vita, whoami, ruleset)", example: "", submenu: Some(KERNEL_MENU) },
     MenuItem { name: "Rebis",    cmd: "rebis",    desc: "Red-Hot Rebis (codon, translate, genetics, materials, bio, tx)", example: "", submenu: Some(REBIS_MENU) },
     MenuItem { name: "Dialect", cmd: "dialect",  desc: "Cross-dialect (ruleset, jump, seal, compound, whoami)", example: "", submenu: Some(DIALECT_MENU) },
@@ -96,6 +96,7 @@ pub static IMASM_MENU: &[MenuItem] = &[
     MenuItem { name: "cycle", cmd: "cycle", desc: "walk an IMASM word around its ROTAT orbit (glyphs only)", example: "cycle ⊢⊙∈+×∋=¬⊣", submenu: None },
     MenuItem { name: "weight", cmd: "weight", desc: "where the weight moves through an IMASM word", example: "weight ⊢⊙∈+×∋=¬⊣", submenu: None },
     MenuItem { name: "banked", cmd: "banked", desc: "was a count cleared with nothing banked?", example: "banked ⊢⊙∈+×∋=¬⊣", submenu: None },
+    MenuItem { name: "insert", cmd: "insert", desc: "every one-glyph repair for an exposed word", example: "insert ⊢⊙∈+×⊞∋><=¬⊣", submenu: None },
     MenuItem { name: "trans", cmd: "trans", desc: "transitions counted on the ring, closing edge included", example: "trans ⊢⊙∈+×∋=¬⊣", submenu: None },
     MenuItem { name: "arev", cmd: "arev", desc: "H hop: read snapshot through the R1<->R2 mirror", example: "arev", submenu: None },
 ];
@@ -368,7 +369,7 @@ pub fn print_help_topic(topic: &str) {
             crate::sprintln!("proof bootstrap  — Grammar self-verification (7 steps)");
             crate::sprintln!("proof parity     — Parity walk");
         }
-        "cycle" | "weight" | "banked" | "trans" => {
+        "cycle" | "weight" | "banked" | "insert" | "trans" => {
             crate::sprintln!("═══ IMASM Word Walks ═══\n");
             crate::sprintln!("{} <word>   — run the {} walk on an IMASM word", t, t);
             crate::sprintln!("Without <word>, shows usage and explanation.");
@@ -525,6 +526,7 @@ pub fn search_commands(keyword: &str) {
         ("cycle", "IMASM word cycle walk"),
         ("weight", "IMASM word weight trace"),
         ("banked", "IMASM banked-count report"),
+        ("insert", "IMASM one-glyph repair sweep"),
         ("trans", "IMASM transition counter"),
         ("proof", "Guided proof walker"),
         ("status", "Kernel status snapshot"),

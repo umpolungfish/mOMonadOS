@@ -382,6 +382,13 @@ fn kmain() -> ! {
     // Value 0x10 → QEMU exits with status 0.
     // On real hardware or without the device, falls through to HLT.
     sprintln!("[SHUTDOWN] μ∘δ=id. Goodbye.");
+
+    // `out` and `hlt` are privileged. On bare metal they are the QEMU
+    // debug-exit device and the idle halt; in a userspace process they are a
+    // general protection fault, which is what made the hosted build segfault on
+    // quit. A host does not need a debug-exit device emulated at it -- it
+    // exits.
+    #[cfg(not(feature = "hosted"))]
     unsafe {
         core::arch::asm!(
             "out dx, eax",
@@ -390,7 +397,11 @@ fn kmain() -> ! {
             options(nomem, nostack, preserves_flags)
         );
     }
+    #[cfg(not(feature = "hosted"))]
     loop { unsafe { core::arch::asm!("hlt", options(nostack, nomem, preserves_flags)); } }
+
+    #[cfg(feature = "hosted")]
+    std::process::exit(0);
 }
 
 fn print_banner() {

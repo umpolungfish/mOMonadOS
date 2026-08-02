@@ -229,6 +229,21 @@ pub fn repl(k: &mut Kernel) {
                     crate::lattice_flow::transitions_report(w);
                 }
             }
+            "insert" => {
+                let tail: Vec<&str> = parts.collect();
+                let word = tail.join(" ");
+                let w = word.trim();
+                if w.is_empty() {
+                    sprintln!("insert <word>    — every single-glyph insertion that turns");
+                    sprintln!("an exposed word into one whose weight survives its clears. The");
+                    sprintln!("repair for a losing word is usually one glyph in the right place,");
+                    sprintln!("and the search is small enough to be exact rather than reasoned.");
+                } else if w.eq_ignore_ascii_case("all") {
+                    crate::lattice_flow::insert_sweep_all();
+                } else {
+                    crate::lattice_flow::insert_report(w);
+                }
+            }
             "banked" => {
                 let tail: Vec<&str> = parts.collect();
                 let word = tail.join(" ");
@@ -2568,6 +2583,7 @@ fn print_help() {
     sprintln!("  {:<32} — walk an IMASM word around its ROTAT orbit", "cycle <word>");
     sprintln!("  {:<32} — where the weight moves through an IMASM word", "weight <word>");
     sprintln!("  {:<32} — was a count cleared with nothing banked?", "banked <word>");
+    sprintln!("  {:<32} — every one-glyph repair for an exposed word", "insert <word>");
     sprintln!("  {:<32} — transitions counted on the ring, closing edge included", "trans <word>");
     sprintln!("  {:<32} — IUFT QC gates: gate|distance|list", "iuft <action>");
     sprintln!("  {:<32} — Riemann Hypothesis bridge", "rh");
