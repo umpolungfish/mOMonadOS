@@ -1,0 +1,5 @@
+L.pol (octic) = x^8 - 2*x^6 - 4*x^4 - 8*x^2 + 16 ,  h=1 ,  #fund S-units = 7
+N1 as S-unit: exponent vector (on fund S-units + units + torsion):
+   [5, -6, 0, 0, 2, 1, -3, -2, -2, 1, 0, -1, -1]
+N1 square-class (exponents mod 2, the sqrt-N1 ramifier): [1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1]
+DONE

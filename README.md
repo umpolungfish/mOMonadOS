@@ -16,6 +16,25 @@ no OS under it, no runtime, and no floating-point unit assumed.
 **Target:** x86_64-unknown-none (bare-metal direct ELF boot, zero external crates)  
 **License:** Unlicense (public domain)
 
+## Where new work goes
+
+The kernel is the first home, not a port target. Anything developed from here
+lands natively here before it lands anywhere else, and no Python version is
+written to precede it.
+
+The reason is not preference. Every translation between a Python surface and
+this one is a place where structure is dropped and then reconstructed from
+description — the Grammar's own account of what an imscription is says that is
+exactly where the loss happens. Two implementations of the same operation are
+two objects that agree by maintenance rather than by construction, and they
+drift the moment one is edited. `m3iosis` mirrors this kernel subcommand for
+subcommand; that mirror is history, not a pattern to extend.
+
+What this means concretely: a new operation is a REPL verb and an IMASM program
+here first. Where a host-side script is genuinely needed — a run that cannot
+happen in 48 MB of static BSS, or one that wants an algebra system — it is a
+driver that calls in, not a second implementation of the thing.
+
 ## Overview
 
 **What it is.** $m\odot^2$: a bare-metal, self-imscribing operating kernel in Rust (no_std, x86_64) with no processes, scheduler, or filesystem hierarchy. The kernel is the Frobenius loop. (Distinct from the Python `omonad_OS`.)

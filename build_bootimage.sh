@@ -11,7 +11,10 @@ echo "═══ mOMonadOS ELF Builder ═══"
 # appending `|| true` discarded it, so a failed compile printed its errors and
 # the script still said Done — over whatever stale ELF was already on disk.
 set -o pipefail
-cargo build --profile "$PROFILE" --target "$TARGET" 2>&1 | grep -E 'Compiling|Finished|error'
+cargo build --profile "$PROFILE" --target "$TARGET" \
+  -Z build-std=core,compiler_builtins,alloc \
+  -Z build-std-features=compiler-builtins-mem \
+  2>&1 | grep -E 'Compiling|Finished|error'
 status=${PIPESTATUS[0]}
 if [ "$status" -ne 0 ]; then
   echo "ERROR: cargo build failed (status $status) — the ELF on disk is stale"

@@ -114,7 +114,14 @@ pub fn replicative_opening_loop() -> Program {
     p
 }
 
-pub const CANONICAL_COUNT: usize = 12;
+/// Counted, not declared. Every family's namer answers "Unknown" past its end,
+/// so the family reports its own size and a program added without touching a
+/// tally cannot go missing from the totals.
+pub fn canonical_count() -> usize {
+    let mut n = 0;
+    while canonical_name(n) != "Unknown" { n += 1; }
+    n
+}
 
 pub fn canonical_name(i: usize) -> &'static str {
     match i {
@@ -201,7 +208,14 @@ pub fn canonical(i: usize) -> Option<Program> {
 // Halt via TANCH at root depth.
 // No HALT/YIELD/JNZ/JZ.
 
-pub const CONTINUOUS_COUNT: usize = 4;
+/// Counted, not declared. Every family's namer answers "Unknown" past its end,
+/// so the family reports its own size and a program added without touching a
+/// tally cannot go missing from the totals.
+pub fn continuous_count() -> usize {
+    let mut n = 0;
+    while continuous_name(n) != "Unknown" { n += 1; }
+    n
+}
 
 pub fn continuous_name(i: usize) -> &'static str {
     match i {
@@ -283,7 +297,14 @@ pub fn period(prog: &Program) -> usize {
 //   XVIII — TANCH root-depth halt (HALT replacement)
 //   XIX   — IMSCRIB cyclic self-imscription (YIELD replacement)
 
-pub const NOVEL_COUNT: usize = 4;
+/// Counted, not declared. Every family's namer answers "Unknown" past its end,
+/// so the family reports its own size and a program added without touching a
+/// tally cannot go missing from the totals.
+pub fn novel_count() -> usize {
+    let mut n = 0;
+    while novel_name(n) != "Unknown" { n += 1; }
+    n
+}
 
 pub fn novel_name(i: usize) -> &'static str {
     match i {
@@ -379,7 +400,14 @@ pub fn novel_program(i: usize) -> Option<Program> {
 // class boundaries, and (3) CLINK spines that couple heterogeneous
 // token-family regions.
 
-pub const SHUNTED_COUNT: usize = 9;
+/// Counted, not declared. Every family's namer answers "Unknown" past its end,
+/// so the family reports its own size and a program added without touching a
+/// tally cannot go missing from the totals.
+pub fn shunted_count() -> usize {
+    let mut n = 0;
+    while shunted_name(n) != "Unknown" { n += 1; }
+    n
+}
 
 pub fn shunted_name(i: usize) -> &'static str {
     match i {
@@ -633,7 +661,14 @@ pub fn shunted_program(i: usize) -> Option<Program> {
 // Each is an IMASM token sequence with a specific structural operation.
 // Refs: ruleset_dialect.py, ig-docs/rebis-port/diaschizics_design.md
 
-pub const COMPOUND_COUNT: usize = 11;
+/// Counted, not declared. Every family's namer answers "Unknown" past its end,
+/// so the family reports its own size and a program added without touching a
+/// tally cannot go missing from the totals.
+pub fn compound_count() -> usize {
+    let mut n = 0;
+    while compound_name(n) != "Unknown" { n += 1; }
+    n
+}
 
 /// Return compound name by index (0-10).
 pub fn compound_name(idx: usize) -> &'static str {

@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 libm = "0.2"
-imasm_core = { path = "../MoDoT/imasm_core", default-features = false }
+imasm_core = { path = "../2m3iosis/imasm_core", default-features = false }
 
 [[bin]]
 name = "momonados"
@@ -13,6 +13,11 @@ path = "src/main.rs"
 
 [features]
 vita = []
+# Run on any host that has Rust, without QEMU and without bare metal. The
+# kernel's own code is unchanged: 67 of its 71 modules are already portable
+# no_std Rust, and only serial, interrupts, the entry point and one halt in the
+# REPL touch the machine.
+hosted = []
 
 [profile.dev]
 panic = "abort"

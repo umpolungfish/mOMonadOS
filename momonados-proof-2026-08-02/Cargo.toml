@@ -1,0 +1,24 @@
+[package]
+name = "momonados"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+libm = "0.2"
+imasm_core = { path = "imasm_core", default-features = false }
+
+[[bin]]
+name = "momonados"
+path = "src/main.rs"
+
+[features]
+vita = []
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+lto = true
+codegen-units = 1
+opt-level = "s"

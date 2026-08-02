@@ -1,0 +1,422 @@
+\documentclass[12pt,a4paper]{article}
+
+% ── Fonts and encoding (LuaLaTeX) ─────────────────────────────────────────────
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\setmainfont{Linux Libertine O}
+\setmathfont{TeX Gyre Pagella Math}
+\setmonofont[Scale=0.85]{Everson Mono}
+
+% ── Layout ────────────────────────────────────────────────────────────────────
+\usepackage[top=1in, bottom=1in, left=1.1in, right=1.1in, headheight=15pt]{geometry}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage[english]{babel}
+\setlength{\emergencystretch}{3em}
+
+% ── Headers ───────────────────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Section styling ───────────────────────────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+% ── Lists ─────────────────────────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist[itemize]{topsep=0.5ex, itemsep=0.25ex, parsep=0pt}
+\setlist[enumerate]{topsep=0.5ex, itemsep=0.25ex, parsep=0pt}
+
+% ── Math and tables ───────────────────────────────────────────────────────────
+\usepackage{amsmath,amsthm}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+
+% ── Code listings ─────────────────────────────────────────────────────────────
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\footnotesize, breaklines=true, columns=fullflexible}
+
+% ── Cross-references ──────────────────────────────────────────────────────────
+\usepackage{hyperref}
+\usepackage{cleveref}
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=cyan, citecolor=blue,
+  pdfkeywords={SIC-POVM, moduli field, conductor, ray class field, Stark units, ray class fields, Zauner conjecture, PARI/GP}}
+
+% ── Theorem environments ──────────────────────────────────────────────────────
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{remark}[theorem]{Remark}
+
+% ── Custom notation ───────────────────────────────────────────────────────────
+\newcommand{\Fd}{F}
+\newcommand{\md}{m_d}
+\newcommand{\pt}{\mathfrak{p}_2}
+\newcommand{\Cl}{\mathrm{Cl}}
+\newcommand{\Lean}{\textsc{Lean\,4}}
+
+\begin{document}
+
+\title{\textbf{The Conductor of the SIC-POVM Moduli Field}}
+
+\author{C.\ Lando\ Mills%
+\thanks{The author thanks Harry T.\ Larson; see Acknowledgements and \cite{Larson1961}.}}
+
+\date{25 July 2026}
+
+\maketitle
+
+\begin{abstract}
+Suppose you hold the squared magnitudes of a SIC-POVM fiducial vector in dimension~$d$. They are real numbers, they sum to one, and their squares sum to $2/(d+1)$. What you want to know is which number field they live in — not approximately, but exactly. That field is an abelian extension of the real quadratic field $\Fd = \mathbb{Q}(\sqrt{(d+1)(d-3)})$, and the question this paper answers is: what is its conductor?
+
+Two results carry the answer. At $d=12$, where the fiducial is known to high precision, the moduli generate a field of degree sixteen over $\mathbb{Q}$, signature $(8,4)$, abelian of degree eight over $\Fd$, with conductor $\pt^3\mathfrak{p}_3$ of norm $192$ and exactly one infinite place ramified. The field is not totally real — and an earlier draft of this paper said the opposite, having been misled by an integer relation that was fitting noise rather than recovering structure. The test that separates the two is whether a relation's coefficient height holds steady as the working precision rises; it is applied throughout.
+
+Second, where the class number of $\Fd$ exceeds one, the class group is not carried by the moduli. Dimension sixteen is the smallest such dimension, and it settles the question: the $\sigma$-coinvariant count at the Appleby modulus is $16$ against a required $d/2 = 8$, and dividing by the class group restores it. The moduli field is the ray class field modulo the class group. At $d=2048$ this gives a field of degree $2^{21}$ over $\Fd$, not $2^{27}$.
+\end{abstract}
+
+\noindent\textbf{Keywords:} SIC-POVM \(\cdot\) moduli field \(\cdot\) conductor
+\(\cdot\) ray class field \(\cdot\) Stark units \(\cdot\) archimedean ramification
+\(\cdot\) Zauner conjecture \(\cdot\) PARI/GP
+
+\newpage
+\tableofcontents
+\newpage
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Introduction}
+\label{sec:intro}
+%──────────────────────────────────────────────────────────────────────────────
+
+Here is the problem in one sentence. A symmetric informationally complete positive operator-valued measure in dimension~$d$ is a set of $d^2$ unit vectors in $\mathbb{C}^d$ with the property that any two distinct vectors have the same absolute inner product: $|\langle\psi_j,\psi_k\rangle|^2 = 1/(d+1)$ for $j \neq k$. Put less formally: you fill complex projective space with $d^2$ points, all equally far apart, and you ask whether it can be done. Zauner conjectured in 1999 that it can, in every dimension, and that the vectors can be taken as the orbit of a single fiducial $\psi$ under the $d^2$ Weyl--Heisenberg displacement operators~\cite{Zauner1999}. The conjecture is open, but decades of numerical and algebraic work have made it one of the richest problems at the boundary of quantum information and number theory.
+
+Here is why it is a number theory problem. Appleby, Bengtsson, Flammia, McConnell, and Yard~\cite{Appleby2013,Appleby2017,AFMY2020} established that the fiducial coordinates are algebraic numbers — not arbitrary transcendentals, but numbers that live in ray class fields of the real quadratic field $\Fd = \mathbb{Q}(\sqrt{\md})$ where $\md = (d+1)(d-3)$. This ties SIC existence to the real-quadratic case of Hilbert's twelfth problem: the problem of generating all abelian extensions of a number field from analytic data~\cite{StarkHilbert12}. If you find the fiducial, you find a generator. If you find the conductor, you know which ray class field to look in.
+
+And that is the gap this paper fills. Knowing that a fiducial lives in \emph{some} ray class field is not the same as knowing \emph{which} one. For any explicit construction the conductor is the thing you need, because the conductor determines the ray class group, the number of characters, and whether the Stark machinery — which manufactures algebraic numbers from $L$-function values — applies at all. This paper determines the conductor for the moduli, the real quantities $N_k = |\psi_k|^2$. The determination is empirical in the honest sense: it is calibrated against dimensions where the fiducial is known exactly, and then applied to one where it is not.
+
+The result is stated in full in \Cref{sec:rule}. Write $\pt$ for the prime of $\Fd$ above $2$. The moduli generate the ray class field of $\Fd$ modulo the class group, at the modulus
+\[
+\mathfrak{f}_d \;=\; \pt^{\,v_2(d)+1} \cdot \prod_{p \mid d,\; p \text{ odd}}
+\ \prod_{\mathfrak{p} \mid p} \mathfrak{p} \cdot \infty_1,
+\]
+with exactly one infinite place ramified. At $d=2048$ this gives $\pt^{12}\infty_1$, a ray class group of order $2^{27}$, and — after dividing by the class number $64$ — a moduli field of degree $2^{21}$ over $\Fd$.
+
+Two features of this answer are more important than the formula itself. The first is the archimedean part: exactly one infinite place ramifies, which means the moduli field is real at the fiducial embedding but not totally real. The Stark machinery in its standard form wants a totally real class field and refuses anything else; PARI's \texttt{bnrstark} reports nonzero $r_2$ and exits. The construction therefore needs the mixed-signature form of Stark's conjecture, as \cite{Chrysopoeia2048} maintained. The second feature is the class group, invisible in every dimension where the fiducial is known exactly — because all of those have class number one — and settled at $d=16$ in \Cref{sec:classgroup}.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{The moduli field is not the coordinate field}
+\label{sec:notcoord}
+%──────────────────────────────────────────────────────────────────────────────
+
+It is tempting to treat the moduli field and the coordinate field as interchangeable. They are not. For a fiducial $\psi$, the coordinates $\psi_k$ are complex numbers; the moduli $N_k = |\psi_k|^2$ are the squared magnitudes, and they are real. But reality at the fiducial embedding does not imply total reality — the field can be, and is, complex at the conjugate place. The difference is the content of this section, and it has practical teeth.
+
+The practical reason to care is that PARI's \texttt{bnrstark} computes Stark units for totally real class fields and refuses anything else. It refuses the moduli field. The construction therefore needs the mixed-signature form of Stark's conjecture, as \cite{Chrysopoeia2048} maintained — and an earlier version of this paper claimed the opposite on the strength of a computation that did not survive scrutiny. Here is what survived.
+
+\begin{proposition}[$d=12$ moduli field]
+\label{prop:d12}
+The twelve moduli of the $d=12$ fiducial generate a field of degree sixteen over $\mathbb{Q}$ of signature $(8,4)$. Individually they have degree $4$ or $8$; the minimal polynomial of $N_0$ is
+$97344\,x^4 - 32448\,x^3 + 3224\,x^2 - 104\,x + 1$. The field is abelian of degree eight over $\Fd = \mathbb{Q}(\sqrt{13})$, with conductor $\pt^3\mathfrak{p}_3$ of norm $192$, \emph{one} infinite place ramified, ray class group $(\mathbb{Z}/2)^3$ of order eight, and trivial subgroup.
+\end{proposition}
+
+The field is therefore not totally real, and the moduli field is the full ray class field at a modulus whose archimedean part is one place — not none, and not both.
+
+Establishing this takes more care than it first appears, and the care is the real content. An integer relation computed against a power basis will happily report membership in a field that does not contain the element, if the working precision gives the lattice reduction enough slack to fit noise. The discriminating test is not the residual — small residuals are easy. The test is the height: a genuine algebraic relation keeps its coefficient height fixed as the working precision rises, while a fitted relation sees its height grow with the precision, because each new digit demands a new coefficient to match it.
+
+At $d=12$, $N_1$ has a degree-eight minimal polynomial of height $33$ bits, unchanged at $600$, $900$, and $1300$ digits. The primitive element $\sum_k k N_k$ has a degree-sixteen relation of height $80$ bits, likewise unchanged. But the claim that $N_1$ lies in a totally real octic — the claim the earlier draft made — is returned at every one of the eight embeddings with heights of $177$, $287$, and $435$ bits at those three precisions. That is the signature of a fit, not a fact. The moduli have degree at most eight each, and they do not lie in a common octic; together they generate the degree-sixteen field above.
+
+A related trap governs the input. The exact coordinates are known to roughly sixteen hundred digits, so seeking a relation at twenty-five hundred is fitting digits that are not there. Every claim in this paper is stated at a precision the input supports.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{How each field was identified}
+\label{sec:method}
+%──────────────────────────────────────────────────────────────────────────────
+
+The method is uniform across dimensions, and it asks nothing of the answer in advance.
+
+A fiducial is obtained numerically by solving the overlap conditions, then refined by Gauss--Newton against the full system rather than a chosen subset of it. Why the full system? Because a subset large enough to fix a solution is not large enough to fix it to high precision — the unconstrained directions accumulate error that only the full $d^2$ conditions can squeeze out. Several hundred digits are reached in roughly ten iterations from a double-precision seed, and the residual across every overlap condition falls below the working tolerance.
+
+Only a Zauner-symmetric fiducial will do. The moduli are not invariant under the Clifford group, so an arbitrary solution of the overlap equations has moduli that are Clifford images of the algebraic ones and are not themselves algebraic of small degree. What is invariant — what comes out right for \emph{any} solution — is the sum of the moduli and the sum of their squares. That is why those two quantities are exactly correct in every numerical SIC, while the individual values resist recognition until symmetry is imposed. The Zauner element is the order-three element of the Clifford group, realized through the metaplectic representation, and the fiducial is sought inside one of its eigenspaces. For $d=8$ the eigenspace dimensions are three, two, and three, and each contains a SIC.
+
+Once the fiducial is in hand, the moduli are recognized algebraically. When they form a single Galois orbit — as in $d=4$ — the elementary symmetric functions are rational and the minimal polynomial falls out with no guesswork. When they do not, and in general they do not because Galois conjugation carries one SIC to a different SIC rather than to itself, the recognition proceeds through \texttt{algdep} on individual moduli and on the symmetric functions of subsets.
+
+Reading \texttt{algdep} output is an art, and it helps to know what you are looking at. A genuine relation announces itself as a sharp collapse in the height of the returned polynomial, followed by that same height repeating at every larger degree as the lattice reduction rediscovers the same relation. Absent a real relation, the height decays smoothly by a roughly constant factor per degree — the reduction spending each additional degree of freedom on fitting noise. In $d=8$ the smooth decay continues past degree fifty for an individual modulus at the precision used, while the symmetric functions of the four moduli lying outside $\Fd$ collapse at degree four and hold there.
+
+With the field identified, its conductor is obtained by factoring it over $\Fd$ and calling \texttt{rnfconductor}, which returns the modulus, the ramified infinite places, the ray class group, and the subgroup the field corresponds to.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{The three calibration points}
+\label{sec:calibration}
+%──────────────────────────────────────────────────────────────────────────────
+
+Three dimensions anchor the rule. They were chosen because their fiducials are known exactly — not interpolated, not extrapolated, but computed to hundreds of digits and recognized as algebraic numbers whose minimal polynomials can be written down.
+
+\begin{center}
+\begin{tabular}{@{}cllcccc@{}}
+\toprule
+$d$ & $\Fd$ & conductor & $\infty$ & ray class group & $[K:\Fd]$ & signature \\
+\midrule
+$4$  & $\mathbb{Q}(\sqrt5)$    & $\pt^3$               & $\infty_1$ & $(\mathbb{Z}/2)^2$ & $4$ & $(4,2)$ \\
+$8$  & $\mathbb{Q}(\sqrt5)$    & $\pt^4$               & $\infty_1$ & $\mathbb{Z}/4\times\mathbb{Z}/2$ & $8$ & $(8,4)$ \\
+$12$ & $\mathbb{Q}(\sqrt{13})$ & $\pt^3\mathfrak{p}_3$ & $\infty_1$ & $(\mathbb{Z}/2)^3$ & $8$ & $(8,4)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Three things stand out. First, in every case the subgroup returned is trivial: the moduli field is the \emph{entire} ray class field of that modulus, not a proper subfield of it. Second, in every case exactly one infinite place ramifies — which is what makes the field real at the fiducial embedding without being totally real, and what puts it outside the reach of \texttt{bnrstark}. Third, and most telling, two of the three dimensions share a base field.
+
+That last point is what makes the calibration sharp rather than accommodating. Dimensions four and eight both reduce to $\mathbb{Q}(\sqrt5)$, because $(d+1)(d-3)$ is $5$ in the first case and $45$ in the second, whose squarefree part is again $5$. Any rule stated in terms of $d$ must separate them by the exponent alone. And the exponents are three and four.
+
+Each field was identified from the fiducial, not guessed from subfields. The distinction is not pedantic: enumerating the totally real subfields of the coordinate field and picking a plausible one is precisely the error corrected in \Cref{sec:notcoord}. What is computed here is the minimal polynomial of a primitive element $\sum_k k N_k$ of the field the moduli actually generate, at a precision the fiducial supports, with the height-stability check applied at each dimension. The degrees over $\mathbb{Q}$ are $8$, $16$, and $16$; the heights of the defining relations are $21$, $62$, and $80$ bits — each unchanged across three working precisions.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{The rule}
+\label{sec:rule}
+%──────────────────────────────────────────────────────────────────────────────
+
+The three calibration points suggest a pattern. Here it is, stated as a conjecture.
+
+\begin{conjecture}[Conductor of the moduli field]
+\label{conj:rule}
+Let $d$ be even, $\Fd = \mathbb{Q}(\sqrt{\md})$ with $\md$ the squarefree part of $(d+1)(d-3)$, and $\pt$ the prime of $\Fd$ above $2$. The moduli $N_k = |\psi_k|^2$ of a Zauner-symmetric Weyl--Heisenberg fiducial in dimension $d$ generate the ray class field of $\Fd$ at the modulus
+\[
+\mathfrak{f}_d \;=\; \pt^{\,v_2(d)+1}\cdot \prod_{p\mid d,\ p\ \mathrm{odd}}\
+\prod_{\mathfrak{p}\mid p}\mathfrak{p},
+\]
+with exactly one infinite place ramified, taken modulo the class group of $\Fd$. Its degree over $\Fd$ is $|\Cl_{\mathfrak{f}_d}|/h(\Fd)$. The field is real at the fiducial embedding and not totally real.
+\end{conjecture}
+
+The formula is compact, but every piece earns its place. Dimension four has $v_2 = 2$ and receives exponent three. Dimension eight has $v_2 = 3$ and receives exponent four. Dimension twelve has $v_2 = 2$ and receives exponent three, together with the prime above three, since three divides twelve. A constant exponent of three fits dimensions four and twelve — and is refuted by dimension eight. That is the entire reason dimension eight was worth the effort: it breaks the naive guess and forces the $2$-adic valuation into the formula.
+
+The odd part has a subtlety worth appreciating. Three splits in $\mathbb{Q}(\sqrt{13})$, so the factor appearing in the $d=12$ conductor has norm three, while three is inert in $\mathbb{Q}(\sqrt5)$ with norm nine. The odd contribution is therefore a statement about primes of $\Fd$ lying above primes dividing $d$, not about rational integers. The two cases would be indistinguishable if only one of them had ever been computed — which is another way of saying that three calibration points is the minimum, not a luxury.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Dimension 2048}
+\label{sec:d2048}
+%──────────────────────────────────────────────────────────────────────────────
+
+Two thousand and forty-eight is the eleventh power of two. It has no odd prime divisors, so \Cref{conj:rule} collapses to $\mathfrak{f}_{2048} = \pt^{12}\infty_1$. Here $\md = 4190205 = 3\cdot 5\cdot 409\cdot 683$, the class number is $64$ with class group $[32,2]$, and two is inert in $\Fd$ since $\md \equiv 5 \pmod 8$. The modulus is the principal ideal generated by $4096$.
+
+The ray class group at $\pt^{12}\infty_1$ has order $2^{27}$, with cyclic type $[4096,1024,8,4]$. The class number is $64$, so by \Cref{sec:classgroup} the moduli field has degree $2^{21}$ over $\Fd$ and $2^{22}$ over $\mathbb{Q}$. To see that this prediction is not sitting on a plateau where an error of one would be invisible, the neighbouring exponents were computed with the infinite places unramified — so that the growth in the finite part stands on its own.
+
+\begin{center}
+\begin{tabular}{@{}clll@{}}
+\toprule
+exponent $k$ & $|\Cl_{\pt^k}|$ & $\log_2$ & cyclic type \\
+\midrule
+$9$  & $2097152$   & $21$ & $[1024, 128, 8, 2]$ \\
+$10$ & $8388608$   & $23$ & $[2048, 256, 8, 2]$ \\
+$11$ & $33554432$  & $25$ & $[4096, 512, 8, 2]$ \\
+$12$ & $67108864$  & $26$ & $[4096, 1024, 8, 2]$ \\
+$13$ & $134217728$ & $27$ & $[4096, 2048, 8, 2]$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The growth is a factor of four per step up to the eleventh power, and a factor of two from there. The predicted exponent falls exactly at the change of r\'egime. An error of one either way is an error of a factor of two or four in the degree — not subtle.
+
+The calibration and the prediction are recorded in \Lean{} alongside the $d=2048$ tower data, with the exponent rule and the fact that dimensions four and eight share a base field but differ in exponent stated as decidable propositions and discharged by evaluation~\cite{StarkHilbert12}. The tower has since been carried to $k=15$, which closes it: every ray class degree in the \Lean{} development is now computed rather than extrapolated, and the halving is sustained — not a stutter — holding at exactly two for each of $k=12,13,14,15$.
+
+Read in valuations, the filtration has a single generating shape. Writing each cyclic invariant as its $2$-adic valuation, every level from $k=4$ upward is $[a,\,b,\,3,\,1]$: the tail is frozen and never moves again. The gap between the two leading invariants is $a-b=3$, equal to the valuation of the third invariant, and it holds for the whole fourfold r\'egime. Growth of four is therefore not two independent doublings but one invariant advancing while its distance to the next is pinned at the tail's valuation. The r\'egime changes exactly when the leader saturates at $12 = v_2(2d)$ and the second begins to close: the gap collapses through $2,1,0$ at $k=12,13,14$, after which the leading pair alternates and the growth is two permanently. The predicted exponent is the last level at which the gap is still pinned — the last moment before the structure changes character.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{The class group, settled at dimension sixteen}
+\label{sec:classgroup}
+%──────────────────────────────────────────────────────────────────────────────
+
+Every ray class field contains the Hilbert class field. So a rule that names the full ray class field and a rule that names its quotient by the class group differ by a factor of $h(\Fd)$, the class number. All three calibration dimensions have $h=1$, where the two agree, so nothing in \Cref{sec:calibration} tells them apart. To see the class group you need a dimension where it is nontrivial. Dimension sixteen is the smallest.
+
+At $d=16$ we have $\md = 221 = 13\cdot 17$, class number two, two inert in $\Fd = \mathbb{Q}(\sqrt{221})$, and $v_2(16)+1 = 5$. The modulus is $\pt^5\infty_1$, the ray class group has order $256$ with cyclic type $[16,8,2]$, giving $128$ over $\Fd$ after the class group is divided out. The $2$-power tower below is listed with the infinite places unramified, so that the growth in the finite part is visible on its own.
+
+\begin{center}
+\begin{tabular}{@{}clll@{}}
+\toprule
+$k$ & $|\Cl_{\pt^k}|$ & cyclic type & narrow order \\
+\midrule
+$3$ & $16$  & $[8,2]$   & $64$ \\
+$4$ & $64$  & $[16,4]$  & $256$ \\
+$5$ & $128$ & $[16,8]$  & $512$ \\
+$6$ & $256$ & $[16,16]$ & $1024$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+But the deciding quantity is not the order of this group. It is the count of independent moduli the group has to carry. Galois conjugation by the nontrivial automorphism $\sigma$ of $\Fd$ pairs the moduli: $N_{k+d/2} = \sigma(N_k)$. So a moduli field must support exactly $d/2$ of them, and that count is read off the $\sigma$-coinvariant quotient of the ray class group at the Appleby modulus $(3d)$.
+
+\begin{proposition}[The coinvariant count at $d=16$]
+\label{prop:coinv}
+Write $G_d$ for the ray class group of $\Fd$ at $(3d)$ with both infinite places unramified, and $G_d^\sigma$ for its $\sigma$-coinvariants. Then $|G_{16}^\sigma| = 16$, which is not $d/2 = 8$, while
+\[
+\frac{|G_{16}^\sigma|}{|\Cl(\Fd)^\sigma|} \;=\; \frac{16}{2} \;=\; 8 \;=\; \frac{d}{2}.
+\]
+The same identity holds at $d = 4,\,8,\,12$, where the class number is one and the denominator is trivial, so those dimensions say nothing either way. It is $d=16$ that carries the content.
+\end{proposition}
+
+This identity is not a law for every dimension, and the reason is arithmetic rather than accidental, so it is worth setting down. It holds at $d = 4, 8, 12, 16, 24, 32, 36$ and fails at $d = 20, 28, 40$. Quoting the corrected count throughout — the coinvariant order divided by $|\Cl(\Fd)^\sigma|$ — the three failures give $8$, $12$, and $16$ against $d/2$ of $10$, $14$, and $20$. At $d=20$ the raw coinvariant order is $16$ and the class group contributes $2$; at $d=28$ the class number is one so raw and corrected agree.
+
+The dividing line is the odd part of $d/2$. For an odd prime $q$, a ray class group at a modulus divisible by $\mathfrak{q}$ but not $\mathfrak{q}^2$ has no $q$-torsion: the local unit group has order $N\mathfrak{q}-1$, equal to $q-1$ when $q$ splits and $q^2-1$ when $q$ is inert, and $q$ divides neither. The $q$-torsion first appears at $\mathfrak{q}^2$. The modulus $(3d)$ supplies $3^2$ exactly when $3 \mid d$, and supplies no other odd prime squared unless that square already divides $d$. So the count reaches $d/2$ when the odd part of $d/2$ is a power of three and falls short otherwise. Supplying the square by hand does not repair it: at $d=20$ the moduli $25$ and $100$ give counts $20$ and $40$ where $10$ is wanted; at $d=28$ the modulus $49$ gives $21$ where $14$ is wanted.
+
+So \Cref{prop:coinv} is a statement about dimension sixteen and not the instance of a general law, and it should be weighed as one dimension. What it says there is nonetheless exact: the raw count overshoots by precisely the class number, and dividing by the class group restores the number of independent moduli that Galois pairing requires.
+
+Together with the typing of the two readings — where the reading that keeps the class group grounds itself on a non-abelian Galois group that the ray class group $\mathbb{Z}/16\times\mathbb{Z}/8$ does not have — the conclusion is clean: the class group is not carried by the moduli. The moduli field is the ray class field at $\mathfrak{f}_d$ modulo the class group, of degree $|\Cl_{\mathfrak{f}_d}|/h(\Fd)$ over $\Fd$: degree $128$ at $d=16$, and $2^{27}/64 = 2^{21}$ at $d=2048$. The calibration of \Cref{sec:calibration} is untouched — all three dimensions there have $h=1$ — and what changes is only the reading of the word \emph{full}. It changes the $d=2048$ degree by six powers of two.
+
+One further fact about $d=16$ deserves a place in the record. The $d=16$ SIC itself is in hand numerically: the Zauner eigenspaces have dimensions five, six, and five; only the six-dimensional sector carries fiducials; and eight of them, separated by their moduli multisets, refine against the full overlap system past two thousand digits. The sum of moduli and the sum of their squares are exact to precision.
+
+That last computation also fixes the limit of recognition from below. With the moduli field of degree $256$ over $\mathbb{Q}$ at $d=16$, an individual modulus has no minimal polynomial within reach of integer relation. Indeed, $\sqrt{221}$, which certainly lies in the field, is not recovered from the power basis of a modulus to degree twenty at twenty-five hundred digits. The height-collapse signature that identifies the canonical fiducial at $d=8$, where the field has degree eight, does not survive the growth of the field. The route at $d=16$ and beyond is from the field down, not from the numbers up.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{The tower data, and what asserting it concealed}
+\label{sec:discharge}
+%──────────────────────────────────────────────────────────────────────────────
+
+The tower entered \Lean{} as thirty axioms: the degree at each of sixteen
+levels, the $2$-adic valuations, the leading and trailing cyclic invariants,
+the class number, the narrow degree, and three field types. That is an honest
+way to record computed field data, and it is what the artifact statement means
+by the boundary between what is proved and what is assumed. It is also more
+than the data requires.
+
+The sixteen degrees are not independent. The same module states the two laws
+they obey --- a ratio of four through the maximal-growth interval $3\le k\le11$,
+and of two once the leading invariant saturates --- so only the three seed
+values $64$, $64$, $128$ are data. Written as a recursion on those, every level
+is decidable and the growth law itself becomes a consequence rather than a
+companion assumption. The valuations follow, though not by decision:
+$\nu_2$ is \texttt{padicValNat}, which is noncomputable, and each level is
+instead an instance of $\nu_p(p^n)=n$, available because every degree in the
+tower is a power of two. The narrow degree is four times the wide one --- the
+factor this manuscript already attributes to the two real places --- which
+turns the assertion $2^{28}$ at $k=12$ into a theorem. The class number is a
+value, returned independently by the kernel's own tower and R\'edei
+distillations, the latter with $4$-rank one matching $[32,2]$.
+
+The three types were declared \texttt{Type 0} with no inhabitants: placeholders
+for constructions \Lean{} does not have. Constructing class fields is not what
+is wanted here. Each is recorded instead as the twelve-slot type it occupies,
+the narrow field differing from the wide in the parity slot alone, since
+ramification at the real places is a parity condition. Nothing is claimed of
+them beyond position.
+
+Thirty axioms become none, and the module still carries no \texttt{sorry}.
+The result of interest is not the count. Discharging the tail invariant showed
+it was false. It asserted that the last two cyclic invariants are $(8,2)$ for
+$4\le k\le 15$; the tower table printed in the same module gives $k=4$ as
+$[32,8,4,2]$, whose last two are $(4,2)$. Stabilisation begins one level later.
+The bound was off by one against data sitting a few lines above it, and as an
+axiom it could have stayed there indefinitely --- an axiom is consistent with
+its own table by fiat. As a theorem it failed immediately and named the level
+it failed at.
+
+That is the argument for spending the effort. Reducing assumption count is
+tidiness; what the reduction buys is that assertions which contradict the
+record announce themselves.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{What follows}
+\label{sec:follows}
+%──────────────────────────────────────────────────────────────────────────────
+
+The prediction is checkable without solving the $d=2048$ SIC. Computing the ray class field at the predicted modulus and confirming that its degree, signature, and Galois structure are consistent with carrying $d/2$ independent moduli under the pairing induced by the nontrivial automorphism of $\Fd$ is a computation in the field alone — no fiducial required. The flat autocorrelation conditions on the moduli then serve as an independent check, and the condition that the sum of squares equals $2/(d+1)$ has already been verified numerically in dimension eight to high precision from a fiducial obtained with no algebraic input at all.
+
+Dimension twenty no longer needs reconciling. Its coinvariant count falls short because $5$-torsion is absent from every modulus that keeps the two-part in range, as \Cref{sec:classgroup} sets out. What it costs is the generality of the count, not the $d=16$ reading.
+
+What does not follow, at least not by the obvious route, is the arithmetic that
+would turn the conductor into the moduli themselves. With the field identified,
+the natural next instrument is the Stark unit, and that wants $L'(0,\chi)$ over
+the characters of the ray class group at $\pt^{12}\infty_1$. Every direct attempt fails, and it is worth being
+exact about where, since the obvious diagnosis is wrong. Constructing the ray
+class group is free: at every exponent we have measured it costs milliseconds,
+and the group of order $2^{27}$ is not a burden to hold. The entire cost, in time
+and in memory, lies in evaluating $L'(0,\chi)$ character by character. Reduced
+precision does not rescue it, the shortfall being nowhere near a factor of two
+and the precision already near what $S$-unit recovery needs.
+
+The natural evasion is to ascend, computing at $\pt^{k}\infty_1$ for small $k$
+and walking upward. We have carried that walk to $k=8$, and it settles the
+question against the route. Both the order of the ray class group and the number
+of characters double with each layer, so a cost that were any fixed power of the
+order would show a constant ratio in the per-character work from layer to layer.
+It does not. Across the last three completed layers that ratio is
+\[
+  2.5, \qquad 4.6, \qquad 6.6,
+\]
+which as an exponent on the order reads $1.33$, then $2.19$, then $2.72$. The
+exponent is itself climbing, so the cost is superpolynomial in the order rather
+than merely steep, and the extrapolation this replaces — made from three layers
+and assuming a fixed factor — was optimistic by a wide margin.
+
+Two consequences. The next layer is days rather than hours and the one after is
+months, so the runtime wall arrives before the memory wall and arrives sooner at
+every step; and a larger machine buys layers, not the target.
+
+The second consequence is sharper than a bound. Because the group costs nothing
+and the character count merely doubles per layer, the growth is entirely in the
+work done for a single character. The modulus doubles from layer to layer, so a
+sum over ideals to a bound scaling with $\sqrt{N(\mathfrak{m})}$ would show a
+per-character ratio near $\sqrt 2$; the observed ratios are several times that
+and rising. Whatever accounts for the difference — growth in working precision,
+or an enumeration superlinear in its own bound — is a property of the
+implementation rather than of the arithmetic, and unlike a group too large to
+hold it is a thing that can be looked into. We note in passing that the walk as
+run recomputes at each exponent every character already handled at the previous
+one, which differ from their primitive counterparts by finitely many Euler
+factors; since the count doubles, half the work at every layer is redundant.
+
+Beyond $d=16$, the rule wants dimensions whose odd part is not three, since the odd contribution has been seen in one dimension only and the splitting behaviour that makes it a statement about primes of $\Fd$ rather than about rational integers deserves a second witness. Dimensions twenty and forty are the cheapest such tests, both with class number two, and both reachable by the same pipeline. They are the next rung.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section*{Artifact statement}
+The field computations were performed in PARI/GP~\cite{PARI}. The $d=16$ settlement is formalized in \Lean{} as its own module, sorry-free, carrying the tower data, the coinvariant count, the abelian type of the ray class group, and the propagation of the correction to $d=2048$. It and the \Lean{} calibration module live in the \texttt{p4ramill} library of \texttt{p4rakernel} (\url{https://github.com/umpolungfish/p4rakernel}), frozen on branch \texttt{crystalline/sic-moduli-conductor-2026-07-25} under tag \texttt{crystalline-sic-moduli-conductor-v1}, with \texttt{main} continuing. The tower discharge of \Cref{sec:discharge} is frozen alongside it on branch \texttt{crystalline/d2048-axiom-free-2026-08-01} under tag \texttt{crystalline-d2048-axiom-free-v1}, where the moduli module carries zero axioms and zero sorries. Running \texttt{./verify\_sic\_moduli.sh} at the root of that repository elaborates the modules through the kernel and prints, dimension by dimension across $d = 2, 4, 8, 12, 16, 20, 2048$, what was checked, followed by the axiom dependency of each headline theorem, so that the boundary between what is proved and what enters as computed field data is visible in the output rather than left to the reader to reconstruct. This manuscript lives in \texttt{ig-docs} (\url{https://github.com/umpolungfish/ig-docs}). Every field computation reported here is reproducible from the PARI/GP calls named in the text: the modulus is read off with \texttt{rnfconductor}, and the candidate algebraic relations with \texttt{algdep}.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section*{Acknowledgements}
+The author would like to thank Harry T.\ Larson for imparting the importance of catching rising problems and never letting them go~\cite{Larson1961}. The conductor was found by refusing to accept a tool's refusal at face value: when \texttt{bnrstark} declined the coordinate field for having nonzero $r_2$, the question became which field the moduli actually generate — and that question had an answer.
+
+%──────────────────────────────────────────────────────────────────────────────
+\begin{thebibliography}{9}
+%──────────────────────────────────────────────────────────────────────────────
+
+\bibitem{Zauner1999}
+G.\ Zauner, \emph{Quantendesigns: Grundz\"uge einer nichtkommutativen Designtheorie}, Ph.D.\ thesis, Universit\"at Wien, 1999.
+
+\bibitem{Appleby2013}
+D.\ M.\ Appleby, H.\ Yadsan-Appleby, and G.\ Zauner,
+\emph{Galois automorphisms of a symmetric measurement},
+Quantum Inf.\ Comput.\ \textbf{13} (2013), 672--720.
+
+\bibitem{Appleby2017}
+M.\ Appleby, S.\ Flammia, G.\ McConnell, and J.\ Yard,
+\emph{SICs and algebraic number theory},
+Found.\ Phys.\ \textbf{47} (2017), 1042--1059.
+
+\bibitem{AFMY2020}
+M.\ Appleby, S.\ Flammia, G.\ McConnell, and J.\ Yard,
+\emph{Generating ray class fields of real quadratic fields via complex equiangular lines}, Acta Arith.\ \textbf{192} (2020), 211--233.
+
+\bibitem{StarkHilbert12}
+C.\ L.\ Mills, \emph{SIC-POVMs, a Stark Conjecture, and the 12th: A Formalization via Paraconsistent Belnap Multilattices}, companion manuscript, 2026.
+
+\bibitem{Chrysopoeia2048}
+C.\ L.\ Mills, \emph{The 2048 Chrysopoeia: An Explicit Construction Program for the $d=2048$ SIC-POVM Moduli}, companion manuscript, 2026.
+
+\bibitem{PARI}
+The PARI~Group, \emph{PARI/GP version 2.13}, Univ.\ Bordeaux, 2021,
+\texttt{https://pari.math.u-bordeaux.fr/}.
+
+\bibitem{Larson1961}
+H.\ T.\ Larson,
+\textit{Catch a Rising Problem\ldots\ and Never Ever Let it Go},
+\emph{IRE Transactions on Engineering Management} \textbf{8}(4) (1961), 173--174.
+\url{https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=1641382}
+
+\end{thebibliography}
+
+\end{document}

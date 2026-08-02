@@ -4,6 +4,7 @@ use core::fmt;
 const COM1: u16 = 0x3F8;
 
 #[inline(always)]
+#[cfg(not(feature = "hosted"))]
 unsafe fn inb(port: u16) -> u8 {
     let val: u8;
     core::arch::asm!(
@@ -16,6 +17,7 @@ unsafe fn inb(port: u16) -> u8 {
 }
 
 #[inline(always)]
+#[cfg(not(feature = "hosted"))]
 unsafe fn outb(port: u16, val: u8) {
     core::arch::asm!(
         "out dx, al",
@@ -25,6 +27,7 @@ unsafe fn outb(port: u16, val: u8) {
     );
 }
 
+#[cfg(not(feature = "hosted"))]
 pub fn init() {
     unsafe {
         outb(COM1 + 1, 0x00); // disable interrupts
@@ -38,20 +41,24 @@ pub fn init() {
 }
 
 #[inline]
+#[cfg(not(feature = "hosted"))]
 fn tx_ready() -> bool {
     unsafe { inb(COM1 + 5) & 0x20 != 0 }
 }
 
 #[inline]
+#[cfg(not(feature = "hosted"))]
 pub fn rx_ready() -> bool {
     unsafe { inb(COM1 + 5) & 0x01 != 0 }
 }
 
+#[cfg(not(feature = "hosted"))]
 pub fn write_byte(b: u8) {
     while !tx_ready() {}
     unsafe { outb(COM1, b); }
 }
 
+#[cfg(not(feature = "hosted"))]
 pub fn read_byte() -> u8 {
     while !rx_ready() {}
     unsafe { inb(COM1) }
@@ -59,12 +66,19 @@ pub fn read_byte() -> u8 {
 
 /// FIFO-burst write: fill the 14-byte FIFO before re-checking TX ready.
 /// Closures can't call `unsafe fn` directly; use a standalone flush_buf().
+#[cfg(not(feature = "hosted"))]
 fn flush_buf(buf: &[u8; 14], fill: usize) {
     if fill == 0 { return; }
     while !tx_ready() {}
     unsafe {
         for i in 0..fill { outb(COM1, buf[i]); }
     }
+}
+
+/// Hosted has no FIFO to burst into; stdout does its own buffering.
+#[cfg(feature = "hosted")]
+fn flush_buf(buf: &[u8; 14], fill: usize) {
+    for i in 0..fill { write_byte(buf[i]); }
 }
 
 /// Decimal on the stack. The heap-exhaustion path cannot use `format!` — that
@@ -126,4 +140,34 @@ macro_rules! sprint {
 macro_rules! sprintln {
     () => { $crate::sprint!("\n") };
     ($($arg:tt)*) => { $crate::sprint!("{}\n", format_args!($($arg)*)) };
+}
+
+// ── Hosted I/O ───────────────────────────────────────────────────────
+// The same four entry points over stdio. write_dec and write_str sit above
+// write_byte and need no variant.
+
+#[cfg(feature = "hosted")]
+pub fn init() {}
+
+/// Hosted reads block, so a byte is always considered available.
+#[cfg(feature = "hosted")]
+pub fn rx_ready() -> bool { true }
+
+#[cfg(feature = "hosted")]
+pub fn write_byte(b: u8) {
+    use std::io::Write;
+    let out = std::io::stdout();
+    let mut h = out.lock();
+    let _ = h.write_all(&[b]);
+    if b == b'\n' { let _ = h.flush(); }
+}
+
+#[cfg(feature = "hosted")]
+pub fn read_byte() -> u8 {
+    use std::io::Read;
+    let mut b = [0u8; 1];
+    match std::io::stdin().read_exact(&mut b) {
+        Ok(()) => b[0],
+        Err(_) => b'\n',   // EOF reads as a newline so the REPL sees a blank line
+    }
 }

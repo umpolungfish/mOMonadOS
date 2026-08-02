@@ -13,7 +13,7 @@ use crate::{
     serial, belnap, tokens, crystal, kernel, interrupts, frob_verify, imas_ig,
     aleph, manus, parasm, belnap_shor, para_rh, para_ym, para_temporal,
     para_category, algebra, catalog, cl8nk, consciousness, rebis, dialect, menu,
-    sequence, boot, cr3echrz, canonical_ordinal, clay_status, sic_povm,
+    sequence, cr3echrz, canonical_ordinal, clay_status, sic_povm,
     frobenius_unify, clay_witness, belnap_sic_bridge, belnap_c4, sic_compute,
     dialect_expansion, divisor_ring, mersenne_parallel, bifurcation_test, entropy, d12_sic, d2048_sic, d2048_sieve, stark,
     sic_moduli,
@@ -21,7 +21,7 @@ use crate::{
     riemann_hilbert,
     witness_vessel, ask, ovm,
 };
-use crate::tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
+use crate::tokens::{canonical_name, canonical_count, continuous_name, continuous_count, novel_name, novel_count, shunted_name, shunted_count, compound_name, compound_index, compound_program, compound_count};
 use crate::crystal::{CrystalStore, decode, encode, indices_from_program, TOTAL};
 use crate::kernel::Kernel;
 use crate::imas_ig::{IgTuple, IgPrim};
@@ -1253,6 +1253,9 @@ pub fn repl(k: &mut Kernel) {
                 while ran < n {
                     while !interrupts::timer_ready() {
                         if interrupts::escape_pressed() { break; }
+                        // Idle until the next interrupt on metal; on a host
+                        // the read below blocks, so there is nothing to wait on.
+                        #[cfg(not(feature = "hosted"))]
                         unsafe { core::arch::asm!("hlt", options(nostack, nomem, preserves_flags)); }
                     }
                     if interrupts::escape_pressed() { break; }
@@ -1270,18 +1273,18 @@ pub fn repl(k: &mut Kernel) {
                 let idx = roman_to_idx(arg)
                     .or_else(|| arg.parse::<usize>().ok().map(|n| n.saturating_sub(1)));
                 if let Some(i) = idx {
-                    if i >= CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT + SHUNTED_COUNT {
+                    if i >= canonical_count() + continuous_count() + novel_count() + shunted_count() {
                         sprintln!("Program {} out of range (max XXVIII/{}).",
-                            arg, CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT + SHUNTED_COUNT);
+                            arg, canonical_count() + continuous_count() + novel_count() + shunted_count());
                     } else if load_by_roman(k, arg) {
-                        let name: &str = if i < CANONICAL_COUNT {
+                        let name: &str = if i < canonical_count() {
                             canonical_name(i)
-                        } else if i < CANONICAL_COUNT + CONTINUOUS_COUNT {
-                            continuous_name(i - CANONICAL_COUNT)
-                        } else if i < CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT {
-                            novel_name(i - CANONICAL_COUNT - CONTINUOUS_COUNT)
+                        } else if i < canonical_count() + continuous_count() {
+                            continuous_name(i - canonical_count())
+                        } else if i < canonical_count() + continuous_count() + novel_count() {
+                            novel_name(i - canonical_count() - continuous_count())
                         } else {
-                            shunted_name(i - CANONICAL_COUNT - CONTINUOUS_COUNT - NOVEL_COUNT)
+                            shunted_name(i - canonical_count() - continuous_count() - novel_count())
                         };
                         sprintln!("Booting {}: {}", arg, name);
                         sprintln!("Running (ESC to stop)...");
@@ -1298,7 +1301,7 @@ pub fn repl(k: &mut Kernel) {
                 let arg = parts.next().unwrap_or("").trim();
                 if let Ok(i) = arg.parse::<usize>() {
                     let idx = i.saturating_sub(1);
-                    if idx < NOVEL_COUNT {
+                    if idx < novel_count() {
                         k.load_novel(idx);
                         sprintln!("Booting novel {}: {}", i, novel_name(idx));
                         sprintln!("Running (ESC to stop)...");
@@ -1308,17 +1311,17 @@ Stopped after {} ticks.", ran);
                         print_status(k);
                     } else {
                         sprintln!("Novel index {} out of range (max {}).",
-                            i, NOVEL_COUNT);
+                            i, novel_count());
                     }
                 } else {
-                    sprintln!("Usage: boot novel <1-{}>", NOVEL_COUNT);
+                    sprintln!("Usage: boot novel <1-{}>", novel_count());
                 }
             }
             "shunt" => {
                 let arg = parts.next().unwrap_or("").trim();
                 if let Ok(i) = arg.parse::<usize>() {
                     let idx = i.saturating_sub(1);
-                    if idx < SHUNTED_COUNT {
+                    if idx < shunted_count() {
                         k.load_shunted(idx);
                         sprintln!("Booting shunted {}: {}", i, shunted_name(idx));
                         sprintln!("Running (ESC to stop)...");
@@ -1328,10 +1331,10 @@ Stopped after {} ticks.", ran);
                         print_status(k);
                     } else {
                         sprintln!("Shunted index {} out of range (max {}).",
-                            i, SHUNTED_COUNT);
+                            i, shunted_count());
                     }
                 } else {
-                    sprintln!("Usage: boot shunt <1-{}>", SHUNTED_COUNT);
+                    sprintln!("Usage: boot shunt <1-{}>", shunted_count());
                 }
             }
             "watch" => {
@@ -1448,10 +1451,10 @@ Stopped after {} ticks.", ran);
                     }
                 } else {
                     sprintln!("Continuous programs:");
-                    for i in 0..CONTINUOUS_COUNT {
+                    for i in 0..continuous_count() {
                         sprintln!("  {}. {}", i + 1, continuous_name(i));
                     }
-                    sprintln!("Usage: continuous <1-{}>", CONTINUOUS_COUNT);
+                    sprintln!("Usage: continuous <1-{}>", continuous_count());
                 }
             }
             "dynamic" => {
@@ -1550,7 +1553,7 @@ Stopped after {} ticks.", ran);
                         if name.is_empty() {
                             sprintln!("Usage: crystal store <name> [data]");
                         } else {
-                            let idx = name_hash(name) % CANONICAL_COUNT;
+                            let idx = name_hash(name) % canonical_count();
                             k.load_canonical(idx);
                             k.tick();
                             let addr = crystal_store_current(k, &mut cfs, name, data, idx as u8);
@@ -1621,27 +1624,27 @@ Stopped after {} ticks.", ran);
                 sprintln!("────────────────────────────────────────────────────────────");
                 sprintln!("   ▸ CANONICAL (I–XII)  — cyclic graph, 12 core patterns   ");
                 sprintln!("────────────────────────────────────────────────────────────");
-                for i in 0..CANONICAL_COUNT {
+                for i in 0..canonical_count() {
                     sprintln!("   {:>4}.  {:<48} ", idx_to_roman(i), canonical_name(i));
                 }
                 sprintln!("────────────────────────────────────────────────────────────");
                 sprintln!("   ▸ CONTINUOUS (XIII–XVI)  — token-graph-native loops     ");
                 sprintln!("────────────────────────────────────────────────────────────");
-                for i in 0..CONTINUOUS_COUNT {
-                    let ri = CANONICAL_COUNT + i;
+                for i in 0..continuous_count() {
+                    let ri = canonical_count() + i;
                     sprintln!("   {:>4}.  {:<48} ", idx_to_roman(ri), continuous_name(i));
                 }
                 sprintln!("────────────────────────────────────────────────────────────");
                 sprintln!("   ▸ NOVEL (XVII–XIX)  — control-flow reconstructions      ");
                 sprintln!("────────────────────────────────────────────────────────────");
-                for i in 0..NOVEL_COUNT {
-                    let ri = CANONICAL_COUNT + CONTINUOUS_COUNT + i;
+                for i in 0..novel_count() {
+                    let ri = canonical_count() + continuous_count() + i;
                     sprintln!("   {:>4}.  {:<48} ", idx_to_roman(ri), novel_name(i));
                 }
                 sprintln!("╚══════════════════════════════════════════════════════════╝");
                 sprintln!("   ▸ SHUNTED (XX–XXVIII) — branching/exotic compositions        ");
-                for i in 0..SHUNTED_COUNT {
-                    let ri = i + CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT;
+                for i in 0..shunted_count() {
+                    let ri = i + canonical_count() + continuous_count() + novel_count();
                     sprintln!("   {:>4}.  {:<48} ", idx_to_roman(ri), shunted_name(i));
                 }
                 sprintln!("Use 'load <I–XXVIII>' to load any program by Roman numeral.");
@@ -1650,14 +1653,14 @@ Stopped after {} ticks.", ran);
                 let arg = parts.next().unwrap_or("").trim();
                 if load_by_roman(k, arg) {
                     let idx = roman_to_idx(arg).unwrap();
-                    let name: &str = if idx < CANONICAL_COUNT {
+                    let name: &str = if idx < canonical_count() {
                         canonical_name(idx)
-                    } else if idx < CANONICAL_COUNT + CONTINUOUS_COUNT {
-                        continuous_name(idx - CANONICAL_COUNT)
-                    } else if idx < CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT {
-                        novel_name(idx - CANONICAL_COUNT - CONTINUOUS_COUNT)
+                    } else if idx < canonical_count() + continuous_count() {
+                        continuous_name(idx - canonical_count())
+                    } else if idx < canonical_count() + continuous_count() + novel_count() {
+                        novel_name(idx - canonical_count() - continuous_count())
                     } else {
-                        shunted_name(idx - CANONICAL_COUNT - CONTINUOUS_COUNT - NOVEL_COUNT)
+                        shunted_name(idx - canonical_count() - continuous_count() - novel_count())
                     };
                     sprintln!("Loaded {}: {}", arg, name);
                     serial::write_str("Program: ");
@@ -2075,7 +2078,7 @@ Stopped after {} ticks.", ran);
                         sprintln!("╔══════════════════════════════════════════════════════════════╗");
                         sprintln!("   11 DIASCHIZIC COMPOUNDS  —  dialect-steering agents       ");
                         sprintln!("──────────────────────────────────────────────────────────────");
-                        for i in 0..COMPOUND_COUNT {
+                        for i in 0..compound_count() {
                             let p = compound_program(i);
                             let tok_count = p.map(|pr| pr.len()).unwrap_or(0);
                             let tier = match i {
@@ -2808,15 +2811,15 @@ fn idx_to_roman(i: usize) -> &'static str {
 
 fn load_by_roman(k: &mut Kernel, roman: &str) -> bool {
     if let Some(idx) = roman_to_idx(roman) {
-        if idx < CANONICAL_COUNT {
+        if idx < canonical_count() {
             k.load_canonical(idx);
             true
-        } else if idx < CANONICAL_COUNT + CONTINUOUS_COUNT {
-            k.load_continuous(idx - CANONICAL_COUNT)
-        } else if idx < CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT {
-            k.load_novel(idx - CANONICAL_COUNT - CONTINUOUS_COUNT)
-        } else if idx < CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT + SHUNTED_COUNT {
-            k.load_shunted(idx - CANONICAL_COUNT - CONTINUOUS_COUNT - NOVEL_COUNT)
+        } else if idx < canonical_count() + continuous_count() {
+            k.load_continuous(idx - canonical_count())
+        } else if idx < canonical_count() + continuous_count() + novel_count() {
+            k.load_novel(idx - canonical_count() - continuous_count())
+        } else if idx < canonical_count() + continuous_count() + novel_count() + shunted_count() {
+            k.load_shunted(idx - canonical_count() - continuous_count() - novel_count())
         } else {
             false
         }

@@ -259,14 +259,35 @@ pub static ABS_SCOPE_TOTALITARIAN: &[AbsorptionRule] = &[
 /// Indices 0..7 are the 8 canonical (Phase 0).
 /// Indices 8..28 are the 21 hand-crafted (Phase I).
 /// Indices 29..87 are the 59 expansion dialects (Phase III: 8→88).
+/// A dialect that gates nothing and constitutes nothing: the identity element
+/// of the array, overwritten by every real entry before `all_dialects` returns.
+/// Its only job is to exist, so that the array is built rather than faked.
+const BLANK_DIALECT: Dialect = Dialect {
+    name: "",
+    description: "",
+    g1: GateSpec { prim: "", min_ord: 0.0 },
+    g2: GateSpec { prim: "", min_ord: 0.0 },
+    g3: GateSpec { prim: "", min_ord: 0.0 },
+    gate_ordering: false,
+    t_entries: &[],
+    abs_rules: &[],
+    is_expansion: false,
+};
+
 pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // We build with a helper that initializes 88 entries.
     // The builder uses default values for common patterns.
-    let mut unis: [Dialect; DIALECT_COUNT] = unsafe {
-        #[allow(invalid_value)]
-        // SAFETY: we will initialize all 88 entries before returning
-        core::mem::zeroed()
-    };
+    // Built from a real value, not conjured and patched. This was
+    // `mem::zeroed()` behind an `#[allow(invalid_value)]`: Dialect holds four
+    // references -- two &str and two &[T] -- and a zeroed reference is null,
+    // which is undefined behaviour the instant it exists, not when it is read.
+    // The SAFETY note said all 88 are initialized before returning, and that is
+    // true, but the UB is committed by the zeroing itself. The allow was the
+    // compiler being told to stop saying so.
+    //
+    // A const repeat operand needs no Copy, so the array is constructed
+    // outright with no unsafe and nothing to assume.
+    let mut unis: [Dialect; DIALECT_COUNT] = [BLANK_DIALECT; DIALECT_COUNT];
 
     // Helper constants
     let g_phi_5 = GateSpec { prim: "Φ", min_ord: 5.0 };
@@ -1180,12 +1201,8 @@ pub fn dialect_counts() -> (usize, usize) {
     let unis = all_dialects();
     let mut canonical = 0usize;
     let mut expansion = 0usize;
-    for i in 0..DIALECT_COUNT {
-        if unis[i].is_expansion {
-            expansion += 1;
-        } else {
-            canonical += 1;
-        }
+    for d in unis.iter() {
+        if d.is_expansion { expansion += 1; } else { canonical += 1; }
     }
     (canonical, expansion)
 }

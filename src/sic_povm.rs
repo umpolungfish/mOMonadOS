@@ -45,12 +45,23 @@ pub const P_SLOTS: u32 = P_PRIMS * P_VALS;  // 20
 /// Total primitive count: 3 + 5 + 4 = 12.
 pub const TOTAL_PRIMS: u32 = D_PRIMS + T_PRIMS + P_PRIMS;  // 12
 
-/// Crystal of Types cardinality: 3³ × 4⁵ × 5⁴ = 17,280,000.
-pub const CRYSTAL_TOTAL: u64 = 27 * 1024 * 625;  // 17,280,000
+/// Crystal of Types cardinality. Taken from the card structure in `crystal`,
+/// which multiplies the twelve slot cardinalities, rather than restated as a
+/// collapsed product here: two spellings of one number drift independently.
+pub const CRYSTAL_TOTAL: u64 = crate::crystal::TOTAL as u64;
 
 /// Shavian count: 3×3 + 5×4 + 4×5 = 9 + 20 + 20 = 49 = 7².
 pub const SHAVIAN_COUNT: u32 = D_SLOTS + T_SLOTS + P_SLOTS;  // 49
-pub const SHAVIAN_ROOT: u32 = 7;
+/// The root is computed from the count, not asserted beside it. If the slot
+/// structure ever changes, a square that stops being square shows up here
+/// rather than in a comment that no longer matches.
+pub const SHAVIAN_ROOT: u32 = isqrt_u32(SHAVIAN_COUNT);
+
+const fn isqrt_u32(n: u32) -> u32 {
+    let mut r = 0;
+    while (r + 1) * (r + 1) <= n { r += 1; }
+    r
+}
 
 // ═══════════════════════════════════════════════════════════════
 // SIC DIMENSION — three independent lattice proofs
@@ -119,9 +130,10 @@ pub fn crystal_partition() -> bool {
     TIER_CELLS as u64 * INNER_PER_CELL as u64 == CRYSTAL_TOTAL
 }
 
-/// SIC orbit size: 144 Weyl-Heisenberg displacements.
-/// Crystal covers SIC space: 17,280,000 / 144 = 120,000-fold.
-pub const WH_GROUP_ORDER: u32 = 144;
+/// SIC orbit size: the Weyl-Heisenberg group has d² displacements, and d is
+/// the primitive total. Written as the square rather than as 144, so the two
+/// cannot disagree.
+pub const WH_GROUP_ORDER: u32 = TOTAL_PRIMS * TOTAL_PRIMS;
 pub const CRYSTAL_SIC_RATIO: u32 = (CRYSTAL_TOTAL / WH_GROUP_ORDER as u64) as u32;
 
 // ═══════════════════════════════════════════════════════════════

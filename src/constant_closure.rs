@@ -186,9 +186,10 @@ pub const D_DMINUS3: u32 = D_SIC * (D_SIC - 3);
 pub const A2_OCCUPANCY_NUM: u32 = 108;
 pub const A2_OCCUPANCY_DEN: u32 = 1;
 
-/// Surface term: 2(d-1)/d² = 22/144 = 11/72.
-pub const SURFACE_TERM_NUM: u32 = 22;
-pub const SURFACE_TERM_DEN: u32 = 144;
+/// Surface term: 2(d-1)/d². Both parts are written as the expressions they
+/// are, so the fraction follows d rather than sitting beside it.
+pub const SURFACE_TERM_NUM: u32 = 2 * (D_SIC - 1);
+pub const SURFACE_TERM_DEN: u32 = D_SIC * D_SIC;
 
 /// Document formula rational value: 132203/72 = 1836.152777...
 pub const MP_ME_DOC_NUM: u32 = 132203;

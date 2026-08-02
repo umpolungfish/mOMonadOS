@@ -27,8 +27,8 @@ cp "$ELF" "$OUT/momonados"
 # Copy source files for inspection and compilation
 cp -r src "$OUT/src"
 mkdir -p "$OUT/imasm_core"
-cp -r ../MoDoT/imasm_core/src "$OUT/imasm_core/src"
-cp ../MoDoT/imasm_core/Cargo.toml "$OUT/imasm_core/Cargo.toml"
+cp -r ../2m3iosis/imasm_core/src "$OUT/imasm_core/src"
+cp ../2m3iosis/imasm_core/Cargo.toml "$OUT/imasm_core/Cargo.toml"
 
 # Copy config and build files
 cp Cargo.lock "$OUT/"
@@ -39,7 +39,38 @@ mkdir -p "$OUT/.cargo"
 cp .cargo/config.toml "$OUT/.cargo/"
 
 # Adjust Cargo.toml dependency path for portable relative build
-sed 's|path = "../MoDoT/imasm_core"|path = "imasm_core"|g' Cargo.toml > "$OUT/Cargo.toml"
+sed 's|path = "../2m3iosis/imasm_core"|path = "imasm_core"|g' Cargo.toml > "$OUT/Cargo.toml"
+
+# Copy Lean formalization from p4rakernel/p4ramill
+mkdir -p "$OUT/lean"
+cp -r ../p4rakernel/p4ramill/Imscribing "$OUT/lean/"
+cp -r ../p4rakernel/p4ramill/Primitives "$OUT/lean/"
+cp ../p4rakernel/p4ramill/lakefile.toml "$OUT/lean/"
+cp ../p4rakernel/p4ramill/lean-toolchain "$OUT/lean/"
+cp ../p4rakernel/p4ramill/lake-manifest.json "$OUT/lean/"
+cp ../p4rakernel/p4ramill/*.lean "$OUT/lean/"
+
+# The field data the proof rests on, from d12_sic_build. That repository is
+# 161 MB; this is the subset a reader needs to check the claims, and it is the
+# same set published under ig-docs-public/data/d2048_moduli.
+#
+# The .npz/.json fiducials are deliberately absent. `d2048 next` records the
+# numerical seeds as dead at residual 3.87e-3 -- "do not polish fiducial" -- so
+# they are not part of what is being proved and shipping them would invite the
+# reader to treat them as evidence.
+mkdir -p "$OUT/data"
+D=../d12_sic_build
+cp $D/tower_ramified_4.poly $D/tower_C4.poly $D/tower_C16.poly $D/tower_C32.poly \
+   $D/tower_step3_C4.poly $D/tower_step4_C8.poly \
+   $D/pin_sunit.txt $D/pin_sunit.gp $D/np_vals.txt \
+   $D/ray_class_2048.txt $D/moduli_degrees.txt $D/conductor_convention.txt \
+   $D/tower_step*.gp $D/d2048_raytower.gp "$OUT/data/" 2>/dev/null
+cp ../ig-docs-public/data/d2048_moduli/README.md "$OUT/data/" 2>/dev/null
+
+# The manuscript the data backs.
+mkdir -p "$OUT/paper"
+cp ../ig-docs/manuscripts3/sic_moduli_conductor.tex \
+   ../ig-docs/manuscripts3/sic_moduli_conductor.pdf "$OUT/paper/" 2>/dev/null
 
 cat > "$OUT/run.sh" <<'RUNNER'
 #!/usr/bin/env bash
@@ -68,6 +99,29 @@ Run:
 
 This will build the kernel at `target/x86_64-unknown-none/release/momonados`. You can then replace the pre-built `momonados` binary at the root of this folder with the new one:
     cp target/x86_64-unknown-none/release/momonados ./momonados
+
+## Lean Formalization
+
+The formalization files for the math and proofs (including the Stark units, ray class towers, and SIC-POVM identities) are located under the `lean/` directory. These are structured as a Lean 4 Lake package.
+
+## What is in here
+
+    momonados             the kernel, prebuilt; boots under qemu -kernel
+    src/                  its full source
+    imasm_core/           the IMASM token crate it builds against
+    lean/                 the Lean 4 formalisation, p4ramill
+    data/                 the field data the claims rest on, with a README
+                          mapping each claim to its file
+    paper/                the manuscript those claims are made in
+
+Nothing here asks to be taken on trust. The kernel compiles from `src/`, the
+Lean elaborates from `lean/`, and every field computation in the paper is
+checkable against `data/`.
+
+The numerical fiducials from the working repository are deliberately absent.
+`d2048 next` records the numerical seeds as dead at residual 3.87e-3 and says
+plainly not to polish the fiducial; they are not part of what is proved, and
+including them would invite a reader to treat them as evidence.
 
 ## What to type
 
