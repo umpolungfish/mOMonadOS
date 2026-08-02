@@ -120,5 +120,64 @@ mod bifurcation_tests {
             assert_eq!(prog_at(w), at_1, "w={} left the advancing regime", w);
         }
     }
-}
 
+    /// Where a w_c exists at all, and why it exists so rarely.
+    ///
+    /// The substrate weight can only move the program by overturning whichever
+    /// token the family matrix leads with, so a w_c exists exactly where that
+    /// leader is not already AFWD. Sweeping T and G shows that is a narrow
+    /// place. Only the self-referential topology and the universal range leave
+    /// IMSCRIB in front, and those are precisely the tuples the family matrix
+    /// alone would leave spinning on themselves carrying no advance. Every
+    /// other T or G already advances with the substrate vote annihilated, and
+    /// no weight up to 64 changes anything about them. So what the substrate
+    /// vote does is carry a self-referential tuple out of pure
+    /// self-imscription, and on this evidence it does nothing else.
+    #[test]
+    fn test_wc_exists_only_where_family_leads_with_imscrib() {
+        let _guard = WEIGHT_LOCK.lock().unwrap_or_else(|e| e.into_inner());
+
+        // The token the family matrix alone puts after the opening IMSCRIB.
+        let leader = |t: &IgTuple| -> crate::tokens::Token {
+            sequence::set_substrate_weight(0);
+            sequence::build_via_substrate(t, 12, true, 3).as_slice()[1]
+        };
+        // Lowest weight whose program differs from the zero-weight program,
+        // or None if no weight up to 64 does.
+        let wc = |t: &IgTuple| -> Option<i32> {
+            sequence::set_substrate_weight(0);
+            let base: Vec<crate::tokens::Token> =
+                sequence::build_via_substrate(t, 12, true, 3).as_slice().to_vec();
+            (1..=64).find(|&w| {
+                sequence::set_substrate_weight(w);
+                sequence::build_via_substrate(t, 12, true, 3).as_slice().to_vec() != base
+            })
+        };
+
+        let seed = test_tuple_oinf();
+        assert_eq!(leader(&seed), crate::tokens::Token::Imscrib);
+        assert_eq!(wc(&seed), Some(1));
+
+        // F never reaches the contested top of the ranking, so it moves nothing.
+        for f in [IgPrim::F_ell, IgPrim::F_eth, IgPrim::F_hbar] {
+            let mut t = seed; t.f = f;
+            assert_eq!(leader(&t), crate::tokens::Token::Imscrib, "F={:?}", f);
+            assert_eq!(wc(&t), Some(1), "F={:?}", f);
+        }
+
+        // Step off the self-referential topology and the family matrix already
+        // leads with the advance, leaving the substrate nothing to overturn.
+        for tv in [IgPrim::T_boxtimes, IgPrim::T_net, IgPrim::T_bowtie, IgPrim::T_in] {
+            let mut t = seed; t.t = tv;
+            assert_eq!(leader(&t), crate::tokens::Token::Afwd, "T={:?}", tv);
+            assert_eq!(wc(&t), None, "T={:?} moved under some weight", tv);
+        }
+
+        // Narrowing the interaction range does the same.
+        for gv in [IgPrim::G_beth, IgPrim::G_gimel] {
+            let mut t = seed; t.g = gv;
+            assert_eq!(leader(&t), crate::tokens::Token::Afwd, "G={:?}", gv);
+            assert_eq!(wc(&t), None, "G={:?} moved under some weight", gv);
+        }
+    }
+}

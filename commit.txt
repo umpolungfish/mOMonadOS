@@ -78,4 +78,15 @@ cycle length was the wrong observable to look for it with. Those tests also
 shared a process-wide `static mut` weight while running concurrently, racing
 each other, and they are serialized now.
 
+Following the w_c result out one more step: the substrate weight can only move
+a program by overturning whichever token the family matrix leads with, so a w_c
+exists exactly where that leader is not already AFWD. Sweeping T and G says that
+is a narrow place. Only the self-referential topology and the universal range
+leave IMSCRIB in front, and those are exactly the tuples the family matrix alone
+would leave spinning on themselves carrying no advance. Step off either one and
+the program already advances at zero weight, with nothing left for the substrate
+to overturn and no weight up to sixty-four changing anything. So the substrate
+vote is what carries a self-referential tuple out of pure self-imscription, and
+on this evidence that is the whole of what it does.
+
 Both targets build clean and the whole suite passes.
