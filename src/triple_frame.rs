@@ -52,15 +52,15 @@ impl Opcode {
         match self {
             Opcode::VINIT   => "⊢",
             Opcode::IMSCRIB => "⊙",
-            Opcode::FSPLIT  => "◇",
-            Opcode::EVALT   => "+",
-            Opcode::EVALF   => "×",
+            Opcode::FSPLIT  => "∈",
+            Opcode::EVALT   => "⊤",
+            Opcode::EVALF   => "⊥",
             Opcode::ENGAGR  => "⊞",
-            Opcode::FFUSE   => "●",
-            Opcode::CLINK   => "=",
+            Opcode::FFUSE   => "∋",
+            Opcode::CLINK   => "⋈",
             Opcode::AFWD    => ">",
             Opcode::AREV    => "<",
-            Opcode::IFIX    => "¬",
+            Opcode::IFIX    => "◻",
             Opcode::TANCH   => "⊣",
         }
     }

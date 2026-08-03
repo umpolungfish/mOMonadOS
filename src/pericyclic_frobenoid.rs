@@ -26,10 +26,14 @@ const TUPLE_AFDMC: &str = "𐑼𐑰𐑑𐑯𐑞𐑧𐑔𐑠⊙𐑒𐑳𐑴";
 const TUPLE_CLINK_L8: &str = "𐑦𐑸𐑾𐑹𐑐𐑧𐑔𐑵⊙𐑫𐑳𐑟";
 
 // IMASM opcode glyphs
+// Each name paired with ITS OWN glyph. The list used to run the names against a
+// shifted copy of the alphabet: TANCH carried the fork's mark, CLINK the fuse's,
+// FSPLIT and FFUSE the two evaluators', and ENGAGR a tensor sign that is not an
+// opcode at all.
 const IMASM_OPS: [(&str, &str); 12] = [
-    ("VINIT", "⊢"), ("TANCH", "◇"), ("AFWD", ">"), ("AREV", "<"),
-    ("CLINK", "●"), ("IMSCRIB", "⊙"), ("FSPLIT", "+"), ("FFUSE", "×"),
-    ("EVALT", "⊞"), ("EVALF", "⊟"), ("ENGAGR", "⊗"), ("IFIX", "¬"),
+    ("VINIT", "⊢"), ("TANCH", "⊣"), ("AFWD", ">"), ("AREV", "<"),
+    ("CLINK", "⋈"), ("IMSCRIB", "⊙"), ("FSPLIT", "∈"), ("FFUSE", "∋"),
+    ("EVALT", "⊤"), ("EVALF", "⊥"), ("ENGAGR", "⊞"), ("IFIX", "◻"),
 ];
 
 // ── Helper: glyph value lookup ───────────────────────────────

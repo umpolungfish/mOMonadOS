@@ -26,7 +26,7 @@ use crate::tokens::{Token, Program};
 // ─── Token Glyphs ──────────────────────────────────────────────
 
 pub const TOKEN_GLYPH: [&str; 12] = [
-    "⊢", "⊣", ">", "<", "=", "⊙", "◇", "●", "+", "×", "⊞", "¬",
+    "⊢", "⊣", ">", "<", "⋈", "⊙", "∈", "∋", "⊤", "⊥", "⊞", "◻",
 ];
 
 fn glyph(t: Token) -> &'static str { TOKEN_GLYPH[t as usize] }

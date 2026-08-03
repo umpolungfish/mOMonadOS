@@ -256,7 +256,7 @@ pub fn run_sic_verify() -> String {
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// The IMASM word for this protocol — the glued program as 11 glyphs.
-pub const IMASM_WORD: &[&str] = &["⊢", "◇", ">", "<", "+", "=", "⊙", "⊞", "●", "¬", "⊣"];
+pub const IMASM_WORD: &[&str] = &["⊢", "∈", ">", "<", "⊤", "⋈", "⊙", "⊞", "∋", "◻", "⊣"];
 
 /// Opcode names in order
 pub const OPCODES: &[&str] = &[

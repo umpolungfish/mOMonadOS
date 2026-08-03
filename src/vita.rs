@@ -362,8 +362,11 @@ impl Vita {
         let voc = &self.voc;
         let open_id = id_of(voc, "⊢");
         let seal_id = id_of(voc, "⊣");
-        let split_id = id_of(voc, "◇");
-        let fuse_id = id_of(voc, "●");
+        // Take the dyad's marks from the token itself. A literal here is a copy
+        // of the alphabet that stops tracking it, and id_of falls back to the
+        // last vocabulary entry on a miss, so the drift would have been silent.
+        let split_id = id_of(voc, CTok::Fsplit.code());
+        let fuse_id = id_of(voc, CTok::Ffuse.code());
         let lang_id = id_of(voc, "⟨");
         let rang_id = id_of(voc, "⟩");
         let dot_id = id_of(voc, "·");
@@ -473,7 +476,7 @@ impl Vita {
         let word = decode(voc, &ids[2..ids.len() - 1]);
 
         // ── skeleton + μ arm ──────────────────────────────────────────────
-        for g in ["◇", "⊞", "⟨", "⟩", "●", "⟨"] {
+        for g in [CTok::Fsplit.code(), "⊞", "⟨", "⟩", CTok::Ffuse.code(), "⟨"] {
             ids.push(id_of(voc, g));
         }
         let mut alen = 0usize;
