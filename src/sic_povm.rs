@@ -37,7 +37,7 @@ pub const T_PRIMS: u32 = 5;
 pub const T_VALS:  u32 = 4;
 pub const T_SLOTS: u32 = T_PRIMS * T_VALS;  // 20
 
-/// P-family: 4 primitives (⊣, Φ, ⊙, ⊤), each 5 values.  5⁴ = 625.
+/// P-family: 4 primitives (⊣, <, ⊙, ⊤), each 5 values.  5⁴ = 625.
 pub const P_PRIMS: u32 = 4;
 pub const P_VALS:  u32 = 5;
 pub const P_SLOTS: u32 = P_PRIMS * P_VALS;  // 20
@@ -88,7 +88,7 @@ pub fn dual_lattice_agrees() -> bool {
 /// T-family: (prim-count, val-count) = (5, 4).
 /// P-family: (prim-count, val-count) = (4, 5).
 /// These are exact transpositions: (5,4) ↔ (4,5).
-/// The Φ gate exchanges them.
+/// The < gate exchanges them.
 pub fn parity_gate_transposition() -> bool {
     (T_PRIMS, T_VALS) == (P_VALS, P_PRIMS)
     && (P_PRIMS, P_VALS) == (T_VALS, T_PRIMS)
@@ -110,7 +110,7 @@ pub const NESTED_D7: u32 = D_PRIMS + P_PRIMS;  // 7
 /// The {D, T} subset gives 8 — NOT on the SIC lattice.
 pub const NON_SIC_D8: u32 = D_PRIMS + T_PRIMS;  // 8
 
-/// Φ gate selects d=7 not d=8 because P-family is its home.
+/// < gate selects d=7 not d=8 because P-family is its home.
 pub fn phi_selects_d7() -> bool {
     NESTED_D7 < NON_SIC_D8 && NESTED_D7 == SHAVIAN_ROOT
 }
@@ -222,7 +222,7 @@ pub fn formatted_report() -> String {
     out.push_str(&alloc::format!(
         "  {{D,T}} subset: 3+5 = {} (NOT on SIC lattice)\n", NON_SIC_D8));
     out.push_str(&alloc::format!(
-        "  Φ selects d=7: {}\n\n", phi_selects_d7()));
+        "  < selects d=7: {}\n\n", phi_selects_d7()));
 
     out.push_str("── Crystal Geometry ──\n");
     out.push_str(&alloc::format!(

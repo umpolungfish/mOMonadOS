@@ -60,7 +60,7 @@ pub fn decode(mut addr: u32) -> [u8; 12] {
 ///   K  Kinetic        [yea<loll<egg<on<air] ← trapping: halt vs diversity vs mixing
 ///   G  Granularity    [bib<thigh<ice]       ← token diversity (scope)
 ///   Γ  Grammar        [vow<gag<measure<ooze] ← fork resolution / sequence / broadcast
-///   Φ  Criticality    [woe<monad<roar<err<haha] ← self_ref ⇒ monad (⊙ fixed point)
+///   <  Criticality    [woe<monad<roar<err<haha] ← self_ref ⇒ monad (⊙ fixed point)
 ///   H  Chirality      [fee<kick<sure<wool]  ← EXACT: ROTAT period (chirality under shift)
 ///   S  Stoichiometry  [hung<so<up]          ← EXACT: FSPLIT/FFUSE (δ/μ) balance
 ///   Ω  Protection     [awe<oak<ah<zoo]      ← winding: rotational period + fork order
@@ -145,7 +145,7 @@ pub fn indices_from_program(
                else if !forked { 2 }
                else if balanced && dialetheia_complete { 0 } else { 1 };
 
-    // Φ — criticality (forced): monad ⇔ self-modeling ⊙; woe = halts stable;
+    // < — criticality (forced): monad ⇔ self-modeling ⊙; woe = halts stable;
     // roar = complex/dialetheic (ENGAGR); err = exceptional point (unbalanced fork
     // coalescence); haha = supercritical runaway (aperiodic, no halt, no closure).
     let crit = if self_ref { 1 }

@@ -6,7 +6,7 @@
 //
 // The 12→3 encoding is:
 //   θ = f(⊢, Ω, Σ)    — latitude angle from dimensionality/winding/stoich
-//   φ = f(>, Φ, ⊥)    — azimuthal phase from coupling/parity/chirality
+//   φ = f(>, <, ⊥)    — azimuthal phase from coupling/parity/chirality
 //   ψ = f(⊙)          — self-modeling phase (90° for ⊙=⊙, scaled for others)
 //
 // Gate: U(θ,φ,ψ) = Rz(φ)·Ry(θ)·Rz(ψ)
@@ -178,13 +178,13 @@ fn encode_theta(d: IgPrim, omega: IgPrim, s: IgPrim) -> f64 {
     avg * 180.0
 }
 
-/// φ(>, Φ, ⊥): azimuthal phase from coupling, parity, chirality.
+/// φ(>, <, ⊥): azimuthal phase from coupling, parity, chirality.
 ///
 /// Each primitive is normalized to [0, 1] within its family and contributes
 /// equally to the 0–360° range, producing a full circular encoding.
 fn encode_phi(r: IgPrim, p: IgPrim, h: IgPrim) -> f64 {
     let nr = normalize_ordinal(r, 4.0);     // >: 1–4
-    let np = normalize_ordinal(p, 5.0);     // Φ: 1–5
+    let np = normalize_ordinal(p, 5.0);     // <: 1–5
     let nh = normalize_ordinal(h, 4.0);     // Ħ: 1–4
     let avg = (nr + np + nh) / 3.0;
     avg * 360.0
@@ -215,7 +215,7 @@ pub fn sensitivity(tuple: &IgTuple) -> IuftSensitivity {
 
     // ψ only depends on ⊙ (slot 8, index 8 in slot order)
     // θ depends on ⊢ (slot 0), Ω (slot 11), Σ (slot 10)
-    // φ depends on > (slot 2), Φ (slot 3), ⊥ (slot 9)
+    // φ depends on > (slot 2), < (slot 3), ⊥ (slot 9)
 
     let _ = base; // suppress unused warning for now
     dpsi[8] = 180.0 / 2.0;  // dψ/d⊙ ≈ 180° per ordinal unit
@@ -223,7 +223,7 @@ pub fn sensitivity(tuple: &IgTuple) -> IuftSensitivity {
     dtheta[11] = 180.0 / 3.0 / 3.0; // dθ/dΩ
     dtheta[10] = 180.0 / 3.0 / 2.0; // dθ/dΣ: only 2 ordinal steps
     dphi[2] = 360.0 / 3.0 / 3.0;    // dφ/d>
-    dphi[3] = 360.0 / 3.0 / 4.0;    // dφ/dΦ: 4 ordinal steps
+    dphi[3] = 360.0 / 3.0 / 4.0;    // dφ/d<: 4 ordinal steps
     dphi[9] = 360.0 / 3.0 / 3.0;    // dφ/dĦ
 
     IuftSensitivity { dtheta, dphi, dpsi }

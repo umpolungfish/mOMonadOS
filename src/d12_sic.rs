@@ -590,7 +590,7 @@ pub const BELNAP_SIC_CAPSTONE: &str = "sic_no_condition (n : Nat) : (mlOrbit n).
 ///   Tier 1: d=2 (Belnap B=XZ, unconditional, degree 2)
 ///   Tier 2: d=4,8,16,... (all 2^n, unconditional from DualLinkClosure)
 ///   Tier 3: d=12 (THEOREM: existence ring + embedding capstone)
-///   Tier 4: d=7 (nested SIC from {D,P} subset, Φ-gate selection)
+///   Tier 4: d=7 (nested SIC from {D,P} subset, <-gate selection)
 ///   Tier 5: general d (Z[1/d, zeta_d] embedding, Stark conjecture as B-state)
 pub const SIC_TIERS: [(&str, &str, &str); 6] = [
     ("Tier 0", "d=1",   "Trivial"),

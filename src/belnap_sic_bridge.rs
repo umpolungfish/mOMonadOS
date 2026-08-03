@@ -8,7 +8,7 @@
 //      WH orbit |WH·B| = d²−1 = 3: {T, F, B} (N is the vacuum).
 //
 //   2. Parity gate T↔P duality in Belnap-Shor:
-//      The Φ gate exchanges T-family (5 prims, 4 vals) with
+//      The < gate exchanges T-family (5 prims, 4 vals) with
 //      P-family (4 prims, 5 vals). In B4, this is the bnot
 //      automorphism: T↔F with B and N fixed.
 //
@@ -95,7 +95,7 @@ pub fn verify_b_fiducial() -> bool {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// PARITY GATE — Φ exchanges T-family ↔ P-family
+// PARITY GATE — < exchanges T-family ↔ P-family
 // ═══════════════════════════════════════════════════════════════
 
 /// The parity gate transposition:
@@ -109,11 +109,11 @@ pub fn verify_b_fiducial() -> bool {
 ///   T-family (5 prims × 4 vals = 20 slots)
 ///   P-family (4 prims × 5 vals = 20 slots)
 ///
-/// In Belnap-Shor, the Φ gate exchanges T and F while preserving
+/// In Belnap-Shor, the < gate exchanges T and F while preserving
 /// B and N — this is exactly the parity operation that swaps the
 /// T-family and P-family cardinalities.
 pub fn parity_gate_b4(q: B4) -> B4 {
-    // Φ: T↔F, B↦B, N↦N
+    // <: T↔F, B↦B, N↦N
     q.bnot()
 }
 

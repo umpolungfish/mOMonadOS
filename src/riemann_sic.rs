@@ -556,7 +556,7 @@ pub fn grammar_encoding() -> String {
     s.push_str("    >=𐑾  (bidirectional) — The correspondence is bidirectional:\n");
     s.push_str("          zeros → eigenvalues and eigenvalues → zeros. The Hilbert-\n");
     s.push_str("          Pólya conjecture posits an equivalence, not a one-way map.\n\n");
-    s.push_str("    Φ=𐑹  (Frobenius-special) — μ∘δ=id holds exactly: splitting the\n");
+    s.push_str("    <=𐑹  (Frobenius-special) — μ∘δ=id holds exactly: splitting the\n");
     s.push_str("          zero distribution into real/imaginary parts and fusing them\n");
     s.push_str("          via tensor product recovers the original distribution. The\n");
     s.push_str("          SIC-POVM dual basis provides the exact reconstruction.\n\n");

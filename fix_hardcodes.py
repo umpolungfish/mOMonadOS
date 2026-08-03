@@ -164,7 +164,7 @@ use crate::imas_ig::IgTuple;
 
 /// Compute B4 status from tuple properties.
 /// ⊙=critical + Ω=non-Abelian → B4::B (dialetheic barrier)
-/// Φ=Frobenius-special → B4::T (closed)
+/// <=Frobenius-special → B4::T (closed)
 /// ⊙=sub-critical → B4::T (determined)
 /// Default → B4::B (open)
 pub fn compute_status_from_tuple(tuple: &IgTuple) -> B4 {
@@ -199,7 +199,7 @@ pub fn compute_status_name(status: B4, tuple: &IgTuple) -> &'static str {
 /// self-consistent within the tuple lattice.
 pub fn verify_tuple_frobenius(v: &mut FrobeniusVerifier, tuple: &IgTuple) {
     use crate::imas_ig::IgPrim;
-    // Verify criticality + parity consistency: if ⊙=critical, Φ must be ≥ partial
+    // Verify criticality + parity consistency: if ⊙=critical, < must be ≥ partial
     if tuple.phi == IgPrim::Phi_crit || tuple.phi == IgPrim::𐑮 || tuple.phi == IgPrim::Phi_ep {
         // At criticality, parity must be at least partial
         let ok = tuple.p.ordinal() >= IgPrim::P_pm.ordinal();
@@ -211,7 +211,7 @@ pub fn verify_tuple_frobenius(v: &mut FrobeniusVerifier, tuple: &IgTuple) {
         let ok = tuple.t == IgPrim::T_odot || tuple.t == IgPrim::T_bowtie;
         v.verify_usize(if ok { 1 } else { 0 }, 1);
     }
-    // Verify Frobenius-special: Φ=𐑹 implies Ω ≥ Z
+    // Verify Frobenius-special: <=𐑹 implies Ω ≥ Z
     if tuple.p == IgPrim::P_pmsym {
         let ok = tuple.omega.ordinal() >= IgPrim::Omega_z.ordinal();
         v.verify_usize(if ok { 1 } else { 0 }, 1);

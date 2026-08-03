@@ -160,7 +160,7 @@ pub fn help_text() -> &'static str {
      troq              full report\n\
      troq summary      one-line summary\n\
      troq json         JSON structured output\n\
-     troq axis <slot>  expand a primitive axis (⊙, Φ, Ω, ⊢, ...)\n\
+     troq axis <slot>  expand a primitive axis (⊙, <, Ω, ⊢, ...)\n\
      troq axes         all 12 axes expanded\n\
      troq converge <n> <seed>  ouroboric convergence trace\n\
      troq tuple        tuple constant"

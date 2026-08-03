@@ -144,7 +144,7 @@ pub fn dialect_description(u: u8) -> &'static str {
               stay plain no matter how structured. G2=self-model, G3=winding. \
               T-constitution is ceiling-mode (T_CEILING), not exact-equality.",
         10 => "Criticality is everything: all three gates are the SAME primitive \
-               (⊙) at escalating thresholds (𐑢 / ⊙ / 𐑣). Φ, Ω, and the rest are \
+               (⊙) at escalating thresholds (𐑢 / ⊙ / 𐑣). <, Ω, and the rest are \
                descriptive, not gating. T-constitution is ceiling-mode (T_CEILING).",
         11 => "Same as U10, but the kinetics ceiling admits trapped/gapped spectra \
                (Ç=𐑪), not just slow ones (Ç=𐑧) — the temporal-closure condition \

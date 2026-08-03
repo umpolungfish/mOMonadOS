@@ -286,8 +286,8 @@ def main():
     print("Tuple: ⟨𐑦𐑸𐑽𐑹𐑐𐑘𐑔𐑝𐑮𐑖𐑕𐑭⟩  Tier: O_∞")
     print("=" * 72)
 
-    # ── 8a. Verify Frobenius condition (Φ=𐑹: μ∘δ=id) ────────
-    print("\n[Φ=𐑹] Frobenius-Special Condition μ∘δ=id")
+    # ── 8a. Verify Frobenius condition (<=𐑹: μ∘δ=id) ────────
+    print("\n[<=𐑹] Frobenius-Special Condition μ∘δ=id")
     test_state = np.ones(12, dtype=np.complex128) / np.sqrt(12)
     split = frobenius_split(test_state)
     fused = frobenius_fuse(split)

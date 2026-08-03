@@ -1,7 +1,7 @@
 # The collision the widening introduced
 
 The register file is eight wide. R0 through R3 carry the tuple as pairs:
-(D,Φ), (T,Ω), (K,ƒ), (H,P). That packing leaves four of the twelve slots
+(D,<), (T,Ω), (K,ƒ), (H,P). That packing leaves four of the twelve slots
 unrepresented: R the adjoint, Γ the maximal, Ç, and Σ the one-to-one.
 
 When the file was widened, R and Σ were seeded into R4, and Γ and Ç into R5, so

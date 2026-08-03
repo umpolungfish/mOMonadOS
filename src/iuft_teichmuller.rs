@@ -6,8 +6,8 @@
 //
 // Core bridge:
 //   Teichmüller deformation = promotion path preserving Frobenius structure
-//   Promotion signature [Φ,∋,⊥,Ω] → gate parameter deltas
-//     Φ (Parity)  → φ (azimuthal)
+//   Promotion signature [<,∋,⊥,Ω] → gate parameter deltas
+//     < (Parity)  → φ (azimuthal)
 //     ⊥ (Chirality) → φ (azimuthal)
 //     Ω (Winding) → θ (latitude)
 //     ∋ (Composition) → latent (affects structure but not the 3 encoded angles)
@@ -15,7 +15,7 @@
 //   Étale deformation: pinned primitives (P,F,K,G,Gm,Ph) unchanged
 //   Anabelian deformation: core Frobenius structure transforms
 //
-//   The Great P-Gap: O₂† → O_∞ transition (d=4.38) driven by Φ — the
+//   The Great P-Gap: O₂† → O_∞ transition (d=4.38) driven by < — the
 //   Frobenius-special symmetry emergence — maps to the largest single
 //   jump in gate space.
 //
@@ -105,7 +105,7 @@ pub fn tier_score(tier: &str) -> f32 {
 }
 
 /// The Great P-Gap: O₂† → O_∞ transition.
-/// d=4.38, driven by Φ (parity), weighted²=19.2.
+/// d=4.38, driven by < (parity), weighted²=19.2.
 /// This is the largest structural discontinuity on the crystal.
 pub const P_GAP_TRANSITION: TierTransition = TierTransition {
     from_tier: "O₂†",

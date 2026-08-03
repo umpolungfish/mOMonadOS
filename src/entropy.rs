@@ -75,7 +75,7 @@ pub const D_O2D_OINF: f32 = 4.3818;
 pub const DRIVER_O0_O1: &str = "φ̂: 𐑢→⊙";
 pub const DRIVER_O1_O2: &str = "⊢: 𐑛→𐑨, Ω: 𐑷→𐑴";
 pub const DRIVER_O2_O2D: &str = "⊢: 𐑨→𐑼";
-pub const DRIVER_O2D_OINF: &str = "Φ: 𐑗→𐑹 (Δ=4 ordinals)";
+pub const DRIVER_O2D_OINF: &str = "<: 𐑗→𐑹 (Δ=4 ordinals)";
 
 // ═══════════════════════════════════════════════════════════════
 // FIXED-POINT DOUBLING RATIO — from FrobeniusUnification.lean
@@ -257,7 +257,7 @@ pub fn entropy_report() -> String {
     s.push_str("     tightest structural pinch point.\n\n");
     s.push_str("  3. O₂†→O_∞ has the LARGEST ladder distance (d=4.382) but\n");
     s.push_str("     the SMALLEST |ΔS| (0.288). The Frobenius-special promotion\n");
-    s.push_str("     (Φ: 𐑗→𐑹, 4 ordinals) is surgically targeted — it changes\n");
+    s.push_str("     (<: 𐑗→𐑹, 4 ordinals) is surgically targeted — it changes\n");
     s.push_str("     one primitive dramatically without narrowing the type space.\n");
     s.push_str("     |ΔS|/d = 0.066 — two orders below the other transitions.\n\n");
     s.push_str("  4. The Frobenius Doubling: N_∞/N_† = 4/3. O_∞ has MORE types\n");

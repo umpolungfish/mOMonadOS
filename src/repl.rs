@@ -1785,39 +1785,39 @@ Stopped after {} ticks.", ran);
                             }
 
                             match u {
-                                0 => { // canonical: G1:Φ≥𐑹  G2:φ̂≥⊙  G3:Ω≥𐑭
+                                0 => { // canonical: G1:<≥𐑹  G2:φ̂≥⊙  G3:Ω≥𐑭
                                     let g1 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
                                     let g2 = (ig.phi as u8) <= (IgPrim::Phi_crit as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
-                                    sprintln!("  G1 (Φ≥𐑹): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G1 (<≥𐑹): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     sprintln!("  G2 (φ̂≥⊙): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
                                     sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                1 => { // low_gate: G1:Φ≥𐑬  G2:φ̂≥𐑢  G3:Ω≥𐑭
+                                1 => { // low_gate: G1:<≥𐑬  G2:φ̂≥𐑢  G3:Ω≥𐑭
                                     let g1 = (ig.p as u8) <= (IgPrim::P_pm as u8);
                                     let g2 = (ig.phi as u8) <= (IgPrim::𐑢 as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
-                                    sprintln!("  G1 (Φ≥𐑬): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G1 (<≥𐑬): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     sprintln!("  G2 (φ̂≥𐑢): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
                                     sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                2 => { // strict_frobenius: G1:ƒ≥𐑐  G2:Φ≥𐑹  G3:Ω≥𐑭
+                                2 => { // strict_frobenius: G1:ƒ≥𐑐  G2:<≥𐑹  G3:Ω≥𐑭
                                     let g1 = (ig.f as u8) <= (IgPrim::F_hbar as u8);
                                     let g2 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
                                     sprintln!("  G1 (ƒ≥𐑐): {}  ƒ={}", if g1 {"PASS"} else {"FAIL"}, ig.f.glyph());
-                                    sprintln!("  G2 (Φ≥𐑹): {}  Φ={}", if g2 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G2 (<≥𐑹): {}  <={}", if g2 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                3 => { // inverted_gates: G1:φ̂≥⊙  G2:Φ≥𐑹  G3:Ω≥𐑭
+                                3 => { // inverted_gates: G1:φ̂≥⊙  G2:<≥𐑹  G3:Ω≥𐑭
                                     let g1 = (ig.phi as u8) <= (IgPrim::Phi_crit as u8);
                                     let g2 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
                                     sprintln!("  G1 (φ̂≥⊙): {}  φ̂={}", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G2 (Φ≥𐑹): {}  Φ={}", if g2 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G2 (<≥𐑹): {}  <={}", if g2 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
@@ -1825,36 +1825,36 @@ Stopped after {} ticks.", ran);
                                     let g1 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
                                     let g2 = (ig.phi as u8) <= (IgPrim::Phi_crit as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
-                                    sprintln!("  G1 (Φ≥𐑹): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G1 (<≥𐑹): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     sprintln!("  G2 (φ̂≥⊙): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
                                     sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     sprintln!("  Mode: PARALLEL — gates evaluated independently.");
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                5 => { // high_gate: G1:Φ≥𐑹  G2:φ̂≥𐑮  G3:Ω≥𐑟
+                                5 => { // high_gate: G1:<≥𐑹  G2:φ̂≥𐑮  G3:Ω≥𐑟
                                     let g1 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
                                     let g2 = (ig.phi as u8) <= (IgPrim::𐑮 as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::Omega_na as u8);
-                                    sprintln!("  G1 (Φ≥𐑹): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G1 (<≥𐑹): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     sprintln!("  G2 (φ̂≥𐑮): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
                                     sprintln!("  G3 (Ω≥𐑟): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                6 => { // winding_first: G1:Ω≥𐑭  G2:φ̂≥⊙  G3:Φ≥𐑹
+                                6 => { // winding_first: G1:Ω≥𐑭  G2:φ̂≥⊙  G3:<≥𐑹
                                     let g1 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
                                     let g2 = (ig.phi as u8) <= (IgPrim::Phi_crit as u8);
                                     let g3 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
                                     sprintln!("  G1 (Ω≥𐑭): {}  Ω={}", if g1 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     sprintln!("  G2 (φ̂≥⊙): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G3 (Φ≥𐑹): {}  Φ={}", if g3 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G3 (<≥𐑹): {}  <={}", if g3 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                7 => { // t_structural: G1:Φ≥𐑹  G2:φ̂≥⊙  G3:Ω≥𐑭  T:ɢ=𐑠
+                                7 => { // t_structural: G1:<≥𐑹  G2:φ̂≥⊙  G3:Ω≥𐑭  T:ɢ=𐑠
                                     let g1 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
                                     let g2 = (ig.phi as u8) <= (IgPrim::Phi_crit as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
                                     let t_ok = ig.c == IgPrim::C_seq;
-                                    sprintln!("  G1 (Φ≥𐑹): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G1 (<≥𐑹): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     sprintln!("  G2 (φ̂≥⊙): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
                                     sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     sprintln!("  T  (ɢ=𐑠): {}  ɢ={}", if t_ok {"PASS"} else {"FAIL"}, ig.c.glyph());
@@ -2392,7 +2392,7 @@ fn redraw_input(old_len: usize, src: &[u8], src_len: usize, buf: &mut [u8]) {
 // ─── T_CEILING — shared T-constitution check for U8/U9 ─────────
 //
 // Ceiling-generalizes canonical's existing ⊤-only ceiling rule to all five
-// dynamics primitives, same anchors: Φ<=𐑹 ⋈<=𐑐 ⊤<=𐑧 ⊥<=𐑫 Ω<=𐑭.
+// dynamics primitives, same anchors: <<=𐑹 ⋈<=𐑐 ⊤<=𐑧 ⊥<=𐑫 Ω<=𐑭.
 // See manuscripts/clay_cross_dialect_closure.md for the derivation. Uses
 // IgPrim::ordinal(), not raw discriminant comparison.
 // Canonical's actual T-constitution (exact-equality on four primitives,
@@ -2435,7 +2435,7 @@ fn t_ceiling_check(ig: &IgTuple) -> bool {
     let t_h   = ig.h.ordinal()     <= IgPrim::H_inf.ordinal();
     let t_om  = ig.omega.ordinal() <= IgPrim::Omega_z.ordinal();
     let t_ok = t_phi && t_f && t_k && t_h && t_om;
-    sprintln!("  T_CEILING Φ<=𐑹: {}  ƒ<=𐑐: {}  Ç<=𐑧: {}  Ħ<=𐑫: {}  Ω<=𐑭: {}",
+    sprintln!("  T_CEILING <<=𐑹: {}  ƒ<=𐑐: {}  Ç<=𐑧: {}  Ħ<=𐑫: {}  Ω<=𐑭: {}",
         if t_phi {"PASS"} else {"FAIL"}, if t_f {"PASS"} else {"FAIL"},
         if t_k {"PASS"} else {"FAIL"}, if t_h {"PASS"} else {"FAIL"},
         if t_om {"PASS"} else {"FAIL"});
@@ -2450,7 +2450,7 @@ fn t_ceiling_gapped_check(ig: &IgTuple) -> bool {
     let t_h   = ig.h.ordinal()     <= IgPrim::H_inf.ordinal();
     let t_om  = ig.omega.ordinal() <= IgPrim::Omega_z.ordinal();
     let t_ok = t_phi && t_f && t_k && t_h && t_om;
-    sprintln!("  T_CEILING(gapped) Φ<=𐑹: {}  ƒ<=𐑐: {}  Ç<=𐑪: {}  Ħ<=𐑫: {}  Ω<=𐑭: {}",
+    sprintln!("  T_CEILING(gapped) <<=𐑹: {}  ƒ<=𐑐: {}  Ç<=𐑪: {}  Ħ<=𐑫: {}  Ω<=𐑭: {}",
         if t_phi {"PASS"} else {"FAIL"}, if t_f {"PASS"} else {"FAIL"},
         if t_k {"PASS"} else {"FAIL"}, if t_h {"PASS"} else {"FAIL"},
         if t_om {"PASS"} else {"FAIL"});

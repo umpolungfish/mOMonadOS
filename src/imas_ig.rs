@@ -150,7 +150,7 @@ impl IgPrim {
             T_net => 1.0, T_in => 2.0, T_bowtie => 3.0, T_boxtimes => 4.0, T_odot => 5.0,
             // > Recognition
             R_super => 1.0, R_cat => 2.0, R_dagger => 3.0, R_lr => 4.0,
-            // Φ Parity
+            // < Parity
             P_asym => 1.0, P_psi => 2.0, P_pm => 3.0, P_sym => 4.0, P_pmsym => 5.0,
             // ⋈ Fidelity
             F_ell => 1.0, F_eth => 2.0, F_hbar => 3.0,
@@ -301,7 +301,7 @@ impl IgTuple {
     }
 }
 
-/// Display helper for IgTuple — formats as ⟨D · T · R · P · F · K · G · C · Φ · H · S · Ω⟩
+/// Display helper for IgTuple — formats as ⟨D · T · R · P · F · K · G · C · < · H · S · Ω⟩
 pub struct IgDisplay { tuple: IgTuple }
 
 impl core::fmt::Display for IgDisplay {

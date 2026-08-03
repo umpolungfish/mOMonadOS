@@ -334,7 +334,7 @@ pub fn atom_desc(atom: &str) -> &'static str {
         "LR_DUAL"                 => "lateral relational duality — R=𐑾",
         "PM_Z2"                   => "ℤ₂ parity with Frobenius μ∘δ=id — P=𐑹",
         "SEQAX"                   => "sequentiality axiom, directed time — C=𐑠",
-        "PHI_C"                   => "criticality fixed-point ξ→∞ ∧ μ∘δ=id — Φ=⊙",
+        "PHI_C"                   => "criticality fixed-point ξ→∞ ∧ μ∘δ=id — <=⊙",
         "TEMPD2"                  => "chirality-2 asymmetry — H=𐑖",
         "ETERNAL_FIXEDPOINT"      => "∀n∃φ fixed by μ∘δ — Axiom D (H=𐑫)",
         "ZWIND"                   => "integer winding number — Ω=𐑭",

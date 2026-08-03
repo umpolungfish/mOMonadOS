@@ -639,7 +639,7 @@ pub fn full_report() -> String {
            {}\n\
          \n\
          ── Notable ────────────────────────────────────────────────────\n\
-           out (Φ=𐑬): 22-opcode giant — encodes the full 17,280,000-type\n\
+           out (<=𐑬): 22-opcode giant — encodes the full 17,280,000-type\n\
            crystal lattice via 13 consecutive IFIX operations.\n\
            monad (⊙=⊙): shortest at 9 opcodes — the critical fixed point.\n\
          \n\
@@ -682,7 +682,7 @@ pub fn expand_report(name: &str) -> String {
         None => {
             let known: Vec<&str> = TYPE_PROGRAMS.iter()
                 .map(|tp| tp.shavian).collect();
-            format!("Unknown type: '{}'. Known: {:?}\nTry primitive axis: ⊢ ⊣ > Φ ƒ Ç Γ ɢ ⊙ Ħ Σ Ω",
+            format!("Unknown type: '{}'. Known: {:?}\nTry primitive axis: ⊢ ⊣ > < ƒ Ç Γ ɢ ⊙ Ħ Σ Ω",
                 name, known)
         }
     }
