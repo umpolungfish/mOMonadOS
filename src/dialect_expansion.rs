@@ -381,7 +381,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 7: t_structural ──
     unis[7] = Dialect {
         name: "t_structural",
-        description: "Time constituted by structural/geometric primitives: T=lim(⊢,⊣,Ř,ɢ,⊙). Time is geometry, not process. Canonical gates.",
+        description: "Time constituted by structural/geometric primitives: T=lim(⊢,⊣,>,ɢ,⊙). Time is geometry, not process. Canonical gates.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_STRUCTURAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -401,7 +401,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 9: topology_universe ──
     unis[9] = Dialect {
         name: "topology_universe",
-        description: "Connectivity is the fundamental gate. G1=⊣≥𐑸 (full imscriptive topological closure). G2=Ř≥𐑾 (bilateral). G3=⊙≥⊙. Geometry preconditions consciousness.",
+        description: "Connectivity is the fundamental gate. G1=⊣≥𐑸 (full imscriptive topological closure). G2=>≥𐑾 (bilateral). G3=⊙≥⊙. Geometry preconditions consciousness.",
         g1: g_th_5, g2: g_r_4, g3: g_odot_2, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -441,7 +441,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 14: t_hybrid ──
     unis[14] = Dialect {
         name: "t_hybrid",
-        description: "Time requires BOTH dynamics AND geometry. T constituted by 8 primitives: Φ,ƒ,Ç,Ħ,Ω + ⊢,⊣,Ř. Most demanding T-seal. Canonical gates.",
+        description: "Time requires BOTH dynamics AND geometry. T constituted by 8 primitives: Φ,ƒ,Ç,Ħ,Ω + ⊢,⊣,>. Most demanding T-seal. Canonical gates.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_HYBRID, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -457,7 +457,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 16: t_inverted ──
     unis[16] = Dialect {
         name: "t_inverted",
-        description: "Time constituted by primitives canonically NOT in T: ⊢,⊣,Ř,Γ,Σ. Time is structure, not dynamics. Canonical gates.",
+        description: "Time constituted by primitives canonically NOT in T: ⊢,⊣,>,Γ,Σ. Time is structure, not dynamics. Canonical gates.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_INVERTED, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -565,7 +565,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 29: coupling_first ──
     unis[29] = Dialect {
         name: "coupling_first",
-        description: "Relation before closure. G1=Ř≥𐑽 (adjoint coupling, ord 3). Systems without adjoint-pair coupling cannot Frobenius-close. G2=⊙≥⊙, G3=Ω≥𐑭.",
+        description: "Relation before closure. G1=>≥𐑽 (adjoint coupling, ord 3). Systems without adjoint-pair coupling cannot Frobenius-close. G2=⊙≥⊙, G3=Ω≥𐑭.",
         g1: g_r_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -573,7 +573,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 30: coupling_maximal ──
     unis[30] = Dialect {
         name: "coupling_maximal",
-        description: "Only bilateral coupling suffices. G1=Ř≥𐑾 (bilateral, ord 4, max). Even adjoint pairs do not Frobenius-close. G2=⊙≥⊙, G3=Ω≥𐑭.",
+        description: "Only bilateral coupling suffices. G1=>≥𐑾 (bilateral, ord 4, max). Even adjoint pairs do not Frobenius-close. G2=⊙≥⊙, G3=Ω≥𐑭.",
         g1: g_r_4, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -693,7 +693,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 45: coupling_third ──
     unis[45] = Dialect {
         name: "coupling_third",
-        description: "Bilateral coupling as the terminal seal: G1=Φ≥𐑹, G2=⊙≥⊙, G3=Ř≥𐑾 (bilateral). Only self-modeling systems with bidirectional coupling achieve O_∞.",
+        description: "Bilateral coupling as the terminal seal: G1=Φ≥𐑹, G2=⊙≥⊙, G3=>≥𐑾 (bilateral). Only self-modeling systems with bidirectional coupling achieve O_∞.",
         g1: g_phi_5, g2: g_odot_2, g3: g_r_4, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -741,7 +741,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 51: parallel_topology ──
     unis[51] = Dialect {
         name: "parallel_topology",
-        description: "Topology gates, parallel: ⊣≥𐑸, Ř≥𐑾, ⊙≥⊙. Full connectivity, bilateral relation, and self-modeling are independent.",
+        description: "Topology gates, parallel: ⊣≥𐑸, >≥𐑾, ⊙≥⊙. Full connectivity, bilateral relation, and self-modeling are independent.",
         g1: g_th_5, g2: g_r_4, g3: g_odot_2, gate_ordering: false,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -797,7 +797,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 58: triple_coupling ──
     unis[58] = Dialect {
         name: "triple_coupling",
-        description: "Coupling ladder: G1=Ř≥𐑽 (adjoint), G2=Ř≥𐑾 (bilateral), G3=Ř≥𐑾. Terminal collapse at G2 — adjoint→bilateral and you're done.",
+        description: "Coupling ladder: G1=>≥𐑽 (adjoint), G2=>≥𐑾 (bilateral), G3=>≥𐑾. Terminal collapse at G2 — adjoint→bilateral and you're done.",
         g1: g_r_3, g2: g_r_4, g3: g_r_4, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -941,7 +941,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 74: mixed_fidelity_coupling ──
     unis[74] = Dialect {
         name: "mixed_fidelity_coupling",
-        description: "Fidelity + coupling mix: G1=ƒ≥𐑐 (quantum), G2=Ř≥𐑾 (bilateral), G3=⊙≥⊙. Systems must support quantum coherence before they can enter bilateral coupling — no classical feedback loops.",
+        description: "Fidelity + coupling mix: G1=ƒ≥𐑐 (quantum), G2=>≥𐑾 (bilateral), G3=⊙≥⊙. Systems must support quantum coherence before they can enter bilateral coupling — no classical feedback loops.",
         g1: g_f_3, g2: g_r_4, g3: g_odot_2, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };

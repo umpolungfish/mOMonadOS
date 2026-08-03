@@ -476,10 +476,10 @@ impl TripleFrameAlgebra {
     /// Returns (n_exact, n_ambiguous, note).
     pub fn imasm_cycle() -> (usize, usize, String) {
         // > maps to both ear and tot — structurally identical programs
-        let n_ambiguous = 1;  // ear ≅ tot on Ř
+        let n_ambiguous = 1;  // ear ≅ tot on >
         let n_exact = 11;     // All other axes bijective
         (n_exact, n_ambiguous,
-         "11/12 axes exact, Ř ambiguous (ear/tot) — the theorized 2-to-1 axis".into())
+         "11/12 axes exact, > ambiguous (ear/tot) — the theorized 2-to-1 axis".into())
     }
 
     /// Levenshtein edit distance between two word slices.
@@ -626,11 +626,11 @@ pub fn full_report() -> String {
          {}\n\
          ── Isomorphic Triplet (ρ=2.2581) ──────────────────────────────\n\
            sure (Ħ=𐑖): Two-step chirality: parity-distinct temporal paths\n\
-           ear  (Ř=𐑽): Dagger-adjoint coupling: A→A†→bidirectional\n\
-           tot  (Ř=𐑽): Functor adjunction: composed functor pair\n\
+           ear  (>=𐑽): Dagger-adjoint coupling: A→A†→bidirectional\n\
+           tot  (>=𐑽): Functor adjunction: composed functor pair\n\
          \n\
          ── The 2-to-1 Axis ────────────────────────────────────────────\n\
-           Ř maps to ear ≅ tot — structurally identical programs (same\n\
+           > maps to ear ≅ tot — structurally identical programs (same\n\
            12-opcode sequence, same ρ=2.2581). The grammar is bijective\n\
            on 11 axes, 2-to-1 on the twelfth.\n\
          \n\
@@ -682,7 +682,7 @@ pub fn expand_report(name: &str) -> String {
         None => {
             let known: Vec<&str> = TYPE_PROGRAMS.iter()
                 .map(|tp| tp.shavian).collect();
-            format!("Unknown type: '{}'. Known: {:?}\nTry primitive axis: ⊢ ⊣ Ř Φ ƒ Ç Γ ɢ ⊙ Ħ Σ Ω",
+            format!("Unknown type: '{}'. Known: {:?}\nTry primitive axis: ⊢ ⊣ > Φ ƒ Ç Γ ɢ ⊙ Ħ Σ Ω",
                 name, known)
         }
     }
@@ -697,7 +697,7 @@ pub fn types_report() -> String {
 pub fn cycle_report() -> String {
     let (n_exact, n_ambiguous, note) = TripleFrameAlgebra::imasm_cycle();
     format!(
-        "IMASM cycle: {}/{} exact\n  Ambiguous: {} (Ř: ear/tot)\n  {}",
+        "IMASM cycle: {}/{} exact\n  Ambiguous: {} (>: ear/tot)\n  {}",
         n_exact, 12, n_ambiguous, note
     )
 }

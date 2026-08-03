@@ -69,7 +69,7 @@ class SemioticOperator:
         return self.M @ v
 
     def dagger(self) -> "SemioticOperator":
-        """Ř=𐑽 : adjoint structure — dagger of the operator."""
+        """>=𐑽 : adjoint structure — dagger of the operator."""
         return SemioticOperator(self.M.conj().T, f"{self.label}†")
 
     def __matmul__(self, other: "SemioticOperator") -> "SemioticOperator":
@@ -327,8 +327,8 @@ def main():
     evals_mbl = eig(H_mbl.M)[0]
     print(f"  Level spacing ratio: {np.mean(np.diff(np.sort(evals_mbl.real))):.4f}")
 
-    # ── 8e. Adjoint Structure (Ř=𐑽) ───────────────────────────
-    print("\n[Ř=𐑽] Dagger / Adjoint Structure")
+    # ── 8e. Adjoint Structure (>=𐑽) ───────────────────────────
+    print("\n[>=𐑽] Dagger / Adjoint Structure")
     S = SemioticOperator(np.random.randn(12, 12) + 1j * np.random.randn(12, 12),
                          "S")
     Sd = S.dagger()

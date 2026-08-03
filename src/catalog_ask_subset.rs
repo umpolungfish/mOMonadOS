@@ -21084,7 +21084,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "john_14_6_exclusive_reading", "Exclusive reading of John 14:6: Jesus uniquely IS the way, truth, and life. Self-referential closure (𐑦, 𐑸), adjoint mediation (Ř_Ť), partial symmetry (Φ_F),...",
+        "john_14_6_exclusive_reading", "Exclusive reading of John 14:6: Jesus uniquely IS the way, truth, and life. Self-referential closure (𐑦, 𐑸), adjoint mediation (𐑽), partial symmetry (Φ_F), c...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_ell, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -22340,7 +22340,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "clink_layer6_meiosis", "CLINK Layer 6: Meiosis — gamete production. Reverts to adjoint coupling (Ř=𐑽) and quantum symmetry (Φ=𐑿) for genetic recombination. O₂.",
+        "clink_layer6_meiosis", "CLINK Layer 6: Meiosis — gamete production. Reverts to adjoint coupling (>=𐑽) and quantum symmetry (Φ=𐑿) for genetic recombination. O₂.",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_psi, IgPrim::F_ell, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
@@ -22716,7 +22716,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "quantum_biologic", "Epigenetic reprogramming therapeutic (O_∞). Writes persistent chromatin state changes via supervenience coupling (Ř=𐑩). Eternal chirality (Ħ=𐑫) ensures repro...",
+        "quantum_biologic", "Epigenetic reprogramming therapeutic (O_∞). Writes persistent chromatin state changes via supervenience coupling (>=𐑩). Eternal chirality (Ħ=𐑫) ensures repro...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_super,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -22772,7 +22772,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "quantum_bioelectric_tissue", "Engineered tissue (O_∞) using quantum-coherent bioelectric fields for regeneration. Bidirectional feedback (Ř=𐑾). Quantum coherent ion channels (ƒ=ƒ^ż). Eter...",
+        "quantum_bioelectric_tissue", "Engineered tissue (O_∞) using quantum-coherent bioelectric fields for regeneration. Bidirectional feedback (>=𐑾). Quantum coherent ion channels (ƒ=ƒ^ż). Eter...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -41300,7 +41300,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "baptism", "THE FIRST SACRAMENT: An ontological threshold of inclusion (⊣=𐑰) where a subject (⊢=𐑛) is categorically coupled (Ř=𐑑) to a maximal cardinality (ɢ=𐑔). Charact...",
+        "baptism", "THE FIRST SACRAMENT: An ontological threshold of inclusion (⊣=𐑰) where a subject (⊢=𐑛) is categorically coupled (>=𐑑) to a maximal cardinality (ɢ=𐑔). Charact...",
         IgPrim::D_wedge, IgPrim::T_in, IgPrim::R_cat,
         IgPrim::P_psi, IgPrim::F_eth, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -47196,7 +47196,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "ternary_gap_promoted_ř", "with Ř=𐑑",
+        "ternary_gap_promoted_ř", "with >=𐑑",
         IgPrim::D_wedge, IgPrim::T_net, IgPrim::R_cat,
         IgPrim::P_psi, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -50756,7 +50756,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "promotion_set", "The set Ř Φ ɢ Σ required to reach L9-anchoring for star_catalyst_op",
+        "promotion_set", "The set > Φ ɢ Σ required to reach L9-anchoring for star_catalyst_op",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_psi, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_beth, IgPrim::C_and,
@@ -50980,7 +50980,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "parity_driven_expansion_loop_fused_excited_transformed", "transformed catalyst after second turnover; tuple ⟨⊢=𐑨; ⊣=𐑥; Ř=𐑑; Φ=𐑹; ƒ=𐑐; Ç=𐑧; Γ=𐑚; ɢ=𐑠; ⊙=⊙; Ħ=𐑖; Σ=𐑙; Ω=𐑭⟩",
+        "parity_driven_expansion_loop_fused_excited_transformed", "transformed catalyst after second turnover; tuple ⟨⊢=𐑨; ⊣=𐑥; >=𐑑; Φ=𐑹; ƒ=𐑐; Ç=𐑧; Γ=𐑚; ɢ=𐑠; ⊙=⊙; Ħ=𐑖; Σ=𐑙; Ω=𐑭⟩",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_beth, IgPrim::C_seq,
@@ -51860,7 +51860,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "chiral_rotation_gate_phi_prime", "A parity-shifting catalytic operator designed to rotate Φ from 𐑬 to 𐑹 and close the Ř-register gap.",
+        "chiral_rotation_gate_phi_prime", "A parity-shifting catalytic operator designed to rotate Φ from 𐑬 to 𐑹 and close the >-register gap.",
         IgPrim::D_odot, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -52108,7 +52108,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "alkahest_vessel_l9_promoted", "The L9-Reference state; the fully promoted, 12-primitive saturated vessel ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑘; Γ=𐑔; ɢ=𐑝; ⊙=𐑣; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩.",
+        "alkahest_vessel_l9_promoted", "The L9-Reference state; the fully promoted, 12-primitive saturated vessel ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑘; Γ=𐑔; ɢ=𐑝; ⊙=𐑣; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩.",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -52116,7 +52116,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "bridge_bidirectional_stabilizer", "A compensator for the Ř primitive to enforce bidirectional symmetry in L9-Reference bridges.",
+        "bridge_bidirectional_stabilizer", "A compensator for the > primitive to enforce bidirectional symmetry in L9-Reference bridges.",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_beth, IgPrim::C_and,
@@ -53836,7 +53836,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_sink_reagent", "A monomer specifically designed to zero the conflict triad {Ř:0.333, Ç:0.286, Ħ:0.333} by providing the missing holographic boundary conditions for infinite...",
+        "perfect_cuboid_sink_reagent", "A monomer specifically designed to zero the conflict triad {>:0.333, Ç:0.286, Ħ:0.333} by providing the missing holographic boundary conditions for infinite...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -54084,7 +54084,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_vacuum", "Saturated 0.0000 distance L9 state, resolving Ř(𐑑), Φ(𐑬), and Σ(𐑳) for absolute vacuum coupling",
+        "perfect_cuboid_l9_vacuum", "Saturated 0.0000 distance L9 state, resolving >(𐑑), Φ(𐑬), and Σ(𐑳) for absolute vacuum coupling",
         IgPrim::D_odot, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -55092,7 +55092,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "catalytic_refinement_matrix", "Matrix for Ř:𐑽 to 𐑾 transition calibration",
+        "catalytic_refinement_matrix", "Matrix for >:𐑽 to 𐑾 transition calibration",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_beth, IgPrim::C_broad,
@@ -57348,7 +57348,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "gaussian_bridge_linker", "⟨⊢=𐑦; ⊣=𐑡; Ř=𐑽; Φ=𐑬; ƒ=𐑐; Ç=𐑧; Γ=𐑔; ɢ=𐑝; ⊙=𐑮; Ħ=𐑖; Σ=𐑳; Ω=𐑭⟩",
+        "gaussian_bridge_linker", "⟨⊢=𐑦; ⊣=𐑡; >=𐑽; Φ=𐑬; ƒ=𐑐; Ç=𐑧; Γ=𐑔; ɢ=𐑝; ⊙=𐑮; Ħ=𐑖; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_odot, IgPrim::T_net, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -57516,7 +57516,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "atom_promotions_stable", "Verify that the atomic transitions {Ř:𐑽→𐑑, Φ:𐑹→𐑬, Ç:𐑧→𐑪, Γ:𐑚→𐑔, Σ:𐑕→𐑳} resolve the L9 promotion gap.",
+        "atom_promotions_stable", "Verify that the atomic transitions {>:𐑽→𐑑, Φ:𐑹→𐑬, Ç:𐑧→𐑪, Γ:𐑚→𐑔, Σ:𐑕→𐑳} resolve the L9 promotion gap.",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_seq,
@@ -57780,7 +57780,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "moat_protocol_reseed_v3", "Refined protocol: Hodge index 0.333 pinned for singularity flux control within the Gaussian moat manifold. Integrates braid_wire coupling to decouple Ř-gate...",
+        "moat_protocol_reseed_v3", "Refined protocol: Hodge index 0.333 pinned for singularity flux control within the Gaussian moat manifold. Integrates braid_wire coupling to decouple >-gate...",
         IgPrim::D_odot, IgPrim::T_bowtie, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_beth, IgPrim::C_and,
@@ -57804,7 +57804,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "bridge_to_ř_manifold", "Structural bridge primitive for Ř-manifold transmutation; links the Gaussian moat's R-sector (Ř) to the higher-order L9 manifold through an Ħ-chiral alignment.",
+        "bridge_to_ř_manifold", "Structural bridge primitive for >-manifold transmutation; links the Gaussian moat's R-sector (>) to the higher-order L9 manifold through an Ħ-chiral alignment.",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_beth, IgPrim::C_seq,
@@ -57860,7 +57860,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "moat_reseed_ring", "moat_protocol_reseed, Ř, Φ, Ç, Γ, Σ",
+        "moat_reseed_ring", "moat_protocol_reseed, >, Φ, Ç, Γ, Σ",
         IgPrim::D_wedge, IgPrim::T_boxtimes, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_seq,
@@ -58140,7 +58140,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "reseed_material", "moat_protocol_reseed, Ř, Φ, Ç, Γ, Σ",
+        "reseed_material", "moat_protocol_reseed, >, Φ, Ç, Γ, Σ",
         IgPrim::D_wedge, IgPrim::T_boxtimes, IgPrim::R_dagger,
         IgPrim::P_psi, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_seq,
@@ -58300,7 +58300,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "residual_notation_floor_dprom", "containment floor with ⊢ promoted to 𐑛 from recalibrate candidate ⟨⊢=𐑛; ⊣=𐑰; Ř=𐑽; Φ=𐑬; ƒ=𐑐; Ç=𐑧; Γ=𐑲; ɢ=𐑝; ⊙=⊙; Ħ=𐑖; Σ=𐑳; Ω=𐑭⟩",
+        "residual_notation_floor_dprom", "containment floor with ⊢ promoted to 𐑛 from recalibrate candidate ⟨⊢=𐑛; ⊣=𐑰; >=𐑽; Φ=𐑬; ƒ=𐑐; Ç=𐑧; Γ=𐑲; ɢ=𐑝; ⊙=⊙; Ħ=𐑖; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_in, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -58308,7 +58308,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "residual_notation_floor_l9", "full L9-reference promotion of residual_notation_floor: ⊢=𐑛 ⊣=𐑥 Ř=𐑑 Ç=𐑪 Γ=𐑔 ɢ=𐑝 Ħ=𐑫 Φ=𐑬 ƒ=𐑐 ⊙=⊙ Σ=𐑳 Ω=𐑭",
+        "residual_notation_floor_l9", "full L9-reference promotion of residual_notation_floor: ⊢=𐑛 ⊣=𐑥 >=𐑑 Ç=𐑪 Γ=𐑔 ɢ=𐑝 Ħ=𐑫 Φ=𐑬 ƒ=𐑐 ⊙=⊙ Σ=𐑳 Ω=𐑭",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -58316,7 +58316,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "imscribing_l9", "full L9-reference promotion of imscribing gerund: ⊢=𐑛 ⊣=𐑥 Ř=𐑑 Ç=𐑪 Γ=𐑔 ɢ=𐑝 Ħ=𐑫 Φ=𐑬 ƒ=𐑐 ⊙=⊙ Σ=𐑳 Ω=𐑭",
+        "imscribing_l9", "full L9-reference promotion of imscribing gerund: ⊢=𐑛 ⊣=𐑥 >=𐑑 Ç=𐑪 Γ=𐑔 ɢ=𐑝 Ħ=𐑫 Φ=𐑬 ƒ=𐑐 ⊙=⊙ Σ=𐑳 Ω=𐑭",
         IgPrim::D_wedge, IgPrim::T_in, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -58324,7 +58324,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "parity_phase_transition_matrix_l9", "full L9-reference promotion of parity_phase_transition_matrix ⊢=𐑛 ⊣=𐑥 Ř=𐑑 Ç=𐑪 Γ=𐑔 ɢ=𐑝 Ħ=𐑫 Φ=𐑬 ƒ=𐑐 ⊙=⊙ Σ=𐑳 Ω=𐑭",
+        "parity_phase_transition_matrix_l9", "full L9-reference promotion of parity_phase_transition_matrix ⊢=𐑛 ⊣=𐑥 >=𐑑 Ç=𐑪 Γ=𐑔 ɢ=𐑝 Ħ=𐑫 Φ=𐑬 ƒ=𐑐 ⊙=⊙ Σ=𐑳 Ω=𐑭",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -58340,7 +58340,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "parity_phase_transition_matrix_taxis_l9", "full L9 promotion of Taxis seam object ⊢=𐑛 ⊣=𐑥 Ř=𐑑 Ç=𐑪 Γ=𐑔 ɢ=𐑝 Ħ=𐑫 Φ=𐑹 ƒ=𐑐 ⊙=⊙ Σ=𐑳 Ω=𐑭 with T seam retained",
+        "parity_phase_transition_matrix_taxis_l9", "full L9 promotion of Taxis seam object ⊢=𐑛 ⊣=𐑥 >=𐑑 Ç=𐑪 Γ=𐑔 ɢ=𐑝 Ħ=𐑫 Φ=𐑹 ƒ=𐑐 ⊙=⊙ Σ=𐑳 Ω=𐑭 with T seam retained",
         IgPrim::D_wedge, IgPrim::T_in, IgPrim::R_cat,
         IgPrim::P_psi, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -58388,7 +58388,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "imscription_omega_collapsed", "containment floor noun form with Omega forced to 𐑭 to collapse conflict ⟨⊢=𐑦; ⊣=𐑰; Ř=𐑽; Φ=𐑬; ƒ=𐑐; Ç=𐑧; Γ=𐑲; ɢ=𐑝; ⊙=⊙; Ħ=𐑖; Σ=𐑳; Ω=𐑭⟩",
+        "imscription_omega_collapsed", "containment floor noun form with Omega forced to 𐑭 to collapse conflict ⟨⊢=𐑦; ⊣=𐑰; >=𐑽; Φ=𐑬; ƒ=𐑐; Ç=𐑧; Γ=𐑲; ɢ=𐑝; ⊙=⊙; Ħ=𐑖; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -58396,7 +58396,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "imscription_omega_theta_collapsed", "noun containment floor with Omega=𐑭 and Theta=𐑰 pinned ⟨⊢=𐑦; ⊣=𐑰; Ř=𐑽; Φ=𐑬; ƒ=𐑐; Ç=𐑧; Γ=𐑲; ɢ=𐑝; ⊙=⊙; Ħ=𐑖; Σ=𐑳; Ω=𐑭⟩",
+        "imscription_omega_theta_collapsed", "noun containment floor with Omega=𐑭 and Theta=𐑰 pinned ⟨⊢=𐑦; ⊣=𐑰; >=𐑽; Φ=𐑬; ƒ=𐑐; Ç=𐑧; Γ=𐑲; ɢ=𐑝; ⊙=⊙; Ħ=𐑖; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_odot, IgPrim::T_in, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -58428,7 +58428,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "phi_repair_extradimensional", "projection of extradimensional_entity that restores Φ-bijective encoding on orbits, holding ⊢ ⊣ ƒ Ç Γ ⊙ Ħ Σ Ω and repairing Ř Φ ɢ to floor",
+        "phi_repair_extradimensional", "projection of extradimensional_entity that restores Φ-bijective encoding on orbits, holding ⊢ ⊣ ƒ Ç Γ ⊙ Ħ Σ Ω and repairing > Φ ɢ to floor",
         IgPrim::D_odot, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -58436,7 +58436,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "phi_floor_restore", "Extradimensional repair projection that sets Φ=𐑹 floor bijective encoding on orbits holding ⊢=𐑨 ⊣=𐑥 Ř=𐑽 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ɢ=𐑵 ⊙=⊙ Ħ=𐑫 Σ=𐑕 Ω=𐑭 exactly to SIXTEEN_3∧...",
+        "phi_floor_restore", "Extradimensional repair projection that sets Φ=𐑹 floor bijective encoding on orbits holding ⊢=𐑨 ⊣=𐑥 >=𐑽 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ɢ=𐑵 ⊙=⊙ Ħ=𐑫 Σ=𐑕 Ω=𐑭 exactly to SIXTEEN_3∧...",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -58452,7 +58452,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "phi_floor_restore_true", "Repair monomer that forces Φ=𐑹 at ring level via ENGAGR ⊞ hold then FFUSE ● on the seven-ring composite, holding ⊢=𐑨 ⊣=𐑥 Ř=𐑽 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ɢ=𐑵 ⊙=⊙ Ħ=𐑫 Σ=𐑕 Ω=𐑭...",
+        "phi_floor_restore_true", "Repair monomer that forces Φ=𐑹 at ring level via ENGAGR ⊞ hold then FFUSE ● on the seven-ring composite, holding ⊢=𐑨 ⊣=𐑥 >=𐑽 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ɢ=𐑵 ⊙=⊙ Ħ=𐑫 Σ=𐑕 Ω=𐑭...",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -58508,7 +58508,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "extradimensional_entity_full_floor", "extradimensional entity with all non-held primitives forced to floor Φ=𐑹 ɢ=𐑵 Ħ=𐑫 Ω=𐑭 ⊣=𐑥 Ř=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕 — full SIXTEEN_3 ∧ CLINK-L8 floor alignment",
+        "extradimensional_entity_full_floor", "extradimensional entity with all non-held primitives forced to floor Φ=𐑹 ɢ=𐑵 Ħ=𐑫 Ω=𐑭 ⊣=𐑥 >=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕 — full SIXTEEN_3 ∧ CLINK-L8 floor alignment",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -58516,7 +58516,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "extradimensional_entity_all_floor_true", "extradimensional entity with every primitive at exact floor ⊢=𐑨 ⊣=𐑥 Ř=𐑽 Φ=𐑹 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ɢ=𐑵 ⊙=⊙ Ħ=𐑫 Σ=𐑕 Ω=𐑷 — full floor alignment with Ħ and Ω explicitly at...",
+        "extradimensional_entity_all_floor_true", "extradimensional entity with every primitive at exact floor ⊢=𐑨 ⊣=𐑥 >=𐑽 Φ=𐑹 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ɢ=𐑵 ⊙=⊙ Ħ=𐑫 Σ=𐑕 Ω=𐑷 — full floor alignment with Ħ and Ω explicitly at...",
         IgPrim::D_triangle, IgPrim::T_in, IgPrim::R_dagger,
         IgPrim::P_psi, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -58524,7 +58524,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "extradimensional_entity_phi_held_full", "extradimensional entity with Phi at floor 𐑹 held Ħ at floor 𐑫 Ω at floor 𐑭 all other primitives inherited from extradimensional_entity_neutral_phi ⊢=𐑦 ⊣=𐑸 Ř=...",
+        "extradimensional_entity_phi_held_full", "extradimensional entity with Phi at floor 𐑹 held Ħ at floor 𐑫 Ω at floor 𐑭 all other primitives inherited from extradimensional_entity_neutral_phi ⊢=𐑦 ⊣=𐑸 >=...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -58540,7 +58540,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "extradimensional_entity_hfloor_omega_clean", "extradimensional entity with Ħ at action 𐑖 floor-cleared AND Ω at floor 𐑭 protected Φ=𐑹 ɢ=𐑵 ⊣=𐑥 Ř=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕 — both Ħ breach cleared and Ω held",
+        "extradimensional_entity_hfloor_omega_clean", "extradimensional entity with Ħ at action 𐑖 floor-cleared AND Ω at floor 𐑭 protected Φ=𐑹 ɢ=𐑵 ⊣=𐑥 >=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕 — both Ħ breach cleared and Ω held",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -58548,7 +58548,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "extradimensional_entity_hfloor_omega_floorpin", "extradimensional entity with Ħ explicitly at floor 𐑫 not action 𐑖 AND Ω explicitly at floor 𐑭 protected Φ=𐑹 ɢ=𐑵 ⊣=𐑥 Ř=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕 — both Ħ and...",
+        "extradimensional_entity_hfloor_omega_floorpin", "extradimensional entity with Ħ explicitly at floor 𐑫 not action 𐑖 AND Ω explicitly at floor 𐑭 protected Φ=𐑹 ɢ=𐑵 ⊣=𐑥 >=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕 — both Ħ and...",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
@@ -58564,7 +58564,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "extradimensional_entity_floorpin_conj_fused", "fused product of annihilate extradimensional_entity_hfloor_omega_floorpin extradimensional_entity_conjugate via μ pair fusion Ħ=𐑫 Ω=𐑭 Φ=𐑹 ɢ=𐑵 ⊣=𐑥 Ř=𐑽 ⊢=𐑨 ƒ=𐑐...",
+        "extradimensional_entity_floorpin_conj_fused", "fused product of annihilate extradimensional_entity_hfloor_omega_floorpin extradimensional_entity_conjugate via μ pair fusion Ħ=𐑫 Ω=𐑭 Φ=𐑹 ɢ=𐑵 ⊣=𐑥 >=𐑽 ⊢=𐑨 ƒ=𐑐...",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -58572,7 +58572,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "extradimensional_entity_phi_closed", "extradimensional entity with Phi action neutralized to floor 𐑹 via base_phi_close protocol ⊣=𐑥 Ř=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ɢ=𐑵 ⊙=⊙ Ħ=𐑫 Σ=𐑕 Ω=𐑭 — full floor alignment...",
+        "extradimensional_entity_phi_closed", "extradimensional entity with Phi action neutralized to floor 𐑹 via base_phi_close protocol ⊣=𐑥 >=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ɢ=𐑵 ⊙=⊙ Ħ=𐑫 Σ=𐑕 Ω=𐑭 — full floor alignment...",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -58580,7 +58580,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "extradimensional_entity_floorpin_conj_phi_closed", "fused product of annihilate floorpin⊗conjugate then base_phi_close protocol applied Φ neutralized to 𐑹 Ħ=𐑫 Ω=𐑭 ɢ=𐑵 ⊣=𐑥 Ř=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕",
+        "extradimensional_entity_floorpin_conj_phi_closed", "fused product of annihilate floorpin⊗conjugate then base_phi_close protocol applied Φ neutralized to 𐑹 Ħ=𐑫 Ω=𐑭 ɢ=𐑵 ⊣=𐑥 >=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -58588,7 +58588,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "extradimensional_entity_floorpin_conj_hreset", "extradimensional entity floorpin_conj_phi_closed with h_reset protocol applied forcing Ħ to floor 𐑫 Φ=𐑹 Ω=𐑭 ɢ=𐑵 ⊣=𐑥 Ř=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕",
+        "extradimensional_entity_floorpin_conj_hreset", "extradimensional entity floorpin_conj_phi_closed with h_reset protocol applied forcing Ħ to floor 𐑫 Φ=𐑹 Ω=𐑭 ɢ=𐑵 ⊣=𐑥 >=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -58596,7 +58596,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "extradimensional_entity_floorpin_conj_hlock", "extradimensional entity floorpin_conj_hreset with Ħ_floor_lock protocol applied forcing Ħ action to floor 𐑫 not 𐑖 Φ=𐑹 Ω=𐑭 ɢ=𐑵 ⊣=𐑥 Ř=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕",
+        "extradimensional_entity_floorpin_conj_hlock", "extradimensional entity floorpin_conj_hreset with Ħ_floor_lock protocol applied forcing Ħ action to floor 𐑫 not 𐑖 Φ=𐑹 Ω=𐑭 ɢ=𐑵 ⊣=𐑥 >=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -58604,7 +58604,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "extradimensional_entity_conjugate_lifted", "extradimensional entity conjugate with Γ lifted to floor 𐑔 and ɢ lifted to floor 𐑵; Φ=𐑹 ⊣=𐑥 Ř=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 ⊙=⊙ Ħ=𐑫 Σ=𐑕 Ω=𐑭",
+        "extradimensional_entity_conjugate_lifted", "extradimensional entity conjugate with Γ lifted to floor 𐑔 and ɢ lifted to floor 𐑵; Φ=𐑹 ⊣=𐑥 >=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 ⊙=⊙ Ħ=𐑫 Σ=𐑕 Ω=𐑭",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -58612,7 +58612,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "extradimensional_entity_floorpin_penrose_macro", "extradimensional entity closed macrocycle of floorpin_conj_hreset + floorpin_conj_hlock + penrose_inequality Ħ=𐑫 Ω=𐑭 Φ=𐑹 ɢ=𐑵 ⊣=𐑥 Ř=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕...",
+        "extradimensional_entity_floorpin_penrose_macro", "extradimensional entity closed macrocycle of floorpin_conj_hreset + floorpin_conj_hlock + penrose_inequality Ħ=𐑫 Ω=𐑭 Φ=𐑹 ɢ=𐑵 ⊣=𐑥 >=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕...",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_lr,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -58620,7 +58620,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "extradimensional_entity_phi_hlocked", "extradimensional entity phi_closed with Ħ_floor_lock protocol applied forcing Ħ to floor 𐑫 action 𐑖 → 𐑫 Φ=𐑹 Ω=𐑭 ɢ=𐑵 ⊣=𐑥 Ř=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕",
+        "extradimensional_entity_phi_hlocked", "extradimensional entity phi_closed with Ħ_floor_lock protocol applied forcing Ħ to floor 𐑫 action 𐑖 → 𐑫 Φ=𐑹 Ω=𐑭 ɢ=𐑵 ⊣=𐑥 >=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -58628,7 +58628,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "extradimensional_entity_phi_hnull", "extradimensional entity phi_hlocked with Ħ_action_null protocol applied nulling Ħ action residual no 𐑖 Ħ at floor 𐑫 Φ=𐑹 Ω=𐑭 ɢ=𐑵 ⊣=𐑥 Ř=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕",
+        "extradimensional_entity_phi_hnull", "extradimensional entity phi_hlocked with Ħ_action_null protocol applied nulling Ħ action residual no 𐑖 Ħ at floor 𐑫 Φ=𐑹 Ω=𐑭 ɢ=𐑵 ⊣=𐑥 >=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -58644,7 +58644,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "extradimensional_entity_hfused_ann", "extradimensional entity product of annihilate phi_hfused ⊗ conjugate via μ pair fusion Ħ action 𐑖 resolved to floor 𐑫 Φ=𐑹 Ω=𐑭 ɢ=𐑵 ⊣=𐑥 Ř=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙...",
+        "extradimensional_entity_hfused_ann", "extradimensional entity product of annihilate phi_hfused ⊗ conjugate via μ pair fusion Ħ action 𐑖 resolved to floor 𐑫 Φ=𐑹 Ω=𐑭 ɢ=𐑵 ⊣=𐑥 >=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙...",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -58652,7 +58652,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "extradimensional_entity_phi_hfused_nab", "extradimensional entity phi_hfused with Ω set to non-Abelian 𐑟 braid channel Ħ action 𐑖 to be consumed by braid Φ=𐑹 Ħ=𐑫 ɢ=𐑵 ⊣=𐑥 Ř=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕",
+        "extradimensional_entity_phi_hfused_nab", "extradimensional entity phi_hfused with Ω set to non-Abelian 𐑟 braid channel Ħ action 𐑖 to be consumed by braid Φ=𐑹 Ħ=𐑫 ɢ=𐑵 ⊣=𐑥 >=𐑽 ⊢=𐑨 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ⊙=⊙ Σ=𐑕",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -58700,7 +58700,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "fused_with_pt_ck_h", "⊢𐑛 ⊣𐑥 Ř𐑑 Φ𐑬 ƒ𐑐 Ç𐑪 Γ𐑔 ɢ𐑝 ⊙⊙ Ħ𐑫 Σ𐑳 Ω𐑭",
+        "fused_with_pt_ck_h", "⊢𐑛 ⊣𐑥 >𐑑 Φ𐑬 ƒ𐑐 Ç𐑪 Γ𐑔 ɢ𐑝 ⊙⊙ Ħ𐑫 Σ𐑳 Ω𐑭",
         IgPrim::D_wedge, IgPrim::T_in, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_beth, IgPrim::C_and,
@@ -58708,7 +58708,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "full_descent_close", "reagent carrying ⊣𐑥 Ç𐑪 Ħ𐑫 Ř𐑽 Φ𐑿 ɢ𐑠 Γ𐑔 Ω𐑭 to close all eight CL9 gaps of perfect_cuboid_fused",
+        "full_descent_close", "reagent carrying ⊣𐑥 Ç𐑪 Ħ𐑫 >𐑽 Φ𐑿 ɢ𐑠 Γ𐑔 Ω𐑭 to close all eight CL9 gaps of perfect_cuboid_fused",
         IgPrim::D_odot, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_beth, IgPrim::C_and,
@@ -58716,7 +58716,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "fused_full_close", "⊢𐑛 ⊣𐑥 Ř𐑽 Φ𐑿 ƒ𐑐 Ç𐑪 Γ𐑔 ɢ𐑠 ⊙⊙ Ħ𐑫 Σ𐑳 Ω𐑭",
+        "fused_full_close", "⊢𐑛 ⊣𐑥 >𐑽 Φ𐑿 ƒ𐑐 Ç𐑪 Γ𐑔 ɢ𐑠 ⊙⊙ Ħ𐑫 Σ𐑳 Ω𐑭",
         IgPrim::D_wedge, IgPrim::T_in, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_beth, IgPrim::C_seq,
@@ -58724,7 +58724,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "fused_gamma_h", "PROM зап Đ𐑛 ⊣𐑸 Ř𐑑 Φ𐑬 ƒ𐑐 Ç𐑧 Γ𐑔 ɢ𐑝 ⊙⊙ Ħ𐑫 Σ𐑳 Ω𐑴",
+        "fused_gamma_h", "PROM зап Đ𐑛 ⊣𐑸 >𐑑 Φ𐑬 ƒ𐑐 Ç𐑧 Γ𐑔 ɢ𐑝 ⊙⊙ Ħ𐑫 Σ𐑳 Ω𐑴",
         IgPrim::D_wedge, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -58780,7 +58780,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_proof_l9_clicked", "fusion product of perfect_cuboid_proof and perfect_cuboid_l9_vacuum via T↔H click; ring ⟨𐑦𐑸𐑾𐑹𐑐𐑧𐑲𐑠⊙𐑖𐑳𐑭⟩ saturated on ⊣↔Ħ, inherits Ř Φ Γ ɢ",
+        "perfect_cuboid_proof_l9_clicked", "fusion product of perfect_cuboid_proof and perfect_cuboid_l9_vacuum via T↔H click; ring ⟨𐑦𐑸𐑾𐑹𐑐𐑧𐑲𐑠⊙𐑖𐑳𐑭⟩ saturated on ⊣↔Ħ, inherits > Φ Γ ɢ",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_beth, IgPrim::C_broad,
@@ -58796,7 +58796,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_annealed_blended", "blended monomer of perfect_cuboid_l9_annealed and missing_pt_ck_h: ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑚; ɢ=𐑵; ⊙=⊙; Ħ=𐑫; Σ=𐑙; Ω=𐑭⟩",
+        "perfect_cuboid_l9_annealed_blended", "blended monomer of perfect_cuboid_l9_annealed and missing_pt_ck_h: ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑚; ɢ=𐑵; ⊙=⊙; Ħ=𐑫; Σ=𐑙; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_beth, IgPrim::C_broad,
@@ -58804,7 +58804,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_blended_promoted", "blended monomer with all 7 axes promoted to proof values: ⟨⊢=𐑦; ⊣=𐑸; Ř=𐑾; Φ=𐑹; ƒ=𐑐; Ç=𐑧; Γ=𐑲; ɢ=𐑠; ⊙=⊙; Ħ=𐑫; Σ=𐑙; Ω=𐑭⟩",
+        "perfect_cuboid_l9_blended_promoted", "blended monomer with all 7 axes promoted to proof values: ⟨⊢=𐑦; ⊣=𐑸; >=𐑾; Φ=𐑹; ƒ=𐑐; Ç=𐑧; Γ=𐑲; ɢ=𐑠; ⊙=⊙; Ħ=𐑫; Σ=𐑙; Ω=𐑭⟩",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_psi, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
@@ -58812,7 +58812,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_annealed_blended_promoted3", "blended monomer of perfect_cuboid_l9_annealed with Γ=𐑔 ɢ=𐑝 Ħ=𐑫 rest unchanged ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑙; Ω=𐑭⟩",
+        "perfect_cuboid_l9_annealed_blended_promoted3", "blended monomer of perfect_cuboid_l9_annealed with Γ=𐑔 ɢ=𐑝 Ħ=𐑫 rest unchanged ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑙; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -58820,7 +58820,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_annealed_blended_promoted4", "blended monomer of perfect_cuboid_l9_annealed_blended_promoted3 with Σ promoted 𐑙→𐑳 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_l9_annealed_blended_promoted4", "blended monomer of perfect_cuboid_l9_annealed_blended_promoted3 with Σ promoted 𐑙→𐑳 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -58828,7 +58828,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_annealed_blended_promoted5", "blended monomer of perfect_cuboid_l9_annealed_blended_promoted4 with Γ promoted 𐑲→𐑔 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳...",
+        "perfect_cuboid_l9_annealed_blended_promoted5", "blended monomer of perfect_cuboid_l9_annealed_blended_promoted4 with Γ promoted 𐑲→𐑔 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳...",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -58836,7 +58836,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_annealed_blended_promoted6", "blended monomer of perfect_cuboid_l9_annealed_blended_promoted5 with Ç promoted 𐑧→𐑪 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳...",
+        "perfect_cuboid_l9_annealed_blended_promoted6", "blended monomer of perfect_cuboid_l9_annealed_blended_promoted5 with Ç promoted 𐑧→𐑪 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳...",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -58844,7 +58844,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_annealed_blended_promoted7", "blended monomer of perfect_cuboid_l9_annealed_blended_promoted6 with Γ promoted 𐑲→𐑔 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳...",
+        "perfect_cuboid_l9_annealed_blended_promoted7", "blended monomer of perfect_cuboid_l9_annealed_blended_promoted6 with Γ promoted 𐑲→𐑔 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳...",
         IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -58852,7 +58852,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_clicked_ring", "blended ring from click perfect_cuboid_l9_annealed_blended_promoted7 with perfect_cuboid_proof, product tuple ⟨⊢=𐑦; ⊣=𐑸; Ř=𐑾; Φ=𐑹; ƒ=𐑐; Ç=𐑧; Γ=𐑲; ɢ=𐑠; ⊙=⊙; Ħ...",
+        "perfect_cuboid_l9_clicked_ring", "blended ring from click perfect_cuboid_l9_annealed_blended_promoted7 with perfect_cuboid_proof, product tuple ⟨⊢=𐑦; ⊣=𐑸; >=𐑾; Φ=𐑹; ƒ=𐑐; Ç=𐑧; Γ=𐑲; ɢ=𐑠; ⊙=⊙; Ħ...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
@@ -58860,7 +58860,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_ring_promoted", "blended ring perfect_cuboid_l9_clicked_ring with full L9 promotion ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_l9_ring_promoted", "blended ring perfect_cuboid_l9_clicked_ring with full L9 promotion ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -58868,7 +58868,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_ring_promoted2", "blended ring perfect_cuboid_l9_ring_promoted with Γ promoted 𐑲→𐑔 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_l9_ring_promoted2", "blended ring perfect_cuboid_l9_ring_promoted with Γ promoted 𐑲→𐑔 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -58876,7 +58876,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_ring_promoted3", "blended ring perfect_cuboid_l9_ring_promoted2 with Ç promoted 𐑧→𐑪 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_l9_ring_promoted3", "blended ring perfect_cuboid_l9_ring_promoted2 with Ç promoted 𐑧→𐑪 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -58884,7 +58884,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_ring_promoted4", "blended ring perfect_cuboid_l9_ring_promoted3 with ⊢ promoted 𐑼→𐑛 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_l9_ring_promoted4", "blended ring perfect_cuboid_l9_ring_promoted3 with ⊢ promoted 𐑼→𐑛 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -58892,7 +58892,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_ring_promoted5", "blended ring perfect_cuboid_l9_ring_promoted4 with Γ promoted 𐑲→𐑔 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_l9_ring_promoted5", "blended ring perfect_cuboid_l9_ring_promoted4 with Γ promoted 𐑲→𐑔 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -58900,7 +58900,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_ring_promoted6", "blended ring perfect_cuboid_l9_ring_promoted5 with Ç promoted 𐑧→𐑪 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_l9_ring_promoted6", "blended ring perfect_cuboid_l9_ring_promoted5 with Ç promoted 𐑧→𐑪 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -58908,7 +58908,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_ring_promoted7", "blended ring perfect_cuboid_l9_ring_promoted6 with ⊢ promoted 𐑼→𐑛 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_l9_ring_promoted7", "blended ring perfect_cuboid_l9_ring_promoted6 with ⊢ promoted 𐑼→𐑛 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -58916,7 +58916,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_ring_promoted8", "blended ring perfect_cuboid_l9_ring_promoted7 with Γ promoted 𐑲→𐑔 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_l9_ring_promoted8", "blended ring perfect_cuboid_l9_ring_promoted7 with Γ promoted 𐑲→𐑔 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -58924,7 +58924,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_ring_promoted9", "blended ring perfect_cuboid_l9_ring_promoted8 with Ç promoted 𐑧→𐑪 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_l9_ring_promoted9", "blended ring perfect_cuboid_l9_ring_promoted8 with Ç promoted 𐑧→𐑪 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -58932,7 +58932,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_ring_promoted10", "blended ring perfect_cuboid_l9_ring_promoted9 with ⊢ promoted 𐑼→𐑛 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_l9_ring_promoted10", "blended ring perfect_cuboid_l9_ring_promoted9 with ⊢ promoted 𐑼→𐑛 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -58940,7 +58940,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_ring_promoted11", "blended ring perfect_cuboid_l9_ring_promoted10 with Ç promoted 𐑧→𐑪 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_l9_ring_promoted11", "blended ring perfect_cuboid_l9_ring_promoted10 with Ç promoted 𐑧→𐑪 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -58948,7 +58948,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_ring_promoted12", "blended ring perfect_cuboid_l9_ring_promoted11 with ⊢ promoted 𐑼→𐑛 and Γ promoted 𐑲→𐑔 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ...",
+        "perfect_cuboid_l9_ring_promoted12", "blended ring perfect_cuboid_l9_ring_promoted11 with ⊢ promoted 𐑼→𐑛 and Γ promoted 𐑲→𐑔 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ...",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -58956,7 +58956,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_ring_promoted13", "blended ring perfect_cuboid_l9_ring_promoted12 with Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_l9_ring_promoted13", "blended ring perfect_cuboid_l9_ring_promoted12 with Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -58964,7 +58964,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_ring_promoted14", "blended ring perfect_cuboid_l9_ring_promoted13 with Ç promoted 𐑧→𐑪 and Γ promoted 𐑲→𐑔 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ...",
+        "perfect_cuboid_l9_ring_promoted14", "blended ring perfect_cuboid_l9_ring_promoted13 with Ç promoted 𐑧→𐑪 and Γ promoted 𐑲→𐑔 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ...",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -58972,7 +58972,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_ring_final", "blended ring perfect_cuboid_l9_ring_promoted14 with Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_l9_ring_final", "blended ring perfect_cuboid_l9_ring_promoted14 with Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -58980,7 +58980,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_ring_final2", "blended ring perfect_cuboid_l9_ring_final with Ç promoted 𐑧→𐑪 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_l9_ring_final2", "blended ring perfect_cuboid_l9_ring_final with Ç promoted 𐑧→𐑪 and Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -58988,7 +58988,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_rbridge", "bridge monomer carrying Ř=𐑽 to match perfect_cuboid_l9_absolute R↔S charge tuple ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑽; Φ=𐑹; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_rbridge", "bridge monomer carrying >=𐑽 to match perfect_cuboid_l9_absolute R↔S charge tuple ⟨⊢=𐑛; ⊣=𐑥; >=𐑽; Φ=𐑹; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -58996,7 +58996,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_dw_conj", "conjugate of absolute with opposite D↔W charge ⊢ flipped from 𐑛 to 𐑼 opposite D-side rest copied from absolute ⟨⊢=𐑼; ⊣=𐑥; Ř=𐑽; Φ=𐑹; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙;...",
+        "perfect_cuboid_dw_conj", "conjugate of absolute with opposite D↔W charge ⊢ flipped from 𐑛 to 𐑼 opposite D-side rest copied from absolute ⟨⊢=𐑼; ⊣=𐑥; >=𐑽; Φ=𐑹; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙;...",
         IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59004,7 +59004,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_th_conj", "conjugate of absolute with opposite T↔H charge Ħ flipped from 𐑫 to 𐑖 opposite H-side rest copied from absolute ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑽; Φ=𐑹; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙;...",
+        "perfect_cuboid_th_conj", "conjugate of absolute with opposite T↔H charge Ħ flipped from 𐑫 to 𐑖 opposite H-side rest copied from absolute ⟨⊢=𐑛; ⊣=𐑥; >=𐑽; Φ=𐑹; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙;...",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59012,7 +59012,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_witness_fused", "direct fusion of perfect_cuboid_proof kernel-green descent with perfect_cuboid_l9_absolute vacuum tuple inherits proof's Φ=𐑹 ⊙=⊙ and absolute's ⊢=𐑛 Ř=𐑽 Ħ=𐑫 Ω...",
+        "perfect_cuboid_l9_witness_fused", "direct fusion of perfect_cuboid_proof kernel-green descent with perfect_cuboid_l9_absolute vacuum tuple inherits proof's Φ=𐑹 ⊙=⊙ and absolute's ⊢=𐑛 >=𐑽 Ħ=𐑫 Ω...",
         IgPrim::D_wedge, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_seq,
@@ -59020,7 +59020,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_witness_promoted", "fused witness with gaps closed to absolute ⊣→𐑥 Γ→𐑔 ɢ→𐑝 copied ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑽; Φ=𐑹; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_l9_witness_promoted", "fused witness with gaps closed to absolute ⊣→𐑥 Γ→𐑔 ɢ→𐑝 copied ⟨⊢=𐑛; ⊣=𐑥; >=𐑽; Φ=𐑹; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_psi, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59028,7 +59028,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_l9_witness_promoted2", "fused witness with explicit Ç=𐑪 Ħ=𐑫 and all axes matched to absolute except Ř Φ gaps ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑽; Φ=𐑹; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_l9_witness_promoted2", "fused witness with explicit Ç=𐑪 Ħ=𐑫 and all axes matched to absolute except > Φ gaps ⟨⊢=𐑛; ⊣=𐑥; >=𐑽; Φ=𐑹; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59052,7 +59052,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "phi_bridge", "bridge monomer carrying Φ=𐑬 to close the Φ primitive gap on pc_abs_cycle_product13 and witness_promoted2; tuple ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑽; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙;...",
+        "phi_bridge", "bridge monomer carrying Φ=𐑬 to close the Φ primitive gap on pc_abs_cycle_product13 and witness_promoted2; tuple ⟨⊢=𐑛; ⊣=𐑥; >=𐑽; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙;...",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59060,7 +59060,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_proof_l9_closed", "perfect_cuboid_proof with all 8 L9 promotions applied ⊢ 𐑦→𐑛 ⊣ 𐑸→𐑥 Ř 𐑾→𐑽 Φ 𐑹→𐑹(held Ç 𐑧→𐑪 Γ 𐑲→𐑔 ɢ 𐑠→𐑝 Ħ 𐑖→𐑫; tuple ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑽; Φ=𐑹; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=...",
+        "perfect_cuboid_proof_l9_closed", "perfect_cuboid_proof with all 8 L9 promotions applied ⊢ 𐑦→𐑛 ⊣ 𐑸→𐑥 > 𐑾→𐑽 Φ 𐑹→𐑹(held Ç 𐑧→𐑪 Γ 𐑲→𐑔 ɢ 𐑠→𐑝 Ħ 𐑖→𐑫; tuple ⟨⊢=𐑛; ⊣=𐑥; >=𐑽; Φ=𐑹; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=...",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59068,7 +59068,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_proof_l9_r", "bridge of perfect_cuboid_proof_l9_closed with Ř promoted 𐑽→𐑑 rest unchanged ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑹; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_proof_l9_r", "bridge of perfect_cuboid_proof_l9_closed with > promoted 𐑽→𐑑 rest unchanged ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑹; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59076,7 +59076,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_proof_l9_rf", "bridge of perfect_cuboid_proof_l9_closed with Ř promoted 𐑽→𐑑 and Φ promoted 𐑹→𐑬 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "perfect_cuboid_proof_l9_rf", "bridge of perfect_cuboid_proof_l9_closed with > promoted 𐑽→𐑑 and Φ promoted 𐑹→𐑬 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59084,7 +59084,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "pc_bridge_rf_ch", "bridge monomer with target tuple ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩ to test Ç/Ħ retention under cl9nk",
+        "pc_bridge_rf_ch", "bridge monomer with target tuple ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩ to test Ç/Ħ retention under cl9nk",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59092,7 +59092,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "pc_bridge_rf_ch_h", "promoted bridge monomer with Ħ promoted 𐑖→𐑫 tuple ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "pc_bridge_rf_ch_h", "promoted bridge monomer with Ħ promoted 𐑖→𐑫 tuple ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59100,7 +59100,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "pc_l9_r_only", "perfect_cuboid_proof_l9_closed with Ř promoted 𐑽→𐑑 only Φ held 𐑹 tuple ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑹; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "pc_l9_r_only", "perfect_cuboid_proof_l9_closed with > promoted 𐑽→𐑑 only Φ held 𐑹 tuple ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑹; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59124,7 +59124,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "witness_l9_closed", "witness with all 8 L9 promotions applied ⊢ 𐑦→𐑛 ⊣ 𐑸→𐑥 Ř 𐑾→𐑽 Φ 𐑹→𐑹 Ç 𐑧→𐑪 Γ 𐑲→𐑔 ɢ 𐑠→𐑝 Ħ 𐑖→𐑫; tuple ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑽; Φ=𐑹; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "witness_l9_closed", "witness with all 8 L9 promotions applied ⊢ 𐑦→𐑛 ⊣ 𐑸→𐑥 > 𐑾→𐑽 Φ 𐑹→𐑹 Ç 𐑧→𐑪 Γ 𐑲→𐑔 ɢ 𐑠→𐑝 Ħ 𐑖→𐑫; tuple ⟨⊢=𐑛; ⊣=𐑥; >=𐑽; Φ=𐑹; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59188,7 +59188,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "who_how_was_where_he_had_not_why_went_how_was_not_rlift", "Structural trace of Two Generals Problem with Ř lifted to 𐑑: ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑿; ƒ=𐑱; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=𐑻; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "who_how_was_where_he_had_not_why_went_how_was_not_rlift", "Structural trace of Two Generals Problem with > lifted to 𐑑: ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑿; ƒ=𐑱; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=𐑻; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_psi, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59196,7 +59196,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "who_how_rlift_phi_hbar_promoted", "Structural trace of Two Generals with Ř lifted to 𐑑 and Φ promoted 𐑿→𐑬 Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑱; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=𐑻; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "who_how_rlift_phi_hbar_promoted", "Structural trace of Two Generals with > lifted to 𐑑 and Φ promoted 𐑿→𐑬 Ħ promoted 𐑖→𐑫 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑱; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=𐑻; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_ell, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -59204,7 +59204,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "who_how_rlift_fg_promoted", "Structural trace of Two Generals with Ř=𐑑 Φ=𐑬 ƒ=𐑐 Ç=𐑪 Γ=𐑲 ɢ=𐑝 ⊙=𐑻 Ħ=𐑫 Σ=𐑳 Ω=𐑭 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑲; ɢ=𐑝; ⊙=𐑻; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "who_how_rlift_fg_promoted", "Structural trace of Two Generals with >=𐑑 Φ=𐑬 ƒ=𐑐 Ç=𐑪 Γ=𐑲 ɢ=𐑝 ⊙=𐑻 Ħ=𐑫 Σ=𐑳 Ω=𐑭 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑲; ɢ=𐑝; ⊙=𐑻; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -59212,7 +59212,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "who_how_rlift_l9c", "Structural trace of Two Generals with Ř=𐑑 Φ=𐑬 ƒ=𐑐 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=𐑻 Ħ=𐑫 Σ=𐑳 Ω=𐑭 ⟨⊢=𐑛; ⊣=𐑥; Ř=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=𐑻; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "who_how_rlift_l9c", "Structural trace of Two Generals with >=𐑑 Φ=𐑬 ƒ=𐑐 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=𐑻 Ħ=𐑫 Σ=𐑳 Ω=𐑭 ⟨⊢=𐑛; ⊣=𐑥; >=𐑑; Φ=𐑬; ƒ=𐑐; Ç=𐑪; Γ=𐑔; ɢ=𐑝; ⊙=𐑻; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59260,7 +59260,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_space_embedding", "Hilbert-space embedding of fiducial state into hilbert_space_generic with Z2 topological boundary sealed register grounded tuple ⟨⊢=𐑦;⊣=𐑥;Ř=𐑽;Φ=𐑬;ƒ=𐑐;Ç=𐑧;Γ=𐑲...",
+        "hilbert_space_embedding", "Hilbert-space embedding of fiducial state into hilbert_space_generic with Z2 topological boundary sealed register grounded tuple ⟨⊢=𐑦;⊣=𐑥;>=𐑽;Φ=𐑬;ƒ=𐑐;Ç=𐑧;Γ=𐑲...",
         IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
@@ -59268,7 +59268,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "omega2_resolved", "constructed extension of conventional_sic_povm_hilbert with promotions ⊢=𐑛 Ř=𐑑 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=⊙ Ħ=𐑫 and two Omega windings past exceptional point Omega=𐑟 comp...",
+        "omega2_resolved", "constructed extension of conventional_sic_povm_hilbert with promotions ⊢=𐑛 >=𐑑 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=⊙ Ħ=𐑫 and two Omega windings past exceptional point Omega=𐑟 comp...",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59276,7 +59276,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_promoted", "Hilbert-space embedding with promotions ⊢=𐑛 Ř=𐑑 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=⊙ Ħ=𐑫 grounded tuple resolved tier lift",
+        "hilbert_embed_promoted", "Hilbert-space embedding with promotions ⊢=𐑛 >=𐑑 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=⊙ Ħ=𐑫 grounded tuple resolved tier lift",
         IgPrim::D_wedge, IgPrim::T_in, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59284,7 +59284,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_explicit", "Hilbert-space embedding of fiducial state into hilbert_space_generic with Z2 topological boundary sealed register explicit grounded tuple ⟨⊢=𐑛;⊣=𐑥;Ř=𐑑;Φ=𐑬;ƒ=...",
+        "hilbert_embed_explicit", "Hilbert-space embedding of fiducial state into hilbert_space_generic with Z2 topological boundary sealed register explicit grounded tuple ⟨⊢=𐑛;⊣=𐑥;>=𐑑;Φ=𐑬;ƒ=...",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59292,7 +59292,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_omega2", "Hilbert-space embedding of fiducial state into hilbert_space_generic with Z2 topological boundary sealed register constructed extension with promotions ⊢=𐑛 Ř...",
+        "hilbert_embed_omega2", "Hilbert-space embedding of fiducial state into hilbert_space_generic with Z2 topological boundary sealed register constructed extension with promotions ⊢=𐑛 >...",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59316,7 +59316,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_seed_o2", "Hilbert-space embedding seed with non-Abelian Omega=𐑟 winding and ETERNAL_FIXEDPOINT tuple ⟨⊢=𐑨;⊣=𐑥;Ř=𐑽;Φ=𐑹;ƒ=𐑐;Ç=𐑧;Γ=𐑔;ɢ=𐑵;⊙=⊙;Ħ=𐑫;Σ=𐑕;Ω=𐑟⟩",
+        "hilbert_embed_seed_o2", "Hilbert-space embedding seed with non-Abelian Omega=𐑟 winding and ETERNAL_FIXEDPOINT tuple ⟨⊢=𐑨;⊣=𐑥;>=𐑽;Φ=𐑹;ƒ=𐑐;Ç=𐑧;Γ=𐑔;ɢ=𐑵;⊙=⊙;Ħ=𐑫;Σ=𐑕;Ω=𐑟⟩",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -59332,7 +59332,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_seed_o2̄", "Hilbert-space embedding conjugate of hilbert_embed_seed_o2 with reversed non-Abelian Omega=𐑟 winding reversed charge tuple ⟨⊢=𐑨;⊣=𐑥;Ř=𐑽;Φ=𐑹;ƒ=𐑐;Ç=𐑧;Γ=𐑔;ɢ=𐑵;⊙...",
+        "hilbert_embed_seed_o2̄", "Hilbert-space embedding conjugate of hilbert_embed_seed_o2 with reversed non-Abelian Omega=𐑟 winding reversed charge tuple ⟨⊢=𐑨;⊣=𐑥;>=𐑽;Φ=𐑹;ƒ=𐑐;Ç=𐑧;Γ=𐑔;ɢ=𐑵;⊙...",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -59340,7 +59340,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_floor_t", "Hilbert-space embedding of fiducial state into hilbert_space_generic with Z2 topological boundary sealed register fully floor-matched tuple ⟨⊢=𐑨;⊣=𐑥;Ř=𐑽;Φ=𐑹;...",
+        "hilbert_embed_floor_t", "Hilbert-space embedding of fiducial state into hilbert_space_generic with Z2 topological boundary sealed register fully floor-matched tuple ⟨⊢=𐑨;⊣=𐑥;>=𐑽;Φ=𐑹;...",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -59348,7 +59348,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_grounded", "Hilbert-space embedding with the previously FAILED tuple ⟨⊢=𐑦;⊣=𐑥;Ř=𐑽;Φ=𐑬;ƒ=𐑐;Ç=𐑧;Γ=𐑲;ɢ=𐑠;⊙=𐑻;Ħ=𐑖;Σ=𐑳;Ω=𐑭⟩ re-supplied for grounding closure",
+        "hilbert_embed_grounded", "Hilbert-space embedding with the previously FAILED tuple ⟨⊢=𐑦;⊣=𐑥;>=𐑽;Φ=𐑬;ƒ=𐑐;Ç=𐑧;Γ=𐑲;ɢ=𐑠;⊙=𐑻;Ħ=𐑖;Σ=𐑳;Ω=𐑭⟩ re-supplied for grounding closure",
         IgPrim::D_odot, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
@@ -59356,7 +59356,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_grounded_fix", "Hilbert-space embedding with Phi corrected to floor ⟨⊢=𐑦;⊣=𐑥;Ř=𐑽;Φ=𐑹;ƒ=𐑐;Ç=𐑧;Γ=𐑲;ɢ=𐑠;⊙=𐑻;Ħ=𐑖;Σ=𐑳;Ω=𐑭⟩",
+        "hilbert_embed_grounded_fix", "Hilbert-space embedding with Phi corrected to floor ⟨⊢=𐑦;⊣=𐑥;>=𐑽;Φ=𐑹;ƒ=𐑐;Ç=𐑧;Γ=𐑲;ɢ=𐑠;⊙=𐑻;Ħ=𐑖;Σ=𐑳;Ω=𐑭⟩",
         IgPrim::D_odot, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
@@ -59364,7 +59364,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_floor_t_fix", "Hilbert-space embedding fully floor-matched with Ħ=𐑫 Ω=𐑭 ⟨⊢=𐑨;⊣=𐑥;Ř=𐑽;Φ=𐑹;ƒ=𐑐;Ç=𐑧;Γ=𐑔;ɢ=𐑵;⊙=⊙;Ħ=𐑫;Σ=𐑕;Ω=𐑭⟩",
+        "hilbert_embed_floor_t_fix", "Hilbert-space embedding fully floor-matched with Ħ=𐑫 Ω=𐑭 ⟨⊢=𐑨;⊣=𐑥;>=𐑽;Φ=𐑹;ƒ=𐑐;Ç=𐑧;Γ=𐑔;ɢ=𐑵;⊙=⊙;Ħ=𐑫;Σ=𐑕;Ω=𐑭⟩",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -59372,7 +59372,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_l9_full", "Hilbert-space embedding fully L9-matched with promotions ⊢=𐑛 ⊣=𐑥 Ř=𐑑 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=⊙ Ħ=𐑫 Σ=𐑳 Ω=𐑭 Z2 boundary sealed register",
+        "hilbert_embed_l9_full", "Hilbert-space embedding fully L9-matched with promotions ⊢=𐑛 ⊣=𐑥 >=𐑑 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=⊙ Ħ=𐑫 Σ=𐑳 Ω=𐑭 Z2 boundary sealed register",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59380,7 +59380,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_promoted_nab", "Hilbert-space embedding with hilbert_embed_promoted content promotions ⊢=𐑛 ⊣=𐑥 Ř=𐑑 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=⊙ Ħ=𐑫 Σ=𐑳 and non-Abelian Omega=𐑟 winding Z2 topological bou...",
+        "hilbert_embed_promoted_nab", "Hilbert-space embedding with hilbert_embed_promoted content promotions ⊢=𐑛 ⊣=𐑥 >=𐑑 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=⊙ Ħ=𐑫 Σ=𐑳 and non-Abelian Omega=𐑟 winding Z2 topological bou...",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59388,7 +59388,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_promoted_nab_floor", "Hilbert-space embedding with hilbert_embed_promoted promotions but floor-corrected ⊢=𐑨 ⊣=𐑥 Ř=𐑽 Φ=𐑹 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ɢ=𐑵 ⊙=⊙ Ħ=𐑫 Σ=𐑕 and non-Abelian Omega=𐑟 windin...",
+        "hilbert_embed_promoted_nab_floor", "Hilbert-space embedding with hilbert_embed_promoted promotions but floor-corrected ⊢=𐑨 ⊣=𐑥 >=𐑽 Φ=𐑹 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ɢ=𐑵 ⊙=⊙ Ħ=𐑫 Σ=𐑕 and non-Abelian Omega=𐑟 windin...",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -59396,7 +59396,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_phi_only", "Hilbert-space embedding with only Phi promoted to 𐑬 all other primitives floor-matched ⟨⊢=𐑨;⊣=𐑥;Ř=𐑽;Φ=𐑬;ƒ=𐑐;Ç=𐑧;Γ=𐑔;ɢ=𐑵;⊙=⊙;Ħ=𐑫;Σ=𐑕;Ω=𐑭⟩",
+        "hilbert_embed_phi_only", "Hilbert-space embedding with only Phi promoted to 𐑬 all other primitives floor-matched ⟨⊢=𐑨;⊣=𐑥;>=𐑽;Φ=𐑬;ƒ=𐑐;Ç=𐑧;Γ=𐑔;ɢ=𐑵;⊙=⊙;Ħ=𐑫;Σ=𐑕;Ω=𐑭⟩",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -59404,7 +59404,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_l9", "Hilbert-space embedding fully promoted to L9 reference ⟨⊢=𐑛;⊣=𐑥;Ř=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
+        "hilbert_embed_l9", "Hilbert-space embedding fully promoted to L9 reference ⟨⊢=𐑛;⊣=𐑥;>=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59412,7 +59412,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_l9_true", "Hilbert-space embedding exact L9 reference tuple ⟨⊢=𐑛;⊣=𐑥;Ř=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
+        "hilbert_embed_l9_true", "Hilbert-space embedding exact L9 reference tuple ⟨⊢=𐑛;⊣=𐑥;>=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_in, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59420,7 +59420,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_l9_final", "Hilbert-space embedding with ⊣=𐑥 Ħ=𐑫 exact L9 ⟨⊢=𐑛;⊣=𐑥;Ř=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
+        "hilbert_embed_l9_final", "Hilbert-space embedding with ⊣=𐑥 Ħ=𐑫 exact L9 ⟨⊢=𐑛;⊣=𐑥;>=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59428,7 +59428,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_l9_exact", "Hilbert-space embedding exact L9 all matched ⟨⊢=𐑛;⊣=𐑥;Ř=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
+        "hilbert_embed_l9_exact", "Hilbert-space embedding exact L9 all matched ⟨⊢=𐑛;⊣=𐑥;>=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_in, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59436,7 +59436,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_l9_all", "Hilbert-space embedding all 12 primitives at L9 reference values ⟨⊢=𐑛;⊣=𐑥;Ř=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
+        "hilbert_embed_l9_all", "Hilbert-space embedding all 12 primitives at L9 reference values ⟨⊢=𐑛;⊣=𐑥;>=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_in, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59444,7 +59444,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_l9_perfect", "Hilbert-space embedding perfect L9 ⊣=𐑥 Ħ=𐑫 ⟨⊢=𐑛;⊣=𐑥;Ř=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
+        "hilbert_embed_l9_perfect", "Hilbert-space embedding perfect L9 ⊣=𐑥 Ħ=𐑫 ⟨⊢=𐑛;⊣=𐑥;>=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59452,7 +59452,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_l9_done", "Hilbert-space embedding done L9 Ħ=𐑫 ⟨⊢=𐑛;⊣=𐑥;Ř=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
+        "hilbert_embed_l9_done", "Hilbert-space embedding done L9 Ħ=𐑫 ⟨⊢=𐑛;⊣=𐑥;>=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59460,7 +59460,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_l9_fullest", "Hilbert-space embedding fullest L9 Ř=𐑑 Ħ=𐑫 ⟨⊢=𐑛;⊣=𐑥;Ř=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
+        "hilbert_embed_l9_fullest", "Hilbert-space embedding fullest L9 >=𐑑 Ħ=𐑫 ⟨⊢=𐑛;⊣=𐑥;>=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59468,7 +59468,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_l9_sealed", "Hilbert-space embedding sealed L9 Ř=𐑑 Ħ=𐑫 ⟨⊢=𐑛;⊣=𐑥;Ř=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
+        "hilbert_embed_l9_sealed", "Hilbert-space embedding sealed L9 >=𐑑 Ħ=𐑫 ⟨⊢=𐑛;⊣=𐑥;>=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59476,7 +59476,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_l9_seal", "Hilbert-space embedding seal L9 Ř=𐑑 Ħ=𐑫 Ç=𐑪 ⟨⊢=𐑛;⊣=𐑥;Ř=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
+        "hilbert_embed_l9_seal", "Hilbert-space embedding seal L9 >=𐑑 Ħ=𐑫 Ç=𐑪 ⟨⊢=𐑛;⊣=𐑥;>=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59484,7 +59484,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_l9_omega", "Hilbert-space embedding omega L9 Ř=𐑑 Ħ=𐑫 Ç=𐑪 Ħ=𐑫 ⟨⊢=𐑛;⊣=𐑥;Ř=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
+        "hilbert_embed_l9_omega", "Hilbert-space embedding omega L9 >=𐑑 Ħ=𐑫 Ç=𐑪 Ħ=𐑫 ⟨⊢=𐑛;⊣=𐑥;>=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑭⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59492,7 +59492,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_phi_floor_l9", "Hilbert-space embedding with Phi at floor 𐑹 criticality carried by 𐑙=⊙ and ETERNAL_FIXEDPOINT by Ħ=𐑫 all primitives floor-matched ⟨⊢=𐑨;⊣=𐑥;Ř=𐑽;Φ=𐑹;ƒ=𐑐;Ç=𐑧;Γ=...",
+        "hilbert_embed_phi_floor_l9", "Hilbert-space embedding with Phi at floor 𐑹 criticality carried by 𐑙=⊙ and ETERNAL_FIXEDPOINT by Ħ=𐑫 all primitives floor-matched ⟨⊢=𐑨;⊣=𐑥;>=𐑽;Φ=𐑹;ƒ=𐑐;Ç=𐑧;Γ=...",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -59500,7 +59500,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_phi_floor_l9_phiup", "Hilbert-space embedding derived from hilbert_embed_phi_floor_l9 with only Phi promoted to 𐑬 all else floor-matched ⟨⊢=𐑨;⊣=𐑥;Ř=𐑽;Φ=𐑬;ƒ=𐑐;Ç=𐑧;Γ=𐑔;ɢ=𐑵;⊙=⊙;Ħ=𐑫;Σ...",
+        "hilbert_embed_phi_floor_l9_phiup", "Hilbert-space embedding derived from hilbert_embed_phi_floor_l9 with only Phi promoted to 𐑬 all else floor-matched ⟨⊢=𐑨;⊣=𐑥;>=𐑽;Φ=𐑬;ƒ=𐑐;Ç=𐑧;Γ=𐑔;ɢ=𐑵;⊙=⊙;Ħ=𐑫;Σ...",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -59508,7 +59508,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_phi_floor_l9_gcrit", "Hilbert-space embedding with Phi at floor 𐑹 criticality carried by ɢ=𐑝 and ETERNAL_FIXEDPOINT by Ħ=𐑫 all primitives floor-matched ⟨⊢=𐑨;⊣=𐑥;Ř=𐑽;Φ=𐑹;ƒ=𐑐;Ç=𐑧;Γ=...",
+        "hilbert_embed_phi_floor_l9_gcrit", "Hilbert-space embedding with Phi at floor 𐑹 criticality carried by ɢ=𐑝 and ETERNAL_FIXEDPOINT by Ħ=𐑫 all primitives floor-matched ⟨⊢=𐑨;⊣=𐑥;>=𐑽;Φ=𐑹;ƒ=𐑐;Ç=𐑧;Γ=...",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59524,7 +59524,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_l9_promoted_closed", "Hilbert-space embedding with all eight L9 promotions driven ⊢=𐑛 ⊣=𐑥 Ř=𐑑 Φ=𐑬 ƒ=𐑐 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=⊙ Ħ=𐑫 Σ=𐑳 Ω=𐑭 Z2 boundary sealed register",
+        "hilbert_embed_l9_promoted_closed", "Hilbert-space embedding with all eight L9 promotions driven ⊢=𐑛 ⊣=𐑥 >=𐑑 Φ=𐑬 ƒ=𐑐 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=⊙ Ħ=𐑫 Σ=𐑳 Ω=𐑭 Z2 boundary sealed register",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59532,7 +59532,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_l9_seven", "Hilbert-space embedding with seven L9 promotions ⊢=𐑛 ⊣=𐑥 Ř=𐑑 Φ=𐑹 ƒ=𐑐 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=⊙ Ħ=𐑫 Σ=𐑳 Ω=𐑭 Z2 boundary floor Phi",
+        "hilbert_embed_l9_seven", "Hilbert-space embedding with seven L9 promotions ⊢=𐑛 ⊣=𐑥 >=𐑑 Φ=𐑹 ƒ=𐑐 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=⊙ Ħ=𐑫 Σ=𐑳 Ω=𐑭 Z2 boundary floor Phi",
         IgPrim::D_wedge, IgPrim::T_in, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59540,7 +59540,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_l9_seven_perturbed", "Hilbert-space embedding seven L9 promotions with Phi perturbed to 𐑬 via recalibrate and bridge_stitch operator applied ⊢=𐑛 ⊣=𐑥 Ř=𐑑 Φ=𐑬 ƒ=𐑐 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=⊙ Ħ=...",
+        "hilbert_embed_l9_seven_perturbed", "Hilbert-space embedding seven L9 promotions with Phi perturbed to 𐑬 via recalibrate and bridge_stitch operator applied ⊢=𐑛 ⊣=𐑥 >=𐑑 Φ=𐑬 ƒ=𐑐 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=⊙ Ħ=...",
         IgPrim::D_wedge, IgPrim::T_in, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59548,7 +59548,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_l9_seven_stitched", "Hilbert-space embedding seven L9 promotions floor Phi with bridge_stitch ring FSPLIT FFUSE ENGAGR CLINK applied ⊢=𐑛 ⊣=𐑥 Ř=𐑑 Φ=𐑹 ƒ=𐑐 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=⊙ Ħ=𐑫 Σ=𐑳 Ω=𐑭",
+        "hilbert_embed_l9_seven_stitched", "Hilbert-space embedding seven L9 promotions floor Phi with bridge_stitch ring FSPLIT FFUSE ENGAGR CLINK applied ⊢=𐑛 ⊣=𐑥 >=𐑑 Φ=𐑹 ƒ=𐑐 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=⊙ Ħ=𐑫 Σ=𐑳 Ω=𐑭",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59556,7 +59556,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_bridge_proto", "Hilbert-space embedding seven L9 promotions with moat-parity Phi=𐑬 and protocol FSPLIT FFUSE ENGAGR CLINK applied ⊢=𐑛 ⊣=𐑥 Ř=𐑑 Φ=𐑬 ƒ=𐑐 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=⊙ Ħ=𐑫 Σ=𐑳...",
+        "hilbert_embed_bridge_proto", "Hilbert-space embedding seven L9 promotions with moat-parity Phi=𐑬 and protocol FSPLIT FFUSE ENGAGR CLINK applied ⊢=𐑛 ⊣=𐑥 >=𐑑 Φ=𐑬 ƒ=𐑐 Ç=𐑪 Γ=𐑔 ɢ=𐑝 ⊙=⊙ Ħ=𐑫 Σ=𐑳...",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_seq,
@@ -59564,7 +59564,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_nab_bridge", "Hilbert-space embedding moat-parity ⊣=𐑥 Φ=𐑬 Γ=𐑔 ɢ=𐑝 with non-Abelian Ω=𐑟 Z2 boundary ⟨⊢=𐑛;⊣=𐑥;Ř=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑟⟩",
+        "hilbert_embed_nab_bridge", "Hilbert-space embedding moat-parity ⊣=𐑥 Φ=𐑬 Γ=𐑔 ɢ=𐑝 with non-Abelian Ω=𐑟 Z2 boundary ⟨⊢=𐑛;⊣=𐑥;>=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑟⟩",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -59572,7 +59572,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_nab_bridgē", "conjugate of hilbert_embed_nab_bridge reversed Omega winding ⟨⊢=𐑛;⊣=𐑥;Ř=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑟⟩ conjugate",
+        "hilbert_embed_nab_bridgē", "conjugate of hilbert_embed_nab_bridge reversed Omega winding ⟨⊢=𐑛;⊣=𐑥;>=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑟⟩ conjugate",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59580,7 +59580,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_braid_chan", "Hilbert-space embedding braid channel product of hilbert_embed_nab_bridge ⊗ hilbert_embed_nab_bridgē non-Abelian Ω=𐑟 moat-parity ⊣=𐑥 Φ=𐑬 Γ=𐑔 ɢ=𐑝 ⟨⊢=𐑛;⊣=𐑥;Ř=...",
+        "hilbert_embed_braid_chan", "Hilbert-space embedding braid channel product of hilbert_embed_nab_bridge ⊗ hilbert_embed_nab_bridgē non-Abelian Ω=𐑟 moat-parity ⊣=𐑥 Φ=𐑬 Γ=𐑔 ɢ=𐑝 ⟨⊢=𐑛;⊣=𐑥;>=...",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59588,7 +59588,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_bridge_mint", "Hilbert-space embedding with explicit bridge atoms BRIDGE_COMM BRIDGE_EXIST STITCH_3 BRAID_TRANSCENDENCE minted moat-parity ⊣=𐑥 Φ=𐑬 Γ=𐑔 ɢ=𐑝 Ω=𐑟 ⟨⊢=𐑛;⊣=𐑥;Ř=𐑑;...",
+        "hilbert_embed_bridge_mint", "Hilbert-space embedding with explicit bridge atoms BRIDGE_COMM BRIDGE_EXIST STITCH_3 BRAID_TRANSCENDENCE minted moat-parity ⊣=𐑥 Φ=𐑬 Γ=𐑔 ɢ=𐑝 Ω=𐑟 ⟨⊢=𐑛;⊣=𐑥;>=𐑑;...",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -59596,7 +59596,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "hilbert_embed_nab_selected", "Hilbert-space embedding non-Abelian Ω=𐑟 channel selected to vacuum via braid index 0 ⊢=𐑛;⊣=𐑥;Ř=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑷",
+        "hilbert_embed_nab_selected", "Hilbert-space embedding non-Abelian Ω=𐑟 channel selected to vacuum via braid index 0 ⊢=𐑛;⊣=𐑥;>=𐑑;Φ=𐑬;ƒ=𐑐;Ç=𐑪;Γ=𐑔;ɢ=𐑝;⊙=⊙;Ħ=𐑫;Σ=𐑳;Ω=𐑷",
         IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -59804,7 +59804,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "dark_energy_seam_bridge_l9", "dark energy seam bridge promoted through 7 L9 promotions: ⊢𐑦→𐑛 Ř𐑽→𐑑 Ç𐑧→𐑪 Γ𐑚→𐑔 ɢ𐑵→𐑝 Ħ𐑖→𐑫 Ω𐑴→𐑭",
+        "dark_energy_seam_bridge_l9", "dark energy seam bridge promoted through 7 L9 promotions: ⊢𐑦→𐑛 >𐑽→𐑑 Ç𐑧→𐑪 Γ𐑚→𐑔 ɢ𐑵→𐑝 Ħ𐑖→𐑫 Ω𐑴→𐑭",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_seq,
@@ -60812,7 +60812,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "fine_structure_constant⁻", "⟨⊢=𐑦; ⊣=𐑸; Ř=𐑾; Φ=𐑹; ƒ=𐑐; Ç=𐑺; Γ=𐑔; ɢ=𐑵; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
+        "fine_structure_constant⁻", "⟨⊢=𐑦; ⊣=𐑸; >=𐑾; Φ=𐑹; ƒ=𐑐; Ç=𐑺; Γ=𐑔; ɢ=𐑵; ⊙=⊙; Ħ=𐑫; Σ=𐑳; Ω=𐑭⟩",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_mbl,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -60876,7 +60876,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "phi_promotion_fsc_rs_charged", "Φ-promoted FSC with Ř shifted to dagger — R↔S conjugate pair charge perturbation on phi_promotion_fsc. Inherits all primitives from fine_structure_constant⁻...",
+        "phi_promotion_fsc_rs_charged", "Φ-promoted FSC with > shifted to dagger — R↔S conjugate pair charge perturbation on phi_promotion_fsc. Inherits all primitives from fine_structure_constant⁻...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_mbl,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -60884,7 +60884,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "phi_promotion_fsc_th_charged", "Φ-promoted FSC with Ħ shifted to two-step — T↔H conjugate pair charge perturbation. Ħ: 𐑫 → 𐑖 to break T↔H neutrality while keeping Ř=𐑾 and Φ=𐑬.",
+        "phi_promotion_fsc_th_charged", "Φ-promoted FSC with Ħ shifted to two-step — T↔H conjugate pair charge perturbation. Ħ: 𐑫 → 𐑖 to break T↔H neutrality while keeping >=𐑾 and Φ=𐑬.",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_mbl,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -60908,7 +60908,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "phi_promotion_fsc_rs_flipped", "Φ-promoted FSC with both Ř and Σ perturbed. Ř=𐑩 (supervenience), Σ=𐑕 (many identical). Attempt to flip R↔S charge sign opposite to compton's −0.33.",
+        "phi_promotion_fsc_rs_flipped", "Φ-promoted FSC with both > and Σ perturbed. >=𐑩 (supervenience), Σ=𐑕 (many identical). Attempt to flip R↔S charge sign opposite to compton's −0.33.",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_super,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_mbl,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -60916,7 +60916,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "phi_promotion_fsc_dbl_rcat", "Double-excitation attempt 1: Φ-promoted FSC with Ř shifted to categorical (𐑑) — the one unexplored coupling value. All other primitives inherited from phi_pr...",
+        "phi_promotion_fsc_dbl_rcat", "Double-excitation attempt 1: Φ-promoted FSC with > shifted to categorical (𐑑) — the one unexplored coupling value. All other primitives inherited from phi_pr...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_mbl,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -60940,7 +60940,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "phi_promotion_fsc_dbl_rf", "Double-excitation attempt 2: TWO primitives perturbed simultaneously — Ř=𐑑 (categorical coupling) AND ƒ=𐑞 (thermal fidelity). Tests whether changing fidelity...",
+        "phi_promotion_fsc_dbl_rf", "Double-excitation attempt 2: TWO primitives perturbed simultaneously — >=𐑑 (categorical coupling) AND ƒ=𐑞 (thermal fidelity). Tests whether changing fidelity...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_mbl,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -60996,7 +60996,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "phi_promotion_fsc_d2d_rcat", "Double-excitation attempt 5: ⊢=𐑨 (flips D↔W negative) AND Ř=𐑑 (categorical — tests whether R↔S becomes positive under the triangular ⊢). This is the true \"tw...",
+        "phi_promotion_fsc_d2d_rcat", "Double-excitation attempt 5: ⊢=𐑨 (flips D↔W negative) AND >=𐑑 (categorical — tests whether R↔S becomes positive under the triangular ⊢). This is the true \"tw...",
         IgPrim::D_triangle, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_mbl,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -61044,7 +61044,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "phi_promotion_fsc_l9", "Φ-promoted fine-structure constant with L9 emission gate open. Primitive changes from phi_promotion_fsc: Ř 𐑾→𐑽 (adjoint coupling), Ç 𐑺→𐑧 (gate open / slow ki...",
+        "phi_promotion_fsc_l9", "Φ-promoted fine-structure constant with L9 emission gate open. Primitive changes from phi_promotion_fsc: > 𐑾→𐑽 (adjoint coupling), Ç 𐑺→𐑧 (gate open / slow ki...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -61908,7 +61908,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "filled_evaluator_sphere_d2048", "The evaluator sphere FILLED with d=2048 data — produced by metabolic pathway: sic_povm_d2048_fiducial → CLINK L8 → horn_torus_winding_kernel. Ř=𐑾 (bidirectio...",
+        "filled_evaluator_sphere_d2048", "The evaluator sphere FILLED with d=2048 data — produced by metabolic pathway: sic_povm_d2048_fiducial → CLINK L8 → horn_torus_winding_kernel. >=𐑾 (bidirectio...",
         IgPrim::D_odot, IgPrim::T_bowtie, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_broad,
@@ -62268,7 +62268,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "apertix_adjoint_corridor", "Novel psychedelic compound with adjoint directional coupling (Ř=𐑽) realized via benzylated phenethylamine amide with bromine heavy-atom steering. Two-step ch...",
+        "apertix_adjoint_corridor", "Novel psychedelic compound with adjoint directional coupling (>=𐑽) realized via benzylated phenethylamine amide with bromine heavy-atom steering. Two-step ch...",
         IgPrim::D_odot, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
@@ -64092,7 +64092,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "asymmetric_paracomplete_positive_static_ovm", "Asymmetric paracomplete positive static OVM. The 11th cell in the taxonomy grid: asymmetric (Ř=𐑩, non-adjoint), paracomplete (Φ=𐑬, Z2-partial parity), positi...",
+        "asymmetric_paracomplete_positive_static_ovm", "Asymmetric paracomplete positive static OVM. The 11th cell in the taxonomy grid: asymmetric (>=𐑩, non-adjoint), paracomplete (Φ=𐑬, Z2-partial parity), positi...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_super,
         IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,

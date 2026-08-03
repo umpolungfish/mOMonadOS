@@ -537,14 +537,14 @@ pub fn grammar_encoding() -> String {
     let mut s = String::new();
     s.push_str("═══ STRUCTURAL GRAMMAR ENCODING ═══\n\n");
     s.push_str("  d=16 moduli field:\n");
-    s.push_str("  ⟨⊢=𐑨 T=𐑸 Ř=𐑾 Φ=𐑹 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ɢ=𐑠 φ̂=⊙ Ħ=𐑫 Σ=𐑳 Ω=𐑴⟩\n\n");
+    s.push_str("  ⟨⊢=𐑨 T=𐑸 >=𐑾 Φ=𐑹 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ɢ=𐑠 φ̂=⊙ Ħ=𐑫 Σ=𐑳 Ω=𐑴⟩\n\n");
 
     s.push_str("  PRIMITIVE    VALUE   REASON\n");
     s.push_str("  ─────────    ─────   ──────────────────────────────────\n");
     s.push_str("  ⊢ (dims)      𐑨      real quadratic field = 2d surface\n");
     s.push_str("  T (topology)  𐑸      self-referential: topology adjusts\n");
     s.push_str("                        to its own class group obstruction\n");
-    s.push_str("  Ř (coupling)  𐑾      bidirectional Galois feedback\n");
+    s.push_str("  > (coupling)  𐑾      bidirectional Galois feedback\n");
     s.push_str("  Φ (parity)    𐑹      Frobenius-special: μ∘δ=id exactly\n");
     s.push_str("  ƒ (fidelity)  𐑐      quantum coherence essential\n");
     s.push_str("  Ç (kinetics)  𐑧      slow/near-equilibrium (class field)\n");

@@ -104,7 +104,7 @@ pub fn frobenius_identity_check() -> (u8, f32, String) {
     let prims: [(&str, IgPrim, IgPrim); 12] = [
         ("⊢ ", kernel.d, fixed.d),
         ("⊣ ", kernel.t, fixed.t),
-        ("Ř ", kernel.r, fixed.r),
+        ("> ", kernel.r, fixed.r),
         ("Φ ", kernel.p, fixed.p),
         ("ƒ ", kernel.f, fixed.f),
         ("Ç ", kernel.k, fixed.k),

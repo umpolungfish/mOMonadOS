@@ -414,7 +414,7 @@ const CLINK_L5: CatalogEntry = entry(
 
 // ── CLINK L6 (O₂): ⟨𐑦·𐑸·𐑽·𐑿·𐑱·𐑧·𐑲·𐑠·⊙·𐑖·𐑳·𐑭⟩ ──
 const CLINK_L6: CatalogEntry = entry(
-    "clink_layer6_meiosis", "CLINK Layer 6: Meiosis — gamete production. Reverts to adjoint coupling (Ř=𐑽) and quantum symmetry (Φ=𐑿) for genetic recombination. O₂.",
+    "clink_layer6_meiosis", "CLINK Layer 6: Meiosis — gamete production. Reverts to adjoint coupling (>=𐑽) and quantum symmetry (Φ=𐑿) for genetic recombination. O₂.",
     IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
     IgPrim::P_psi, IgPrim::F_ell, IgPrim::K_slow,
     IgPrim::G_aleph, IgPrim::C_seq,

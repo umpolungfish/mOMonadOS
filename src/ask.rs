@@ -226,7 +226,7 @@ pub fn run_ask(question: &str, opts: &AskOptions, k: &mut Kernel) -> String {
     s.push_str("\n── Scaffold (instantiate in object language of the question) ──\n");
     s.push_str("  Encoding/Duality [Φ]: bijective encoding / injectivity on orbits\n");
     s.push_str("  Inverse structure [⊣]: dual/self-referential decomposition\n");
-    s.push_str("  Bidirectional [Ř]: forward and inverse constructions exhaust\n");
+    s.push_str("  Bidirectional [>]: forward and inverse constructions exhaust\n");
     s.push_str("  Boundedness [⊙]: confinement / no escape to infinity\n");
     s.push_str("  Topological invariant [Ω]: integer invariant rules out exotics\n");
     s.push_str("  Regularity [Ç]: equidistribution / typical configurations\n");

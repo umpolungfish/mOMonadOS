@@ -183,7 +183,7 @@ fn encode_theta(d: IgPrim, omega: IgPrim, s: IgPrim) -> f64 {
 /// Each primitive is normalized to [0, 1] within its family and contributes
 /// equally to the 0–360° range, producing a full circular encoding.
 fn encode_phi(r: IgPrim, p: IgPrim, h: IgPrim) -> f64 {
-    let nr = normalize_ordinal(r, 4.0);     // Ř: 1–4
+    let nr = normalize_ordinal(r, 4.0);     // >: 1–4
     let np = normalize_ordinal(p, 5.0);     // Φ: 1–5
     let nh = normalize_ordinal(h, 4.0);     // Ħ: 1–4
     let avg = (nr + np + nh) / 3.0;
@@ -222,7 +222,7 @@ pub fn sensitivity(tuple: &IgTuple) -> IuftSensitivity {
     dtheta[0] = 180.0 / 3.0 / 3.0;  // dθ/d⊢: full range 180°, 3 contributors, 3 ordinal steps
     dtheta[11] = 180.0 / 3.0 / 3.0; // dθ/dΩ
     dtheta[10] = 180.0 / 3.0 / 2.0; // dθ/dΣ: only 2 ordinal steps
-    dphi[2] = 360.0 / 3.0 / 3.0;    // dφ/dŘ
+    dphi[2] = 360.0 / 3.0 / 3.0;    // dφ/d>
     dphi[3] = 360.0 / 3.0 / 4.0;    // dφ/dΦ: 4 ordinal steps
     dphi[9] = 360.0 / 3.0 / 3.0;    // dφ/dĦ
 

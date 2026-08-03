@@ -553,7 +553,7 @@ pub fn grammar_encoding() -> String {
     s.push_str("          point where the real part of s is fixed and the imaginary\n");
     s.push_str("          parts encode the spectrum. The topology is a bowtie:\n");
     s.push_str("          two half-planes meeting at the critical line.\n\n");
-    s.push_str("    Ř=𐑾  (bidirectional) — The correspondence is bidirectional:\n");
+    s.push_str("    >=𐑾  (bidirectional) — The correspondence is bidirectional:\n");
     s.push_str("          zeros → eigenvalues and eigenvalues → zeros. The Hilbert-\n");
     s.push_str("          Pólya conjecture posits an equivalence, not a one-way map.\n\n");
     s.push_str("    Φ=𐑹  (Frobenius-special) — μ∘δ=id holds exactly: splitting the\n");
