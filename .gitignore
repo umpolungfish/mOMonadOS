@@ -3,3 +3,4 @@ target/
 # imscribing_grammar/IG_catalog.json and never read at runtime (no_std). Kept on
 # disk for reference, out of the tracked tree to keep the repo lean.
 IG_catalog.json
+.ordinals.log
