@@ -1,18 +1,8 @@
-The catalog subset regenerates on the new primitive keys
+Regenerate against the stripped catalog
 
-The twelve primitive axes now carry the IMASM alphabet, and the catalog this
-kernel bakes in is keyed by them. `tools/gen_catalog_subset.py` holds the slot
-list and the enum-prefix map, so both move there and `src/catalog_ask_subset.rs`
-is regenerated rather than edited: 8,016 entries, one more than the committed
-snapshot and none fewer.
+One entry moved into the crystal when the compatibility layer came out:
+axiom_of_maria's topology slot held a retired value spelling, so it had no legal
+address and the generator skipped it. It emits now — 8,017 entries, up from
+8,016, and none fewer.
 
-⊙ stays on Criticality, so `Phi_` keeps its slot in the prefix map and the 5,122
-entries whose criticality value is the monad are untouched.
-
-`src/vita.rs` listed eleven of the twelve axes as literal glyphs for the trunk's
-vocabulary, with ⊙ absent because it is injected separately as a value token.
-Those eleven are renamed in place; the ordering is unchanged, so vita_weights.bin
-still indexes what it was trained on.
-
-Boot still reports ordinal faithfulness against the Lean canonical, which is the
-cross-language check that the ordinals did not move with the keys.
+Boot still reports ordinal faithfulness against the Lean canonical.
