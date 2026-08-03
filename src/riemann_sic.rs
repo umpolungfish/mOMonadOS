@@ -544,7 +544,7 @@ pub fn grammar_encoding() -> String {
     s.push_str("  The Riemann-SIC spectral correspondence imscribes as:\n\n");
     s.push_str("    ⟨𐑦𐑥𐑾𐑹𐑐𐑧𐑔𐑠⊙𐑫𐑳𐑭⟩\n\n");
     s.push_str("  Per-primitive justification:\n\n");
-    s.push_str("    Ð=𐑦  (imscriptive)  — The state space of the zeta function is\n");
+    s.push_str("    ⊢=𐑦  (imscriptive)  — The state space of the zeta function is\n");
     s.push_str("          imscriptive: the boundary (critical line) imscribes the bulk\n");
     s.push_str("          spectral density via the explicit formula connecting zeros\n");
     s.push_str("          to the Chebyshev ψ function. The zeros ARE the eigenvalues\n");

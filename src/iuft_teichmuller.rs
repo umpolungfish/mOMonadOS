@@ -128,7 +128,7 @@ pub fn tier_transitions() -> &'static [TierTransition] {
         },
         TierTransition {
             from_tier: "O₁", to_tier: "O₂",
-            distance: 1.30, driver_primitive: "Ð+Ω",
+            distance: 1.30, driver_primitive: "⊢+Ω",
             gate_jump: (45.0, 90.0, 0.0),    // Topological expansion
             is_p_gap: false,
         },

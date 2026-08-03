@@ -151,7 +151,7 @@ impl AminoAcid {
             (B4::N, B4::B, true)   => "Ř (Recognition)",      // Cys
             (B4::N, B4::B, false)  => "⊣ (Topology)",         // Trp
             (B4::F, B4::N, true)   => "Ç (Kinetics)",         // Ile
-            (B4::F, B4::N, false)  => "Ð (Dimensionality)",   // Met
+            (B4::F, B4::N, false)  => "⊢ (Dimensionality)",   // Met
             (B4::F, B4::F, true)   => "ɢ (Coupling)",         // Asn
             (B4::F, B4::F, false)  => "Σ (Stoichiometry)",    // Lys
             (B4::T, B4::F, true)   => "Γ (Granularity)",      // His
@@ -178,7 +178,7 @@ impl AminoAcid {
             (B4::N, B4::B, true)   => Some(IgPrim::R_lr),      // Cys → Ř
             (B4::N, B4::B, false)  => Some(IgPrim::T_net),     // Trp → ⊣
             (B4::F, B4::N, true)   => Some(IgPrim::K_mod),     // Ile → Ç
-            (B4::F, B4::N, false)  => Some(IgPrim::D_infty),   // Met → Ð
+            (B4::F, B4::N, false)  => Some(IgPrim::D_infty),   // Met → ⊢
             (B4::F, B4::F, true)   => Some(IgPrim::G_aleph),   // Asn → ɢ
             (B4::F, B4::F, false)  => Some(IgPrim::S_nm),      // Lys → Σ
             (B4::T, B4::F, true)   => Some(IgPrim::C_seq),     // His → Γ

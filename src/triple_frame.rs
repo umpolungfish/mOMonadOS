@@ -682,7 +682,7 @@ pub fn expand_report(name: &str) -> String {
         None => {
             let known: Vec<&str> = TYPE_PROGRAMS.iter()
                 .map(|tp| tp.shavian).collect();
-            format!("Unknown type: '{}'. Known: {:?}\nTry primitive axis: Ð ⊣ Ř Φ ƒ Ç Γ ɢ ⊙ Ħ Σ Ω",
+            format!("Unknown type: '{}'. Known: {:?}\nTry primitive axis: ⊢ ⊣ Ř Φ ƒ Ç Γ ɢ ⊙ Ħ Σ Ω",
                 name, known)
         }
     }

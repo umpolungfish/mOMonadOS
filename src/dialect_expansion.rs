@@ -381,7 +381,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 7: t_structural ──
     unis[7] = Dialect {
         name: "t_structural",
-        description: "Time constituted by structural/geometric primitives: T=lim(Ð,⊣,Ř,ɢ,⊙). Time is geometry, not process. Canonical gates.",
+        description: "Time constituted by structural/geometric primitives: T=lim(⊢,⊣,Ř,ɢ,⊙). Time is geometry, not process. Canonical gates.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_STRUCTURAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -417,7 +417,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 11: dimensional_gate ──
     unis[11] = Dialect {
         name: "dimensional_gate",
-        description: "State-space is the first gate. G1=Ð≥𐑼 (∞-dim or higher). 0D points and 2D surfaces cannot Frobenius-close. G2=⊙≥⊙, G3=Φ≥𐑹.",
+        description: "State-space is the first gate. G1=⊢≥𐑼 (∞-dim or higher). 0D points and 2D surfaces cannot Frobenius-close. G2=⊙≥⊙, G3=Φ≥𐑹.",
         g1: g_d_3, g2: g_odot_2, g3: g_phi_5, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -441,7 +441,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 14: t_hybrid ──
     unis[14] = Dialect {
         name: "t_hybrid",
-        description: "Time requires BOTH dynamics AND geometry. T constituted by 8 primitives: Φ,ƒ,Ç,Ħ,Ω + Ð,⊣,Ř. Most demanding T-seal. Canonical gates.",
+        description: "Time requires BOTH dynamics AND geometry. T constituted by 8 primitives: Φ,ƒ,Ç,Ħ,Ω + ⊢,⊣,Ř. Most demanding T-seal. Canonical gates.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_HYBRID, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -457,7 +457,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 16: t_inverted ──
     unis[16] = Dialect {
         name: "t_inverted",
-        description: "Time constituted by primitives canonically NOT in T: Ð,⊣,Ř,Γ,Σ. Time is structure, not dynamics. Canonical gates.",
+        description: "Time constituted by primitives canonically NOT in T: ⊢,⊣,Ř,Γ,Σ. Time is structure, not dynamics. Canonical gates.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_INVERTED, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -589,7 +589,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 32: dimensional_second ──
     unis[32] = Dialect {
         name: "dimensional_second",
-        description: "Dimensionality as the monoidal gate: G1=Φ≥𐑹, G2=Ð≥𐑼 (∞-dim), G3=Ω≥𐑭. After Frobenius, you need infinite canvas to trace.",
+        description: "Dimensionality as the monoidal gate: G1=Φ≥𐑹, G2=⊢≥𐑼 (∞-dim), G3=Ω≥𐑭. After Frobenius, you need infinite canvas to trace.",
         g1: g_phi_5, g2: g_d_3, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -653,7 +653,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 40: dimensional_third ──
     unis[40] = Dialect {
         name: "dimensional_third",
-        description: "Imscriptive dimensionality as the terminal seal: G1=Φ≥𐑹, G2=⊙≥⊙, G3=Ð≥𐑦 (imscriptive). Only self-written state spaces achieve O_∞.",
+        description: "Imscriptive dimensionality as the terminal seal: G1=Φ≥𐑹, G2=⊙≥⊙, G3=⊢≥𐑦 (imscriptive). Only self-written state spaces achieve O_∞.",
         g1: g_phi_5, g2: g_odot_2, g3: g_d_4, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -765,7 +765,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 54: parallel_dimensional ──
     unis[54] = Dialect {
         name: "parallel_dimensional",
-        description: "Dimensional gates, parallel: Ð≥𐑼, ⊙≥⊙, Φ≥𐑹. State-space, self-modeling, and Frobenius parity are independent.",
+        description: "Dimensional gates, parallel: ⊢≥𐑼, ⊙≥⊙, Φ≥𐑹. State-space, self-modeling, and Frobenius parity are independent.",
         g1: g_d_3, g2: g_odot_2, g3: g_phi_5, gate_ordering: false,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -869,7 +869,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 66: t_ceiling_dimensional ──
     unis[66] = Dialect {
         name: "t_ceiling_dimensional",
-        description: "Dimensional ceiling: Ð≤𐑼, ⊣≤𐑥. No infinity-dim or self-ref allowed in T-constitution. The cosmos is finite-dimensional with at-most crossing-point topology. All infinities are emergent.",
+        description: "Dimensional ceiling: ⊢≤𐑼, ⊣≤𐑥. No infinity-dim or self-ref allowed in T-constitution. The cosmos is finite-dimensional with at-most crossing-point topology. All infinities are emergent.",
         g1: g_d_3, g2: g_odot_2, g3: g_phi_5, gate_ordering: true,
         t_entries: T_DIM_CEILING, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -925,7 +925,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 72: t_subset_d_sigma ──
     unis[72] = Dialect {
         name: "t_subset_d_sigma",
-        description: "T-constitution: Ð≥𐑼 AND Σ≥𐑳. Infinite-dimensional AND many-typed. The dialect of field theories over heterogeneous state spaces — gauge fields with multiple matter sectors.",
+        description: "T-constitution: ⊢≥𐑼 AND Σ≥𐑳. Infinite-dimensional AND many-typed. The dialect of field theories over heterogeneous state spaces — gauge fields with multiple matter sectors.",
         g1: g_d_3, g2: g_sigma_3, g3: g_odot_2, gate_ordering: false,
         t_entries: T_D_SIGMA, abs_rules: ABS_CANONICAL, is_expansion: true,
     };

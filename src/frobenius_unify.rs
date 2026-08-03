@@ -102,7 +102,7 @@ pub fn frobenius_identity_check() -> (u8, f32, String) {
 
     // Per-primitive comparison
     let prims: [(&str, IgPrim, IgPrim); 12] = [
-        ("Ð ", kernel.d, fixed.d),
+        ("⊢ ", kernel.d, fixed.d),
         ("⊣ ", kernel.t, fixed.t),
         ("Ř ", kernel.r, fixed.r),
         ("Φ ", kernel.p, fixed.p),

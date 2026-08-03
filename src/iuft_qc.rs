@@ -170,7 +170,7 @@ fn encode_psi(phi_prim: IgPrim) -> f64 {
 /// Each primitive is normalized to [0, 1] within its family and contributes
 /// equally to the 0–180° range.
 fn encode_theta(d: IgPrim, omega: IgPrim, s: IgPrim) -> f64 {
-    let nd = normalize_ordinal(d, 4.0);     // Ð: 1–4
+    let nd = normalize_ordinal(d, 4.0);     // ⊢: 1–4
     let nw = normalize_ordinal(omega, 4.0);  // Ω: 1–4
     let ns = normalize_ordinal(s, 3.0);      // Σ: 1–3
     // Equal-weighted average scaled to [0°, 180°]
@@ -219,7 +219,7 @@ pub fn sensitivity(tuple: &IgTuple) -> IuftSensitivity {
 
     let _ = base; // suppress unused warning for now
     dpsi[8] = 180.0 / 2.0;  // dψ/d⊙ ≈ 180° per ordinal unit
-    dtheta[0] = 180.0 / 3.0 / 3.0;  // dθ/dÐ: full range 180°, 3 contributors, 3 ordinal steps
+    dtheta[0] = 180.0 / 3.0 / 3.0;  // dθ/d⊢: full range 180°, 3 contributors, 3 ordinal steps
     dtheta[11] = 180.0 / 3.0 / 3.0; // dθ/dΩ
     dtheta[10] = 180.0 / 3.0 / 2.0; // dθ/dΣ: only 2 ordinal steps
     dphi[2] = 360.0 / 3.0 / 3.0;    // dφ/dŘ

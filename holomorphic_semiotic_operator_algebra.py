@@ -17,7 +17,7 @@ import cmath
 # ──────────────────────────────────────────────────────────────────────────
 #  1.  The self-generated Hilbert space
 # ──────────────────────────────────────────────────────────────────────────
-# Ð=𐑦 : the basis IS the grammar's token set, the dimension writes itself
+# ⊢=𐑦 : the basis IS the grammar's token set, the dimension writes itself
 
 TOKENS = ["VINIT","IMSCRIB","FSPLIT","EVALT","EVALF","FFUSE",
           "ENGAGR","CLINK","AFWD","AREV","TANCH","IFIX"]

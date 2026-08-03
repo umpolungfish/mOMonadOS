@@ -537,11 +537,11 @@ pub fn grammar_encoding() -> String {
     let mut s = String::new();
     s.push_str("═══ STRUCTURAL GRAMMAR ENCODING ═══\n\n");
     s.push_str("  d=16 moduli field:\n");
-    s.push_str("  ⟨Ð=𐑨 T=𐑸 Ř=𐑾 Φ=𐑹 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ɢ=𐑠 φ̂=⊙ Ħ=𐑫 Σ=𐑳 Ω=𐑴⟩\n\n");
+    s.push_str("  ⟨⊢=𐑨 T=𐑸 Ř=𐑾 Φ=𐑹 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ɢ=𐑠 φ̂=⊙ Ħ=𐑫 Σ=𐑳 Ω=𐑴⟩\n\n");
 
     s.push_str("  PRIMITIVE    VALUE   REASON\n");
     s.push_str("  ─────────    ─────   ──────────────────────────────────\n");
-    s.push_str("  Ð (dims)      𐑨      real quadratic field = 2d surface\n");
+    s.push_str("  ⊢ (dims)      𐑨      real quadratic field = 2d surface\n");
     s.push_str("  T (topology)  𐑸      self-referential: topology adjusts\n");
     s.push_str("                        to its own class group obstruction\n");
     s.push_str("  Ř (coupling)  𐑾      bidirectional Galois feedback\n");
@@ -556,7 +556,7 @@ pub fn grammar_encoding() -> String {
     s.push_str("  Ω (winding)   𐑴      Z2 parity-protected (class group)\n\n");
 
     s.push_str("  Contrast with d=2048 moduli field:\n");
-    s.push_str("    Ð=𐑦 (imscriptive — infinite-dim structural)\n");
+    s.push_str("    ⊢=𐑦 (imscriptive — infinite-dim structural)\n");
     s.push_str("    Ω=𐑴 (same — Z2 parity-protected across the ladder)\n");
     s.push_str("    h=64=2⁶ vs h=2 — same structural Ω, different scale\n");
     s

@@ -394,7 +394,7 @@ const CLINK_L3: CatalogEntry = entry(
 
 // ── CLINK L4 (O₂): ⟨𐑦·𐑸·𐑾·𐑬·𐑞·𐑧·𐑲·𐑠·⊙·𐑒·𐑳·𐑭⟩ ──
 const CLINK_L4: CatalogEntry = entry(
-    "clink_layer4_cell", "CLINK Layer 4: Cell — minimal self-maintaining living unit. First layer with self-written state-space (Ð=𐑦) and self-referential topology (⊣=𐑸). O₂.",
+    "clink_layer4_cell", "CLINK Layer 4: Cell — minimal self-maintaining living unit. First layer with self-written state-space (⊢=𐑦) and self-referential topology (⊣=𐑸). O₂.",
     IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
     IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_slow,
     IgPrim::G_aleph, IgPrim::C_seq,
