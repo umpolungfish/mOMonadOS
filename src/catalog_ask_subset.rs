@@ -21084,7 +21084,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "john_14_6_exclusive_reading", "Exclusive reading of John 14:6: Jesus uniquely IS the way, truth, and life. Self-referential closure (Ð_ω, Þ_O), adjoint mediation (Ř_Ť), partial symmetry (Φ...",
+        "john_14_6_exclusive_reading", "Exclusive reading of John 14:6: Jesus uniquely IS the way, truth, and life. Self-referential closure (𐑦, Þ_O), adjoint mediation (Ř_Ť), partial symmetry (Φ...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
         IgPrim::P_pm, IgPrim::F_ell, IgPrim::K_trap,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -22020,7 +22020,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "emerald_zfct_extension", "Emerald Tablet extended to ZFCₜ strength while preserving Ð_ω and ⊙: box product topology, bidirectional coupling, sequential grammar, two-step chirality, in...",
+        "emerald_zfct_extension", "Emerald Tablet extended to ZFCₜ strength while preserving 𐑦 and ⊙: box product topology, bidirectional coupling, sequential grammar, two-step chirality, in...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
@@ -22044,7 +22044,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "bootstrap_stage_1_dimensionality", "Agent 1 of 12 in the emerald bootstrap — responsible for holographic dimensionality (Ð_ω). Enforces self-written state space and holographic encoding of all...",
+        "bootstrap_stage_1_dimensionality", "Agent 1 of 12 in the emerald bootstrap — responsible for holographic dimensionality (𐑦). Enforces self-written state space and holographic encoding of all...",
         IgPrim::D_odot, IgPrim::T_in, IgPrim::R_super,
         IgPrim::P_psi, IgPrim::F_eth, IgPrim::K_slow,
         IgPrim::G_beth, IgPrim::C_and,
@@ -22740,7 +22740,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "topological_quantum_material", "Room-temperature topological superconductor (O_∞). Non-Abelian braiding (Ω=Ω_5) for fault-tolerant quantum computing. Self-written ground state (Ð=Ð_ω). Quan...",
+        "topological_quantum_material", "Room-temperature topological superconductor (O_∞). Non-Abelian braiding (Ω=Ω_5) for fault-tolerant quantum computing. Self-written ground state (Ð=𐑦). Quan...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,
@@ -22788,7 +22788,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "topological_morphogenesis", "Organ development (O_∞) driven by topological winding numbers. Integer winding (Ω=Ω_z) per organ primordium. Self-written morphogenetic field (Ð=Ð_ω). Eterna...",
+        "topological_morphogenesis", "Organ development (O_∞) driven by topological winding numbers. Integer winding (Ω=Ω_z) per organ primordium. Self-written morphogenetic field (Ð=𐑦). Eterna...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_and,

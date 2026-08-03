@@ -1,8 +1,21 @@
-Regenerate against the stripped catalog
+⊢ Dimensionality: every underscored name gone
 
-One entry moved into the crystal when the compatibility layer came out:
-axiom_of_maria's topology slot held a retired value spelling, so it had no legal
-address and the generator skipped it. It emits now — 8,017 entries, up from
-8,016, and none fewer.
+The first axis of the per-primitive purge. Ð_wynn, Ð_turnthree, Ð_invomega,
+Ð_omega and the rest resolve to their Shavian values; the LaTeX subscript forms
+Ð_{ß} Ð_{C} Ð_{;} Ð_{\omega} with them.
 
-Boot still reports ordinal faithfulness against the Lean canonical.
+Three kinds of hit, treated differently. Real values became the value glyph.
+Ordinary mathematics that an earlier sweep had glyph-substituted went back to
+ASCII: $A_n$, $B_n$, $C_n$, $Ð_n$ in E8G2.tex is the classical Lie series D_n,
+Ð_p in the SIC-POVM paper is the displacement operator D_p, and Ð_H / Ð_A are
+hydrogen-bond distances. And English words whose D had been eaten were restored:
+HYBRIÐ_SUPRA_TEMP was HYBRID, BROAÐ_SEQ was BROAD.
+
+Also gone: the eight spent migration scripts under .stuff/scripts, the subscript
+fallback in resolve_ordinal_key (which is how a value that had stopped being
+legal went on resolving to something anyway), and the whole PRIM_LATEX table in
+IG_latex.py, whose only job was rendering a value as a retired glyph with a
+subscript.
+
+Zero remain anywhere except 2m3iosis/crystal_fs/*.jsonl, which are kernel run
+logs rather than code or data. Eleven axes to go.
