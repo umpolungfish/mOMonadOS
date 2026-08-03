@@ -149,7 +149,7 @@ impl AminoAcid {
             (B4::N, B4::N, _)      => "ƒ (Fidelity)",         // Phe
             (B4::N, B4::F, _)      => "Φ (Parity)",           // Tyr
             (B4::N, B4::B, true)   => "Ř (Recognition)",      // Cys
-            (B4::N, B4::B, false)  => "Þ (Topology)",         // Trp
+            (B4::N, B4::B, false)  => "⊣ (Topology)",         // Trp
             (B4::F, B4::N, true)   => "Ç (Kinetics)",         // Ile
             (B4::F, B4::N, false)  => "Ð (Dimensionality)",   // Met
             (B4::F, B4::F, true)   => "ɢ (Coupling)",         // Asn
@@ -176,7 +176,7 @@ impl AminoAcid {
             (B4::N, B4::N, _)      => Some(IgPrim::F_hbar),   // Phe → ƒ
             (B4::N, B4::F, _)      => Some(IgPrim::𐑢),   // Tyr → Φ (Parity, sub-critical gate)
             (B4::N, B4::B, true)   => Some(IgPrim::R_lr),      // Cys → Ř
-            (B4::N, B4::B, false)  => Some(IgPrim::T_net),     // Trp → Þ
+            (B4::N, B4::B, false)  => Some(IgPrim::T_net),     // Trp → ⊣
             (B4::F, B4::N, true)   => Some(IgPrim::K_mod),     // Ile → Ç
             (B4::F, B4::N, false)  => Some(IgPrim::D_infty),   // Met → Ð
             (B4::F, B4::F, true)   => Some(IgPrim::G_aleph),   // Asn → ɢ

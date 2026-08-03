@@ -221,7 +221,7 @@ pub fn verify_tuple_frobenius(v: &mut FrobeniusVerifier, tuple: &IgTuple) {
         let ok = tuple.h == IgPrim::H_inf;
         v.verify_usize(if ok { 1 } else { 0 }, 1);
     }
-    // Verify holographic bound: Ð=imscriptive implies Þ=odot
+    // Verify holographic bound: Ð=imscriptive implies ⊣=odot
     if tuple.d == IgPrim::D_odot {
         let ok = tuple.t == IgPrim::T_odot;
         v.verify_usize(if ok { 1 } else { 0 }, 1);

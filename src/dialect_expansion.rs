@@ -381,7 +381,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 7: t_structural ──
     unis[7] = Dialect {
         name: "t_structural",
-        description: "Time constituted by structural/geometric primitives: T=lim(Ð,Þ,Ř,ɢ,⊙). Time is geometry, not process. Canonical gates.",
+        description: "Time constituted by structural/geometric primitives: T=lim(Ð,⊣,Ř,ɢ,⊙). Time is geometry, not process. Canonical gates.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_STRUCTURAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -401,7 +401,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 9: topology_universe ──
     unis[9] = Dialect {
         name: "topology_universe",
-        description: "Connectivity is the fundamental gate. G1=Þ≥𐑸 (full imscriptive topological closure). G2=Ř≥𐑾 (bilateral). G3=⊙≥⊙. Geometry preconditions consciousness.",
+        description: "Connectivity is the fundamental gate. G1=⊣≥𐑸 (full imscriptive topological closure). G2=Ř≥𐑾 (bilateral). G3=⊙≥⊙. Geometry preconditions consciousness.",
         g1: g_th_5, g2: g_r_4, g3: g_odot_2, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -441,7 +441,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 14: t_hybrid ──
     unis[14] = Dialect {
         name: "t_hybrid",
-        description: "Time requires BOTH dynamics AND geometry. T constituted by 8 primitives: Φ,ƒ,Ç,Ħ,Ω + Ð,Þ,Ř. Most demanding T-seal. Canonical gates.",
+        description: "Time requires BOTH dynamics AND geometry. T constituted by 8 primitives: Φ,ƒ,Ç,Ħ,Ω + Ð,⊣,Ř. Most demanding T-seal. Canonical gates.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_HYBRID, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -457,7 +457,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 16: t_inverted ──
     unis[16] = Dialect {
         name: "t_inverted",
-        description: "Time constituted by primitives canonically NOT in T: Ð,Þ,Ř,Γ,Σ. Time is structure, not dynamics. Canonical gates.",
+        description: "Time constituted by primitives canonically NOT in T: Ð,⊣,Ř,Γ,Σ. Time is structure, not dynamics. Canonical gates.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_INVERTED, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -537,7 +537,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 26: absorption_topology_seal ──
     unis[26] = Dialect {
         name: "absorption_topology_seal",
-        description: "Topological closure (Þ=𐑸) is absorbing under all operations. Topology is destiny — the most connected structure absorbs everything. G1=Þ≥𐑸.",
+        description: "Topological closure (⊣=𐑸) is absorbing under all operations. Topology is destiny — the most connected structure absorbs everything. G1=⊣≥𐑸.",
         g1: g_th_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_TOPOLOGY_SEAL, is_expansion: false,
     };
@@ -597,7 +597,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 33: topology_second ──
     unis[33] = Dialect {
         name: "topology_second",
-        description: "Connectivity as the monoidal gate: G1=Φ≥𐑹, G2=Þ≥𐑥 (bowtie crossing), G3=Ω≥𐑭. After Frobenius, the topology of connection determines traced status.",
+        description: "Connectivity as the monoidal gate: G1=Φ≥𐑹, G2=⊣≥𐑥 (bowtie crossing), G3=Ω≥𐑭. After Frobenius, the topology of connection determines traced status.",
         g1: g_phi_5, g2: g_th_3, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -661,7 +661,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 41: topology_third ──
     unis[41] = Dialect {
         name: "topology_third",
-        description: "Box-product topology as the terminal seal: G1=Φ≥𐑹, G2=⊙≥⊙, G3=Þ≥𐑶 (irreducible box product). Only product-irreducible connectivity achieves O_∞.",
+        description: "Box-product topology as the terminal seal: G1=Φ≥𐑹, G2=⊙≥⊙, G3=⊣≥𐑶 (irreducible box product). Only product-irreducible connectivity achieves O_∞.",
         g1: g_phi_5, g2: g_odot_2, g3: g_th_4, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -741,7 +741,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 51: parallel_topology ──
     unis[51] = Dialect {
         name: "parallel_topology",
-        description: "Topology gates, parallel: Þ≥𐑸, Ř≥𐑾, ⊙≥⊙. Full connectivity, bilateral relation, and self-modeling are independent.",
+        description: "Topology gates, parallel: ⊣≥𐑸, Ř≥𐑾, ⊙≥⊙. Full connectivity, bilateral relation, and self-modeling are independent.",
         g1: g_th_5, g2: g_r_4, g3: g_odot_2, gate_ordering: false,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -789,7 +789,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 57: triple_topology ──
     unis[57] = Dialect {
         name: "triple_topology",
-        description: "Topology ladder: G1=Þ≥𐑥 (bowtie), G2=Þ≥𐑶 (box product), G3=Þ≥𐑸 (imscriptive closure). Three rungs of topological connectivity.",
+        description: "Topology ladder: G1=⊣≥𐑥 (bowtie), G2=⊣≥𐑶 (box product), G3=⊣≥𐑸 (imscriptive closure). Three rungs of topological connectivity.",
         g1: g_th_3, g2: g_th_4, g3: g_th_5, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -861,7 +861,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 65: t_ceiling_topology ──
     unis[65] = Dialect {
         name: "t_ceiling_topology",
-        description: "T-constitution ceiling: Þ≤𐑶. No self-referential topology allowed — the ceiling caps at box product. All ⊗ compositions must admit a modular floor.",
+        description: "T-constitution ceiling: ⊣≤𐑶. No self-referential topology allowed — the ceiling caps at box product. All ⊗ compositions must admit a modular floor.",
         g1: g_th_4, g2: g_odot_2, g3: g_phi_5, gate_ordering: true,
         t_entries: T_CEILING, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -869,7 +869,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 66: t_ceiling_dimensional ──
     unis[66] = Dialect {
         name: "t_ceiling_dimensional",
-        description: "Dimensional ceiling: Ð≤𐑼, Þ≤𐑥. No infinity-dim or self-ref allowed in T-constitution. The cosmos is finite-dimensional with at-most crossing-point topology. All infinities are emergent.",
+        description: "Dimensional ceiling: Ð≤𐑼, ⊣≤𐑥. No infinity-dim or self-ref allowed in T-constitution. The cosmos is finite-dimensional with at-most crossing-point topology. All infinities are emergent.",
         g1: g_d_3, g2: g_odot_2, g3: g_phi_5, gate_ordering: true,
         t_entries: T_DIM_CEILING, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -909,7 +909,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 70: t_subset_th_sigma ──
     unis[70] = Dialect {
         name: "t_subset_th_sigma",
-        description: "T-constitution: Þ≥𐑸 AND Σ≥𐑳. Self-referential topology AND heterogeneous components. The dialect of self-measuring, many-typed systems — grammars within grammars.",
+        description: "T-constitution: ⊣≥𐑸 AND Σ≥𐑳. Self-referential topology AND heterogeneous components. The dialect of self-measuring, many-typed systems — grammars within grammars.",
         g1: g_th_5, g2: g_sigma_3, g3: g_odot_2, gate_ordering: false,
         t_entries: T_TH_SIGMA, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -917,7 +917,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 71: t_subset_th_omega ──
     unis[71] = Dialect {
         name: "t_subset_th_omega",
-        description: "T-constitution: Þ≥𐑸 AND Ω≥𐑭. Self-referential topology AND integer winding. The dialect of topologically protected self-reference — every grammatical system carries a winding charge.",
+        description: "T-constitution: ⊣≥𐑸 AND Ω≥𐑭. Self-referential topology AND integer winding. The dialect of topologically protected self-reference — every grammatical system carries a winding charge.",
         g1: g_th_5, g2: g_omega_3, g3: g_odot_2, gate_ordering: false,
         t_entries: T_TH_OMEGA, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -933,7 +933,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 73: mixed_gamma_th ──
     unis[73] = Dialect {
         name: "mixed_gamma_th",
-        description: "Cardinality + topology mix: G1=Γ≥𐑲 (universal), G2=Þ≥𐑸 (self-ref), G3=⊙≥⊙. Systems must have universal interaction range before they can exhibit self-referential topology.",
+        description: "Cardinality + topology mix: G1=Γ≥𐑲 (universal), G2=⊣≥𐑸 (self-ref), G3=⊙≥⊙. Systems must have universal interaction range before they can exhibit self-referential topology.",
         g1: g_gamma_3, g2: g_th_5, g3: g_odot_2, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -1001,7 +1001,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 81: dense_gates ──
     unis[81] = Dialect {
         name: "dense_gates",
-        description: "Maximally dense: 5 distinct primitives across 3 gate slots. G1=Φ≥𐑹 AND Ω≥𐑭, G2=⊙≥⊙ AND Ç≥𐑧, G3=Þ≥𐑸. Parity+winding paired, criticality+kinetics paired, topology solo. The densest gate constellation — 5 orthogonal structural demands.",
+        description: "Maximally dense: 5 distinct primitives across 3 gate slots. G1=Φ≥𐑹 AND Ω≥𐑭, G2=⊙≥⊙ AND Ç≥𐑧, G3=⊣≥𐑸. Parity+winding paired, criticality+kinetics paired, topology solo. The densest gate constellation — 5 orthogonal structural demands.",
         g1: g_phi_omega, g2: g_odot_c, g3: g_th_5, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -1049,7 +1049,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 87: the_all ──
     unis[87] = Dialect {
         name: "the_all",
-        description: "All-structured dialect: G1=⊙≥⊙, G2=Φ≥𐑹, G3=Ω≥𐑭, G4=Þ≥𐑸. T-constitution: all primitives explicit. Absorption: 𐑻 + sub-critical dual regime. Four-gate + full T + dual absorption. The densest structural filter in the catalog — admits only systems that are simultaneously self-modeling, Frobenius-special, topologically protected, self-referential, and constitutionally complete. Approximate fingerprint: the grammar itself, plus a handful of crystal neighbors.",
+        description: "All-structured dialect: G1=⊙≥⊙, G2=Φ≥𐑹, G3=Ω≥𐑭, G4=⊣≥𐑸. T-constitution: all primitives explicit. Absorption: 𐑻 + sub-critical dual regime. Four-gate + full T + dual absorption. The densest structural filter in the catalog — admits only systems that are simultaneously self-modeling, Frobenius-special, topologically protected, self-referential, and constitutionally complete. Approximate fingerprint: the grammar itself, plus a handful of crystal neighbors.",
         g1: g_odot_2, g2: g_phi_5, g3: g_omega_3, gate_ordering: true,
         t_entries: T_ALL, abs_rules: ABS_DUAL, is_expansion: true,
     };

@@ -168,7 +168,7 @@ def main():
 
         # Map primitives
         prims = {}
-        for key, rust_key in [("Ð","d"), ("Þ","t"), ("Ř","r"), ("Φ","p"),
+        for key, rust_key in [("Ð","d"), ("⊣","t"), ("Ř","r"), ("Φ","p"),
                                ("ƒ","f"), ("Ç","k"), ("Γ","g"), ("ɢ","c"),
                                ("⊙","phi"), ("Ħ","h"), ("Σ","s"), ("Ω","omega")]:
             glyph = entry.get(key, "")

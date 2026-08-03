@@ -549,7 +549,7 @@ pub fn grammar_encoding() -> String {
     s.push_str("          spectral density via the explicit formula connecting zeros\n");
     s.push_str("          to the Chebyshev ψ function. The zeros ARE the eigenvalues\n");
     s.push_str("          of a quantum Hamiltonian — the boundary defines the interior.\n\n");
-    s.push_str("    Þ=𐑥  (crossing)     — The critical line Re(s)=½ is a crossing\n");
+    s.push_str("    ⊣=𐑥  (crossing)     — The critical line Re(s)=½ is a crossing\n");
     s.push_str("          point where the real part of s is fixed and the imaginary\n");
     s.push_str("          parts encode the spectrum. The topology is a bowtie:\n");
     s.push_str("          two half-planes meeting at the critical line.\n\n");
