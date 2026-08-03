@@ -389,7 +389,7 @@ pub fn search_report(p_start: usize, p_end: usize) -> String {
         if let Some((_pp, _mp, result)) = crate::divisor_ring::analyze_mersenne(*p as u32) {
             s.push_str(&format!("\n  Structural: {}\n", 
                 match result.verdict {
-                    crate::divisor_ring::DivisorRingVerdict::PrimeState => "PRIME STATE (Ω=1)",
+                    crate::divisor_ring::DivisorRingVerdict::PrimeState => "PRIME STATE (◻=1)",
                     _ => "COMPOSITE",
                 }));
         }

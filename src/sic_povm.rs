@@ -32,7 +32,7 @@ pub const D_PRIMS: u32 = 3;
 pub const D_VALS:  u32 = 3;
 pub const D_SLOTS: u32 = D_PRIMS * D_VALS;  // 9
 
-/// T-family: 5 primitives (⊢, >, ∋, ⊥, Ω), each 4 values.  4⁵ = 1024.
+/// T-family: 5 primitives (⊢, >, ∋, ⊥, ◻), each 4 values.  4⁵ = 1024.
 pub const T_PRIMS: u32 = 5;
 pub const T_VALS:  u32 = 4;
 pub const T_SLOTS: u32 = T_PRIMS * T_VALS;  // 20

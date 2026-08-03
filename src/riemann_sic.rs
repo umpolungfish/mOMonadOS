@@ -583,7 +583,7 @@ pub fn grammar_encoding() -> String {
     s.push_str("    ⊞=𐑳  (heterogeneous) — The zeros and eigenvalues span multiple\n");
     s.push_str("          distinct types: complex numbers (zeros), real numbers\n");
     s.push_str("          (eigenvalues), operators, and SIC-POVM projectors.\n\n");
-    s.push_str("    Ω=𐑭  (integer winding) — The argument principle gives integer\n");
+    s.push_str("    ◻=𐑭  (integer winding) — The argument principle gives integer\n");
     s.push_str("          winding around the critical strip. The number of zeros up\n");
     s.push_str("          to height T follows N(T) ~ (T/2π)log(T/2πe), an integer\n");
     s.push_str("          count with topological protection.\n\n");

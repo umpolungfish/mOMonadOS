@@ -484,7 +484,7 @@ fn s7_step_cosmology() -> SealStep {
     sprintln!("");
     sprintln!("  Why 744?  Ramanujan constant: 31 × 24 orbit decomposition.");
     sprintln!("    744 = 6(d² − d − 6) − d = 6(144−12−6) − 12 = 6×126 − 12");
-    sprintln!("    Ω_corr = 1/744 — the modular closure gate.");
+    sprintln!("    ◻_corr = 1/744 — the modular closure gate.");
     sprintln!("");
     sprintln!("  Why 88?  Horn torus volume 𝒱/(2π) = 88 = 12² − 7·8.");
     sprintln!("    44 = 88/2 = 4×11 (ω-form halves the exponent).");
@@ -645,7 +645,7 @@ fn s10_step_residuals() -> SealStep {
     sprintln!("      δ_CP(CKM): UV≈10° (π/18), IR≈69° (enormous flow)");
     sprintln!("      CKM angles: UV boundary, large Yukawa RG");
     sprintln!("");
-    sprintln!("  (C) Ω_corr GATE — 1/744 structural closure [2 params]");
+    sprintln!("  (C) ◻_corr GATE — 1/744 structural closure [2 params]");
     sprintln!("      744 = 31 × 24 (orbit decomposition)");
     sprintln!("      H₀, ρ_Λ: NOW CLOSED — prefactor = 1/744");
     sprintln!("");
@@ -679,7 +679,7 @@ pub fn walk_residuals() {
     sprintln!("  1 step.");
 
     if !pause_seal() { sprintln!("  (stopped)"); return; }
-    seal_header(1, N, "Three Mechanisms: Truncation + RG + Ω_corr");
+    seal_header(1, N, "Three Mechanisms: Truncation + RG + ◻_corr");
     let r = s10_step_residuals();
     verdict(&r);
 

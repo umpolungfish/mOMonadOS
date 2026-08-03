@@ -6,8 +6,8 @@
 // The close bond identifies 1 and n cyclically, collapsing the chain into a ring.
 //
 // Results:
-//   Prime n (|Σ|=2): degenerate ring (dimer), Ω=1 "prime state"
-//   Composite n (|Σ|>2): stable ring with Ω = |Σ(n)|
+//   Prime n (|Σ|=2): degenerate ring (dimer), ◻=1 "prime state"
+//   Composite n (|Σ|>2): stable ring with ◻ = |Σ(n)|
 //   n=1: trivial
 //
 // Mersenne application: analyze M_p = 2^p - 1 to study the divisor ring
@@ -252,7 +252,7 @@ pub fn analyze(n: u64) -> DivisorRingResult {
             ring: Some(ring),
             note: format!(
                 "A 2-node divisor ring is degenerate — the single bond between 1 and {}. \
-                 The Grammar identifies this as the PRIME STATE (Ω=1). \
+                 The Grammar identifies this as the PRIME STATE (◻=1). \
                  Primes have no internal divisor structure; the ring collapses to a dimer.",
                 n
             ),
@@ -324,14 +324,14 @@ pub fn format_report(result: &DivisorRingResult) -> String {
         DivisorRingVerdict::Trivial => {
             lines.push(format!("  VERDICT: TRIVIAL"));
             lines.push(format!("  {}", result.note));
-            lines.push(format!("  Ω = {}", result.omega.unwrap_or(0)));
+            lines.push(format!("  ◻ = {}", result.omega.unwrap_or(0)));
         }
         DivisorRingVerdict::PrimeState => {
-            lines.push(format!("  VERDICT: PRIME STATE  (Ω = 1)"));
+            lines.push(format!("  VERDICT: PRIME STATE  (◻ = 1)"));
             lines.push(format!("  {} is PRIME. Σ({}) = {{1, {}}}.", result.n, result.n, result.n));
             lines.push(format!("  The 'close' verb forms a DEGENERATE RING (dimer):"));
             lines.push(format!("  a single divisibility bond 1 | {}.", result.n));
-            lines.push(format!("  This is the prime state — Ω=1, no internal structure."));
+            lines.push(format!("  This is the prime state — ◻=1, no internal structure."));
             if let Some(ref ring) = result.ring {
                 let spec_strs: Vec<String> = ring.spectrum.spectrum.iter()
                     .map(|v| format!("{:.4}", v)).collect();
@@ -341,7 +341,7 @@ pub fn format_report(result: &DivisorRingResult) -> String {
         }
         DivisorRingVerdict::StableRing => {
             let omega = result.omega.unwrap_or(result.k);
-            lines.push(format!("  VERDICT: STABLE RING  (Ω = {})", omega));
+            lines.push(format!("  VERDICT: STABLE RING  (◻ = {})", omega));
             lines.push(format!("  Σ({}) is NON-TRIVIAL: |Σ|={} > 2.", result.n, result.k));
             lines.push(format!("  The divisor lattice forms a genuine macrocycle under the close verb."));
             if let Some(ref ring) = result.ring {

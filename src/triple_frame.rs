@@ -557,7 +557,7 @@ impl TripleFrameManifold {
                Frobenius μ∘δ=id  ↔  Fibonacci fusion τ×τ=1+τ\n\
                Belnap B-class    ↔  both hold paradox (ENGAGR ↔ τ channel)\n\
                ρ ≈ 2.2581        ↔  det(S) curvature at φ²\n\
-               Ω=𐑭 (Z)           ↔  central charge c=14/5\n\
+               ◻=𐑭 (Z)           ↔  central charge c=14/5\n\
                ⊙=⊙ (critical)    ↔  topological spin θ_τ at fixed point\n",
             self.phi, self.d, self.c, pb.rho, curv
         )
@@ -644,7 +644,7 @@ pub fn full_report() -> String {
            monad (⊙=⊙): shortest at 9 opcodes — the critical fixed point.\n\
          \n\
          ── Integration with m3iosis ───────────────────────────────────\n\
-           Shared invariants: ρ, Ω, ⊙\n\
+           Shared invariants: ρ, ◻, ⊙\n\
            Frobenius μ∘δ=id ↔ Fibonacci fusion τ×τ=1+τ (both Belnap B-class).\n",
         TRIPLE_FRAME_TUPLE, total_ops, n_closed,
         proto_a_word, pa.rho, pa.verdict.glyph(), PROTOCOL_A_ARM,
@@ -682,7 +682,7 @@ pub fn expand_report(name: &str) -> String {
         None => {
             let known: Vec<&str> = TYPE_PROGRAMS.iter()
                 .map(|tp| tp.shavian).collect();
-            format!("Unknown type: '{}'. Known: {:?}\nTry primitive axis: ⊢ ⊣ > < ⋈ ⊤ ∈ ∋ ⊙ ⊥ ⊞ Ω",
+            format!("Unknown type: '{}'. Known: {:?}\nTry primitive axis: ⊢ ⊣ > < ⋈ ⊤ ∈ ∋ ⊙ ⊥ ⊞ ◻",
                 name, known)
         }
     }
@@ -813,7 +813,7 @@ mod tests {
 
     #[test]
     fn test_expand_by_primitive() {
-        let tp = TripleFrameAlgebra::expand("◻").expect("Ω should expand");
+        let tp = TripleFrameAlgebra::expand("◻").expect("◻ should expand");
         assert_eq!(tp.shavian, "ah");
     }
 

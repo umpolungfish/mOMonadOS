@@ -63,7 +63,7 @@ pub fn decode(mut addr: u32) -> [u8; 12] {
 ///   <  Criticality    [woe<monad<roar<err<haha] ← self_ref ⇒ monad (⊙ fixed point)
 ///   H  Chirality      [fee<kick<sure<wool]  ← EXACT: ROTAT period (chirality under shift)
 ///   S  Stoichiometry  [hung<so<up]          ← EXACT: FSPLIT/FFUSE (δ/μ) balance
-///   Ω  Protection     [awe<oak<ah<zoo]      ← winding: rotational period + fork order
+///   ◻  Protection     [awe<oak<ah<zoo]      ← winding: rotational period + fork order
 pub fn indices_from_program(
     p: &Program,
     frobenius_order: u8,
@@ -160,7 +160,7 @@ pub fn indices_from_program(
     // S — EXACT: stoichiometry is the δ/μ (FSPLIT/FFUSE) conservation balance.
     let stoi = if !forked { 0 } else if balanced { 1 } else { 2 };
 
-    // Ω — protection = winding, dual to H: H is the period class, Ω the multiplicity m.
+    // ◻ — protection = winding, dual to H: H is the period class, ◻ the multiplicity m.
     // zoo = non-Abelian (nested forks); ah = ℤ winding (m≥3); oak = ℤ₂ (m=2); awe = none.
     let prot = if frobenius_order >= 2 { 3 }
                else if m >= 3 { 2 }

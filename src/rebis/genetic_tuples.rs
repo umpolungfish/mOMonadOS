@@ -173,7 +173,7 @@ impl IGTuple {
         }
     }
 
-    /// Build a tuple display string: ⟨D·T·R·P·F·K·G·Gm·⊙·H·S·Ω⟩
+    /// Build a tuple display string: ⟨D·T·R·P·F·K·G·Gm·⊙·H·S·◻⟩
     pub fn display(&self) -> alloc::string::String {
         let mut s = alloc::string::String::from("\u{27e8}"); // ⟨
         for (i, key) in PRIM_KEYS.iter().enumerate() {
@@ -689,7 +689,7 @@ pub fn generate_all_stages(ctx: &StageContext) -> [IGTuple; 7] {
     ]
 }
 
-/// Verify monotonic advance: each stage's Ω ordinal is ≥ prior.
+/// Verify monotonic advance: each stage's ◻ ordinal is ≥ prior.
 ///
 /// This is a predicate over any 7-stage pipeline, not an invariant of the
 /// gene→protein one. `genetic_tuples.py` reports regressions rather than
@@ -705,14 +705,14 @@ pub fn verify_monotonic_advance(stages: &[IGTuple; 7]) -> bool {
     true
 }
 
-/// Where Ω falls: entry i is true when stage i+1's Ω ordinal is below stage i's.
+/// Where ◻ falls: entry i is true when stage i+1's ◻ ordinal is below stage i's.
 ///
 /// The gene→protein pipeline drops twice, and both drops are hardcoded rather
 /// than context-driven, so no `StageContext` makes it monotonic. The drops sit
 /// where the modelled object changes kind: the codon lattice carries Z2 from
 /// codon↔anticodon parity, which is a symmetry of the *code* and not of the
 /// nascent chain that follows it; and secondary structure carries Z2 from helix
-/// chirality, which the tertiary fold's Ω is written to take from disulfide
+/// chirality, which the tertiary fold's ◻ is written to take from disulfide
 /// count alone.
 pub fn omega_regressions(stages: &[IGTuple; 7]) -> [bool; 6] {
     let mut drops = [false; 6];
@@ -783,9 +783,9 @@ mod tests {
         // DNA and transcription carry no topological protection; the codon
         // lattice carries Z2; the nascent chain carries none; secondary
         // structure carries Z2; the default context has no disulfides, so the
-        // tertiary fold carries none; the monomer's quaternary Ω is Z2.
+        // tertiary fold carries none; the monomer's quaternary ◻ is Z2.
         assert_eq!(omega, [0, 0, 1, 0, 1, 0, 1]);
-        // So the pipeline is not Ω-monotonic, and no StageContext makes it so —
+        // So the pipeline is not ◻-monotonic, and no StageContext makes it so —
         // both drops are between hardcoded stage values.
         assert!(!verify_monotonic_advance(&stages));
         assert_eq!(omega_regressions(&stages), [false, false, true, false, true, false]);

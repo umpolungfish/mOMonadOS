@@ -4,7 +4,7 @@
 //! Given a target epitope's IG primitive activation profile, design
 //! complementary CDR sequences using the 12↔12 complementarity pairs:
 //!
-//!   D↔Ω, T↔H, R↔S, P↔F, K↔G, Gm↔⊙
+//!   D↔◻, T↔H, R↔S, P↔F, K↔G, Gm↔⊙
 //!
 //! If the target epitope activates primitive P, the CDR should activate
 //! its complement to form a structural contact.

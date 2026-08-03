@@ -4,7 +4,7 @@
 //   - Clay_WitnessedClosure.lean: BSD and Hodge close (T_CEILING-consistent),
 //     Yang-Mills one-bump-short (gate layer idempotent, T_CEILING-blocked).
 //   - Clay_UnclosedResistance.lean: RH, Navier-Stokes, and P-vs-NP resist
-//     closure under ALL 23 dialects due to low winding (Ω < 3).
+//     closure under ALL 23 dialects due to low winding (◻ < 3).
 //
 // All verdicts sourced from ClayCanonicalTuples.lean (procedurally generated
 // from IG_catalog.json) — no hand-transcribed tuples.
@@ -49,9 +49,9 @@ pub struct ClayReport {
     pub verdict: ClayVerdict,
     pub closer_dialects: Vec<&'static str>,
     pub blocker: Option<&'static str>,
-    pub winding: &'static str,  // Ω Shavian glyph
+    pub winding: &'static str,  // ◻ Shavian glyph
     pub winding_ordinal: f32,
-    pub low_winding: bool,      // Ω < 3 = below terminal anchor
+    pub low_winding: bool,      // ◻ < 3 = below terminal anchor
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -118,7 +118,7 @@ pub fn ym_report() -> ClayReport {
 }
 
 /// RIEMANN HYPOTHESIS: UNCLOSED under all 23 dialects.
-/// Blocker: Ω=𐑴 (ord=2) < 3. All closure-bearing dialects require Ω≥3.
+/// Blocker: ◻=𐑴 (ord=2) < 3. All closure-bearing dialects require ◻≥3.
 /// Additionally: ⊙=𐑮 (roar, ord=7/3≈2.33) < 3 — fails triple_criticality's
 /// < gate which selects only haha (ord=3).
 /// Canonical tuple: ⟨𐑛𐑥𐑾𐑬𐑱𐑧𐑲𐑝𐑮𐑖𐑳𐑴⟩
@@ -128,7 +128,7 @@ pub fn rh_report() -> ClayReport {
         name: "Riemann Hypothesis",
         verdict: ClayVerdict::Unclosed,
         closer_dialects: vec![],
-        blocker: Some("Ω=𐑴 (ord=2) < terminal anchor 3; ⊙=𐑮 (ord=7/3) < triple_criticality < gate (requires ord=3)"),
+        blocker: Some("◻=𐑴 (ord=2) < terminal anchor 3; ⊙=𐑮 (ord=7/3) < triple_criticality < gate (requires ord=3)"),
         winding: "𐑴",
         winding_ordinal: 2.0,
         low_winding: true,
@@ -136,7 +136,7 @@ pub fn rh_report() -> ClayReport {
 }
 
 /// NAVIER-STOKES: UNCLOSED under all 23 dialects.
-/// Blocker: Ω=𐑷 (ord=1) < 3. Even lower winding than RH.
+/// Blocker: ◻=𐑷 (ord=1) < 3. Even lower winding than RH.
 /// Canonical tuple: ⟨𐑨𐑡𐑽𐑗𐑱𐑪𐑲𐑝𐑢𐑒𐑳𐑷⟩
 /// Lean: `ns_closes_nowhere` — proven by native_decide.
 pub fn ns_report() -> ClayReport {
@@ -144,7 +144,7 @@ pub fn ns_report() -> ClayReport {
         name: "Navier–Stokes Regularity",
         verdict: ClayVerdict::Unclosed,
         closer_dialects: vec![],
-        blocker: Some("Ω=𐑷 (ord=1) < terminal anchor 3"),
+        blocker: Some("◻=𐑷 (ord=1) < terminal anchor 3"),
         winding: "𐑷",
         winding_ordinal: 1.0,
         low_winding: true,
@@ -152,7 +152,7 @@ pub fn ns_report() -> ClayReport {
 }
 
 /// P-vs-NP: UNCLOSED under all 23 dialects.
-/// Blocker: Ω=𐑷 (ord=1) < 3. Also <=𐑢 (ord=1) — sub-critical, no gate clearance possible.
+/// Blocker: ◻=𐑷 (ord=1) < 3. Also <=𐑢 (ord=1) — sub-critical, no gate clearance possible.
 /// Canonical tuple: ⟨𐑛𐑡𐑩𐑗𐑱𐑤𐑲𐑝𐑢𐑓𐑙𐑷⟩
 /// Lean: `pnp_closes_nowhere` — proven by native_decide.
 pub fn pnp_report() -> ClayReport {
@@ -160,7 +160,7 @@ pub fn pnp_report() -> ClayReport {
         name: "P vs NP",
         verdict: ClayVerdict::Unclosed,
         closer_dialects: vec![],
-        blocker: Some("Ω=𐑷 (ord=1) < terminal anchor 3; ⊙=𐑢 (ord=1) — sub-critical"),
+        blocker: Some("◻=𐑷 (ord=1) < terminal anchor 3; ⊙=𐑢 (ord=1) — sub-critical"),
         winding: "𐑷",
         winding_ordinal: 1.0,
         low_winding: true,
@@ -203,11 +203,11 @@ pub fn clay_summary() -> (usize, usize, usize) {
 }
 
 /// The theorem: all three unclosed problems share the same blocker —
-/// low winding (Ω < 3). This is the machine-checked content of
+/// low winding (◻ < 3). This is the machine-checked content of
 /// `rh_ns_pnp_low_winding` in Clay_UnclosedResistance.lean.
 pub fn low_winding_theorem() -> &'static str {
-    "All three unclosed Clay types (RH, NS, PNP) carry winding Ω below \
-     the terminal anchor ah (ord=3). Every closure-bearing dialect requires Ω≥3 \
+    "All three unclosed Clay types (RH, NS, PNP) carry winding ◻ below \
+     the terminal anchor ah (ord=3). Every closure-bearing dialect requires ◻≥3 \
      at its terminal gate. Low winding ⇒ no idempotent-terminal closure. \
      This is the machine-checked theorem `rh_ns_pnp_low_winding` in \
      Imscribing.Millennium.ClayUnclosedResistance, proved by `decide`."
@@ -223,7 +223,7 @@ pub fn formatted_report() -> String {
         out.push_str(&alloc::format!(
             "  {}: {}\n", r.name, r.verdict.name()));
         out.push_str(&alloc::format!(
-            "    Ω = {} (ord={:.1})\n", r.winding, r.winding_ordinal));
+            "    ◻ = {} (ord={:.1})\n", r.winding, r.winding_ordinal));
         if r.verdict == ClayVerdict::Closed {
             out.push_str(&alloc::format!(
                 "    Closer dialects: {}\n", r.closer_dialects.join(", ")));

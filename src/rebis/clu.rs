@@ -7,12 +7,12 @@
 //! at the O₂/O_∞ boundary. Proof structure:
 //!
 //! P1. CLU(b) = ln(b) nats per K-tier crossing
-//! P2. At O₂/O_∞, axes K(5), H(4), Ω(4) form a 3D lattice of 80 sites
-//! P3. Each kernel cycle = one symmetric step in (K, H, Ω) space
+//! P2. At O₂/O_∞, axes K(5), H(4), ◻(4) form a 3D lattice of 80 sites
+//! P3. Each kernel cycle = one symmetric step in (K, H, ◻) space
 //! P4. Return probability in d dimensions: P_n(0) ∝ n^(-d/2)
 //! P5. With d_eff = 3: P(S) ∝ S^(-3/2)
 //!
-//! Verification: 3D random walk on (K×H×Ω) lattice, MLE exponent = 1.5 ± 0.15
+//! Verification: 3D random walk on (K×H×◻) lattice, MLE exponent = 1.5 ± 0.15
 
 use alloc::vec::Vec;
 
@@ -72,7 +72,7 @@ pub const CLU_NATURAL: f64 = 1.0;
 pub const N_K: usize = 5;
 /// Number of H values: 𐑓, 𐑒, 𐑖, 𐑫
 pub const N_H: usize = 4;
-/// Number of Ω values: 𐑷, 𐑴, 𐑭, 𐑟
+/// Number of ◻ values: 𐑷, 𐑴, 𐑭, 𐑟
 pub const N_W: usize = 4;
 /// Total lattice sites: 5 × 4 × 4 = 80
 pub const TOTAL_SITES: usize = N_K * N_H * N_W;
@@ -81,7 +81,7 @@ pub const TOTAL_SITES: usize = N_K * N_H * N_W;
 pub const K_TIER_NAMES: [&str; 5] = ["𐑘", "𐑤", "𐑧", "𐑪", "𐑺"];
 /// H-axis names.
 pub const H_NAMES: [&str; 4] = ["𐑓", "𐑒", "𐑖", "𐑫"];
-/// Ω-axis names.
+/// ◻-axis names.
 pub const W_NAMES: [&str; 4] = ["𐑷", "𐑴", "𐑭", "𐑟"];
 
 // ── CLU function ───────────────────────────────────────────────────────
@@ -97,9 +97,9 @@ pub fn k_crossing_nats(from_tier: usize, to_tier: usize) -> f64 {
     delta as f64 * CLU_DECIMAL
 }
 
-// ── 3D Point on the (K, H, Ω) lattice ──────────────────────────────────
+// ── 3D Point on the (K, H, ◻) lattice ──────────────────────────────────
 
-/// A point in (K, H, Ω) structural space.
+/// A point in (K, H, ◻) structural space.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Point3D {
     pub k: usize,  // 0..4
@@ -157,7 +157,7 @@ impl Point3D {
 
 // ── 3D Random Walk ─────────────────────────────────────────────────────
 
-/// A 3D random walk on the (K×H×Ω) lattice.
+/// A 3D random walk on the (K×H×◻) lattice.
 #[derive(Clone, Debug)]
 pub struct CLUWalk3D {
     pub pos: Point3D,
@@ -198,7 +198,7 @@ impl CLUWalk3D {
 // ── Avalanche size distribution ────────────────────────────────────────
 
 /// Power-law exponent for avalanche sizes.
-/// P(S) ∝ S^(-3/2) with d_eff = 3 on the (K×H×Ω) lattice.
+/// P(S) ∝ S^(-3/2) with d_eff = 3 on the (K×H×◻) lattice.
 pub const AVALANCHE_EXPONENT: f64 = -1.5;
 
 /// Predicted probability for a given avalanche size S.
@@ -248,7 +248,7 @@ pub fn run_walk(max_steps: usize) -> CLUWalk3D {
 
 // ── Frobenius filtration clustering ────────────────────────────────────
 
-/// A cluster in the (K, H, Ω) lattice.
+/// A cluster in the (K, H, ◻) lattice.
 #[derive(Clone, Debug)]
 pub struct CLUCluster {
     pub center: Point3D,

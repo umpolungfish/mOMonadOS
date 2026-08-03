@@ -6,10 +6,10 @@
 //
 // Core bridge:
 //   Teichmüller deformation = promotion path preserving Frobenius structure
-//   Promotion signature [<,∋,⊥,Ω] → gate parameter deltas
+//   Promotion signature [<,∋,⊥,◻] → gate parameter deltas
 //     < (Parity)  → φ (azimuthal)
 //     ⊥ (Chirality) → φ (azimuthal)
-//     Ω (Winding) → θ (latitude)
+//     ◻ (Winding) → θ (latitude)
 //     ∋ (Composition) → latent (affects structure but not the 3 encoded angles)
 //
 //   Étale deformation: pinned primitives (P,F,K,G,Gm,Ph) unchanged
@@ -128,7 +128,7 @@ pub fn tier_transitions() -> &'static [TierTransition] {
         },
         TierTransition {
             from_tier: "O₁", to_tier: "O₂",
-            distance: 1.30, driver_primitive: "⊢+Ω",
+            distance: 1.30, driver_primitive: "⊢+◻",
             gate_jump: (45.0, 90.0, 0.0),    // Topological expansion
             is_p_gap: false,
         },

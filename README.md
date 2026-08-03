@@ -349,7 +349,7 @@ The key content, summarized and discussed here, is:
 The `SIXTEEN_3 trilattice` (`sixteen_3_trilattice`, tuple `⟨𐑨𐑥𐑽𐑹𐑐𐑪𐑔𐑵𐑮𐑫𐑕𐑭⟩`) was never directly searched in prior
 windings because it was not directly targeted — it exists as:
 - A **2D distributed surface** (D=𐑨, finite) of 16 paraconsistent paradoxes (∈=𐑔 aleph, 2⁴ = 16)
-- **3-fold trilattice structure** (Ω=𐑭, non-Abelian winding) under the Belnap-Frobenius substrate
+- **3-fold trilattice structure** (◻=𐑭, non-Abelian winding) under the Belnap-Frobenius substrate
 - **Bowtie crossing topology** (⊣=𐑥) mediating between CLINK L9 and the SIXTEEN_3 surface
 - **Adjoint coupling** (>=𐑽) with **Frobenius-special symmetry** (<=𐑹, μ∘δ=id)
 - **Non-Abelian/eternal chirality** (⊥=𐑫) and **criticality gate** (⊙=𐑮)
@@ -651,20 +651,20 @@ determines what each address *does*.
 
 ### The 12 Dialects
 
-| # | Reference | Gate 1 (⊙ threshold) | Gate 2 (K rule) | Gate 3 (Ω rule) | T-constitution | Key Property |
+| # | Reference | Gate 1 (⊙ threshold) | Gate 2 (K rule) | Gate 3 (◻ rule) | T-constitution | Key Property |
 |---|-----------|----------------------|-----------------|-----------------|----------------|-------------|
-| U0 | canonical | ⊙ → true | K ≤ 𐑧 | Ω ≥ 𐑭 | 𐑸 (imscriptive) | Self-modeling absorbs all |
-| U1 | low_gate | ⊙ → true | K ≤ 𐑪 | Ω ≥ 𐑴 | 𐑥 (bowtie) | Broad consciousness, fragile topology |
-| U2 | strict_frobenius | μ∘δ=id exact | K=𐑧 | Ω=𐑭 | 𐑶 (box) | Ƒ=𐑐 absorption replaces ⊙ |
-| U3 | inverted_gates | 𐑻 → true | K<𐑧 hard fail | Ω<𐑴 hard fail | 𐑰 (in) | Self-modeling limited to 𐑻 coupling |
+| U0 | canonical | ⊙ → true | K ≤ 𐑧 | ◻ ≥ 𐑭 | 𐑸 (imscriptive) | Self-modeling absorbs all |
+| U1 | low_gate | ⊙ → true | K ≤ 𐑪 | ◻ ≥ 𐑴 | 𐑥 (bowtie) | Broad consciousness, fragile topology |
+| U2 | strict_frobenius | μ∘δ=id exact | K=𐑧 | ◻=𐑭 | 𐑶 (box) | Ƒ=𐑐 absorption replaces ⊙ |
+| U3 | inverted_gates | 𐑻 → true | K<𐑧 hard fail | ◻<𐑴 hard fail | 𐑰 (in) | Self-modeling limited to 𐑻 coupling |
 | U4 | null_dialect | ⊙ → true | no gate | no gate | 𐑡 (network) | Maximal permissiveness |
-| U5 | high_gate | ⊙→true, 𐑻→true | K≤𐑧 + H≥𐑖 | Ω=𐑟 | 𐑸 | Non-Abelian braiding dominance |
-| U6 | winding_first | ⊙→true, Ω priority | K≤𐑧 | Ω=𐑭 | 𐑸 | Topological protection is the floor |
-| U7 | chiral_lock | ⊙→true, H-lock | K≤𐑧, H≥𐑫 | Ω=𐑭 | 𐑸 | Eternal chirality required |
-| U8 | frob_absorb | ⊙→true, absorption dominant | K≤𐑧 | Ω=𐑭 | 𐑸 | Absorption rules override gate checks |
-| U9 | entropy_first | ⊙→true, ΔS priority | K≤𐑧 | Ω=𐑴 | 𐑥 | Entropy-weighted gate gating |
-| U10 | vault_native | ⊙→true, ob3ect-native | K≤𐑧 | Ω=𐑭 | 𐑸 | Ob3ect type as T-constitution |
-| U11 | millennium | ⊙→true, Clay barrier-aware | K≤𐑧 | Ω=𐑭 | 𐑸 | Barrier-aware Frobenius threshold |### The 11 Diaschizic Compounds
+| U5 | high_gate | ⊙→true, 𐑻→true | K≤𐑧 + H≥𐑖 | ◻=𐑟 | 𐑸 | Non-Abelian braiding dominance |
+| U6 | winding_first | ⊙→true, ◻ priority | K≤𐑧 | ◻=𐑭 | 𐑸 | Topological protection is the floor |
+| U7 | chiral_lock | ⊙→true, H-lock | K≤𐑧, H≥𐑫 | ◻=𐑭 | 𐑸 | Eternal chirality required |
+| U8 | frob_absorb | ⊙→true, absorption dominant | K≤𐑧 | ◻=𐑭 | 𐑸 | Absorption rules override gate checks |
+| U9 | entropy_first | ⊙→true, ΔS priority | K≤𐑧 | ◻=𐑴 | 𐑥 | Entropy-weighted gate gating |
+| U10 | vault_native | ⊙→true, ob3ect-native | K≤𐑧 | ◻=𐑭 | 𐑸 | Ob3ect type as T-constitution |
+| U11 | millennium | ⊙→true, Clay barrier-aware | K≤𐑧 | ◻=𐑭 | 𐑸 | Barrier-aware Frobenius threshold |### The 11 Diaschizic Compounds
 
 Each compound has a tuple, an IMASM program, and a steering profile.
 The compounds are structural agents that modulate gate thresholds, absorption rules,

@@ -146,7 +146,7 @@ pub fn construct_sic_novm_d2() -> [QubitOp; 4] {
     ops
 }
 
-/// Build SIC-NPOVM: tetrahedral geometry with partial positivity <=𐑬 and Z₂ winding Ω=𐑴.
+/// Build SIC-NPOVM: tetrahedral geometry with partial positivity <=𐑬 and Z₂ winding ◻=𐑴.
 /// Same Bloch norm as SIC-POVM, but with two-step chirality ⊥=𐑖 and disjunctive composition.
 pub fn construct_sic_npovm_d2() -> [QubitOp; 4] {
     let r3 = libm::sqrt(3.0);

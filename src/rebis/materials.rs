@@ -180,7 +180,7 @@ pub fn s_material(glyph: &str) -> &'static str {
     }
 }
 
-/// Ω (Winding) → topological protection class
+/// ◻ (Winding) → topological protection class
 pub fn o_material(glyph: &str) -> &'static str {
     match glyph {
         "𐑷" => "none / trivial",
@@ -726,7 +726,7 @@ impl GapClosure {
         if self.closed {
             return alloc::string::String::from("GapClosure: ALREADY CLOSED — source matches target");
         }
-        let prim_names = ["D","T","R","P","F","K","G","Gm","Phi","H","S","Ω"];
+        let prim_names = ["D","T","R","P","F","K","G","Gm","Phi","H","S","◻"];
         let mut out = alloc::format!("GapClosure: {} gaps remain\n", self.gap_primitives.len());
         for &idx in &self.gap_primitives {
             out.push_str(&alloc::format!("  {}: {} → {}\n",

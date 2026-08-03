@@ -73,7 +73,7 @@ SHavian_TO_RUST = {
     "𐑙": "IgPrim::S_11",
     "𐑕": "IgPrim::S_many",
     "𐑳": "IgPrim::S_nm",
-    # Ω (Winding)
+    # ◻ (Winding)
     "𐑷": "IgPrim::Omega_0",
     "𐑴": "IgPrim::Omega_z2",
     "𐑭": "IgPrim::Omega_z",
@@ -170,7 +170,7 @@ def main():
         prims = {}
         for key, rust_key in [("⊢","d"), ("⊣","t"), (">","r"), ("<","p"),
                                ("⋈","f"), ("⊤","k"), ("∈","g"), ("∋","c"),
-                               ("⊙","phi"), ("⊥","h"), ("⊞","s"), ("Ω","omega")]:
+                               ("⊙","phi"), ("⊥","h"), ("⊞","s"), ("◻","omega")]:
             glyph = entry.get(key, "")
             rust_variant = SHavian_TO_RUST.get(glyph)
             if rust_variant:

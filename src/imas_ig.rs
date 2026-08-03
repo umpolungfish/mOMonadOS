@@ -138,7 +138,7 @@ impl IgPrim {
     /// non-monotonic extra value: ⊤ (Kinetics: K_mbl=4.5 sits between
     /// K_trap=4 and K_fast=1, not below K_fast), ⊙/Phi (Criticality:
     /// 𐑮=2.33 and Phi_ep=2.67 sit between ⊙=2 and
-    /// Phi_super=3, not below 𐑢=1), and Ω (Winding: Omega_na=4 sits
+    /// Phi_super=3, not below 𐑢=1), and ◻ (Winding: Omega_na=4 sits
     /// above Omega_z=3, not below Omega_0=1). Any new gate logic should
     /// compare `ordinal()` directly rather than raw discriminants.
     pub fn ordinal(self) -> f32 {
@@ -167,7 +167,7 @@ impl IgPrim {
             H0 => 1.0, H1 => 2.0, H2 => 3.0, H_inf => 4.0,
             // ⊞ Stoichiometry
             S_11 => 1.0, S_nn => 2.0, S_nm => 3.0,
-            // Ω Winding — non-monotonic: Omega_na sits above Omega_z, not below Omega_0.
+            // ◻ Winding — non-monotonic: Omega_na sits above Omega_z, not below Omega_0.
             Omega_0 => 1.0, Omega_z2 => 2.0, Omega_z => 3.0, Omega_na => 4.0,
         }
     }
@@ -301,7 +301,7 @@ impl IgTuple {
     }
 }
 
-/// Display helper for IgTuple — formats as ⟨D · T · R · P · F · K · G · C · < · H · S · Ω⟩
+/// Display helper for IgTuple — formats as ⟨D · T · R · P · F · K · G · C · < · H · S · ◻⟩
 pub struct IgDisplay { tuple: IgTuple }
 
 impl core::fmt::Display for IgDisplay {

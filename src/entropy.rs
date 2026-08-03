@@ -73,7 +73,7 @@ pub const D_O2D_OINF: f32 = 4.3818;
 
 /// Driver primitives for each ladder step.
 pub const DRIVER_O0_O1: &str = "⊙: 𐑢→⊙";
-pub const DRIVER_O1_O2: &str = "⊢: 𐑛→𐑨, Ω: 𐑷→𐑴";
+pub const DRIVER_O1_O2: &str = "⊢: 𐑛→𐑨, ◻: 𐑷→𐑴";
 pub const DRIVER_O2_O2D: &str = "⊢: 𐑨→𐑼";
 pub const DRIVER_O2D_OINF: &str = "<: 𐑗→𐑹 (Δ=4 ordinals)";
 
@@ -250,7 +250,7 @@ pub fn entropy_report() -> String {
     // ─── Key Findings ───
     s.push_str("\n─── Key Findings ───\n");
     s.push_str("  1. Entropy is NON-monotonic with tier.\n");
-    s.push_str("     O₂ (S=14.95) > O₁ (S=14.14) — relaxing Ω and ⊢ constraints\n");
+    s.push_str("     O₂ (S=14.95) > O₁ (S=14.14) — relaxing ◻ and ⊢ constraints\n");
     s.push_str("     opens more configuration space than ⊙-criticality closes.\n\n");
     s.push_str("  2. The entropy BOTTLENECK is at O₂† (S=13.85), not O_∞ (S=14.14).\n");
     s.push_str("     The ∞-dimensional requirement (⊢: 𐑨→𐑼) creates the\n");

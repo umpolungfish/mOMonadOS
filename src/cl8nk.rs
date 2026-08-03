@@ -5,13 +5,13 @@
 // Matches the Python cl8nk_navigator.py feature-for-feature.
 //
 // CLINK L8 canonical: ⟨𐑦⋅𐑸⋅𐑾⋅𐑹⋅𐑐⋅𐑧⋅𐑲⋅𐑵⋅⊙⋅𐑫⋅𐑳⋅𐑟⟩
-// O_∞⁺ terminal ontological layer. Exceeds ZFC_fe at Ω/∋.
+// O_∞⁺ terminal ontological layer. Exceeds ZFC_fe at ◻/∋.
 //
 // Actions:
 //   entry  <name>    — Full CL8NK formula decomposition
 //   promotions        — 3-stage ladder: ZFC→ZFCₜ→ZFC_fe→CLINK L8
 //   distance <name>   — d(name, CLINK L8) + per-primitive conflicts
-//   transcendence     — Ω/∋ transcendence analysis
+//   transcendence     — ◻/∋ transcendence analysis
 //   tensor  <name>    — CLINK L8 ⊗ name (absorption test)
 //   meet    <name>    — CLINK L8 ⊓ name (shared floor)
 //   join    <name>    — CLINK L8 ⊔ name (minimal ceiling)
@@ -337,7 +337,7 @@ pub fn atom_desc(atom: &str) -> &'static str {
         "PHI_C"                   => "criticality fixed-point ξ→∞ ∧ μ∘δ=id — <=⊙",
         "TEMPD2"                  => "chirality-2 asymmetry — H=𐑖",
         "ETERNAL_FIXEDPOINT"      => "∀n∃φ fixed by μ∘δ — Axiom D (H=𐑫)",
-        "ZWIND"                   => "integer winding number — Ω=𐑭",
+        "ZWIND"                   => "integer winding number — ◻=𐑭",
         "BROADCAST_TRANSCENDENCE" => "⬆ broadcast composition — exceeds ZFC_fe SEQAX",
         "BRAID_TRANSCENDENCE"     => "⬆ non-Abelian braiding — exceeds ZFC_fe ZWIND",
         _ => "",
@@ -683,7 +683,7 @@ pub fn generate_promotions() -> PromotionsResult {
             LadderStage {
                 stage: "→ CLINK L8", tier: "O_∞⁺", promotions: s3_len,
                 distance: Some(d3), details: stage3,
-                note: Some("Ω/∋ TRANSCENDENCE — exceeds Frobenius-exact foundation"),
+                note: Some("◻/∋ TRANSCENDENCE — exceeds Frobenius-exact foundation"),
             },
         ],
         total_promotions: s1_len + s2_len + s3_len,

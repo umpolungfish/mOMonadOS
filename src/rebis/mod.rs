@@ -157,7 +157,7 @@ impl AminoAcid {
             (B4::T, B4::F, true)   => "∈ (Granularity)",      // His
             (B4::T, B4::F, false)  => "⊙ (Criticality)",      // Gln
             (B4::B, B4::F, true)   => "⊥ (Chirality)",        // Asp
-            (B4::B, B4::F, false)  => "Ω (Winding)",          // Glu
+            (B4::B, B4::F, false)  => "◻ (Winding)",          // Glu
             _                      => return None,
         })
     }
@@ -184,7 +184,7 @@ impl AminoAcid {
             (B4::T, B4::F, true)   => Some(IgPrim::C_seq),     // His → ∈
             (B4::T, B4::F, false)  => Some(IgPrim::Phi_crit),     // Gln → ⊙
             (B4::B, B4::F, true)   => Some(IgPrim::H2),        // Asp → ⊥
-            (B4::B, B4::F, false)  => Some(IgPrim::Omega_z),   // Glu → Ω
+            (B4::B, B4::F, false)  => Some(IgPrim::Omega_z),   // Glu → ◻
             _                      => None,
         }
     }

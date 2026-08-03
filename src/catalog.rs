@@ -343,7 +343,7 @@ const ZFC_FE: CatalogEntry = entry(
 
 // ── CLINK L8 (O_∞⁺): ⟨𐑦·𐑸·𐑾·𐑹·𐑐·𐑧·𐑲·𐑵·⊙·𐑫·𐑳·𐑟⟩ ──
 const CLINK_L8: CatalogEntry = entry(
-    "clink_l8", "CLINK Layer 8 Organism — terminal ontological layer, O_∞⁺ with Ω/∋ transcendence",
+    "clink_l8", "CLINK Layer 8 Organism — terminal ontological layer, O_∞⁺ with ◻/∋ transcendence",
     IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
     IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
     IgPrim::G_aleph, IgPrim::C_broad,
@@ -1131,8 +1131,8 @@ pub fn primitive_short(prim: IgPrim) -> &'static str {
         IgPrim::H1 => "H1", IgPrim::H0 => "H0",
         IgPrim::S_nm => "S_n:m", IgPrim::S_nn => "S_n:n",
         IgPrim::S_11 => "S_1:1",
-        IgPrim::Omega_z => "Ω_Z", IgPrim::Omega_z2 => "Ω_Z2",
-        IgPrim::Omega_0 => "Ω_0", IgPrim::Omega_na => "Ω_NA",
+        IgPrim::Omega_z => "𐑭", IgPrim::Omega_z2 => "𐑴",
+        IgPrim::Omega_0 => "𐑷", IgPrim::Omega_na => "𐑟",
     }
 }
 

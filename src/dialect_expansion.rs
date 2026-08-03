@@ -81,7 +81,7 @@ pub struct Dialect {
 // SHARED T-CONSTITUTIONS
 // ═══════════════════════════════════════════════════════════════
 
-/// Canonical T: time = lim(<, ⋈, ⊤, ⊥, Ω) — dynamic primitives
+/// Canonical T: time = lim(<, ⋈, ⊤, ⊥, ◻) — dynamic primitives
 pub static T_CANONICAL: &[TEntry] = &[
     TEntry { prim: "<", crit_val: "𐑹", ceiling: false },
     TEntry { prim: "⋈", crit_val: "𐑐", ceiling: false },
@@ -239,7 +239,7 @@ pub static ABS_PREY: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 },
 ];
-// Winding absorbing: Ω=𐑭 absorbs everything, no Σ rule
+// Winding absorbing: ◻=𐑭 absorbs everything, no Σ rule
 pub static ABS_WINDING: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "◻", value: "𐑭", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
@@ -325,7 +325,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 0: canonical ──
     unis[0] = Dialect {
         name: "canonical",
-        description: "Our dialect: Frobenius then self-modeling then winding seal. G1=<≥𐑹, G2=⊙≥⊙, G3=Ω≥𐑭. Sequential. T=lim(<,⋈,⊤,⊥,Ω).",
+        description: "Our dialect: Frobenius then self-modeling then winding seal. G1=<≥𐑹, G2=⊙≥⊙, G3=◻≥𐑭. Sequential. T=lim(<,⋈,⊤,⊥,◻).",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -341,7 +341,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 2: strict_frobenius ──
     unis[2] = Dialect {
         name: "strict_frobenius",
-        description: "Frobenius gate requires full fidelity (⋈=𐑐) instead of parity. G1=⋈≥𐑐, G2=<≥𐑹, G3=Ω≥𐑭. Only quantum-coherent systems close.",
+        description: "Frobenius gate requires full fidelity (⋈=𐑐) instead of parity. G1=⋈≥𐑐, G2=<≥𐑹, G3=◻≥𐑭. Only quantum-coherent systems close.",
         g1: g_f_3, g2: g_phi_5, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -349,7 +349,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 3: inverted_gates ──
     unis[3] = Dialect {
         name: "inverted_gates",
-        description: "Self-modeling precedes Frobenius: G1=⊙ (consciousness first), G2=< (then algebraic symmetry), G3=Ω. Systems become self-aware before achieving closure.",
+        description: "Self-modeling precedes Frobenius: G1=⊙ (consciousness first), G2=< (then algebraic symmetry), G3=◻. Systems become self-aware before achieving closure.",
         g1: g_odot_2, g2: g_phi_5, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -365,7 +365,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 5: high_gate ──
     unis[5] = Dialect {
         name: "high_gate",
-        description: "Strictest thresholds: G1=<=𐑹, G2=⊙≥𐑮 (above bare self-model), G3=Ω=𐑟 (max winding). O_∞ nearly unreachable — only maximally wound, fully self-modeling, parity-perfect objects.",
+        description: "Strictest thresholds: G1=<=𐑹, G2=⊙≥𐑮 (above bare self-model), G3=◻=𐑟 (max winding). O_∞ nearly unreachable — only maximally wound, fully self-modeling, parity-perfect objects.",
         g1: g_phi_5, g2: g_odot_233, g3: g_omega_4, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -373,7 +373,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 6: winding_first ──
     unis[6] = Dialect {
         name: "winding_first",
-        description: "Topological order: G1=Ω (winding seal first), G2=⊙ (then self-modeling), G3=< (Frobenius last). Geometry precedes algebra.",
+        description: "Topological order: G1=◻ (winding seal first), G2=⊙ (then self-modeling), G3=< (Frobenius last). Geometry precedes algebra.",
         g1: g_omega_3, g2: g_odot_2, g3: g_phi_5, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -393,7 +393,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 8: chirality_first ──
     unis[8] = Dialect {
         name: "chirality_first",
-        description: "Memory before closure. G1=⊥≥𐑖 (2-step Markov). Only systems with memory can Frobenius-close. G2=⊙≥⊙, G3=Ω≥𐑭.",
+        description: "Memory before closure. G1=⊥≥𐑖 (2-step Markov). Only systems with memory can Frobenius-close. G2=⊙≥⊙, G3=◻≥𐑭.",
         g1: g_h_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -425,7 +425,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 12: kinetics_trap ──
     unis[12] = Dialect {
         name: "kinetics_trap",
-        description: "Slowness is a structural requirement. G1=⊤≥𐑧 (slow/near-equilibrium). Fast processes outrun their own structure. G2=⊙≥⊙, G3=Ω≥𐑭.",
+        description: "Slowness is a structural requirement. G1=⊤≥𐑧 (slow/near-equilibrium). Fast processes outrun their own structure. G2=⊙≥⊙, G3=◻≥𐑭.",
         g1: g_c_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -441,7 +441,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 14: t_hybrid ──
     unis[14] = Dialect {
         name: "t_hybrid",
-        description: "Time requires BOTH dynamics AND geometry. T constituted by 8 primitives: <,⋈,⊤,⊥,Ω + ⊢,⊣,>. Most demanding T-seal. Canonical gates.",
+        description: "Time requires BOTH dynamics AND geometry. T constituted by 8 primitives: <,⋈,⊤,⊥,◻ + ⊢,⊣,>. Most demanding T-seal. Canonical gates.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_HYBRID, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -449,7 +449,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 15: broadcast_universe ──
     unis[15] = Dialect {
         name: "broadcast_universe",
-        description: "Interaction grammar as the fundamental gate. G1=∋≥𐑠 (sequential composition). Conjunctive/disjunctive systems cannot close. G2=⊙≥⊙, G3=Ω≥𐑭.",
+        description: "Interaction grammar as the fundamental gate. G1=∋≥𐑠 (sequential composition). Conjunctive/disjunctive systems cannot close. G2=⊙≥⊙, G3=◻≥𐑭.",
         g1: g_g_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -481,7 +481,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 19: stoichiometry_universe ──
     unis[19] = Dialect {
         name: "stoichiometry_universe",
-        description: "Component heterogeneity is the first gate. G1=Σ≥𐑳 (many heterogeneous). Uniform systems cannot close — you must be internally diverse. G2=⊙≥⊙, G3=Ω≥𐑭.",
+        description: "Component heterogeneity is the first gate. G1=Σ≥𐑳 (many heterogeneous). Uniform systems cannot close — you must be internally diverse. G2=⊙≥⊙, G3=◻≥𐑭.",
         g1: g_sigma_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -497,7 +497,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 21: absorption_monarchy ──
     unis[21] = Dialect {
         name: "absorption_monarchy",
-        description: "⊙ criticality, Σ n:m, < Frobenius parity, Ω integer winding ALL absorb everything. The monadic absorption empire. Self-modeling is totalitarian.",
+        description: "⊙ criticality, Σ n:m, < Frobenius parity, ◻ integer winding ALL absorb everything. The monadic absorption empire. Self-modeling is totalitarian.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_MONARCHY, is_expansion: false,
     };
@@ -529,7 +529,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 25: absorption_scope_empire ──
     unis[25] = Dialect {
         name: "absorption_scope_empire",
-        description: "Maximal scope (∈=𐑲) is absorbing under all operations. The universal swallows the particular. G1=∈≥𐑲, G2=⊙≥⊙, G3=Ω≥𐑭.",
+        description: "Maximal scope (∈=𐑲) is absorbing under all operations. The universal swallows the particular. G1=∈≥𐑲, G2=⊙≥⊙, G3=◻≥𐑭.",
         g1: g_gamma_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_SCOPE_EMPIRE, is_expansion: false,
     };
@@ -565,7 +565,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 29: coupling_first ──
     unis[29] = Dialect {
         name: "coupling_first",
-        description: "Relation before closure. G1=>≥𐑽 (adjoint coupling, ord 3). Systems without adjoint-pair coupling cannot Frobenius-close. G2=⊙≥⊙, G3=Ω≥𐑭.",
+        description: "Relation before closure. G1=>≥𐑽 (adjoint coupling, ord 3). Systems without adjoint-pair coupling cannot Frobenius-close. G2=⊙≥⊙, G3=◻≥𐑭.",
         g1: g_r_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -573,7 +573,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 30: coupling_maximal ──
     unis[30] = Dialect {
         name: "coupling_maximal",
-        description: "Only bilateral coupling suffices. G1=>≥𐑾 (bilateral, ord 4, max). Even adjoint pairs do not Frobenius-close. G2=⊙≥⊙, G3=Ω≥𐑭.",
+        description: "Only bilateral coupling suffices. G1=>≥𐑾 (bilateral, ord 4, max). Even adjoint pairs do not Frobenius-close. G2=⊙≥⊙, G3=◻≥𐑭.",
         g1: g_r_4, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -581,7 +581,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 31: chirality_second ──
     unis[31] = Dialect {
         name: "chirality_second",
-        description: "Chirality as the monoidal gate: G1=<≥𐑹, G2=⊥≥𐑖 (2-step Markov), G3=Ω≥𐑭. After Frobenius closure, you must remember before you can trace.",
+        description: "Chirality as the monoidal gate: G1=<≥𐑹, G2=⊥≥𐑖 (2-step Markov), G3=◻≥𐑭. After Frobenius closure, you must remember before you can trace.",
         g1: g_phi_5, g2: g_h_3, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -589,7 +589,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 32: dimensional_second ──
     unis[32] = Dialect {
         name: "dimensional_second",
-        description: "Dimensionality as the monoidal gate: G1=<≥𐑹, G2=⊢≥𐑼 (∞-dim), G3=Ω≥𐑭. After Frobenius, you need infinite canvas to trace.",
+        description: "Dimensionality as the monoidal gate: G1=<≥𐑹, G2=⊢≥𐑼 (∞-dim), G3=◻≥𐑭. After Frobenius, you need infinite canvas to trace.",
         g1: g_phi_5, g2: g_d_3, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -597,7 +597,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 33: topology_second ──
     unis[33] = Dialect {
         name: "topology_second",
-        description: "Connectivity as the monoidal gate: G1=<≥𐑹, G2=⊣≥𐑥 (bowtie crossing), G3=Ω≥𐑭. After Frobenius, the topology of connection determines traced status.",
+        description: "Connectivity as the monoidal gate: G1=<≥𐑹, G2=⊣≥𐑥 (bowtie crossing), G3=◻≥𐑭. After Frobenius, the topology of connection determines traced status.",
         g1: g_phi_5, g2: g_th_3, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -605,7 +605,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 34: fidelity_second ──
     unis[34] = Dialect {
         name: "fidelity_second",
-        description: "Quantum coherence as the monoidal gate: G1=<≥𐑹, G2=⋈≥𐑐 (full fidelity), G3=Ω≥𐑭. After Frobenius, only quantum-coherent systems trace.",
+        description: "Quantum coherence as the monoidal gate: G1=<≥𐑹, G2=⋈≥𐑐 (full fidelity), G3=◻≥𐑭. After Frobenius, only quantum-coherent systems trace.",
         g1: g_phi_5, g2: g_f_3, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -613,7 +613,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 35: scope_second ──
     unis[35] = Dialect {
         name: "scope_second",
-        description: "Universal scope as the monoidal gate: G1=<≥𐑹, G2=∈≥𐑲 (aleph/maximal), G3=Ω≥𐑭. Frobenius closure is local; tracing requires universality.",
+        description: "Universal scope as the monoidal gate: G1=<≥𐑹, G2=∈≥𐑲 (aleph/maximal), G3=◻≥𐑭. Frobenius closure is local; tracing requires universality.",
         g1: g_phi_5, g2: g_gamma_3, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -621,7 +621,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 36: composition_second ──
     unis[36] = Dialect {
         name: "composition_second",
-        description: "Sequential composition as the monoidal gate: G1=<≥𐑹, G2=∋≥𐑠 (sequential), G3=Ω≥𐑭. Conjunctive or disjunctive systems cannot trace.",
+        description: "Sequential composition as the monoidal gate: G1=<≥𐑹, G2=∋≥𐑠 (sequential), G3=◻≥𐑭. Conjunctive or disjunctive systems cannot trace.",
         g1: g_phi_5, g2: g_g_3, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -629,7 +629,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 37: winding_second ──
     unis[37] = Dialect {
         name: "winding_second",
-        description: "Topological protection as the monoidal gate: G1=<≥𐑹, G2=Ω≥𐑴 (Z2), G3=⊙≥⊙. After Frobenius parity, only topologically protected systems trace.",
+        description: "Topological protection as the monoidal gate: G1=<≥𐑹, G2=◻≥𐑴 (Z2), G3=⊙≥⊙. After Frobenius parity, only topologically protected systems trace.",
         g1: g_phi_5, g2: g_omega_2, g3: g_odot_2, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -637,7 +637,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 38: kinetics_second ──
     unis[38] = Dialect {
         name: "kinetics_second",
-        description: "Slowness as the monoidal gate: G1=<≥𐑹, G2=⊤≥𐑧 (slow), G3=Ω≥𐑭. Fast Frobenius-closed systems cannot trace — they outrun themselves.",
+        description: "Slowness as the monoidal gate: G1=<≥𐑹, G2=⊤≥𐑧 (slow), G3=◻≥𐑭. Fast Frobenius-closed systems cannot trace — they outrun themselves.",
         g1: g_phi_5, g2: g_c_3, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -709,7 +709,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 47: parallel_canonical ──
     unis[47] = Dialect {
         name: "parallel_canonical",
-        description: "Canonical gates but parallel: <≥𐑹, ⊙≥⊙, Ω≥𐑭 all independent. Any combination qualifies — Frobenius without self-modeling possible.",
+        description: "Canonical gates but parallel: <≥𐑹, ⊙≥⊙, ◻≥𐑭 all independent. Any combination qualifies — Frobenius without self-modeling possible.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: false,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -717,7 +717,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 48: parallel_low ──
     unis[48] = Dialect {
         name: "parallel_low",
-        description: "Low gates, parallel: <≥𐑬, ⊙≥𐑢, Ω≥𐑭. Easiest possible O_∞ access — three independent low bars.",
+        description: "Low gates, parallel: <≥𐑬, ⊙≥𐑢, ◻≥𐑭. Easiest possible O_∞ access — three independent low bars.",
         g1: g_phi_3, g2: g_odot_1, g3: g_omega_3, gate_ordering: false,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -725,7 +725,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 49: parallel_high ──
     unis[49] = Dialect {
         name: "parallel_high",
-        description: "High gates, parallel: <≥𐑹, ⊙≥𐑮, Ω≥𐑟. Strictest bars but independently checked — a system can be Frobenius without self-modeling or winding.",
+        description: "High gates, parallel: <≥𐑹, ⊙≥𐑮, ◻≥𐑟. Strictest bars but independently checked — a system can be Frobenius without self-modeling or winding.",
         g1: g_phi_5, g2: g_odot_233, g3: g_omega_4, gate_ordering: false,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -733,7 +733,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 50: parallel_chirality ──
     unis[50] = Dialect {
         name: "parallel_chirality",
-        description: "Chirality gates, parallel: ⊥≥𐑖, ⊙≥⊙, Ω≥𐑭. Memory, self-modeling, and winding are independent axes.",
+        description: "Chirality gates, parallel: ⊥≥𐑖, ⊙≥⊙, ◻≥𐑭. Memory, self-modeling, and winding are independent axes.",
         g1: g_h_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: false,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -749,7 +749,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 52: parallel_scope ──
     unis[52] = Dialect {
         name: "parallel_scope",
-        description: "Scope gates, parallel: ∈≥𐑲, ⊙≥⊙, Ω≥𐑭. Universal scope, self-modeling, and winding are independent.",
+        description: "Scope gates, parallel: ∈≥𐑲, ⊙≥⊙, ◻≥𐑭. Universal scope, self-modeling, and winding are independent.",
         g1: g_gamma_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: false,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -757,7 +757,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 53: parallel_broadcast ──
     unis[53] = Dialect {
         name: "parallel_broadcast",
-        description: "Broadcast gates, parallel: ∋≥𐑠, ⊙≥⊙, Ω≥𐑭. Sequential composition, self-modeling, and winding are independent.",
+        description: "Broadcast gates, parallel: ∋≥𐑠, ⊙≥⊙, ◻≥𐑭. Sequential composition, self-modeling, and winding are independent.",
         g1: g_g_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: false,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -773,7 +773,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 55: parallel_kinetics ──
     unis[55] = Dialect {
         name: "parallel_kinetics",
-        description: "Kinetics gates, parallel: ⊤≥𐑧, ⊙≥⊙, Ω≥𐑭. Slowness, self-modeling, and winding are independent.",
+        description: "Kinetics gates, parallel: ⊤≥𐑧, ⊙≥⊙, ◻≥𐑭. Slowness, self-modeling, and winding are independent.",
         g1: g_c_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: false,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -813,7 +813,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 60: triple_winding ──
     unis[60] = Dialect {
         name: "triple_winding",
-        description: "Winding ladder: G1=Ω≥𐑴 (Z2), G2=Ω≥𐑭 (integer), G3=Ω≥𐑟 (non-Abelian, max). Topological protection as the sole operad filter.",
+        description: "Winding ladder: G1=◻≥𐑴 (Z2), G2=◻≥𐑭 (integer), G3=◻≥𐑟 (non-Abelian, max). Topological protection as the sole operad filter.",
         g1: g_omega_2, g2: g_omega_3, g3: g_omega_4, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -833,7 +833,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 62: ordinal4_winding ──
     unis[62] = Dialect {
         name: "ordinal4_winding",
-        description: "Ordinal-4 winding filter: G1=Ω≥𐑴, G2=Ω≥𐑭, G3=Ω≥𐑟, G4=Ω≥𐑟. All four winding rungs. Non-Abelian braiding type-checked twice — once by topology, once by winding itself.",
+        description: "Ordinal-4 winding filter: G1=◻≥𐑴, G2=◻≥𐑭, G3=◻≥𐑟, G4=◻≥𐑟. All four winding rungs. Non-Abelian braiding type-checked twice — once by topology, once by winding itself.",
         g1: g_omega_2, g2: g_omega_3, g3: g_omega_4, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -841,7 +841,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 63: ordinal_swap ──
     unis[63] = Dialect {
         name: "ordinal_swap",
-        description: "Same primitives as canonical but in swapped order: G1=Ω≥𐑭 (winding first), G2=⊙≥⊙ (criticality second), G3=<≥𐑯 (parity third). Winding as the primary filter changes the admission curve.",
+        description: "Same primitives as canonical but in swapped order: G1=◻≥𐑭 (winding first), G2=⊙≥⊙ (criticality second), G3=<≥𐑯 (parity third). Winding as the primary filter changes the admission curve.",
         g1: g_omega_3, g2: g_odot_2, g3: g_phi_4, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -917,7 +917,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 71: t_subset_th_omega ──
     unis[71] = Dialect {
         name: "t_subset_th_omega",
-        description: "T-constitution: ⊣≥𐑸 AND Ω≥𐑭. Self-referential topology AND integer winding. The dialect of topologically protected self-reference — every grammatical system carries a winding charge.",
+        description: "T-constitution: ⊣≥𐑸 AND ◻≥𐑭. Self-referential topology AND integer winding. The dialect of topologically protected self-reference — every grammatical system carries a winding charge.",
         g1: g_th_5, g2: g_omega_3, g3: g_odot_2, gate_ordering: false,
         t_entries: T_TH_OMEGA, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -961,7 +961,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 76: g4_quad ──
     unis[76] = Dialect {
         name: "g4_quad",
-        description: "Full quad-gate: G1=∈≥𐑲, G2=<≥𐑹, G3=⊙≥⊙, G4=Ω≥𐑭. Four-gate ordinal-4 dialect. Universal range → Frobenius parity → self-modeling → winding. The longest ordinal ladder.",
+        description: "Full quad-gate: G1=∈≥𐑲, G2=<≥𐑹, G3=⊙≥⊙, G4=◻≥𐑭. Four-gate ordinal-4 dialect. Universal range → Frobenius parity → self-modeling → winding. The longest ordinal ladder.",
         g1: g_gamma_3, g2: g_phi_5, g3: g_odot_2, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -977,7 +977,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 78: only_winding ──
     unis[78] = Dialect {
         name: "only_winding",
-        description: "Single-gate dialect: G1=Ω≥𐑭 only. Winding number as the sole filter. Any topologically protected system passes. All flat-world systems admitted. Pure topological dialect.",
+        description: "Single-gate dialect: G1=◻≥𐑭 only. Winding number as the sole filter. Any topologically protected system passes. All flat-world systems admitted. Pure topological dialect.",
         g1: g_omega_3, g2: GATE_NONE, g3: GATE_NONE, gate_ordering: false,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -1001,7 +1001,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 81: dense_gates ──
     unis[81] = Dialect {
         name: "dense_gates",
-        description: "Maximally dense: 5 distinct primitives across 3 gate slots. G1=<≥𐑹 AND Ω≥𐑭, G2=⊙≥⊙ AND ⊤≥𐑧, G3=⊣≥𐑸. Parity+winding paired, criticality+kinetics paired, topology solo. The densest gate constellation — 5 orthogonal structural demands.",
+        description: "Maximally dense: 5 distinct primitives across 3 gate slots. G1=<≥𐑹 AND ◻≥𐑭, G2=⊙≥⊙ AND ⊤≥𐑧, G3=⊣≥𐑸. Parity+winding paired, criticality+kinetics paired, topology solo. The densest gate constellation — 5 orthogonal structural demands.",
         g1: g_phi_omega, g2: g_odot_c, g3: g_th_5, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -1009,7 +1009,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 82: chirality_winding ──
     unis[82] = Dialect {
         name: "chirality_winding",
-        description: "Chirality-winding pair: G1=⊥≥𐑫 (eternal memory), G2=Ω≥𐑭 (integer winding), G3=⊙≥⊙. Eternal chirality and topological protection are yoked — memory depth enables winding, winding preserves memory. The paired conservation dialect.",
+        description: "Chirality-winding pair: G1=⊥≥𐑫 (eternal memory), G2=◻≥𐑭 (integer winding), G3=⊙≥⊙. Eternal chirality and topological protection are yoked — memory depth enables winding, winding preserves memory. The paired conservation dialect.",
         g1: g_h_4, g2: g_omega_3, g3: g_odot_2, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -1049,7 +1049,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 87: the_all ──
     unis[87] = Dialect {
         name: "the_all",
-        description: "All-structured dialect: G1=⊙≥⊙, G2=<≥𐑹, G3=Ω≥𐑭, G4=⊣≥𐑸. T-constitution: all primitives explicit. Absorption: 𐑻 + sub-critical dual regime. Four-gate + full T + dual absorption. The densest structural filter in the catalog — admits only systems that are simultaneously self-modeling, Frobenius-special, topologically protected, self-referential, and constitutionally complete. Approximate fingerprint: the grammar itself, plus a handful of crystal neighbors.",
+        description: "All-structured dialect: G1=⊙≥⊙, G2=<≥𐑹, G3=◻≥𐑭, G4=⊣≥𐑸. T-constitution: all primitives explicit. Absorption: 𐑻 + sub-critical dual regime. Four-gate + full T + dual absorption. The densest structural filter in the catalog — admits only systems that are simultaneously self-modeling, Frobenius-special, topologically protected, self-referential, and constitutionally complete. Approximate fingerprint: the grammar itself, plus a handful of crystal neighbors.",
         g1: g_odot_2, g2: g_phi_5, g3: g_omega_3, gate_ordering: true,
         t_entries: T_ALL, abs_rules: ABS_DUAL, is_expansion: true,
     };
@@ -1078,7 +1078,7 @@ pub static T_TH_SIGMA: &[TEntry] = &[
     TEntry { prim: "⊞", crit_val: "𐑳", ceiling: false },
 ];
 
-/// Self-referential + winding T: ⊣≥𐑸 AND Ω≥𐑭
+/// Self-referential + winding T: ⊣≥𐑸 AND ◻≥𐑭
 pub static T_TH_OMEGA: &[TEntry] = &[
     TEntry { prim: "⊣", crit_val: "𐑸", ceiling: false },
     TEntry { prim: "◻", crit_val: "𐑭", ceiling: false },

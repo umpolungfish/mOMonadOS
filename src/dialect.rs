@@ -144,7 +144,7 @@ pub fn dialect_description(u: u8) -> &'static str {
               stay plain no matter how structured. G2=self-model, G3=winding. \
               T-constitution is ceiling-mode (T_CEILING), not exact-equality.",
         10 => "Criticality is everything: all three gates are the SAME primitive \
-               (⊙) at escalating thresholds (𐑢 / ⊙ / 𐑣). <, Ω, and the rest are \
+               (⊙) at escalating thresholds (𐑢 / ⊙ / 𐑣). <, ◻, and the rest are \
                descriptive, not gating. T-constitution is ceiling-mode (T_CEILING).",
         11 => "Same as U10, but the kinetics ceiling admits trapped/gapped spectra \
                (⊤=𐑪), not just slow ones (⊤=𐑧) — the temporal-closure condition \
@@ -173,8 +173,8 @@ pub fn dialect_gates(u: u8) -> String {
         5 => "G1:Phi>=pmsym  G2:Phc>=c_complex  G3:Omega>=NA  T:o".to_string(),
         6 => "G1:Omega>=Z  G2:Phc>=c  G3:Phi>=pmsym  T:o".to_string(),
         7 => "G1:Phi>=pmsym  G2:Phc>=c  G3:Omega>=Z  T:Gm=seq".to_string(),
-        8 => "G1:⊥≥𐑖  G2:⊙≥⊙  G3:Ω≥𐑭  T:ceiling(5)".to_string(),
-        9 => "G1:∈≥𐑲  G2:⊙≥⊙  G3:Ω≥𐑭  T:ceiling(5)".to_string(),
+        8 => "G1:⊥≥𐑖  G2:⊙≥⊙  G3:◻≥𐑭  T:ceiling(5)".to_string(),
+        9 => "G1:∈≥𐑲  G2:⊙≥⊙  G3:◻≥𐑭  T:ceiling(5)".to_string(),
         10 => "G1:⊙≥𐑢  G2:⊙≥⊙  G3:⊙≥𐑣  T:ceiling(5)".to_string(),
         11 => "G1:⊙≥𐑢  G2:⊙≥⊙  G3:⊙≥𐑣  T:ceiling(⊤≤𐑪)".to_string(),
         _ if is_expansion(u) => {
