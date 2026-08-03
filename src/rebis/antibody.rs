@@ -4,7 +4,7 @@
 //! Given a target epitope's IG primitive activation profile, design
 //! complementary CDR sequences using the 12↔12 complementarity pairs:
 //!
-//!   D↔Ω, T↔H, R↔S, P↔F, K↔G, Gm↔φ̂
+//!   D↔Ω, T↔H, R↔S, P↔F, K↔G, Gm↔⊙
 //!
 //! If the target epitope activates primitive P, the CDR should activate
 //! its complement to form a structural contact.
@@ -26,7 +26,7 @@ pub fn complementary_primitive(prim: &str) -> Option<&'static str> {
         "K" | "⊤" => Some("G"),
         "G" | "∈" => Some("K"),
         "Gm" | "∋" => Some("Phi"),
-        "Phi" | "φ̂" => Some("Gm"),
+        "Phi" | "⊙" => Some("Gm"),
         "H" | "⊥" => Some("T"),
         "S" | "⊞" => Some("R"),
         "O" | "◻" => Some("D"),
@@ -45,7 +45,7 @@ pub fn primitive_to_aa(prim: &str) -> Option<char> {
         "K" | "⊤" => Some('I'),  // Ile
         "G" | "∈" => Some('H'),  // His
         "Gm" | "∋" => Some('N'), // Asn
-        "Phi" | "φ̂" => Some('Q'), // Gln
+        "Phi" | "⊙" => Some('Q'), // Gln
         "H" | "⊥" => Some('D'),  // Asp
         "S" | "⊞" => Some('K'),  // Lys
         "O" | "◻" => Some('E'),  // Glu

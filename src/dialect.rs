@@ -251,7 +251,7 @@ pub fn eval_gate_spec(
 pub fn gate_prim_label(prim: &str) -> &'static str {
     match prim {
         "<" => "<",
-        "⊙" => "φ̂",
+        "⊙" => "⊙",
         "◻" => "◻",
         "⊥" => "⊥",
         "∈" => "∈",

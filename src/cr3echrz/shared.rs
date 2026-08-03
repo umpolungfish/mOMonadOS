@@ -92,7 +92,7 @@ pub fn opcode_grammar(op: Opcode) -> GrammarPrim {
         Opcode::TAnchor => GrammarPrim { symbol: "\u{10461}", latin: "⊣", desc: "Topology" },
         Opcode::FSplit  => GrammarPrim { symbol: "\u{1045A}", latin: "∈", desc: "Split (δ)" },
         Opcode::FFuse   => GrammarPrim { symbol: "\u{10459}", latin: "⊞", desc: "Fuse (μ)" },
-        Opcode::EvalT   => GrammarPrim { symbol: "⊙",  latin: "φ̂", desc: "Criticality" },
+        Opcode::EvalT   => GrammarPrim { symbol: "⊙",  latin: "⊙", desc: "Criticality" },
         Opcode::EvalF   => GrammarPrim { symbol: "\u{10456}", latin: "⊥", desc: "Chirality" },
         Opcode::EngPar  => GrammarPrim { symbol: "\u{10473}", latin: "⊞", desc: "Stoichiometry" },
         Opcode::AFwd    => GrammarPrim { symbol: "\u{1047E}", latin: ">", desc: "Coupling" },

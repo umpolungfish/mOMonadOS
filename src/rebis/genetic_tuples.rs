@@ -58,7 +58,7 @@ impl PrimKey {
             "K" | "⊤" => Some(PrimKey::K),
             "G" | "∈" => Some(PrimKey::G),
             "Gm" | "∋" => Some(PrimKey::Gm),
-            "Phi" | "φ̂" => Some(PrimKey::Phi),
+            "Phi" | "⊙" => Some(PrimKey::Phi),
             "H" | "⊥" => Some(PrimKey::H),
             "S" | "⊞" => Some(PrimKey::S),
             "O" | "◻" => Some(PrimKey::O),
@@ -173,7 +173,7 @@ impl IGTuple {
         }
     }
 
-    /// Build a tuple display string: ⟨D·T·R·P·F·K·G·Gm·φ̂·H·S·Ω⟩
+    /// Build a tuple display string: ⟨D·T·R·P·F·K·G·Gm·⊙·H·S·Ω⟩
     pub fn display(&self) -> alloc::string::String {
         let mut s = alloc::string::String::from("\u{27e8}"); // ⟨
         for (i, key) in PRIM_KEYS.iter().enumerate() {

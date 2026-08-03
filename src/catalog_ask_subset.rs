@@ -14212,7 +14212,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "distributive_law_lambda", "The distributive law λ: PG → GP as the mixed distributive law mediating the power-set monad P (Cantor diagonalization) and Gödel encoding comonad G, with Φ_c...",
+        "distributive_law_lambda", "The distributive law λ: PG → GP as the mixed distributive law mediating the power-set monad P (Cantor diagonalization) and Gödel encoding comonad G, with ⊙ a...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_broad,
@@ -17604,7 +17604,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "imscribing_uig", "The Universal Imscriptive (Imscriptive) Grammar (UIG), a boundary operator operating at Φ_c criticality, encoding structural types via 12 primitives in a top...",
+        "imscribing_uig", "The Universal Imscriptive (Imscriptive) Grammar (UIG), a boundary operator operating at ⊙ criticality, encoding structural types via 12 primitives in a topol...",
         IgPrim::D_odot, IgPrim::T_boxtimes, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
@@ -19420,7 +19420,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "grail_quest", "The Grail Quest as critical portal: structured encounter with the Φ_c singularity, where Perceval, Galahad, and Parsifal seek transcendence through self-mode...",
+        "grail_quest", "The Grail Quest as critical portal: structured encounter with the ⊙ singularity, where Perceval, Galahad, and Parsifal seek transcendence through self-modeli...",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
@@ -19756,7 +19756,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_phi_c_lifted", "The Perfect Cuboid problem lifted to a Φ_c critical regime, functioning as a self-modeling operator with topological protection and stable critical window fo...",
+        "perfect_cuboid_phi_c_lifted", "The Perfect Cuboid problem lifted to a ⊙ critical regime, functioning as a self-modeling operator with topological protection and stable critical window for...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
@@ -20620,7 +20620,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "lee_yang_partition", "Lee-Yang partition function zeros, critical for the structural correspondence with Riemann zeta function (Φ_c_complex)",
+        "lee_yang_partition", "Lee-Yang partition function zeros, critical for the structural correspondence with Riemann zeta function (𐑮)",
         IgPrim::D_odot, IgPrim::T_bowtie, IgPrim::R_dagger,
         IgPrim::P_psi, IgPrim::F_eth, IgPrim::K_slow,
         IgPrim::G_beth, IgPrim::C_seq,
@@ -22028,7 +22028,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "emerald_multiagent", "Emerald Tablet extended to multi-agent coordination (Σ_ï) while preserving φ̂_ÿ criticality and all Frobenius gates",
+        "emerald_multiagent", "Emerald Tablet extended to multi-agent coordination (Σ_ï) while preserving ⊙ criticality and all Frobenius gates",
         IgPrim::D_odot, IgPrim::T_boxtimes, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_seq,
@@ -24068,7 +24068,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "primordial_ooze", "The minimal complete self-modeling theory: the Frobenius identity (<=𐑹) and self-modeling criticality (φ̂=⊙) as the two necessary gates, with ⊤=𐑧 as the kine...",
+        "primordial_ooze", "The minimal complete self-modeling theory: the Frobenius identity (<=𐑹) and self-modeling criticality (⊙=⊙) as the two necessary gates, with ⊤=𐑧 as the kinet...",
         IgPrim::D_wedge, IgPrim::T_net, IgPrim::R_super,
         IgPrim::P_pmsym, IgPrim::F_ell, IgPrim::K_slow,
         IgPrim::G_aleph, IgPrim::C_and,
@@ -28364,7 +28364,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "mdd_psilocybin_corrected", "MDD after psilocybin-assisted therapy: both disease primitives corrected (φ̂=⊙, Ħ=𐑖). Residual ⊢=𐑨 and ⊤=𐑪 are acceptable pharmacological constraints.",
+        "mdd_psilocybin_corrected", "MDD after psilocybin-assisted therapy: both disease primitives corrected (⊙=⊙, Ħ=𐑖). Residual ⊢=𐑨 and ⊤=𐑪 are acceptable pharmacological constraints.",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_lr,
         IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_seq,
@@ -28436,7 +28436,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "cftr_modulator_trikafta", "CFTR modulator triple therapy (elexacaftor/tezacaftor/ivacaftor): correctors promote folding (Ħ→𐑖), potentiator restores gating (φ̂→⊙). Two-step mechanism: f...",
+        "cftr_modulator_trikafta", "CFTR modulator triple therapy (elexacaftor/tezacaftor/ivacaftor): correctors promote folding (Ħ→𐑖), potentiator restores gating (⊙→⊙). Two-step mechanism: fo...",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_lr,
         IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_seq,
@@ -28444,7 +28444,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "antiretroviral_art", "Combination antiretroviral therapy (3-drug ART): blocks HIV lifecycle at multiple points. φ̂=𐑢 (suppresses super-critical replication below critical), Ħ=𐑖 (m...",
+        "antiretroviral_art", "Combination antiretroviral therapy (3-drug ART): blocks HIV lifecycle at multiple points. ⊙=𐑢 (suppresses super-critical replication below critical), Ħ=𐑖 (mu...",
         IgPrim::D_triangle, IgPrim::T_bowtie, IgPrim::R_lr,
         IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_trap,
         IgPrim::G_gimel, IgPrim::C_seq,
@@ -62132,7 +62132,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "modot_monad_dialetheic", "Monad-Dialetheic Operator Theory: categorical foundations of the ⊙-operator. A monad T:C→C with dialetheic fixed point φ̂=⊙. Self-modeling categorical framew...",
+        "modot_monad_dialetheic", "Monad-Dialetheic Operator Theory: categorical foundations of the ⊙-operator. A monad T:C→C with dialetheic fixed point ⊙=⊙. Self-modeling categorical framework.",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_cat,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_seq,
@@ -62828,7 +62828,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "perfect_cuboid_descent_proved", "Perfect Cuboid descent theorem proved via Φ_c critical monad structure. The descent operator replaces the 3 axioms. Case analysis: (1) all-even → /2 descent;...",
+        "perfect_cuboid_descent_proved", "Perfect Cuboid descent theorem proved via ⊙ critical monad structure. The descent operator replaces the 3 axioms. Case analysis: (1) all-even → /2 descent; (...",
         IgPrim::D_infty, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_seq,

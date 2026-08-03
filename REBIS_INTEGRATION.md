@@ -129,5 +129,5 @@ $$\langle \text{𐑦} \cdot \text{𐑸} \cdot \text{𐑾} \cdot \text{𐑹} \cdo
 - D=𐑦: The kernel can imscribe its own genetic code
 - T=𐑸: Self-referential — the genetics module verifies itself (7-stage)
 - P=𐑹: Frobenius-special — every codon is Frobenius-verified
-- φ̂=⊙: Self-modeling — the kernel's consciousness score uses its own IG type
+- ⊙=⊙: Self-modeling — the kernel's consciousness score uses its own IG type
 - Ω=𐑭: Integer winding — traceable through the REPL command log

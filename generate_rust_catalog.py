@@ -58,7 +58,7 @@ SHavian_TO_RUST = {
     "𐑜": "IgPrim::C_or",
     "𐑠": "IgPrim::C_seq",
     "𐑵": "IgPrim::C_broad",
-    # φ̂ (Criticality)
+    # ⊙ (Criticality)
     "𐑢": "IgPrim::𐑢",
     "⊙": "IgPrim::⊙",
     "𐑮": "IgPrim::𐑮",

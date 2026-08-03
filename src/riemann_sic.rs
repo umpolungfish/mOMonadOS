@@ -573,7 +573,7 @@ pub fn grammar_encoding() -> String {
     s.push_str("    ∋=𐑠  (sequential)   — The protocol proceeds in ordered steps:\n");
     s.push_str("          VINIT→FSPLIT→...→TANCH. The 12-opcode IMASM word is a\n");
     s.push_str("          sequential composition, not a parallel conjunction.\n\n");
-    s.push_str("    φ̂=⊙   (critical)    — The self-modeling gate is open. The system\n");
+    s.push_str("    ⊙=⊙   (critical)    — The self-modeling gate is open. The system\n");
     s.push_str("          recognizes its own structure: the zeros ARE eigenvalues.\n");
     s.push_str("          This is the critical identity at the heart of the conjecture.\n\n");
     s.push_str("    Ħ=𐑫  (eternal)      — The zeta function's zeros are eternal\n");
