@@ -8,7 +8,7 @@
 //! classic close condition (check::word_verdict) and, when the word carries
 //! tri tokens, the SIXTEEN_3 register machine's tri-ancestral verdict.
 //!
-//! One certified turn per call: ⊢⟨word⟩◇⊞⟨⟩●⟨readout⟩⊣ — the query arm
+//! One certified turn per call: ⊢⟨word⟩∈⊞⟨⟩∋⟨readout⟩⊣ — the query arm
 //! sampled under the fork discipline, the μ arm the trunk's self-readout,
 //! and the verdict spoken by the kernel that lives on this machine.
 //!
@@ -370,13 +370,22 @@ impl Vita {
         let lang_id = id_of(voc, "⟨");
         let rang_id = id_of(voc, "⟩");
         let dot_id = id_of(voc, "·");
-        let query_legal: Vec<u32> =
-            "⊢⊣><=⊙◇●∈∋+×⊞~≁¬".chars().map(|c| id_of(voc, &c.to_string())).collect();
+        // The alphabet the trunk may write a query in, read off the tokens
+        // rather than spelled out: a literal list goes stale the moment a glyph
+        // moves, and id_of answers a miss with the last vocabulary entry instead
+        // of an error, so the mask would have silently admitted the wrong token.
+        let query_legal: Vec<u32> = ALL_TOKENS
+            .iter()
+            .map(|t| id_of(voc, &t.glyph().to_string()))
+            .chain([CTok::Fsplit.code(), CTok::Ffuse.code()]
+                .iter()
+                .map(|g| id_of(voc, g)))
+            .collect();
         let mut answer_legal: Vec<u32> = imasm_core::state_order()
             .iter()
             .map(|s| id_of(voc, &s.glyph().to_string()))
             .collect();
-        answer_legal.extend([id_of(voc, "⊙"), id_of(voc, "×"), dot_id, rang_id]);
+        answer_legal.extend([id_of(voc, "⊙"), id_of(voc, CTok::Evalf.code()), dot_id, rang_id]);
         let word_initial = [open_id, id_of(voc, "⊙")];
 
         // splitmix64: every u64 seed lands on its own xorshift orbit — seed↔word

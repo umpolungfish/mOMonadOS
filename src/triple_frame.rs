@@ -35,11 +35,11 @@ use alloc::format;
 pub enum Opcode {
     VINIT,    // ⊢  — initialize vacuum
     IMSCRIB,  // ⊙  — self-referential identity
-    FSPLIT,   // ◇  — comultiplication (δ)
+    FSPLIT,   // ∈  — comultiplication (δ)
     EVALT,    // +  — coherent convergence
     EVALF,    // ×  — decoherent divergence
     ENGAGR,   // ⊞  — non-commutative braiding / paradox
-    FFUSE,    // ●  — multiplication (μ)
+    FFUSE,    // ∋  — multiplication (μ)
     CLINK,    // =  — superoperator composition
     AFWD,     // >  — unitary evolution
     AREV,     // <  — adjoint symmetry
@@ -86,11 +86,11 @@ impl Opcode {
         match g {
             '⊢' => Some(Opcode::VINIT),
             '⊙' => Some(Opcode::IMSCRIB),
-            '◇' => Some(Opcode::FSPLIT),
+            '∈' | '◇' => Some(Opcode::FSPLIT),
             '+' => Some(Opcode::EVALT),
             '×' => Some(Opcode::EVALF),
             '⊞' => Some(Opcode::ENGAGR),
-            '●' => Some(Opcode::FFUSE),
+            '∋' | '●' => Some(Opcode::FFUSE),
             '=' => Some(Opcode::CLINK),
             '>' => Some(Opcode::AFWD),
             '<' => Some(Opcode::AREV),

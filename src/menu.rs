@@ -93,11 +93,11 @@ pub static CRYSTAL_MENU: &[MenuItem] = &[
 ];
 
 pub static IMASM_MENU: &[MenuItem] = &[
-    MenuItem { name: "cycle", cmd: "cycle", desc: "walk an IMASM word around its ROTAT orbit (glyphs only)", example: "cycle ⊢⊙∈+×∋=¬⊣", submenu: None },
-    MenuItem { name: "weight", cmd: "weight", desc: "where the weight moves through an IMASM word", example: "weight ⊢⊙∈+×∋=¬⊣", submenu: None },
-    MenuItem { name: "banked", cmd: "banked", desc: "was a count cleared with nothing banked?", example: "banked ⊢⊙∈+×∋=¬⊣", submenu: None },
-    MenuItem { name: "insert", cmd: "insert", desc: "every one-glyph repair for an exposed word", example: "insert ⊢⊙∈+×⊞∋><=¬⊣", submenu: None },
-    MenuItem { name: "trans", cmd: "trans", desc: "transitions counted on the ring, closing edge included", example: "trans ⊢⊙∈+×∋=¬⊣", submenu: None },
+    MenuItem { name: "cycle", cmd: "cycle", desc: "walk an IMASM word around its ROTAT orbit (glyphs only)", example: "cycle ⊢⊙∈⊤⊥∋⋈◻⊣", submenu: None },
+    MenuItem { name: "weight", cmd: "weight", desc: "where the weight moves through an IMASM word", example: "weight ⊢⊙∈⊤⊥∋⋈◻⊣", submenu: None },
+    MenuItem { name: "banked", cmd: "banked", desc: "was a count cleared with nothing banked?", example: "banked ⊢⊙∈⊤⊥∋⋈◻⊣", submenu: None },
+    MenuItem { name: "insert", cmd: "insert", desc: "every one-glyph repair for an exposed word", example: "insert ⊢⊙∈⊤⊥⊞∋><⋈◻⊣", submenu: None },
+    MenuItem { name: "trans", cmd: "trans", desc: "transitions counted on the ring, closing edge included", example: "trans ⊢⊙∈⊤⊥∋⋈◻⊣", submenu: None },
     MenuItem { name: "arev", cmd: "arev", desc: "H hop: read snapshot through the R1<->R2 mirror", example: "arev", submenu: None },
 ];
 

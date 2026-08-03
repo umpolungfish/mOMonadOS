@@ -3,7 +3,7 @@
 // Encodes the ob3ect: "the zeros of ζ(s) correspond to the eigenvalues
 // of a SIC-POVM-driven Hamiltonian" as an IMASM protocol.
 //
-// IMASM word: ⊢◇><+=⊙⊞●¬⊣  (11 opcodes, period 11)
+// IMASM word: ⊢∈><⊤⋈⊙⊞∋◻⊣  (11 opcodes, period 11)
 // Topology: flat_chain (1 FSPLIT/FFUSE pair, 6 T-ops, 0 F-ops)
 // Tier lift: O₀ → O₂dag
 // Lean: Imscribing.Ob3ects.the_zeros_of_s_correspond_to_the_eigenvalues_of_abe3fc55_scaffold
@@ -463,7 +463,7 @@ pub fn sixteen3_breakdown() -> String {
     s.push_str("═══ SIXTEEN_3 Trilattice Breakdown (Phase 11) ═══\n\n");
     s.push_str("  Carrier: P({T,F,t,f}) = 16 generalized truth values\n");
     s.push_str("  Three orderings: ≤_i (information), ≤_t (truth), ≤_c (constructivity)\n");
-    s.push_str("  Word: ⊢∈><+=⊙⊞∋¬⊣\n\n");
+    s.push_str("  Word: ⊢∈><⊤⋈⊙⊞∋◻⊣\n\n");
     s.push_str("  Step  Glyph  12-op     16₃-op    Reg↓ →  Reg↑\n");
     s.push_str("  ───  ─────  ────────  ────────  ─────   ─────\n");
 
@@ -509,28 +509,28 @@ pub fn rotat_audit() -> String {
     s.push_str("    ⊙ closed_walk\n");
     s.push_str("    ⊙ topology_class\n\n");
     s.push_str("  ──── ROTAT-Phase-Dependent ────\n");
-    s.push_str("    ◇ final_register\n\n");
+    s.push_str("    ∈ final_register\n\n");
     s.push_str("  Rotation orbit:\n");
 
     let rotations: &[(&str, &str)] = &[
-        ("k=0",  "⊢◇><+=⊙⊞●¬⊣"),
-        ("k=1",  "◇><+=⊙⊞●¬⊣⊢"),
-        ("k=2",  "><+=⊙⊞●¬⊣⊢◇"),
-        ("k=3",  "<+=⊙⊞●¬⊣⊢◇>"),
-        ("k=4",  "+=⊙⊞●¬⊣⊢◇><"),
-        ("k=5",  "=⊙⊞●¬⊣⊢◇><+"),
-        ("k=6",  "⊙⊞●¬⊣⊢◇><+="),
-        ("k=7",  "⊞●¬⊣⊢◇><+=⊙"),
-        ("k=8",  "●¬⊣⊢◇><+=⊙⊞"),
-        ("k=9",  "¬⊣⊢◇><+=⊙⊞●"),
-        ("k=10", "⊣⊢◇><+=⊙⊞●¬"),
+        ("k=0",  "⊢∈><⊤⋈⊙⊞∋◻⊣"),
+        ("k=1",  "∈><⊤⋈⊙⊞∋◻⊣⊢"),
+        ("k=2",  "><⊤⋈⊙⊞∋◻⊣⊢∈"),
+        ("k=3",  "<⊤⋈⊙⊞∋◻⊣⊢∈>"),
+        ("k=4",  "⊤⋈⊙⊞∋◻⊣⊢∈><"),
+        ("k=5",  "⋈⊙⊞∋◻⊣⊢∈><⊤"),
+        ("k=6",  "⊙⊞∋◻⊣⊢∈><⊤⋈"),
+        ("k=7",  "⊞∋◻⊣⊢∈><⊤⋈⊙"),
+        ("k=8",  "∋◻⊣⊢∈><⊤⋈⊙⊞"),
+        ("k=9",  "◻⊣⊢∈><⊤⋈⊙⊞∋"),
+        ("k=10", "⊣⊢∈><⊤⋈⊙⊞∋◻"),
     ];
 
     for (k, word) in rotations {
         s.push_str(&alloc::format!("    {:>4}:  {}\n", k, word));
     }
 
-    s.push_str("\n  Canonical rotation: k=4  word: +=⊙⊞●¬⊣⊢◇><\n");
+    s.push_str("\n  Canonical rotation: k=4  word: ⊤⋈⊙⊞∋◻⊣⊢∈><\n");
     s.push_str("  Verdict: PHASE-BEARING — moves under ROTAT: final_register\n");
     s
 }
@@ -673,16 +673,16 @@ pub fn hilbert_polya_connection() -> String {
     s.push_str("    The SIC-POVM {Πₖ} on C^d is the measurement basis.\n");
     s.push_str("    The correspondence is the identity:\n\n");
     s.push_str("      spec(H) = {ρₙ : ζ(ρₙ) = 0, 0 < Re(ρₙ) < 1}\n\n");
-    s.push_str("  The IMASM protocol ⊢◇><+=⊙⊞●¬⊣ encodes this as:\n");
+    s.push_str("  The IMASM protocol ⊢∈><⊤⋈⊙⊞∋◻⊣ encodes this as:\n");
     s.push_str("    ⊢  VINIT   — establish the zeta domain\n");
-    s.push_str("    ◇  FSPLIT  — bifurcate into real/imaginary\n");
+    s.push_str("    ∈  FSPLIT  — bifurcate into real/imaginary\n");
     s.push_str("    >  AFWD    — forward morphism to Hamiltonian\n");
     s.push_str("    <  AREV    — reverse descent to zeros\n");
     s.push_str("    +  EVALT   — affirm critical line alignment\n");
     s.push_str("    =  CLINK   — chain SIC-POVM projections\n");
     s.push_str("    ⊙  IMSCRIB — self-dual recognition\n");
     s.push_str("    ⊞  ENGAGR  — dialetheic both-state\n");
-    s.push_str("    ●  FFUSE   — spectral reconstitution\n");
+    s.push_str("    ∋  FFUSE   — spectral reconstitution\n");
     s.push_str("    ¬  IFIX    — permanent record\n");
     s.push_str("    ⊣  TANCH   — anchor on critical line\n\n");
     s.push_str("  The protocol does not PROVE the Riemann Hypothesis. It encodes\n");

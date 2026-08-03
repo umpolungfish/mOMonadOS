@@ -1,22 +1,35 @@
-The kernel speaks the new alphabet
+The kernel is on the new alphabet, all the way down
 
     ⊢ VINIT   ⊣ TANCH   > AFWD    < AREV    ⋈ CLINK   ⊙ IMSCRIB
     ∈ FSPLIT  ∋ FFUSE   ⊤ EVALT   ⊥ EVALF   ⊞ ENGAGR  ◻ IFIX
 
-The wound torus reads ⊢⊙∈⊤⋈∋◻⊞<⋈⊣ now. `kernel_torus`, `triple_frame` and
-`riemann_sic` carried their own copies of the glyph table and all three are on
-the new set.
+The first pass changed the glyph tables and left the words. `kernel_torus`,
+`triple_frame`, `riemann_sic`, `pericyclic_frobenoid`, `lattice_flow`, `menu` and
+`vita` each carried their own spelling of the alphabet: the ROTAT table in
+`riemann_sic` and its eleven rotations, the menu examples for cycle, weight,
+banked, insert and trans, the repair sweep's own twelve-glyph array. All of them
+are the same twelve now, and the boot torus reads ⊢⊙∈⊤⋈∋◻⊞<⋈⊣.
 
-Two things the sweep turned up. `vita.rs` looked the fork and the fuse up in the
-trunk's vocabulary by literal glyph, and `id_of` falls back to the LAST
-vocabulary entry when it misses, so changing the alphabet would have silently
-pointed the split and fuse legality masks at whatever sits at the end of the
-vocabulary rather than failing. It takes the marks from the token now, so it
-cannot drift again. The vocabulary itself is built in the same order from the
-same tokens, so the trunk's weights still index what they were trained on; only
-the rendered glyph changed.
+Three things the sweep turned up that were wrong before it.
+
+`vita.rs` picked the fork, the fuse, the legal query alphabet and one answer
+token out of the trunk's vocabulary by literal glyph. `id_of` answers a miss with
+the LAST vocabulary entry rather than an error, so moving the alphabet would have
+pointed those masks at whatever sits at the end of the vocabulary and the trunk
+would have gone on speaking. They read off the tokens now. The vocabulary is
+still built in the same order from the same tokens, so the weights index what
+they were trained on and only the rendered glyph changed.
 
 `pericyclic_frobenoid` had the twelve names running against a shifted copy of the
-alphabet: TANCH carried the fork's mark, CLINK the fuse's, FSPLIT and FFUSE the
-two evaluators', and ENGAGR a tensor sign that is not an opcode at all. That was
-wrong before this change and is right now.
+alphabet, in the table and again in four protocol descriptions: TANCH carrying
+the fork's mark, CLINK the fuse's, FSPLIT and FFUSE the two evaluators', ENGAGR a
+tensor sign that is not an opcode at all.
+
+`lattice_flow` normalizes a word before the core reads it, and normalized only
+the dyad. It takes all six retired marks now, so `cycle ⊢⊙◇+×●=¬⊣` loads and
+prints ⊢⊙∈⊤⊥∋⋈◻⊣, same nine tokens, same verdict.
+
+Left alone on purpose: `para_temporal`'s ◇ is the temporal modality, eventually,
+not an opcode; and `catalog_ask_subset` holds stored catalog words in the old
+spelling, which load through the aliases. Those belong to the catalog and move
+when it does.

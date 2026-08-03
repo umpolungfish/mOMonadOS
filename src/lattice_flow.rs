@@ -34,15 +34,22 @@ use imasm_core::imasm16_3::{parse_glyph_word, run_word_register, tri_ancestral_v
 
 use crate::sprintln;
 
-/// The 12-op alphabet writes split and fuse as ◇ and ●; the trilattice core
-/// writes them ∈ and ∋. A word copied out of a bootstrap report is in the
-/// first and the machine reads the second, so translate rather than drop.
+/// Bring a word onto the current alphabet before the core reads it.
+///
+/// The retired spellings are still in every stored word and in anything copied
+/// out of an older report, and the tensor forms turn up where a fork and a fuse
+/// were written as ⊗ and ⊕. Translating is what lets those load; dropping them
+/// would read the word as shorter than it is and change its verdict.
 fn normalize(word: &str) -> String {
     let mut out = String::new();
     for c in word.chars() {
         match c {
             '◇' | '⊗' => out.push('∈'),
             '●' | '⊕' => out.push('∋'),
+            '=' | '═' => out.push('⋈'),
+            '+' => out.push('⊤'),
+            '×' => out.push('⊥'),
+            '¬' => out.push('◻'),
             c if c.is_whitespace() => {}
             c => out.push(c),
         }
@@ -280,7 +287,7 @@ pub fn insert_report(word: &str) {
         None => return,
     }
 
-    let glyphs = ['⊢', '⊙', '∈', '∋', '+', '×', '>', '<', '=', '⊞', '¬', '⊣'];
+    let glyphs = ['⊢', '⊙', '∈', '∋', '⊤', '⊥', '>', '<', '⋈', '⊞', '◻', '⊣'];
     let chars: Vec<char> = base.chars().collect();
 
     // Distinct words, not distinct sites. Inserting a glyph beside an identical
@@ -318,7 +325,7 @@ pub fn insert_report(word: &str) {
 
 /// How many distinct one-glyph insertions make `base` hold, without printing.
 fn repair_count(base: &str) -> usize {
-    let glyphs = ['⊢', '⊙', '∈', '∋', '+', '×', '>', '<', '=', '⊞', '¬', '⊣'];
+    let glyphs = ['⊢', '⊙', '∈', '∋', '⊤', '⊥', '>', '<', '⋈', '⊞', '◻', '⊣'];
     let chars: Vec<char> = base.chars().collect();
     let n = chars.len();
     let mut seen: Vec<String> = Vec::new();

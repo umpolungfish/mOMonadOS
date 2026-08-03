@@ -326,16 +326,16 @@ pub fn generate_protocol(ptype: &ProtocolType) -> String {
 pub fn protocol_description(ptype: &ProtocolType) -> String {
     match ptype {
         ProtocolType::FrobeniusCycle =>
-            "⊙ IMSCRIB: self-imscription → > AFWD: μ (multiply) → + FSPLIT: δ (split) → \
-             × FFUSE: μ∘δ → ¬ IFIX: identity closed cycle (μ∘δ=id)".into(),
+            "⊙ IMSCRIB: self-imscription → > AFWD: μ (multiply) → ∈ FSPLIT: δ (split) → \
+             ∋ FFUSE: μ∘δ → ◻ IFIX: identity closed cycle (μ∘δ=id)".into(),
         ProtocolType::PericyclicCross =>
-            "◇ TANCH: two π-systems → × FFUSE: μ(g⊗g)=1 cycloaddition → \
-             ⊢ VINIT: σ-framework → + FSPLIT: δ(1)=½(1⊗1+g⊗g) → ● CLINK: closure".into(),
+            "⊣ TANCH: two π-systems → ∋ FFUSE: μ(g⊗g)=1 cycloaddition → \
+             ⊢ VINIT: σ-framework → ∈ FSPLIT: δ(1)=½(1⊗1+g⊗g) → ⋈ CLINK: closure".into(),
         ProtocolType::Pairing =>
-            "⊢ VINIT: seed state → × FFUSE: μ(ψ⊗ψ) → ⊟ EVALF: ε (counit) → ¬ IFIX: fix ⟨ψ,ψ⟩".into(),
+            "⊢ VINIT: seed state → ∋ FFUSE: μ(ψ⊗ψ) → ⊥ EVALF: ε (counit) → ◻ IFIX: fix ⟨ψ,ψ⟩".into(),
         ProtocolType::Monad =>
-            "⊙ IMSCRIB → ⊢ VINIT: η(1) → × FFUSE: μ∘η=id (left unit) → \
-             ⊙ IMSCRIB → ◇ TANCH: η⊗id → × FFUSE: μ∘(η⊗id)=id (right unit) → ¬ IFIX".into(),
+            "⊙ IMSCRIB → ⊢ VINIT: η(1) → ∋ FFUSE: μ∘η=id (left unit) → \
+             ⊙ IMSCRIB → ⊣ TANCH: η⊗id → ∋ FFUSE: μ∘(η⊗id)=id (right unit) → ◻ IFIX".into(),
         ProtocolType::Full => {
             format!("Phase 1: {}\nPhase 2: {}\nPhase 3: {}\nPhase 4: {}",
                 protocol_description(&ProtocolType::FrobeniusCycle),
