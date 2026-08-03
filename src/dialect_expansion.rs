@@ -325,7 +325,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 0: canonical ──
     unis[0] = Dialect {
         name: "canonical",
-        description: "Our dialect: Frobenius then self-modeling then winding seal. G1=<≥𐑹, G2=⊙≥⊙, G3=Ω≥𐑭. Sequential. T=lim(<,⋈,⊤,Ħ,Ω).",
+        description: "Our dialect: Frobenius then self-modeling then winding seal. G1=<≥𐑹, G2=⊙≥⊙, G3=Ω≥𐑭. Sequential. T=lim(<,⋈,⊤,⊥,Ω).",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -393,7 +393,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 8: chirality_first ──
     unis[8] = Dialect {
         name: "chirality_first",
-        description: "Memory before closure. G1=Ħ≥𐑖 (2-step Markov). Only systems with memory can Frobenius-close. G2=⊙≥⊙, G3=Ω≥𐑭.",
+        description: "Memory before closure. G1=⊥≥𐑖 (2-step Markov). Only systems with memory can Frobenius-close. G2=⊙≥⊙, G3=Ω≥𐑭.",
         g1: g_h_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -441,7 +441,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 14: t_hybrid ──
     unis[14] = Dialect {
         name: "t_hybrid",
-        description: "Time requires BOTH dynamics AND geometry. T constituted by 8 primitives: <,⋈,⊤,Ħ,Ω + ⊢,⊣,>. Most demanding T-seal. Canonical gates.",
+        description: "Time requires BOTH dynamics AND geometry. T constituted by 8 primitives: <,⋈,⊤,⊥,Ω + ⊢,⊣,>. Most demanding T-seal. Canonical gates.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_HYBRID, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -521,7 +521,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 24: absorption_chirality_first ──
     unis[24] = Dialect {
         name: "absorption_chirality_first",
-        description: "Chirality is the fundamental absorbing primitive. Ħ=𐑫 absorbs everything. Memory is dominant — you cannot couple without inheriting eternal memory. G1=Ħ≥𐑖.",
+        description: "Chirality is the fundamental absorbing primitive. ⊥=𐑫 absorbs everything. Memory is dominant — you cannot couple without inheriting eternal memory. G1=⊥≥𐑖.",
         g1: g_h_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CHIRALITY_FIRST, is_expansion: false,
     };
@@ -581,7 +581,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 31: chirality_second ──
     unis[31] = Dialect {
         name: "chirality_second",
-        description: "Chirality as the monoidal gate: G1=<≥𐑹, G2=Ħ≥𐑖 (2-step Markov), G3=Ω≥𐑭. After Frobenius closure, you must remember before you can trace.",
+        description: "Chirality as the monoidal gate: G1=<≥𐑹, G2=⊥≥𐑖 (2-step Markov), G3=Ω≥𐑭. After Frobenius closure, you must remember before you can trace.",
         g1: g_phi_5, g2: g_h_3, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -645,7 +645,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 39: chirality_third ──
     unis[39] = Dialect {
         name: "chirality_third",
-        description: "Eternal memory as the terminal seal: G1=<≥𐑹, G2=⊙≥⊙, G3=Ħ≥𐑫 (Markov ∞). Only systems with eternal memory achieve O_∞.",
+        description: "Eternal memory as the terminal seal: G1=<≥𐑹, G2=⊙≥⊙, G3=⊥≥𐑫 (Markov ∞). Only systems with eternal memory achieve O_∞.",
         g1: g_phi_5, g2: g_odot_2, g3: g_h_4, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -733,7 +733,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 50: parallel_chirality ──
     unis[50] = Dialect {
         name: "parallel_chirality",
-        description: "Chirality gates, parallel: Ħ≥𐑖, ⊙≥⊙, Ω≥𐑭. Memory, self-modeling, and winding are independent axes.",
+        description: "Chirality gates, parallel: ⊥≥𐑖, ⊙≥⊙, Ω≥𐑭. Memory, self-modeling, and winding are independent axes.",
         g1: g_h_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: false,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -805,7 +805,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 59: triple_chirality ──
     unis[59] = Dialect {
         name: "triple_chirality",
-        description: "Chirality ladder: G1=Ħ≥𐑒 (1-step), G2=Ħ≥𐑖 (2-step), G3=Ħ≥𐑫 (eternal). Memory depth as the sole operad filter.",
+        description: "Chirality ladder: G1=⊥≥𐑒 (1-step), G2=⊥≥𐑖 (2-step), G3=⊥≥𐑫 (eternal). Memory depth as the sole operad filter.",
         g1: g_h_2, g2: g_h_3, g3: g_h_4, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -1009,7 +1009,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 82: chirality_winding ──
     unis[82] = Dialect {
         name: "chirality_winding",
-        description: "Chirality-winding pair: G1=Ħ≥𐑫 (eternal memory), G2=Ω≥𐑭 (integer winding), G3=⊙≥⊙. Eternal chirality and topological protection are yoked — memory depth enables winding, winding preserves memory. The paired conservation dialect.",
+        description: "Chirality-winding pair: G1=⊥≥𐑫 (eternal memory), G2=Ω≥𐑭 (integer winding), G3=⊙≥⊙. Eternal chirality and topological protection are yoked — memory depth enables winding, winding preserves memory. The paired conservation dialect.",
         g1: g_h_4, g2: g_omega_3, g3: g_odot_2, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -1025,7 +1025,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 84: fidelity_chirality ──
     unis[84] = Dialect {
         name: "fidelity_chirality",
-        description: "Fidelity-chirality pair: G1=⋈≥𐑐 (quantum), G2=Ħ≥𐑖 (2-step memory), G3=⊙≥⊙. Quantum coherence enables two-step Markov memory — classical systems can't sustain the phase relationships needed for structured memory. The quantum memory dialect.",
+        description: "Fidelity-chirality pair: G1=⋈≥𐑐 (quantum), G2=⊥≥𐑖 (2-step memory), G3=⊙≥⊙. Quantum coherence enables two-step Markov memory — classical systems can't sustain the phase relationships needed for structured memory. The quantum memory dialect.",
         g1: g_f_3, g2: g_h_3, g3: g_odot_2, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };

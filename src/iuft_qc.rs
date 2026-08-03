@@ -185,7 +185,7 @@ fn encode_theta(d: IgPrim, omega: IgPrim, s: IgPrim) -> f64 {
 fn encode_phi(r: IgPrim, p: IgPrim, h: IgPrim) -> f64 {
     let nr = normalize_ordinal(r, 4.0);     // >: 1–4
     let np = normalize_ordinal(p, 5.0);     // <: 1–5
-    let nh = normalize_ordinal(h, 4.0);     // Ħ: 1–4
+    let nh = normalize_ordinal(h, 4.0);     // ⊥: 1–4
     let avg = (nr + np + nh) / 3.0;
     avg * 360.0
 }
@@ -224,7 +224,7 @@ pub fn sensitivity(tuple: &IgTuple) -> IuftSensitivity {
     dtheta[10] = 180.0 / 3.0 / 2.0; // dθ/dΣ: only 2 ordinal steps
     dphi[2] = 360.0 / 3.0 / 3.0;    // dφ/d>
     dphi[3] = 360.0 / 3.0 / 4.0;    // dφ/d<: 4 ordinal steps
-    dphi[9] = 360.0 / 3.0 / 3.0;    // dφ/dĦ
+    dphi[9] = 360.0 / 3.0 / 3.0;    // dφ/d⊥
 
     IuftSensitivity { dtheta, dphi, dpsi }
 }

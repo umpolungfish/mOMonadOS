@@ -257,7 +257,7 @@ ENGAGR, FSPLIT.
 
 ### `arev [test]`
 
-The Ħ hop: toggle the kernel's chirality bit so every snapshot is read through
+The ⊥ hop: toggle the kernel's chirality bit so every snapshot is read through
 the R1↔R2 mirror. The mirror exchanges the two evidence triples role for role
 (dialetheia_complete ↔ atomic_reentry, b_live_ticks ↔ winding_count,
 gate_discriminations ↔ bifurcation_revisited) over the shared temporal
@@ -269,11 +269,11 @@ by the classifier.
 ```
 ⊙> arev test
 ═ AREV door experiment ═
-replicative loop, 16 ticks, Ħ = or':
+replicative loop, 16 ticks, ⊥ = or':
   s0         tier O_inf_dag  R1(dialeth=false b_live=false gates=false)  R2(atomic=true wind=true bifurc=true)
-first hop (Ħ flipped) — R1 reads the mirrored evidence:
+first hop (⊥ flipped) — R1 reads the mirrored evidence:
   s1         tier O_inf      R1(dialeth=true b_live=true gates=true)  R2(atomic=false wind=false bifurc=false)
-second hop (Ħ back to or'):
+second hop (⊥ back to or'):
   s2         tier O_inf_dag  R1(...)  R2(...)
 hop∘hop = id (raw fields): EXACT
 ```

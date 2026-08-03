@@ -711,7 +711,7 @@ pub fn repl(k: &mut Kernel) {
                 match parts.next().unwrap_or("") {
                     ""     => print_arev_hop(k),
                     "test" => print_arev_test(k),
-                    _ => sprintln!("arev [test] — Ħ hop to the lateral partner (O_∞ ↔ O_inf_dag) / door experiment"),
+                    _ => sprintln!("arev [test] — ⊥ hop to the lateral partner (O_∞ ↔ O_inf_dag) / door experiment"),
                 }
             }
             "aleph" => print_aleph(k, parts.next().unwrap_or("")),
@@ -1860,7 +1860,7 @@ Stopped after {} ticks.", ran);
                                     sprintln!("  T  (∋=𐑠): {}  ∋={}", if t_ok {"PASS"} else {"FAIL"}, ig.c.glyph());
                                     if !g1 || !g2 || !g3 || !t_ok { all_pass = false; }
                                 }
-                                8 => { // chirality_first: G1:Ħ≥𐑖  G2:⊙≥⊙  G3:Ω≥𐑭
+                                8 => { // chirality_first: G1:⊥≥𐑖  G2:⊙≥⊙  G3:Ω≥𐑭
                                        // T: T_CEILING — see manuscripts/clay_cross_dialect_closure.md.
                                        // Uses IgPrim::ordinal(), NOT raw discriminant comparison — the
                                        // discriminant trick used in arms 0-7 is invalid for the criticality
@@ -1868,7 +1868,7 @@ Stopped after {} ticks.", ran);
                                     let g1 = ig.h.ordinal() >= IgPrim::H2.ordinal();
                                     let g2 = ig.phi.ordinal() >= IgPrim::Phi_crit.ordinal();
                                     let g3 = ig.omega.ordinal() >= IgPrim::Omega_z.ordinal();
-                                    sprintln!("  G1 (Ħ≥𐑖): {}  Ħ={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.h.glyph(), ig.h.ordinal());
+                                    sprintln!("  G1 (⊥≥𐑖): {}  ⊥={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.h.glyph(), ig.h.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     sprintln!("  G3 (Ω≥𐑭): {}  Ω={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
@@ -2435,7 +2435,7 @@ fn t_ceiling_check(ig: &IgTuple) -> bool {
     let t_h   = ig.h.ordinal()     <= IgPrim::H_inf.ordinal();
     let t_om  = ig.omega.ordinal() <= IgPrim::Omega_z.ordinal();
     let t_ok = t_phi && t_f && t_k && t_h && t_om;
-    sprintln!("  T_CEILING <<=𐑹: {}  ⋈<=𐑐: {}  ⊤<=𐑧: {}  Ħ<=𐑫: {}  Ω<=𐑭: {}",
+    sprintln!("  T_CEILING <<=𐑹: {}  ⋈<=𐑐: {}  ⊤<=𐑧: {}  ⊥<=𐑫: {}  Ω<=𐑭: {}",
         if t_phi {"PASS"} else {"FAIL"}, if t_f {"PASS"} else {"FAIL"},
         if t_k {"PASS"} else {"FAIL"}, if t_h {"PASS"} else {"FAIL"},
         if t_om {"PASS"} else {"FAIL"});
@@ -2450,7 +2450,7 @@ fn t_ceiling_gapped_check(ig: &IgTuple) -> bool {
     let t_h   = ig.h.ordinal()     <= IgPrim::H_inf.ordinal();
     let t_om  = ig.omega.ordinal() <= IgPrim::Omega_z.ordinal();
     let t_ok = t_phi && t_f && t_k && t_h && t_om;
-    sprintln!("  T_CEILING(gapped) <<=𐑹: {}  ⋈<=𐑐: {}  ⊤<=𐑪: {}  Ħ<=𐑫: {}  Ω<=𐑭: {}",
+    sprintln!("  T_CEILING(gapped) <<=𐑹: {}  ⋈<=𐑐: {}  ⊤<=𐑪: {}  ⊥<=𐑫: {}  Ω<=𐑭: {}",
         if t_phi {"PASS"} else {"FAIL"}, if t_f {"PASS"} else {"FAIL"},
         if t_k {"PASS"} else {"FAIL"}, if t_h {"PASS"} else {"FAIL"},
         if t_om {"PASS"} else {"FAIL"});
@@ -2593,7 +2593,7 @@ fn print_help() {
     sprintln!("  {:<30} — B4 memory heatmap with color blocks", "heatmap [start] [n]");
     sprintln!("  {:<30} — dump B4 memory", "memory [start] [n]");
     sprintln!("  {:<30} — show R0-R7", "registers");
-    sprintln!("  {:<30} — Ħ hop: read snapshot through the R1↔R2 mirror", "arev [test]");
+    sprintln!("  {:<30} — ⊥ hop: read snapshot through the R1↔R2 mirror", "arev [test]");
     sprintln!("  {:<30} — stack depth", "stack");
     sprintln!();
     sprintln!("══ Program Loading ══");
@@ -2800,7 +2800,7 @@ fn print_arev_hop(k: &mut Kernel) {
     let before = k.dynamic_imscribe();
     let h = k.arev_hop();
     let after = k.snapshot.unwrap_or(before);
-    sprintln!("AREV — Ħ hop, lateral at the same shell. Ħ now {}", if h { "flipped" } else { "or'" });
+    sprintln!("AREV — ⊥ hop, lateral at the same shell. ⊥ now {}", if h { "flipped" } else { "or'" });
     print_snap_line("before", &before);
     print_snap_line("after", &after);
 }
@@ -2812,17 +2812,17 @@ fn print_arev_test(k: &mut Kernel) {
     sprintln!("═ AREV door experiment ═");
     k.load_replicative();
     k.run(16); // 4 wraps of the 4-token cycle: winding_count > 0, both R2 marks live
-    if k.chirality { k.arev_hop(); } // enter with Ħ = or'
+    if k.chirality { k.arev_hop(); } // enter with ⊥ = or'
     let s0 = k.dynamic_imscribe();
-    sprintln!("replicative loop, 16 ticks, Ħ = or':");
+    sprintln!("replicative loop, 16 ticks, ⊥ = or':");
     print_snap_line("s0", &s0);
     k.arev_hop();
     let s1 = k.snapshot.unwrap_or(s0);
-    sprintln!("first hop (Ħ flipped) — R1 reads the mirrored evidence:");
+    sprintln!("first hop (⊥ flipped) — R1 reads the mirrored evidence:");
     print_snap_line("s1", &s1);
     k.arev_hop();
     let s2 = k.snapshot.unwrap_or(s0);
-    sprintln!("second hop (Ħ back to or'):");
+    sprintln!("second hop (⊥ back to or'):");
     print_snap_line("s2", &s2);
     sprintln!("hop∘hop = id (raw fields): {}", if s2 == s0 { "EXACT" } else { "BROKEN" });
     let mm = s0.mirrored().mirrored();

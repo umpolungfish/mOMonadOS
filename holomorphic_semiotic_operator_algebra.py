@@ -242,12 +242,12 @@ def compute_localization_length(H: SemioticOperator, site: int = 0) -> float:
 
 
 # ──────────────────────────────────────────────────────────────────────────
-#  6.  Two-Step Chirality  (Ħ=𐑖)
+#  6.  Two-Step Chirality  (⊥=𐑖)
 # ──────────────────────────────────────────────────────────────────────────
 def two_step_chiral_pair() -> Tuple[SemioticOperator, SemioticOperator]:
     """Generate a two-step chiral pair (S₁, S₂) such that S₂ ∘ S₁ = id.
 
-    This implements Ħ=𐑖 — two-step chirality, where the morphism
+    This implements ⊥=𐑖 — two-step chirality, where the morphism
     requires two steps to complete a full orientation cycle.
     """
     # S₁: a split operation (δ)
@@ -335,8 +335,8 @@ def main():
     print(f"  Tr(S†) = conj(Tr(S)): {np.isclose(np.trace(Sd.M),
                                                  np.trace(S.M).conj())}")
 
-    # ── 8f. Two-Step Chirality (Ħ=𐑖) ─────────────────────────
-    print("\n[Ħ=𐑖] Two-Step Chirality")
+    # ── 8f. Two-Step Chirality (⊥=𐑖) ─────────────────────────
+    print("\n[⊥=𐑖] Two-Step Chirality")
     S1, S2 = two_step_chiral_pair()
     identity_check = S2 @ S1
     print(f"  S₂ ∘ S₁ ≈ id : {np.allclose(identity_check.M, np.eye(12), atol=1e-10)}")

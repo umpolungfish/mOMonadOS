@@ -625,7 +625,7 @@ pub fn full_report() -> String {
          ── Type Expansion Table ───────────────────────────────────────\n\
          {}\n\
          ── Isomorphic Triplet (ρ=2.2581) ──────────────────────────────\n\
-           sure (Ħ=𐑖): Two-step chirality: parity-distinct temporal paths\n\
+           sure (⊥=𐑖): Two-step chirality: parity-distinct temporal paths\n\
            ear  (>=𐑽): Dagger-adjoint coupling: A→A†→bidirectional\n\
            tot  (>=𐑽): Functor adjunction: composed functor pair\n\
          \n\
@@ -682,7 +682,7 @@ pub fn expand_report(name: &str) -> String {
         None => {
             let known: Vec<&str> = TYPE_PROGRAMS.iter()
                 .map(|tp| tp.shavian).collect();
-            format!("Unknown type: '{}'. Known: {:?}\nTry primitive axis: ⊢ ⊣ > < ⋈ ⊤ ∈ ∋ ⊙ Ħ Σ Ω",
+            format!("Unknown type: '{}'. Known: {:?}\nTry primitive axis: ⊢ ⊣ > < ⋈ ⊤ ∈ ∋ ⊙ ⊥ Σ Ω",
                 name, known)
         }
     }

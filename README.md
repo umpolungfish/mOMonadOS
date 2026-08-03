@@ -352,7 +352,7 @@ windings because it was not directly targeted — it exists as:
 - **3-fold trilattice structure** (Ω=𐑭, non-Abelian winding) under the Belnap-Frobenius substrate
 - **Bowtie crossing topology** (⊣=𐑥) mediating between CLINK L9 and the SIXTEEN_3 surface
 - **Adjoint coupling** (>=𐑽) with **Frobenius-special symmetry** (<=𐑹, μ∘δ=id)
-- **Non-Abelian/eternal chirality** (Ħ=𐑫) and **criticality gate** (⊙=𐑮)
+- **Non-Abelian/eternal chirality** (⊥=𐑫) and **criticality gate** (⊙=𐑮)
 
 Conventional: A trilattice extending Belnap's 4-valued logic to 16 truth values organized as three
 interleaved layers with Frobenius-special symmetry.

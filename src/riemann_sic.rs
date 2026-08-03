@@ -576,7 +576,7 @@ pub fn grammar_encoding() -> String {
     s.push_str("    ⊙=⊙   (critical)    — The self-modeling gate is open. The system\n");
     s.push_str("          recognizes its own structure: the zeros ARE eigenvalues.\n");
     s.push_str("          This is the critical identity at the heart of the conjecture.\n\n");
-    s.push_str("    Ħ=𐑫  (eternal)      — The zeta function's zeros are eternal\n");
+    s.push_str("    ⊥=𐑫  (eternal)      — The zeta function's zeros are eternal\n");
     s.push_str("          mathematical objects; they have no temporal dependence.\n");
     s.push_str("          Markov order is infinite — every zero depends on the\n");
     s.push_str("          distribution of all others through the Euler product.\n\n");

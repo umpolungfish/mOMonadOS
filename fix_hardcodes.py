@@ -216,7 +216,7 @@ pub fn verify_tuple_frobenius(v: &mut FrobeniusVerifier, tuple: &IgTuple) {
         let ok = tuple.omega.ordinal() >= IgPrim::Omega_z.ordinal();
         v.verify_usize(if ok { 1 } else { 0 }, 1);
     }
-    // Verify self-referential closure: ⊙=critical implies Ħ=eternal
+    // Verify self-referential closure: ⊙=critical implies ⊥=eternal
     if tuple.phi == IgPrim::Phi_crit {
         let ok = tuple.h == IgPrim::H_inf;
         v.verify_usize(if ok { 1 } else { 0 }, 1);
