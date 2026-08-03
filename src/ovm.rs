@@ -238,7 +238,7 @@ pub fn construct_ai_novm_d2() -> [QubitOp; 3] {
     ops
 }
 /// Build S-PC-POVM: 3 operators (paracomplete), equiangular.
-/// Updated per grid: <=𐑬 (partial parity), ∋=𐑜 (disjunctive), Γ=𐑔 (aleph).
+/// Updated per grid: <=𐑬 (partial parity), ∋=𐑜 (disjunctive), ∈=𐑔 (aleph).
 /// m=3 < d²=4, frame is anisotropic but carries aleph cardinality.
 pub fn construct_s_pc_povm_d2() -> [QubitOp; 3] {
     let n = 1.0 / libm::sqrt(3.0);
@@ -312,7 +312,7 @@ pub fn construct_aminus_pc_novm_d2() -> [QubitOp; 3] {
     ops
 }
 
-/// Build A-PC-POVM (grid variant): 3 operators, asymmetric Bloch norms, local completeness Γ=𐑲.
+/// Build A-PC-POVM (grid variant): 3 operators, asymmetric Bloch norms, local completeness ∈=𐑲.
 pub fn construct_a_pc_povm_d2() -> [QubitOp; 3] {
     let norms = [0.3, 0.5, 0.7];
     let traces = [0.4, 0.6, 1.0];
@@ -328,7 +328,7 @@ pub fn construct_a_pc_povm_d2() -> [QubitOp; 3] {
     ops
 }
 
-/// Build A-PC-POVM† (HTML variant): bidirectional coupling >=𐑾, mesoscale Γ=𐑚, broadcast ∋=𐑵.
+/// Build A-PC-POVM† (HTML variant): bidirectional coupling >=𐑾, mesoscale ∈=𐑚, broadcast ∋=𐑵.
 pub fn construct_a_pc_povm_dagger_d2() -> [QubitOp; 3] {
     let norms = [0.35, 0.55, 0.65];
     let traces = [0.5, 0.6, 0.9];

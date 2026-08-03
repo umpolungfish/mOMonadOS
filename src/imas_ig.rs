@@ -156,7 +156,7 @@ impl IgPrim {
             F_ell => 1.0, F_eth => 2.0, F_hbar => 3.0,
             // ⊤ Kinetics — non-monotonic: K_mbl is *above* K_trap, not below K_fast.
             K_fast => 1.0, K_mod => 2.0, K_slow => 3.0, K_trap => 4.0, K_mbl => 4.5,
-            // Γ Granularity
+            // ∈ Granularity
             G_beth => 1.0, G_gimel => 2.0, G_aleph => 3.0,
             // ∋ Coupling
             C_and => 1.0, C_or => 2.0, C_seq => 3.0, C_broad => 4.0,

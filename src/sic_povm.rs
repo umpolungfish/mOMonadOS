@@ -27,7 +27,7 @@ use alloc::string::String;
 // CORE CONSTANTS — Crystal family cardinalities
 // ═══════════════════════════════════════════════════════════════
 
-/// D-family: 3 primitives (⋈, Γ, Σ), each 3 values.  3³ = 27.
+/// D-family: 3 primitives (⋈, ∈, Σ), each 3 values.  3³ = 27.
 pub const D_PRIMS: u32 = 3;
 pub const D_VALS:  u32 = 3;
 pub const D_SLOTS: u32 = D_PRIMS * D_VALS;  // 9

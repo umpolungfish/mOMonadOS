@@ -215,7 +215,7 @@ pub static ABS_CHIRALITY_FIRST: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 },
 ];
-// Scope empire: Γ=𐑲 absorbs everything
+// Scope empire: ∈=𐑲 absorbs everything
 pub static ABS_SCOPE_EMPIRE: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "∈", value: "𐑲", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
@@ -409,7 +409,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 10: scope_universe ──
     unis[10] = Dialect {
         name: "scope_universe",
-        description: "Universality first. G1=Γ≥𐑲 (aleph, maximal scope). Only universally-interacting systems can Frobenius-close. Parochialism is a structural barrier.",
+        description: "Universality first. G1=∈≥𐑲 (aleph, maximal scope). Only universally-interacting systems can Frobenius-close. Parochialism is a structural barrier.",
         g1: g_gamma_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -457,7 +457,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 16: t_inverted ──
     unis[16] = Dialect {
         name: "t_inverted",
-        description: "Time constituted by primitives canonically NOT in T: ⊢,⊣,>,Γ,Σ. Time is structure, not dynamics. Canonical gates.",
+        description: "Time constituted by primitives canonically NOT in T: ⊢,⊣,>,∈,Σ. Time is structure, not dynamics. Canonical gates.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_INVERTED, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -529,7 +529,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 25: absorption_scope_empire ──
     unis[25] = Dialect {
         name: "absorption_scope_empire",
-        description: "Maximal scope (Γ=𐑲) is absorbing under all operations. The universal swallows the particular. G1=Γ≥𐑲, G2=⊙≥⊙, G3=Ω≥𐑭.",
+        description: "Maximal scope (∈=𐑲) is absorbing under all operations. The universal swallows the particular. G1=∈≥𐑲, G2=⊙≥⊙, G3=Ω≥𐑭.",
         g1: g_gamma_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_SCOPE_EMPIRE, is_expansion: false,
     };
@@ -613,7 +613,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 35: scope_second ──
     unis[35] = Dialect {
         name: "scope_second",
-        description: "Universal scope as the monoidal gate: G1=<≥𐑹, G2=Γ≥𐑲 (aleph/maximal), G3=Ω≥𐑭. Frobenius closure is local; tracing requires universality.",
+        description: "Universal scope as the monoidal gate: G1=<≥𐑹, G2=∈≥𐑲 (aleph/maximal), G3=Ω≥𐑭. Frobenius closure is local; tracing requires universality.",
         g1: g_phi_5, g2: g_gamma_3, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -677,7 +677,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 43: scope_third ──
     unis[43] = Dialect {
         name: "scope_third",
-        description: "Universal scope as the terminal seal: G1=<≥𐑹, G2=⊙≥⊙, G3=Γ≥𐑲 (aleph). Only self-modeling systems with universal interaction range achieve O_∞.",
+        description: "Universal scope as the terminal seal: G1=<≥𐑹, G2=⊙≥⊙, G3=∈≥𐑲 (aleph). Only self-modeling systems with universal interaction range achieve O_∞.",
         g1: g_phi_5, g2: g_odot_2, g3: g_gamma_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -749,7 +749,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 52: parallel_scope ──
     unis[52] = Dialect {
         name: "parallel_scope",
-        description: "Scope gates, parallel: Γ≥𐑲, ⊙≥⊙, Ω≥𐑭. Universal scope, self-modeling, and winding are independent.",
+        description: "Scope gates, parallel: ∈≥𐑲, ⊙≥⊙, Ω≥𐑭. Universal scope, self-modeling, and winding are independent.",
         g1: g_gamma_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: false,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -933,7 +933,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 73: mixed_gamma_th ──
     unis[73] = Dialect {
         name: "mixed_gamma_th",
-        description: "Cardinality + topology mix: G1=Γ≥𐑲 (universal), G2=⊣≥𐑸 (self-ref), G3=⊙≥⊙. Systems must have universal interaction range before they can exhibit self-referential topology.",
+        description: "Cardinality + topology mix: G1=∈≥𐑲 (universal), G2=⊣≥𐑸 (self-ref), G3=⊙≥⊙. Systems must have universal interaction range before they can exhibit self-referential topology.",
         g1: g_gamma_3, g2: g_th_5, g3: g_odot_2, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -961,7 +961,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 76: g4_quad ──
     unis[76] = Dialect {
         name: "g4_quad",
-        description: "Full quad-gate: G1=Γ≥𐑲, G2=<≥𐑹, G3=⊙≥⊙, G4=Ω≥𐑭. Four-gate ordinal-4 dialect. Universal range → Frobenius parity → self-modeling → winding. The longest ordinal ladder.",
+        description: "Full quad-gate: G1=∈≥𐑲, G2=<≥𐑹, G3=⊙≥⊙, G4=Ω≥𐑭. Four-gate ordinal-4 dialect. Universal range → Frobenius parity → self-modeling → winding. The longest ordinal ladder.",
         g1: g_gamma_3, g2: g_phi_5, g3: g_odot_2, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -1017,7 +1017,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 83: composition_scope ──
     unis[83] = Dialect {
         name: "composition_scope",
-        description: "Composition-scope pair: G1=ɢ≥𐑠 (sequential), G2=Γ≥𐑲 (universal scope), G3=⊙≥⊙. Sequential composition with universal interaction range. Stepwise construction across all scales. The algorithmic dialect.",
+        description: "Composition-scope pair: G1=ɢ≥𐑠 (sequential), G2=∈≥𐑲 (universal scope), G3=⊙≥⊙. Sequential composition with universal interaction range. Stepwise construction across all scales. The algorithmic dialect.",
         g1: g_g_3, g2: g_gamma_3, g3: g_odot_2, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };

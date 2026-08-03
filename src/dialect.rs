@@ -140,7 +140,7 @@ pub fn dialect_description(u: u8) -> &'static str {
         8 => "Memory before closure: G1=Ħ≥𐑖 (two-step Markov), then self-model, \
               then winding. T-constitution is ceiling-mode (T_CEILING), not \
               exact-equality.",
-        9 => "Universality first: G1=Γ≥𐑲 (maximal range) — parochial systems \
+        9 => "Universality first: G1=∈≥𐑲 (maximal range) — parochial systems \
               stay plain no matter how structured. G2=self-model, G3=winding. \
               T-constitution is ceiling-mode (T_CEILING), not exact-equality.",
         10 => "Criticality is everything: all three gates are the SAME primitive \
@@ -174,7 +174,7 @@ pub fn dialect_gates(u: u8) -> String {
         6 => "G1:Omega>=Z  G2:Phc>=c  G3:Phi>=pmsym  T:o".to_string(),
         7 => "G1:Phi>=pmsym  G2:Phc>=c  G3:Omega>=Z  T:Gm=seq".to_string(),
         8 => "G1:Ħ≥𐑖  G2:⊙≥⊙  G3:Ω≥𐑭  T:ceiling(5)".to_string(),
-        9 => "G1:Γ≥𐑲  G2:⊙≥⊙  G3:Ω≥𐑭  T:ceiling(5)".to_string(),
+        9 => "G1:∈≥𐑲  G2:⊙≥⊙  G3:Ω≥𐑭  T:ceiling(5)".to_string(),
         10 => "G1:⊙≥𐑢  G2:⊙≥⊙  G3:⊙≥𐑣  T:ceiling(5)".to_string(),
         11 => "G1:⊙≥𐑢  G2:⊙≥⊙  G3:⊙≥𐑣  T:ceiling(⊤≤𐑪)".to_string(),
         _ if is_expansion(u) => {

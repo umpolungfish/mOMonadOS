@@ -22,7 +22,7 @@ The MiniKernel had drifted from the kernel in four places. Three are now fixed.
 2. Register width. The file is eight wide in the kernel, because the layer is
    CL8NK, CLINK Layer 8, the Organism. The MiniKernel had four, packing pairs of
    tuple slots into single B4 values: (D,<), (T,Ω), (K,⋈), (H,P). That drops four
-   of the twelve slots, and the four dropped were R, Γ, ⊤ and Σ. R is the adjoint
+   of the twelve slots, and the four dropped were R, ∈, ⊤ and Σ. R is the adjoint
    slot and Σ is the one-to-one self-referential slot, so the packing removed
    exactly what closure and self-reference are stated in. The file is now eight
    wide, with R4 and R5 seeded from the recovered slots.

@@ -59,7 +59,7 @@ pub fn decode(mut addr: u32) -> [u8; 12] {
 ///   F  Fidelity       [age<they<peep]       ← IFIX (!) lossless brand ⇒ peep
 ///   K  Kinetic        [yea<loll<egg<on<air] ← trapping: halt vs diversity vs mixing
 ///   G  Granularity    [bib<thigh<ice]       ← token diversity (scope)
-///   Γ  Grammar        [vow<gag<measure<ooze] ← fork resolution / sequence / broadcast
+///   ∈  Grammar        [vow<gag<measure<ooze] ← fork resolution / sequence / broadcast
 ///   <  Criticality    [woe<monad<roar<err<haha] ← self_ref ⇒ monad (⊙ fixed point)
 ///   H  Chirality      [fee<kick<sure<wool]  ← EXACT: ROTAT period (chirality under shift)
 ///   S  Stoichiometry  [hung<so<up]          ← EXACT: FSPLIT/FFUSE (δ/μ) balance
@@ -139,7 +139,7 @@ pub fn indices_from_program(
     // G — scope by family-completeness (forced): all-to-all ⇒ ice.
     let gran = if fams >= 4 { 2 } else if fams >= 2 { 1 } else { 0 };
 
-    // Γ — composition rule. ooze = broadcast (self_ref); measure = fork-free sequence;
+    // ∈ — composition rule. ooze = broadcast (self_ref); measure = fork-free sequence;
     // vow = conjunctive (fork balanced+resolved); gag = disjunctive (fork open).
     let gram = if self_ref { 3 }
                else if !forked { 2 }

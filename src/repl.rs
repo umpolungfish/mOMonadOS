@@ -1874,12 +1874,12 @@ Stopped after {} ticks.", ran);
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                     if !t_ceiling_check(&ig) { all_pass = false; }
                                 }
-                                9 => { // scope_dialect: G1:Γ≥𐑲(maximal scope)  G2:⊙≥⊙  G3:Ω≥𐑭
+                                9 => { // scope_dialect: G1:∈≥𐑲(maximal scope)  G2:⊙≥⊙  G3:Ω≥𐑭
                                        // T: T_CEILING — same generalization as U8, paired with a different gate spec.
                                     let g1 = ig.g.ordinal() >= IgPrim::G_aleph.ordinal();
                                     let g2 = ig.phi.ordinal() >= IgPrim::Phi_crit.ordinal();
                                     let g3 = ig.omega.ordinal() >= IgPrim::Omega_z.ordinal();
-                                    sprintln!("  G1 (Γ≥𐑲): {}  Γ={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.g.glyph(), ig.g.ordinal());
+                                    sprintln!("  G1 (∈≥𐑲): {}  ∈={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.g.glyph(), ig.g.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     sprintln!("  G3 (Ω≥𐑭): {}  Ω={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
                                     if !g1 || !g2 || !g3 { all_pass = false; }

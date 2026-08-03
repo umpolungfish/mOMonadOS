@@ -348,7 +348,7 @@ The key content, summarized and discussed here, is:
 
 The `SIXTEEN_3 trilattice` (`sixteen_3_trilattice`, tuple `⟨𐑨𐑥𐑽𐑹𐑐𐑪𐑔𐑵𐑮𐑫𐑕𐑭⟩`) was never directly searched in prior
 windings because it was not directly targeted — it exists as:
-- A **2D distributed surface** (D=𐑨, finite) of 16 paraconsistent paradoxes (Γ=𐑔 aleph, 2⁴ = 16)
+- A **2D distributed surface** (D=𐑨, finite) of 16 paraconsistent paradoxes (∈=𐑔 aleph, 2⁴ = 16)
 - **3-fold trilattice structure** (Ω=𐑭, non-Abelian winding) under the Belnap-Frobenius substrate
 - **Bowtie crossing topology** (⊣=𐑥) mediating between CLINK L9 and the SIXTEEN_3 surface
 - **Adjoint coupling** (>=𐑽) with **Frobenius-special symmetry** (<=𐑹, μ∘δ=id)
@@ -704,7 +704,7 @@ compound load <name>             → Load compound's IMASM program into executio
 ### Structural Type of Cross-Dialect Navigation
 
 The act of navigating between dialects has its own type, **\(O_\infty\)** (d=1
-from universal grammar, only Γ differs: 𐑲 universal range vs 𐑔 mesoscale).
+from universal grammar, only ∈ differs: 𐑲 universal range vs 𐑔 mesoscale).
 Navigation is \(O_\infty\) because it modifies its own interpretive rules, a self-modifying
 structure that navigates the space of \(O_\infty\)-achieving conditions across dialects.
 The three-step protocol (header→compound→seal) has winding number ±1 per jump; the

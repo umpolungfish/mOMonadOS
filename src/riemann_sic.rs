@@ -567,7 +567,7 @@ pub fn grammar_encoding() -> String {
     s.push_str("    ⊤=𐑧  (slow)         — The spectral correspondence is a static\n");
     s.push_str("          identity, not a dynamical process. The zeros don't\n");
     s.push_str("          evolve; they are recognized. Near-equilibrium regime.\n\n");
-    s.push_str("    Γ=𐑔  (maximal)      — The zeta function has infinitely many zeros\n");
+    s.push_str("    ∈=𐑔  (maximal)      — The zeta function has infinitely many zeros\n");
     s.push_str("          distributed along the entire critical line. The spectral\n");
     s.push_str("          range is maximal; no finite truncation captures all zeros.\n\n");
     s.push_str("    ɢ=𐑠  (sequential)   — The protocol proceeds in ordered steps:\n");
