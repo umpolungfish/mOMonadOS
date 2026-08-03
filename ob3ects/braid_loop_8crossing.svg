@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="452" height="452" viewBox="0 0 452 452">
+<title>closed braid, 8 generators on 3 strands</title>
+<desc>writhe 6, 1 component, non-pure braid</desc>
+<style>
+.bg{fill:#ffffff}.halo{stroke:#ffffff}.cap{fill:#5f6368}.idx{fill:#9aa0a6}.c0{stroke:#c0392b}.c1{stroke:#2471a3}.c2{stroke:#1e8449}.c3{stroke:#b7950b}.c4{stroke:#7d3c98}.c5{stroke:#117a65}.c6{stroke:#ba4a00}.c7{stroke:#34495e}
+@media(prefers-color-scheme:dark){.bg{fill:#101215}.halo{stroke:#101215}.cap{fill:#9aa0a6}.idx{fill:#6b7075}.c0{stroke:#ff7a6b}.c1{stroke:#6aaef0}.c2{stroke:#58c98a}.c3{stroke:#e3c05a}.c4{stroke:#c08fdb}.c5{stroke:#4fc7ae}.c6{stroke:#ff9d5c}.c7{stroke:#a3b1c2}}
+</style>
+<rect class="bg" width="100%" height="100%"/>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.2">
+<path class="c0" d="M 226.20 104.00 C 242.20 104.00 258.19 107.18 272.96 113.30 C 287.74 119.42 301.30 128.48 312.61 139.79"/>
+<path class="c0" d="M 226.20 78.00 C 236.59 78.00 246.98 79.10 257.14 81.27 C 274.76 85.03 303.17 68.50 320.95 80.02 C 331.20 86.66 340.74 94.39 349.38 103.02"/>
+<path class="halo" d="M 244.48 52.96 C 250.56 53.60 256.60 54.56 262.57 55.84 C 283.28 60.26 291.69 92.04 306.81 101.84 C 311.17 104.66 315.38 107.72 319.42 110.99" stroke-width="10" stroke-linecap="butt"/>
+<path class="c0" d="M 226.20 52.00 C 238.41 52.00 250.62 53.29 262.57 55.84 C 283.28 60.26 291.69 92.04 306.81 101.84 C 315.53 107.49 323.65 114.06 330.99 121.41"/>
+<text class="idx" x="296.65" y="56.11" font-family="monospace" font-size="9.0" text-anchor="middle" dominant-baseline="central" stroke="none">0</text>
+<path class="c0" d="M 349.38 103.02 C 365.50 119.15 378.41 138.47 387.14 159.54 C 395.87 180.60 400.40 203.40 400.40 226.20"/>
+<path class="c0" d="M 312.61 139.79 C 318.67 145.85 324.08 152.55 328.74 159.73 C 336.83 172.20 367.37 177.64 371.13 195.26 C 373.30 205.42 374.40 215.81 374.40 226.20"/>
+<path class="halo" d="M 341.41 132.98 C 344.68 137.02 347.74 141.23 350.56 145.59 C 360.36 160.71 342.61 186.16 345.71 200.69 C 346.60 204.88 347.28 209.11 347.72 213.37" stroke-width="10" stroke-linecap="butt"/>
+<path class="c0" d="M 330.99 121.41 C 338.34 128.75 344.91 136.87 350.56 145.59 C 360.36 160.71 342.61 186.16 345.71 200.69 C 347.50 209.07 348.40 217.63 348.40 226.20"/>
+<text class="idx" x="396.29" y="155.75" font-family="monospace" font-size="9.0" text-anchor="middle" dominant-baseline="central" stroke="none">1</text>
+<path class="c0" d="M 348.40 226.20 C 348.40 242.20 345.22 258.19 339.10 272.96 C 332.98 287.74 323.92 301.30 312.61 312.61"/>
+<path class="c0" d="M 374.40 226.20 C 374.40 236.59 373.30 246.98 371.13 257.14 C 367.37 274.76 383.90 303.17 372.38 320.95 C 365.74 331.20 358.01 340.74 349.38 349.38"/>
+<path class="halo" d="M 399.44 244.48 C 398.80 250.56 397.84 256.60 396.56 262.57 C 392.14 283.28 360.36 291.69 350.56 306.81 C 347.74 311.17 344.68 315.38 341.41 319.42" stroke-width="10" stroke-linecap="butt"/>
+<path class="c0" d="M 400.40 226.20 C 400.40 238.41 399.11 250.62 396.56 262.57 C 392.14 283.28 360.36 291.69 350.56 306.81 C 344.91 315.53 338.34 323.65 330.99 330.99"/>
+<text class="idx" x="396.29" y="296.65" font-family="monospace" font-size="9.0" text-anchor="middle" dominant-baseline="central" stroke="none">2</text>
+<path class="c0" d="M 349.38 349.38 C 333.25 365.50 313.93 378.41 292.86 387.14 C 271.80 395.87 249.00 400.40 226.20 400.40"/>
+<path class="c0" d="M 312.61 312.61 C 306.55 318.67 299.85 324.08 292.67 328.74 C 280.20 336.83 274.76 367.37 257.14 371.13 C 246.98 373.30 236.59 374.40 226.20 374.40"/>
+<path class="halo" d="M 319.42 341.41 C 315.38 344.68 311.17 347.74 306.81 350.56 C 291.69 360.36 266.24 342.61 251.71 345.71 C 247.52 346.60 243.29 347.28 239.03 347.72" stroke-width="10" stroke-linecap="butt"/>
+<path class="c0" d="M 330.99 330.99 C 323.65 338.34 315.53 344.91 306.81 350.56 C 291.69 360.36 266.24 342.61 251.71 345.71 C 243.33 347.50 234.77 348.40 226.20 348.40"/>
+<text class="idx" x="296.65" y="396.29" font-family="monospace" font-size="9.0" text-anchor="middle" dominant-baseline="central" stroke="none">3</text>
+<path class="c0" d="M 226.20 348.40 C 210.20 348.40 194.21 345.22 179.44 339.10 C 164.66 332.98 151.10 323.92 139.79 312.61"/>
+<path class="c0" d="M 226.20 374.40 C 215.81 374.40 205.42 373.30 195.26 371.13 C 177.64 367.37 149.23 383.90 131.45 372.38 C 121.20 365.74 111.66 358.01 103.02 349.38"/>
+<path class="halo" d="M 207.92 399.44 C 201.84 398.80 195.80 397.84 189.83 396.56 C 169.12 392.14 160.71 360.36 145.59 350.56 C 141.23 347.74 137.02 344.68 132.98 341.41" stroke-width="10" stroke-linecap="butt"/>
+<path class="c0" d="M 226.20 400.40 C 213.99 400.40 201.78 399.11 189.83 396.56 C 169.12 392.14 160.71 360.36 145.59 350.56 C 136.87 344.91 128.75 338.34 121.41 330.99"/>
+<text class="idx" x="155.75" y="396.29" font-family="monospace" font-size="9.0" text-anchor="middle" dominant-baseline="central" stroke="none">4</text>
+<path class="c0" d="M 139.79 312.61 C 128.48 301.30 119.42 287.74 113.30 272.96 C 107.18 258.19 104.00 242.20 104.00 226.20"/>
+<path class="c0" d="M 103.02 349.38 C 94.39 340.74 86.66 331.20 80.02 320.95 C 68.50 303.17 85.03 274.76 81.27 257.14 C 79.10 246.98 78.00 236.59 78.00 226.20"/>
+<path class="halo" d="M 110.99 319.42 C 107.72 315.38 104.66 311.17 101.84 306.81 C 92.04 291.69 60.26 283.28 55.84 262.57 C 54.56 256.60 53.60 250.56 52.96 244.48" stroke-width="10" stroke-linecap="butt"/>
+<path class="c0" d="M 121.41 330.99 C 114.06 323.65 107.49 315.53 101.84 306.81 C 92.04 291.69 60.26 283.28 55.84 262.57 C 53.29 250.62 52.00 238.41 52.00 226.20"/>
+<text class="idx" x="56.11" y="296.65" font-family="monospace" font-size="9.0" text-anchor="middle" dominant-baseline="central" stroke="none">5−</text>
+<path class="c0" d="M 52.00 226.20 C 52.00 203.40 56.53 180.60 65.26 159.54 C 73.99 138.47 86.90 119.15 103.02 103.02"/>
+<path class="c0" d="M 104.00 226.20 C 104.00 217.63 104.90 209.07 106.69 200.69 C 109.79 186.16 92.04 160.71 101.84 145.59 C 107.49 136.87 114.06 128.75 121.41 121.41"/>
+<path class="halo" d="M 78.82 210.64 C 79.36 205.48 80.18 200.34 81.27 195.26 C 85.03 177.64 115.57 172.20 123.66 159.73 C 125.99 156.14 128.51 152.67 131.20 149.34" stroke-width="10" stroke-linecap="butt"/>
+<path class="c0" d="M 78.00 226.20 C 78.00 215.81 79.10 205.42 81.27 195.26 C 85.03 177.64 115.57 172.20 123.66 159.73 C 128.32 152.55 133.73 145.85 139.79 139.79"/>
+<text class="idx" x="56.11" y="155.75" font-family="monospace" font-size="9.0" text-anchor="middle" dominant-baseline="central" stroke="none">6</text>
+<path class="c0" d="M 139.79 139.79 C 151.10 128.48 164.66 119.42 179.44 113.30 C 194.21 107.18 210.20 104.00 226.20 104.00"/>
+<path class="c0" d="M 121.41 121.41 C 128.75 114.06 136.87 107.49 145.59 101.84 C 160.71 92.04 169.12 60.26 189.83 55.84 C 201.78 53.29 213.99 52.00 226.20 52.00"/>
+<path class="halo" d="M 116.63 90.77 C 121.38 86.93 126.33 83.34 131.45 80.02 C 149.23 68.50 177.64 85.03 195.26 81.27 C 200.34 80.18 205.48 79.36 210.64 78.82" stroke-width="10" stroke-linecap="butt"/>
+<path class="c0" d="M 103.02 103.02 C 111.66 94.39 121.20 86.66 131.45 80.02 C 149.23 68.50 177.64 85.03 195.26 81.27 C 205.42 79.10 215.81 78.00 226.20 78.00"/>
+<text class="idx" x="155.75" y="56.11" font-family="monospace" font-size="9.0" text-anchor="middle" dominant-baseline="central" stroke="none">7</text>
+<path class="idx" d="M 231.78 28.60 l -5.58 -4.74 l 0 9.49 z" stroke="none"/>
+<text class="cap" x="226.20" y="211.87" font-family="monospace" font-size="10.0" text-anchor="middle" dominant-baseline="central" stroke="none">8 generators</text>
+<text class="cap" x="226.20" y="226.30" font-family="monospace" font-size="10.0" text-anchor="middle" dominant-baseline="central" stroke="none">3 strands, 1 component</text>
+<text class="cap" x="226.20" y="240.73" font-family="monospace" font-size="10.0" text-anchor="middle" dominant-baseline="central" stroke="none">writhe 6</text>
+</g>
+</svg>

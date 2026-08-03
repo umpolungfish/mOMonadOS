@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="356" height="356" viewBox="0 0 356 356">
+<title>closed braid, 3 generators on 2 strands</title>
+<desc>writhe 3, 1 component, non-pure braid</desc>
+<style>
+.bg{fill:#ffffff}.halo{stroke:#ffffff}.cap{fill:#5f6368}.idx{fill:#9aa0a6}.c0{stroke:#c0392b}.c1{stroke:#2471a3}.c2{stroke:#1e8449}.c3{stroke:#b7950b}.c4{stroke:#7d3c98}.c5{stroke:#117a65}.c6{stroke:#ba4a00}.c7{stroke:#34495e}
+@media(prefers-color-scheme:dark){.bg{fill:#101215}.halo{stroke:#101215}.cap{fill:#9aa0a6}.idx{fill:#6b7075}.c0{stroke:#ff7a6b}.c1{stroke:#6aaef0}.c2{stroke:#58c98a}.c3{stroke:#e3c05a}.c4{stroke:#c08fdb}.c5{stroke:#4fc7ae}.c6{stroke:#ff9d5c}.c7{stroke:#a3b1c2}}
+</style>
+<rect class="bg" width="100%" height="100%"/>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.2">
+<path class="c0" d="M 178.10 78.00 C 189.98 78.00 201.86 80.14 212.99 84.28 C 224.13 88.42 234.51 94.56 243.51 102.32 C 251.97 109.63 264.10 113.86 276.05 121.55 C 287.99 129.24 299.33 140.64 301.97 154.47 C 304.77 169.17 304.93 184.37 302.43 199.13 C 299.94 213.89 294.79 228.19 287.31 241.15"/>
+<path class="halo" d="M 222.05 59.91 C 236.08 65.13 249.17 72.86 260.50 82.64 C 271.16 91.85 275.36 107.36 276.05 121.55 C 276.74 135.74 274.33 148.36 276.43 159.34 C 278.65 171.01 278.78 183.08 276.80 194.79" stroke-width="10" stroke-linecap="butt"/>
+<path class="c0" d="M 178.10 52.00 C 193.07 52.00 208.03 54.69 222.05 59.91 C 236.08 65.13 249.17 72.86 260.50 82.64 C 271.16 91.85 275.36 107.36 276.05 121.55 C 276.74 135.74 274.33 148.36 276.43 159.34 C 278.65 171.01 278.78 183.08 276.80 194.79 C 274.82 206.51 270.73 217.86 264.79 228.15"/>
+<text class="idx" x="295.88" y="110.10" font-family="monospace" font-size="9.0" text-anchor="middle" dominant-baseline="central" stroke="none">0</text>
+<path class="c0" d="M 264.79 228.15 C 258.85 238.44 251.06 247.66 241.91 255.23 C 232.75 262.80 222.24 268.73 211.02 272.63 C 200.46 276.31 190.73 284.70 178.10 291.20 C 165.47 297.70 149.93 301.82 136.63 297.19 C 122.50 292.26 109.25 284.80 97.72 275.26 C 86.19 265.72 76.38 254.11 68.89 241.15"/>
+<path class="halo" d="M 258.48 275.26 C 246.95 284.80 233.70 292.26 219.57 297.19 C 206.27 301.82 190.73 297.70 178.10 291.20 C 165.47 284.70 155.74 276.31 145.18 272.63 C 133.96 268.73 123.45 262.80 114.29 255.23" stroke-width="10" stroke-linecap="butt"/>
+<path class="c0" d="M 287.31 241.15 C 279.82 254.11 270.01 265.72 258.48 275.26 C 246.95 284.80 233.70 292.26 219.57 297.19 C 206.27 301.82 190.73 297.70 178.10 291.20 C 165.47 284.70 155.74 276.31 145.18 272.63 C 133.96 268.73 123.45 262.80 114.29 255.23 C 105.14 247.66 97.35 238.44 91.41 228.15"/>
+<text class="idx" x="178.10" y="314.10" font-family="monospace" font-size="9.0" text-anchor="middle" dominant-baseline="central" stroke="none">1</text>
+<path class="c0" d="M 91.41 228.15 C 85.47 217.86 81.38 206.51 79.40 194.79 C 77.42 183.08 77.55 171.01 79.77 159.34 C 81.87 148.36 79.46 135.74 80.15 121.55 C 80.84 107.36 85.04 91.85 95.70 82.64 C 107.03 72.86 120.12 65.13 134.15 59.91 C 148.17 54.69 163.13 52.00 178.10 52.00"/>
+<path class="halo" d="M 53.77 199.13 C 51.27 184.37 51.43 169.17 54.23 154.47 C 56.87 140.64 68.21 129.24 80.15 121.55 C 92.10 113.86 104.23 109.63 112.69 102.32 C 121.69 94.56 132.07 88.42 143.21 84.28" stroke-width="10" stroke-linecap="butt"/>
+<path class="c0" d="M 68.89 241.15 C 61.41 228.19 56.26 213.89 53.77 199.13 C 51.27 184.37 51.43 169.17 54.23 154.47 C 56.87 140.64 68.21 129.24 80.15 121.55 C 92.10 113.86 104.23 109.63 112.69 102.32 C 121.69 94.56 132.07 88.42 143.21 84.28 C 154.34 80.14 166.22 78.00 178.10 78.00"/>
+<text class="idx" x="60.32" y="110.10" font-family="monospace" font-size="9.0" text-anchor="middle" dominant-baseline="central" stroke="none">2</text>
+<path class="idx" d="M 183.68 28.60 l -5.58 -4.74 l 0 9.49 z" stroke="none"/>
+<text class="cap" x="178.10" y="165.14" font-family="monospace" font-size="9.0" text-anchor="middle" dominant-baseline="central" stroke="none">3 generators</text>
+<text class="cap" x="178.10" y="178.19" font-family="monospace" font-size="9.0" text-anchor="middle" dominant-baseline="central" stroke="none">2 strands, 1 component</text>
+<text class="cap" x="178.10" y="191.24" font-family="monospace" font-size="9.0" text-anchor="middle" dominant-baseline="central" stroke="none">writhe 3</text>
+</g>
+</svg>

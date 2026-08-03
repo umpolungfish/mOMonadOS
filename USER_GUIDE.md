@@ -444,26 +444,69 @@ Compiles a circuit over `H`, `T`, `S`, `X` to a braid word.
 
 ```
 ⊙> fibqc compile T S
-Building gate net (depth 10)...
-  net: 4842 entries, 1704 KB (heap 2164 of 8192 KB)
-  single arm : error 7.260095e-4  length 1094
-  split+fused: error 7.260095e-4  length 1094
+Building gate net (depth 10, SK recursion 3)...
+  net: 4842 entries, 1704 KB (heap 2909 of 49152 KB)
+  single arm : error 7.260095e-4  length 1068
+  split+fused: error 7.260095e-4  length 1068
   gain       : 1.0x
   unitary    : true
-  word check : PASS (residual 5.40e-14)
-  heap peak  : 2602 of 8192 KB
+  word check : PASS (residual 5.20e-14)
+  heap peak  : 2922 of 49152 KB
 ```
 
 The circuit compiles as ONE unitary rather than gate by gate, so the approximation
 error is incurred once instead of accumulating across the gates.
 
-A trailing integer sets the gate net depth, as in `fibqc compile T S 12`. The default
-is 10 and 12 is the hard ceiling, for reasons of memory rather than time: the net costs
-1.7 MB at depth 10 and 6.9 MB at depth 12 against the 8 MB bump arena, and depth 12
-peaks at 8156 KB, a margin of 36 KB. The command reports its own high-water mark and
-scopes itself with `heap_mark`/`heap_reset`, so a second invocation starts from the
-same place. Exhausting the arena returns null and takes the kernel down without
-printing, which is why the usage line is there.
+### The two depths
+
+Two trailing integers set the gate net depth and then the Solovay-Kitaev recursion
+depth, as in `fibqc compile T S 12 3`. They default to 10 and 3. One integer sets the
+net depth alone, and `fibqc compile T S 10 0` asks the net directly with no recursion
+on top, which is the only setting whose error is monotone in net size.
+
+Neither depth is capped. The net grows until it is within a third of the arena and
+then stops where it is, and the recursion asks the same question one level at a time:
+the word a level returns is five sub-words long, so it grows by roughly a factor of
+five per level, its size is known before any of it is allocated, and a level that will
+not fit is declined where the level below it is already a complete answer. What comes
+back is the deepest thing that fit, and the run says so rather than reporting the
+depth that was asked for.
+
+Depth costs arena, not correctness. Recursion 9 on a small net reaches an error near
+4e-10 with a word of 1.8 million generators and peaks at 18 MB of the 48 MB arena.
+
+### Where the recursion stops paying
+
+The net sets how deep the recursion is worth running, and the point is sharp. On the
+47-entry net that a net depth of 3 builds, recursion 7 gives 6.4e-8, recursion 8 gives
+2.7e-9, and recursion 9 gives 3.9e-10. Recursions 10 and 11 give 3.9e-10: the same
+error, the same word to the generator, and the same high-water mark to the kilobyte.
+The levels above 9 are not merely a poor trade. They contribute nothing at all.
+
+What happens there is worth knowing, because it is the free reduction doing it. A level
+appends its two commutator factors and their inverses around the base word, and once
+the residual falls below what the net can resolve, those four factors cancel each other
+completely. The level returns its own base, byte for byte. Without free reduction the
+same level would return a word five times longer for no accuracy whatever, and the
+level above that twenty-five times longer, and the arena would be what stopped it
+rather than arithmetic. With it, asking for a depth past the net's resolution is free:
+it costs no memory and no error.
+
+So a run whose error will not come down wants a larger net, not a deeper recursion. The
+flat pair of rows is the same signal here as in the two error lines below: the
+dictionary is the limit.
+
+The words themselves are freely reduced at every level, since the concatenation is
+where cancelling pairs are created and each one the level above would otherwise copy
+five more times. Free reduction leaves the unitary exactly where it was, so the errors
+are unchanged and only the lengths come down.
+
+The compile scopes itself with `heap_mark`/`heap_reset`, so a second invocation starts
+from the same place, and it reports its own high-water mark. Each level of the
+recursion scopes itself the same way: the sub-words it built are dead the moment it
+returns, so its result is moved down over them and the bump pointer follows. Peak use
+tracks the path down the recursion rather than the whole tree, which is the difference
+between a few megabytes and the whole arena.
 
 ### What the two error lines mean
 
@@ -480,10 +523,45 @@ Depth matters to whether the fuse fires at all. `T S` gains nothing at depth 10 
 ### `word check`
 
 The reported unitary is verified against its own printed word by resynthesizing the
-word from scratch, agreeing to about 1e-13. The determinant identity
+word from scratch, agreeing to about 1e-13 on a short word and to about 1e-10 on a
+word of a million generators, where the residual is the rounding of the walk itself.
+The walk folds the generators through 2x2 registers rather than building a matrix per
+generator, so checking a long word costs no arena and the check cannot be the thing
+that runs the kernel out. The determinant identity
 `det(braid) = det(σ₁)^(sum of exponents)` is NOT used: `det(σ₁)` is a primitive tenth
 root of unity, so that test passes by chance one time in ten, and it sees only the sum
 of the exponents, so every permutation of a word passes it.
+
+### Drawing the word: `draw`, `svg`, `loop`
+
+A word in front of the gates picks a form: `qc draw H T` puts the strand diagram in
+the terminal, `qc svg H T` emits the flat diagram as an SVG document, and
+`qc loop H T` emits the closed braid. `bi` takes the same three over a word typed
+straight in, as in `bi loop 1 2 -1 -2 1 2`. Everything is written to the serial line,
+so redirect it to a file to keep it.
+
+The flat form is the braid as it is written: strands down the page, one crossing per
+row, folded into columns so a compiled circuit is a figure rather than a mile of paper.
+It is the form to read a specific crossing out of, and it carries the crossing index
+beside every row.
+
+The closed form is the braid as a link. Closing a braid means bending the page into a
+cylinder so every strand's foot meets its own head, and `loop` draws that cylinder end
+on: the strand positions are concentric tracks, one crossing owns one angular slot,
+and reading once around the ring is reading the word once through. Nothing is added to
+close it, because a circle is already closed. The strands of a permutation cycle join
+into one curve on their own, and each such curve is one component of the link, which
+is why colour there follows the component rather than the strand. The hole in the
+middle is the braid axis, and the caption sits in it.
+
+The ring grows with the crossing count rather than packing them tighter, so the
+crossings stay the same size to read at any length. A word too long for the arena to
+hold the whole document is drawn as far as it fits and says so, in the caption and in
+the `desc`, as the closure of the crossings it drew.
+
+Both SVG forms carry their own stylesheet and answer either theme: the gap in an under
+strand is cut by overstroking it in the background colour, and a viewer in a dark theme
+would otherwise see those gaps filled with white.
 
 ### `fibqc jones <strands> <generators...>` and `fibqc knot [name]`
 

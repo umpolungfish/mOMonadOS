@@ -51,7 +51,7 @@ pub fn init() {
         }
         outb(COM1 + 1, 0x00); // disable interrupts
         outb(COM1 + 3, 0x80); // enable DLAB
-        outb(COM1 + 0, 0x01); // baud divisor lo = 1 → 115200
+        outb(COM1 + 0, 0x01); // baud divisor lo = 1 -> 115200
         outb(COM1 + 1, 0x00); // baud divisor hi
         outb(COM1 + 3, 0x03); // 8N1, DLAB off
         outb(COM1 + 2, 0xC7); // FIFO on, clear, 14-byte threshold
@@ -103,7 +103,7 @@ fn flush_buf(buf: &[u8; 14], fill: usize) {
     for i in 0..fill { write_byte(buf[i]); }
 }
 
-/// Decimal on the stack. The heap-exhaustion path cannot use `format!` — that
+/// Decimal on the stack. The heap-exhaustion path cannot use `format!` -- that
 /// allocates, and allocating is precisely what has just failed.
 pub fn write_dec(mut n: usize) {
     let mut buf = [0u8; 20];
@@ -191,5 +191,46 @@ pub fn read_byte() -> u8 {
     match std::io::stdin().read_exact(&mut b) {
         Ok(()) => b[0],
         Err(_) => b'\n',   // EOF reads as a newline so the REPL sees a blank line
+    }
+}
+
+// ── SVG output (hosted-only) ─────────────────────────────────────────
+// Saves SVG content to a file in the kernel's output directory.
+// In hosted mode, files go to <project_root>/ob3ects/.
+// In bare-metal mode (unimplemented), this would be a no-op.
+
+#[cfg(feature = "hosted")]
+pub mod svg_out {
+    use std::fs::File;
+    use std::io::Write;
+    use std::path::PathBuf;
+
+    /// Saves SVG content to a file in the kernel's output directory.
+    pub fn save_svg(content: &str, name_hint: &str) -> std::io::Result<PathBuf> {
+        let dir = std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
+        let out_dir = dir.join("ob3ects");
+        std::fs::create_dir_all(&out_dir)?;
+
+        // Sanitize the name hint into a filename
+        let sanitized: String = name_hint
+            .chars()
+            .map(|c| if c.is_alphanumeric() || c == '-' || c == '_' { c } else { '_' })
+            .collect();
+        let filename = format!("braid_{}.svg", sanitized);
+        let path = out_dir.join(&filename);
+
+        let mut file = File::create(&path)?;
+        file.write_all(content.as_bytes())?;
+        file.flush()?;
+        Ok(path)
+    }
+}
+
+#[cfg(not(feature = "hosted"))]
+pub mod svg_out {
+    /// No-op in bare-metal mode: SVG output stays on serial only.
+    pub fn save_svg(content: &str, name_hint: &str) -> Result<(), ()> {
+        let _ = (content, name_hint);
+        Err(())
     }
 }

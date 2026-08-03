@@ -283,16 +283,27 @@ pub fn repl(k: &mut Kernel) {
                 // built inside the compile's heap scope and dies with it, so
                 // the choice has to travel in rather than the word travelling out.
                 let mut render = 0u8;
-                let rest: Vec<&str> = match rest.split_first() {
-                    Some((&"draw", tail)) => { render = 1; tail.to_vec() }
-                    Some((&"svg", tail))  => { render = 2; tail.to_vec() }
-                    _ => rest,
-                };
+                let mut rest = rest;
+                if !rest.is_empty() {
+                    let first = rest[0].to_lowercase();
+                    if first == "draw" {
+                        render = 1;
+                        rest.remove(0);
+                    } else if first == "svg" {
+                        render = 2;
+                        rest.remove(0);
+                    } else if first == "loop" || first == "curve" || first == "curvy" {
+                        render = 3;
+                        rest.remove(0);
+                    }
+                }
                 if rest.is_empty() {
                     sprintln!("qc [draw|svg] <gates> [net_depth] [sk_depth]   e.g. `qc H T 8`, `qc HTSX 10 0`");
                     sprintln!("Known gates: H T S X — spaces optional, case free.");
-                    sprintln!("Depth is any positive integer (default 10); the search");
-                    sprintln!("stops early if the gate net outgrows the arena.");
+                    sprintln!("Both depths are any positive integer (net 10, recursion 3");
+                    sprintln!("by default). Each stops early rather than refusing: the net");
+                    sprintln!("when it outgrows the arena, the recursion when the next");
+                    sprintln!("level's word would, and the run says which one it was.");
                 } else {
                     // Trailing integers are the two depths: net depth, then SK
                     // recursion depth. The recursion depth was pinned at 3 and
@@ -348,6 +359,7 @@ pub fn repl(k: &mut Kernel) {
                     .filter(|t| !t.is_empty())
                     .collect();
                 let (mut as_svg, mut start, mut count) = (false, 0usize, 0usize);
+                let mut as_loop = false;
                 // Long words fold into columns by default; `/N` sets the column
                 // height, `/0` forces the single tall column.
                 let mut fold: usize = 48;
@@ -355,8 +367,9 @@ pub fn repl(k: &mut Kernel) {
                 let mut bad: Option<&str> = None;
                 for t in &toks {
                     match *t {
-                        "svg" => as_svg = true,
-                        "ascii" | "draw" => as_svg = false,
+                        "svg" => { as_svg = true; as_loop = false; }
+                        "loop" | "curve" | "curvy" => { as_svg = true; as_loop = true; }
+                        "ascii" | "draw" => { as_svg = false; as_loop = false; }
                         _ => {
                             if let Some(n) = t.strip_prefix('/') {
                                 match n.parse::<usize>() {
@@ -380,8 +393,8 @@ pub fn repl(k: &mut Kernel) {
                 if let Some(t) = bad {
                     sprintln!("bi: '{}' is not a generator, a window, or svg/ascii.", t);
                 } else if word.is_empty() {
-                    sprintln!("bi [svg] <generators> [start:count]");
-                    sprintln!("  e.g. `bi 1 2 1`, `bi 1 -2 1 -2`, `bi svg 1 2 1 2 1`");
+                    sprintln!("bi [svg|loop] <generators> [start:count]");
+                    sprintln!("  e.g. `bi 1 2 1`, `bi 1 -2 1 -2`, `bi loop 1 2 1 2 1`");
                     sprintln!("  Generators are signed Artin: k is sigma_k, -k its inverse.");
                     sprintln!("  A window like `40:24` draws 24 crossings from the 40th.");
                     sprintln!("  SVG folds into columns of 48; `/N` sets that, `/0` is one column.");
@@ -390,7 +403,11 @@ pub fn repl(k: &mut Kernel) {
                     let strands = crate::braid_render::strands_for(&word);
                     let (a, b) = crate::braid_render::window(word.len(), start, count);
                     if as_svg {
-                        sprint!("{}", crate::braid_render::svg(&word, strands, a, b, fold));
+                        if as_loop {
+                            sprint!("{}", crate::braid_render::svg_loop(&word, strands));
+                        } else {
+                            sprint!("{}", crate::braid_render::svg(&word, strands, a, b, fold));
+                        }
                     } else {
                         sprint!("{}", crate::braid_render::header(&word, strands, a, b));
                         sprint!("{}", crate::braid_render::ascii(&word, strands, a, b));
@@ -421,6 +438,7 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("fibqc jones <gens...>    — Jones polynomial; strands implied by the word");
                         sprintln!("fibqc knot [name]        — Jones value for a knot from the census");
                         sprintln!("fibqc winding            — the phase lattice, in windings");
+                        sprintln!("fibqc protocol           — show the IMASM braiding protocol report");
                         sprintln!("");
                         sprintln!("The circuit compiles as ONE unitary, so the error is incurred once");
                         sprintln!("rather than accumulating gate by gate. Several braid words sit at the");
@@ -443,8 +461,23 @@ pub fn repl(k: &mut Kernel) {
                         let joined = tail.join(" ");
                         let rest: Vec<&str> = joined.split_whitespace().collect();
                         if rest.is_empty() {
-                            sprintln!("fibqc compile <gates>   e.g. `fibqc compile H T`");
+                            sprintln!("fibqc compile [draw|svg|loop] <gates> [depth]");
                         } else {
+                            let mut render = 0u8;
+                            let mut rest = rest;
+                            if !rest.is_empty() {
+                                let first = rest[0].to_lowercase();
+                                if first == "draw" {
+                                    render = 1;
+                                    rest.remove(0);
+                                } else if first == "svg" {
+                                    render = 2;
+                                    rest.remove(0);
+                                } else if first == "loop" || first == "curve" || first == "curvy" {
+                                    render = 3;
+                                    rest.remove(0);
+                                }
+                            }
                             // a trailing integer is the net depth, everything before it is the circuit
                             let (gates, depth) = match rest.last().and_then(|s| s.parse::<usize>().ok()) {
                                 Some(d) => (&rest[..rest.len()-1], d.max(1)),
@@ -453,7 +486,7 @@ pub fn repl(k: &mut Kernel) {
                             if gates.is_empty() {
                                 sprintln!("No gates given. Known: H T S X");
                             } else {
-                                crate::fibonacci_qc::repl_compile(&gates.join(" "), depth, 3, 0);
+                                crate::fibonacci_qc::repl_compile(&gates.join(" "), depth, 3, render);
                             }
                         }
                     }
@@ -499,6 +532,9 @@ pub fn repl(k: &mut Kernel) {
                         } else {
                             sprintln!("fibqc: no knot named '{}'. Try `fibqc knot`.", name);
                         }
+                    }
+                    "protocol" => {
+                        sprint!("{}", crate::braid_protocol::report());
                     }
                     other => sprintln!("fibqc: unknown subcommand '{}'. Try `fibqc help`.", other),
                 }

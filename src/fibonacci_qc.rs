@@ -934,6 +934,33 @@ pub fn synthesize_gate(n: usize, word: &[i32]) -> Result<Vec<Vec<Complex>>, Stri
     Ok(u)
 }
 
+/// Resynthesize a four-strand braid word without allocating per generator.
+///
+/// `synthesize_gate` builds a fresh dense matrix for every generator it walks
+/// and another for every inverse, so on a word of a million generators the
+/// check costs more arena than the compile that produced the word, and on a
+/// bump allocator none of it comes back until the scope closes. The fusion
+/// space on four strands is two-dimensional, which is why the compiler works in
+/// `Matrix2` throughout, so the same product is a fold through registers with
+/// the three generators built once.
+pub fn synthesize_matrix2_4(word: &[i32]) -> Matrix2 {
+    let (_, sigmas) = braid_representation(4);
+    let mut gens: Vec<(Matrix2, Matrix2)> = Vec::with_capacity(sigmas.len());
+    for s in &sigmas {
+        let m = matrix2_from_vec(s);
+        gens.push((m, m.conjugate_transpose()));
+    }
+    // U = sigma_{g_k} * ... * sigma_{g_1}, the same order the dense path takes.
+    let mut acc = Matrix2::identity();
+    for &g in word {
+        if g == 0 { continue; }
+        let k = (g.unsigned_abs() as usize) - 1;
+        if k >= gens.len() { continue; }
+        acc = if g < 0 { gens[k].1.mul(acc) } else { gens[k].0.mul(acc) };
+    }
+    acc
+}
+
 /// Braid generators in both total-charge sectors on n strands.
 ///
 /// The quantum trace runs over BOTH sectors: tau^n -> 1 (dimension F_{n-1},
@@ -1391,6 +1418,84 @@ fn gc_decompose(u: &Matrix2) -> (Matrix2, Matrix2) {
     (s.mul(vx).mul(s.conjugate_transpose()), s.mul(wy).mul(s.conjugate_transpose()))
 }
 
+// ─── Word storage under a bump arena ────────────────────────────────────────
+
+/// Set when the recursion stopped short of the requested depth because the
+/// arena could not hold the next level's word.
+static SK_CAPPED: core::sync::atomic::AtomicBool = core::sync::atomic::AtomicBool::new(false);
+
+pub fn sk_capped_reset() { SK_CAPPED.store(false, core::sync::atomic::Ordering::Relaxed); }
+pub fn sk_capped() -> bool { SK_CAPPED.load(core::sync::atomic::Ordering::Relaxed) }
+
+/// Cancel adjacent inverse pairs in place. Free reduction in the braid group:
+/// σ σ⁻¹ = 1 holds in the group and the representation is a homomorphism, so
+/// the unitary is unchanged and the word gets shorter. The concatenation in
+/// `sk_arm` is where cancelling pairs are created, four seams per level, each
+/// of which the level above then copies five more times, so reducing at every
+/// level rather than once at the end is what keeps the growth in hand.
+fn free_reduce(w: &mut Vec<i32>) {
+    let mut n = 0usize;
+    for i in 0..w.len() {
+        let g = w[i];
+        if n > 0 && w[n - 1] == -g { n -= 1; } else { w[n] = g; n += 1; }
+    }
+    w.truncate(n);
+}
+
+/// Move a word down to `mark`, releasing everything allocated above it.
+///
+/// The arena reclaims only in LIFO order, so a recursion that allocates
+/// sub-words and then returns one word built from them leaks the sub-words for
+/// the rest of the call, and the words grow by a factor of five per level, so
+/// what leaks is most of the arena. Every sub-word is dead at the moment the
+/// node returns, and the returned word is the topmost live allocation, so the
+/// node's whole footprint can be collapsed to just that word: memmove it down
+/// to where the node started and put the bump pointer back behind it. Peak use
+/// then follows the recursion path rather than the whole tree.
+///
+/// Sound only where `word` is the single allocation of this node's that
+/// outlives it, which is what the single caller does.
+#[cfg(not(feature = "hosted"))]
+fn arena_compact(word: Vec<i32>, mark: usize) -> Vec<i32> {
+    let len = word.len();
+    if len == 0 {
+        drop(word);
+        crate::heap_reset(mark);
+        return Vec::new();
+    }
+    let src = word.as_ptr();
+    let dst = ((mark + 3) & !3) as *mut i32;
+    if dst as usize > src as usize { return word; }   // nothing below to reclaim
+    unsafe {
+        core::ptr::copy(src, dst, len);               // memmove: regions overlap
+        core::mem::forget(word);                      // storage is the arena's
+        crate::heap_reset(dst as usize + len * core::mem::size_of::<i32>());
+        Vec::from_raw_parts(dst, len, len)
+    }
+}
+
+/// Hosted builds run on the host allocator, which frees on drop.
+#[cfg(feature = "hosted")]
+fn arena_compact(word: Vec<i32>, _mark: usize) -> Vec<i32> { word }
+
+/// Give a dead word back to the enclosing arena scope instead of to the
+/// allocator.
+///
+/// Dropping it would be worse than useless here. The bump allocator reclaims a
+/// block when it ends exactly where the bump pointer stands, and after a
+/// compaction that is where the *result* ends, so a dead sub-word of the same
+/// length, sitting at the same address the result was moved to, frees the
+/// result out from under its owner and the next allocation overwrites it. It is
+/// reachable: when the net's closest approximation to both commutator factors
+/// is the identity, the level's word is its base word, byte for byte. The reset
+/// that follows reclaims all of it at once anyway, so the drop has nothing to
+/// contribute and one way to do damage.
+#[cfg(not(feature = "hosted"))]
+fn release(w: Vec<i32>) { core::mem::forget(w); }
+
+#[cfg(feature = "hosted")]
+fn release(w: Vec<i32>) { drop(w); }
+
 /// Solovay-Kitaev approximation: recursively decompose target into braid words.
 /// Returns (word, gate, error) where error is the projective distance.
 pub fn solovay_kitaev(
@@ -1441,6 +1546,9 @@ fn sk_arm(
         return net.closest_arm(target, arm);
     }
 
+    // Everything this node allocates below its result is dead when it returns.
+    let mark = crate::heap_mark();
+
     // Base approximation
     let (w_u, g_u, _) = sk_arm(target, depth - 1, net, arm, false);
 
@@ -1455,6 +1563,25 @@ fn sk_arm(
     let (w_v, g_v, _) = sk_arm(&v_mat, depth - 1, net, arm, false);
     let (w_w, g_w, _) = sk_arm(&w_mat, depth - 1, net, arm, false);
 
+    let err_u = Matrix2::projective_distance(target, &g_u);
+
+    // The level's word is five sub-words long, so its length grows by about a
+    // factor of five per level and the request that does not fit is the one
+    // above the last one that did. Its size is known before anything is
+    // allocated for it, so ask: a level that cannot be built is declined here,
+    // where the base below it is a complete answer, rather than a level down
+    // inside an allocation that takes the kernel out. Leave the arena a third
+    // clear for the synthesis and the drawing, which run on top of this.
+    let need = (w_u.len() + 2 * w_v.len() + 2 * w_w.len())
+        * 2 * core::mem::size_of::<i32>();
+    let (used, total) = crate::heap_used();
+    if total.saturating_sub(used) < need + total / 3 {
+        SK_CAPPED.store(true, core::sync::atomic::Ordering::Relaxed);
+        release(w_v);
+        release(w_w);
+        return (arena_compact(w_u, mark), g_u, err_u);
+    }
+
     // Combined gate: g_v * g_w * g_v† * g_w† * g_u
     let combined = g_v.mul(g_w).mul(g_v.conjugate_transpose())
         .mul(g_w.conjugate_transpose()).mul(g_u);
@@ -1465,17 +1592,34 @@ fn sk_arm(
     // right-to-left composition: the word is the reverse concatenation of
     // the factors, so that synth(word) reproduces `gate` exactly.
     // gate = gV @ gW @ gV† @ gW† @ gU, word = wU + inv(wW) + inv(wV) + wW + wV
-    let mut word = w_u.clone();
+    // One allocation of the final size: growing it by five extends reallocated
+    // four times, and on a bump arena each of those copies is kept forever.
+    let mut word = Vec::with_capacity(
+        w_u.len() + inv_ww.len() + inv_wv.len() + w_w.len() + w_v.len());
+    word.extend_from_slice(&w_u);
     word.extend_from_slice(&inv_ww);
     word.extend_from_slice(&inv_wv);
     word.extend_from_slice(&w_w);
     word.extend_from_slice(&w_v);
+    free_reduce(&mut word);
 
     let err = Matrix2::projective_distance(target, &combined);
 
+    // Every word this level built other than the one it returns is dead, and
+    // the reset inside the compaction is what reclaims them.
+    release(inv_wv);
+    release(inv_ww);
+    release(w_v);
+    release(w_w);
+
     // At the top only: keep the better of this level and its own base.
-    let err_u = Matrix2::projective_distance(target, &g_u);
-    if top && err_u < err { (w_u, g_u, err_u) } else { (word, combined, err) }
+    if top && err_u < err {
+        release(word);
+        (arena_compact(w_u, mark), g_u, err_u)
+    } else {
+        release(w_u);
+        (arena_compact(word, mark), combined, err)
+    }
 }
 
 /// Split over the tied bases, then fuse — δ then μ, rather than a ranking.
@@ -1494,9 +1638,16 @@ pub fn sk_split_fuse(
 ) -> (Vec<i32>, Matrix2, f64) {
     let mut arms: Vec<(Vec<i32>, Matrix2, f64)> = Vec::new();
     for i in 0..n_arms {
+        // An arm that turns out to be an alias keeps nothing, so give back what
+        // it cost. Only the arms that are kept accumulate.
+        let mark = crate::heap_mark();
         let (w, g, e) = solovay_kitaev_arm(target, depth, net, Some(i));
         // an arm index past the tie count aliases back onto an earlier arm
-        if arms.iter().any(|(aw, _, _)| *aw == w) { continue; }
+        if arms.iter().any(|(aw, _, _)| *aw == w) {
+            release(w);
+            crate::heap_reset(mark);
+            continue;
+        }
         arms.push((w, g, e));
     }
     if arms.is_empty() {
@@ -1512,15 +1663,28 @@ pub fn sk_split_fuse(
     // mu: the losing arms compile the survivor's residual.
     let n = arms.len();
     for i in 0..n {
+        // A pass that does not improve on the survivor is worth nothing and is
+        // rolled back; one that does keeps its word, which the next pass then
+        // builds on, so only improvements cost arena.
+        let mark = crate::heap_mark();
         let residual = target.mul(best.1.inverse());
         let (rw, rg, _) = solovay_kitaev_arm(&residual, depth, net, Some(i));
         // right-to-left composition: rg applies last, so its word goes last
         let gate = rg.mul(best.1);
-        let mut word = best.0.clone();
+        let mut word = Vec::with_capacity(best.0.len() + rw.len());
+        word.extend_from_slice(&best.0);
         word.extend_from_slice(&rw);
+        free_reduce(&mut word);
         let err = Matrix2::projective_distance(target, &gate);
+        release(rw);
         if err < best.2 {
-            best = (word, gate, err);
+            // The word this replaces sits below the mark and is dead, so the
+            // survivor moves down over the pass that produced it.
+            release(core::mem::take(&mut best.0));
+            best = (arena_compact(word, mark), gate, err);
+        } else {
+            release(word);
+            crate::heap_reset(mark);
         }
     }
     best
@@ -1868,11 +2032,11 @@ pub fn run_sample_circuit() {
 /// the approximation error is incurred once instead of accumulating across the
 /// gates, and the braid comes out shorter.
 ///
-/// `net_depth` sizes the gate net, which is the memory-dominant structure.
-/// Measured in-kernel it costs 1.7 MB at depth 10 and 6.9 MB at depth 12
-/// against an 8 MB bump arena, peaking at 8156 KB in the latter case, a margin
-/// of 36 KB. So 10 is the default and 12 is the hard ceiling, not merely the
-/// practical one.
+/// `net_depth` sizes the gate net, which costs 1.7 MB at depth 10 and 6.9 MB at
+/// depth 12 of the 48 MB arena. `sk_depth` sizes the recursion on top of it,
+/// whose word grows by roughly a factor of five per level and passes the net in
+/// cost around depth 7. Neither is capped: each grows until the arena says stop
+/// and then reports the depth it reached.
 /// `render`: 0 prints the word as integers, 1 draws it, 2 emits SVG. The word
 /// lives inside the heap scope this function opens and is dropped with it, so
 /// the drawing happens here rather than being handed back.
@@ -1932,10 +2096,20 @@ pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize, render: u8) {
                   total.saturating_sub(used1) / 1024, net_depth);
     }
 
+    sk_capped_reset();
     let (w0, g0, _) = solovay_kitaev(&target, sk_depth, &net);
     let e0 = Matrix2::projective_distance(&target, &g0);
     let (w1, g1, _) = sk_split_fuse(&target, sk_depth, &net, 8);
     let e1 = Matrix2::projective_distance(&target, &g1);
+    // The word grows about fivefold per recursion level, so the depth that does
+    // not fit is one above the depth that does. The recursion stops where the
+    // arena stops and returns the deepest level it completed, the same way the
+    // net does. Say which one that was.
+    if sk_capped() {
+        let (used, total) = crate::heap_used();
+        sprintln!("  SK stopped short of depth {}, {} KB free at the deepest level built",
+                  sk_depth, total.saturating_sub(used) / 1024);
+    }
 
     sprintln!("  single arm : error {:.6e}  length {}", e0, w0.len());
     sprintln!("  split+fused: error {:.6e}  length {}", e1, w1.len());
@@ -1945,14 +2119,13 @@ pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize, render: u8) {
     sprintln!("  unitary    : {}", g1.is_unitary(1e-9));
 
     // The reported unitary must come from the reported word: resynthesize it.
-    match synthesize_gate(4, &w1) {
-        Ok(v) => {
-            let m = matrix2_from_vec(&v);
-            let d = Matrix2::projective_distance(&m, &g1);
-            sprintln!("  word check : {} (residual {:.2e})", if d < 1e-6 { "PASS" } else { "FAIL" }, d);
-        }
-        Err(e) => sprintln!("  word check : synthesis failed: {}", e),
-    }
+    // Nothing the resynthesis allocates survives the comparison, so scope it.
+    // Only the residual comes out, and that is one float.
+    let check_mark = crate::heap_mark();
+    let m = synthesize_matrix2_4(&w1);
+    let d = Matrix2::projective_distance(&m, &g1);
+    sprintln!("  word check : {} (residual {:.2e})", if d < 1e-6 { "PASS" } else { "FAIL" }, d);
+    crate::heap_reset(check_mark);
     let (peak, total2) = crate::heap_used();
     sprintln!("  heap peak  : {} of {} KB", peak / 1024, total2 / 1024);
 
@@ -1966,11 +2139,19 @@ pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize, render: u8) {
         2 => {
             sprint!("{}", crate::braid_render::svg(&w1, strands, 0, w1.len(), 48));
         }
+        3 => {
+            sprint!("{}", crate::braid_render::svg_loop(&w1, strands));
+        }
         _ => {
             sprintln!("  braid word ({} generators):", w1.len());
+            // Formatting straight into the line rather than into a throwaway
+            // String per generator: on a long word that per-generator String is
+            // one arena allocation each, hundreds of thousands of them, none of
+            // which come back until the compile scope ends.
+            use core::fmt::Write as _;
             let mut line = String::new();
             for (i, g) in w1.iter().enumerate() {
-                line.push_str(&format!("{} ", g));
+                let _ = write!(line, "{} ", g);
                 if (i + 1) % 24 == 0 { sprintln!("    {}", line); line.clear(); }
             }
             if !line.is_empty() { sprintln!("    {}", line); }
@@ -1992,8 +2173,8 @@ pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize, render: u8) {
 pub fn repl_jones(n: usize, word: &[i32]) {
     // Scope the arena. Both sectors build F(n) x F(n) complex matrices for
     // every generator, which is ~600 KB at ten strands, and the bump allocator
-    // reclaims only in LIFO order — so without this each invocation kept its
-    // representation forever and a handful of calls exhausted the 8 MB.
+    // reclaims only in LIFO order, so without this each invocation kept its
+    // representation forever and a run of calls exhausted the arena.
     let mark = crate::heap_mark();
 
     // The fusion space is F(n-1) and the matrices are its square, so cost grows
@@ -2002,7 +2183,7 @@ pub fn repl_jones(n: usize, word: &[i32]) {
     if n > 16 {
         sprintln!("  {} strands: fusion space is F({}), and the braid matrices are",
                   n, n - 1);
-        sprintln!("  its square. That does not fit the 8 MB arena. Cap is 16.");
+        sprintln!("  its square. That does not fit the arena. Cap is 16.");
         crate::heap_reset(mark);
         return;
     }

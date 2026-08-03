@@ -98,6 +98,7 @@ mod troq;
 mod hop;
 mod braid_grammar;
 mod braid_render;
+mod braid_protocol;
 mod text;
 mod manifold;
 mod kernel_torus;

@@ -1,92 +1,125 @@
-The suite green again, and what the compile error had been hiding
+The Solovay-Kitaev recursion now fits the arena it runs in
 
-The tests had not compiled since the `IgPrim` rename, so nothing in them had run
-for a long time and a pile of failures sat waiting behind the compile error.
-None of it was new breakage. It was tests drifting from the code over a stretch
-where nobody could run them. `tests/sic_povm_verify.rs` was worse than stale: it
-went in as a tool-call parse error and had never been valid Rust at any point in
-its history. It now runs the host-side SIC-POVM verification through
-`tests/sic_verify.py`.
+`qc hx 3 7` took the kernel down inside an allocation. The gate net at depth 3
+is small and the report said so, a little over a megabyte of a 48 MB arena, and
+then the compile asked for 131 KB with 88 KB left. Everything in between had
+gone into the recursion, and none of it into anything that survived.
 
-The largest finding is that `belnap.rs` and `Belnap.lean` disagree about what
-`band` and `bor` name. The Lean, and the Python that mirrors it, use those names
-for the truth-functional conjunction and disjunction. This crate had been using
-them for the knowledge-order join and meet, which are a genuinely different pair
-of operations on the same bilattice, and nothing anywhere pinned them apart. So
-`belnap_c4.rs`, a line-for-line port of `belnap_c4.py`, had been computing its
-whole complex plane on the wrong axis, and `para_ym.rs` had been asking the
-knowledge axis to witness a BRST nilpotency only the truth axis can show, since
-the knowledge axis sends both B and T to B and cannot separate them. Both axes
-are real and both are wanted, so `band` and `bor` stay as they were, `truth_and`
-and `truth_or` carry the Lean tables, and the port binds its names to those at
-its import so it stays line-for-line with the Python it came from.
-`belnap_invariants` now asserts the two axes disagree, which is the check that
-was missing and would have caught this when it landed.
+The recursion is three-way, and the word a level returns is five sub-words long,
+so the tree is 3^d nodes and the words carry a factor of five per level. That
+much is inherent. What was not inherent is that every one of those nodes kept
+its sub-words for the rest of the run. The arena is a bump allocator and
+reclaims only in LIFO order, so a node that allocates three sub-words and then
+builds a fourth out of them cannot give the three back by dropping them. Sixteen
+of these runs happen per compile, eight arms and eight fuse passes, and each was
+leaking the whole of its own tree. On top of that the level's word was grown by
+five extends from a clone, which reallocates four times, and on a bump allocator
+each of those intermediate copies is also kept forever.
 
-`WH2::Z` in `belnap_sic_bridge.rs` was implemented as `bnot`, which breaks the
-group law. With X swapping T and B, and XZ swapping T and F, closure forces Z to
-swap T with N and F with B, and there is no freedom in it. Restoring that makes
-the four displacements act simply transitively, so B is carried across the whole
-of B4, and once the vacuum drops out what is left is the three states the
-header had claimed all along. I first read the header and the orbit test as
-contradicting each other and went hunting for which to throw away, which is the
-wrong instinct in a four-valued setting and wrong on the facts besides. Both are
-true, of the raw action and of the orbit modulo vacuum respectively.
-`verify_b_fiducial` was iterating the non-identity displacements when what it
-wants is the non-vacuum images.
+The fix is that a level collapses to its result before returning. Its sub-words
+are dead the moment it has the word built out of them, its word is the topmost
+live block, so the word is moved down to where the level started and the bump
+pointer follows it. Peak use then tracks the path down the recursion rather than
+the whole tree. With the word built in one allocation of the size it will be,
+`qc hx 3 7` peaks at 3.8 MB where it used to run 48 MB out, and `qc hx 3 9`,
+which is a word of 1.8 million generators reaching an error near 4e-10, peaks at
+18 MB and returns.
 
-`witness_report` in `clay_witness.rs` returned early for any problem carrying no
-witness program, which put the low winding theorem out of reach for exactly the
-problems that are low winding, the only ones it speaks about.
+Compaction has a trap in it that I nearly walked into. The allocator reclaims a
+block when it ends exactly where the bump pointer stands, and after a compaction
+that is where the result ends. So dropping a dead sub-word of the same length,
+sitting at the address the result was just moved to, frees the result out from
+under its owner and the next allocation writes over it. It is reachable: when
+the net's nearest approximation to both commutator factors is the identity, the
+level's word is its base word byte for byte. The dead words are handed back to
+the arena scope now rather than to the allocator, which is what the reset was
+going to reclaim anyway.
 
-The kernel-state loop test in `parasm.rs` asserted all three registers stay B
-through a step. A step leaving all three at B would not have split anything. The
-invariant is that r0 comes back to B while r1 and r2 hold the split halves, so
-that is what it checks now, with the paradox count rising every step to show the
-loop is not decaying.
+Two more things were eating the arena for nothing. The word check resynthesized
+the printed word by building a fresh dense matrix per generator, which on a
+million-generator word costs more than the compile that produced it, and that is
+what took depth 9 down even after the recursion fit. The fusion space on four
+strands is two-dimensional, which is why the compiler works in `Matrix2`
+throughout, so the check now folds the generators through registers and costs
+nothing. The integer listing was formatting each generator into a throwaway
+string, one arena allocation per generator, and writes into the line directly
+now.
 
-`test_meet_exists` in `frobenius_unify.rs` asserted the kernel's meet with the
-Frobenius fixed point is clean. It cannot be, and should not be. The kernel sits
-off the fixed point in T, which is categorical, and that mismatch is the very
-thing `frobenius_identity_check` exists to count. A kernel whose meet with the
-fixed point came back clean would already be the fixed point. It now pins T as
-the only conflict, and F and G, being ordered, as taking the min instead.
+Sweeping the recursion depth on a small net says where it stops paying, and the
+answer is sharper than I expected. Recursion 7 gives 6.4e-8, 8 gives 2.7e-9, 9
+gives 3.9e-10, and 10 and 11 give 3.9e-10: the same error, the same word to the
+generator, the same high-water mark to the kilobyte. The levels above 9 do not
+trade badly, they contribute nothing, and the free reduction is what makes that
+visible. A level appends its two commutator factors and their inverses around the
+base word, and once the residual falls below what the net can resolve those four
+cancel completely and the level returns its own base byte for byte. Without the
+reduction the same level would return a word five times longer for no accuracy at
+all, and the level above it twenty-five times, and the arena would be what stopped
+it. That also means the case the compaction has to be careful about, a level whose
+word is exactly its base, is not a corner: past the useful depth it is every call.
 
-The genetics pipeline asserted monotonic advance of Omega across its stages,
-which is unsatisfiable for every possible `StageContext`, because the drop falls
-between two hardcoded stage values. The codon lattice carries Z2 from codon and
-anticodon parity, a symmetry of the code rather than of the nascent chain that
-follows it. The Python this came from reports regressions instead of gating on
-them, and even keeps a list of primitives allowed to regress, so the assertion
-was a hardening the original never made. An earlier attempt at this had given
-the default context a disulfide bond, quietly changing which protein the default
-models, and that is back where it was. The test now records the trajectory the
-pipeline actually has, and where it falls.
+Depth is capped nowhere. The net already grew until the arena said stop; the
+recursion now asks the same question a level at a time. The size of the word a
+level will return is known before any of it is allocated, so a level that will
+not fit is declined at the point where the level below it is already a complete
+answer, and the run reports the depth it reached instead of the depth it was
+asked for. Free reduction of the words at every level came along with this: the
+concatenation is where cancelling pairs are created, four seams per level, each
+of which the level above would copy five more times. It leaves the unitary
+exactly where it was, so the errors are unchanged and only the lengths come
+down. `T S` at the defaults still reports 7.260095e-4, in 1068 generators rather
+than 1094.
 
-The bifurcation module is where I was most wrong before I looked. Its tests
-encoded a hypothesis that low substrate weight yields a short cycle and high
-weight a long one. Sweeping the weight shows cycle length pinned at one across
-the whole range, every weight self-closing in a single step, and I took that to
-mean the substrate was inert and no w_c existed. Wrong, and measuring rather
-than reasoning is what showed it. There is a bifurcation and it is sharp. At
-zero weight the substrate vote is annihilated, the family matrix alone leads
-with IMSCRIB by a single point over AFWD, and the program is pure
-self-imscription carrying no advance. One unit of substrate vote overturns a
-one-point margin, so from weight one upward AFWD leads and the program advances,
-and it does not move again across the rest of the sweep. So w_c is one, and
-cycle length was the wrong observable to look for it with. Those tests also
-shared a process-wide `static mut` weight while running concurrently, racing
-each other, and they are serialized now.
+The user guide's compile section had the arena at 8 MB and a hard ceiling of 12
+that neither depth has any more, and said nothing about the second depth at all.
+It now describes both, and what each does when the arena runs short.
 
-Following the w_c result out one more step: the substrate weight can only move
-a program by overturning whichever token the family matrix leads with, so a w_c
-exists exactly where that leader is not already AFWD. Sweeping T and G says that
-is a narrow place. Only the self-referential topology and the universal range
-leave IMSCRIB in front, and those are exactly the tuples the family matrix alone
-would leave spinning on themselves carrying no advance. Step off either one and
-the program already advances at zero weight, with nothing left for the substrate
-to overturn and no weight up to sixty-four changing anything. So the substrate
-vote is what carries a self-referential tuple out of pure self-imscription, and
-on this evidence that is the whole of what it does.
+The closed form now draws the closure it is named for. `loop` was laying the
+crossings out in horizontal lanes that alternated direction, running the return
+path around the outside as a dashed line and leaving the strands of a crossing
+joined to nothing, so what came out was neither the braid nor its closure. The
+whole thing is redrawn as an annulus, which is what closing a braid is: bend the
+page into a cylinder so every strand's foot meets its own head, and look at the
+cylinder end on. Strand positions become concentric tracks, one crossing owns one
+angular slot, and reading once around the ring is reading the word once through.
+Nothing has to be added to close it, because a circle is already closed. The
+strands of a permutation cycle join into one curve on their own and each such
+curve is one component of the link, which is why colour there follows the
+component and not the strand: a component that changed colour where two of its
+strands meet would be one closed curve drawn as several. The hole in the middle
+is the braid axis, and the caption sits in it.
 
-Both targets build clean and the whole suite passes.
+The curves are the part I would have got wrong by eye. A crossing interpolates
+its two radii with a smoothstep in the angle, whose derivative vanishes at both
+ends, and every cubic is fitted to that curve's own position and derivative at
+its ends rather than to a guessed control point. So a strand leaves its track
+along the track, rejoins the next one the same way, and the seam between the
+crossing and the arcs either side of it is not there to find. The crossing takes
+the middle of its slot and the strands run parallel into and out of it, more of
+the slot the fewer crossings there are: swinging across the whole slot draws a
+ring of waves in which a crossing is not a crossing to look at.
+
+The ring grows with the crossing count instead of packing them tighter, so a
+crossing is the same size to read whatever the length, and the annotation scales
+with the figure rather than staying at the size that suited a small one. The file
+carries its own stylesheet and answers either theme, which matters more here than
+it sounds: the gap in an under strand is cut by overstroking it in the background
+colour, so a dark-theme viewer was being shown gaps filled with white. The
+palette is named in classes, with a second set lifted for dark.
+
+Also in here, from the same sitting: `braid_protocol.rs`, which carries the twelve
+IMASM tokens onto the tangle generators so a program can be read as a braid word
+and its invariants taken, reachable as `fibqc protocol`; the `loop` and `curve`
+spellings on `bi` and on `qc`; and a hosted-only `svg_out` that writes an SVG to
+`ob3ects/` rather than only to the serial line, a no-op on bare metal where there
+is nowhere to write it.
+
+It also would not draw a long word. Formatting each element into a string of its
+own and pushing that costs an allocation per element and leaves the growth of
+every one of them behind, so a drawing well inside the budget it had measured for
+itself ran the kernel out of heap two thirds of the way through. It writes into
+one reserved buffer now, with three scratch strings for the crossing legs that
+are cleared rather than dropped, and a word too long for the arena to hold the
+whole document is drawn as far as it fits and says so, in the caption and in the
+`desc`, as the closure of the crossings it drew. A forty-thousand generator word
+draws twenty thousand of them and comes back.
