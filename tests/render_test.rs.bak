@@ -1,0 +1,37 @@
+use momonados::braid_render;
+
+#[test]
+fn test_svg_loop_simple() {
+    let word: Vec<i32> = vec![1, 2, -1, -2, 1, 2];
+    let strands = 3;
+    let svg = braid_render::svg_loop(&word, strands);
+    
+    assert!(svg.contains("<svg"), "Should contain SVG tag");
+    assert!(svg.contains("</svg>"), "Should close SVG tag");
+    assert!(svg.contains("<path d=\"M"), "Should contain path elements");
+    assert!(svg.contains("stroke-linecap=\"round\""), "Should have rounded line caps");
+    assert!(svg.contains("stroke-dasharray=\"6,4\""), "Should have dashed closure paths");
+}
+
+#[test]
+fn test_svg_loop_single_crossing() {
+    let word: Vec<i32> = vec![1, -1];
+    let strands = 2;
+    let svg = braid_render::svg_loop(&word, strands);
+    
+    assert!(svg.contains("<svg"), "Should contain SVG tag");
+    assert!(svg.contains("</svg>"), "Should close SVG tag");
+}
+
+#[test]
+fn test_svg_loop_long_braid() {
+    let word: Vec<i32> = vec![1, -2, 1, -2, 1, -2, 1, -2, 1, 2, -1, 2, -1, 2, -1, 2];
+    let strands = 3;
+    let svg = braid_render::svg_loop(&word, strands);
+    
+    assert!(svg.contains("<svg"), "Should contain SVG tag");
+    assert!(svg.contains("</svg>"), "Should close SVG tag");
+    // Check that multiple crossings are rendered
+    let path_count = svg.matches("<path d=").count();
+    assert!(path_count > 20, "Should have many paths for long braid");
+}
