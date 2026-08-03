@@ -411,7 +411,7 @@ pub fn vessel_report() -> String {
         ));
     }
     s.push_str("  YM = B is the U10 dialetheia DERIVED: gate closed AND ceiling\n");
-    s.push_str("  blocked (Ç). The Witness rides both arms: fsplit(B)=(T,F),\n");
+    s.push_str("  blocked (⊤). The Witness rides both arms: fsplit(B)=(T,F),\n");
     s.push_str("  ffuse(T,F)=B — b_cargo_mechanism, here executed, not asserted.\n\n");
 
     // ── The 88-dialect matrix ──

@@ -564,7 +564,7 @@ pub fn grammar_encoding() -> String {
     s.push_str("          structure. The Hamiltonian is Hermitian; eigenvalues are\n");
     s.push_str("          real. Quantum coherence is essential: classical measurement\n");
     s.push_str("          cannot achieve informational completeness.\n\n");
-    s.push_str("    Ç=𐑧  (slow)         — The spectral correspondence is a static\n");
+    s.push_str("    ⊤=𐑧  (slow)         — The spectral correspondence is a static\n");
     s.push_str("          identity, not a dynamical process. The zeros don't\n");
     s.push_str("          evolve; they are recognized. Near-equilibrium regime.\n\n");
     s.push_str("    Γ=𐑔  (maximal)      — The zeta function has infinitely many zeros\n");
@@ -654,7 +654,7 @@ pub fn sic_povm_structural_probe() -> String {
     s.push_str("    dialetheic spectral correspondence.\n\n");
     s.push_str("  Gate evaluation:\n");
     s.push_str("    Gate 1 (⊙):  OPEN — self-modeling criticality\n");
-    s.push_str("    Gate 2 (Ç≤𐑧): PASS — slow kinetics, near-equilibrium\n");
+    s.push_str("    Gate 2 (⊤≤𐑧): PASS — slow kinetics, near-equilibrium\n");
     s
 }
 

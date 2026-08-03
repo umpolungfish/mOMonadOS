@@ -147,7 +147,7 @@ pub fn dialect_description(u: u8) -> &'static str {
                (⊙) at escalating thresholds (𐑢 / ⊙ / 𐑣). <, Ω, and the rest are \
                descriptive, not gating. T-constitution is ceiling-mode (T_CEILING).",
         11 => "Same as U10, but the kinetics ceiling admits trapped/gapped spectra \
-               (Ç=𐑪), not just slow ones (Ç=𐑧) — the temporal-closure condition \
+               (⊤=𐑪), not just slow ones (⊤=𐑧) — the temporal-closure condition \
                for a mass-gap claim should not exclude the gap itself.",
         _ if is_expansion(u) => {
             let unis = all_dialects();
@@ -176,7 +176,7 @@ pub fn dialect_gates(u: u8) -> String {
         8 => "G1:Ħ≥𐑖  G2:⊙≥⊙  G3:Ω≥𐑭  T:ceiling(5)".to_string(),
         9 => "G1:Γ≥𐑲  G2:⊙≥⊙  G3:Ω≥𐑭  T:ceiling(5)".to_string(),
         10 => "G1:⊙≥𐑢  G2:⊙≥⊙  G3:⊙≥𐑣  T:ceiling(5)".to_string(),
-        11 => "G1:⊙≥𐑢  G2:⊙≥⊙  G3:⊙≥𐑣  T:ceiling(Ç≤𐑪)".to_string(),
+        11 => "G1:⊙≥𐑢  G2:⊙≥⊙  G3:⊙≥𐑣  T:ceiling(⊤≤𐑪)".to_string(),
         _ if is_expansion(u) => {
             let unis = all_dialects();
             let uni = &unis[u as usize];

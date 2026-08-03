@@ -110,7 +110,7 @@ pub fn ym_report() -> ClayReport {
         name: "Yang–Mills Mass Gap",
         verdict: ClayVerdict::OneBumpShort,
         closer_dialects: vec!["triple_criticality"],
-        blocker: Some("Ç (kinetics): K_trap ord=4 exceeds T_CEILING ord=3 ceiling"),
+        blocker: Some("⊤ (kinetics): K_trap ord=4 exceeds T_CEILING ord=3 ceiling"),
         winding: "𐑷",
         winding_ordinal: 1.0,
         low_winding: true,

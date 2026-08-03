@@ -2,9 +2,9 @@
 
 The register file is eight wide. R0 through R3 carry the tuple as pairs:
 (D,<), (T,Ω), (K,⋈), (H,P). That packing leaves four of the twelve slots
-unrepresented: R the adjoint, Γ the maximal, Ç, and Σ the one-to-one.
+unrepresented: R the adjoint, Γ the maximal, ⊤, and Σ the one-to-one.
 
-When the file was widened, R and Σ were seeded into R4, and Γ and Ç into R5, so
+When the file was widened, R and Σ were seeded into R4, and Γ and ⊤ into R5, so
 that the slots closure and self-reference are stated in would be present. But
 IMSCRIB writes the four closure witnesses into R4 through R7. So the recovered
 slots vote only until the first imscription, and are then overwritten.

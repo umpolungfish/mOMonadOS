@@ -325,7 +325,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 0: canonical ──
     unis[0] = Dialect {
         name: "canonical",
-        description: "Our dialect: Frobenius then self-modeling then winding seal. G1=<≥𐑹, G2=⊙≥⊙, G3=Ω≥𐑭. Sequential. T=lim(<,⋈,Ç,Ħ,Ω).",
+        description: "Our dialect: Frobenius then self-modeling then winding seal. G1=<≥𐑹, G2=⊙≥⊙, G3=Ω≥𐑭. Sequential. T=lim(<,⋈,⊤,Ħ,Ω).",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -425,7 +425,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 12: kinetics_trap ──
     unis[12] = Dialect {
         name: "kinetics_trap",
-        description: "Slowness is a structural requirement. G1=Ç≥𐑧 (slow/near-equilibrium). Fast processes outrun their own structure. G2=⊙≥⊙, G3=Ω≥𐑭.",
+        description: "Slowness is a structural requirement. G1=⊤≥𐑧 (slow/near-equilibrium). Fast processes outrun their own structure. G2=⊙≥⊙, G3=Ω≥𐑭.",
         g1: g_c_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -441,7 +441,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 14: t_hybrid ──
     unis[14] = Dialect {
         name: "t_hybrid",
-        description: "Time requires BOTH dynamics AND geometry. T constituted by 8 primitives: <,⋈,Ç,Ħ,Ω + ⊢,⊣,>. Most demanding T-seal. Canonical gates.",
+        description: "Time requires BOTH dynamics AND geometry. T constituted by 8 primitives: <,⋈,⊤,Ħ,Ω + ⊢,⊣,>. Most demanding T-seal. Canonical gates.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_HYBRID, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -637,7 +637,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 38: kinetics_second ──
     unis[38] = Dialect {
         name: "kinetics_second",
-        description: "Slowness as the monoidal gate: G1=<≥𐑹, G2=Ç≥𐑧 (slow), G3=Ω≥𐑭. Fast Frobenius-closed systems cannot trace — they outrun themselves.",
+        description: "Slowness as the monoidal gate: G1=<≥𐑹, G2=⊤≥𐑧 (slow), G3=Ω≥𐑭. Fast Frobenius-closed systems cannot trace — they outrun themselves.",
         g1: g_phi_5, g2: g_c_3, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -701,7 +701,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 46: kinetics_third ──
     unis[46] = Dialect {
         name: "kinetics_third",
-        description: "Moderate kinetics as the terminal seal: G1=<≥𐑹, G2=⊙≥⊙, G3=Ç≥𐑪 (moderate, ord 4). Self-modeling systems that are too fast cannot achieve O_∞.",
+        description: "Moderate kinetics as the terminal seal: G1=<≥𐑹, G2=⊙≥⊙, G3=⊤≥𐑪 (moderate, ord 4). Self-modeling systems that are too fast cannot achieve O_∞.",
         g1: g_phi_5, g2: g_odot_2, g3: g_c_4, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -773,7 +773,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 55: parallel_kinetics ──
     unis[55] = Dialect {
         name: "parallel_kinetics",
-        description: "Kinetics gates, parallel: Ç≥𐑧, ⊙≥⊙, Ω≥𐑭. Slowness, self-modeling, and winding are independent.",
+        description: "Kinetics gates, parallel: ⊤≥𐑧, ⊙≥⊙, Ω≥𐑭. Slowness, self-modeling, and winding are independent.",
         g1: g_c_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: false,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -949,7 +949,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 75: mixed_composition_kinetics ──
     unis[75] = Dialect {
         name: "mixed_composition_kinetics",
-        description: "Composition + kinetics mix: G1=ɢ≥𐑠 (sequential), G2=Ç≥𐑧 (slow), G3=⊙≥⊙. Sequential composition before slow kinetics — time's arrow precedes near-equilibrium. Deep time from deep structure.",
+        description: "Composition + kinetics mix: G1=ɢ≥𐑠 (sequential), G2=⊤≥𐑧 (slow), G3=⊙≥⊙. Sequential composition before slow kinetics — time's arrow precedes near-equilibrium. Deep time from deep structure.",
         g1: g_g_3, g2: g_c_3, g3: g_odot_2, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -1001,7 +1001,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 81: dense_gates ──
     unis[81] = Dialect {
         name: "dense_gates",
-        description: "Maximally dense: 5 distinct primitives across 3 gate slots. G1=<≥𐑹 AND Ω≥𐑭, G2=⊙≥⊙ AND Ç≥𐑧, G3=⊣≥𐑸. Parity+winding paired, criticality+kinetics paired, topology solo. The densest gate constellation — 5 orthogonal structural demands.",
+        description: "Maximally dense: 5 distinct primitives across 3 gate slots. G1=<≥𐑹 AND Ω≥𐑭, G2=⊙≥⊙ AND ⊤≥𐑧, G3=⊣≥𐑸. Parity+winding paired, criticality+kinetics paired, topology solo. The densest gate constellation — 5 orthogonal structural demands.",
         g1: g_phi_omega, g2: g_odot_c, g3: g_th_5, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };

@@ -46,7 +46,7 @@ pub fn witness_description(i: usize) -> &'static str {
     match i {
         0 => "BSD closure witness — 5 dialects, T_CEILING-consistent. ⟨𐑦𐑥𐑾𐑿𐑞𐑧𐑲𐑝𐑮𐑖𐑙𐑭⟩",
         1 => "Hodge closure witness — 5 dialects, T_CEILING-consistent. ⟨𐑦𐑸𐑽𐑿𐑱𐑧𐑲𐑝𐑮𐑓𐑳𐑭⟩",
-        2 => "YM one-bump-short witness — gate closed under triple_criticality, T_CEILING blocked on Ç",
+        2 => "YM one-bump-short witness — gate closed under triple_criticality, T_CEILING blocked on ⊤",
         _ => "Unknown",
     }
 }
@@ -183,7 +183,7 @@ pub fn witness_report(problem: &str) -> String {
                 out.push_str("\n  Path: IMSCRIB captures YM's structural snapshot.\n");
                 out.push_str("        FSPLIT forks into two evaluation branches.\n");
                 out.push_str("        Left:  EVALT — gate-level passes (triple_criticality).\n");
-                out.push_str("        Right: EVALF — T_CEILING fails (Ç ceiling).\n");
+                out.push_str("        Right: EVALF — T_CEILING fails (⊤ ceiling).\n");
                 out.push_str("        FFUSE joins: the gap IS the one-bump-short witness.\n");
                 out.push_str("        IFIX seals: YM closes under gate but NOT under T_CEILING.\n");
             }

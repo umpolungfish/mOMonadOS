@@ -194,7 +194,7 @@ def winding_number(H: SemioticOperator,
 
 
 # ──────────────────────────────────────────────────────────────────────────
-#  5.  MBL Structure  (Ç=𐑘 : frozen/disorder kinetics)
+#  5.  MBL Structure  (⊤=𐑘 : frozen/disorder kinetics)
 # ──────────────────────────────────────────────────────────────────────────
 def build_mbl_hamiltonian(n_sites: int = 12,
                           h_range: float = 1.0,
@@ -319,7 +319,7 @@ def main():
     print(f"  Winding number W = {W}  (should be integer: Ω=𐑭)")
 
     # ── 8d. MBL Structure ─────────────────────────────────────
-    print("\n[Ç=𐑘] MBL (Frozen Kinetics)")
+    print("\n[⊤=𐑘] MBL (Frozen Kinetics)")
     H_mbl = build_mbl_hamiltonian(12, h_range=2.0, J_range=0.5,
                                    xi_localization=3.0)
     xi = compute_localization_length(H_mbl)
