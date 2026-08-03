@@ -63516,7 +63516,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "sic_povm_fiducial_frobenius_algebra", "SIC-POVM fiducial B = XZ as Frobenius algebra in C^2. The fiducial is the fixed point of its own measurement channel <_B(B)=B. The Frobenius structure: δ (FS...",
+        "sic_povm_fiducial_frobenius_algebra", "SIC-POVM fiducial B = XZ as Frobenius algebra in C^2. The fiducial is the fixed point of its own measurement channel Φ_B(B)=B. The Frobenius structure: δ (FS...",
         IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
         IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
         IgPrim::G_gimel, IgPrim::C_seq,
