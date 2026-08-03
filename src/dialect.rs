@@ -214,18 +214,18 @@ use crate::imas_ig::{IgPrim, IgTuple};
 /// Returns None for unrecognized primitive names.
 pub fn prim_from_name(name: &str, ig: &IgTuple) -> Option<IgPrim> {
     match name {
-        "Φ" => Some(ig.p),
+        "<" => Some(ig.p),
         "⊙" => Some(ig.phi),
-        "Ω" => Some(ig.omega),
-        "Ħ" => Some(ig.h),
-        "Γ" => Some(ig.g),
-        "Þ" => Some(ig.t),
-        "Ř" => Some(ig.r),
-        "ƒ" => Some(ig.f),
-        "Ç" => Some(ig.k),
-        "Ð" => Some(ig.d),
-        "Σ" => Some(ig.s),
-        "ɢ" => Some(ig.c),
+        "◻" => Some(ig.omega),
+        "⊥" => Some(ig.h),
+        "∈" => Some(ig.g),
+        "⊣" => Some(ig.t),
+        ">" => Some(ig.r),
+        "⋈" => Some(ig.f),
+        "⊤" => Some(ig.k),
+        "⊢" => Some(ig.d),
+        "⊞" => Some(ig.s),
+        "∋" => Some(ig.c),
         _ => None,
     }
 }
@@ -250,18 +250,18 @@ pub fn eval_gate_spec(
 /// Used for verify output labels.
 pub fn gate_prim_label(prim: &str) -> &'static str {
     match prim {
-        "Φ" => "Φ",
+        "<" => "<",
         "⊙" => "φ̂",
-        "Ω" => "Ω",
-        "Ħ" => "Ħ",
-        "Γ" => "Γ",
-        "Þ" => "Þ",
-        "Ř" => "Ř",
-        "ƒ" => "ƒ",
-        "Ç" => "Ç",
-        "Ð" => "Ð",
-        "Σ" => "Σ",
-        "ɢ" => "ɢ",
+        "◻" => "◻",
+        "⊥" => "⊥",
+        "∈" => "∈",
+        "⊣" => "⊣",
+        ">" => ">",
+        "⋈" => "⋈",
+        "⊤" => "⊤",
+        "⊢" => "⊢",
+        "⊞" => "⊞",
+        "∋" => "∋",
         _ => "?",
     }
 }

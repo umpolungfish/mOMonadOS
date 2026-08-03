@@ -1,35 +1,18 @@
-The kernel is on the new alphabet, all the way down
+The catalog subset regenerates on the new primitive keys
 
-    ⊢ VINIT   ⊣ TANCH   > AFWD    < AREV    ⋈ CLINK   ⊙ IMSCRIB
-    ∈ FSPLIT  ∋ FFUSE   ⊤ EVALT   ⊥ EVALF   ⊞ ENGAGR  ◻ IFIX
+The twelve primitive axes now carry the IMASM alphabet, and the catalog this
+kernel bakes in is keyed by them. `tools/gen_catalog_subset.py` holds the slot
+list and the enum-prefix map, so both move there and `src/catalog_ask_subset.rs`
+is regenerated rather than edited: 8,016 entries, one more than the committed
+snapshot and none fewer.
 
-The first pass changed the glyph tables and left the words. `kernel_torus`,
-`triple_frame`, `riemann_sic`, `pericyclic_frobenoid`, `lattice_flow`, `menu` and
-`vita` each carried their own spelling of the alphabet: the ROTAT table in
-`riemann_sic` and its eleven rotations, the menu examples for cycle, weight,
-banked, insert and trans, the repair sweep's own twelve-glyph array. All of them
-are the same twelve now, and the boot torus reads ⊢⊙∈⊤⋈∋◻⊞<⋈⊣.
+⊙ stays on Criticality, so `Phi_` keeps its slot in the prefix map and the 5,122
+entries whose criticality value is the monad are untouched.
 
-Three things the sweep turned up that were wrong before it.
+`src/vita.rs` listed eleven of the twelve axes as literal glyphs for the trunk's
+vocabulary, with ⊙ absent because it is injected separately as a value token.
+Those eleven are renamed in place; the ordering is unchanged, so vita_weights.bin
+still indexes what it was trained on.
 
-`vita.rs` picked the fork, the fuse, the legal query alphabet and one answer
-token out of the trunk's vocabulary by literal glyph. `id_of` answers a miss with
-the LAST vocabulary entry rather than an error, so moving the alphabet would have
-pointed those masks at whatever sits at the end of the vocabulary and the trunk
-would have gone on speaking. They read off the tokens now. The vocabulary is
-still built in the same order from the same tokens, so the weights index what
-they were trained on and only the rendered glyph changed.
-
-`pericyclic_frobenoid` had the twelve names running against a shifted copy of the
-alphabet, in the table and again in four protocol descriptions: TANCH carrying
-the fork's mark, CLINK the fuse's, FSPLIT and FFUSE the two evaluators', ENGAGR a
-tensor sign that is not an opcode at all.
-
-`lattice_flow` normalizes a word before the core reads it, and normalized only
-the dyad. It takes all six retired marks now, so `cycle ⊢⊙◇+×●=¬⊣` loads and
-prints ⊢⊙∈⊤⊥∋⋈◻⊣, same nine tokens, same verdict.
-
-Left alone on purpose: `para_temporal`'s ◇ is the temporal modality, eventually,
-not an opcode; and `catalog_ask_subset` holds stored catalog words in the old
-spelling, which load through the aliases. Those belong to the catalog and move
-when it does.
+Boot still reports ordinal faithfulness against the Lean canonical, which is the
+cross-language check that the ordinals did not move with the keys.

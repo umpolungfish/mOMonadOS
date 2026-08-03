@@ -30,13 +30,13 @@ ENUM = ROOT / "src" / "imas_ig.rs"
 OUT = ROOT / "src" / "catalog_ask_subset.rs"
 
 # The twelve slots, in canonical order, keyed as they appear in IG_catalog.json.
-SLOTS = ["Ð", "Þ", "Ř", "Φ", "ƒ", "Ç", "Γ", "ɢ", "⊙", "Ħ", "Σ", "Ω"]
+SLOTS = ["⊢", "⊣", ">", "<", "⋈", "⊤", "∈", "∋", "⊙", "⊥", "⊞", "◻"]
 
 # Which enum prefix owns which slot. A glyph can repeat across slots only if
 # the enum keeps them distinct, so the prefix disambiguates the lookup.
 SLOT_PREFIX = {
-    "Ð": "D_", "Þ": "T_", "Ř": "R_", "Φ": "P_", "ƒ": "F_", "Ç": "K_",
-    "Γ": "G_", "ɢ": "C_", "⊙": "Phi_", "Ħ": "H", "Σ": "S_", "Ω": "Omega_",
+    "⊢": "D_", "⊣": "T_", ">": "R_", "<": "P_", "⋈": "F_", "⊤": "K_",
+    "∈": "G_", "∋": "C_", "⊙": "Phi_", "⊥": "H", "⊞": "S_", "◻": "Omega_",
 }
 
 # Two Criticality variants are named with the glyph itself (𐑮, 𐑢), so the

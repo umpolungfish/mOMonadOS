@@ -18,18 +18,18 @@ use super::genetic_tuples::aa_activation;
 /// IG primitive name → complementary primitive name.
 pub fn complementary_primitive(prim: &str) -> Option<&'static str> {
     match prim {
-        "D" | "Ð" => Some("O"),
-        "T" | "Þ" => Some("H"),
-        "R" | "Ř" => Some("S"),
-        "P" | "Φ" => Some("F"),
-        "F" | "ƒ" => Some("P"),
-        "K" | "Ç" => Some("G"),
-        "G" | "Γ" => Some("K"),
-        "Gm" | "ɢ" => Some("Phi"),
+        "D" | "⊢" => Some("O"),
+        "T" | "⊣" => Some("H"),
+        "R" | ">" => Some("S"),
+        "P" | "<" => Some("F"),
+        "F" | "⋈" => Some("P"),
+        "K" | "⊤" => Some("G"),
+        "G" | "∈" => Some("K"),
+        "Gm" | "∋" => Some("Phi"),
         "Phi" | "φ̂" => Some("Gm"),
-        "H" | "Ħ" => Some("T"),
-        "S" | "Σ" => Some("R"),
-        "O" | "Ω" => Some("D"),
+        "H" | "⊥" => Some("T"),
+        "S" | "⊞" => Some("R"),
+        "O" | "◻" => Some("D"),
         _ => None,
     }
 }
@@ -37,18 +37,18 @@ pub fn complementary_primitive(prim: &str) -> Option<&'static str> {
 /// IG primitive name → preferred AA for CDR complement.
 pub fn primitive_to_aa(prim: &str) -> Option<char> {
     match prim {
-        "D" | "Ð" => Some('M'),  // Met
-        "T" | "Þ" => Some('W'),  // Trp
-        "R" | "Ř" => Some('C'),  // Cys
-        "P" | "Φ" => Some('Y'),  // Tyr
-        "F" | "ƒ" => Some('F'),  // Phe
-        "K" | "Ç" => Some('I'),  // Ile
-        "G" | "Γ" => Some('H'),  // His
-        "Gm" | "ɢ" => Some('N'), // Asn
+        "D" | "⊢" => Some('M'),  // Met
+        "T" | "⊣" => Some('W'),  // Trp
+        "R" | ">" => Some('C'),  // Cys
+        "P" | "<" => Some('Y'),  // Tyr
+        "F" | "⋈" => Some('F'),  // Phe
+        "K" | "⊤" => Some('I'),  // Ile
+        "G" | "∈" => Some('H'),  // His
+        "Gm" | "∋" => Some('N'), // Asn
         "Phi" | "φ̂" => Some('Q'), // Gln
-        "H" | "Ħ" => Some('D'),  // Asp
-        "S" | "Σ" => Some('K'),  // Lys
-        "O" | "Ω" => Some('E'),  // Glu
+        "H" | "⊥" => Some('D'),  // Asp
+        "S" | "⊞" => Some('K'),  // Lys
+        "O" | "◻" => Some('E'),  // Glu
         _ => None,
     }
 }

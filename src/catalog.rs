@@ -505,7 +505,7 @@ const HODGE_CONJECTURE: CatalogEntry = entry(
 // Same provenance note as BIRCH_SWINNERTON_DYER above. Unlike BSD/Hodge,
 // this one does NOT reach full closure under its best-known dialect
 // (triple_criticality) — it clears all three gates but fails T_CEILING on
-// Ç alone (K_trap, ord 4, exceeds the ord-3 ceiling). Kept anyway: the
+// ⊤ alone (K_trap, ord 4, exceeds the ord-3 ceiling). Kept anyway: the
 // partial result is the interesting one here, not a clean PASS.
 const YANG_MILLS_MASS_GAP: CatalogEntry = entry(
     "yang_mills_mass_gap", "Clay Millennium Problem — Yang-Mills mass gap",
@@ -1147,10 +1147,10 @@ pub fn primitive_family(prim: IgPrim) -> &'static str {
         IgPrim::K_trap | IgPrim::K_slow | IgPrim::K_mod | IgPrim::K_fast | IgPrim::K_mbl => "K",
         IgPrim::G_aleph | IgPrim::G_beth | IgPrim::G_gimel => "G",
         IgPrim::C_seq | IgPrim::C_and | IgPrim::C_or | IgPrim::C_broad => "C",
-        IgPrim::Phi_crit | IgPrim::𐑮 | IgPrim::Phi_ep | IgPrim::𐑢 | IgPrim::Phi_super => "Φ",
+        IgPrim::Phi_crit | IgPrim::𐑮 | IgPrim::Phi_ep | IgPrim::𐑢 | IgPrim::Phi_super => "<",
         IgPrim::H_inf | IgPrim::H2 | IgPrim::H1 | IgPrim::H0 => "H",
         IgPrim::S_nm | IgPrim::S_nn | IgPrim::S_11 => "S",
-        IgPrim::Omega_z | IgPrim::Omega_z2 | IgPrim::Omega_0 | IgPrim::Omega_na => "Ω",
+        IgPrim::Omega_z | IgPrim::Omega_z2 | IgPrim::Omega_0 | IgPrim::Omega_na => "◻",
     }
 }
 
@@ -1159,8 +1159,8 @@ pub fn ordinal_table(family: &str) -> &'static [IgPrim] {
     match family {
         "D" => &D_ORD, "T" => &T_ORD, "R" => &R_ORD,
         "P" => &P_ORD, "F" => &F_ORD, "K" => &K_ORD,
-        "G" => &G_ORD, "C" => &C_ORD, "Φ" | "Phi" => &PHI_ORD,
-        "H" => &H_ORD, "S" => &S_ORD, "Ω" | "Omega" => &OMEGA_ORD,
+        "G" => &G_ORD, "C" => &C_ORD, "<" | "Phi" => &PHI_ORD,
+        "H" => &H_ORD, "S" => &S_ORD, "◻" | "Omega" => &OMEGA_ORD,
         _ => &D_ORD,
     }
 }

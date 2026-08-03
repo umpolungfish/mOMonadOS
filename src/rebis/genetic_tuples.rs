@@ -50,18 +50,18 @@ impl PrimKey {
 
     pub fn from_name(name: &str) -> Option<Self> {
         match name {
-            "D" | "Ð" => Some(PrimKey::D),
-            "T" | "Þ" => Some(PrimKey::T),
-            "R" | "Ř" => Some(PrimKey::R),
-            "P" | "Φ" => Some(PrimKey::P),
-            "F" | "ƒ" => Some(PrimKey::F),
-            "K" | "Ç" => Some(PrimKey::K),
-            "G" | "Γ" => Some(PrimKey::G),
-            "Gm" | "ɢ" => Some(PrimKey::Gm),
+            "D" | "⊢" => Some(PrimKey::D),
+            "T" | "⊣" => Some(PrimKey::T),
+            "R" | ">" => Some(PrimKey::R),
+            "P" | "<" => Some(PrimKey::P),
+            "F" | "⋈" => Some(PrimKey::F),
+            "K" | "⊤" => Some(PrimKey::K),
+            "G" | "∈" => Some(PrimKey::G),
+            "Gm" | "∋" => Some(PrimKey::Gm),
             "Phi" | "φ̂" => Some(PrimKey::Phi),
-            "H" | "Ħ" => Some(PrimKey::H),
-            "S" | "Σ" => Some(PrimKey::S),
-            "O" | "Ω" => Some(PrimKey::O),
+            "H" | "⊥" => Some(PrimKey::H),
+            "S" | "⊞" => Some(PrimKey::S),
+            "O" | "◻" => Some(PrimKey::O),
             _ => None,
         }
     }

@@ -135,35 +135,35 @@ pub const TRIPLE_FRAME_TUPLE: &str = "⟨𐑦𐑸𐑽𐑬𐑐𐑧𐑔𐑝⊙𐑖
 
 static TYPE_PROGRAMS: &[TypeProgram] = &[
     TypeProgram {
-        shavian: "if", primitive_axis: "Ð", value_glyph: "𐑦",
+        shavian: "if", primitive_axis: "⊢", value_glyph: "𐑦",
         opcodes: &[VINIT, IMSCRIB, FSPLIT, EVALT, AFWD, CLINK,
                     IFIX, AREV, EVALF, FFUSE, IMSCRIB, TANCH],
         rho: 2.2242,
         domain_reading: "Imscriptive dimensionality: bulk→boundary→reconstruction",
     },
     TypeProgram {
-        shavian: "are", primitive_axis: "Þ", value_glyph: "𐑸",
+        shavian: "are", primitive_axis: "⊣", value_glyph: "𐑸",
         opcodes: &[VINIT, IMSCRIB, AFWD, IFIX, FSPLIT, EVALT,
                     CLINK, AREV, FFUSE, ENGAGR, TANCH],
         rho: 2.2791,
         domain_reading: "Imscriptive topology: boundary↔bulk closure",
     },
     TypeProgram {
-        shavian: "ear", primitive_axis: "Ř", value_glyph: "𐑽",
+        shavian: "ear", primitive_axis: ">", value_glyph: "𐑽",
         opcodes: &[VINIT, IMSCRIB, FSPLIT, AFWD, EVALT, AREV,
                     EVALF, FFUSE, CLINK, ENGAGR, IFIX, TANCH],
         rho: 2.2581,
         domain_reading: "Dagger-adjoint coupling: A→A†→bidirectional",
     },
     TypeProgram {
-        shavian: "tot", primitive_axis: "Ř", value_glyph: "𐑽",
+        shavian: "tot", primitive_axis: ">", value_glyph: "𐑽",
         opcodes: &[VINIT, IMSCRIB, FSPLIT, AFWD, EVALT, AREV,
                     EVALF, FFUSE, CLINK, ENGAGR, IFIX, TANCH],
         rho: 2.2581,
         domain_reading: "Functor adjunction: composed functor pair",
     },
     TypeProgram {
-        shavian: "out", primitive_axis: "Φ", value_glyph: "𐑬",
+        shavian: "out", primitive_axis: "<", value_glyph: "𐑬",
         opcodes: &[VINIT, IMSCRIB,
                     IFIX, IFIX, IFIX, IFIX, IFIX, IFIX,
                     IFIX, IFIX, IFIX, IFIX, IFIX, IFIX,
@@ -173,28 +173,28 @@ static TYPE_PROGRAMS: &[TypeProgram] = &[
         domain_reading: "Frobenius partial symmetry: 17,280,000-type crystal lattice",
     },
     TypeProgram {
-        shavian: "peep", primitive_axis: "ƒ", value_glyph: "𐑐",
+        shavian: "peep", primitive_axis: "⋈", value_glyph: "𐑐",
         opcodes: &[VINIT, IMSCRIB, AFWD, FSPLIT, EVALT, CLINK,
                     FFUSE, AREV, ENGAGR, IFIX, TANCH],
         rho: 2.3203,
         domain_reading: "Quantum fidelity: unitary→verify→fuse→reverse coherence",
     },
     TypeProgram {
-        shavian: "egg", primitive_axis: "Ç", value_glyph: "𐑧",
+        shavian: "egg", primitive_axis: "⊤", value_glyph: "𐑧",
         opcodes: &[VINIT, IMSCRIB, AFWD, FSPLIT, EVALT, IFIX,
                     EVALF, AREV, FFUSE, CLINK, ENGAGR, IFIX, TANCH],
         rho: 2.2657,
         domain_reading: "Thermal kinetics: barrier crossing with dwell-time measurement",
     },
     TypeProgram {
-        shavian: "thigh", primitive_axis: "Γ", value_glyph: "𐑔",
+        shavian: "thigh", primitive_axis: "∈", value_glyph: "𐑔",
         opcodes: &[VINIT, IMSCRIB, AFWD, FSPLIT, EVALT, EVALF,
                     FFUSE, CLINK, IMSCRIB, IFIX, TANCH],
         rho: 2.3203,
         domain_reading: "Mesoscale cardinality: aggregation→correlation→synthesis",
     },
     TypeProgram {
-        shavian: "vow", primitive_axis: "ɢ", value_glyph: "𐑝",
+        shavian: "vow", primitive_axis: "∋", value_glyph: "𐑝",
         opcodes: &[VINIT, IMSCRIB, FSPLIT, EVALT, AFWD, EVALT,
                     AREV, EVALF, FFUSE, CLINK, IFIX, TANCH],
         rho: 2.2417,
@@ -208,21 +208,21 @@ static TYPE_PROGRAMS: &[TypeProgram] = &[
         domain_reading: "Critical fixed point: renormalization→absorbing property (ξ→∞, μ∘δ=id)",
     },
     TypeProgram {
-        shavian: "sure", primitive_axis: "Ħ", value_glyph: "𐑖",
+        shavian: "sure", primitive_axis: "⊥", value_glyph: "𐑖",
         opcodes: &[VINIT, IMSCRIB, FSPLIT, AFWD, EVALT, AREV,
                     EVALF, FFUSE, CLINK, IMSCRIB, IFIX, TANCH],
         rho: 2.2581,
         domain_reading: "Two-step chirality: parity-distinct temporal paths with self-verification",
     },
     TypeProgram {
-        shavian: "so", primitive_axis: "Σ", value_glyph: "𐑕",
+        shavian: "so", primitive_axis: "⊞", value_glyph: "𐑕",
         opcodes: &[VINIT, IMSCRIB, FSPLIT, EVALT, AFWD, AREV,
                     EVALT, FFUSE, CLINK, IFIX, TANCH],
         rho: 2.2552,
         domain_reading: "Many-identical stoichiometry: n↔n cardinality verification",
     },
     TypeProgram {
-        shavian: "ah", primitive_axis: "Ω", value_glyph: "𐑭",
+        shavian: "ah", primitive_axis: "◻", value_glyph: "𐑭",
         opcodes: &[VINIT, IMSCRIB, AFWD, FSPLIT, EVALT, CLINK,
                     FFUSE, IMSCRIB, IFIX, TANCH],
         rho: 2.3180,
@@ -258,10 +258,10 @@ pub const ROOT_WORD_RHO: f32 = 2.2526;
 // Primitive → Shavian type name mapping
 pub fn primitive_to_type(prim: &str) -> Option<&'static str> {
     match prim {
-        "Ð" => Some("if"),  "Þ" => Some("are"), "Ř" => Some("ear"),
-        "Φ" => Some("out"), "ƒ" => Some("peep"), "Ç" => Some("egg"),
-        "Γ" => Some("thigh"), "ɢ" => Some("vow"), "⊙" => Some("monad"),
-        "Ħ" => Some("sure"), "Σ" => Some("so"), "Ω" => Some("ah"),
+        "⊢" => Some("if"),  "⊣" => Some("are"), ">" => Some("ear"),
+        "<" => Some("out"), "⋈" => Some("peep"), "⊤" => Some("egg"),
+        "∈" => Some("thigh"), "∋" => Some("vow"), "⊙" => Some("monad"),
+        "⊥" => Some("sure"), "⊞" => Some("so"), "◻" => Some("ah"),
         _ => None,
     }
 }
@@ -475,7 +475,7 @@ impl TripleFrameAlgebra {
     /// Execute the tuple↔word round-trip (IMASM cycle).
     /// Returns (n_exact, n_ambiguous, note).
     pub fn imasm_cycle() -> (usize, usize, String) {
-        // Ř maps to both ear and tot — structurally identical programs
+        // > maps to both ear and tot — structurally identical programs
         let n_ambiguous = 1;  // ear ≅ tot on Ř
         let n_exact = 11;     // All other axes bijective
         (n_exact, n_ambiguous,
@@ -807,13 +807,13 @@ mod tests {
     #[test]
     fn test_expand_by_shavian() {
         let tp = TripleFrameAlgebra::expand("sure").expect("sure should exist");
-        assert_eq!(tp.primitive_axis, "Ħ");
+        assert_eq!(tp.primitive_axis, "⊥");
         assert_eq!(tp.rho, 2.2581);
     }
 
     #[test]
     fn test_expand_by_primitive() {
-        let tp = TripleFrameAlgebra::expand("Ω").expect("Ω should expand");
+        let tp = TripleFrameAlgebra::expand("◻").expect("Ω should expand");
         assert_eq!(tp.shavian, "ah");
     }
 

@@ -5,8 +5,8 @@
 // IUFT Quantum Expansion II.
 //
 // The 12→3 encoding is:
-//   θ = f(Ð, Ω, Σ)    — latitude angle from dimensionality/winding/stoich
-//   φ = f(Ř, Φ, Ħ)    — azimuthal phase from coupling/parity/chirality
+//   θ = f(⊢, Ω, Σ)    — latitude angle from dimensionality/winding/stoich
+//   φ = f(>, Φ, ⊥)    — azimuthal phase from coupling/parity/chirality
 //   ψ = f(⊙)          — self-modeling phase (90° for ⊙=⊙, scaled for others)
 //
 // Gate: U(θ,φ,ψ) = Rz(φ)·Ry(θ)·Rz(ψ)
@@ -165,7 +165,7 @@ fn encode_psi(phi_prim: IgPrim) -> f64 {
     ((psi % 360.0) + 360.0) % 360.0
 }
 
-/// θ(Ð, Ω, Σ): latitude angle from dimensionality, winding, stoichiometry.
+/// θ(⊢, Ω, Σ): latitude angle from dimensionality, winding, stoichiometry.
 ///
 /// Each primitive is normalized to [0, 1] within its family and contributes
 /// equally to the 0–180° range.
@@ -178,7 +178,7 @@ fn encode_theta(d: IgPrim, omega: IgPrim, s: IgPrim) -> f64 {
     avg * 180.0
 }
 
-/// φ(Ř, Φ, Ħ): azimuthal phase from coupling, parity, chirality.
+/// φ(>, Φ, ⊥): azimuthal phase from coupling, parity, chirality.
 ///
 /// Each primitive is normalized to [0, 1] within its family and contributes
 /// equally to the 0–360° range, producing a full circular encoding.
@@ -214,8 +214,8 @@ pub fn sensitivity(tuple: &IgTuple) -> IuftSensitivity {
     let mut dpsi = [0.0f64; 12];
 
     // ψ only depends on ⊙ (slot 8, index 8 in slot order)
-    // θ depends on Ð (slot 0), Ω (slot 11), Σ (slot 10)
-    // φ depends on Ř (slot 2), Φ (slot 3), Ħ (slot 9)
+    // θ depends on ⊢ (slot 0), Ω (slot 11), Σ (slot 10)
+    // φ depends on > (slot 2), Φ (slot 3), ⊥ (slot 9)
 
     let _ = base; // suppress unused warning for now
     dpsi[8] = 180.0 / 2.0;  // dψ/d⊙ ≈ 180° per ordinal unit

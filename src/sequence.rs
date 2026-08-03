@@ -147,7 +147,7 @@ impl MiniKernel {
                 tuple_to_b4(tuple.k,   tuple.f),
                 tuple_to_b4(tuple.h,   tuple.p),
                 // The four slots the paired packing used to drop: R the
-                // adjoint, Γ the maximal, Ç, and Σ the one-to-one. R and Σ are
+                // adjoint, Γ the maximal, ⊤, and Σ the one-to-one. R and Σ are
                 // the adjointness and self-reference of the tuple, so leaving
                 // them out removed exactly what closure is stated in.
                 tuple_to_b4(tuple.r,   tuple.s),

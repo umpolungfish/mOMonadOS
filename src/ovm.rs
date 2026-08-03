@@ -147,7 +147,7 @@ pub fn construct_sic_novm_d2() -> [QubitOp; 4] {
 }
 
 /// Build SIC-NPOVM: tetrahedral geometry with partial positivity Φ=𐑬 and Z₂ winding Ω=𐑴.
-/// Same Bloch norm as SIC-POVM, but with two-step chirality Ħ=𐑖 and disjunctive composition.
+/// Same Bloch norm as SIC-POVM, but with two-step chirality ⊥=𐑖 and disjunctive composition.
 pub fn construct_sic_npovm_d2() -> [QubitOp; 4] {
     let r3 = libm::sqrt(3.0);
     let n = 1.0 / r3;
@@ -238,7 +238,7 @@ pub fn construct_ai_novm_d2() -> [QubitOp; 3] {
     ops
 }
 /// Build S-PC-POVM: 3 operators (paracomplete), equiangular.
-/// Updated per grid: Φ=𐑬 (partial parity), ɢ=𐑜 (disjunctive), Γ=𐑔 (aleph).
+/// Updated per grid: Φ=𐑬 (partial parity), ∋=𐑜 (disjunctive), Γ=𐑔 (aleph).
 /// m=3 < d²=4, frame is anisotropic but carries aleph cardinality.
 pub fn construct_s_pc_povm_d2() -> [QubitOp; 3] {
     let n = 1.0 / libm::sqrt(3.0);
@@ -328,7 +328,7 @@ pub fn construct_a_pc_povm_d2() -> [QubitOp; 3] {
     ops
 }
 
-/// Build A-PC-POVM† (HTML variant): bidirectional coupling Ř=𐑾, mesoscale Γ=𐑚, broadcast ɢ=𐑵.
+/// Build A-PC-POVM† (HTML variant): bidirectional coupling >=𐑾, mesoscale Γ=𐑚, broadcast ∋=𐑵.
 pub fn construct_a_pc_povm_dagger_d2() -> [QubitOp; 3] {
     let norms = [0.35, 0.55, 0.65];
     let traces = [0.5, 0.6, 0.9];

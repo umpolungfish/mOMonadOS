@@ -135,7 +135,7 @@ impl IgPrim {
     /// (lower discriminant = higher ordinal), and existing gate-verify code
     /// elsewhere in this kernel exploits that via `(x as u8) <= (thresh as u8)`.
     /// That trick silently breaks for three families that carry a
-    /// non-monotonic extra value: Ç (Kinetics: K_mbl=4.5 sits between
+    /// non-monotonic extra value: ⊤ (Kinetics: K_mbl=4.5 sits between
     /// K_trap=4 and K_fast=1, not below K_fast), ⊙/Phi (Criticality:
     /// 𐑮=2.33 and Phi_ep=2.67 sit between ⊙=2 and
     /// Phi_super=3, not below 𐑢=1), and Ω (Winding: Omega_na=4 sits
@@ -144,26 +144,26 @@ impl IgPrim {
     pub fn ordinal(self) -> f32 {
         use IgPrim::*;
         match self {
-            // Ð Dimensionality
+            // ⊢ Dimensionality
             D_wedge => 1.0, D_triangle => 2.0, D_infty => 3.0, D_odot => 4.0,
-            // Þ Topology
+            // ⊣ Topology
             T_net => 1.0, T_in => 2.0, T_bowtie => 3.0, T_boxtimes => 4.0, T_odot => 5.0,
-            // Ř Recognition
+            // > Recognition
             R_super => 1.0, R_cat => 2.0, R_dagger => 3.0, R_lr => 4.0,
             // Φ Parity
             P_asym => 1.0, P_psi => 2.0, P_pm => 3.0, P_sym => 4.0, P_pmsym => 5.0,
-            // ƒ Fidelity
+            // ⋈ Fidelity
             F_ell => 1.0, F_eth => 2.0, F_hbar => 3.0,
-            // Ç Kinetics — non-monotonic: K_mbl is *above* K_trap, not below K_fast.
+            // ⊤ Kinetics — non-monotonic: K_mbl is *above* K_trap, not below K_fast.
             K_fast => 1.0, K_mod => 2.0, K_slow => 3.0, K_trap => 4.0, K_mbl => 4.5,
             // Γ Granularity
             G_beth => 1.0, G_gimel => 2.0, G_aleph => 3.0,
-            // ɢ Coupling
+            // ∋ Coupling
             C_and => 1.0, C_or => 2.0, C_seq => 3.0, C_broad => 4.0,
             // ⊙ Criticality — non-monotonic: 𐑮/Phi_ep sit between
             // ⊙ and Phi_super, not below 𐑢.
             𐑢 => 1.0, Phi_crit => 2.0, 𐑮 => 2.33, Phi_ep => 2.67, Phi_super => 3.0,
-            // Ħ Chirality
+            // ⊥ Chirality
             H0 => 1.0, H1 => 2.0, H2 => 3.0, H_inf => 4.0,
             // Σ Stoichiometry
             S_11 => 1.0, S_nn => 2.0, S_nm => 3.0,

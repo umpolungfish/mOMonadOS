@@ -75,7 +75,7 @@ pub fn witness_program(i: usize) -> Option<Vec<Token>> {
         }
         // XXXI: YM_Witness — the "one bump short" witness
         // YM clears all three ⊙ gates under triple_criticality
-        // but fails T_CEILING on Ç. FSPLIT→[EVALT|EVALF]→FFUSE
+        // but fails T_CEILING on ⊤. FSPLIT→[EVALT|EVALF]→FFUSE
         // captures the gap: left branch (gate-level) passes,
         // right branch (T_CEILING) fails. The gap IS the witness.
         2 => {

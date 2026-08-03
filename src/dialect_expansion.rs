@@ -32,7 +32,7 @@ pub const DIALECT_COUNT: usize = 88;
 /// A single gate condition: primitive must have ordinal ≥ min_ord.
 #[derive(Debug, Clone, Copy)]
 pub struct GateSpec {
-    /// Shavian primitive glyph (e.g. 'Φ', '⊙', 'Ω')
+    /// Shavian primitive glyph (e.g. '<', '⊙', '◻')
     pub prim: &'static str,
     /// Minimum ordinal value (float, e.g. 5.0 for 𐑹)
     pub min_ord: f32,
@@ -81,43 +81,43 @@ pub struct Dialect {
 // SHARED T-CONSTITUTIONS
 // ═══════════════════════════════════════════════════════════════
 
-/// Canonical T: time = lim(Φ, ƒ, Ç, Ħ, Ω) — dynamic primitives
+/// Canonical T: time = lim(Φ, ⋈, ⊤, ⊥, Ω) — dynamic primitives
 pub static T_CANONICAL: &[TEntry] = &[
-    TEntry { prim: "Φ", crit_val: "𐑹", ceiling: false },
-    TEntry { prim: "ƒ", crit_val: "𐑐", ceiling: false },
-    TEntry { prim: "Ç", crit_val: "𐑧", ceiling: true },
-    TEntry { prim: "Ħ", crit_val: "𐑫", ceiling: false },
-    TEntry { prim: "Ω", crit_val: "𐑭", ceiling: false },
+    TEntry { prim: "<", crit_val: "𐑹", ceiling: false },
+    TEntry { prim: "⋈", crit_val: "𐑐", ceiling: false },
+    TEntry { prim: "⊤", crit_val: "𐑧", ceiling: true },
+    TEntry { prim: "⊥", crit_val: "𐑫", ceiling: false },
+    TEntry { prim: "◻", crit_val: "𐑭", ceiling: false },
 ];
 
-/// Structural T: time = lim(Ð, Þ, Ř, ɢ, ⊙) — geometric primitives
+/// Structural T: time = lim(⊢, ⊣, >, ∋, ⊙) — geometric primitives
 pub static T_STRUCTURAL: &[TEntry] = &[
-    TEntry { prim: "Ð", crit_val: "𐑦", ceiling: false },
-    TEntry { prim: "Þ", crit_val: "𐑸", ceiling: false },
-    TEntry { prim: "Ř", crit_val: "𐑾", ceiling: false },
-    TEntry { prim: "ɢ", crit_val: "𐑵", ceiling: false },
+    TEntry { prim: "⊢", crit_val: "𐑦", ceiling: false },
+    TEntry { prim: "⊣", crit_val: "𐑸", ceiling: false },
+    TEntry { prim: ">", crit_val: "𐑾", ceiling: false },
+    TEntry { prim: "∋", crit_val: "𐑵", ceiling: false },
     TEntry { prim: "⊙", crit_val: "⊙", ceiling: false },
 ];
 
 /// Hybrid T: all 8 dynamic + primitives
 pub static T_HYBRID: &[TEntry] = &[
-    TEntry { prim: "Φ", crit_val: "𐑹", ceiling: false },
-    TEntry { prim: "ƒ", crit_val: "𐑐", ceiling: false },
-    TEntry { prim: "Ç", crit_val: "𐑧", ceiling: true },
-    TEntry { prim: "Ħ", crit_val: "𐑫", ceiling: false },
-    TEntry { prim: "Ω", crit_val: "𐑭", ceiling: false },
-    TEntry { prim: "Ð", crit_val: "𐑦", ceiling: false },
-    TEntry { prim: "Þ", crit_val: "𐑸", ceiling: false },
-    TEntry { prim: "Ř", crit_val: "𐑾", ceiling: false },
+    TEntry { prim: "<", crit_val: "𐑹", ceiling: false },
+    TEntry { prim: "⋈", crit_val: "𐑐", ceiling: false },
+    TEntry { prim: "⊤", crit_val: "𐑧", ceiling: true },
+    TEntry { prim: "⊥", crit_val: "𐑫", ceiling: false },
+    TEntry { prim: "◻", crit_val: "𐑭", ceiling: false },
+    TEntry { prim: "⊢", crit_val: "𐑦", ceiling: false },
+    TEntry { prim: "⊣", crit_val: "𐑸", ceiling: false },
+    TEntry { prim: ">", crit_val: "𐑾", ceiling: false },
 ];
 
 /// Inverted T: primitives (non-dynamic)
 pub static T_INVERTED: &[TEntry] = &[
-    TEntry { prim: "Ð", crit_val: "𐑼", ceiling: false },
-    TEntry { prim: "Þ", crit_val: "𐑶", ceiling: false },
-    TEntry { prim: "Ř", crit_val: "𐑽", ceiling: false },
-    TEntry { prim: "Γ", crit_val: "𐑚", ceiling: false },
-    TEntry { prim: "Σ", crit_val: "𐑕", ceiling: false },
+    TEntry { prim: "⊢", crit_val: "𐑼", ceiling: false },
+    TEntry { prim: "⊣", crit_val: "𐑶", ceiling: false },
+    TEntry { prim: ">", crit_val: "𐑽", ceiling: false },
+    TEntry { prim: "∈", crit_val: "𐑚", ceiling: false },
+    TEntry { prim: "⊞", crit_val: "𐑕", ceiling: false },
 ];
 
 // ═══════════════════════════════════════════════════════════════
@@ -127,7 +127,7 @@ pub static T_INVERTED: &[TEntry] = &[
 /// Canonical default: ⊙ absorbs all ops, Σ n:m absorbs under tensor
 pub static ABS_CANONICAL: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 }, // meet|join|tensor
-    AbsorptionRule { prim: "Σ", value: "𐑳", ops_mask: 4, direction: 0 }, // tensor only
+    AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 }, // tensor only
 ];
 
 /// No absorption — pure lattice operations
@@ -136,22 +136,22 @@ pub static ABS_NONE: &[AbsorptionRule] = &[];
 /// Monarchy: 4 values absorb everything
 pub static ABS_MONARCHY: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
-    AbsorptionRule { prim: "Σ", value: "𐑳", ops_mask: 7, direction: 0 },
-    AbsorptionRule { prim: "Φ", value: "𐑹", ops_mask: 7, direction: 0 },
-    AbsorptionRule { prim: "Ω", value: "𐑭", ops_mask: 7, direction: 0 },
+    AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 7, direction: 0 },
+    AbsorptionRule { prim: "<", value: "𐑹", ops_mask: 7, direction: 0 },
+    AbsorptionRule { prim: "◻", value: "𐑭", ops_mask: 7, direction: 0 },
 ];
 
 /// Inverted: trivial values absorb
 pub static ABS_INVERTED: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "⊙", value: "𐑢", ops_mask: 7, direction: 0 },
-    AbsorptionRule { prim: "Ω", value: "𐑷", ops_mask: 7, direction: 0 },
-    AbsorptionRule { prim: "Σ", value: "𐑙", ops_mask: 7, direction: 0 },
+    AbsorptionRule { prim: "◻", value: "𐑷", ops_mask: 7, direction: 0 },
+    AbsorptionRule { prim: "⊞", value: "𐑙", ops_mask: 7, direction: 0 },
 ];
 
 /// Tensor-only absorption
 pub static ABS_TENSOR_ONLY: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 4, direction: 0 },
-    AbsorptionRule { prim: "Σ", value: "𐑳", ops_mask: 4, direction: 0 },
+    AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 },
 ];
 
 // ═══════════════════════════════════════════════════════════════
@@ -159,96 +159,96 @@ pub static ABS_TENSOR_ONLY: &[AbsorptionRule] = &[
 // ═══════════════════════════════════════════════════════════════
 
 pub static T_PARITY_ONLY: &[TEntry] = &[
-    TEntry { prim: "Φ", crit_val: "𐑹", ceiling: false },
+    TEntry { prim: "<", crit_val: "𐑹", ceiling: false },
 ];
 pub static T_CRITICALITY_ONLY: &[TEntry] = &[
     TEntry { prim: "⊙", crit_val: "⊙", ceiling: false },
 ];
 pub static T_WINDING_ONLY: &[TEntry] = &[
-    TEntry { prim: "Ω", crit_val: "𐑭", ceiling: false },
+    TEntry { prim: "◻", crit_val: "𐑭", ceiling: false },
 ];
 pub static T_CHIRALITY_ONLY: &[TEntry] = &[
-    TEntry { prim: "Ħ", crit_val: "𐑫", ceiling: false },
+    TEntry { prim: "⊥", crit_val: "𐑫", ceiling: false },
 ];
 pub static T_FIDELITY_ONLY: &[TEntry] = &[
-    TEntry { prim: "ƒ", crit_val: "𐑐", ceiling: false },
+    TEntry { prim: "⋈", crit_val: "𐑐", ceiling: false },
 ];
 pub static T_DIMENSIONAL_ONLY: &[TEntry] = &[
-    TEntry { prim: "Ð", crit_val: "𐑦", ceiling: false },
+    TEntry { prim: "⊢", crit_val: "𐑦", ceiling: false },
 ];
 pub static T_KINETICS_CEILING: &[TEntry] = &[
-    TEntry { prim: "Ç", crit_val: "𐑧", ceiling: true },
+    TEntry { prim: "⊤", crit_val: "𐑧", ceiling: true },
 ];
 
 // Dual-primitive T's
 pub static T_PARITY_FIDELITY: &[TEntry] = &[
-    TEntry { prim: "Φ", crit_val: "𐑹", ceiling: false },
-    TEntry { prim: "ƒ", crit_val: "𐑐", ceiling: false },
+    TEntry { prim: "<", crit_val: "𐑹", ceiling: false },
+    TEntry { prim: "⋈", crit_val: "𐑐", ceiling: false },
 ];
 pub static T_CRITICALITY_WINDING: &[TEntry] = &[
     TEntry { prim: "⊙", crit_val: "⊙", ceiling: false },
-    TEntry { prim: "Ω", crit_val: "𐑭", ceiling: false },
+    TEntry { prim: "◻", crit_val: "𐑭", ceiling: false },
 ];
 pub static T_CHIRALITY_COUPLING: &[TEntry] = &[
-    TEntry { prim: "Ħ", crit_val: "𐑫", ceiling: false },
-    TEntry { prim: "Ř", crit_val: "𐑾", ceiling: false },
+    TEntry { prim: "⊥", crit_val: "𐑫", ceiling: false },
+    TEntry { prim: ">", crit_val: "𐑾", ceiling: false },
 ];
 pub static T_TOPOLOGY_SCOPE: &[TEntry] = &[
-    TEntry { prim: "Þ", crit_val: "𐑸", ceiling: false },
-    TEntry { prim: "Γ", crit_val: "𐑲", ceiling: false },
+    TEntry { prim: "⊣", crit_val: "𐑸", ceiling: false },
+    TEntry { prim: "∈", crit_val: "𐑲", ceiling: false },
 ];
 pub static T_STRUCTURAL_DYNAMIC: &[TEntry] = &[
-    TEntry { prim: "Φ", crit_val: "𐑹", ceiling: false },
-    TEntry { prim: "ƒ", crit_val: "𐑐", ceiling: false },
-    TEntry { prim: "Ç", crit_val: "𐑧", ceiling: true },
-    TEntry { prim: "Ð", crit_val: "𐑦", ceiling: false },
-    TEntry { prim: "Þ", crit_val: "𐑸", ceiling: false },
+    TEntry { prim: "<", crit_val: "𐑹", ceiling: false },
+    TEntry { prim: "⋈", crit_val: "𐑐", ceiling: false },
+    TEntry { prim: "⊤", crit_val: "𐑧", ceiling: true },
+    TEntry { prim: "⊢", crit_val: "𐑦", ceiling: false },
+    TEntry { prim: "⊣", crit_val: "𐑸", ceiling: false },
 ];
 
 // ═══════════════════════════════════════════════════════════════
 // ABSORPTION VARIANTS
 // ═══════════════════════════════════════════════════════════════
 
-// Chirality empire: Ħ=𐑫 absorbs everything
+// Chirality empire: ⊥=𐑫 absorbs everything
 pub static ABS_CHIRALITY_FIRST: &[AbsorptionRule] = &[
-    AbsorptionRule { prim: "Ħ", value: "𐑫", ops_mask: 7, direction: 0 },
+    AbsorptionRule { prim: "⊥", value: "𐑫", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
-    AbsorptionRule { prim: "Σ", value: "𐑳", ops_mask: 4, direction: 0 },
+    AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 },
 ];
 // Scope empire: Γ=𐑲 absorbs everything
 pub static ABS_SCOPE_EMPIRE: &[AbsorptionRule] = &[
-    AbsorptionRule { prim: "Γ", value: "𐑲", ops_mask: 7, direction: 0 },
+    AbsorptionRule { prim: "∈", value: "𐑲", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
-    AbsorptionRule { prim: "Σ", value: "𐑳", ops_mask: 4, direction: 0 },
+    AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 },
 ];
-// Topology seal: Þ=𐑸 absorbs everything
+// Topology seal: ⊣=𐑸 absorbs everything
 pub static ABS_TOPOLOGY_SEAL: &[AbsorptionRule] = &[
-    AbsorptionRule { prim: "Þ", value: "𐑸", ops_mask: 7, direction: 0 },
+    AbsorptionRule { prim: "⊣", value: "𐑸", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
-    AbsorptionRule { prim: "Σ", value: "𐑳", ops_mask: 4, direction: 0 },
+    AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 },
 ];
 // Predator: Φ=𐑹 absorbs left only under tensor
 pub static ABS_PREDATOR: &[AbsorptionRule] = &[
-    AbsorptionRule { prim: "Φ", value: "𐑹", ops_mask: 4, direction: 1 },
+    AbsorptionRule { prim: "<", value: "𐑹", ops_mask: 4, direction: 1 },
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
-    AbsorptionRule { prim: "Σ", value: "𐑳", ops_mask: 4, direction: 0 },
+    AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 },
 ];
 // Prey: Φ=𐑹 absorbs right only under tensor
 pub static ABS_PREY: &[AbsorptionRule] = &[
-    AbsorptionRule { prim: "Φ", value: "𐑹", ops_mask: 4, direction: 2 },
+    AbsorptionRule { prim: "<", value: "𐑹", ops_mask: 4, direction: 2 },
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
-    AbsorptionRule { prim: "Σ", value: "𐑳", ops_mask: 4, direction: 0 },
+    AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 },
 ];
 // Winding absorbing: Ω=𐑭 absorbs everything, no Σ rule
 pub static ABS_WINDING: &[AbsorptionRule] = &[
-    AbsorptionRule { prim: "Ω", value: "𐑭", ops_mask: 7, direction: 0 },
+    AbsorptionRule { prim: "◻", value: "𐑭", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
 ];
 // Scope totalitarian: Σ n:m absorbs under ALL ops
 pub static ABS_SCOPE_TOTALITARIAN: &[AbsorptionRule] = &[
-    AbsorptionRule { prim: "Γ", value: "𐑲", ops_mask: 7, direction: 0 },
+    AbsorptionRule { prim: "∈", value: "𐑲", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
-    AbsorptionRule { prim: "Σ", value: "𐑳", ops_mask: 7, direction: 0 },
+    AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 7, direction: 0 },
 ];
 
 // ═══════════════════════════════════════════════════════════════
@@ -290,37 +290,37 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     let mut unis: [Dialect; DIALECT_COUNT] = [BLANK_DIALECT; DIALECT_COUNT];
 
     // Helper constants
-    let g_phi_5 = GateSpec { prim: "Φ", min_ord: 5.0 };
-    let g_phi_4 = GateSpec { prim: "Φ", min_ord: 4.0 };
-    let g_phi_3 = GateSpec { prim: "Φ", min_ord: 3.0 };
+    let g_phi_5 = GateSpec { prim: "<", min_ord: 5.0 };
+    let g_phi_4 = GateSpec { prim: "<", min_ord: 4.0 };
+    let g_phi_3 = GateSpec { prim: "<", min_ord: 3.0 };
     let g_odot_2 = GateSpec { prim: "⊙", min_ord: 2.0 };
     let g_odot_1 = GateSpec { prim: "⊙", min_ord: 1.0 };
     let g_odot_233 = GateSpec { prim: "⊙", min_ord: 2.33 };
     let g_odot_3 = GateSpec { prim: "⊙", min_ord: 3.0 };
-    let g_omega_3 = GateSpec { prim: "Ω", min_ord: 3.0 };
-    let g_omega_2 = GateSpec { prim: "Ω", min_ord: 2.0 };
-    let g_omega_4 = GateSpec { prim: "Ω", min_ord: 4.0 };
-    let g_h_3 = GateSpec { prim: "Ħ", min_ord: 3.0 };
-    let g_h_4 = GateSpec { prim: "Ħ", min_ord: 4.0 };
-    let g_h_2 = GateSpec { prim: "Ħ", min_ord: 2.0 };
-    let g_th_5 = GateSpec { prim: "Þ", min_ord: 5.0 };
-    let g_th_3 = GateSpec { prim: "Þ", min_ord: 3.0 };
-    let g_th_4 = GateSpec { prim: "Þ", min_ord: 4.0 };
-    let g_r_4 = GateSpec { prim: "Ř", min_ord: 4.0 };
-    let g_r_3 = GateSpec { prim: "Ř", min_ord: 3.0 };
-    let g_gamma_3 = GateSpec { prim: "Γ", min_ord: 3.0 };
-    let _g_gamma_2 = GateSpec { prim: "Γ", min_ord: 2.0 };
-    let g_d_3 = GateSpec { prim: "Ð", min_ord: 3.0 };
-    let g_d_4 = GateSpec { prim: "Ð", min_ord: 4.0 };
-    let _g_d_2 = GateSpec { prim: "Ð", min_ord: 2.0 };
-    let g_c_3 = GateSpec { prim: "Ç", min_ord: 3.0 };
-    let g_c_4 = GateSpec { prim: "Ç", min_ord: 4.0 };
-    let g_f_3 = GateSpec { prim: "ƒ", min_ord: 3.0 };
-    let g_sigma_3 = GateSpec { prim: "Σ", min_ord: 3.0 };
-    let g_sigma_1 = GateSpec { prim: "Σ", min_ord: 1.0 };
-    let g_g_3 = GateSpec { prim: "ɢ", min_ord: 3.0 };
-    let g_g_4 = GateSpec { prim: "ɢ", min_ord: 4.0 };
-    let _g_g_2 = GateSpec { prim: "ɢ", min_ord: 2.0 };
+    let g_omega_3 = GateSpec { prim: "◻", min_ord: 3.0 };
+    let g_omega_2 = GateSpec { prim: "◻", min_ord: 2.0 };
+    let g_omega_4 = GateSpec { prim: "◻", min_ord: 4.0 };
+    let g_h_3 = GateSpec { prim: "⊥", min_ord: 3.0 };
+    let g_h_4 = GateSpec { prim: "⊥", min_ord: 4.0 };
+    let g_h_2 = GateSpec { prim: "⊥", min_ord: 2.0 };
+    let g_th_5 = GateSpec { prim: "⊣", min_ord: 5.0 };
+    let g_th_3 = GateSpec { prim: "⊣", min_ord: 3.0 };
+    let g_th_4 = GateSpec { prim: "⊣", min_ord: 4.0 };
+    let g_r_4 = GateSpec { prim: ">", min_ord: 4.0 };
+    let g_r_3 = GateSpec { prim: ">", min_ord: 3.0 };
+    let g_gamma_3 = GateSpec { prim: "∈", min_ord: 3.0 };
+    let _g_gamma_2 = GateSpec { prim: "∈", min_ord: 2.0 };
+    let g_d_3 = GateSpec { prim: "⊢", min_ord: 3.0 };
+    let g_d_4 = GateSpec { prim: "⊢", min_ord: 4.0 };
+    let _g_d_2 = GateSpec { prim: "⊢", min_ord: 2.0 };
+    let g_c_3 = GateSpec { prim: "⊤", min_ord: 3.0 };
+    let g_c_4 = GateSpec { prim: "⊤", min_ord: 4.0 };
+    let g_f_3 = GateSpec { prim: "⋈", min_ord: 3.0 };
+    let g_sigma_3 = GateSpec { prim: "⊞", min_ord: 3.0 };
+    let g_sigma_1 = GateSpec { prim: "⊞", min_ord: 1.0 };
+    let g_g_3 = GateSpec { prim: "∋", min_ord: 3.0 };
+    let g_g_4 = GateSpec { prim: "∋", min_ord: 4.0 };
+    let _g_g_2 = GateSpec { prim: "∋", min_ord: 2.0 };
 
     // ── 0: canonical ──
     unis[0] = Dialect {
@@ -1061,54 +1061,54 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
 // ADDITIONAL T-CONSTITUTIONS (referenced by expansion dialects)
 // ═══════════════════════════════════════════════════════════════
 
-/// Ceiling T: Þ≤𐑶 — ceiling on topology, no self-ref allowed
+/// Ceiling T: ⊣≤𐑶 — ceiling on topology, no self-ref allowed
 pub static T_CEILING: &[TEntry] = &[
-    TEntry { prim: "Þ", crit_val: "𐑶", ceiling: true },
+    TEntry { prim: "⊣", crit_val: "𐑶", ceiling: true },
 ];
 
-/// Dimensional ceiling: Ð≤𐑼, Þ≤𐑥 — finite-dimensional, crossing-point max
+/// Dimensional ceiling: ⊢≤𐑼, ⊣≤𐑥 — finite-dimensional, crossing-point max
 pub static T_DIM_CEILING: &[TEntry] = &[
-    TEntry { prim: "Ð", crit_val: "𐑼", ceiling: true },
-    TEntry { prim: "Þ", crit_val: "𐑥", ceiling: true },
+    TEntry { prim: "⊢", crit_val: "𐑼", ceiling: true },
+    TEntry { prim: "⊣", crit_val: "𐑥", ceiling: true },
 ];
 
-/// Self-referential + heterogeneous T: Þ≥𐑸 AND Σ≥𐑳
+/// Self-referential + heterogeneous T: ⊣≥𐑸 AND Σ≥𐑳
 pub static T_TH_SIGMA: &[TEntry] = &[
-    TEntry { prim: "Þ", crit_val: "𐑸", ceiling: false },
-    TEntry { prim: "Σ", crit_val: "𐑳", ceiling: false },
+    TEntry { prim: "⊣", crit_val: "𐑸", ceiling: false },
+    TEntry { prim: "⊞", crit_val: "𐑳", ceiling: false },
 ];
 
-/// Self-referential + winding T: Þ≥𐑸 AND Ω≥𐑭
+/// Self-referential + winding T: ⊣≥𐑸 AND Ω≥𐑭
 pub static T_TH_OMEGA: &[TEntry] = &[
-    TEntry { prim: "Þ", crit_val: "𐑸", ceiling: false },
-    TEntry { prim: "Ω", crit_val: "𐑭", ceiling: false },
+    TEntry { prim: "⊣", crit_val: "𐑸", ceiling: false },
+    TEntry { prim: "◻", crit_val: "𐑭", ceiling: false },
 ];
 
-/// Infinite-dim + heterogeneous T: Ð≥𐑼 AND Σ≥𐑳
+/// Infinite-dim + heterogeneous T: ⊢≥𐑼 AND Σ≥𐑳
 pub static T_D_SIGMA: &[TEntry] = &[
-    TEntry { prim: "Ð", crit_val: "𐑼", ceiling: false },
-    TEntry { prim: "Σ", crit_val: "𐑳", ceiling: false },
+    TEntry { prim: "⊢", crit_val: "𐑼", ceiling: false },
+    TEntry { prim: "⊞", crit_val: "𐑳", ceiling: false },
 ];
 
-/// Broadcast T: ɢ≥𐑵 — one-to-all composition required
+/// Broadcast T: ∋≥𐑵 — one-to-all composition required
 pub static T_BROADCAST: &[TEntry] = &[
-    TEntry { prim: "ɢ", crit_val: "𐑵", ceiling: false },
+    TEntry { prim: "∋", crit_val: "𐑵", ceiling: false },
 ];
 
 /// All T: all 12 primitives at their maximal structural values
 pub static T_ALL: &[TEntry] = &[
-    TEntry { prim: "Ð", crit_val: "𐑦", ceiling: false },
-    TEntry { prim: "Þ", crit_val: "𐑸", ceiling: false },
-    TEntry { prim: "Ř", crit_val: "𐑾", ceiling: false },
-    TEntry { prim: "Φ", crit_val: "𐑹", ceiling: false },
-    TEntry { prim: "ƒ", crit_val: "𐑐", ceiling: false },
-    TEntry { prim: "Ç", crit_val: "𐑧", ceiling: true },
-    TEntry { prim: "Γ", crit_val: "𐑲", ceiling: false },
-    TEntry { prim: "ɢ", crit_val: "𐑵", ceiling: false },
+    TEntry { prim: "⊢", crit_val: "𐑦", ceiling: false },
+    TEntry { prim: "⊣", crit_val: "𐑸", ceiling: false },
+    TEntry { prim: ">", crit_val: "𐑾", ceiling: false },
+    TEntry { prim: "<", crit_val: "𐑹", ceiling: false },
+    TEntry { prim: "⋈", crit_val: "𐑐", ceiling: false },
+    TEntry { prim: "⊤", crit_val: "𐑧", ceiling: true },
+    TEntry { prim: "∈", crit_val: "𐑲", ceiling: false },
+    TEntry { prim: "∋", crit_val: "𐑵", ceiling: false },
     TEntry { prim: "⊙", crit_val: "⊙", ceiling: false },
-    TEntry { prim: "Ħ", crit_val: "𐑫", ceiling: false },
-    TEntry { prim: "Σ", crit_val: "𐑳", ceiling: false },
-    TEntry { prim: "Ω", crit_val: "𐑭", ceiling: false },
+    TEntry { prim: "⊥", crit_val: "𐑫", ceiling: false },
+    TEntry { prim: "⊞", crit_val: "𐑳", ceiling: false },
+    TEntry { prim: "◻", crit_val: "𐑭", ceiling: false },
 ];
 
 // ═══════════════════════════════════════════════════════════════
@@ -1119,14 +1119,14 @@ pub static T_ALL: &[TEntry] = &[
 pub static ABS_EP: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊙", value: "𐑻", ops_mask: 7, direction: 0 }, // absorb EP
-    AbsorptionRule { prim: "Σ", value: "𐑳", ops_mask: 4, direction: 0 },
+    AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 },
 ];
 
 /// Sub-critical absorption: ⊙ absorbs sub-critical (𐑢) under all ops
 pub static ABS_SUB: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊙", value: "𐑢", ops_mask: 7, direction: 0 }, // absorb sub-critical
-    AbsorptionRule { prim: "Σ", value: "𐑳", ops_mask: 4, direction: 0 },
+    AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 },
 ];
 
 /// Dual absorption: both EP and sub-critical absorbed
@@ -1134,7 +1134,7 @@ pub static ABS_DUAL: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊙", value: "𐑻", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊙", value: "𐑢", ops_mask: 7, direction: 0 },
-    AbsorptionRule { prim: "Σ", value: "𐑳", ops_mask: 4, direction: 0 },
+    AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 },
 ];
 
 // ═══════════════════════════════════════════════════════════════
@@ -1217,8 +1217,8 @@ pub fn dialect_counts() -> (usize, usize) {
 
 /// Compound: Φ≥𐑹 (parity first in compound pair)
 #[allow(non_upper_case_globals)]
-    pub const g_phi_omega: GateSpec = GateSpec { prim: "Φ", min_ord: 5.0 };
+    pub const g_phi_omega: GateSpec = GateSpec { prim: "<", min_ord: 5.0 };
 
-/// Compound: ⊙≥⊙ + Ç≥𐑧 (criticality first in compound pair)
+/// Compound: ⊙≥⊙ + ⊤≥𐑧 (criticality first in compound pair)
 #[allow(non_upper_case_globals)]
     pub const g_odot_c: GateSpec = GateSpec { prim: "⊙", min_ord: 2.0 };

@@ -5,13 +5,13 @@
 // Matches the Python cl8nk_navigator.py feature-for-feature.
 //
 // CLINK L8 canonical: ⟨𐑦⋅𐑸⋅𐑾⋅𐑹⋅𐑐⋅𐑧⋅𐑲⋅𐑵⋅⊙⋅𐑫⋅𐑳⋅𐑟⟩
-// O_∞⁺ terminal ontological layer. Exceeds ZFC_fe at Ω/ɢ.
+// O_∞⁺ terminal ontological layer. Exceeds ZFC_fe at Ω/∋.
 //
 // Actions:
 //   entry  <name>    — Full CL8NK formula decomposition
 //   promotions        — 3-stage ladder: ZFC→ZFCₜ→ZFC_fe→CLINK L8
 //   distance <name>   — d(name, CLINK L8) + per-primitive conflicts
-//   transcendence     — Ω/ɢ transcendence analysis
+//   transcendence     — Ω/∋ transcendence analysis
 //   tensor  <name>    — CLINK L8 ⊗ name (absorption test)
 //   meet    <name>    — CLINK L8 ⊓ name (shared floor)
 //   join    <name>    — CLINK L8 ⊔ name (minimal ceiling)
@@ -45,15 +45,15 @@ pub fn zfc_baseline_ref() -> IgTuple { catalog::zfc_baseline_tuple() }
 // PRIMITIVE KEY NAMES
 // ═══════════════════════════════════════════════════════════════
 
-pub static PRIMITIVE_KEYS: [&str; 12] = ["D","T","R","P","F","K","G","C","Φ","H","S","Ω"];
+pub static PRIMITIVE_KEYS: [&str; 12] = ["D","T","R","P","F","K","G","C","<","H","S","◻"];
 
 /// Get a primitive value from a tuple by key name.
 pub fn get_prim(t: &IgTuple, key: &str) -> Option<IgPrim> {
     match key {
         "D" => Some(t.d), "T" => Some(t.t), "R" => Some(t.r),
         "P" => Some(t.p), "F" => Some(t.f), "K" => Some(t.k),
-        "G" => Some(t.g), "C" => Some(t.c), "Φ" => Some(t.phi),
-        "H" => Some(t.h), "S" => Some(t.s), "Ω" => Some(t.omega),
+        "G" => Some(t.g), "C" => Some(t.c), "<" => Some(t.phi),
+        "H" => Some(t.h), "S" => Some(t.s), "◻" => Some(t.omega),
         _ => None,
     }
 }
@@ -65,8 +65,8 @@ pub fn ord_table_for(key: &str) -> &'static [IgPrim] {
         "R" => &catalog::R_ORD, "P" => &catalog::P_ORD,
         "F" => &catalog::F_ORD, "K" => &catalog::K_ORD,
         "G" => &catalog::G_ORD, "C" => &catalog::C_ORD,
-        "Φ" => &catalog::PHI_ORD, "H" => &catalog::H_ORD,
-        "S" => &catalog::S_ORD, "Ω" => &catalog::OMEGA_ORD,
+        "<" => &catalog::PHI_ORD, "H" => &catalog::H_ORD,
+        "S" => &catalog::S_ORD, "◻" => &catalog::OMEGA_ORD,
         _ => &catalog::D_ORD,
     }
 }
@@ -87,10 +87,10 @@ pub static DIST_SPECS: [(&str, DistSpec); 12] = [
     ("K", DistSpec { weight: 0.7, max_delta: 3.5 }),
     ("G", DistSpec { weight: 0.6, max_delta: 2.0 }),
     ("C", DistSpec { weight: 0.8, max_delta: 3.0 }),
-    ("Φ", DistSpec { weight: 1.0, max_delta: 2.0 }),
+    ("<", DistSpec { weight: 1.0, max_delta: 2.0 }),
     ("H", DistSpec { weight: 0.9, max_delta: 3.0 }),
     ("S", DistSpec { weight: 0.5, max_delta: 2.0 }),
-    ("Ω", DistSpec { weight: 0.7, max_delta: 3.0 }),
+    ("◻", DistSpec { weight: 0.7, max_delta: 3.0 }),
 ];
 
 /// Normalized ordinal distance between two primitive values.
@@ -294,7 +294,7 @@ pub fn cl8nk_formula(key: &str, val: IgPrim) -> Option<FormulaEntry> {
             IgPrim::C_and   => Some(FormulaEntry { fragment: "f ∧ g ∧ h", atom: None, proximity: "distant" }),
             _ => None,
         },
-        "Φ" => match val {
+        "<" => match val {
             IgPrim::Phi_crit         => Some(FormulaEntry { fragment: "ξ → ∞ ∧ μ∘δ = id", atom: Some("PHI_C"), proximity: "match" }),
             IgPrim::𐑮 => Some(FormulaEntry { fragment: "ξ ∈ ℂ ∧ Im(ξ) → ∞", atom: None, proximity: "close" }),
             IgPrim::Phi_ep        => Some(FormulaEntry { fragment: "H(λ) non-Herm ∧ det(H - λI) = 0 ∧ ∂_λ H = 0", atom: None, proximity: "distant" }),
@@ -315,7 +315,7 @@ pub fn cl8nk_formula(key: &str, val: IgPrim) -> Option<FormulaEntry> {
             IgPrim::S_11 => Some(FormulaEntry { fragment: "|A| = 1 ∧ |B| = 1", atom: None, proximity: "distant" }),
             _ => None,
         },
-        "Ω" => match val {
+        "◻" => match val {
             IgPrim::Omega_na => Some(FormulaEntry { fragment: "Braid(σ_i) ∧ R_matrix ≠ 0 ∧ nonAbelian(x)", atom: Some("BRAID_TRANSCENDENCE"), proximity: "match" }),
             IgPrim::Omega_z  => Some(FormulaEntry { fragment: "∮_γ A = 2πn ∧ n ∈ ℤ ∧ wind(γ) ≠ 0", atom: Some("ZWIND"), proximity: "close" }),
             IgPrim::Omega_z2 => Some(FormulaEntry { fragment: "∮_γ A = nπ ∧ n ∈ ℤ₂", atom: None, proximity: "distant" }),
@@ -474,8 +474,8 @@ pub fn compute_tensor_op(sys: &IgTuple) -> TensorResult {
                 &"D" => result.d = v, &"T" => result.t = v,
                 &"R" => result.r = v, &"K" => result.k = v,
                 &"G" => result.g = v, &"C" => result.c = v,
-                &"Φ" => result.phi = v, &"H" => result.h = v,
-                &"S" => result.s = v, &"Ω" => result.omega = v,
+                &"<" => result.phi = v, &"H" => result.h = v,
+                &"S" => result.s = v, &"◻" => result.omega = v,
                 _ => {}
             }
         }
@@ -513,8 +513,8 @@ pub fn compute_meet_op(sys: &IgTuple) -> MeetJoinResult {
             &"R" => result.r = v, &"P" => result.p = v,
             &"F" => result.f = v, &"K" => result.k = v,
             &"G" => result.g = v, &"C" => result.c = v,
-            &"Φ" => result.phi = v, &"H" => result.h = v,
-            &"S" => result.s = v, &"Ω" => result.omega = v,
+            &"<" => result.phi = v, &"H" => result.h = v,
+            &"S" => result.s = v, &"◻" => result.omega = v,
             _ => {}
         }
     }
@@ -538,8 +538,8 @@ pub fn compute_join_op(sys: &IgTuple) -> MeetJoinResult {
             &"R" => result.r = v, &"P" => result.p = v,
             &"F" => result.f = v, &"K" => result.k = v,
             &"G" => result.g = v, &"C" => result.c = v,
-            &"Φ" => result.phi = v, &"H" => result.h = v,
-            &"S" => result.s = v, &"Ω" => result.omega = v,
+            &"<" => result.phi = v, &"H" => result.h = v,
+            &"S" => result.s = v, &"◻" => result.omega = v,
             _ => {}
         }
     }
@@ -575,8 +575,8 @@ pub fn compute_transcendence() -> TranscendenceResult {
     let grammar_zfcfe = zfc_fe.c;
     let grammar_cl8nk = cl8.c;
 
-    let omega_zfcfe_frag = cl8nk_formula("Ω", omega_zfcfe).map(|f| f.fragment).unwrap_or("?");
-    let omega_cl8nk_frag = cl8nk_formula("Ω", omega_cl8nk).map(|f| f.fragment).unwrap_or("?");
+    let omega_zfcfe_frag = cl8nk_formula("◻", omega_zfcfe).map(|f| f.fragment).unwrap_or("?");
+    let omega_cl8nk_frag = cl8nk_formula("◻", omega_cl8nk).map(|f| f.fragment).unwrap_or("?");
     let grammar_zfcfe_frag = cl8nk_formula("C", grammar_zfcfe).map(|f| f.fragment).unwrap_or("?");
     let grammar_cl8nk_frag = cl8nk_formula("C", grammar_cl8nk).map(|f| f.fragment).unwrap_or("?");
 
@@ -688,7 +688,7 @@ pub fn generate_promotions() -> PromotionsResult {
         ],
         total_promotions: s1_len + s2_len + s3_len,
         total_distance: d_total,
-        transcendence_primitives: vec!["Ω", "C"],
+        transcendence_primitives: vec!["◻", "C"],
         d_zfcfe_to_cl8nk: d3,
     }
 }

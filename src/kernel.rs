@@ -60,7 +60,7 @@ impl Snapshot {
         }
     }
 
-    /// The Ħ mirror: exchange the R1 (O_∞) and R2 (O_inf_dag) evidence triples,
+    /// The ⊥ mirror: exchange the R1 (O_∞) and R2 (O_inf_dag) evidence triples,
     /// role for role, leaving the shared substrate (self_ref, frobenius_order,
     /// period, value_period, sig, diversity) untouched — the two dialects sit on
     /// one temporal substrate; only the evidence changes hands:
@@ -107,7 +107,7 @@ pub struct Kernel {
     pub dynamic_mode: bool,  // true → rebuild program from IgTuple each wrap
     // ── Cross-dialect ruleset state ──
     pub active_dialect: u8,        // 0-87, current active ruleset (default 0 = canonical)
-    /// Ħ (chirality): false = or' reading (R1-dominant, the canonical hand),
+    /// ⊥ (chirality): false = or' reading (R1-dominant, the canonical hand),
     /// true = flipped — the kernel reads its own snapshot through the mirror
     /// (O_∞ ↔ O_inf_dag lateral hop, the ob3ect's AREV step 15). Toggled by
     /// arev_hop(); parity over unchanged accumulators, so hop∘hop = id exactly.
@@ -585,7 +585,7 @@ impl Kernel {
     /// Dynamic imscription: static structural analysis overlaid with
     /// runtime accumulator values. Call this instead of self_imscribe()
     /// when the kernel has runtime state that should inform the tier.
-    /// When Ħ is flipped (arev_hop), the snapshot is read through the mirror:
+    /// When ⊥ is flipped (arev_hop), the snapshot is read through the mirror:
     /// same accumulators, evidence triples exchanged, tier recomputed.
     pub fn dynamic_imscribe(&self) -> Snapshot {
         let mut snap = self_imscribe(&self.program);
@@ -598,11 +598,11 @@ impl Kernel {
         snap
     }
 
-    /// AREV as a runtime operation — the door, not the classifier. Toggles Ħ,
+    /// AREV as a runtime operation — the door, not the classifier. Toggles ⊥,
     /// so the kernel descends to (or returns from) the lateral partner at the
     /// same shell: every subsequent dynamic_imscribe reads the R1/R2 evidence
     /// triples exchanged. Because the accumulators themselves are untouched,
-    /// arev_hop∘arev_hop = id on the snapshot, exactly. Returns the new Ħ.
+    /// arev_hop∘arev_hop = id on the snapshot, exactly. Returns the new ⊥.
     pub fn arev_hop(&mut self) -> bool {
         self.chirality = !self.chirality;
         self.snapshot = Some(self.dynamic_imscribe());

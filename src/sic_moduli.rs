@@ -524,15 +524,15 @@ pub fn scope_report() -> String {
 // ═══════════════════════════════════════════════════════════════
 
 /// The d=16 moduli field type:
-/// ⟨Ð=𐑨 T=𐑸 Ř=𐑾 Φ=𐑹 ƒ=𐑐 Ç=𐑧 Γ=𐑔 ɢ=𐑠 φ̂=⊙ Ħ=𐑫 Σ=𐑳 Ω=𐑴⟩
+/// ⟨⊢=𐑨 T=𐑸 >=𐑾 Φ=𐑹 ⋈=𐑐 ⊤=𐑧 Γ=𐑔 ∋=𐑠 φ̂=⊙ ⊥=𐑫 Σ=𐑳 Ω=𐑴⟩
 ///
 /// Key points:
-/// - Ð=𐑨 (triangle/2d): real quadratic field, 2 DoF over Q
+/// - ⊢=𐑨 (triangle/2d): real quadratic field, 2 DoF over Q
 /// - T=𐑸 (self-referential): topology adjusts to its own class group obstruction
 /// - Ω=𐑴 (Z2 parity-protected): class group of order 2 = Z/2 obstruction
 /// - φ̂=⊙ (self-modeling): structural SIC-POVM is the Σ=1:1 limit
-/// - ƒ=𐑐 (quantum): SIC-POVM is a quantum measurement
-/// - Ħ=𐑫 (eternal): class group is permanent, not finite-order
+/// - ⋈=𐑐 (quantum): SIC-POVM is a quantum measurement
+/// - ⊥=𐑫 (eternal): class group is permanent, not finite-order
 pub fn grammar_encoding() -> String {
     let mut s = String::new();
     s.push_str("═══ STRUCTURAL GRAMMAR ENCODING ═══\n\n");

@@ -88,18 +88,18 @@ pub struct GrammarPrim {
 
 pub fn opcode_grammar(op: Opcode) -> GrammarPrim {
     match op {
-        Opcode::VInit   => GrammarPrim { symbol: "\u{1047C}", latin: "Ð", desc: "Dimensionality" },
-        Opcode::TAnchor => GrammarPrim { symbol: "\u{10461}", latin: "Þ", desc: "Topology" },
-        Opcode::FSplit  => GrammarPrim { symbol: "\u{1045A}", latin: "Γ", desc: "Split (δ)" },
-        Opcode::FFuse   => GrammarPrim { symbol: "\u{10459}", latin: "Σ", desc: "Fuse (μ)" },
+        Opcode::VInit   => GrammarPrim { symbol: "\u{1047C}", latin: "⊢", desc: "Dimensionality" },
+        Opcode::TAnchor => GrammarPrim { symbol: "\u{10461}", latin: "⊣", desc: "Topology" },
+        Opcode::FSplit  => GrammarPrim { symbol: "\u{1045A}", latin: "∈", desc: "Split (δ)" },
+        Opcode::FFuse   => GrammarPrim { symbol: "\u{10459}", latin: "⊞", desc: "Fuse (μ)" },
         Opcode::EvalT   => GrammarPrim { symbol: "⊙",  latin: "φ̂", desc: "Criticality" },
-        Opcode::EvalF   => GrammarPrim { symbol: "\u{10456}", latin: "Ħ", desc: "Chirality" },
-        Opcode::EngPar  => GrammarPrim { symbol: "\u{10473}", latin: "Σ", desc: "Stoichiometry" },
-        Opcode::AFwd    => GrammarPrim { symbol: "\u{1047E}", latin: "Ř", desc: "Coupling" },
-        Opcode::ARev    => GrammarPrim { symbol: "\u{1046C}", latin: "Φ", desc: "Parity" },
-        Opcode::CLink   => GrammarPrim { symbol: "\u{10471}", latin: "ƒ", desc: "Kinetics" },
-        Opcode::ImScrib => GrammarPrim { symbol: "\u{10460}", latin: "ɢ", desc: "Composition" },
-        Opcode::IFix    => GrammarPrim { symbol: "\u{1046D}", latin: "Ω", desc: "Winding" },
+        Opcode::EvalF   => GrammarPrim { symbol: "\u{10456}", latin: "⊥", desc: "Chirality" },
+        Opcode::EngPar  => GrammarPrim { symbol: "\u{10473}", latin: "⊞", desc: "Stoichiometry" },
+        Opcode::AFwd    => GrammarPrim { symbol: "\u{1047E}", latin: ">", desc: "Coupling" },
+        Opcode::ARev    => GrammarPrim { symbol: "\u{1046C}", latin: "<", desc: "Parity" },
+        Opcode::CLink   => GrammarPrim { symbol: "\u{10471}", latin: "⋈", desc: "Kinetics" },
+        Opcode::ImScrib => GrammarPrim { symbol: "\u{10460}", latin: "∋", desc: "Composition" },
+        Opcode::IFix    => GrammarPrim { symbol: "\u{1046D}", latin: "◻", desc: "Winding" },
     }
 }
 

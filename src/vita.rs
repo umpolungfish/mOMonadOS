@@ -41,7 +41,7 @@ fn vocab() -> Vec<String> {
         v.push(s.glyph().to_string());
     }
     v.push("⊤".to_string());
-    for p in ["Ð", "Þ", "Ř", "Φ", "ƒ", "Ç", "Γ", "ɢ", "Ħ", "Σ", "Ω"] {
+    for p in ["⊢", "⊣", ">", "<", "⋈", "⊤", "∈", "∋", "⊥", "⊞", "◻"] {
         v.push(p.to_string());
     }
     for c in 0x10450..=0x1047F_u32 {

@@ -985,7 +985,7 @@ pub fn repl(k: &mut Kernel) {
                         if args.len() >= 2 {
                             if let (Ok(start), Ok(end)) = (args[0].parse::<u32>(), args[1].parse::<u32>()) {
                                 sprintln!("=== MERSENNE SCAN p={}..{} ===", start, end);
-                                sprintln!("{:>4} {:>24} {:>14} {:>6}", "p", "M_p", "VERDICT", "Ω");
+                                sprintln!("{:>4} {:>24} {:>14} {:>6}", "p", "M_p", "VERDICT", "◻");
                                 sprintln!("{}", "-".repeat(52));
                                 let results = crate::divisor_ring::scan_mersenne_range(start, end);
                                 for (p, mp, verdict, omega) in &results {
@@ -2013,7 +2013,7 @@ Stopped after {} ticks.", ran);
 
                         // Alt-dialect gate verdict: only U8/U9/U10/U11 wired up so far.
                         // U8/U9/U10 use T_CEILING for their T side; U11 uses the
-                        // gapped variant (raises only the Ç anchor — see dialect.rs).
+                        // gapped variant (raises only the ⊤ anchor — see dialect.rs).
                         let gate_alt = match alt {
                             8 => ig.h.ordinal() >= IgPrim::H2.ordinal()
                                 && ig.phi.ordinal() >= IgPrim::Phi_crit.ordinal()
@@ -2391,12 +2391,12 @@ fn redraw_input(old_len: usize, src: &[u8], src_len: usize, buf: &mut [u8]) {
 
 // ─── T_CEILING — shared T-constitution check for U8/U9 ─────────
 //
-// Ceiling-generalizes canonical's existing Ç-only ceiling rule to all five
-// dynamics primitives, same anchors: Φ<=𐑹 ƒ<=𐑐 Ç<=𐑧 Ħ<=𐑫 Ω<=𐑭.
+// Ceiling-generalizes canonical's existing ⊤-only ceiling rule to all five
+// dynamics primitives, same anchors: Φ<=𐑹 ⋈<=𐑐 ⊤<=𐑧 ⊥<=𐑫 Ω<=𐑭.
 // See manuscripts/clay_cross_dialect_closure.md for the derivation. Uses
 // IgPrim::ordinal(), not raw discriminant comparison.
 // Canonical's actual T-constitution (exact-equality on four primitives,
-// ceiling on Ç only) — matches Python's _T_CANONICAL exactly. This is the
+// ceiling on ⊤ only) — matches Python's _T_CANONICAL exactly. This is the
 // real canonical T-verdict, distinct from T_CEILING (which only applies
 // to U8/U9/U10/U11).
 fn t_canonical_check_silent(ig: &IgTuple) -> bool {
@@ -2416,7 +2416,7 @@ fn t_ceiling_check_silent(ig: &IgTuple) -> bool {
     t_phi && t_f && t_k && t_h && t_om
 }
 
-// U11 only: same as T_CEILING, but Ç's ceiling is raised from 𐑧 (K_slow,
+// U11 only: same as T_CEILING, but ⊤'s ceiling is raised from 𐑧 (K_slow,
 // ord 3) to 𐑪 (K_trap, ord 4) — a gapped/trapped spectrum, not just a slow
 // one. Motivated, not tailored: see dialect.rs's U11 comment block.
 fn t_ceiling_gapped_check_silent(ig: &IgTuple) -> bool {
@@ -2795,7 +2795,7 @@ fn print_snap_line(tag: &str, s: &crate::kernel::Snapshot) {
         tag, s.tier_name(), d, bl, g, a, w, bi);
 }
 
-/// One Ħ hop: toggle chirality, show the snapshot on each side of the door.
+/// One ⊥ hop: toggle chirality, show the snapshot on each side of the door.
 fn print_arev_hop(k: &mut Kernel) {
     let before = k.dynamic_imscribe();
     let h = k.arev_hop();

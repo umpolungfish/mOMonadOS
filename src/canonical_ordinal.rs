@@ -67,7 +67,7 @@ pub const CANON_G_BETH:  f32 = 1.0;
 pub const CANON_G_GIMEL: f32 = 2.0;
 pub const CANON_G_ALEPH: f32 = 3.0;
 
-/// C (ɢ) canonical ordinals: and=1, or=2, seq=3, broad=4
+/// C (∋) canonical ordinals: and=1, or=2, seq=3, broad=4
 pub const CANON_C_AND:   f32 = 1.0;
 pub const CANON_C_OR:    f32 = 2.0;
 pub const CANON_C_SEQ:   f32 = 3.0;
@@ -188,7 +188,7 @@ pub fn verify_canonical_ordinals() -> (bool, &'static str) {
     if G_aleph.ordinal() != CANON_G_ALEPH
     { return (false, "G_aleph ordinal drift"); }
 
-    // ── C / ɢ (4 values) ──
+    // ── C / ∋ (4 values) ──
     if C_and.ordinal() != CANON_C_AND
     { return (false, "C_and ordinal drift"); }
     if C_or.ordinal() != CANON_C_OR

@@ -401,7 +401,7 @@ pub const STRUCTURAL_DISTANCE_O2_TO_OINF: f64 = 3.0;
 pub const GAP_PRIMITIVES: [(&str, &str, &str); 3] = [
     ("R", "𐑽", "𐑾"),   // dagger → bidirectional
     ("H", "𐑖", "𐑫"),   // 2-step → eternal
-    ("Ω", "𐑭", "𐑟"),   // Z → non-Abelian
+    ("◻", "𐑭", "𐑟"),   // Z → non-Abelian
 ];
 
 /// Run Eagle Cycle computation for a named material.
@@ -625,7 +625,7 @@ pub fn closure_pathways() -> alloc::vec::Vec<ClosurePathway> {
         ClosurePathway {
             name: alloc::string::String::from("anyonic_braiding"),
             description: "Non-Abelian anyons for Omega closure",
-            target_primitive: "Ω", source_value: "𐑭", target_value: "𐑟",
+            target_primitive: "◻", source_value: "𐑭", target_value: "𐑟",
         },
         ClosurePathway {
             name: alloc::string::String::from("floquet_engineering"),
@@ -640,7 +640,7 @@ pub fn closure_pathways() -> alloc::vec::Vec<ClosurePathway> {
         ClosurePathway {
             name: alloc::string::String::from("surface_code"),
             description: "Topological surface code for Omega protection",
-            target_primitive: "Ω", source_value: "𐑴", target_value: "𐑭",
+            target_primitive: "◻", source_value: "𐑴", target_value: "𐑭",
         },
     ]
 }
@@ -648,7 +648,7 @@ pub fn closure_pathways() -> alloc::vec::Vec<ClosurePathway> {
 /// Diagnose closure obstructions for a material tuple.
 pub fn diagnose_closure(tuple: &[&str; 12], target: &[&str; 12]) -> alloc::vec::Vec<ClosureObstruction> {
     let mut obstructions = alloc::vec::Vec::new();
-    let prim_names = ["D", "T", "R", "P", "F", "K", "G", "Gm", "Phi", "H", "S", "Ω"];
+    let prim_names = ["D", "T", "R", "P", "F", "K", "G", "Gm", "Phi", "H", "S", "◻"];
     for i in 0..12 {
         if tuple[i] != target[i] {
             match prim_names[i] {
@@ -658,7 +658,7 @@ pub fn diagnose_closure(tuple: &[&str; 12], target: &[&str; 12]) -> alloc::vec::
                 "P" => obstructions.push(ClosureObstruction::ParityConflict),
                 "Phi" => obstructions.push(ClosureObstruction::CriticalityBarrier),
                 "H" => obstructions.push(ClosureObstruction::ChiralityMismatch),
-                "Ω" => obstructions.push(ClosureObstruction::WindingProtectionGap),
+                "◻" => obstructions.push(ClosureObstruction::WindingProtectionGap),
                 _ => {},
             }
         }
@@ -672,7 +672,7 @@ pub fn recommend_pathway(obstructions: &[ClosureObstruction]) -> Option<ClosureP
     for obs in obstructions {
         for pw in &pathways {
             let prim = match obs {
-                ClosureObstruction::WindingProtectionGap => "Ω",
+                ClosureObstruction::WindingProtectionGap => "◻",
                 ClosureObstruction::ChiralityMismatch => "H",
                 ClosureObstruction::CouplingAsymmetry => "R",
                 _ => "",

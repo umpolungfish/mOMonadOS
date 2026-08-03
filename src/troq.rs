@@ -23,17 +23,17 @@ fn frac(x: f64) -> f64 { x - floor(x) }
 pub fn expand_axis(slot: &str) -> Vec<&'static str> {
     match slot {
         "⊙" => vec!["𐑢 (sub)", "⊙ (critical)", "𐑮 (c_complex)", "𐑻 (EP)", "𐑣 (super)"],
-        "Φ" => vec!["𐑗 (asym)", "𐑿 (psi)", "𐑬 (pm)", "𐑯 (sym)", "𐑹 (pm_sym/Frobenius)"],
-        "Ω" => vec!["𐑷 (0)", "𐑴 (Z2)", "𐑭 (Z)", "𐑟 (NA)"],
-        "Ð" => vec!["𐑛 (wedge/0D)", "𐑨 (ash/2D)", "𐑼 (array/∞D)", "𐑦 (if'/imscriptive)"],
-        "Þ" => vec!["𐑡 (network)", "𐑰 (inclusion)", "𐑥 (bowtie)", "𐑶 (box)", "𐑸 (imscriptive)"],
-        "Ř" => vec!["𐑩 (supervenience)", "𐑑 (functorial)", "𐑽 (adjoint)", "𐑾 (bidirectional)"],
-        "ƒ" => vec!["𐑱 (classical)", "𐑞 (thermal)", "𐑐 (quantum)"],
-        "Ç" => vec!["𐑘 (driven)", "𐑤 (trapped)", "𐑧 (slow)", "𐑪 (moderate)", "𐑺 (fast-MBL)"],
-        "Γ" => vec!["𐑲 (local)", "𐑚 (mesoscale)", "𐑔 (aleph/maximal)"],
-        "ɢ" => vec!["𐑝 (conjunctive)", "𐑜 (disjunctive)", "𐑠 (sequential)", "𐑵 (broadcast)"],
-        "Ħ" => vec!["𐑓 (memoryless)", "𐑒 (one-step)", "𐑖 (two-step)", "𐑫 (eternal)"],
-        "Σ" => vec!["𐑙 (1:1)", "𐑕 (n:n)", "𐑳 (n:m)"],
+        "<" => vec!["𐑗 (asym)", "𐑿 (psi)", "𐑬 (pm)", "𐑯 (sym)", "𐑹 (pm_sym/Frobenius)"],
+        "◻" => vec!["𐑷 (0)", "𐑴 (Z2)", "𐑭 (Z)", "𐑟 (NA)"],
+        "⊢" => vec!["𐑛 (wedge/0D)", "𐑨 (ash/2D)", "𐑼 (array/∞D)", "𐑦 (if'/imscriptive)"],
+        "⊣" => vec!["𐑡 (network)", "𐑰 (inclusion)", "𐑥 (bowtie)", "𐑶 (box)", "𐑸 (imscriptive)"],
+        ">" => vec!["𐑩 (supervenience)", "𐑑 (functorial)", "𐑽 (adjoint)", "𐑾 (bidirectional)"],
+        "⋈" => vec!["𐑱 (classical)", "𐑞 (thermal)", "𐑐 (quantum)"],
+        "⊤" => vec!["𐑘 (driven)", "𐑤 (trapped)", "𐑧 (slow)", "𐑪 (moderate)", "𐑺 (fast-MBL)"],
+        "∈" => vec!["𐑲 (local)", "𐑚 (mesoscale)", "𐑔 (aleph/maximal)"],
+        "∋" => vec!["𐑝 (conjunctive)", "𐑜 (disjunctive)", "𐑠 (sequential)", "𐑵 (broadcast)"],
+        "⊥" => vec!["𐑓 (memoryless)", "𐑒 (one-step)", "𐑖 (two-step)", "𐑫 (eternal)"],
+        "⊞" => vec!["𐑙 (1:1)", "𐑕 (n:n)", "𐑳 (n:m)"],
         _ => vec!["no expansion for this slot"],
     }
 }
@@ -94,7 +94,7 @@ pub fn full_report() -> String {
     s.push_str(&format!("Triple-ramification norm:     {:.6} {}\n", rd, if rd < 0.05 { "✓" } else { "✗" }));
     s.push_str("──────────────────────────────────────\n");
     s.push_str("Axis expansions:\n");
-    for ax in &["⊙", "Φ", "Ω"] {
+    for ax in &["⊙", "<", "◻"] {
         let exps = expand_axis(ax);
         s.push_str(&format!("  {}: ", ax));
         for (i, e) in exps.iter().enumerate() {
@@ -136,7 +136,7 @@ pub fn report_axis(slot: &str) -> String {
 
 pub fn report_all_axes() -> String {
     let mut s = String::new();
-    for ax in &["Ð","Þ","Ř","Φ","ƒ","Ç","Γ","ɢ","⊙","Ħ","Σ","Ω"] {
+    for ax in &["⊢","⊣",">","<","⋈","⊤","∈","∋","⊙","⊥","⊞","◻"] {
         s.push_str(&report_axis(ax));
         s.push_str("\n");
     }

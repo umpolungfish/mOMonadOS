@@ -77,7 +77,7 @@ pub fn consciousness_eval(t: &IgTuple) -> ConsciousnessResult {
             catalog::score_c(t.c), catalog::score_h(t.h),
             catalog::score_s(t.s), catalog::score_omega(t.omega),
         ],
-        component_names: ["D","T","R","P","F","G","C","H","S","Ω"],
+        component_names: ["D","T","R","P","F","G","C","H","S","◻"],
     }
 }
 

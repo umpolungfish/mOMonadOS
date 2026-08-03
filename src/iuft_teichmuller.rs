@@ -6,11 +6,11 @@
 //
 // Core bridge:
 //   Teichmüller deformation = promotion path preserving Frobenius structure
-//   Promotion signature [Φ,ɢ,Ħ,Ω] → gate parameter deltas
+//   Promotion signature [Φ,∋,⊥,Ω] → gate parameter deltas
 //     Φ (Parity)  → φ (azimuthal)
-//     Ħ (Chirality) → φ (azimuthal)
+//     ⊥ (Chirality) → φ (azimuthal)
 //     Ω (Winding) → θ (latitude)
-//     ɢ (Composition) → latent (affects structure but not the 3 encoded angles)
+//     ∋ (Composition) → latent (affects structure but not the 3 encoded angles)
 //
 //   Étale deformation: pinned primitives (P,F,K,G,Gm,Ph) unchanged
 //   Anabelian deformation: core Frobenius structure transforms
@@ -49,7 +49,7 @@ pub enum DeformationType {
 /// A single primitive promotion/demotion step in a Teichmüller path.
 #[derive(Clone, Debug)]
 pub struct PromotionStep {
-    pub primitive: &'static str,  // Family name: "Φ", "ɢ", "Ħ", "Ω", etc.
+    pub primitive: &'static str,  // Family name: "<", "∋", "⊥", "◻", etc.
     pub from_ord: f32,
     pub to_ord: f32,
     pub delta: i32,               // Positive = promotion, negative = demotion
@@ -111,7 +111,7 @@ pub const P_GAP_TRANSITION: TierTransition = TierTransition {
     from_tier: "O₂†",
     to_tier: "O_∞",
     distance: 4.38,
-    driver_primitive: "Φ",
+    driver_primitive: "<",
     gate_jump: (60.0, 180.0, 0.0),  // θ+60°, φ+180°, ψ unchanged
     is_p_gap: true,
 };
@@ -134,7 +134,7 @@ pub fn tier_transitions() -> &'static [TierTransition] {
         },
         TierTransition {
             from_tier: "O₂", to_tier: "O₂†",
-            distance: 1.00, driver_primitive: "Ð",
+            distance: 1.00, driver_primitive: "⊢",
             gate_jump: (30.0, 0.0, 0.0),     // Dimensional refinement
             is_p_gap: false,
         },
@@ -159,8 +159,8 @@ pub enum GateParam {
 /// Map a primitive family to the gate parameter it controls.
 pub fn primitive_to_gate_param(family: &str) -> GateParam {
     match family {
-        "Ð" | "Ω" | "Σ" => GateParam::Theta,
-        "Ř" | "Φ" | "Ħ" => GateParam::Phi,
+        "⊢" | "◻" | "⊞" => GateParam::Theta,
+        ">" | "<" | "⊥" => GateParam::Phi,
         "⊙" | "Ph" => GateParam::Psi,
         _ => GateParam::Latent,  // Þ, ƒ, Ç, Γ, ɢ — carried by the dialect sheaf
     }
@@ -169,7 +169,7 @@ pub fn primitive_to_gate_param(family: &str) -> GateParam {
 /// Check if a primitive family is "pinned" (Frobenius-core invariant).
 /// Pinned primitives should not change in an étale deformation.
 pub fn is_pinned(family: &str) -> bool {
-    matches!(family, "Φ" | "ƒ" | "Ç" | "Γ" | "ɢ" | "⊙" | "Ph" | "P" | "F" | "K" | "G" | "Gm")
+    matches!(family, "<" | "⋈" | "⊤" | "∈" | "∋" | "⊙" | "Ph" | "P" | "F" | "K" | "G" | "Gm")
 }
 
 /// The per-step angular contribution of a primitive promotion/demotion
@@ -178,13 +178,13 @@ pub fn is_pinned(family: &str) -> bool {
 fn primitive_step_to_gate_delta(family: &str) -> (f64, f64, f64) {
     match family {
         // θ contributors (share 180° range, 3 families)
-        "Ð" => (60.0, 0.0, 0.0),   // 180°/3 families = 60° per full-range step
-        "Ω" => (60.0, 0.0, 0.0),
-        "Σ" => (60.0, 0.0, 0.0),
+        "⊢" => (60.0, 0.0, 0.0),   // 180°/3 families = 60° per full-range step
+        "◻" => (60.0, 0.0, 0.0),
+        "⊞" => (60.0, 0.0, 0.0),
         // φ contributors (share 360° range, 3 families)
-        "Ř" => (0.0, 120.0, 0.0),  // 360°/3 families = 120° per full-range step
-        "Φ" => (0.0, 120.0, 0.0),
-        "Ħ" => (0.0, 120.0, 0.0),
+        ">" => (0.0, 120.0, 0.0),  // 360°/3 families = 120° per full-range step
+        "<" => (0.0, 120.0, 0.0),
+        "⊥" => (0.0, 120.0, 0.0),
         // ψ contributor
         "⊙" | "Ph" => (0.0, 0.0, 180.0), // Full 180° range
         _ => (0.0, 0.0, 0.0),     // Latent — no direct gate effect
@@ -331,27 +331,27 @@ pub fn tier_to_gate(tier: &str) -> Option<IuftQcGate> {
 /// Max ordinal value for a primitive family.
 fn max_ordinal_for_family(family: &str) -> f32 {
     match family {
-        "Ð" => 4.0, "Þ" => 5.0, "Ř" => 4.0, "Φ" => 5.0,
-        "ƒ" => 3.0, "Ç" => 4.5, "Γ" => 3.0, "ɢ" => 4.0,
-        "⊙" | "Ph" => 3.0, "Ħ" => 4.0, "Σ" => 3.0, "Ω" => 4.0,
+        "⊢" => 4.0, "⊣" => 5.0, ">" => 4.0, "<" => 5.0,
+        "⋈" => 3.0, "⊤" => 4.5, "∈" => 3.0, "∋" => 4.0,
+        "⊙" | "Ph" => 3.0, "⊥" => 4.0, "⊞" => 3.0, "◻" => 4.0,
         _ => 1.0,
     }
 }
 
 /// Compare two IgTuples and record promotion/demotion steps.
 fn compare_primitives(src: &IgTuple, tgt: &IgTuple, steps: &mut Vec<PromotionStep>) {
-    compare_one("Ð", src.d, tgt.d, steps);
-    compare_one("Þ", src.t, tgt.t, steps);
-    compare_one("Ř", src.r, tgt.r, steps);
-    compare_one("Φ", src.p, tgt.p, steps);
-    compare_one("ƒ", src.f, tgt.f, steps);
-    compare_one("Ç", src.k, tgt.k, steps);
-    compare_one("Γ", src.g, tgt.g, steps);
-    compare_one("ɢ", src.c, tgt.c, steps);
+    compare_one("⊢", src.d, tgt.d, steps);
+    compare_one("⊣", src.t, tgt.t, steps);
+    compare_one(">", src.r, tgt.r, steps);
+    compare_one("<", src.p, tgt.p, steps);
+    compare_one("⋈", src.f, tgt.f, steps);
+    compare_one("⊤", src.k, tgt.k, steps);
+    compare_one("∈", src.g, tgt.g, steps);
+    compare_one("∋", src.c, tgt.c, steps);
     compare_one("⊙", src.phi, tgt.phi, steps);
-    compare_one("Ħ", src.h, tgt.h, steps);
-    compare_one("Σ", src.s, tgt.s, steps);
-    compare_one("Ω", src.omega, tgt.omega, steps);
+    compare_one("⊥", src.h, tgt.h, steps);
+    compare_one("⊞", src.s, tgt.s, steps);
+    compare_one("◻", src.omega, tgt.omega, steps);
 }
 
 fn compare_one(family: &'static str, a: IgPrim, b: IgPrim, steps: &mut Vec<PromotionStep>) {

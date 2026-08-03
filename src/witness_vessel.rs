@@ -49,18 +49,18 @@ use crate::dialect_expansion::{all_dialects, GateSpec, Dialect, DIALECT_COUNT};
 /// Resolve a primitive glyph to the corresponding IgTuple field.
 fn tuple_prim(ig: &IgTuple, glyph: &str) -> Option<IgPrim> {
     match glyph {
-        "Ð" => Some(ig.d),
-        "Þ" => Some(ig.t),
-        "Ř" => Some(ig.r),
-        "Φ" => Some(ig.p),
-        "ƒ" => Some(ig.f),
-        "Ç" => Some(ig.k),
-        "Γ" => Some(ig.g),
-        "ɢ" => Some(ig.c),
+        "⊢" => Some(ig.d),
+        "⊣" => Some(ig.t),
+        ">" => Some(ig.r),
+        "<" => Some(ig.p),
+        "⋈" => Some(ig.f),
+        "⊤" => Some(ig.k),
+        "∈" => Some(ig.g),
+        "∋" => Some(ig.c),
         "⊙" => Some(ig.phi),
-        "Ħ" => Some(ig.h),
-        "Σ" => Some(ig.s),
-        "Ω" => Some(ig.omega),
+        "⊥" => Some(ig.h),
+        "⊞" => Some(ig.s),
+        "◻" => Some(ig.omega),
         _ => None,
     }
 }
@@ -131,7 +131,7 @@ pub fn t_seal(u: &Dialect, ig: &IgTuple) -> bool {
 }
 
 /// The Clay T_CEILING — all five dynamics primitives as ceilings at their
-/// canonical anchors (Φ≤𐑹 ƒ≤𐑐 Ç≤𐑧 Ħ≤𐑫 Ω≤𐑭). This is the T convention of
+/// canonical anchors (Φ≤𐑹 ⋈≤𐑐 ⊤≤𐑧 ⊥≤𐑫 Ω≤𐑭). This is the T convention of
 /// Clay_WitnessedClosure.lean / SIC_D12_WitnessVessel.lean and of the
 /// U8-U10 dialect gates.
 pub fn t_ceiling(ig: &IgTuple) -> bool {

@@ -27,17 +27,17 @@ use alloc::string::String;
 // CORE CONSTANTS — Crystal family cardinalities
 // ═══════════════════════════════════════════════════════════════
 
-/// D-family: 3 primitives (ƒ, Γ, Σ), each 3 values.  3³ = 27.
+/// D-family: 3 primitives (⋈, Γ, Σ), each 3 values.  3³ = 27.
 pub const D_PRIMS: u32 = 3;
 pub const D_VALS:  u32 = 3;
 pub const D_SLOTS: u32 = D_PRIMS * D_VALS;  // 9
 
-/// T-family: 5 primitives (Ð, Ř, ɢ, Ħ, Ω), each 4 values.  4⁵ = 1024.
+/// T-family: 5 primitives (⊢, >, ∋, ⊥, Ω), each 4 values.  4⁵ = 1024.
 pub const T_PRIMS: u32 = 5;
 pub const T_VALS:  u32 = 4;
 pub const T_SLOTS: u32 = T_PRIMS * T_VALS;  // 20
 
-/// P-family: 4 primitives (Þ, Φ, ⊙, Ç), each 5 values.  5⁴ = 625.
+/// P-family: 4 primitives (⊣, Φ, ⊙, ⊤), each 5 values.  5⁴ = 625.
 pub const P_PRIMS: u32 = 4;
 pub const P_VALS:  u32 = 5;
 pub const P_SLOTS: u32 = P_PRIMS * P_VALS;  // 20

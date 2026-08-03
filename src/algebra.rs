@@ -218,7 +218,7 @@ impl fmt::Display for LatticeResult {
         write!(f, "{}: {}", self.op, self.tuple.display_shavian())?;
         if !self.is_valid() {
             write!(f, " [CONFLICTS:")?;
-            let names = ["D","T","R","P","F","K","C","Φ","Ω","S","H"];
+            let names = ["D","T","R","P","F","K","C","<","◻","S","H"];
             for i in 0..12 {
                 if self.conflicts[i] {
                     write!(f, " {}", names[i])?;

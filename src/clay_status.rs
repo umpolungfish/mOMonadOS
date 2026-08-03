@@ -102,7 +102,7 @@ pub fn hodge_report() -> ClayReport {
 
 /// YANG-MILLS: ONE-BUMP-SHORT.
 /// Clears all three ⊙ gates under triple_criticality but fails T_CEILING
-/// on Ç (kinetics) alone: K_trap ord=4 exceeds the ord=3 ceiling.
+/// on ⊤ (kinetics) alone: K_trap ord=4 exceeds the ord=3 ceiling.
 /// Canonical tuple: ⟨𐑛𐑥𐑩𐑗𐑐𐑤𐑲𐑝𐑣𐑓𐑳𐑷⟩
 /// Lean: `ym_one_bump_short` + `ym_blocker_is_kinetics` — proven by native_decide.
 pub fn ym_report() -> ClayReport {
