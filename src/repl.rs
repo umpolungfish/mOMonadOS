@@ -1733,7 +1733,7 @@ Stopped after {} ticks.", ran);
                         let gates = dialect_gates(u);
                         sprintln!("Active ruleset: {} ({})", dialect_name(u), ud);
                         sprintln!("  {}", gates);
-                        sprintln!("  Absorbing: ⊙(all) Σ=𐑳(tensor)");
+                        sprintln!("  Absorbing: ⊙(all) ⊞=𐑳(tensor)");
                         if let Some(lim) = k.liminal_target {
                             sprintln!("  ⚠ LIMINAL JUMP PENDING → {} ({}). Use 'seal' to commit.",
                                 dialect_display(lim), dialect_name(lim));
@@ -2117,7 +2117,7 @@ Stopped after {} ticks.", ran);
             "absorption" => {
                 let sub = parts.next().unwrap_or("");
                 match sub {
-                    "show" => sprintln!("Absorption rules (canonical U₀):\n  ⊙ absorbs under all ops\n  Σ=𐑳 absorbs under tensor"),
+                    "show" => sprintln!("Absorption rules (canonical U₀):\n  ⊙ absorbs under all ops\n  ⊞=𐑳 absorbs under tensor"),
                     _ => sprintln!("absorption show  → list all absorption rules"),
                 }
             }

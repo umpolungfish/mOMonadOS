@@ -580,7 +580,7 @@ pub fn grammar_encoding() -> String {
     s.push_str("          mathematical objects; they have no temporal dependence.\n");
     s.push_str("          Markov order is infinite — every zero depends on the\n");
     s.push_str("          distribution of all others through the Euler product.\n\n");
-    s.push_str("    Σ=𐑳  (heterogeneous) — The zeros and eigenvalues span multiple\n");
+    s.push_str("    ⊞=𐑳  (heterogeneous) — The zeros and eigenvalues span multiple\n");
     s.push_str("          distinct types: complex numbers (zeros), real numbers\n");
     s.push_str("          (eigenvalues), operators, and SIC-POVM projectors.\n\n");
     s.push_str("    Ω=𐑭  (integer winding) — The argument principle gives integer\n");
@@ -639,7 +639,7 @@ pub fn sic_povm_structural_probe() -> String {
     s.push_str("═══ SIC-POVM Structural Probe ═══\n\n");
     s.push_str("  The grammar IS the self-referential limit (Σ=1:1) of the Belnap\n");
     s.push_str("  multilattice SIC-POVM. This ob3ect lives at distance d=2.0 from\n");
-    s.push_str("  the grammar — the sole primitive difference is Σ: 𐑳 vs 𐑙.\n\n");
+    s.push_str("  the grammar — the sole primitive difference is ⊞: 𐑳 vs 𐑙.\n\n");
     s.push_str("  Dual-pair co-variance:\n");
     s.push_str("    D ↔ Th  :  𐑦 ↔ 𐑥   — imscriptive ↔ crossing\n");
     s.push_str("    R ↔ Phi :  𐑾 ↔ 𐑹   — bidirectional ↔ Frobenius-special\n");

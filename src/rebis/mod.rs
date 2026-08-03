@@ -153,7 +153,7 @@ impl AminoAcid {
             (B4::F, B4::N, true)   => "⊤ (Kinetics)",         // Ile
             (B4::F, B4::N, false)  => "⊢ (Dimensionality)",   // Met
             (B4::F, B4::F, true)   => "∋ (Coupling)",         // Asn
-            (B4::F, B4::F, false)  => "Σ (Stoichiometry)",    // Lys
+            (B4::F, B4::F, false)  => "⊞ (Stoichiometry)",    // Lys
             (B4::T, B4::F, true)   => "∈ (Granularity)",      // His
             (B4::T, B4::F, false)  => "⊙ (Criticality)",      // Gln
             (B4::B, B4::F, true)   => "⊥ (Chirality)",        // Asp

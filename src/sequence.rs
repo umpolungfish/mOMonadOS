@@ -299,7 +299,7 @@ impl MiniKernel {
         // self-reference, Frobenius order, dialetheia completeness. They vote
         // rather than gate, and they vote in the same manner as R0-R3, so the
         // witness block mirrors the tuple block rather than carrying invented
-        // weights of its own. Σ=𐑕 on that reading: parallel components in a
+        // weights of its own. ⊞=𐑕 on that reading: parallel components in a
         // symmetric structure, not an asymmetric control signal.
         const TOKEN_REG_AFFINITY: [[i32; 4]; 12] = [
             // R0  R1  R2  R3

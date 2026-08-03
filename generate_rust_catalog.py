@@ -170,7 +170,7 @@ def main():
         prims = {}
         for key, rust_key in [("⊢","d"), ("⊣","t"), (">","r"), ("<","p"),
                                ("⋈","f"), ("⊤","k"), ("∈","g"), ("∋","c"),
-                               ("⊙","phi"), ("⊥","h"), ("Σ","s"), ("Ω","omega")]:
+                               ("⊙","phi"), ("⊥","h"), ("⊞","s"), ("Ω","omega")]:
             glyph = entry.get(key, "")
             rust_variant = SHavian_TO_RUST.get(glyph)
             if rust_variant:

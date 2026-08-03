@@ -389,7 +389,7 @@ pub fn sic_report() -> String {
     s.push_str(&format!("  Belnap B = XZ: |B⟩ = {:.4}|1⟩ + {:.4}|g⟩\n", b.a, b.b));
 
     // 6 Frobenius-dual pairs
-    s.push_str("  6 Dual Pairs: ⊢↔⊣, >↔<, ⋈↔⊤, ∈↔∋, ⊙↔⊥, Σ↔Ω\n");
+    s.push_str("  6 Dual Pairs: ⊢↔⊣, >↔<, ⋈↔⊤, ∈↔∋, ⊙↔⊥, ⊞↔Ω\n");
 
     // Born probabilities for the fiducial
     s.push_str("  Born probabilities P(i)=½|⟨B|ψ_i⟩|²:\n");
@@ -399,7 +399,7 @@ pub fn sic_report() -> String {
 
     // Grammar bridge
     s.push_str(&format!("  Grammar bridge:\n"));
-    s.push_str(&format!("    Σ=𐑙 (1:1) — grammar IS measured system\n"));
+    s.push_str(&format!("    ⊞=𐑙 (1:1) — grammar IS measured system\n"));
     s.push_str(&format!("    B = XZ — d=2 SIC-POVM fiducial\n"));
     s.push_str(&format!("    meet(B,x)=x, join(B,x)=B, bnot(B)=B\n"));
 

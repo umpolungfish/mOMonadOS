@@ -263,12 +263,12 @@ def two_step_chiral_pair() -> Tuple[SemioticOperator, SemioticOperator]:
 
 
 # ──────────────────────────────────────────────────────────────────────────
-#  7.  Many Identical Copies  (Σ=𐑕)
+#  7.  Many Identical Copies  (⊞=𐑕)
 # ──────────────────────────────────────────────────────────────────────────
 def tensor_product_copies(H: SemioticOperator, n_copies: int) -> np.ndarray:
     """Create the N-copy tensor product space ℋ^⊗N with diagonal action.
 
-    Σ=𐑕 : many identical copies, acting diagonally.
+    ⊞=𐑕 : many identical copies, acting diagonally.
     S_α^{(N)} = S_α ⊗ S_α ⊗ ... ⊗ S_α
     """
     result = H.M
@@ -341,8 +341,8 @@ def main():
     identity_check = S2 @ S1
     print(f"  S₂ ∘ S₁ ≈ id : {np.allclose(identity_check.M, np.eye(12), atol=1e-10)}")
 
-    # ── 8g. N-Copy Tensor Product (Σ=𐑕) ──────────────────────
-    print("\n[Σ=𐑕] Many Identical Copies")
+    # ── 8g. N-Copy Tensor Product (⊞=𐑕) ──────────────────────
+    print("\n[⊞=𐑕] Many Identical Copies")
     H3 = tensor_product_copies(H0, 3)
     print(f"  ℋ^⊗3 dimension: {H3.shape[0]}×{H3.shape[1]}")
 

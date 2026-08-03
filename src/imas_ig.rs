@@ -165,7 +165,7 @@ impl IgPrim {
             𐑢 => 1.0, Phi_crit => 2.0, 𐑮 => 2.33, Phi_ep => 2.67, Phi_super => 3.0,
             // ⊥ Chirality
             H0 => 1.0, H1 => 2.0, H2 => 3.0, H_inf => 4.0,
-            // Σ Stoichiometry
+            // ⊞ Stoichiometry
             S_11 => 1.0, S_nn => 2.0, S_nm => 3.0,
             // Ω Winding — non-monotonic: Omega_na sits above Omega_z, not below Omega_0.
             Omega_0 => 1.0, Omega_z2 => 2.0, Omega_z => 3.0, Omega_na => 4.0,
