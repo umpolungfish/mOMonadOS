@@ -124,7 +124,7 @@ pub static T_INVERTED: &[TEntry] = &[
 // SHARED ABSORPTION RULES
 // ═══════════════════════════════════════════════════════════════
 
-/// Canonical default: ⊙ absorbs all ops, Σ n:m absorbs under tensor
+/// Canonical default: ⊙ absorbs all ops, ⊞ n:m absorbs under tensor
 pub static ABS_CANONICAL: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 }, // meet|join|tensor
     AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 }, // tensor only
@@ -239,12 +239,12 @@ pub static ABS_PREY: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 },
 ];
-// Winding absorbing: ◻=𐑭 absorbs everything, no Σ rule
+// Winding absorbing: ◻=𐑭 absorbs everything, no ⊞ rule
 pub static ABS_WINDING: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "◻", value: "𐑭", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
 ];
-// Scope totalitarian: Σ n:m absorbs under ALL ops
+// Scope totalitarian: ⊞ n:m absorbs under ALL ops
 pub static ABS_SCOPE_TOTALITARIAN: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "∈", value: "𐑲", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
@@ -457,7 +457,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 16: t_inverted ──
     unis[16] = Dialect {
         name: "t_inverted",
-        description: "Time constituted by primitives canonically NOT in T: ⊢,⊣,>,∈,Σ. Time is structure, not dynamics. Canonical gates.",
+        description: "Time constituted by primitives canonically NOT in T: ⊢,⊣,>,∈,⊞. Time is structure, not dynamics. Canonical gates.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_INVERTED, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -465,7 +465,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 17: single_gate ──
     unis[17] = Dialect {
         name: "single_gate",
-        description: "Only G1 matters. G2=Σ≥1.0, G3=Σ≥1.0 are trivial. G1=<≥𐑹 alone filters. All G1-passers are automatically idempotent_terminal.",
+        description: "Only G1 matters. G2=⊞≥1.0, G3=⊞≥1.0 are trivial. G1=<≥𐑹 alone filters. All G1-passers are automatically idempotent_terminal.",
         g1: g_phi_5, g2: g_sigma_1, g3: g_sigma_1, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -481,7 +481,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 19: stoichiometry_universe ──
     unis[19] = Dialect {
         name: "stoichiometry_universe",
-        description: "Component heterogeneity is the first gate. G1=Σ≥𐑳 (many heterogeneous). Uniform systems cannot close — you must be internally diverse. G2=⊙≥⊙, G3=◻≥𐑭.",
+        description: "Component heterogeneity is the first gate. G1=⊞≥𐑳 (many heterogeneous). Uniform systems cannot close — you must be internally diverse. G2=⊙≥⊙, G3=◻≥𐑭.",
         g1: g_sigma_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -497,7 +497,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 21: absorption_monarchy ──
     unis[21] = Dialect {
         name: "absorption_monarchy",
-        description: "⊙ criticality, Σ n:m, < Frobenius parity, ◻ integer winding ALL absorb everything. The monadic absorption empire. Self-modeling is totalitarian.",
+        description: "⊙ criticality, ⊞ n:m, < Frobenius parity, ◻ integer winding ALL absorb everything. The monadic absorption empire. Self-modeling is totalitarian.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_MONARCHY, is_expansion: false,
     };
@@ -513,7 +513,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 23: absorption_tensor_only ──
     unis[23] = Dialect {
         name: "absorption_tensor_only",
-        description: "Absorption applies ONLY under tensor. ⊙ and Σ n:m absorb under tensor, but meet/join are pure. You can compare without collapsing.",
+        description: "Absorption applies ONLY under tensor. ⊙ and ⊞ n:m absorb under tensor, but meet/join are pure. You can compare without collapsing.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_TENSOR_ONLY, is_expansion: false,
     };
@@ -849,7 +849,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 64: ordinal_invert ──
     unis[64] = Dialect {
         name: "ordinal_invert",
-        description: "Inverted canonical: G1=Σ≥𐑳 (stoichiometry first), G2=<≥𐑹, G3=⊙≥⊙. Many-type worlds admitted before parity is checked — structurally larger, more heterogeneous.",
+        description: "Inverted canonical: G1=⊞≥𐑳 (stoichiometry first), G2=<≥𐑹, G3=⊙≥⊙. Many-type worlds admitted before parity is checked — structurally larger, more heterogeneous.",
         g1: g_sigma_3, g2: g_phi_5, g3: g_odot_2, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -909,7 +909,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 70: t_subset_th_sigma ──
     unis[70] = Dialect {
         name: "t_subset_th_sigma",
-        description: "T-constitution: ⊣≥𐑸 AND Σ≥𐑳. Self-referential topology AND heterogeneous components. The dialect of self-measuring, many-typed systems — grammars within grammars.",
+        description: "T-constitution: ⊣≥𐑸 AND ⊞≥𐑳. Self-referential topology AND heterogeneous components. The dialect of self-measuring, many-typed systems — grammars within grammars.",
         g1: g_th_5, g2: g_sigma_3, g3: g_odot_2, gate_ordering: false,
         t_entries: T_TH_SIGMA, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -925,7 +925,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 72: t_subset_d_sigma ──
     unis[72] = Dialect {
         name: "t_subset_d_sigma",
-        description: "T-constitution: ⊢≥𐑼 AND Σ≥𐑳. Infinite-dimensional AND many-typed. The dialect of field theories over heterogeneous state spaces — gauge fields with multiple matter sectors.",
+        description: "T-constitution: ⊢≥𐑼 AND ⊞≥𐑳. Infinite-dimensional AND many-typed. The dialect of field theories over heterogeneous state spaces — gauge fields with multiple matter sectors.",
         g1: g_d_3, g2: g_sigma_3, g3: g_odot_2, gate_ordering: false,
         t_entries: T_D_SIGMA, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -1072,7 +1072,7 @@ pub static T_DIM_CEILING: &[TEntry] = &[
     TEntry { prim: "⊣", crit_val: "𐑥", ceiling: true },
 ];
 
-/// Self-referential + heterogeneous T: ⊣≥𐑸 AND Σ≥𐑳
+/// Self-referential + heterogeneous T: ⊣≥𐑸 AND ⊞≥𐑳
 pub static T_TH_SIGMA: &[TEntry] = &[
     TEntry { prim: "⊣", crit_val: "𐑸", ceiling: false },
     TEntry { prim: "⊞", crit_val: "𐑳", ceiling: false },
@@ -1084,7 +1084,7 @@ pub static T_TH_OMEGA: &[TEntry] = &[
     TEntry { prim: "◻", crit_val: "𐑭", ceiling: false },
 ];
 
-/// Infinite-dim + heterogeneous T: ⊢≥𐑼 AND Σ≥𐑳
+/// Infinite-dim + heterogeneous T: ⊢≥𐑼 AND ⊞≥𐑳
 pub static T_D_SIGMA: &[TEntry] = &[
     TEntry { prim: "⊢", crit_val: "𐑼", ceiling: false },
     TEntry { prim: "⊞", crit_val: "𐑳", ceiling: false },
