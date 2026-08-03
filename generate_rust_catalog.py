@@ -53,7 +53,7 @@ SHavian_TO_RUST = {
     "𐑚": "IgPrim::G_beth",
     "𐑔": "IgPrim::G_gimel",
     "𐑲": "IgPrim::G_aleph",
-    # C/ɢ (Composition)
+    # C/∋ (Composition)
     "𐑝": "IgPrim::C_and",
     "𐑜": "IgPrim::C_or",
     "𐑠": "IgPrim::C_seq",
@@ -169,7 +169,7 @@ def main():
         # Map primitives
         prims = {}
         for key, rust_key in [("⊢","d"), ("⊣","t"), (">","r"), ("<","p"),
-                               ("⋈","f"), ("⊤","k"), ("∈","g"), ("ɢ","c"),
+                               ("⋈","f"), ("⊤","k"), ("∈","g"), ("∋","c"),
                                ("⊙","phi"), ("Ħ","h"), ("Σ","s"), ("Ω","omega")]:
             glyph = entry.get(key, "")
             rust_variant = SHavian_TO_RUST.get(glyph)

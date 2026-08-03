@@ -537,7 +537,7 @@ pub fn grammar_encoding() -> String {
     let mut s = String::new();
     s.push_str("═══ STRUCTURAL GRAMMAR ENCODING ═══\n\n");
     s.push_str("  d=16 moduli field:\n");
-    s.push_str("  ⟨⊢=𐑨 T=𐑸 >=𐑾 <=𐑹 ⋈=𐑐 ⊤=𐑧 ∈=𐑔 ɢ=𐑠 φ̂=⊙ Ħ=𐑫 Σ=𐑳 Ω=𐑴⟩\n\n");
+    s.push_str("  ⟨⊢=𐑨 T=𐑸 >=𐑾 <=𐑹 ⋈=𐑐 ⊤=𐑧 ∈=𐑔 ∋=𐑠 φ̂=⊙ Ħ=𐑫 Σ=𐑳 Ω=𐑴⟩\n\n");
 
     s.push_str("  PRIMITIVE    VALUE   REASON\n");
     s.push_str("  ─────────    ─────   ──────────────────────────────────\n");
@@ -549,7 +549,7 @@ pub fn grammar_encoding() -> String {
     s.push_str("  ⋈ (fidelity)  𐑐      quantum coherence essential\n");
     s.push_str("  ⊤ (kinetics)  𐑧      slow/near-equilibrium (class field)\n");
     s.push_str("  ∈ (card.)     𐑔      maximal coupling (ℵ / all-of-field)\n");
-    s.push_str("  ɢ (compos.)   𐑠      sequential (tower ascent)\n");
+    s.push_str("  ∋ (compos.)   𐑠      sequential (tower ascent)\n");
     s.push_str("  φ̂ (critical)  ⊙       self-modeling gate open\n");
     s.push_str("  Ħ (chirality) 𐑫      eternal (class group permanent)\n");
     s.push_str("  Σ (stoich.)   𐑳      many heterogeneous (multiple moduli)\n");

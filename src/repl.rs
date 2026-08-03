@@ -1849,7 +1849,7 @@ Stopped after {} ticks.", ran);
                                     sprintln!("  G3 (<≥𐑹): {}  <={}", if g3 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                7 => { // t_structural: G1:<≥𐑹  G2:φ̂≥⊙  G3:Ω≥𐑭  T:ɢ=𐑠
+                                7 => { // t_structural: G1:<≥𐑹  G2:φ̂≥⊙  G3:Ω≥𐑭  T:∋=𐑠
                                     let g1 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
                                     let g2 = (ig.phi as u8) <= (IgPrim::Phi_crit as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
@@ -1857,7 +1857,7 @@ Stopped after {} ticks.", ran);
                                     sprintln!("  G1 (<≥𐑹): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     sprintln!("  G2 (φ̂≥⊙): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
                                     sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
-                                    sprintln!("  T  (ɢ=𐑠): {}  ɢ={}", if t_ok {"PASS"} else {"FAIL"}, ig.c.glyph());
+                                    sprintln!("  T  (∋=𐑠): {}  ∋={}", if t_ok {"PASS"} else {"FAIL"}, ig.c.glyph());
                                     if !g1 || !g2 || !g3 || !t_ok { all_pass = false; }
                                 }
                                 8 => { // chirality_first: G1:Ħ≥𐑖  G2:⊙≥⊙  G3:Ω≥𐑭
@@ -3245,7 +3245,7 @@ fn print_cl8nk(action: &str, name: &str) {
         }
         "transcendence" => {
             let tr = compute_transcendence();
-            sprintln!("══ The Ω/ɢ Transcendence — CLINK L8 beyond ZFC_fe ══");
+            sprintln!("══ The Ω/∋ Transcendence — CLINK L8 beyond ZFC_fe ══");
             sprintln!("  d(ZFC_fe, CLINK L8) = {:.4}", tr.d_zfcfe_to_cl8nk);
             sprintln!();
             sprintln!("  Ω: {} → {}",
@@ -3255,7 +3255,7 @@ fn print_cl8nk(action: &str, name: &str) {
             sprintln!("    CL8NK:  {}", tr.omega_cl8nk_frag);
             sprintln!("    → Integer winding (Abelian anyons) → braid group (non-Abelian anyons)");
             sprintln!();
-            sprintln!("  C (ɢ): {} → {}",
+            sprintln!("  C (∋): {} → {}",
                 catalog::primitive_glyph(tr.grammar_zfcfe),
                 catalog::primitive_glyph(tr.grammar_cl8nk));
             sprintln!("    ZFC_fe: {}", tr.grammar_zfcfe_frag);
@@ -3343,7 +3343,7 @@ fn print_cl8nk(action: &str, name: &str) {
             sprintln!("  entry  <name>    — Full CL8NK formula decomposition");
             sprintln!("  promotions        — 3-stage ladder: ZFC→ZFCₜ→ZFC_fe→CLINK L8");
             sprintln!("  distance <name>   — d(name, CLINK L8)");
-            sprintln!("  transcendence     — Ω/ɢ transcendence analysis");
+            sprintln!("  transcendence     — Ω/∋ transcendence analysis");
             sprintln!("  tensor  <name>    — CLINK L8 ⊗ name (absorption test)");
             sprintln!("  meet    <name>    — CLINK L8 ⊓ name");
             sprintln!("  join    <name>    — CLINK L8 ⊔ name");

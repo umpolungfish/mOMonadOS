@@ -152,7 +152,7 @@ impl AminoAcid {
             (B4::N, B4::B, false)  => "⊣ (Topology)",         // Trp
             (B4::F, B4::N, true)   => "⊤ (Kinetics)",         // Ile
             (B4::F, B4::N, false)  => "⊢ (Dimensionality)",   // Met
-            (B4::F, B4::F, true)   => "ɢ (Coupling)",         // Asn
+            (B4::F, B4::F, true)   => "∋ (Coupling)",         // Asn
             (B4::F, B4::F, false)  => "Σ (Stoichiometry)",    // Lys
             (B4::T, B4::F, true)   => "∈ (Granularity)",      // His
             (B4::T, B4::F, false)  => "⊙ (Criticality)",      // Gln
@@ -179,7 +179,7 @@ impl AminoAcid {
             (B4::N, B4::B, false)  => Some(IgPrim::T_net),     // Trp → ⊣
             (B4::F, B4::N, true)   => Some(IgPrim::K_mod),     // Ile → ⊤
             (B4::F, B4::N, false)  => Some(IgPrim::D_infty),   // Met → ⊢
-            (B4::F, B4::F, true)   => Some(IgPrim::G_aleph),   // Asn → ɢ
+            (B4::F, B4::F, true)   => Some(IgPrim::G_aleph),   // Asn → ∋
             (B4::F, B4::F, false)  => Some(IgPrim::S_nm),      // Lys → Σ
             (B4::T, B4::F, true)   => Some(IgPrim::C_seq),     // His → ∈
             (B4::T, B4::F, false)  => Some(IgPrim::Phi_crit),     // Gln → ⊙

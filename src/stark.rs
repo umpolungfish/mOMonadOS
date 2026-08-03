@@ -199,7 +199,7 @@ pub fn stark_exponents(_d: u32, k: Option<u32>) -> String {
         s.push_str("Derived from three independent sources:\n");
         s.push_str("  1. Newton polygon:  ramification e₁=16, e₂=8\n");
         s.push_str("  2. Norm constraint:  8e₁ + 16e₂ = 56 → e₁ + 2e₂ = 7\n");
-        s.push_str("  3. Grammar gap:      ɢ=3.0→e₁=3, ⊙=0.67→e₂=2, >=1.0→e_fund=-1\n\n");
+        s.push_str("  3. Grammar gap:      ∋=3.0→e₁=3, ⊙=0.67→e₂=2, >=1.0→e_fund=-1\n\n");
 
         s.push_str("Cross-check: 3 + 2·2 = 7 ✓\n");
         s.push_str("Norm: 2^(8·3 + 16·2) = 2^56 ✓\n\n");
@@ -216,7 +216,7 @@ pub fn stark_exponents(_d: u32, k: Option<u32>) -> String {
         s.push_str("  Grammar-gap method:\n");
         s.push_str(&format!("    1. compute_distance(d{}_sic_closed_ring, stark_unit_monomial)\n", k));
         s.push_str("    2. Gap primitives directly encode S-unit exponents\n");
-        s.push_str("    3. ɢ → exponent count, ⊙ → exponent ratio, > → ramification layer\n\n");
+        s.push_str("    3. ∋ → exponent count, ⊙ → exponent ratio, > → ramification layer\n\n");
 
         s.push_str(&format!("  For conductor 2^{}, the moduli field degree is available\n", k));
         s.push_str("  from SIC_D2048_Moduli.lean 'wideRayDegree' axioms.\n");
@@ -244,7 +244,7 @@ pub fn stark_verify() -> String {
 
     s.push_str("Grammar verification:\n");
     s.push_str("  d2048_sic_closed_ring ↔ stark_unit_monomial: distance 3.2325\n");
-    s.push_str("  Gap: >(𐑾→𐑽,δ=1.0) ɢ(𐑵→𐑝,δ=3.0) ⊙(⊙→𐑻,δ=0.67)\n\n");
+    s.push_str("  Gap: >(𐑾→𐑽,δ=1.0) ∋(𐑵→𐑝,δ=3.0) ⊙(⊙→𐑻,δ=0.67)\n\n");
 
     s.push_str("Cross-source convergence:\n");
     s.push_str("  Newton polygon → e₁=16, e₂=8 ramification\n");

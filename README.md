@@ -293,7 +293,7 @@ Encodes the 12-primitive IG tuple into a 3-parameter SU(2) gate via Euler angles
 **Tuple:** `⟨𐑦𐑸𐑽𐑹𐑐𐑧𐑔𐑝⊙𐑖𐑕𐑭⟩`  
 **REPL:** `troq`
 
-A quantale (sup-lattice enriched monoid) with triple ramification: three distinct self-reference loops form a single closed quantale structure. The tuple carries and-conjunctive composition (ɢ=𐑝), distinguishing it from the broadcast/disjunctive OVM types.
+A quantale (sup-lattice enriched monoid) with triple ramification: three distinct self-reference loops form a single closed quantale structure. The tuple carries and-conjunctive composition (∋=𐑝), distinguishing it from the broadcast/disjunctive OVM types.
 
 ---
 

@@ -54,7 +54,7 @@ def frobenius_condition(v: np.ndarray) -> bool:
 
 
 # ──────────────────────────────────────────────────────────────────────────
-#  2.  Semiotic Operator Algebra  (ɢ=𐑝 : conjunctive composition)
+#  2.  Semiotic Operator Algebra  (∋=𐑝 : conjunctive composition)
 # ──────────────────────────────────────────────────────────────────────────
 class SemioticOperator:
     """A semiotic operator S_α ∈ B(ℋ) on the self-generated Hilbert space."""
@@ -73,7 +73,7 @@ class SemioticOperator:
         return SemioticOperator(self.M.conj().T, f"{self.label}†")
 
     def __matmul__(self, other: "SemioticOperator") -> "SemioticOperator":
-        """Conjunctive composition ɢ=𐑝 : ALL factors must be present."""
+        """Conjunctive composition ∋=𐑝 : ALL factors must be present."""
         return SemioticOperator(self.M @ other.M, f"{self.label}∘{other.label}")
 
     def __add__(self, other: "SemioticOperator") -> "SemioticOperator":
@@ -346,8 +346,8 @@ def main():
     H3 = tensor_product_copies(H0, 3)
     print(f"  ℋ^⊗3 dimension: {H3.shape[0]}×{H3.shape[1]}")
 
-    # ── 8h. Conjunctive Composition (ɢ=𐑝) ────────────────────
-    print("\n[ɢ=𐑝] Conjunctive Composition")
+    # ── 8h. Conjunctive Composition (∋=𐑝) ────────────────────
+    print("\n[∋=𐑝] Conjunctive Composition")
     v = ket("IMSCRIB")
     A = SemioticOperator(np.random.randn(12, 12) + 1j * np.random.randn(12, 12),
                          "A")

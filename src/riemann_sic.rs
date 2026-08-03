@@ -570,7 +570,7 @@ pub fn grammar_encoding() -> String {
     s.push_str("    ∈=𐑔  (maximal)      — The zeta function has infinitely many zeros\n");
     s.push_str("          distributed along the entire critical line. The spectral\n");
     s.push_str("          range is maximal; no finite truncation captures all zeros.\n\n");
-    s.push_str("    ɢ=𐑠  (sequential)   — The protocol proceeds in ordered steps:\n");
+    s.push_str("    ∋=𐑠  (sequential)   — The protocol proceeds in ordered steps:\n");
     s.push_str("          VINIT→FSPLIT→...→TANCH. The 12-opcode IMASM word is a\n");
     s.push_str("          sequential composition, not a parallel conjunction.\n\n");
     s.push_str("    φ̂=⊙   (critical)    — The self-modeling gate is open. The system\n");

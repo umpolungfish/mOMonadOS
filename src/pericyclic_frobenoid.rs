@@ -389,7 +389,7 @@ pub fn sic_report() -> String {
     s.push_str(&format!("  Belnap B = XZ: |B⟩ = {:.4}|1⟩ + {:.4}|g⟩\n", b.a, b.b));
 
     // 6 Frobenius-dual pairs
-    s.push_str("  6 Dual Pairs: ⊢↔⊣, >↔<, ⋈↔⊤, ∈↔ɢ, ⊙↔Ħ, Σ↔Ω\n");
+    s.push_str("  6 Dual Pairs: ⊢↔⊣, >↔<, ⋈↔⊤, ∈↔∋, ⊙↔Ħ, Σ↔Ω\n");
 
     // Born probabilities for the fiducial
     s.push_str("  Born probabilities P(i)=½|⟨B|ψ_i⟩|²:\n");

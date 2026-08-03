@@ -343,7 +343,7 @@ const ZFC_FE: CatalogEntry = entry(
 
 // ── CLINK L8 (O_∞⁺): ⟨𐑦·𐑸·𐑾·𐑹·𐑐·𐑧·𐑲·𐑵·⊙·𐑫·𐑳·𐑟⟩ ──
 const CLINK_L8: CatalogEntry = entry(
-    "clink_l8", "CLINK Layer 8 Organism — terminal ontological layer, O_∞⁺ with Ω/ɢ transcendence",
+    "clink_l8", "CLINK Layer 8 Organism — terminal ontological layer, O_∞⁺ with Ω/∋ transcendence",
     IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
     IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
     IgPrim::G_aleph, IgPrim::C_broad,
@@ -424,7 +424,7 @@ const CLINK_L6: CatalogEntry = entry(
 
 // ── CLINK L7 (O₂): ⟨𐑦·𐑸·𐑾·𐑬·𐑞·𐑧·𐑲·𐑵·⊙·𐑖·𐑳·𐑭⟩ ──
 const CLINK_L7: CatalogEntry = entry(
-    "clink_layer7_tissue", "CLINK Layer 7: Tissue/Organ — multi-cellular organization. First layer with broadcast composition (ɢ=𐑵). O₂.",
+    "clink_layer7_tissue", "CLINK Layer 7: Tissue/Organ — multi-cellular organization. First layer with broadcast composition (∋=𐑵). O₂.",
     IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
     IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_slow,
     IgPrim::G_aleph, IgPrim::C_broad,

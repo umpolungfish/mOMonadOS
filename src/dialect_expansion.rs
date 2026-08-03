@@ -381,7 +381,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 7: t_structural ──
     unis[7] = Dialect {
         name: "t_structural",
-        description: "Time constituted by structural/geometric primitives: T=lim(⊢,⊣,>,ɢ,⊙). Time is geometry, not process. Canonical gates.",
+        description: "Time constituted by structural/geometric primitives: T=lim(⊢,⊣,>,∋,⊙). Time is geometry, not process. Canonical gates.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_STRUCTURAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -449,7 +449,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 15: broadcast_universe ──
     unis[15] = Dialect {
         name: "broadcast_universe",
-        description: "Interaction grammar as the fundamental gate. G1=ɢ≥𐑠 (sequential composition). Conjunctive/disjunctive systems cannot close. G2=⊙≥⊙, G3=Ω≥𐑭.",
+        description: "Interaction grammar as the fundamental gate. G1=∋≥𐑠 (sequential composition). Conjunctive/disjunctive systems cannot close. G2=⊙≥⊙, G3=Ω≥𐑭.",
         g1: g_g_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -621,7 +621,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 36: composition_second ──
     unis[36] = Dialect {
         name: "composition_second",
-        description: "Sequential composition as the monoidal gate: G1=<≥𐑹, G2=ɢ≥𐑠 (sequential), G3=Ω≥𐑭. Conjunctive or disjunctive systems cannot trace.",
+        description: "Sequential composition as the monoidal gate: G1=<≥𐑹, G2=∋≥𐑠 (sequential), G3=Ω≥𐑭. Conjunctive or disjunctive systems cannot trace.",
         g1: g_phi_5, g2: g_g_3, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -685,7 +685,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 44: composition_third ──
     unis[44] = Dialect {
         name: "composition_third",
-        description: "Broadcast composition as the terminal seal: G1=<≥𐑹, G2=⊙≥⊙, G3=ɢ≥𐑵 (broadcast). Only systems with one-to-all composition achieve O_∞.",
+        description: "Broadcast composition as the terminal seal: G1=<≥𐑹, G2=⊙≥⊙, G3=∋≥𐑵 (broadcast). Only systems with one-to-all composition achieve O_∞.",
         g1: g_phi_5, g2: g_odot_2, g3: g_g_4, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -757,7 +757,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 53: parallel_broadcast ──
     unis[53] = Dialect {
         name: "parallel_broadcast",
-        description: "Broadcast gates, parallel: ɢ≥𐑠, ⊙≥⊙, Ω≥𐑭. Sequential composition, self-modeling, and winding are independent.",
+        description: "Broadcast gates, parallel: ∋≥𐑠, ⊙≥⊙, Ω≥𐑭. Sequential composition, self-modeling, and winding are independent.",
         g1: g_g_3, g2: g_odot_2, g3: g_omega_3, gate_ordering: false,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -949,7 +949,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 75: mixed_composition_kinetics ──
     unis[75] = Dialect {
         name: "mixed_composition_kinetics",
-        description: "Composition + kinetics mix: G1=ɢ≥𐑠 (sequential), G2=⊤≥𐑧 (slow), G3=⊙≥⊙. Sequential composition before slow kinetics — time's arrow precedes near-equilibrium. Deep time from deep structure.",
+        description: "Composition + kinetics mix: G1=∋≥𐑠 (sequential), G2=⊤≥𐑧 (slow), G3=⊙≥⊙. Sequential composition before slow kinetics — time's arrow precedes near-equilibrium. Deep time from deep structure.",
         g1: g_g_3, g2: g_c_3, g3: g_odot_2, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -1017,7 +1017,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 83: composition_scope ──
     unis[83] = Dialect {
         name: "composition_scope",
-        description: "Composition-scope pair: G1=ɢ≥𐑠 (sequential), G2=∈≥𐑲 (universal scope), G3=⊙≥⊙. Sequential composition with universal interaction range. Stepwise construction across all scales. The algorithmic dialect.",
+        description: "Composition-scope pair: G1=∋≥𐑠 (sequential), G2=∈≥𐑲 (universal scope), G3=⊙≥⊙. Sequential composition with universal interaction range. Stepwise construction across all scales. The algorithmic dialect.",
         g1: g_g_3, g2: g_gamma_3, g3: g_odot_2, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -1033,7 +1033,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 85: t_broadcast ──
     unis[85] = Dialect {
         name: "t_broadcast",
-        description: "T-constitution: ɢ≥𐑵 (broadcast composition). Systems must support one-to-all broadcast — every structural unit emits to the whole simultaneously. The dialect where every part speaks to every other part without mediation.",
+        description: "T-constitution: ∋≥𐑵 (broadcast composition). Systems must support one-to-all broadcast — every structural unit emits to the whole simultaneously. The dialect where every part speaks to every other part without mediation.",
         g1: g_g_4, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_BROADCAST, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -1041,7 +1041,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 86: absorb_broadcast ──
     unis[86] = Dialect {
         name: "absorb_broadcast",
-        description: "Broadcast absorption: 𐑻 rule + ɢ≥𐑵 T-constitution. Self-modeling dominance with mandatory broadcast composition. The grammar's communicativity is baked into the dialect's constitution — nothing may be silent.",
+        description: "Broadcast absorption: 𐑻 rule + ∋≥𐑵 T-constitution. Self-modeling dominance with mandatory broadcast composition. The grammar's communicativity is baked into the dialect's constitution — nothing may be silent.",
         g1: g_odot_2, g2: g_g_4, g3: g_phi_5, gate_ordering: true,
         t_entries: T_BROADCAST, abs_rules: ABS_EP, is_expansion: true,
     };

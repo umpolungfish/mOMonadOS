@@ -683,7 +683,7 @@ pub fn generate_promotions() -> PromotionsResult {
             LadderStage {
                 stage: "→ CLINK L8", tier: "O_∞⁺", promotions: s3_len,
                 distance: Some(d3), details: stage3,
-                note: Some("Ω/ɢ TRANSCENDENCE — exceeds Frobenius-exact foundation"),
+                note: Some("Ω/∋ TRANSCENDENCE — exceeds Frobenius-exact foundation"),
             },
         ],
         total_promotions: s1_len + s2_len + s3_len,
