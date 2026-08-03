@@ -162,7 +162,7 @@ pub fn primitive_to_gate_param(family: &str) -> GateParam {
         "⊢" | "◻" | "⊞" => GateParam::Theta,
         ">" | "<" | "⊥" => GateParam::Phi,
         "⊙" | "Ph" => GateParam::Psi,
-        _ => GateParam::Latent,  // ⊣, ƒ, Ç, Γ, ɢ — carried by the dialect sheaf
+        _ => GateParam::Latent,  // ⊣, ⋈, Ç, Γ, ɢ — carried by the dialect sheaf
     }
 }
 

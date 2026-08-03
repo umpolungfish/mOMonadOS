@@ -1803,11 +1803,11 @@ Stopped after {} ticks.", ran);
                                     sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                2 => { // strict_frobenius: G1:ƒ≥𐑐  G2:<≥𐑹  G3:Ω≥𐑭
+                                2 => { // strict_frobenius: G1:⋈≥𐑐  G2:<≥𐑹  G3:Ω≥𐑭
                                     let g1 = (ig.f as u8) <= (IgPrim::F_hbar as u8);
                                     let g2 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
-                                    sprintln!("  G1 (ƒ≥𐑐): {}  ƒ={}", if g1 {"PASS"} else {"FAIL"}, ig.f.glyph());
+                                    sprintln!("  G1 (⋈≥𐑐): {}  ⋈={}", if g1 {"PASS"} else {"FAIL"}, ig.f.glyph());
                                     sprintln!("  G2 (<≥𐑹): {}  <={}", if g2 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
@@ -2435,7 +2435,7 @@ fn t_ceiling_check(ig: &IgTuple) -> bool {
     let t_h   = ig.h.ordinal()     <= IgPrim::H_inf.ordinal();
     let t_om  = ig.omega.ordinal() <= IgPrim::Omega_z.ordinal();
     let t_ok = t_phi && t_f && t_k && t_h && t_om;
-    sprintln!("  T_CEILING <<=𐑹: {}  ƒ<=𐑐: {}  Ç<=𐑧: {}  Ħ<=𐑫: {}  Ω<=𐑭: {}",
+    sprintln!("  T_CEILING <<=𐑹: {}  ⋈<=𐑐: {}  Ç<=𐑧: {}  Ħ<=𐑫: {}  Ω<=𐑭: {}",
         if t_phi {"PASS"} else {"FAIL"}, if t_f {"PASS"} else {"FAIL"},
         if t_k {"PASS"} else {"FAIL"}, if t_h {"PASS"} else {"FAIL"},
         if t_om {"PASS"} else {"FAIL"});
@@ -2450,7 +2450,7 @@ fn t_ceiling_gapped_check(ig: &IgTuple) -> bool {
     let t_h   = ig.h.ordinal()     <= IgPrim::H_inf.ordinal();
     let t_om  = ig.omega.ordinal() <= IgPrim::Omega_z.ordinal();
     let t_ok = t_phi && t_f && t_k && t_h && t_om;
-    sprintln!("  T_CEILING(gapped) <<=𐑹: {}  ƒ<=𐑐: {}  Ç<=𐑪: {}  Ħ<=𐑫: {}  Ω<=𐑭: {}",
+    sprintln!("  T_CEILING(gapped) <<=𐑹: {}  ⋈<=𐑐: {}  Ç<=𐑪: {}  Ħ<=𐑫: {}  Ω<=𐑭: {}",
         if t_phi {"PASS"} else {"FAIL"}, if t_f {"PASS"} else {"FAIL"},
         if t_k {"PASS"} else {"FAIL"}, if t_h {"PASS"} else {"FAIL"},
         if t_om {"PASS"} else {"FAIL"});

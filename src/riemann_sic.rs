@@ -560,7 +560,7 @@ pub fn grammar_encoding() -> String {
     s.push_str("          zero distribution into real/imaginary parts and fusing them\n");
     s.push_str("          via tensor product recovers the original distribution. The\n");
     s.push_str("          SIC-POVM dual basis provides the exact reconstruction.\n\n");
-    s.push_str("    ƒ=𐑐  (quantum)      — The SIC-POVM is a quantum measurement\n");
+    s.push_str("    ⋈=𐑐  (quantum)      — The SIC-POVM is a quantum measurement\n");
     s.push_str("          structure. The Hamiltonian is Hermitian; eigenvalues are\n");
     s.push_str("          real. Quantum coherence is essential: classical measurement\n");
     s.push_str("          cannot achieve informational completeness.\n\n");

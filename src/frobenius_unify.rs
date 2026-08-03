@@ -106,7 +106,7 @@ pub fn frobenius_identity_check() -> (u8, f32, String) {
         ("⊣ ", kernel.t, fixed.t),
         ("> ", kernel.r, fixed.r),
         ("< ", kernel.p, fixed.p),
-        ("ƒ ", kernel.f, fixed.f),
+        ("⋈ ", kernel.f, fixed.f),
         ("Ç ", kernel.k, fixed.k),
         ("Γ ", kernel.g, fixed.g),
         ("ɢ ", kernel.c, fixed.c),

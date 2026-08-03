@@ -169,7 +169,7 @@ def main():
         # Map primitives
         prims = {}
         for key, rust_key in [("⊢","d"), ("⊣","t"), (">","r"), ("<","p"),
-                               ("ƒ","f"), ("Ç","k"), ("Γ","g"), ("ɢ","c"),
+                               ("⋈","f"), ("Ç","k"), ("Γ","g"), ("ɢ","c"),
                                ("⊙","phi"), ("Ħ","h"), ("Σ","s"), ("Ω","omega")]:
             glyph = entry.get(key, "")
             rust_variant = SHavian_TO_RUST.get(glyph)

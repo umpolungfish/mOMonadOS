@@ -325,7 +325,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 0: canonical ──
     unis[0] = Dialect {
         name: "canonical",
-        description: "Our dialect: Frobenius then self-modeling then winding seal. G1=<≥𐑹, G2=⊙≥⊙, G3=Ω≥𐑭. Sequential. T=lim(<,ƒ,Ç,Ħ,Ω).",
+        description: "Our dialect: Frobenius then self-modeling then winding seal. G1=<≥𐑹, G2=⊙≥⊙, G3=Ω≥𐑭. Sequential. T=lim(<,⋈,Ç,Ħ,Ω).",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -341,7 +341,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 2: strict_frobenius ──
     unis[2] = Dialect {
         name: "strict_frobenius",
-        description: "Frobenius gate requires full fidelity (ƒ=𐑐) instead of parity. G1=ƒ≥𐑐, G2=<≥𐑹, G3=Ω≥𐑭. Only quantum-coherent systems close.",
+        description: "Frobenius gate requires full fidelity (⋈=𐑐) instead of parity. G1=⋈≥𐑐, G2=<≥𐑹, G3=Ω≥𐑭. Only quantum-coherent systems close.",
         g1: g_f_3, g2: g_phi_5, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -441,7 +441,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 14: t_hybrid ──
     unis[14] = Dialect {
         name: "t_hybrid",
-        description: "Time requires BOTH dynamics AND geometry. T constituted by 8 primitives: <,ƒ,Ç,Ħ,Ω + ⊢,⊣,>. Most demanding T-seal. Canonical gates.",
+        description: "Time requires BOTH dynamics AND geometry. T constituted by 8 primitives: <,⋈,Ç,Ħ,Ω + ⊢,⊣,>. Most demanding T-seal. Canonical gates.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_HYBRID, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -473,7 +473,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 18: fidelity_universe ──
     unis[18] = Dialect {
         name: "fidelity_universe",
-        description: "Quantum coherence is the fundamental gate. G1=ƒ≥𐑐 (full fidelity). Classical/thermal systems cannot close. G2=⊙≥⊙, G3=<≥𐑹.",
+        description: "Quantum coherence is the fundamental gate. G1=⋈≥𐑐 (full fidelity). Classical/thermal systems cannot close. G2=⊙≥⊙, G3=<≥𐑹.",
         g1: g_f_3, g2: g_odot_2, g3: g_phi_5, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -605,7 +605,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 34: fidelity_second ──
     unis[34] = Dialect {
         name: "fidelity_second",
-        description: "Quantum coherence as the monoidal gate: G1=<≥𐑹, G2=ƒ≥𐑐 (full fidelity), G3=Ω≥𐑭. After Frobenius, only quantum-coherent systems trace.",
+        description: "Quantum coherence as the monoidal gate: G1=<≥𐑹, G2=⋈≥𐑐 (full fidelity), G3=Ω≥𐑭. After Frobenius, only quantum-coherent systems trace.",
         g1: g_phi_5, g2: g_f_3, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -669,7 +669,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 42: fidelity_third ──
     unis[42] = Dialect {
         name: "fidelity_third",
-        description: "Quantum coherence as the terminal seal: G1=<≥𐑹, G2=⊙≥⊙, G3=ƒ≥𐑐. Only quantum-coherent self-modeling systems achieve O_∞. Classical self-modelers stay traced.",
+        description: "Quantum coherence as the terminal seal: G1=<≥𐑹, G2=⊙≥⊙, G3=⋈≥𐑐. Only quantum-coherent self-modeling systems achieve O_∞. Classical self-modelers stay traced.",
         g1: g_phi_5, g2: g_odot_2, g3: g_f_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -941,7 +941,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 74: mixed_fidelity_coupling ──
     unis[74] = Dialect {
         name: "mixed_fidelity_coupling",
-        description: "Fidelity + coupling mix: G1=ƒ≥𐑐 (quantum), G2=>≥𐑾 (bilateral), G3=⊙≥⊙. Systems must support quantum coherence before they can enter bilateral coupling — no classical feedback loops.",
+        description: "Fidelity + coupling mix: G1=⋈≥𐑐 (quantum), G2=>≥𐑾 (bilateral), G3=⊙≥⊙. Systems must support quantum coherence before they can enter bilateral coupling — no classical feedback loops.",
         g1: g_f_3, g2: g_r_4, g3: g_odot_2, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -1025,7 +1025,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 84: fidelity_chirality ──
     unis[84] = Dialect {
         name: "fidelity_chirality",
-        description: "Fidelity-chirality pair: G1=ƒ≥𐑐 (quantum), G2=Ħ≥𐑖 (2-step memory), G3=⊙≥⊙. Quantum coherence enables two-step Markov memory — classical systems can't sustain the phase relationships needed for structured memory. The quantum memory dialect.",
+        description: "Fidelity-chirality pair: G1=⋈≥𐑐 (quantum), G2=Ħ≥𐑖 (2-step memory), G3=⊙≥⊙. Quantum coherence enables two-step Markov memory — classical systems can't sustain the phase relationships needed for structured memory. The quantum memory dialect.",
         g1: g_f_3, g2: g_h_3, g3: g_odot_2, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };

@@ -146,7 +146,7 @@ impl AminoAcid {
         let c = &codons[0];
         let is_pyr = matches!(c.p3, B4::N | B4::T);
         Some(match (c.p1, c.p2, is_pyr) {
-            (B4::N, B4::N, _)      => "ƒ (Fidelity)",         // Phe
+            (B4::N, B4::N, _)      => "⋈ (Fidelity)",         // Phe
             (B4::N, B4::F, _)      => "< (Parity)",           // Tyr
             (B4::N, B4::B, true)   => "> (Recognition)",      // Cys
             (B4::N, B4::B, false)  => "⊣ (Topology)",         // Trp
@@ -173,7 +173,7 @@ impl AminoAcid {
         let c = &codons[0];
         let is_pyr = matches!(c.p3, B4::N | B4::T);
         match (c.p1, c.p2, is_pyr) {
-            (B4::N, B4::N, _)      => Some(IgPrim::F_hbar),   // Phe → ƒ
+            (B4::N, B4::N, _)      => Some(IgPrim::F_hbar),   // Phe → ⋈
             (B4::N, B4::F, _)      => Some(IgPrim::𐑢),   // Tyr → < (Parity, sub-critical gate)
             (B4::N, B4::B, true)   => Some(IgPrim::R_lr),      // Cys → >
             (B4::N, B4::B, false)  => Some(IgPrim::T_net),     // Trp → ⊣
