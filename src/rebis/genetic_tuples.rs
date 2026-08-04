@@ -71,69 +71,69 @@ impl PrimKey {
 
 /// Dimensionality values.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum DVal { Wedge, Tri, Infty, Odot }
+pub enum DimVal { Dead, Ash, Array, If }
 
 /// Topology values.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum TVal { Network, In, Bowtie, Boxtimes, Odot }
+pub enum TopVal { Judge, Eat, Mime, Oil, Are }
 
 /// Relational mode values.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum RVal { Super, Cat, Dagger, LR }
+pub enum RelVal { Ado, Tot, Ear, Ian }
 
 /// Parity values.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum PVal { Asym, Psi, Pm, Sym, PmSym }
+pub enum PolVal { Church, Yew, Out, Nun, Or }
 
 /// Fidelity values.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum FVal { Ell, Eth, Hbar }
+pub enum FidVal { Age, They, Peep }
 
 /// Kinetics values.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum KVal { Fast, Mod, Slow, Trap, MBL }
+pub enum KinVal { Yea, Loll, Egg, On, Air }
 
 /// Scope values.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum GVal { Beth, Gimel, Aleph }
+pub enum GranVal { Bib, Thigh, Ice }
 
 /// Interaction grammar values.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum GmVal { And, Or, Seq, Broad }
+pub enum GramVal { Vow, Gag, Measure, Ooze }
 
 /// Criticality values.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum PhiVal { Sub, C, CComplex, EP, Super }
+pub enum CritVal { Woe, Monad, Roar, Err, Haha }
 
 /// Chirality values.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum HVal { M0, M1, M2, Inf }
+pub enum ChirVal { Fee, Kick, Sure, Wool }
 
 /// Stoichiometry values.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum SVal { One, Many, Hetero }
+pub enum StoiVal { Hung, So, Up }
 
 /// Winding values.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum OVal { Trivial, Z2, Z, NA }
+pub enum ProtVal { Awe, Oak, Ah, Zoo }
 
 // ── IG Tuple ────────────────────────────────────────────────────────────
 
 /// A complete 12-primitive IG tuple (pipeline string names).
 #[derive(Clone, Debug)]
 pub struct IGTuple {
-    pub d: DVal,
-    pub t: TVal,
-    pub r: RVal,
-    pub p: PVal,
-    pub f: FVal,
-    pub k: KVal,
-    pub g: GVal,
-    pub gm: GmVal,
-    pub phi: PhiVal,
-    pub h: HVal,
-    pub s: SVal,
-    pub o: OVal,
+    pub d: DimVal,
+    pub t: TopVal,
+    pub r: RelVal,
+    pub p: PolVal,
+    pub f: FidVal,
+    pub k: KinVal,
+    pub g: GranVal,
+    pub gm: GramVal,
+    pub phi: CritVal,
+    pub h: ChirVal,
+    pub s: StoiVal,
+    pub o: ProtVal,
 }
 
 impl IGTuple {
@@ -187,176 +187,176 @@ impl IGTuple {
 
 // ── Value type impls ────────────────────────────────────────────────────
 
-impl DVal {
+impl DimVal {
     pub fn as_str(&self) -> &'static str {
-        match self { DVal::Wedge => "wedge", DVal::Tri => "tri",
-                     DVal::Infty => "infty", DVal::Odot => "odot" }
+        match self { DimVal::Dead => "wedge", DimVal::Ash => "tri",
+                     DimVal::Array => "infty", DimVal::If => "odot" }
     }
     pub fn glyph(&self) -> &'static str {
-        match self { DVal::Wedge => "𐑛", DVal::Tri => "𐑨",
-                     DVal::Infty => "𐑼", DVal::Odot => "𐑦" }
+        match self { DimVal::Dead => "𐑛", DimVal::Ash => "𐑨",
+                     DimVal::Array => "𐑼", DimVal::If => "𐑦" }
     }
     pub fn ordinal(&self) -> u8 {
-        match self { DVal::Wedge => 0, DVal::Tri => 1,
-                     DVal::Infty => 2, DVal::Odot => 3 }
+        match self { DimVal::Dead => 0, DimVal::Ash => 1,
+                     DimVal::Array => 2, DimVal::If => 3 }
     }
 }
 
-impl TVal {
+impl TopVal {
     pub fn as_str(&self) -> &'static str {
-        match self { TVal::Network => "network", TVal::In => "in",
-                     TVal::Bowtie => "bowtie", TVal::Boxtimes => "boxtimes",
-                     TVal::Odot => "odot" }
+        match self { TopVal::Judge => "network", TopVal::Eat => "in",
+                     TopVal::Mime => "bowtie", TopVal::Oil => "boxtimes",
+                     TopVal::Are => "odot" }
     }
     pub fn glyph(&self) -> &'static str {
-        match self { TVal::Network => "𐑡", TVal::In => "𐑰",
-                     TVal::Bowtie => "𐑥", TVal::Boxtimes => "𐑶",
-                     TVal::Odot => "𐑸" }
+        match self { TopVal::Judge => "𐑡", TopVal::Eat => "𐑰",
+                     TopVal::Mime => "𐑥", TopVal::Oil => "𐑶",
+                     TopVal::Are => "𐑸" }
     }
     pub fn ordinal(&self) -> u8 {
-        match self { TVal::Network => 0, TVal::In => 1,
-                     TVal::Bowtie => 2, TVal::Boxtimes => 3, TVal::Odot => 4 }
+        match self { TopVal::Judge => 0, TopVal::Eat => 1,
+                     TopVal::Mime => 2, TopVal::Oil => 3, TopVal::Are => 4 }
     }
 }
 
-impl RVal {
+impl RelVal {
     pub fn as_str(&self) -> &'static str {
-        match self { RVal::Super => "super", RVal::Cat => "cat",
-                     RVal::Dagger => "dagger", RVal::LR => "lr" }
+        match self { RelVal::Ado => "super", RelVal::Tot => "cat",
+                     RelVal::Ear => "dagger", RelVal::Ian => "lr" }
     }
     pub fn glyph(&self) -> &'static str {
-        match self { RVal::Super => "𐑩", RVal::Cat => "𐑑",
-                     RVal::Dagger => "𐑽", RVal::LR => "𐑾" }
+        match self { RelVal::Ado => "𐑩", RelVal::Tot => "𐑑",
+                     RelVal::Ear => "𐑽", RelVal::Ian => "𐑾" }
     }
     pub fn ordinal(&self) -> u8 {
-        match self { RVal::Super => 0, RVal::Cat => 1,
-                     RVal::Dagger => 2, RVal::LR => 3 }
+        match self { RelVal::Ado => 0, RelVal::Tot => 1,
+                     RelVal::Ear => 2, RelVal::Ian => 3 }
     }
 }
 
-impl PVal {
+impl PolVal {
     pub fn as_str(&self) -> &'static str {
-        match self { PVal::Asym => "asym", PVal::Psi => "psi",
-                     PVal::Pm => "pm", PVal::Sym => "sym", PVal::PmSym => "pm_sym" }
+        match self { PolVal::Church => "asym", PolVal::Yew => "psi",
+                     PolVal::Out => "pm", PolVal::Nun => "sym", PolVal::Or => "pm_sym" }
     }
     pub fn glyph(&self) -> &'static str {
-        match self { PVal::Asym => "𐑗", PVal::Psi => "𐑿",
-                     PVal::Pm => "𐑬", PVal::Sym => "𐑯", PVal::PmSym => "𐑹" }
+        match self { PolVal::Church => "𐑗", PolVal::Yew => "𐑿",
+                     PolVal::Out => "𐑬", PolVal::Nun => "𐑯", PolVal::Or => "𐑹" }
     }
     pub fn ordinal(&self) -> u8 {
-        match self { PVal::Asym => 0, PVal::Psi => 1,
-                     PVal::Pm => 2, PVal::Sym => 3, PVal::PmSym => 4 }
+        match self { PolVal::Church => 0, PolVal::Yew => 1,
+                     PolVal::Out => 2, PolVal::Nun => 3, PolVal::Or => 4 }
     }
 }
 
-impl FVal {
+impl FidVal {
     pub fn as_str(&self) -> &'static str {
-        match self { FVal::Ell => "ell", FVal::Eth => "eth", FVal::Hbar => "hbar" }
+        match self { FidVal::Age => "ell", FidVal::They => "eth", FidVal::Peep => "hbar" }
     }
     pub fn glyph(&self) -> &'static str {
-        match self { FVal::Ell => "𐑱", FVal::Eth => "𐑞", FVal::Hbar => "𐑐" }
+        match self { FidVal::Age => "𐑱", FidVal::They => "𐑞", FidVal::Peep => "𐑐" }
     }
     pub fn ordinal(&self) -> u8 {
-        match self { FVal::Ell => 0, FVal::Eth => 1, FVal::Hbar => 2 }
+        match self { FidVal::Age => 0, FidVal::They => 1, FidVal::Peep => 2 }
     }
 }
 
-impl KVal {
+impl KinVal {
     pub fn as_str(&self) -> &'static str {
-        match self { KVal::Fast => "fast", KVal::Mod => "mod",
-                     KVal::Slow => "slow", KVal::Trap => "trap", KVal::MBL => "MBL" }
+        match self { KinVal::Yea => "fast", KinVal::Loll => "mod",
+                     KinVal::Egg => "slow", KinVal::On => "trap", KinVal::Air => "MBL" }
     }
     pub fn glyph(&self) -> &'static str {
-        match self { KVal::Fast => "𐑘", KVal::Mod => "𐑤",
-                     KVal::Slow => "𐑧", KVal::Trap => "𐑪", KVal::MBL => "𐑺" }
+        match self { KinVal::Yea => "𐑘", KinVal::Loll => "𐑤",
+                     KinVal::Egg => "𐑧", KinVal::On => "𐑪", KinVal::Air => "𐑺" }
     }
     pub fn ordinal(&self) -> u8 {
-        match self { KVal::Fast => 0, KVal::Mod => 1,
-                     KVal::Slow => 2, KVal::Trap => 3, KVal::MBL => 4 }
+        match self { KinVal::Yea => 0, KinVal::Loll => 1,
+                     KinVal::Egg => 2, KinVal::On => 3, KinVal::Air => 4 }
     }
 }
 
-impl GVal {
+impl GranVal {
     pub fn as_str(&self) -> &'static str {
-        match self { GVal::Beth => "beth", GVal::Gimel => "gimel", GVal::Aleph => "aleph" }
+        match self { GranVal::Bib => "beth", GranVal::Thigh => "gimel", GranVal::Ice => "aleph" }
     }
     pub fn glyph(&self) -> &'static str {
-        match self { GVal::Beth => "𐑚", GVal::Gimel => "𐑔", GVal::Aleph => "𐑲" }
+        match self { GranVal::Bib => "𐑚", GranVal::Thigh => "𐑔", GranVal::Ice => "𐑲" }
     }
     pub fn ordinal(&self) -> u8 {
-        match self { GVal::Beth => 0, GVal::Gimel => 1, GVal::Aleph => 2 }
+        match self { GranVal::Bib => 0, GranVal::Thigh => 1, GranVal::Ice => 2 }
     }
 }
 
-impl GmVal {
+impl GramVal {
     pub fn as_str(&self) -> &'static str {
-        match self { GmVal::And => "and", GmVal::Or => "or",
-                     GmVal::Seq => "seq", GmVal::Broad => "broad" }
+        match self { GramVal::Vow => "and", GramVal::Gag => "or",
+                     GramVal::Measure => "seq", GramVal::Ooze => "broad" }
     }
     pub fn glyph(&self) -> &'static str {
-        match self { GmVal::And => "𐑝", GmVal::Or => "𐑜",
-                     GmVal::Seq => "𐑠", GmVal::Broad => "𐑵" }
+        match self { GramVal::Vow => "𐑝", GramVal::Gag => "𐑜",
+                     GramVal::Measure => "𐑠", GramVal::Ooze => "𐑵" }
     }
     pub fn ordinal(&self) -> u8 {
-        match self { GmVal::And => 0, GmVal::Or => 1,
-                     GmVal::Seq => 2, GmVal::Broad => 3 }
+        match self { GramVal::Vow => 0, GramVal::Gag => 1,
+                     GramVal::Measure => 2, GramVal::Ooze => 3 }
     }
 }
 
-impl PhiVal {
+impl CritVal {
     pub fn as_str(&self) -> &'static str {
-        match self { PhiVal::Sub => "sub", PhiVal::C => "c",
-                     PhiVal::CComplex => "c_complex", PhiVal::EP => "EP",
-                     PhiVal::Super => "super" }
+        match self { CritVal::Woe => "sub", CritVal::Monad => "c",
+                     CritVal::Roar => "c_complex", CritVal::Err => "EP",
+                     CritVal::Haha => "super" }
     }
     pub fn glyph(&self) -> &'static str {
-        match self { PhiVal::Sub => "woe", PhiVal::C => "\u{2299}",
-                     PhiVal::CComplex => "roar", PhiVal::EP => "𐑻",
-                     PhiVal::Super => "𐑣" }
+        match self { CritVal::Woe => "woe", CritVal::Monad => "\u{2299}",
+                     CritVal::Roar => "roar", CritVal::Err => "𐑻",
+                     CritVal::Haha => "𐑣" }
     }
     pub fn ordinal(&self) -> u8 {
-        match self { PhiVal::Sub => 0, PhiVal::C => 1,
-                     PhiVal::CComplex => 2, PhiVal::EP => 3, PhiVal::Super => 4 }
+        match self { CritVal::Woe => 0, CritVal::Monad => 1,
+                     CritVal::Roar => 2, CritVal::Err => 3, CritVal::Haha => 4 }
     }
 }
 
-impl HVal {
+impl ChirVal {
     pub fn as_str(&self) -> &'static str {
-        match self { HVal::M0 => "0", HVal::M1 => "1",
-                     HVal::M2 => "2", HVal::Inf => "inf" }
+        match self { ChirVal::Fee => "0", ChirVal::Kick => "1",
+                     ChirVal::Sure => "2", ChirVal::Wool => "inf" }
     }
     pub fn glyph(&self) -> &'static str {
-        match self { HVal::M0 => "𐑓", HVal::M1 => "𐑒",
-                     HVal::M2 => "𐑖", HVal::Inf => "𐑫" }
+        match self { ChirVal::Fee => "𐑓", ChirVal::Kick => "𐑒",
+                     ChirVal::Sure => "𐑖", ChirVal::Wool => "𐑫" }
     }
     pub fn ordinal(&self) -> u8 {
-        match self { HVal::M0 => 0, HVal::M1 => 1, HVal::M2 => 2, HVal::Inf => 3 }
+        match self { ChirVal::Fee => 0, ChirVal::Kick => 1, ChirVal::Sure => 2, ChirVal::Wool => 3 }
     }
 }
 
-impl SVal {
+impl StoiVal {
     pub fn as_str(&self) -> &'static str {
-        match self { SVal::One => "one", SVal::Many => "many", SVal::Hetero => "hetero" }
+        match self { StoiVal::Hung => "one", StoiVal::So => "many", StoiVal::Up => "hetero" }
     }
     pub fn glyph(&self) -> &'static str {
-        match self { SVal::One => "𐑙", SVal::Many => "𐑕", SVal::Hetero => "𐑳" }
+        match self { StoiVal::Hung => "𐑙", StoiVal::So => "𐑕", StoiVal::Up => "𐑳" }
     }
     pub fn ordinal(&self) -> u8 {
-        match self { SVal::One => 0, SVal::Many => 1, SVal::Hetero => 2 }
+        match self { StoiVal::Hung => 0, StoiVal::So => 1, StoiVal::Up => 2 }
     }
 }
 
-impl OVal {
+impl ProtVal {
     pub fn as_str(&self) -> &'static str {
-        match self { OVal::Trivial => "0", OVal::Z2 => "Z2",
-                     OVal::Z => "Z", OVal::NA => "NA" }
+        match self { ProtVal::Awe => "0", ProtVal::Oak => "Z2",
+                     ProtVal::Ah => "Z", ProtVal::Zoo => "NA" }
     }
     pub fn glyph(&self) -> &'static str {
-        match self { OVal::Trivial => "𐑷", OVal::Z2 => "𐑴",
-                     OVal::Z => "𐑭", OVal::NA => "𐑟" }
+        match self { ProtVal::Awe => "𐑷", ProtVal::Oak => "𐑴",
+                     ProtVal::Ah => "𐑭", ProtVal::Zoo => "𐑟" }
     }
     pub fn ordinal(&self) -> u8 {
-        match self { OVal::Trivial => 0, OVal::Z2 => 1, OVal::Z => 2, OVal::NA => 3 }
+        match self { ProtVal::Awe => 0, ProtVal::Oak => 1, ProtVal::Ah => 2, ProtVal::Zoo => 3 }
     }
 }
 
@@ -438,56 +438,56 @@ impl Default for StageContext {
 /// Each AA activates specific IG primitives when present in the chain.
 pub struct AAActivation {
     pub aa: char,
-    pub d_activates: Option<DVal>,
-    pub k_activates: Option<KVal>,
-    pub h_activates: Option<HVal>,
-    pub s_activates: Option<SVal>,
-    pub phi_activates: Option<PhiVal>,
+    pub d_activates: Option<DimVal>,
+    pub k_activates: Option<KinVal>,
+    pub h_activates: Option<ChirVal>,
+    pub s_activates: Option<StoiVal>,
+    pub phi_activates: Option<CritVal>,
 }
 
 /// 20 canonical amino acid activations.
 pub fn aa_activation(aa: char) -> AAActivation {
     match aa.to_ascii_uppercase() {
         'A' => AAActivation { aa: 'A', d_activates: None, k_activates: None,
-            h_activates: Some(HVal::M0), s_activates: None, phi_activates: None },
+            h_activates: Some(ChirVal::Fee), s_activates: None, phi_activates: None },
         'C' => AAActivation { aa: 'C', d_activates: None, k_activates: None,
-            h_activates: None, s_activates: None, phi_activates: Some(PhiVal::C) },
-        'D' => AAActivation { aa: 'D', d_activates: None, k_activates: Some(KVal::Fast),
+            h_activates: None, s_activates: None, phi_activates: Some(CritVal::Monad) },
+        'D' => AAActivation { aa: 'D', d_activates: None, k_activates: Some(KinVal::Yea),
             h_activates: None, s_activates: None, phi_activates: None },
-        'E' => AAActivation { aa: 'E', d_activates: None, k_activates: Some(KVal::Fast),
+        'E' => AAActivation { aa: 'E', d_activates: None, k_activates: Some(KinVal::Yea),
             h_activates: None, s_activates: None, phi_activates: None },
         'F' => AAActivation { aa: 'F', d_activates: None, k_activates: None,
-            h_activates: Some(HVal::M2), s_activates: None, phi_activates: None },
+            h_activates: Some(ChirVal::Sure), s_activates: None, phi_activates: None },
         'G' => AAActivation { aa: 'G', d_activates: None, k_activates: None,
-            h_activates: None, s_activates: None, phi_activates: Some(PhiVal::Sub) },
+            h_activates: None, s_activates: None, phi_activates: Some(CritVal::Woe) },
         'H' => AAActivation { aa: 'H', d_activates: None, k_activates: None,
-            h_activates: Some(HVal::M1), s_activates: None, phi_activates: None },
-        'I' => AAActivation { aa: 'I', d_activates: None, k_activates: Some(KVal::Slow),
+            h_activates: Some(ChirVal::Kick), s_activates: None, phi_activates: None },
+        'I' => AAActivation { aa: 'I', d_activates: None, k_activates: Some(KinVal::Egg),
             h_activates: None, s_activates: None, phi_activates: None },
-        'K' => AAActivation { aa: 'K', d_activates: Some(DVal::Odot), k_activates: None,
+        'K' => AAActivation { aa: 'K', d_activates: Some(DimVal::If), k_activates: None,
             h_activates: None, s_activates: None, phi_activates: None },
-        'L' => AAActivation { aa: 'L', d_activates: None, k_activates: Some(KVal::Trap),
+        'L' => AAActivation { aa: 'L', d_activates: None, k_activates: Some(KinVal::On),
             h_activates: None, s_activates: None, phi_activates: None },
         'M' => AAActivation { aa: 'M', d_activates: None, k_activates: None,
-            h_activates: Some(HVal::Inf), s_activates: None, phi_activates: None },
+            h_activates: Some(ChirVal::Wool), s_activates: None, phi_activates: None },
         'N' => AAActivation { aa: 'N', d_activates: None, k_activates: None,
-            h_activates: Some(HVal::M1), s_activates: None, phi_activates: None },
-        'P' => AAActivation { aa: 'P', d_activates: None, k_activates: Some(KVal::Trap),
-            h_activates: None, s_activates: None, phi_activates: Some(PhiVal::EP) },
+            h_activates: Some(ChirVal::Kick), s_activates: None, phi_activates: None },
+        'P' => AAActivation { aa: 'P', d_activates: None, k_activates: Some(KinVal::On),
+            h_activates: None, s_activates: None, phi_activates: Some(CritVal::Err) },
         'Q' => AAActivation { aa: 'Q', d_activates: None, k_activates: None,
-            h_activates: Some(HVal::M1), s_activates: None, phi_activates: None },
-        'R' => AAActivation { aa: 'R', d_activates: Some(DVal::Odot), k_activates: None,
-            h_activates: None, s_activates: Some(SVal::Hetero), phi_activates: None },
-        'S' => AAActivation { aa: 'S', d_activates: None, k_activates: Some(KVal::Fast),
+            h_activates: Some(ChirVal::Kick), s_activates: None, phi_activates: None },
+        'R' => AAActivation { aa: 'R', d_activates: Some(DimVal::If), k_activates: None,
+            h_activates: None, s_activates: Some(StoiVal::Up), phi_activates: None },
+        'S' => AAActivation { aa: 'S', d_activates: None, k_activates: Some(KinVal::Yea),
             h_activates: None, s_activates: None, phi_activates: None },
-        'T' => AAActivation { aa: 'T', d_activates: None, k_activates: Some(KVal::Mod),
+        'T' => AAActivation { aa: 'T', d_activates: None, k_activates: Some(KinVal::Loll),
             h_activates: None, s_activates: None, phi_activates: None },
-        'V' => AAActivation { aa: 'V', d_activates: None, k_activates: Some(KVal::Slow),
+        'V' => AAActivation { aa: 'V', d_activates: None, k_activates: Some(KinVal::Egg),
             h_activates: None, s_activates: None, phi_activates: None },
         'W' => AAActivation { aa: 'W', d_activates: None, k_activates: None,
-            h_activates: Some(HVal::Inf), s_activates: None, phi_activates: Some(PhiVal::Super) },
+            h_activates: Some(ChirVal::Wool), s_activates: None, phi_activates: Some(CritVal::Haha) },
         'Y' => AAActivation { aa: 'Y', d_activates: None, k_activates: None,
-            h_activates: Some(HVal::M2), s_activates: None, phi_activates: Some(PhiVal::CComplex) },
+            h_activates: Some(ChirVal::Sure), s_activates: None, phi_activates: Some(CritVal::Roar) },
         _   => AAActivation { aa: 'X', d_activates: None, k_activates: None,
             h_activates: None, s_activates: None, phi_activates: None },
     }
@@ -502,7 +502,7 @@ pub fn scan_activations(aa_chain: &str) -> alloc::collections::BTreeMap<&'static
         if act.h_activates.map(|h| h.ordinal() >= 2).unwrap_or(false) {
             *counts.entry("H_high").or_default() += 1;
         }
-        if act.phi_activates.is_some() { *counts.entry("Phi_active").or_default() += 1; }
+        if act.phi_activates.is_some() { *counts.entry("⊙_active").or_default() += 1; }
         if act.s_activates.is_some() { *counts.entry("S_hetero").or_default() += 1; }
         if act.d_activates.is_some() { *counts.entry("if_").or_default() += 1; }
     }
@@ -515,18 +515,18 @@ pub fn scan_activations(aa_chain: &str) -> alloc::collections::BTreeMap<&'static
 /// DNA is classical storage — low entanglement, sequential, local.
 pub fn generate_stage1_dna(_ctx: &StageContext) -> IGTuple {
     IGTuple {
-        d: DVal::Tri,         // Finite 2D — linear sequence
-        t: TVal::Network,     // Branching — genes on chromosomes
-        r: RVal::Super,       // Supervenience — sequence determines everything above
-        p: PVal::Asym,        // No symmetry — forward strand only
-        f: FVal::Ell,         // Classical — no coherence
-        k: KVal::Trap,        // Frozen — stable double helix
-        g: GVal::Beth,        // Local — nearest-neighbor base pairing
-        gm: GmVal::Seq,       // Sequential — 5′→3′
-        phi: PhiVal::Sub,     // Sub-critical — stable storage
-        h: HVal::M0,          // Memoryless at this level
-        s: SVal::One,         // One type — DNA
-        o: OVal::Trivial,     // No topological protection
+        d: DimVal::Ash,         // Finite 2D — linear sequence
+        t: TopVal::Judge,     // Branching — genes on chromosomes
+        r: RelVal::Ado,       // Supervenience — sequence determines everything above
+        p: PolVal::Church,        // No symmetry — forward strand only
+        f: FidVal::Age,         // Classical — no coherence
+        k: KinVal::On,        // Frozen — stable double helix
+        g: GranVal::Bib,        // Local — nearest-neighbor base pairing
+        gm: GramVal::Measure,       // Sequential — 5′→3′
+        phi: CritVal::Woe,     // Sub-critical — stable storage
+        h: ChirVal::Fee,          // Memoryless at this level
+        s: StoiVal::Hung,         // One type — DNA
+        o: ProtVal::Awe,     // No topological protection
     }
 }
 
@@ -534,18 +534,18 @@ pub fn generate_stage1_dna(_ctx: &StageContext) -> IGTuple {
 /// RNA polymerase introduces dynamics — moderate kinetics, thermal regime.
 pub fn generate_stage2_transcription(_ctx: &StageContext) -> IGTuple {
     IGTuple {
-        d: DVal::Tri,         // Still finite
-        t: TVal::Bowtie,      // Crossing point — DNA → RNA transition
-        r: RVal::Dagger,      // Adjoint — one-way transcription
-        p: PVal::Psi,         // Quantum — nucleotide selection
-        f: FVal::Eth,         // Thermal — Brownian ratchet
-        k: KVal::Mod,         // Moderate — ~50 nt/s
-        g: GVal::Gimel,       // Mesoscale — promoter→terminator
-        gm: GmVal::Seq,       // Sequential — processive
-        phi: PhiVal::Sub,     // Sub-critical
-        h: HVal::M1,          // One-step — abortive initiation
-        s: SVal::One,         // One type — RNA
-        o: OVal::Trivial,
+        d: DimVal::Ash,         // Still finite
+        t: TopVal::Mime,      // Crossing point — DNA → RNA transition
+        r: RelVal::Ear,      // Adjoint — one-way transcription
+        p: PolVal::Yew,         // Quantum — nucleotide selection
+        f: FidVal::They,         // Thermal — Brownian ratchet
+        k: KinVal::Loll,         // Moderate — ~50 nt/s
+        g: GranVal::Thigh,       // Mesoscale — promoter→terminator
+        gm: GramVal::Measure,       // Sequential — processive
+        phi: CritVal::Woe,     // Sub-critical
+        h: ChirVal::Kick,          // One-step — abortive initiation
+        s: StoiVal::Hung,         // One type — RNA
+        o: ProtVal::Awe,
     }
 }
 
@@ -553,18 +553,18 @@ pub fn generate_stage2_transcription(_ctx: &StageContext) -> IGTuple {
 /// Triplet code on B₄ lattice — Frobenius structure emerges.
 pub fn generate_stage3_codon(_ctx: &StageContext) -> IGTuple {
     IGTuple {
-        d: DVal::Wedge,       // 0D — codons are points on the B₄ lattice
-        t: TVal::Boxtimes,    // Irreducible product — triplet = ⊗ of 3 nucleotides
-        r: RVal::LR,          // Bidirectional — codon↔AA mapping is a bijection
-        p: PVal::Pm,          // Partial Z2 — pyrimidine/purine
-        f: FVal::Hbar,        // Quantum — wobble base pairing
-        k: KVal::Slow,        // Near-equilibrium — ribosome decoding
-        g: GVal::Beth,        // Local — within ribosome A-site
-        gm: GmVal::And,       // All-simultaneous — codon positions constrain each other
-        phi: PhiVal::C,       // CRITICAL — exact/split stratum boundary
-        h: HVal::M2,          // Two-step — codon recognition → accommodation
-        s: SVal::Many,        // Many identical — 64 codons
-        o: OVal::Z2,          // Z2 parity — codon↔anticodon
+        d: DimVal::Dead,       // 0D — codons are points on the B₄ lattice
+        t: TopVal::Oil,    // Irreducible product — triplet = ⊗ of 3 nucleotides
+        r: RelVal::Ian,          // Bidirectional — codon↔AA mapping is a bijection
+        p: PolVal::Out,          // Partial Z2 — pyrimidine/purine
+        f: FidVal::Peep,        // Quantum — wobble base pairing
+        k: KinVal::Egg,        // Near-equilibrium — ribosome decoding
+        g: GranVal::Bib,        // Local — within ribosome A-site
+        gm: GramVal::Vow,       // All-simultaneous — codon positions constrain each other
+        phi: CritVal::Monad,       // CRITICAL — exact/split stratum boundary
+        h: ChirVal::Sure,          // Two-step — codon recognition → accommodation
+        s: StoiVal::So,        // Many identical — 64 codons
+        o: ProtVal::Oak,          // Z2 parity — codon↔anticodon
     }
 }
 
@@ -572,107 +572,107 @@ pub fn generate_stage3_codon(_ctx: &StageContext) -> IGTuple {
 /// AA chain emerges — kinetics driven by β-branched content.
 pub fn generate_stage4_translation(ctx: &StageContext) -> IGTuple {
     let k_val = if ctx.beta_branched_frac > 0.25 {
-        KVal::Slow
+        KinVal::Egg
     } else if ctx.beta_branched_frac > 0.12 {
-        KVal::Mod
+        KinVal::Loll
     } else {
-        KVal::Fast
+        KinVal::Yea
     };
-    let h_val = if ctx.aromatic_frac > 0.12 { HVal::M2 }
-                else if ctx.aromatic_frac > 0.05 { HVal::M1 }
-                else { HVal::M0 };
+    let h_val = if ctx.aromatic_frac > 0.12 { ChirVal::Sure }
+                else if ctx.aromatic_frac > 0.05 { ChirVal::Kick }
+                else { ChirVal::Fee };
 
     IGTuple {
-        d: DVal::Tri,         // Linear chain
-        t: TVal::Network,     // Branching — sidechain interactions
-        r: RVal::Super,       // Supervenience — sequence→structure
-        p: PVal::Asym,        // N→C directionality
-        f: FVal::Eth,         // Thermal
+        d: DimVal::Ash,         // Linear chain
+        t: TopVal::Judge,     // Branching — sidechain interactions
+        r: RelVal::Ado,       // Supervenience — sequence→structure
+        p: PolVal::Church,        // N→C directionality
+        f: FidVal::They,         // Thermal
         k: k_val,             // β-branched driven
-        g: GVal::Gimel,       // Mesoscale — domain-level
-        gm: GmVal::Seq,       // Sequential — processive translation
-        phi: PhiVal::Sub,
+        g: GranVal::Thigh,       // Mesoscale — domain-level
+        gm: GramVal::Measure,       // Sequential — processive translation
+        phi: CritVal::Woe,
         h: h_val,
-        s: SVal::Hetero,      // 20 distinct AA types
-        o: OVal::Trivial,
+        s: StoiVal::Up,      // 20 distinct AA types
+        o: ProtVal::Awe,
     }
 }
 
 /// Generate the IG tuple for Stage 5: Folding (Secondary Structure).
 pub fn generate_stage5_folding(ctx: &StageContext) -> IGTuple {
     let p_val = if ctx.helix_content > 0.5 || ctx.sheet_content > 0.5 {
-        PVal::Pm  // Regular secondary structure = partial symmetry
+        PolVal::Out  // Regular secondary structure = partial symmetry
     } else {
-        PVal::Psi // Mixed = superposition of conformations
+        PolVal::Yew // Mixed = superposition of conformations
     };
-    let phi_val = if ctx.proline_frac > 0.08 { PhiVal::EP }
-                  else if ctx.cysteine_count >= 2 { PhiVal::C }
-                  else { PhiVal::Sub };
-    let h_val = if ctx.proline_frac > 0.06 { HVal::M2 }
-                else { HVal::M1 };
+    let phi_val = if ctx.proline_frac > 0.08 { CritVal::Err }
+                  else if ctx.cysteine_count >= 2 { CritVal::Monad }
+                  else { CritVal::Woe };
+    let h_val = if ctx.proline_frac > 0.06 { ChirVal::Sure }
+                else { ChirVal::Kick };
 
     IGTuple {
-        d: DVal::Tri,
-        t: TVal::Bowtie,      // Crossing — folding funnel
-        r: RVal::LR,          // Bidirectional — sequence↔structure
+        d: DimVal::Ash,
+        t: TopVal::Mime,      // Crossing — folding funnel
+        r: RelVal::Ian,          // Bidirectional — sequence↔structure
         p: p_val,
-        f: FVal::Hbar,        // Quantum — folding landscape
-        k: KVal::Slow,        // Slow — folding kinetics
-        g: GVal::Gimel,
-        gm: GmVal::And,       // Cooperative — all residues fold together
+        f: FidVal::Peep,        // Quantum — folding landscape
+        k: KinVal::Egg,        // Slow — folding kinetics
+        g: GranVal::Thigh,
+        gm: GramVal::Vow,       // Cooperative — all residues fold together
         phi: phi_val,
         h: h_val,
-        s: SVal::Hetero,      // α-helix, β-sheet, loops
-        o: OVal::Z2,          // Z2 — right-handed helix chirality
+        s: StoiVal::Up,      // α-helix, β-sheet, loops
+        o: ProtVal::Oak,          // Z2 — right-handed helix chirality
     }
 }
 
 /// Generate the IG tuple for Stage 6: Tertiary Structure.
 pub fn generate_stage6_tertiary(ctx: &StageContext) -> IGTuple {
-    let p_val = if ctx.disulfide_bonds >= 2 { PVal::Pm }
-                else { PVal::Asym };
-    let o_val = if ctx.disulfide_bonds >= 3 { OVal::Z }
-                else if ctx.disulfide_bonds >= 1 { OVal::Z2 }
-                else { OVal::Trivial };
+    let p_val = if ctx.disulfide_bonds >= 2 { PolVal::Out }
+                else { PolVal::Church };
+    let o_val = if ctx.disulfide_bonds >= 3 { ProtVal::Ah }
+                else if ctx.disulfide_bonds >= 1 { ProtVal::Oak }
+                else { ProtVal::Awe };
 
     IGTuple {
-        d: DVal::Infty,       // Infinite — conformational space
-        t: TVal::Boxtimes,    // Product — domain×domain
-        r: RVal::LR,          // Bidirectional — folding↔function
+        d: DimVal::Array,       // Infinite — conformational space
+        t: TopVal::Oil,    // Product — domain×domain
+        r: RelVal::Ian,          // Bidirectional — folding↔function
         p: p_val,
-        f: FVal::Hbar,        // Quantum
-        k: KVal::Slow,        // Slow — tertiary folding
-        g: GVal::Beth,        // Local — contact-based
-        gm: GmVal::And,       // Cooperative
-        phi: PhiVal::C,       // Critical — native state at ⊙
-        h: HVal::Inf,         // Eternal — fold memory
-        s: SVal::Hetero,      // Multiple domains
+        f: FidVal::Peep,        // Quantum
+        k: KinVal::Egg,        // Slow — tertiary folding
+        g: GranVal::Bib,        // Local — contact-based
+        gm: GramVal::Vow,       // Cooperative
+        phi: CritVal::Monad,       // Critical — native state at ⊙
+        h: ChirVal::Wool,         // Eternal — fold memory
+        s: StoiVal::Up,      // Multiple domains
         o: o_val,
     }
 }
 
 /// Generate the IG tuple for Stage 7: Quaternary Structure.
 pub fn generate_stage7_quaternary(ctx: &StageContext) -> IGTuple {
-    let s_val = if ctx.subunit_count > 2 { SVal::Hetero }
-                else if ctx.subunit_count == 2 { SVal::Many }
-                else { SVal::One };
-    let p_val = if ctx.has_symmetry { PVal::Sym }
-                else if ctx.subunit_count > 1 { PVal::Pm }
-                else { PVal::Asym };
+    let s_val = if ctx.subunit_count > 2 { StoiVal::Up }
+                else if ctx.subunit_count == 2 { StoiVal::So }
+                else { StoiVal::Hung };
+    let p_val = if ctx.has_symmetry { PolVal::Nun }
+                else if ctx.subunit_count > 1 { PolVal::Out }
+                else { PolVal::Church };
 
     IGTuple {
-        d: DVal::Infty,
-        t: TVal::Boxtimes,    // Product — subunit⊗subunit
-        r: RVal::LR,
+        d: DimVal::Array,
+        t: TopVal::Oil,    // Product — subunit⊗subunit
+        r: RelVal::Ian,
         p: p_val,
-        f: FVal::Ell,         // Classical — assembled complex
-        k: KVal::Trap,        // Frozen — stable assembly
-        g: GVal::Aleph,       // Universal — quaternary interactions span entire complex
-        gm: GmVal::Broad,     // Broadcast — allostery
-        phi: PhiVal::Sub,     // Sub-critical — stable oligomer
-        h: HVal::Inf,         // Eternal — assembly memory
+        f: FidVal::Age,         // Classical — assembled complex
+        k: KinVal::On,        // Frozen — stable assembly
+        g: GranVal::Ice,       // Universal — quaternary interactions span entire complex
+        gm: GramVal::Ooze,     // Broadcast — allostery
+        phi: CritVal::Woe,     // Sub-critical — stable oligomer
+        h: ChirVal::Wool,         // Eternal — assembly memory
         s: s_val,
-        o: if ctx.subunit_count >= 4 { OVal::Z } else { OVal::Z2 },
+        o: if ctx.subunit_count >= 4 { ProtVal::Ah } else { ProtVal::Oak },
     }
 }
 
@@ -795,7 +795,7 @@ mod tests {
     fn test_codon_stage_critical() {
         let ctx = StageContext::default();
         let codon = generate_stage3_codon(&ctx);
-        assert_eq!(codon.phi, PhiVal::C, "Codon stage must be ⊙-critical");
+        assert_eq!(codon.phi, CritVal::Monad, "Codon stage must be ⊙-critical");
     }
 
     #[test]
@@ -806,8 +806,8 @@ mod tests {
             ..Default::default()
         };
         let quat = generate_stage7_quaternary(&ctx);
-        assert_eq!(quat.p, PVal::Sym);
-        assert_eq!(quat.o, OVal::Z);
+        assert_eq!(quat.p, PolVal::Nun);
+        assert_eq!(quat.o, ProtVal::Ah);
     }
 
     #[test]
@@ -815,7 +815,7 @@ mod tests {
         let counts = scan_activations("MAGILVFWY");
         // M has H=Inf; A has H=M0; G has Phi=Sub; I has K=Slow; L has K=Trap;
         // V has K=Slow; F has H=M2; W has H=Inf + Phi=Super; Y has H=M2 + Phi=CComplex
-        assert!(counts.get("Phi_active").unwrap_or(&0) >= &2, "G+W+Y activate Phi");
+        assert!(counts.get("⊙_active").unwrap_or(&0) >= &2, "G+W+Y activate ⊙");
         assert!(counts.get("K_branched").unwrap_or(&0) >= &2, "I+V activate K");
         assert!(counts.get("H_high").unwrap_or(&0) >= &2, "F+Y activate H≥2");
         assert!(counts.get("if_").unwrap_or(&0) == &0, "No K or R in test chain");
@@ -827,8 +827,8 @@ mod tests {
         let high_beta = StageContext { beta_branched_frac: 0.30, ..Default::default() };
         let s4_low = generate_stage4_translation(&low_beta);
         let s4_high = generate_stage4_translation(&high_beta);
-        assert_eq!(s4_low.k, KVal::Fast);
-        assert_eq!(s4_high.k, KVal::Slow);
+        assert_eq!(s4_low.k, KinVal::Yea);
+        assert_eq!(s4_high.k, KinVal::Egg);
     }
 
     #[test]
@@ -853,14 +853,14 @@ mod tests {
     #[test]
     fn test_proline_ep() {
         let act = aa_activation('P');
-        assert_eq!(act.phi_activates, Some(PhiVal::EP));
-        assert_eq!(act.k_activates, Some(KVal::Trap));
+        assert_eq!(act.phi_activates, Some(CritVal::Err));
+        assert_eq!(act.k_activates, Some(KinVal::On));
     }
 
     #[test]
     fn test_methionine_inf() {
         let act = aa_activation('M');
-        assert_eq!(act.h_activates, Some(HVal::Inf));
+        assert_eq!(act.h_activates, Some(ChirVal::Wool));
     }
 
     #[test]
@@ -883,7 +883,7 @@ mod tests {
             ..Default::default()
         };
         let fold = generate_stage5_folding(&helix_ctx);
-        assert_eq!(fold.p, PVal::Pm);  // High helix → partial symmetry
+        assert_eq!(fold.p, PolVal::Out);  // High helix → partial symmetry
     }
 }
 
@@ -910,7 +910,7 @@ pub const CANONICAL_QUATERNARY: (&str, &str, &str, &str, &str, &str,
 
 
 // ── IgPrim Consistency Guard ─────────────────────────────────────────────
-// The genetic_tuples value enums (DVal, TVal, ...) are structurally isomorphic
+// The genetic_tuples value enums (DimVal, TopVal, ...) are structurally isomorphic
 // to IgPrim by construction — same cardinalities, same ordering.
 // These tests GUARD against drift: if IgPrim values change, these break.
 #[cfg(test)]
@@ -918,101 +918,101 @@ mod igprim_consistency {
     use super::*;
     use crate::imas_ig::IgPrim;
 
-    /// Verify DVal glyphs match IgPrim glyphs.
+    /// Verify DimVal glyphs match IgPrim glyphs.
     #[test]
     fn dval_glyphs_match_igprim() {
-        assert_eq!(DVal::Wedge.glyph(), IgPrim::dead.glyph());
-        assert_eq!(DVal::Tri.glyph(),   IgPrim::ash.glyph());
-        assert_eq!(DVal::Infty.glyph(), IgPrim::array.glyph());
-        assert_eq!(DVal::Odot.glyph(),  IgPrim::if_.glyph());
+        assert_eq!(DimVal::Dead.glyph(), IgPrim::dead.glyph());
+        assert_eq!(DimVal::Ash.glyph(),   IgPrim::ash.glyph());
+        assert_eq!(DimVal::Array.glyph(), IgPrim::array.glyph());
+        assert_eq!(DimVal::If.glyph(),  IgPrim::if_.glyph());
     }
 
     #[test]
     fn tval_glyphs_match_igprim() {
-        assert_eq!(TVal::Network.glyph(),  IgPrim::judge.glyph());
-        assert_eq!(TVal::In.glyph(),       IgPrim::eat.glyph());
-        assert_eq!(TVal::Bowtie.glyph(),   IgPrim::mime.glyph());
-        assert_eq!(TVal::Boxtimes.glyph(), IgPrim::oil.glyph());
-        assert_eq!(TVal::Odot.glyph(),     IgPrim::are.glyph());
+        assert_eq!(TopVal::Judge.glyph(),  IgPrim::judge.glyph());
+        assert_eq!(TopVal::Eat.glyph(),       IgPrim::eat.glyph());
+        assert_eq!(TopVal::Mime.glyph(),   IgPrim::mime.glyph());
+        assert_eq!(TopVal::Oil.glyph(), IgPrim::oil.glyph());
+        assert_eq!(TopVal::Are.glyph(),     IgPrim::are.glyph());
     }
 
     #[test]
     fn rval_glyphs_match_igprim() {
-        assert_eq!(RVal::Super.glyph(),  IgPrim::ado.glyph());
-        assert_eq!(RVal::Cat.glyph(),    IgPrim::tot.glyph());
-        assert_eq!(RVal::Dagger.glyph(), IgPrim::ear.glyph());
-        assert_eq!(RVal::LR.glyph(),     IgPrim::ian.glyph());
+        assert_eq!(RelVal::Ado.glyph(),  IgPrim::ado.glyph());
+        assert_eq!(RelVal::Tot.glyph(),    IgPrim::tot.glyph());
+        assert_eq!(RelVal::Ear.glyph(), IgPrim::ear.glyph());
+        assert_eq!(RelVal::Ian.glyph(),     IgPrim::ian.glyph());
     }
 
     #[test]
     fn pval_glyphs_match_igprim() {
-        assert_eq!(PVal::Asym.glyph(),  IgPrim::church.glyph());
-        assert_eq!(PVal::Psi.glyph(),   IgPrim::yew.glyph());
-        assert_eq!(PVal::Pm.glyph(),    IgPrim::out.glyph());
-        assert_eq!(PVal::Sym.glyph(),   IgPrim::nun.glyph());
-        assert_eq!(PVal::PmSym.glyph(), IgPrim::or_.glyph());
+        assert_eq!(PolVal::Church.glyph(),  IgPrim::church.glyph());
+        assert_eq!(PolVal::Yew.glyph(),   IgPrim::yew.glyph());
+        assert_eq!(PolVal::Out.glyph(),    IgPrim::out.glyph());
+        assert_eq!(PolVal::Nun.glyph(),   IgPrim::nun.glyph());
+        assert_eq!(PolVal::Or.glyph(), IgPrim::or_.glyph());
     }
 
     #[test]
     fn fval_glyphs_match_igprim() {
-        assert_eq!(FVal::Ell.glyph(),  IgPrim::age.glyph());
-        assert_eq!(FVal::Eth.glyph(),  IgPrim::they.glyph());
-        assert_eq!(FVal::Hbar.glyph(), IgPrim::peep.glyph());
+        assert_eq!(FidVal::Age.glyph(),  IgPrim::age.glyph());
+        assert_eq!(FidVal::They.glyph(),  IgPrim::they.glyph());
+        assert_eq!(FidVal::Peep.glyph(), IgPrim::peep.glyph());
     }
 
     #[test]
     fn kval_glyphs_match_igprim() {
-        assert_eq!(KVal::Fast.glyph(), IgPrim::yea.glyph());
-        assert_eq!(KVal::Mod.glyph(),  IgPrim::loll.glyph());
-        assert_eq!(KVal::Slow.glyph(), IgPrim::egg.glyph());
-        assert_eq!(KVal::Trap.glyph(), IgPrim::on.glyph());
-        assert_eq!(KVal::MBL.glyph(),  IgPrim::air.glyph());
+        assert_eq!(KinVal::Yea.glyph(), IgPrim::yea.glyph());
+        assert_eq!(KinVal::Loll.glyph(),  IgPrim::loll.glyph());
+        assert_eq!(KinVal::Egg.glyph(), IgPrim::egg.glyph());
+        assert_eq!(KinVal::On.glyph(), IgPrim::on.glyph());
+        assert_eq!(KinVal::Air.glyph(),  IgPrim::air.glyph());
     }
 
     #[test]
     fn gval_glyphs_match_igprim() {
-        assert_eq!(GVal::Beth.glyph(),  IgPrim::bib.glyph());
-        assert_eq!(GVal::Gimel.glyph(), IgPrim::thigh.glyph());
-        assert_eq!(GVal::Aleph.glyph(), IgPrim::ice.glyph());
+        assert_eq!(GranVal::Bib.glyph(),  IgPrim::bib.glyph());
+        assert_eq!(GranVal::Thigh.glyph(), IgPrim::thigh.glyph());
+        assert_eq!(GranVal::Ice.glyph(), IgPrim::ice.glyph());
     }
 
     #[test]
     fn gmval_glyphs_match_igprim() {
-        assert_eq!(GmVal::And.glyph(),   IgPrim::vow.glyph());
-        assert_eq!(GmVal::Or.glyph(),    IgPrim::gag.glyph());
-        assert_eq!(GmVal::Seq.glyph(),   IgPrim::measure.glyph());
-        assert_eq!(GmVal::Broad.glyph(), IgPrim::ooze.glyph());
+        assert_eq!(GramVal::Vow.glyph(),   IgPrim::vow.glyph());
+        assert_eq!(GramVal::Gag.glyph(),    IgPrim::gag.glyph());
+        assert_eq!(GramVal::Measure.glyph(),   IgPrim::measure.glyph());
+        assert_eq!(GramVal::Ooze.glyph(), IgPrim::ooze.glyph());
     }
 
     #[test]
     fn phival_glyphs_match_igprim() {
-        assert_eq!(PhiVal::Sub.glyph(),      IgPrim::woe.glyph());
-        assert_eq!(PhiVal::C.glyph(),         IgPrim::monad.glyph());
-        assert_eq!(PhiVal::CComplex.glyph(),  IgPrim::roar.glyph());
-        assert_eq!(PhiVal::EP.glyph(),        IgPrim::err.glyph());
-        assert_eq!(PhiVal::Super.glyph(),     IgPrim::haha.glyph());
+        assert_eq!(CritVal::Woe.glyph(),      IgPrim::woe.glyph());
+        assert_eq!(CritVal::Monad.glyph(),         IgPrim::monad.glyph());
+        assert_eq!(CritVal::Roar.glyph(),  IgPrim::roar.glyph());
+        assert_eq!(CritVal::Err.glyph(),        IgPrim::err.glyph());
+        assert_eq!(CritVal::Haha.glyph(),     IgPrim::haha.glyph());
     }
 
     #[test]
     fn hval_glyphs_match_igprim() {
-        assert_eq!(HVal::M0.glyph(),  IgPrim::fee.glyph());
-        assert_eq!(HVal::M1.glyph(),  IgPrim::kick.glyph());
-        assert_eq!(HVal::M2.glyph(),  IgPrim::sure.glyph());
-        assert_eq!(HVal::Inf.glyph(), IgPrim::wool.glyph());
+        assert_eq!(ChirVal::Fee.glyph(),  IgPrim::fee.glyph());
+        assert_eq!(ChirVal::Kick.glyph(),  IgPrim::kick.glyph());
+        assert_eq!(ChirVal::Sure.glyph(),  IgPrim::sure.glyph());
+        assert_eq!(ChirVal::Wool.glyph(), IgPrim::wool.glyph());
     }
 
     #[test]
     fn sval_glyphs_match_igprim() {
-        assert_eq!(SVal::One.glyph(),    IgPrim::hung.glyph());
-        assert_eq!(SVal::Many.glyph(),   IgPrim::so.glyph());
-        assert_eq!(SVal::Hetero.glyph(), IgPrim::up.glyph());
+        assert_eq!(StoiVal::Hung.glyph(),    IgPrim::hung.glyph());
+        assert_eq!(StoiVal::So.glyph(),   IgPrim::so.glyph());
+        assert_eq!(StoiVal::Up.glyph(), IgPrim::up.glyph());
     }
 
     #[test]
     fn oval_glyphs_match_igprim() {
-        assert_eq!(OVal::Trivial.glyph(), IgPrim::awe.glyph());
-        assert_eq!(OVal::Z2.glyph(),      IgPrim::oak.glyph());
-        assert_eq!(OVal::Z.glyph(),       IgPrim::ah.glyph());
-        assert_eq!(OVal::NA.glyph(),      IgPrim::zoo.glyph());
+        assert_eq!(ProtVal::Awe.glyph(), IgPrim::awe.glyph());
+        assert_eq!(ProtVal::Oak.glyph(),      IgPrim::oak.glyph());
+        assert_eq!(ProtVal::Ah.glyph(),       IgPrim::ah.glyph());
+        assert_eq!(ProtVal::Zoo.glyph(),      IgPrim::zoo.glyph());
     }
 }

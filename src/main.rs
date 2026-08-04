@@ -40,6 +40,7 @@ mod aleph;
 mod manus;
 mod parasm;
 mod belnap_shor;
+mod belnap_shor_factors;
 mod para_rh;
 mod para_ym;
 mod para_temporal;

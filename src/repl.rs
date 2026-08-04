@@ -721,7 +721,34 @@ pub fn repl(k: &mut Kernel) {
                 let psm_full = if psm_rest.is_empty() { alloc::string::String::from(psm_arg) } else { alloc::format!("{} {}", psm_arg, psm_rest) };
                 print_psm(&psm_full);
             }
-            "shor" => print_shor(),
+            "shor" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" => print_shor(),
+                    "factors" => {
+                        let n_str = parts.next().unwrap_or("");
+                        let a_str = parts.next().unwrap_or("");
+                        print_shor_factors(parse_u64(n_str), parse_u64(a_str));
+                    }
+                    "gap" => {
+                        let n_str = parts.next().unwrap_or("");
+                        let a_str = parts.next().unwrap_or("");
+                        print_shor_gap(parse_u64(n_str), parse_u64(a_str));
+                    }
+                    "help" => {
+                        sprintln!("shor — Belnap Shor pipeline + factorization");
+                        sprintln!("  shor              default pipeline (N=15,21)");
+                        sprintln!("  shor factors N a  full factorization run");
+                        sprintln!("  shor gap N a      coherence gap analysis");
+                        sprintln!("  shor N a          belnap cost analysis for specific (N,a)");
+                    }
+                    other => {
+                        let n_val = parse_u64(other);
+                        let a_val = parse_u64(parts.next().unwrap_or(""));
+                        print_shor_custom(n_val, a_val);
+                    }
+                }
+            }
             "rh" => print_rh(),
             "ym" => print_ym(),
             "temp" => print_temporal(),
@@ -2978,11 +3005,131 @@ fn print_shor() {
     sprintln!("  period={} H={} B-meas={} T-meas={} ratio={:.1}",
         r2.period_cl, r2.hadamard_coherence, r2.b_bias_coherence, r2.t_bias_coherence, r2.ratio);
 
-    sprintln!("── Phi_upsilon bottleneck ──");
+    // Both of these are Polarity values wearing an old Criticality-style
+    // prefix: upsilon is yew (𐑿, phase symmetry) and pmsym is or' (𐑹,
+    // Frobenius-special). The gap is along <, not ⊙.
+    sprintln!("── <=𐑿 bottleneck ──");
     sprintln!("  B is the only superposition; all lattice ops preserve B.");
     sprintln!("  Period r encoded in 2:1 coherence cost ratio, not bits.");
-    sprintln!("  Phi_upsilon -> Phi_pmsym gap: structural open problem.");
+    sprintln!("  <=𐑿 -> <=𐑹 gap: structural open problem.");
 }
+
+fn parse_u64(s: &str) -> u64 {
+    s.parse::<u64>().unwrap_or(0)
+}
+
+fn print_shor_custom(n_val: u64, a_val: u64) {
+    use crate::belnap::B4;
+    use crate::belnap_shor::run_belnap_shor;
+    use crate::belnap_shor_factors::{analyze_coherence_gap, extract_factors};
+
+    if n_val == 0 || a_val == 0 {
+        sprintln!("shor: usage: shor N a  (N>1, a>1, gcd(N,a)=1)");
+        return;
+    }
+
+    let n_qubits = if n_val <= 1 { 2 } else {
+        let mut bits = 0; let mut v = n_val - 1;
+        while v > 0 { bits += 1; v >>= 1; }
+        bits.max(2) as usize
+    };
+
+    sprintln!("══ Belnap Shor Pipeline: N={}, a={} ══", n_val, a_val);
+
+    let shor = run_belnap_shor(n_qubits, a_val, n_val);
+    let gap = analyze_coherence_gap(n_qubits, shor.period_cl, shor.b_bias_coherence);
+    let factors = extract_factors(n_val, a_val, shor.period_cl);
+
+    sprintln!("  n_qubits={}  period={}  n_qubits==period? {}",
+        n_qubits, shor.period_cl, n_qubits as u64 == shor.period_cl);
+    sprintln!("  belnapCost (B-meas) = {}", shor.b_bias_coherence);
+    sprintln!("  2·period            = {}", gap.twice_period);
+    sprintln!("  coherence gap        = {}  (precondition: {})",
+        gap.gap, if gap.precondition_holds { "HOLDS" } else { "FAILS" });
+    sprintln!("  ratio belnapCost/2r  = {:.4}", gap.ratio_to_2r);
+    sprintln!("  B-bias/T-bias ratio  = {:.1}", shor.ratio);
+
+    sprintln!("  ── Factorization ──");
+    sprintln!("  period={}  trivial={}", factors.period, factors.trivial);
+    if !factors.trivial {
+        sprintln!("  factor1={}  factor2={}  N={}×{}",
+            factors.factor1.unwrap_or(0), factors.factor2.unwrap_or(0),
+            factors.factor1.unwrap_or(0), factors.factor2.unwrap_or(0));
+    } else {
+        sprintln!("  reason: {}", factors.reason);
+    }
+}
+
+fn print_shor_factors(n_val: u64, a_val: u64) {
+    use crate::belnap_shor_factors::*;
+    use crate::belnap_shor::run_belnap_shor;
+
+    if n_val == 0 || a_val == 0 {
+        sprintln!("shor factors: usage: shor factors N a");
+        return;
+    }
+
+    sprintln!("══ Belnap Shor Factorization: N={}, a={} ══", n_val, a_val);
+    let r = run_full_belnap_shor_auto(a_val, n_val);
+
+    sprintln!("  n_qubits={}  period={}", r.n_qubits, r.period);
+    sprintln!("  Belnap B-meas cost = {}  (2n = {})", r.shor_result.b_bias_coherence, 2 * r.n_qubits);
+    sprintln!("  T-bias cost        = {}  (n = {})", r.shor_result.t_bias_coherence, r.n_qubits);
+    sprintln!("  Coherence gap      = {}  precondition={}",
+        r.gap.gap, r.gap.precondition_holds);
+
+    sprintln!("  ── Factors ──");
+    if !r.factors.trivial {
+        sprintln!("  ✓ N = {} × {}", r.factors.factor1.unwrap_or(0), r.factors.factor2.unwrap_or(0));
+        sprintln!("  ✓ gcd(a^(r/2)±1, N) = ({},{})",
+            r.factors.factor1.unwrap_or(0), r.factors.factor2.unwrap_or(0));
+    } else {
+        sprintln!("  ✗ {}", r.factors.reason);
+        if r.factors.factor1.is_some() {
+            sprintln!("    partial: gcd → {} and {}",
+                r.factors.factor1.unwrap_or(0), r.factors.factor2.unwrap_or(0));
+        }
+    }
+}
+
+fn print_shor_gap(n_val: u64, a_val: u64) {
+    use crate::belnap_shor_factors::*;
+    use crate::belnap_shor::run_belnap_shor;
+
+    if n_val == 0 || a_val == 0 {
+        // Default: show gap for canonical cases
+        sprintln!("══ Belnap Shor Coherence Gap Analysis ══");
+        sprintln!();
+        let cases = [(4usize, 7u64, 15u64, 4u64), (5, 5, 21, 6), (6, 2, 35, 12), (7, 2, 77, 30)];
+        sprintln!("  {:<6} {:<6} {:<6} {:<10} {:<10} {:<8}", "N", "a", "r", "belnapCost", "2r", "gap");
+        sprintln!("  {}", "─".repeat(52));
+        for (n, a, N, r) in &cases {
+            let shor = run_belnap_shor(*n, *a, *N);
+            let gap = analyze_coherence_gap(*n, *r, shor.b_bias_coherence);
+            sprintln!("  {:<6} {:<6} {:<6} {:<10} {:<10} {:<+8}  {}",
+                N, a, r, shor.b_bias_coherence, gap.twice_period, gap.gap,
+                if gap.precondition_holds { "✓ precondition holds" } else { "✗ gap" });
+        }
+        sprintln!();
+        sprintln!("  phi_upsilon_bottleneck: belnapCost = 2·period");
+        sprintln!("  This holds ONLY when n == r (coincidental for N=15,a=7).");
+        sprintln!("  For general N: belnapCost = 2n ≠ 2r.");
+        sprintln!("  The 2:1 ratio is the quantum advantage INVARIANT, not the period extractor.");
+        return;
+    }
+
+    sprintln!("══ Coherence Gap: N={}, a={} ══", n_val, a_val);
+    let n = if n_val <= 1 { 2 } else {
+        let mut bits = 0; let mut v = n_val - 1;
+        while v > 0 { bits += 1; v >>= 1; }
+        bits.max(2) as usize
+    };
+    let shor = run_belnap_shor(n, a_val, n_val);
+    let gap = analyze_coherence_gap(n, shor.period_cl, shor.b_bias_coherence);
+    sprintln!("  n={}  r={}  belnapCost={}  2r={}  gap={}  holds={}",
+        n, shor.period_cl, shor.b_bias_coherence, gap.twice_period, gap.gap, gap.precondition_holds);
+}
+
 
 fn print_psm(arg: &str) {
     use crate::belnap::B4;
