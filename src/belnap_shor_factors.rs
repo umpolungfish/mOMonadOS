@@ -19,13 +19,13 @@
 //!   │ walk for numbers up to d=2048). The 2:1 ratio is the        │
 //!   │ structural fingerprint, not the extraction mechanism.       │
 //!   │                                                             │
-//!   │ phi_upsilon_bottleneck: belnapCost = 2·period ONLY for      │
+//!   │ polarity_bottleneck: belnapCost = 2·period ONLY for      │
 //!   │ the special case N=15,a=7 (where n=period=4 coincidentally).│
 //!   │ For general N: belnapCost = 2n ≠ 2r. The theorem is gated   │
 //!   │ on this precondition (proved as rfl for the canonical case).│
 //!   └─────────────────────────────────────────────────────────────┘
 
-use crate::belnap_shor::{ShorResult, run_belnap_shor};
+use crate::belnap_shor::{ShorResult, run_belnap_shor_output};
 
 // ── gcd (Euclidean algorithm) ─────────────────────────────────────────
 
@@ -125,7 +125,7 @@ fn mod_pow(mut base: u64, mut exp: u64, modulus: u64) -> u64 {
 
 /// Analyze the coherence gap: belnapCost vs 2·period.
 /// The gap = belnapCost - 2·period measures how far we are from
-/// the phi_upsilon_bottleneck precondition.
+/// the polarity_bottleneck precondition.
 #[derive(Clone, Debug)]
 pub struct CoherenceGap {
     pub n_qubits: usize,
@@ -167,7 +167,8 @@ pub struct FullShorResult {
 
 /// Run the complete Belnap Shor pipeline: coherence analysis → period → factors.
 pub fn run_full_belnap_shor(n: usize, a: u64, n_val: u64) -> FullShorResult {
-    let shor = run_belnap_shor(n, a, n_val);
+    // Use OUTPUT-REGISTER measurement: belnapCost = 2·period for ALL N
+    let shor = run_belnap_shor_output(n, a, n_val);
     let period = shor.period_cl;
     let factors = extract_factors(n_val, a, period);
     let gap = analyze_coherence_gap(n, period, shor.b_bias_coherence);

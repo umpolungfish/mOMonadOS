@@ -22,7 +22,6 @@
 
 use alloc::vec::Vec;
 use alloc::vec;
-use alloc::string::String;
 
 // ── Gate decomposition for Shor's circuit ─────────────────────────────
 

@@ -3024,7 +3024,7 @@ fn print_shor() {
     sprintln!("  period={} H={} B-meas={} T-meas={} ratio={:.1}",
         r1.period_cl, r1.hadamard_coherence, r1.b_bias_coherence, r1.t_bias_coherence, r1.ratio);
     sprintln!("  allB={} b-preserves={} t-collapses={} bottleneck={}",
-        r1.mod_exp_all_b, r1.b_bias_preserves, r1.t_bias_collapses, r1.phi_upsilon_bottleneck);
+        r1.mod_exp_all_b, r1.b_bias_preserves, r1.t_bias_collapses, r1.polarity_bottleneck);
 
     sprintln!("── Shor N=21,a=5 ──");
     let r2 = run_belnap_shor_output(5, 5, 21);
@@ -3041,7 +3041,7 @@ fn print_shor() {
 }
 
 fn print_shor_phase(n_val: u64, a_val: u64) {
-    use crate::belnap_phase_shor::{run_phase_belnap_shor, PhaseModExp, phi_upsilon_bottleneck_closed};
+    use crate::belnap_phase_shor::{run_phase_belnap_shor, PhaseModExp, polarity_bottleneck_closed};
 
     if n_val == 0 || a_val == 0 {
         // Default: show phase-augmented analysis for canonical cases
@@ -3058,7 +3058,7 @@ fn print_shor_phase(n_val: u64, a_val: u64) {
                 N, a, r.period, r.total_phase, r.belnap_cost, r.gap, r.bottleneck_closed);
         }
         sprintln!();
-        sprintln!("  phi_upsilon_bottleneck: belnapCost = 2·period");
+        sprintln!("  polarity_bottleneck: belnapCost = 2·period");
         sprintln!("  Phase-augmented model: cost depends on phase accumulation");
         sprintln!("  Gap is SMALLER than classical (belnapCost=2n) approach");
         return;
@@ -3288,7 +3288,7 @@ fn print_shor_gap(n_val: u64, a_val: u64) {
                 if gap.precondition_holds { "✓ precondition holds" } else { "✗ gap" });
         }
         sprintln!();
-        sprintln!("  phi_upsilon_bottleneck: belnapCost = 2·period  ✓ CLOSED");
+        sprintln!("  polarity_bottleneck: belnapCost = 2·period  ✓ CLOSED");
         sprintln!("  Output-register measurement: |{{a^x mod N}}| = r distinct values.");
         sprintln!("  belnapCost = 2r for ALL N (verified: 15, 21, 35, 77).");
         sprintln!("  The 2:1 B-bias/T-bias ratio IS the period extractor.");
