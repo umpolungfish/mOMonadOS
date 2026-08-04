@@ -1,32 +1,35 @@
-Close the braid dual, and give it a door
+Give the CFG figure the kernel's geometry, and a clear field
 
-braid_to_imasm and read_tangle were written as δ and μ of the same pair and then
-neither exposed nor checked. The reason they were never checked is structural:
-the kernel is a bare-metal binary with no library target, so there was nowhere a
-round trip could run. A dual that has never been closed is a claim.
+Three things were wrong with the picture the dialect visualizer produced.
 
-So the lib target comes first. It carries only tokens and braid_protocol,
-nothing that touches serial, interrupts, the entry point or the halt, and it
-takes main.rs's own no_std condition because cargo builds it alongside the
-binary. The bare-metal image still builds and is unchanged.
+The layout was a circle. Every token sat at an arbitrary angle, so the drawing
+said nothing the token order had not already said. The real arrangement is fixed
+and is read off k3vM.html: the FSPLIT shell is centred on IMSCRIB with radius LR;
+the evaluator sphere carries the SAME radius and is centred one radius along +x,
+so IMSCRIB lies exactly on it and the two are tangent; the three evaluators stand
+at 120 degrees on the evaluator equator, which is the A2 trine; FFUSE sits at the
+antipodal pole. Both shells and the coupler between their centres are drawn now,
+and a token's position is a fact about what it is. Tokens the geometry does not
+pin ride the syzygy axis in program order, and a token occurring twice is fanned
+rather than stacked invisibly on itself.
 
-The gate is seven tests and they pass. mu(delta) = id holds on the GENERATOR
-WORD, which is the object, and not on the token stream: delta chooses a depth
-path between crossings and mu does not record which path was taken, so a program
-is one presentation of a braid rather than the braid. Claiming the stronger
-identity would be claiming something false. Writhe and crossing count survive.
-The two handednesses cost the same and differ by exactly one gate, and that gate
-is AREV, the involution that swaps T and F, swaps t and f, and fixes B and N.
-Chirality in the braid is chirality in the register.
+The opcodes were the retired spellings. They are the legal twelve now, in both
+the Python table and the emitted JavaScript one.
 
-Yang-Baxter and far commutativity are checked as agreements on the invariants mu
-recovers, which is what they can be here: the two sides are distinct programs, so
-the relation was never going to be an identity of token streams.
+And the figure could not be read on a page. The titles are gone, inside the SVG
+and above it, because the universe name and the gate verdict are the caption's
+job and drawn there they sat on top of the geometry. The body and the figure
+surface are transparent. The four family colours were picked to glow on
+near-black and three of them were too light to survive a white field, so they
+are the Okabe-Ito equivalents at the same hue. The node discs lost their dark
+fill, which had swallowed the glyph.
 
-fibqc braid and fibqc tangle expose the two directions, with the mu-of-delta
-result printed on the same line so a caller sees the closure rather than
-trusting it. Both land in the reference in this change, as section 14b, together
-with the reading of Markov's first move as ROTAT rather than as something
-analogous to it, and with the expected refusal: braid generators are invertible,
-IFIX and the evaluator projections are not, so the braid group embeds only into
-the involutive part and the surplus is measurement.
+The reason none of the colour work appeared to take: a CSS rule set fill and
+font-size on every text element, and a CSS rule beats an SVG presentation
+attribute, so each glyph was painted near-white at 8px no matter what the drawing
+code asked for. On a clear field that is invisible. The rule no longer sets
+either, and the per-element attributes decide.
+
+shoot_cfg.py captures the figure element on a transparent field. A page is not a
+figure, and the alternative was a second stripped copy of the generator that
+would have drifted from this one within a week.

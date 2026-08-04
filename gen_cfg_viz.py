@@ -10,12 +10,15 @@ PC = ["#e8b84b", "#4ba8b8", "#a84bb8"]
 PN = ["Canonical", "Hand-crafted", "Expansion"]
 
 # Token glyphs and families
-GLYPH = {"VINIT":"\u22a2","TANCH":"\u22a3","AFWD":">","AREV":"<",
-         "CLINK":"=","IMSCRIB":"\u2299","FSPLIT":"\u25c7","FFUSE":"\u25cf",
-         "EVALT":"+","EVALF":"\u00d7","ENGAGR":"\u229e","IFIX":"\u00ac"}
+# The legal twelve. These are the primitive glyphs of the Grammar itself, one
+# per axis, not a notation standing beside them. Authority is
+# MoDoT/ask_native/src/imasm.rs; the retired forms ◇ ● + × ¬ = do not appear.
+GLYPH = {"VINIT":"⊢","TANCH":"⊣","AFWD":">","AREV":"<",
+         "CLINK":"⋈","IMSCRIB":"⊙","FSPLIT":"∈","FFUSE":"∋",
+         "EVALT":"⊤","EVALF":"⊥","ENGAGR":"⊞","IFIX":"◻"}
 FAM = {"VINIT":0,"TANCH":0,"AFWD":0,"AREV":0,"CLINK":0,"IMSCRIB":0,
        "FSPLIT":1,"FFUSE":1,"EVALT":2,"EVALF":2,"ENGAGR":2,"IFIX":3}
-FAMC = ["#6af","#a84bb8","#e8b84b","#6f6"]
+FAMC = ["#0072B2","#7B3294","#B8860B","#009E73"]
 FAMN = ["LOGICAL","FROBENIUS","DIALETHEIA","LINEAR"]
 
 CANONICALS = {
@@ -39,7 +42,7 @@ CANONICALS = {
 # ===== CSS =====
 CSS = r"""
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#0b0b12;color:#f0ead8;font-family:'Courier New',monospace;overflow-x:hidden}
+body{background:transparent;color:#f0ead8;font-family:'Courier New',monospace;overflow-x:hidden}
 #layout{display:grid;grid-template-columns:340px 1fr;height:100vh}
 #sidebar{background:#12101e;border-right:1px solid #2a2740;padding:16px;overflow-y:auto}
 #main{padding:20px;overflow-y:auto}
@@ -61,13 +64,13 @@ textarea{width:100%;background:#1e1c2e;color:#f0ead8;border:1px solid #3a3550;bo
 #ruleset-box .gv{color:#f0ead8}
 #rslt-box{background:#1a1828;border:1px solid #2a2740;border-radius:6px;padding:10px;margin:10px 0;font-size:11px}
 #cfg-box{background:#1a1828;border:1px solid #2a2740;border-radius:6px;padding:10px;margin:10px 0;font-size:11px;line-height:1.6}
-#cfg-view{width:100%;height:480px;background:#0e0c18;border:1px solid #2a2740;border-radius:6px;position:relative;overflow:hidden}
+#cfg-view{width:100%;height:480px;background:transparent;border:1px solid #2a2740;border-radius:6px;position:relative;overflow:hidden}
 #cfg-view svg{width:100%;height:100%}
 .edge{stroke:#3a3550;stroke-width:1.5;fill:none}
 .edge.pass{stroke:#4a8}
 .edge.fail{stroke:#844;stroke-dasharray:4,3}
 .edge.back{stroke:#a84bb8;stroke-dasharray:2,2}
-text{font-family:'Courier New',monospace;font-size:8px;fill:#f0ead8;pointer-events:none}
+text{font-family:'Courier New',monospace;pointer-events:none}/* No fill or font-size here: a CSS rule beats an SVG presentation attribute, so fill:#f0ead8 and font-size:8px silently overrode every per-element colour and size the drawing code set. Every glyph was painted near-white at 8px whatever the code asked for, which on a clear field is invisible. The per-element attributes decide. */
 #legend{display:flex;gap:14px;margin:6px 0;font-size:10px;flex-wrap:wrap}
 #legend span{display:flex;align-items:center;gap:4px}
 .ld{width:10px;height:10px;border-radius:50%;display:inline-block}
@@ -84,7 +87,6 @@ CSS,
 '</style></head><body>',
 '<div id="tip"></div><div id="layout">',
 '<div id="sidebar">',
-'<h1>&#x2299; Dialect CFG</h1>',
 '<div style="font-size:10px;color:#8a84b0;margin-bottom:10px">88 universes &middot; IMASM grammar</div>',
 '<h2>1. Select Universe</h2>',
 '<select id="dialectSel" onchange="updateDialect()">',
@@ -107,7 +109,6 @@ H.append('<h2>3. Gate Results</h2>')
 H.append('<div id="rslt-box">Run evaluation</div>')
 H.append('</div>')  # end sidebar
 H.append('<div id="main">')
-H.append('<h1>CFG: Token Grammar &times; Dialect Ruleset</h1>')
 H.append('<div id="stat-bar">Select universe + IMASM word, then Evaluate</div>')
 H.append('<div id="legend">')
 for i in range(4):
@@ -124,12 +125,12 @@ H.append('</div></div>')
 # ===== JAVASCRIPT =====
 H.append("""<script>
 const DATA = """ + json.dumps(DATA) + """;
-const GLYPH = {"VINIT":"\\u22a2","TANCH":"\\u22a3","AFWD":">","AREV":"<","CLINK":"=",
-  "IMSCRIB":"\\u2299","FSPLIT":"\\u25c7","FFUSE":"\\u25cf","EVALT":"+","EVALF":"\\u00d7",
-  "ENGAGR":"\\u229e","IFIX":"\\u00ac"};
+const GLYPH = {"VINIT":"⊢","TANCH":"⊣","AFWD":">","AREV":"<","CLINK":"⋈",
+  "IMSCRIB":"⊙","FSPLIT":"∈","FFUSE":"∋","EVALT":"⊤","EVALF":"⊥",
+  "ENGAGR":"⊞","IFIX":"◻"};
 const FAM = {"VINIT":0,"TANCH":0,"AFWD":0,"AREV":0,"CLINK":0,"IMSCRIB":0,
   "FSPLIT":1,"FFUSE":1,"EVALT":2,"EVALF":2,"ENGAGR":2,"IFIX":3};
-const FAMC = ["#6af","#a84bb8","#e8b84b","#6f6"];
+const FAMC = ["#0072B2","#7B3294","#B8860B","#009E73"];
 const FAMN = ["LOGICAL","FROBENIUS","DIALETHEIA","LINEAR"];
 const PC = ["#e8b84b","#4ba8b8","#a84bb8"];
 
@@ -391,19 +392,65 @@ function drawCFG(tokens, ig, allPass, seq, g1p, g2p, g3p, idx) {
   
   let html = "";
   
-  // Layout: place tokens in a bowtie/cycle pattern
-  const cx = W / 2, cy = H / 2;
-  const R = Math.min(W, H) * 0.38;
-  
-  // Positions: arrange in a circle (cyclic program)
-  const pos = [];
-  const startAngle = -Math.PI/2;
+  // Layout: the kernel's own geometry, not a ring.
+  //
+  // A circle placed every token at an arbitrary angle, so the picture said
+  // nothing the token order did not already say. The real arrangement is fixed
+  // (k3vM.html, "Spheres and evaluators"): the ∈ shell is centred on ⊙ with
+  // radius LR; the evaluator sphere has the SAME radius and is centred one
+  // radius along +x, so ⊙ lies exactly on it and the two are tangent; the three
+  // evaluators ⊤ ⊥ ⊞ stand at 120° on the evaluator equator, the A₂ trine; and
+  // ∋ sits at the antipodal pole, at 2·LR. The mainline ⊢ … ⊣ runs along the
+  // syzygy axis through both centres.
+  //
+  // So a token's position is a fact about what it is, and the two shells and
+  // their tangency are drawn rather than implied.
+  const LR = Math.min(W, H) * 0.19;          // shell radius, both spheres
+  const ODOT = { x: W / 2 - LR, y: H / 2 };  // ⊙, centre of the ∈ shell
+  const CEN  = { x: ODOT.x + LR, y: H / 2 }; // evaluator sphere centre
+  const POLE = { x: ODOT.x + 2 * LR, y: H / 2 }; // ∋, antipodal pole
+
+  // the A₂ trine on the evaluator equator, ⊤ at the top
+  const TRINE = ["EVALT", "EVALF", "ENGAGR"];
+  const trinePos = {};
+  TRINE.forEach((tok, k) => {
+    const a = -Math.PI / 2 + 2 * Math.PI * k / 3;
+    trinePos[tok] = { x: CEN.x + LR * Math.cos(a), y: CEN.y + LR * Math.sin(a) };
+  });
+
+  // Both shells and the coupler between their centres, drawn first so the
+  // tokens sit on them rather than in front of an empty field.
+  html += `<circle cx="${ODOT.x}" cy="${ODOT.y}" r="${LR}" fill="none" stroke="#B8860B" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.75"/>`;
+  html += `<circle cx="${CEN.x}" cy="${CEN.y}" r="${LR}" fill="none" stroke="#0072B2" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.75"/>`;
+  html += `<line x1="${ODOT.x}" y1="${ODOT.y}" x2="${CEN.x}" y2="${CEN.y}" stroke="#555" stroke-width="1.2"/>`;
+  html += `<text x="${ODOT.x - LR - 6}" y="${ODOT.y - LR * 0.62}" fill="#B8860B" font-size="11" text-anchor="end">∈ shell (centred on ⊙)</text>`;
+  html += `<text x="${CEN.x + LR + 6}" y="${CEN.y - LR * 0.62}" fill="#0072B2" font-size="11">evaluator sphere (d=2048)</text>`;
+
+  // Mainline positions for the tokens the geometry does not pin: they ride the
+  // syzygy axis in program order, which is where the kernel puts them.
+  const RAIL = [];
   for (let i = 0; i < n; i++) {
-    const angle = startAngle + (2 * Math.PI * i / n);
-    pos.push({
-      x: cx + R * Math.cos(angle),
-      y: cy + R * Math.sin(angle)
-    });
+    const fixed = tokens[i] === "IMSCRIB" || tokens[i] === "FFUSE" || TRINE.includes(tokens[i]);
+    if (!fixed) RAIL.push(i);
+  }
+  const x0 = ODOT.x - LR * 1.7, x1 = POLE.x + LR * 1.7;
+
+  const pos = [];
+  const seen = {};
+  for (let i = 0; i < n; i++) {
+    const tok = tokens[i];
+    // A token occurring more than once cannot be at one point, so repeats are
+    // fanned perpendicular to the axis instead of being stacked invisibly.
+    const rep = (seen[tok] = (seen[tok] || 0) + 1) - 1;
+    const fan = rep * 16;
+    if (tok === "IMSCRIB")      pos.push({ x: ODOT.x, y: ODOT.y + fan });
+    else if (tok === "FFUSE")   pos.push({ x: POLE.x, y: POLE.y + fan });
+    else if (trinePos[tok])     pos.push({ x: trinePos[tok].x, y: trinePos[tok].y + fan });
+    else {
+      const k = RAIL.indexOf(i);
+      const frac = RAIL.length > 1 ? k / (RAIL.length - 1) : 0.5;
+      pos.push({ x: x0 + (x1 - x0) * frac, y: H / 2 + LR * 1.55 });
+    }
   }
   
   // Draw edges
@@ -450,21 +497,17 @@ function drawCFG(tokens, ig, allPass, seq, g1p, g2p, g3p, idx) {
     // Token pass/fail based on gate status
     // For now, show based on overall pass
     const isPass = allPass;
-    const r = isPass ? 16 : 12;
+    const r = isPass ? 15 : 11;
     
     // Draw node circle with gate-aware coloring
     html += `<g class="token-node">`;
-    html += `<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="#1a1828" stroke="${col}" stroke-width="${isPass ? 2.5 : 1.5}" class="token-ring" opacity="${isPass ? 1 : 0.5}"/>`;
-    
-    // Gate badge
-    const badgeCol = allPass ? "#4a8" : "#844";
-    html += `<circle cx="${p.x+10}" cy="${p.y-10}" r="5" fill="${badgeCol}" opacity="0.8"/>`;
+    html += `<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="none" stroke="${col}" stroke-width="${isPass ? 2.5 : 1.5}" class="token-ring" opacity="${isPass ? 1 : 0.5}"/>`;
     
     // Token label
-    html += `<text x="${p.x}" y="${p.y+3}" text-anchor="middle" fill="${col}" font-size="11" font-weight="bold">${glyph}</text>`;
+    html += `<text x="${p.x}" y="${p.y+3}" text-anchor="middle" fill="${col}" font-size="17" font-weight="bold">${glyph}</text>`;
     
     // Index label below
-    html += `<text x="${p.x}" y="${p.y+r+12}" text-anchor="middle" fill="#5a659c" font-size="7">${i}</text>`;
+    html += `<text x="${p.x}" y="${p.y+r+12}" text-anchor="middle" fill="#444" font-size="8">${i}</text>`;
     html += `</g>`;
   }
   
@@ -473,12 +516,11 @@ function drawCFG(tokens, ig, allPass, seq, g1p, g2p, g3p, idx) {
   let ffuseCount = tokens.filter(t => t === "FFUSE").length;
   const balanced = fsplitCount === ffuseCount;
   
-  html += `<text x="12" y="${H-12}" fill="#5a659c" font-size="9">FSplit:${fsplitCount} FFuse:${ffuseCount} ${balanced ? "(balanced)" : "(unbalanced)"}</text>`;
+  html += `<text x="12" y="${H-12}" fill="#555" font-size="9">FSplit:${fsplitCount} FFuse:${ffuseCount} ${balanced ? "(balanced)" : "(unbalanced)"}</text>`;
   
-  // Title
-  const d = DATA[idx];
-  html += `<text x="${cx}" y="20" text-anchor="middle" fill="#e8b84b" font-size="13" font-weight="bold">${d.name} (U_${idx})</text>`;
-  html += `<text x="${cx}" y="34" text-anchor="middle" fill="#8a84b0" font-size="9">${n} tokens &middot; ${allPass ? "ALL GATES PASS" : "GATE VIOLATION"}${seq ? " &middot; sequential" : " &middot; parallel"}</text>`;
+  // No title inside the figure. The universe name and the gate verdict are the
+  // caption's job on a page, and drawn here they were the one label guaranteed
+  // to sit on top of the geometry.
   
   svg.innerHTML = html;
   
