@@ -1,35 +1,19 @@
-Give the CFG figure the kernel's geometry, and a clear field
+Two panels, because the geometry does not fit in one
 
-Three things were wrong with the picture the dialect visualizer produced.
+The figure showed the two shells as tangent circles AND the trine spread at 120
+degrees. Those are facts about different planes. The shells appear tangent only
+in a plane containing the syzygy axis; the trine stands at 120 degrees only in
+the plane perpendicular to it. Drawing both put two mutually exclusive viewpoints
+in one picture, which is a perspective that does not exist. plotter3 emits
+separate views for exactly this reason and this now follows it.
 
-The layout was a circle. Every token sat at an arbitrary angle, so the drawing
-said nothing the token order had not already said. The real arrangement is fixed
-and is read off k3vM.html: the FSPLIT shell is centred on IMSCRIB with radius LR;
-the evaluator sphere carries the SAME radius and is centred one radius along +x,
-so IMSCRIB lies exactly on it and the two are tangent; the three evaluators stand
-at 120 degrees on the evaluator equator, which is the A2 trine; FFUSE sits at the
-antipodal pole. Both shells and the coupler between their centres are drawn now,
-and a token's position is a fact about what it is. Tokens the geometry does not
-pin ride the syzygy axis in program order, and a token occurring twice is fanned
-rather than stacked invisibly on itself.
+Left is side-on: the FSPLIT shell centred on IMSCRIB, the evaluator sphere of
+equal radius one radius along the axis so IMSCRIB lies on it, FFUSE at the
+antipodal pole, and the trine drawn as the vertical span it actually is in this
+plane rather than as a triangle it is not. The program rides this panel.
 
-The opcodes were the retired spellings. They are the legal twelve now, in both
-the Python table and the emitted JavaScript one.
+Right is face-on down the axis: the same evaluator sphere as one circle, the
+three arms at 120 degrees, the A2 trine, IMSCRIB at the centre.
 
-And the figure could not be read on a page. The titles are gone, inside the SVG
-and above it, because the universe name and the gate verdict are the caption's
-job and drawn there they sat on top of the geometry. The body and the figure
-surface are transparent. The four family colours were picked to glow on
-near-black and three of them were too light to survive a white field, so they
-are the Okabe-Ito equivalents at the same hue. The node discs lost their dark
-fill, which had swallowed the glyph.
-
-The reason none of the colour work appeared to take: a CSS rule set fill and
-font-size on every text element, and a CSS rule beats an SVG presentation
-attribute, so each glyph was painted near-white at 8px no matter what the drawing
-code asked for. On a clear field that is invisible. The rule no longer sets
-either, and the per-element attributes decide.
-
-shoot_cfg.py captures the figure element on a transparent field. A page is not a
-figure, and the alternative was a second stripped copy of the generator that
-would have drifted from this one within a week.
+Both panels are at one scale, so the two readings of the same sphere can be
+compared rather than only believed.

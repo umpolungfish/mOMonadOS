@@ -26,7 +26,7 @@ textarea{width:100%;background:#1e1c2e;color:#f0ead8;border:1px solid #3a3550;bo
 #ruleset-box .gv{color:#f0ead8}
 #rslt-box{background:#1a1828;border:1px solid #2a2740;border-radius:6px;padding:10px;margin:10px 0;font-size:11px}
 #cfg-box{background:#1a1828;border:1px solid #2a2740;border-radius:6px;padding:10px;margin:10px 0;font-size:11px;line-height:1.6}
-#cfg-view{width:100%;height:480px;background:transparent;border:1px solid #2a2740;border-radius:6px;position:relative;overflow:hidden}
+#cfg-view{width:100%;height:480px;background:transparent;border:none;position:relative;overflow:hidden}
 #cfg-view svg{width:100%;height:100%}
 .edge{stroke:#3a3550;stroke-width:1.5;fill:none}
 .edge.pass{stroke:#4a8}
@@ -442,67 +442,91 @@ function drawCFG(tokens, ig, allPass, seq, g1p, g2p, g3p, idx) {
   
   let html = "";
   
-  // Layout: the kernel's own geometry, not a ring.
+  // Layout: the kernel's own geometry, in TWO panels.
   //
-  // A circle placed every token at an arbitrary angle, so the picture said
-  // nothing the token order did not already say. The real arrangement is fixed
-  // (k3vM.html, "Spheres and evaluators"): the ∈ shell is centred on ⊙ with
-  // radius LR; the evaluator sphere has the SAME radius and is centred one
-  // radius along +x, so ⊙ lies exactly on it and the two are tangent; the three
-  // evaluators ⊤ ⊥ ⊞ stand at 120° on the evaluator equator, the A₂ trine; and
-  // ∋ sits at the antipodal pole, at 2·LR. The mainline ⊢ … ⊣ runs along the
-  // syzygy axis through both centres.
+  // A single panel cannot hold it. The two shells appear as tangent circles only
+  // in a plane containing the syzygy axis, and the A₂ trine appears at 120° only
+  // in the plane perpendicular to it. Drawing the tangency and the 120° spread
+  // together puts two mutually exclusive viewpoints in one picture. plotter3
+  // emits separate views for exactly this reason, and this follows it.
   //
-  // So a token's position is a fact about what it is, and the two shells and
-  // their tangency are drawn rather than implied.
-  const LR = Math.min(W, H) * 0.19;          // shell radius, both spheres
-  const ODOT = { x: W / 2 - LR, y: H / 2 };  // ⊙, centre of the ∈ shell
-  const CEN  = { x: ODOT.x + LR, y: H / 2 }; // evaluator sphere centre
-  const POLE = { x: ODOT.x + 2 * LR, y: H / 2 }; // ∋, antipodal pole
+  //   LEFT  — side-on, the plane of the syzygy axis: the ∈ shell centred on ⊙,
+  //           the evaluator sphere of equal radius one radius along +x so ⊙ lies
+  //           on it, ∋ at the antipodal pole. The trine is edge-on here and is
+  //           NOT drawn as a triangle, because in this plane it is not one.
+  //   RIGHT — face-on, looking down the syzygy axis: the evaluator sphere as one
+  //           circle with the three arms at 120°, the A₂ trine, ⊙ at the centre.
+  //
+  const PW = W / 2;                       // panel width
+  const LR = Math.min(PW, H) * 0.195;     // shell radius, one scale for both
+  const yMid = H / 2;
 
-  // the A₂ trine on the evaluator equator, ⊤ at the top
-  const TRINE = ["EVALT", "EVALF", "ENGAGR"];
-  const trinePos = {};
-  TRINE.forEach((tok, k) => {
-    const a = -Math.PI / 2 + 2 * Math.PI * k / 3;
-    trinePos[tok] = { x: CEN.x + LR * Math.cos(a), y: CEN.y + LR * Math.sin(a) };
-  });
+  // ── left panel: side-on ──
+  const ODOT = { x: PW * 0.30, y: yMid - LR * 0.30 };
+  const CEN  = { x: ODOT.x + LR, y: yMid };
+  const POLE = { x: ODOT.x + 2 * LR, y: yMid };
+  const h3 = LR * Math.sqrt(3) / 2;
 
-  // Both shells and the coupler between their centres, drawn first so the
-  // tokens sit on them rather than in front of an empty field.
-  html += `<circle cx="${ODOT.x}" cy="${ODOT.y}" r="${LR}" fill="none" stroke="#B8860B" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.75"/>`;
-  html += `<circle cx="${CEN.x}" cy="${CEN.y}" r="${LR}" fill="none" stroke="#0072B2" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.75"/>`;
+  html += `<circle cx="${ODOT.x}" cy="${ODOT.y}" r="${LR}" fill="none" stroke="#B8860B" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.8"/>`;
+  html += `<circle cx="${CEN.x}" cy="${CEN.y}" r="${LR}" fill="none" stroke="#0072B2" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.8"/>`;
   html += `<line x1="${ODOT.x}" y1="${ODOT.y}" x2="${CEN.x}" y2="${CEN.y}" stroke="#555" stroke-width="1.2"/>`;
-  html += `<text x="${ODOT.x - LR - 6}" y="${ODOT.y - LR * 0.62}" fill="#B8860B" font-size="11" text-anchor="end">∈ shell (centred on ⊙)</text>`;
-  html += `<text x="${CEN.x + LR + 6}" y="${CEN.y - LR * 0.62}" fill="#0072B2" font-size="11">evaluator sphere (d=2048)</text>`;
+  html += `<line x1="${CEN.x}" y1="${CEN.y - h3}" x2="${CEN.x}" y2="${CEN.y + h3}" stroke="#009E73" stroke-width="1.1" opacity="0.8"/>`;
+  html += `<text x="${ODOT.x + LR}" y="${yMid - LR - 30}" text-anchor="middle" fill="#333" font-size="12">side-on: plane of the syzygy axis</text>`;
+  html += `<text x="${ODOT.x}" y="${ODOT.y - LR * 0.62}" text-anchor="middle" fill="#B8860B" font-size="10">∈ shell on ⊙</text>`;
+  html += `<text x="${POLE.x + LR * 0.12}" y="${yMid - LR * 0.55}" fill="#0072B2" font-size="10">evaluator sphere (d=2048)</text>`;
+  html += `<text x="${CEN.x + 6}" y="${CEN.y - h3 - 8}" fill="#009E73" font-size="10">trine, edge-on</text>`;
 
-  // Mainline positions for the tokens the geometry does not pin: they ride the
-  // syzygy axis in program order, which is where the kernel puts them.
+  // ── right panel: face-on ──
+  const FCEN = { x: PW + PW * 0.5, y: yMid };
+  html += `<circle cx="${FCEN.x}" cy="${FCEN.y}" r="${LR}" fill="none" stroke="#0072B2" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.8"/>`;
+  html += `<text x="${FCEN.x}" y="${yMid - LR - 30}" text-anchor="middle" fill="#333" font-size="12">face-on: down the syzygy axis</text>`;
+  const facePos = {};
+  ["EVALT", "EVALF", "ENGAGR"].forEach((tok, k) => {
+    const a = -Math.PI / 2 + 2 * Math.PI * k / 3;
+    facePos[tok] = { x: FCEN.x + LR * Math.cos(a), y: FCEN.y + LR * Math.sin(a) };
+  });
+  const tri = ["EVALT", "EVALF", "ENGAGR"].map(k => `${facePos[k].x},${facePos[k].y}`).join(" ");
+  html += `<polygon points="${tri}" fill="#009E73" fill-opacity="0.10" stroke="#009E73" stroke-width="1.2"/>`;
+  html += `<text x="${FCEN.x}" y="${FCEN.y + LR + 26}" text-anchor="middle" fill="#009E73" font-size="10">A₂ trine at 120°</text>`;
+  Object.entries(facePos).forEach(([tok, q]) => {
+    html += `<circle cx="${q.x}" cy="${q.y}" r="13" fill="none" stroke="#B8860B" stroke-width="2"/>`;
+    html += `<text x="${q.x}" y="${q.y + 5}" text-anchor="middle" fill="#B8860B" font-size="15" font-weight="bold">${GLYPH[tok]}</text>`;
+  });
+  html += `<circle cx="${FCEN.x}" cy="${FCEN.y}" r="3.5" fill="#0072B2"/>`;
+  html += `<text x="${FCEN.x + 8}" y="${FCEN.y + 4}" fill="#0072B2" font-size="12">⊙</text>`;
+
+  // ── the program itself rides the left panel ──
+  const TRINE = ["EVALT", "EVALF", "ENGAGR"];
+  const trinePos = {
+    EVALT:  { x: CEN.x, y: CEN.y },
+    EVALF:  { x: CEN.x, y: CEN.y - h3 },
+    ENGAGR: { x: CEN.x, y: CEN.y + h3 },
+  };
   const RAIL = [];
   for (let i = 0; i < n; i++) {
     const fixed = tokens[i] === "IMSCRIB" || tokens[i] === "FFUSE" || TRINE.includes(tokens[i]);
     if (!fixed) RAIL.push(i);
   }
-  const x0 = ODOT.x - LR * 1.7, x1 = POLE.x + LR * 1.7;
+  const x0 = ODOT.x - LR * 0.95, x1 = POLE.x + LR * 0.95;
 
   const pos = [];
   const seen = {};
   for (let i = 0; i < n; i++) {
     const tok = tokens[i];
-    // A token occurring more than once cannot be at one point, so repeats are
-    // fanned perpendicular to the axis instead of being stacked invisibly.
+    // A token occurring more than once cannot be at one point, so repeats fan
+    // instead of stacking invisibly on top of each other.
     const rep = (seen[tok] = (seen[tok] || 0) + 1) - 1;
-    const fan = rep * 16;
-    if (tok === "IMSCRIB")      pos.push({ x: ODOT.x, y: ODOT.y + fan });
-    else if (tok === "FFUSE")   pos.push({ x: POLE.x, y: POLE.y + fan });
-    else if (trinePos[tok])     pos.push({ x: trinePos[tok].x, y: trinePos[tok].y + fan });
+    const fan = rep * 15;
+    if (tok === "IMSCRIB")    pos.push({ x: ODOT.x, y: ODOT.y + fan });
+    else if (tok === "FFUSE") pos.push({ x: POLE.x, y: POLE.y + fan });
+    else if (trinePos[tok])   pos.push({ x: trinePos[tok].x, y: trinePos[tok].y + fan });
     else {
       const k = RAIL.indexOf(i);
       const frac = RAIL.length > 1 ? k / (RAIL.length - 1) : 0.5;
-      pos.push({ x: x0 + (x1 - x0) * frac, y: H / 2 + LR * 1.55 });
+      pos.push({ x: x0 + (x1 - x0) * frac, y: yMid + LR * 1.55 });
     }
   }
-  
+
   // Draw edges
   for (let i = 0; i < n; i++) {
     const j = (i + 1) % n; // cyclic - wraps around
@@ -566,7 +590,7 @@ function drawCFG(tokens, ig, allPass, seq, g1p, g2p, g3p, idx) {
   let ffuseCount = tokens.filter(t => t === "FFUSE").length;
   const balanced = fsplitCount === ffuseCount;
   
-  html += `<text x="12" y="${H-12}" fill="#555" font-size="9">FSplit:${fsplitCount} FFuse:${ffuseCount} ${balanced ? "(balanced)" : "(unbalanced)"}</text>`;
+  html += `<text x="12" y="14" fill="#555" font-size="9">FSplit:${fsplitCount} FFuse:${ffuseCount} ${balanced ? "(balanced)" : "(unbalanced)"}</text>`;
   
   // No title inside the figure. The universe name and the gate verdict are the
   // caption's job on a page, and drawn here they were the one label guaranteed
