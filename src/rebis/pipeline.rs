@@ -41,29 +41,29 @@ pub struct IgTuple {
 impl IgTuple {
     /// The universal_imscriptive_grammar tuple (O_∞).
     pub const IUG: Self = Self {
-        d: IgPrim::D_odot, t: IgPrim::T_odot, r: IgPrim::R_lr,
-        p: IgPrim::P_pmsym, f: IgPrim::F_hbar, k: IgPrim::K_slow,
-        g: IgPrim::G_aleph, c: IgPrim::C_seq,
-        phi: IgPrim::Phi_crit, h: IgPrim::H_inf,
-        s: IgPrim::S_nm, omega: IgPrim::Omega_z,
+        d: IgPrim::if_, t: IgPrim::are, r: IgPrim::ian,
+        p: IgPrim::or_, f: IgPrim::peep, k: IgPrim::egg,
+        g: IgPrim::ice, c: IgPrim::measure,
+        phi: IgPrim::monad, h: IgPrim::wool,
+        s: IgPrim::up, omega: IgPrim::ah,
     };
 
     /// The genetic_code tuple (O₂).
     pub const GENETIC: Self = Self {
-        d: IgPrim::D_triangle, t: IgPrim::T_boxtimes, r: IgPrim::R_lr,
-        p: IgPrim::P_psi, f: IgPrim::F_hbar, k: IgPrim::K_slow,
-        g: IgPrim::G_aleph, c: IgPrim::C_and,
-        phi: IgPrim::𐑮, h: IgPrim::H2,
-        s: IgPrim::S_nm, omega: IgPrim::Omega_z2,
+        d: IgPrim::ash, t: IgPrim::oil, r: IgPrim::ian,
+        p: IgPrim::yew, f: IgPrim::peep, k: IgPrim::egg,
+        g: IgPrim::ice, c: IgPrim::vow,
+        phi: IgPrim::roar, h: IgPrim::sure,
+        s: IgPrim::up, omega: IgPrim::oak,
     };
 
     /// The standard_model tuple.
     pub const STANDARD_MODEL: Self = Self {
-        d: IgPrim::D_infty, t: IgPrim::T_net, r: IgPrim::R_dagger,
-        p: IgPrim::P_sym, f: IgPrim::F_hbar, k: IgPrim::K_fast,
-        g: IgPrim::G_gimel, c: IgPrim::C_or,
-        phi: IgPrim::Phi_crit, h: IgPrim::H2,
-        s: IgPrim::S_nm, omega: IgPrim::Omega_z,
+        d: IgPrim::array, t: IgPrim::judge, r: IgPrim::ear,
+        p: IgPrim::nun, f: IgPrim::peep, k: IgPrim::yea,
+        g: IgPrim::thigh, c: IgPrim::gag,
+        phi: IgPrim::monad, h: IgPrim::sure,
+        s: IgPrim::up, omega: IgPrim::ah,
     };
 
     /// Get a primitive by family name.
@@ -153,12 +153,12 @@ pub fn predict_tier(source: &IgTuple, proms: &[Promotion]) -> u8 {
 
 /// Determine ouroboricity tier from a tuple.
 fn tier_of(t: &IgTuple) -> u8 {
-    let ph = t.phi == IgPrim::Phi_crit;
-    let ks = t.k == IgPrim::K_slow;
-    let wz = t.omega == IgPrim::Omega_z;
-    let d_odot = t.d == IgPrim::D_odot;
-    let t_odot = t.t == IgPrim::T_odot;
-    let ppmsym = t.p == IgPrim::P_pmsym;
+    let ph = t.phi == IgPrim::monad;
+    let ks = t.k == IgPrim::egg;
+    let wz = t.omega == IgPrim::ah;
+    let d_odot = t.d == IgPrim::if_;
+    let t_odot = t.t == IgPrim::are;
+    let ppmsym = t.p == IgPrim::or_;
 
     if ph && ks && wz && d_odot && t_odot && ppmsym { 3 }  // O_∞
     else if ph && ks && wz { 2 }                              // O₂

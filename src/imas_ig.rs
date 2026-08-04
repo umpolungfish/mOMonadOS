@@ -39,77 +39,77 @@ pub struct IgTuple {
 #[repr(u8)]
 pub enum IgPrim {
     // D (Dimensionality)
-    D_odot    = 0,  // 𐑦 self-written imscriptive
-    D_wedge   = 1,  // 𐑛 0d point
-    D_triangle = 2, // 𐑨 2d surface
-    D_infty   = 3,  // 𐑼 infinite-dim
+    if_    = 0,  // 𐑦 self-written imscriptive
+    dead   = 1,  // 𐑛 0d point
+    ash = 2, // 𐑨 2d surface
+    array   = 3,  // 𐑼 infinite-dim
 
     // T (Topology)
-    T_odot   = 4,  // 𐑸 self-ref topology
-    T_net    = 5,  // 𐑡 branching network
-    T_in     = 6,  // 𐑰 containment
-    T_bowtie = 7,  // 𐑥 crossing point
-    T_boxtimes = 8, // 𐑶 irreducible product
+    are   = 4,  // 𐑸 self-ref topology
+    judge    = 5,  // 𐑡 branching network
+    eat     = 6,  // 𐑰 containment
+    mime = 7,  // 𐑥 crossing point
+    oil = 8, // 𐑶 irreducible product
 
     // R (Coupling)
-    R_lr    = 9,  // 𐑾 bidirectional
-    R_dagger = 10, // 𐑽 adjoint
-    R_cat   = 11, // 𐑑 functorial
-    R_super = 12, // 𐑩 supervenience
+    ian    = 9,  // 𐑾 bidirectional
+    ear = 10, // 𐑽 adjoint
+    tot   = 11, // 𐑑 functorial
+    ado = 12, // 𐑩 supervenience
 
     // P (Parity)
-    P_pmsym = 13, // 𐑹 Frobenius-special
-    P_sym   = 14, // 𐑯 full symmetry
-    P_pm    = 15, // 𐑬 partial/Z2
-    P_psi   = 16, // 𐑿 quantum superposition
-    P_asym  = 17, // 𐑗 none/empty
+    or_ = 13, // 𐑹 Frobenius-special
+    nun   = 14, // 𐑯 full symmetry
+    out    = 15, // 𐑬 partial/Z2
+    yew   = 16, // 𐑿 quantum superposition
+    church  = 17, // 𐑗 none/empty
 
     // F (Fidelity)
-    F_hbar = 18, // 𐑐 quantum
-    F_ell  = 19, // 𐑱 classical
-    F_eth  = 20, // 𐑞 thermal/noisy
+    peep = 18, // 𐑐 quantum
+    age  = 19, // 𐑱 classical
+    they  = 20, // 𐑞 thermal/noisy
 
     // K (Kinetics)
-    K_trap = 21, // 𐑪 trapped-ordered
-    K_slow = 22, // 𐑧 slow/near-equilibrium
-    K_mod  = 23, // 𐑤 moderate
-    K_fast = 24, // 𐑘 driven/fast
-    K_mbl  = 25, // 𐑺 trapped-disorder
+    on = 21, // 𐑪 trapped-ordered
+    egg = 22, // 𐑧 slow/near-equilibrium
+    loll  = 23, // 𐑤 moderate
+    yea = 24, // 𐑘 driven/fast
+    air  = 25, // 𐑺 trapped-disorder
 
     // G (Cardinality)
-    G_aleph = 26, // 𐑲 long-range/universal
-    G_beth  = 27, // 𐑚 nearest-neighbor/local
-    G_gimel = 28, // 𐑔 mesoscale
+    ice = 26, // 𐑲 long-range/universal
+    bib  = 27, // 𐑚 nearest-neighbor/local
+    thigh = 28, // 𐑔 mesoscale
 
     // C (Composition)
-    C_seq   = 29, // 𐑠 ordered steps
-    C_and   = 30, // 𐑝 all-simultaneous
-    C_or    = 31, // 𐑜 alternate paths
-    C_broad = 32, // 𐑵 one-to-all broadcast
+    measure   = 29, // 𐑠 ordered steps
+    vow   = 30, // 𐑝 all-simultaneous
+    gag    = 31, // 𐑜 alternate paths
+    ooze = 32, // 𐑵 one-to-all broadcast
 
     // Phi (Criticality)
-    Phi_crit  = 33, // ⊙ critical/power-law
-    𐑮 = 34, // 𐑮 complex-plane critical
-    Phi_ep        = 35, // 𐑻 exceptional point
-    𐑢       = 36, // 𐑢 sub-critical
-    Phi_super     = 37, // 𐑣 supercritical/runaway
+    monad  = 33, // ⊙ critical/power-law
+    roar = 34, // 𐑮 complex-plane critical
+    err        = 35, // 𐑻 exceptional point
+    woe       = 36, // 𐑢 sub-critical
+    haha     = 37, // 𐑣 supercritical/runaway
 
     // H (Chirality)
-    H_inf  = 38, // 𐑫 eternal/no finite n
-    H2     = 39, // 𐑖 Markov 2
-    H1     = 40, // 𐑒 Markov 1
-    H0     = 41, // 𐑓 memoryless/Markov 0
+    wool  = 38, // 𐑫 eternal/no finite n
+    sure     = 39, // 𐑖 Markov 2
+    kick     = 40, // 𐑒 Markov 1
+    fee     = 41, // 𐑓 memoryless/Markov 0
 
     // S (Stoichiometry)
-    S_nm   = 42, // 𐑳 multiple distinct
-    S_nn   = 43, // 𐑕 many identical
-    S_11   = 44, // 𐑙 1:1 one type one instance
+    up   = 42, // 𐑳 multiple distinct
+    so   = 43, // 𐑕 many identical
+    hung   = 44, // 𐑙 1:1 one type one instance
 
     // Omega (Winding)
-    Omega_z  = 45, // 𐑭 integer winding
-    Omega_z2 = 46, // 𐑴 Z2 parity-protected
-    Omega_0  = 47, // 𐑷 trivial/none
-    Omega_na = 48, // 𐑟 non-Abelian braiding
+    ah  = 45, // 𐑭 integer winding
+    oak = 46, // 𐑴 Z2 parity-protected
+    awe  = 47, // 𐑷 trivial/none
+    zoo = 48, // 𐑟 non-Abelian braiding
 }
 
 impl IgPrim {
@@ -135,40 +135,40 @@ impl IgPrim {
     /// (lower discriminant = higher ordinal), and existing gate-verify code
     /// elsewhere in this kernel exploits that via `(x as u8) <= (thresh as u8)`.
     /// That trick silently breaks for three families that carry a
-    /// non-monotonic extra value: ⊤ (Kinetics: K_mbl=4.5 sits between
-    /// K_trap=4 and K_fast=1, not below K_fast), ⊙/Phi (Criticality:
-    /// 𐑮=2.33 and Phi_ep=2.67 sit between ⊙=2 and
-    /// Phi_super=3, not below 𐑢=1), and ◻ (Winding: Omega_na=4 sits
-    /// above Omega_z=3, not below Omega_0=1). Any new gate logic should
+    /// non-monotonic extra value: ⊤ (Kinetics: air=4.5 sits between
+    /// on=4 and yea=1, not below yea), ⊙/Phi (Criticality:
+    /// roar=2.33 and err=2.67 sit between ⊙=2 and
+    /// haha=3, not below woe=1), and ◻ (Winding: zoo=4 sits
+    /// above ah=3, not below awe=1). Any new gate logic should
     /// compare `ordinal()` directly rather than raw discriminants.
     pub fn ordinal(self) -> f32 {
         use IgPrim::*;
         match self {
             // ⊢ Dimensionality
-            D_wedge => 1.0, D_triangle => 2.0, D_infty => 3.0, D_odot => 4.0,
+            dead => 1.0, ash => 2.0, array => 3.0, if_ => 4.0,
             // ⊣ Topology
-            T_net => 1.0, T_in => 2.0, T_bowtie => 3.0, T_boxtimes => 4.0, T_odot => 5.0,
+            judge => 1.0, eat => 2.0, mime => 3.0, oil => 4.0, are => 5.0,
             // > Recognition
-            R_super => 1.0, R_cat => 2.0, R_dagger => 3.0, R_lr => 4.0,
+            ado => 1.0, tot => 2.0, ear => 3.0, ian => 4.0,
             // < Parity
-            P_asym => 1.0, P_psi => 2.0, P_pm => 3.0, P_sym => 4.0, P_pmsym => 5.0,
+            church => 1.0, yew => 2.0, out => 3.0, nun => 4.0, or_ => 5.0,
             // ⋈ Fidelity
-            F_ell => 1.0, F_eth => 2.0, F_hbar => 3.0,
-            // ⊤ Kinetics — non-monotonic: K_mbl is *above* K_trap, not below K_fast.
-            K_fast => 1.0, K_mod => 2.0, K_slow => 3.0, K_trap => 4.0, K_mbl => 4.5,
+            age => 1.0, they => 2.0, peep => 3.0,
+            // ⊤ Kinetics — non-monotonic: air is *above* on, not below yea.
+            yea => 1.0, loll => 2.0, egg => 3.0, on => 4.0, air => 4.5,
             // ∈ Granularity
-            G_beth => 1.0, G_gimel => 2.0, G_aleph => 3.0,
+            bib => 1.0, thigh => 2.0, ice => 3.0,
             // ∋ Coupling
-            C_and => 1.0, C_or => 2.0, C_seq => 3.0, C_broad => 4.0,
-            // ⊙ Criticality — non-monotonic: 𐑮/Phi_ep sit between
-            // ⊙ and Phi_super, not below 𐑢.
-            𐑢 => 1.0, Phi_crit => 2.0, 𐑮 => 2.33, Phi_ep => 2.67, Phi_super => 3.0,
+            vow => 1.0, gag => 2.0, measure => 3.0, ooze => 4.0,
+            // ⊙ Criticality — non-monotonic: roar/err sit between
+            // ⊙ and haha, not below woe.
+            woe => 1.0, monad => 2.0, roar => 2.33, err => 2.67, haha => 3.0,
             // ⊥ Chirality
-            H0 => 1.0, H1 => 2.0, H2 => 3.0, H_inf => 4.0,
+            fee => 1.0, kick => 2.0, sure => 3.0, wool => 4.0,
             // ⊞ Stoichiometry
-            S_11 => 1.0, S_nn => 2.0, S_nm => 3.0,
-            // ◻ Winding — non-monotonic: Omega_na sits above Omega_z, not below Omega_0.
-            Omega_0 => 1.0, Omega_z2 => 2.0, Omega_z => 3.0, Omega_na => 4.0,
+            hung => 1.0, so => 2.0, up => 3.0,
+            // ◻ Winding — non-monotonic: zoo sits above ah, not below awe.
+            awe => 1.0, oak => 2.0, ah => 3.0, zoo => 4.0,
         }
     }
 }
@@ -186,70 +186,70 @@ impl IgTuple {
         let sx = snap.sig.3; // IFIX count
 
         // D — Dimensionality from token diversity
-        let d_val = if d <= 2 { IgPrim::D_wedge }
-            else if d <= 5 { IgPrim::D_triangle }
-            else if d <= 9 { IgPrim::D_infty }
-            else { IgPrim::D_odot };
+        let d_val = if d <= 2 { IgPrim::dead }
+            else if d <= 5 { IgPrim::ash }
+            else if d <= 9 { IgPrim::array }
+            else { IgPrim::if_ };
 
         // T — Topology from self_ref + period + frobenius_order
-        let t_val = if sr { IgPrim::T_odot }
-            else if p == 1 { IgPrim::T_net }
-            else if p == 2 { IgPrim::T_bowtie }
-            else if fo > 0 { IgPrim::T_boxtimes }
-            else { IgPrim::T_in };
+        let t_val = if sr { IgPrim::are }
+            else if p == 1 { IgPrim::judge }
+            else if p == 2 { IgPrim::mime }
+            else if fo > 0 { IgPrim::oil }
+            else { IgPrim::eat };
 
         // R — Coupling from frobenius_order
         let r_val = match fo {
-            1 => IgPrim::R_lr,
-            2 => IgPrim::R_dagger,
-            3 => IgPrim::R_cat,
-            _ => IgPrim::R_super,
+            1 => IgPrim::ian,
+            2 => IgPrim::ear,
+            3 => IgPrim::tot,
+            _ => IgPrim::ado,
         };
 
         // P — Parity from frobenius_order + dialetheia
         let p_val = match fo {
-            1 => IgPrim::P_pmsym,
-            2 => IgPrim::P_sym,
-            3 => IgPrim::P_pm,
-            _ => if dc { IgPrim::P_psi } else { IgPrim::P_asym },
+            1 => IgPrim::or_,
+            2 => IgPrim::nun,
+            3 => IgPrim::out,
+            _ => if dc { IgPrim::yew } else { IgPrim::church },
         };
 
         // F — Fidelity from dialetheia + period
-        let f_val = if dc { IgPrim::F_hbar }
-            else if p == 1 { IgPrim::F_ell }
-            else { IgPrim::F_eth };
+        let f_val = if dc { IgPrim::peep }
+            else if p == 1 { IgPrim::age }
+            else { IgPrim::they };
 
         // K — Kinetics from period + IFIX count
-        let k_val = if sx == 8 { IgPrim::K_trap }
-            else if p == 1 { IgPrim::K_slow }
-            else if p <= 4 { IgPrim::K_mod }
-            else { IgPrim::K_fast };
+        let k_val = if sx == 8 { IgPrim::on }
+            else if p == 1 { IgPrim::egg }
+            else if p <= 4 { IgPrim::loll }
+            else { IgPrim::yea };
 
         // G — Cardinality from IFIX + diversity
-        let g_val = if sx >= 3 { IgPrim::G_aleph }
-            else if sx >= 1 { IgPrim::G_gimel }
-            else if d <= 3 { IgPrim::G_beth }
-            else { IgPrim::G_gimel };
+        let g_val = if sx >= 3 { IgPrim::ice }
+            else if sx >= 1 { IgPrim::thigh }
+            else if d <= 3 { IgPrim::bib }
+            else { IgPrim::thigh };
 
         // C — Composition from frobenius_order + period
-        let c_val = if fo > 0 { IgPrim::C_seq }
-            else if p == 1 { IgPrim::C_and }
-            else if p == 2 { IgPrim::C_or }
-            else { IgPrim::C_broad };
+        let c_val = if fo > 0 { IgPrim::measure }
+            else if p == 1 { IgPrim::vow }
+            else if p == 2 { IgPrim::gag }
+            else { IgPrim::ooze };
 
         // Phi — Criticality from self_ref + dialetheia + period
-        let phi_val = if sr && dc { IgPrim::Phi_crit }
-            else if sr { IgPrim::𐑮 }
-            else if dc { IgPrim::Phi_ep }
-            else if p == 1 { IgPrim::𐑢 }
-            else { IgPrim::Phi_super };
+        let phi_val = if sr && dc { IgPrim::monad }
+            else if sr { IgPrim::roar }
+            else if dc { IgPrim::err }
+            else if p == 1 { IgPrim::woe }
+            else { IgPrim::haha };
 
         // H — Chirality from period
         let h_val = match p {
-            1 => IgPrim::H0,
-            2 => IgPrim::H1,
-            3 => IgPrim::H2,
-            _ => IgPrim::H_inf,
+            1 => IgPrim::fee,
+            2 => IgPrim::kick,
+            3 => IgPrim::sure,
+            _ => IgPrim::wool,
         };
 
         // S — Stoichiometry from non-zero signature count
@@ -257,17 +257,17 @@ impl IgTuple {
                + (if snap.sig.1 > 0 { 1 } else { 0 })
                + (if snap.sig.2 > 0 { 1 } else { 0 })
                + (if snap.sig.3 > 0 { 1 } else { 0 });
-        let s_val = if nz == 1 { IgPrim::S_11 }
-            else if nz == 2 { IgPrim::S_nn }
-            else { IgPrim::S_nm };
+        let s_val = if nz == 1 { IgPrim::hung }
+            else if nz == 2 { IgPrim::so }
+            else { IgPrim::up };
 
         // Omega — Winding from frobenius_order + self_ref + period
         let omega_val = match fo {
-            1 => IgPrim::Omega_z,
-            2 => IgPrim::Omega_z2,
-            _ => if sr { IgPrim::Omega_z }
-                else if p == 2 { IgPrim::Omega_z2 }
-                else { IgPrim::Omega_0 },
+            1 => IgPrim::ah,
+            2 => IgPrim::oak,
+            _ => if sr { IgPrim::ah }
+                else if p == 2 { IgPrim::oak }
+                else { IgPrim::awe },
         };
 
         IgTuple {
@@ -323,10 +323,10 @@ pub fn all_canonical_ig() -> [IgTuple; 12] {
     use crate::kernel::self_imscribe;
     use crate::tokens::canonical;
     let mut result = [IgTuple {
-        d: IgPrim::D_infty, t: IgPrim::T_odot, r: IgPrim::R_lr,
-        p: IgPrim::P_pmsym, f: IgPrim::F_hbar, k: IgPrim::K_mod,
-        g: IgPrim::G_aleph, c: IgPrim::C_seq, phi: IgPrim::Phi_crit,
-        h: IgPrim::H2, s: IgPrim::S_nm, omega: IgPrim::Omega_z,
+        d: IgPrim::array, t: IgPrim::are, r: IgPrim::ian,
+        p: IgPrim::or_, f: IgPrim::peep, k: IgPrim::loll,
+        g: IgPrim::ice, c: IgPrim::measure, phi: IgPrim::monad,
+        h: IgPrim::sure, s: IgPrim::up, omega: IgPrim::ah,
     }; 12];
     for i in 0..12 {
         if let Some(prog) = canonical(i) {

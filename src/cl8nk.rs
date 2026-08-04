@@ -45,15 +45,15 @@ pub fn zfc_baseline_ref() -> IgTuple { catalog::zfc_baseline_tuple() }
 // PRIMITIVE KEY NAMES
 // ═══════════════════════════════════════════════════════════════
 
-pub static PRIMITIVE_KEYS: [&str; 12] = ["D","T","R","P","F","K","G","C","<","H","S","◻"];
+pub use crate::canonical_ig::PRIMITIVE_ORDER as PRIMITIVE_KEYS;
 
 /// Get a primitive value from a tuple by key name.
 pub fn get_prim(t: &IgTuple, key: &str) -> Option<IgPrim> {
     match key {
-        "D" => Some(t.d), "T" => Some(t.t), "R" => Some(t.r),
-        "P" => Some(t.p), "F" => Some(t.f), "K" => Some(t.k),
-        "G" => Some(t.g), "C" => Some(t.c), "<" => Some(t.phi),
-        "H" => Some(t.h), "S" => Some(t.s), "◻" => Some(t.omega),
+        "⊢" => Some(t.d), "⊣" => Some(t.t), ">" => Some(t.r),
+        "<" => Some(t.p), "⋈" => Some(t.f), "⊤" => Some(t.k),
+        "∈" => Some(t.g), "∋" => Some(t.c), "⊙" => Some(t.phi),
+        "⊥" => Some(t.h), "⊞" => Some(t.s), "◻" => Some(t.omega),
         _ => None,
     }
 }
@@ -61,12 +61,12 @@ pub fn get_prim(t: &IgTuple, key: &str) -> Option<IgPrim> {
 /// Get the ordinal table for a primitive family by key.
 pub fn ord_table_for(key: &str) -> &'static [IgPrim] {
     match key {
-        "D" => &catalog::D_ORD, "T" => &catalog::T_ORD,
-        "R" => &catalog::R_ORD, "P" => &catalog::P_ORD,
-        "F" => &catalog::F_ORD, "K" => &catalog::K_ORD,
-        "G" => &catalog::G_ORD, "C" => &catalog::C_ORD,
-        "<" => &catalog::PHI_ORD, "H" => &catalog::H_ORD,
-        "S" => &catalog::S_ORD, "◻" => &catalog::OMEGA_ORD,
+        "⊢" => &catalog::D_ORD, "⊣" => &catalog::T_ORD,
+        ">" => &catalog::R_ORD, "<" => &catalog::P_ORD,
+        "⋈" => &catalog::F_ORD, "⊤" => &catalog::K_ORD,
+        "∈" => &catalog::G_ORD, "∋" => &catalog::C_ORD,
+        "⊙" => &catalog::PHI_ORD, "⊥" => &catalog::H_ORD,
+        "⊞" => &catalog::S_ORD, "◻" => &catalog::OMEGA_ORD,
         _ => &catalog::D_ORD,
     }
 }
@@ -129,8 +129,8 @@ pub fn tuple_distance_cl8nk(t1: &IgTuple, t2: &IgTuple) -> (f32, Vec<Conflict>) 
     let mut total: f32 = 0.0;
     let mut conflicts: Vec<Conflict> = Vec::new();
     for (key, spec) in &DIST_SPECS {
-        let v1 = get_prim(t1, key).unwrap_or(IgPrim::D_wedge);
-        let v2 = get_prim(t2, key).unwrap_or(IgPrim::D_wedge);
+        let v1 = get_prim(t1, key).unwrap_or(IgPrim::dead);
+        let v2 = get_prim(t2, key).unwrap_or(IgPrim::dead);
         if v1 != v2 {
             let d = ordinal_distance(key, v1, v2);
             total += spec.weight * d * d;
@@ -149,14 +149,14 @@ pub fn tuple_distance_cl8nk(t1: &IgTuple, t2: &IgTuple) -> (f32, Vec<Conflict>) 
 
 pub fn assess_tier(t: &IgTuple) -> &'static str {
     let mut score: u8 = 0;
-    if t.phi == IgPrim::Phi_crit { score += 1; }
-    if t.p == IgPrim::P_pmsym { score += 1; }
-    if t.h == IgPrim::H_inf { score += 1; }
-    if t.omega == IgPrim::Omega_z || t.omega == IgPrim::Omega_na { score += 1; }
-    if t.d == IgPrim::D_odot { score += 1; }
-    if t.k == IgPrim::K_slow { score += 1; }
-    if t.t == IgPrim::T_odot { score += 1; }
-    if t.r == IgPrim::R_lr { score += 1; }
+    if t.phi == IgPrim::monad { score += 1; }
+    if t.p == IgPrim::or_ { score += 1; }
+    if t.h == IgPrim::wool { score += 1; }
+    if t.omega == IgPrim::ah || t.omega == IgPrim::zoo { score += 1; }
+    if t.d == IgPrim::if_ { score += 1; }
+    if t.k == IgPrim::egg { score += 1; }
+    if t.t == IgPrim::are { score += 1; }
+    if t.r == IgPrim::ian { score += 1; }
     match score {
         s if s >= 7 => "O_∞",
         s if s >= 5 => "O₂",
@@ -236,94 +236,27 @@ pub struct FormulaEntry {
 }
 
 pub fn cl8nk_formula(key: &str, val: IgPrim) -> Option<FormulaEntry> {
-    match key {
-        "D" => match val {
-            IgPrim::D_odot     => Some(FormulaEntry { fragment: "V = L(x) ∧ selfmodel(x) ∧ x ∈ V", atom: Some("HOLOGRAPHIC_STATE"), proximity: "match" }),
-            IgPrim::D_infty    => Some(FormulaEntry { fragment: "∀n∃y( y ∈ x ∧ rank(y) > n )", atom: None, proximity: "close" }),
-            IgPrim::D_triangle => Some(FormulaEntry { fragment: "dim(x) = 2 ∧ sur(x)", atom: None, proximity: "distant" }),
-            IgPrim::D_wedge    => Some(FormulaEntry { fragment: "dim(x) = 0 ∧ fin(x)", atom: None, proximity: "distant" }),
-            _ => None,
-        },
-        "T" => match val {
-            IgPrim::T_odot     => Some(FormulaEntry { fragment: "bound_⊙(a, f) ∧ Refl(a, f) ∧ holo(x, a)", atom: Some("HOLOBOUND"), proximity: "match" }),
-            IgPrim::T_bowtie   => Some(FormulaEntry { fragment: "cross(x, y) ∧ ¬ meet(x, y)", atom: None, proximity: "close" }),
-            IgPrim::T_boxtimes => Some(FormulaEntry { fragment: "x ⊠ y ∧ irreducible(x, y)", atom: None, proximity: "distant" }),
-            IgPrim::T_net      => Some(FormulaEntry { fragment: "graph(x) ∧ branch(x)", atom: None, proximity: "distant" }),
-            IgPrim::T_in       => Some(FormulaEntry { fragment: "x ⊆ y ∧ cont(y)", atom: None, proximity: "distant" }),
-            _ => None,
-        },
-        "R" => match val {
-            IgPrim::R_lr     => Some(FormulaEntry { fragment: "lr⇔(x, y) ∧ Θ(x, y) ∧ ¬ Θ(y, x)", atom: Some("LR_DUAL"), proximity: "match" }),
-            IgPrim::R_dagger => Some(FormulaEntry { fragment: "f ⊣ g ∧ L Adj(f, g)", atom: None, proximity: "close" }),
-            IgPrim::R_cat    => Some(FormulaEntry { fragment: "Fun(x, y) ∧ Nat(y, z) → Fun(x, z)", atom: None, proximity: "distant" }),
-            IgPrim::R_super  => Some(FormulaEntry { fragment: "x ↑ y ∧ ¬(y ↑ x)", atom: None, proximity: "distant" }),
-            _ => None,
-        },
-        "P" => match val {
-            IgPrim::P_pmsym => Some(FormulaEntry { fragment: "ℤ₂(x) ∧ ∀g∈G( gx = x ) ∧ μ∘δ = id", atom: Some("PM_Z2"), proximity: "match" }),
-            IgPrim::P_psi   => Some(FormulaEntry { fragment: "|ψ⟩ = Σ c_i |e_i⟩", atom: None, proximity: "close" }),
-            IgPrim::P_pm    => Some(FormulaEntry { fragment: "ℤ₂(x) ∧ ¬(x = -x)", atom: None, proximity: "close" }),
-            IgPrim::P_sym   => Some(FormulaEntry { fragment: "∀g∈G( gx = x )", atom: None, proximity: "distant" }),
-            IgPrim::P_asym  => Some(FormulaEntry { fragment: "¬∃sym(x)", atom: None, proximity: "distant" }),
-            _ => None,
-        },
-        "F" => match val {
-            IgPrim::F_hbar => Some(FormulaEntry { fragment: "ℏ(x) ∧ [x, p] = iℏ", atom: None, proximity: "match" }),
-            IgPrim::F_eth  => Some(FormulaEntry { fragment: "Tr(ρ²) < 1 ∧ ρ = Σ p_i |i⟩⟨i|", atom: None, proximity: "close" }),
-            IgPrim::F_ell  => Some(FormulaEntry { fragment: "P(x) ∈ {0,1} ∧ det(x)", atom: None, proximity: "distant" }),
-            _ => None,
-        },
-        "K" => match val {
-            IgPrim::K_slow => Some(FormulaEntry { fragment: "τ ≫ T ∧ eq(x) ∧ gate_open(x)", atom: None, proximity: "match" }),
-            IgPrim::K_mod  => Some(FormulaEntry { fragment: "τ ∼ T ∧ noisy(x)", atom: None, proximity: "close" }),
-            IgPrim::K_fast => Some(FormulaEntry { fragment: "τ ≪ T ∧ ∂_t x = f(x)", atom: None, proximity: "distant" }),
-            IgPrim::K_trap => Some(FormulaEntry { fragment: "τ = ∞ ∧ ord(x)", atom: None, proximity: "distant" }),
-            IgPrim::K_mbl  => Some(FormulaEntry { fragment: "τ = ∞ ∧ dis(x) ∧ MBL", atom: None, proximity: "distant" }),
-            _ => None,
-        },
-        "G" => match val {
-            IgPrim::G_aleph => Some(FormulaEntry { fragment: "∀y( y ⊂ x → |y| < |x| )", atom: None, proximity: "match" }),
-            IgPrim::G_gimel => Some(FormulaEntry { fragment: "∃y∈x( |y| ∼ |x| )", atom: None, proximity: "close" }),
-            IgPrim::G_beth  => Some(FormulaEntry { fragment: "∀y∈x( |y| < |x| )", atom: None, proximity: "distant" }),
-            _ => None,
-        },
-        "C" => match val {
-            IgPrim::C_broad => Some(FormulaEntry { fragment: "f → all(x) ∧ broadcast(x, f)", atom: Some("BROADCAST_TRANSCENDENCE"), proximity: "match" }),
-            IgPrim::C_seq   => Some(FormulaEntry { fragment: "seq!(f, g) ∧ ⟨→⟩(f, g, τ) ∧ ¬ ⟨→⟩(g, f, τ)", atom: Some("SEQAX"), proximity: "close" }),
-            IgPrim::C_or    => Some(FormulaEntry { fragment: "f ∨ g ∨ h", atom: None, proximity: "distant" }),
-            IgPrim::C_and   => Some(FormulaEntry { fragment: "f ∧ g ∧ h", atom: None, proximity: "distant" }),
-            _ => None,
-        },
-        "<" => match val {
-            IgPrim::Phi_crit         => Some(FormulaEntry { fragment: "ξ → ∞ ∧ μ∘δ = id", atom: Some("PHI_C"), proximity: "match" }),
-            IgPrim::𐑮 => Some(FormulaEntry { fragment: "ξ ∈ ℂ ∧ Im(ξ) → ∞", atom: None, proximity: "close" }),
-            IgPrim::Phi_ep        => Some(FormulaEntry { fragment: "H(λ) non-Herm ∧ det(H - λI) = 0 ∧ ∂_λ H = 0", atom: None, proximity: "distant" }),
-            IgPrim::Phi_super     => Some(FormulaEntry { fragment: "ξ → ∞ ∧ chaotic(x)", atom: None, proximity: "distant" }),
-            IgPrim::𐑢       => Some(FormulaEntry { fragment: "¬∃ξ( diverges(ξ) )", atom: None, proximity: "distant" }),
-            _ => None,
-        },
-        "H" => match val {
-            IgPrim::H_inf => Some(FormulaEntry { fragment: "∀n∃φ( rank(φ) > n ∧ φ fixed by μ∘δ ∧ φ ∈ V )", atom: Some("ETERNAL_FIXEDPOINT"), proximity: "match" }),
-            IgPrim::H2    => Some(FormulaEntry { fragment: "∃y∃z( y ∈ x ∧ z ∈ y ∧ ¬ z ∈ x ∧ rank(z) < rank(y) )", atom: Some("TEMPD2"), proximity: "close" }),
-            IgPrim::H1    => Some(FormulaEntry { fragment: "∃y( P(y) ↔ P(S²(y)) )", atom: None, proximity: "distant" }),
-            IgPrim::H0    => Some(FormulaEntry { fragment: "∀x( P(x) ↔ P(S(x)) )", atom: None, proximity: "distant" }),
-            _ => None,
-        },
-        "S" => match val {
-            IgPrim::S_nm => Some(FormulaEntry { fragment: "∃a∈A∃b∈B( type(a) ≠ type(b) )", atom: None, proximity: "match" }),
-            IgPrim::S_nn => Some(FormulaEntry { fragment: "∀a∈A∀b∈B( type(a) = type(b) )", atom: None, proximity: "close" }),
-            IgPrim::S_11 => Some(FormulaEntry { fragment: "|A| = 1 ∧ |B| = 1", atom: None, proximity: "distant" }),
-            _ => None,
-        },
-        "◻" => match val {
-            IgPrim::Omega_na => Some(FormulaEntry { fragment: "Braid(σ_i) ∧ R_matrix ≠ 0 ∧ nonAbelian(x)", atom: Some("BRAID_TRANSCENDENCE"), proximity: "match" }),
-            IgPrim::Omega_z  => Some(FormulaEntry { fragment: "∮_γ A = 2πn ∧ n ∈ ℤ ∧ wind(γ) ≠ 0", atom: Some("ZWIND"), proximity: "close" }),
-            IgPrim::Omega_z2 => Some(FormulaEntry { fragment: "∮_γ A = nπ ∧ n ∈ ℤ₂", atom: None, proximity: "distant" }),
-            IgPrim::Omega_0  => Some(FormulaEntry { fragment: "∮_γ dx = 0", atom: None, proximity: "distant" }),
-            _ => None,
-        },
-        _ => None,
-    }
+    // Read the generated table rather than restating it. The fragments are
+    // cl8nk_navigator.CL8NK_FORMULAE, which is the reference; a copy here was
+    // one more thing to drift. `key` accepts either the axis mark or the axis's
+    // name, and the value is matched by its canonical glyph.
+    let axis = if crate::canonical_ig::axis_index(key).is_some() {
+        key
+    } else {
+        let mut found = "";
+        for (a, n) in crate::canonical_ig::PRIMITIVE_NAMES.iter() {
+            if *n == key { found = a; break; }
+        }
+        if found.is_empty() { return None; }
+        found
+    };
+    let glyph = crate::catalog::primitive_glyph(val);
+    let (fragment, atom, proximity) = crate::canonical_ig::formula_of(axis, glyph)?;
+    Some(FormulaEntry {
+        fragment,
+        atom: if atom.is_empty() { None } else { Some(atom) },
+        proximity,
+    })
 }
 
 /// Atom descriptions for legend display.
@@ -355,7 +288,7 @@ pub fn generate_entry_formula(name: &str, desc: &str, t: &IgTuple) -> EntryResul
     let mut transcendence_keys: Vec<&'static str> = Vec::new();
 
     for key in &PRIMITIVE_KEYS {
-        let val = get_prim(t, key).unwrap_or(IgPrim::D_wedge);
+        let val = get_prim(t, key).unwrap_or(IgPrim::dead);
         let glyph = catalog::primitive_glyph(val);
         if let Some(fe) = cl8nk_formula(key, val) {
             let frag = PrimFragment {
@@ -408,8 +341,8 @@ pub fn generate_entry_formula(name: &str, desc: &str, t: &IgTuple) -> EntryResul
     // Promotions needed
     let mut promos: Vec<PromoNeeded> = Vec::new();
     for key in &PRIMITIVE_KEYS {
-        let v1 = get_prim(t, key).unwrap_or(IgPrim::D_wedge);
-        let v2 = get_prim(&cl8, key).unwrap_or(IgPrim::D_wedge);
+        let v1 = get_prim(t, key).unwrap_or(IgPrim::dead);
+        let v2 = get_prim(&cl8, key).unwrap_or(IgPrim::dead);
         if v1 != v2 {
             promos.push(PromoNeeded {
                 primitive: key,
@@ -456,8 +389,8 @@ pub fn compute_tensor_op(sys: &IgTuple) -> TensorResult {
     let mut result = cl8;
     for key in &PRIMITIVE_KEYS {
         let table = ord_table_for(key);
-        let v_ref = get_prim(&cl8, key).unwrap_or(IgPrim::D_wedge);
-        let v_sys = get_prim(sys, key).unwrap_or(IgPrim::D_wedge);
+        let v_ref = get_prim(&cl8, key).unwrap_or(IgPrim::dead);
+        let v_sys = get_prim(sys, key).unwrap_or(IgPrim::dead);
         let i_ref = catalog::ord_index(table, v_ref).unwrap_or(0);
         let i_sys = catalog::ord_index(table, v_sys).unwrap_or(0);
         // For P and F: min; for others: max
@@ -503,8 +436,8 @@ pub fn compute_meet_op(sys: &IgTuple) -> MeetJoinResult {
     let mut result = cl8;
     for key in &PRIMITIVE_KEYS {
         let table = ord_table_for(key);
-        let v_ref = get_prim(&cl8, key).unwrap_or(IgPrim::D_wedge);
-        let v_sys = get_prim(sys, key).unwrap_or(IgPrim::D_wedge);
+        let v_ref = get_prim(&cl8, key).unwrap_or(IgPrim::dead);
+        let v_sys = get_prim(sys, key).unwrap_or(IgPrim::dead);
         let i_ref = catalog::ord_index(table, v_ref).unwrap_or(0);
         let i_sys = catalog::ord_index(table, v_sys).unwrap_or(0);
         let v = if i_ref <= i_sys { v_ref } else { v_sys };
@@ -528,8 +461,8 @@ pub fn compute_join_op(sys: &IgTuple) -> MeetJoinResult {
     let mut result = cl8;
     for key in &PRIMITIVE_KEYS {
         let table = ord_table_for(key);
-        let v_ref = get_prim(&cl8, key).unwrap_or(IgPrim::D_wedge);
-        let v_sys = get_prim(sys, key).unwrap_or(IgPrim::D_wedge);
+        let v_ref = get_prim(&cl8, key).unwrap_or(IgPrim::dead);
+        let v_sys = get_prim(sys, key).unwrap_or(IgPrim::dead);
         let i_ref = catalog::ord_index(table, v_ref).unwrap_or(0);
         let i_sys = catalog::ord_index(table, v_sys).unwrap_or(0);
         let v = if i_ref >= i_sys { v_ref } else { v_sys };
@@ -634,8 +567,8 @@ pub fn generate_promotions() -> PromotionsResult {
     fn promo_details(from: &IgTuple, to: &IgTuple) -> Vec<PromoDetail> {
         let mut details: Vec<PromoDetail> = Vec::new();
         for key in &PRIMITIVE_KEYS {
-            let v1 = get_prim(from, key).unwrap_or(IgPrim::D_wedge);
-            let v2 = get_prim(to, key).unwrap_or(IgPrim::D_wedge);
+            let v1 = get_prim(from, key).unwrap_or(IgPrim::dead);
+            let v2 = get_prim(to, key).unwrap_or(IgPrim::dead);
             if v1 != v2 {
                 let f_info = cl8nk_formula(key, v1);
                 let t_info = cl8nk_formula(key, v2);

@@ -22,7 +22,7 @@ fn frac(x: f64) -> f64 { x - floor(x) }
 
 pub fn expand_axis(slot: &str) -> Vec<&'static str> {
     match slot {
-        "⊙" => vec!["𐑢 (sub)", "⊙ (critical)", "𐑮 (c_complex)", "𐑻 (EP)", "𐑣 (super)"],
+        "⊙" => vec!["woe (sub)", "⊙ (critical)", "roar (c_complex)", "𐑻 (EP)", "𐑣 (super)"],
         "<" => vec!["𐑗 (asym)", "𐑿 (psi)", "𐑬 (pm)", "𐑯 (sym)", "𐑹 (pm_sym/Frobenius)"],
         "◻" => vec!["𐑷 (0)", "𐑴 (Z2)", "𐑭 (Z)", "𐑟 (NA)"],
         "⊢" => vec!["𐑛 (wedge/0D)", "𐑨 (ash/2D)", "𐑼 (array/∞D)", "𐑦 (if'/imscriptive)"],
@@ -136,7 +136,7 @@ pub fn report_axis(slot: &str) -> String {
 
 pub fn report_all_axes() -> String {
     let mut s = String::new();
-    for ax in &["⊢","⊣",">","<","⋈","⊤","∈","∋","⊙","⊥","⊞","◻"] {
+    for ax in crate::canonical_ig::PRIMITIVE_ORDER.iter() {
         s.push_str(&report_axis(ax));
         s.push_str("\n");
     }

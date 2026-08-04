@@ -72,7 +72,7 @@ pub const D_O2_O2D: f32 = 1.0000;
 pub const D_O2D_OINF: f32 = 4.3818;
 
 /// Driver primitives for each ladder step.
-pub const DRIVER_O0_O1: &str = "⊙: 𐑢→⊙";
+pub const DRIVER_O0_O1: &str = "⊙: woe→⊙";
 pub const DRIVER_O1_O2: &str = "⊢: 𐑛→𐑨, ◻: 𐑷→𐑴";
 pub const DRIVER_O2_O2D: &str = "⊢: 𐑨→𐑼";
 pub const DRIVER_O2D_OINF: &str = "<: 𐑗→𐑹 (Δ=4 ordinals)";

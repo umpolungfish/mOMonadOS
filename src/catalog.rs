@@ -21,64 +21,64 @@ use crate::imas_ig::{IgPrim, IgTuple};
 // PRIMITIVE ORDINAL TABLES
 // ═══════════════════════════════════════════════════════════════
 
-/// D ordinal: D_wedge < D_triangle < D_infty < D_odot
+/// D ordinal: dead < ash < array < if_
 pub static D_ORD: [IgPrim; 4] = [
-    IgPrim::D_wedge, IgPrim::D_triangle, IgPrim::D_infty, IgPrim::D_odot,
+    IgPrim::dead, IgPrim::ash, IgPrim::array, IgPrim::if_,
 ];
 
-/// T ordinal: T_net < T_in < T_bowtie < T_boxtimes < T_odot
+/// T ordinal: judge < eat < mime < oil < are
 pub static T_ORD: [IgPrim; 5] = [
-    IgPrim::T_net, IgPrim::T_in, IgPrim::T_bowtie, IgPrim::T_boxtimes, IgPrim::T_odot,
+    IgPrim::judge, IgPrim::eat, IgPrim::mime, IgPrim::oil, IgPrim::are,
 ];
 
-/// R ordinal: R_super < R_cat < R_dagger < R_lr
+/// R ordinal: ado < tot < ear < ian
 pub static R_ORD: [IgPrim; 4] = [
-    IgPrim::R_super, IgPrim::R_cat, IgPrim::R_dagger, IgPrim::R_lr,
+    IgPrim::ado, IgPrim::tot, IgPrim::ear, IgPrim::ian,
 ];
 
-/// P ordinal: P_asym < P_psi < P_pm < P_sym < P_pmsym
+/// P ordinal: church < yew < out < nun < or_
 pub static P_ORD: [IgPrim; 5] = [
-    IgPrim::P_asym, IgPrim::P_psi, IgPrim::P_pm, IgPrim::P_sym, IgPrim::P_pmsym,
+    IgPrim::church, IgPrim::yew, IgPrim::out, IgPrim::nun, IgPrim::or_,
 ];
 
-/// F ordinal: F_ell < F_eth < F_hbar
+/// F ordinal: age < they < peep
 pub static F_ORD: [IgPrim; 3] = [
-    IgPrim::F_ell, IgPrim::F_eth, IgPrim::F_hbar,
+    IgPrim::age, IgPrim::they, IgPrim::peep,
 ];
 
-/// K ordinal: K_fast < K_mod < K_slow < K_trap < K_mbl
+/// K ordinal: yea < loll < egg < on < air
 pub static K_ORD: [IgPrim; 5] = [
-    IgPrim::K_fast, IgPrim::K_mod, IgPrim::K_slow, IgPrim::K_trap, IgPrim::K_mbl,
+    IgPrim::yea, IgPrim::loll, IgPrim::egg, IgPrim::on, IgPrim::air,
 ];
 
-/// G ordinal: G_aleph < G_beth < G_gimel
+/// G ordinal: ice < bib < thigh
 pub static G_ORD: [IgPrim; 3] = [
-    IgPrim::G_aleph, IgPrim::G_beth, IgPrim::G_gimel,
+    IgPrim::ice, IgPrim::bib, IgPrim::thigh,
 ];
 
-/// C ordinal: C_and < C_or < C_seq < C_broad
+/// C ordinal: vow < gag < measure < ooze
 pub static C_ORD: [IgPrim; 4] = [
-    IgPrim::C_and, IgPrim::C_or, IgPrim::C_seq, IgPrim::C_broad,
+    IgPrim::vow, IgPrim::gag, IgPrim::measure, IgPrim::ooze,
 ];
 
-/// Phi ordinal: 𐑢 < ⊙ < 𐑮 < Phi_ep < Phi_super
+/// Phi ordinal: woe < ⊙ < roar < err < haha
 pub static PHI_ORD: [IgPrim; 5] = [
-    IgPrim::𐑢, IgPrim::Phi_crit, IgPrim::𐑮, IgPrim::Phi_ep, IgPrim::Phi_super,
+    IgPrim::woe, IgPrim::monad, IgPrim::roar, IgPrim::err, IgPrim::haha,
 ];
 
-/// H ordinal: H0 < H1 < H2 < H_inf
+/// H ordinal: fee < kick < sure < wool
 pub static H_ORD: [IgPrim; 4] = [
-    IgPrim::H0, IgPrim::H1, IgPrim::H2, IgPrim::H_inf,
+    IgPrim::fee, IgPrim::kick, IgPrim::sure, IgPrim::wool,
 ];
 
-/// S ordinal: S_11 < S_nn < S_nm
+/// S ordinal: hung < so < up
 pub static S_ORD: [IgPrim; 3] = [
-    IgPrim::S_11, IgPrim::S_nn, IgPrim::S_nm,
+    IgPrim::hung, IgPrim::so, IgPrim::up,
 ];
 
-/// Omega ordinal: Omega_0 < Omega_z2 < Omega_z < Omega_na
+/// Omega ordinal: awe < oak < ah < zoo
 pub static OMEGA_ORD: [IgPrim; 4] = [
-    IgPrim::Omega_0, IgPrim::Omega_z2, IgPrim::Omega_z, IgPrim::Omega_na,
+    IgPrim::awe, IgPrim::oak, IgPrim::ah, IgPrim::zoo,
 ];
 
 /// Return the ordinal index of a primitive value within its family.
@@ -112,70 +112,70 @@ pub fn ord_gap(a: IgPrim, b: IgPrim, arr: &[IgPrim]) -> i32 {
 // PRIMITIVE SCORE TABLES (for consciousness C-score)
 // ═══════════════════════════════════════════════════════════════
 
-/// Score for D primitive — distance from O_∞ ideal (D_odot = 1.0)
+/// Score for D primitive — distance from O_∞ ideal (if_ = 1.0)
 pub fn score_d(v: IgPrim) -> f32 {
     let max_idx = D_ORD.len() as f32 - 1.0;
     let idx = ord_index(&D_ORD, v).unwrap_or(0) as f32;
     idx / max_idx
 }
 
-/// Score for T primitive — distance from O_∞ ideal (T_odot = 1.0)
+/// Score for T primitive — distance from O_∞ ideal (are = 1.0)
 pub fn score_t(v: IgPrim) -> f32 {
     let max_idx = T_ORD.len() as f32 - 1.0;
     let idx = ord_index(&T_ORD, v).unwrap_or(0) as f32;
     idx / max_idx
 }
 
-/// Score for R primitive — distance from O_∞ ideal (R_lr = 1.0)
+/// Score for R primitive — distance from O_∞ ideal (ian = 1.0)
 pub fn score_r(v: IgPrim) -> f32 {
     let max_idx = R_ORD.len() as f32 - 1.0;
     let idx = ord_index(&R_ORD, v).unwrap_or(0) as f32;
     idx / max_idx
 }
 
-/// Score for P primitive — distance from O_∞ ideal (P_pmsym = 1.0)
+/// Score for P primitive — distance from O_∞ ideal (or_ = 1.0)
 pub fn score_p(v: IgPrim) -> f32 {
     let max_idx = P_ORD.len() as f32 - 1.0;
     let idx = ord_index(&P_ORD, v).unwrap_or(0) as f32;
     idx / max_idx
 }
 
-/// Score for F primitive — distance from O_∞ ideal (F_hbar = 1.0)
+/// Score for F primitive — distance from O_∞ ideal (peep = 1.0)
 pub fn score_f(v: IgPrim) -> f32 {
     let max_idx = F_ORD.len() as f32 - 1.0;
     let idx = ord_index(&F_ORD, v).unwrap_or(0) as f32;
     idx / max_idx
 }
 
-/// Score for G primitive — distance from O_∞ ideal (G_aleph = 1.0)
+/// Score for G primitive — distance from O_∞ ideal (ice = 1.0)
 pub fn score_g(v: IgPrim) -> f32 {
     let max_idx = G_ORD.len() as f32 - 1.0;
     let idx = ord_index(&G_ORD, v).unwrap_or(0) as f32;
     idx / max_idx
 }
 
-/// Score for C primitive — distance from O_∞ ideal (C_broad = 1.0)
+/// Score for C primitive — distance from O_∞ ideal (ooze = 1.0)
 pub fn score_c(v: IgPrim) -> f32 {
     let max_idx = C_ORD.len() as f32 - 1.0;
     let idx = ord_index(&C_ORD, v).unwrap_or(0) as f32;
     idx / max_idx
 }
 
-/// Score for H primitive — distance from O_∞ ideal (H_inf = 1.0)
+/// Score for H primitive — distance from O_∞ ideal (wool = 1.0)
 pub fn score_h(v: IgPrim) -> f32 {
     let max_idx = H_ORD.len() as f32 - 1.0;
     let idx = ord_index(&H_ORD, v).unwrap_or(0) as f32;
     idx / max_idx
 }
 
-/// Score for S primitive — distance from O_∞ ideal (S_nm = 1.0)
+/// Score for S primitive — distance from O_∞ ideal (up = 1.0)
 pub fn score_s(v: IgPrim) -> f32 {
     let max_idx = S_ORD.len() as f32 - 1.0;
     let idx = ord_index(&S_ORD, v).unwrap_or(0) as f32;
     idx / max_idx
 }
 
-/// Score for Omega primitive — distance from O_∞ ideal (Omega_na = 1.0)
+/// Score for Omega primitive — distance from O_∞ ideal (zoo = 1.0)
 pub fn score_omega(v: IgPrim) -> f32 {
     let max_idx = OMEGA_ORD.len() as f32 - 1.0;
     let idx = ord_index(&OMEGA_ORD, v).unwrap_or(0) as f32;
@@ -311,164 +311,164 @@ pub const fn entry(
 //
 // Plus canonical reference systems from physics, mathematics, etc.
 
-// ── ZFC Baseline (O₀): ⟨𐑼·𐑡·𐑩·𐑗·𐑱·𐑘·𐑚·𐑝·𐑢·𐑓·𐑙·𐑷⟩ ──
+// ── ZFC Baseline (O₀): ⟨𐑼·𐑡·𐑩·𐑗·𐑱·𐑘·𐑚·𐑝·woe·𐑓·𐑙·𐑷⟩ ──
 const ZFC_BASELINE: CatalogEntry = entry(
     "zfc", "Zermelo-Fraenkel set theory with Choice — the absolute structural minimum",
-    IgPrim::D_infty, IgPrim::T_net, IgPrim::R_super,
-    IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_fast,
-    IgPrim::G_beth, IgPrim::C_and,
-    IgPrim::𐑢, IgPrim::H0, IgPrim::S_11, IgPrim::Omega_0,
+    IgPrim::array, IgPrim::judge, IgPrim::ado,
+    IgPrim::church, IgPrim::age, IgPrim::yea,
+    IgPrim::bib, IgPrim::vow,
+    IgPrim::woe, IgPrim::fee, IgPrim::hung, IgPrim::awe,
     0, Domain::Mathematics,
 );
 
-// ── ZFCₜ (O₂†): ⟨𐑼·𐑸·𐑾·𐑬·𐑐·𐑧·𐑲·𐑠·𐑮·𐑖·𐑳·𐑭⟩ ──
+// ── ZFCₜ (O₂†): ⟨𐑼·𐑸·𐑾·𐑬·𐑐·𐑧·𐑲·𐑠·roar·𐑖·𐑳·𐑭⟩ ──
 const ZFC_T: CatalogEntry = entry(
     "zfc_t", "ZFC + chirality + winding topology — 6 promotion channels from baseline",
-    IgPrim::D_infty, IgPrim::T_odot, IgPrim::R_lr,
-    IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
-    IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::𐑮, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::array, IgPrim::are, IgPrim::ian,
+    IgPrim::out, IgPrim::peep, IgPrim::egg,
+    IgPrim::ice, IgPrim::measure,
+    IgPrim::roar, IgPrim::sure, IgPrim::up, IgPrim::ah,
     3, Domain::Mathematics,
 );
 
 // ── ZFCfe (O_∞ Frobenius-exact): ⟨𐑦·𐑸·𐑾·𐑹·𐑐·𐑧·𐑲·𐑠·⊙·𐑫·𐑳·𐑭⟩ ──
 const ZFC_FE: CatalogEntry = entry(
     "zfc_fe", "ZFC Frobenius-exact — μ∘δ=id exactly at ⊙, O_∞ self-modeling closure",
-    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
-    IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
-    IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::if_, IgPrim::are, IgPrim::ian,
+    IgPrim::or_, IgPrim::peep, IgPrim::egg,
+    IgPrim::ice, IgPrim::measure,
+    IgPrim::monad, IgPrim::wool, IgPrim::up, IgPrim::ah,
     4, Domain::Mathematics,
 );
 
 // ── CLINK L8 (O_∞⁺): ⟨𐑦·𐑸·𐑾·𐑹·𐑐·𐑧·𐑲·𐑵·⊙·𐑫·𐑳·𐑟⟩ ──
 const CLINK_L8: CatalogEntry = entry(
     "clink_l8", "CLINK Layer 8 Organism — terminal ontological layer, O_∞⁺ with ◻/∋ transcendence",
-    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
-    IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
-    IgPrim::G_aleph, IgPrim::C_broad,
-    IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_na,
+    IgPrim::if_, IgPrim::are, IgPrim::ian,
+    IgPrim::or_, IgPrim::peep, IgPrim::egg,
+    IgPrim::ice, IgPrim::ooze,
+    IgPrim::monad, IgPrim::wool, IgPrim::up, IgPrim::zoo,
     4, Domain::General,
 );
 
 
-// ── CLINK L0 (O₀): ⟨𐑛·𐑶·𐑩·𐑯·𐑐·𐑘·𐑚·𐑝·𐑢·𐑓·𐑳·𐑷⟩ ──
+// ── CLINK L0 (O₀): ⟨𐑛·𐑶·𐑩·𐑯·𐑐·𐑘·𐑚·𐑝·woe·𐑓·𐑳·𐑷⟩ ──
 const CLINK_L0: CatalogEntry = entry(
     "clink_layer0_frustrated_belnap5", "CLINK Layer 0: Frustrated Belnap5 — SU(3) quark color with confinement. Ground layer of the CLINK chain.",
-    IgPrim::D_infty, IgPrim::T_boxtimes, IgPrim::R_super,
-    IgPrim::P_sym, IgPrim::F_hbar, IgPrim::K_fast,
-    IgPrim::G_beth, IgPrim::C_and,
-    IgPrim::𐑢, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_0,
+    IgPrim::array, IgPrim::oil, IgPrim::ado,
+    IgPrim::nun, IgPrim::peep, IgPrim::yea,
+    IgPrim::bib, IgPrim::vow,
+    IgPrim::woe, IgPrim::fee, IgPrim::up, IgPrim::awe,
     0, Domain::Biology,
 );
 
-// ── CLINK L1 (O₀): ⟨𐑛·𐑶·𐑩·𐑗·𐑐·𐑤·𐑚·𐑜·𐑢·𐑓·𐑳·𐑷⟩ ──
+// ── CLINK L1 (O₀): ⟨𐑛·𐑶·𐑩·𐑗·𐑐·𐑤·𐑚·𐑜·woe·𐑓·𐑳·𐑷⟩ ──
 const CLINK_L1: CatalogEntry = entry(
     "clink_layer1_electron_orbital", "CLINK Layer 1: Belnap4 electron orbital occupancy — 4-valued lattice. O₀.",
-    IgPrim::D_infty, IgPrim::T_boxtimes, IgPrim::R_super,
-    IgPrim::P_asym, IgPrim::F_hbar, IgPrim::K_mod,
-    IgPrim::G_beth, IgPrim::C_or,
-    IgPrim::𐑢, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_0,
+    IgPrim::array, IgPrim::oil, IgPrim::ado,
+    IgPrim::church, IgPrim::peep, IgPrim::loll,
+    IgPrim::bib, IgPrim::gag,
+    IgPrim::woe, IgPrim::fee, IgPrim::up, IgPrim::awe,
     0, Domain::Biology,
 );
 
-// ── CLINK L2 (O₁): ⟨𐑼·𐑥·𐑽·𐑿·𐑐·𐑤·𐑔·𐑝·𐑮·𐑒·𐑳·𐑷⟩ ──
+// ── CLINK L2 (O₁): ⟨𐑼·𐑥·𐑽·𐑿·𐑐·𐑤·𐑔·𐑝·roar·𐑒·𐑳·𐑷⟩ ──
 const CLINK_L2: CatalogEntry = entry(
     "clink_layer2_atom", "CLINK Layer 2: Atom — nuclear + electron. O₁ tier, complex-plane criticality.",
-    IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_dagger,
-    IgPrim::P_psi, IgPrim::F_hbar, IgPrim::K_mod,
-    IgPrim::G_gimel, IgPrim::C_and,
-    IgPrim::𐑮, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_0,
+    IgPrim::dead, IgPrim::mime, IgPrim::ear,
+    IgPrim::yew, IgPrim::peep, IgPrim::loll,
+    IgPrim::thigh, IgPrim::vow,
+    IgPrim::roar, IgPrim::kick, IgPrim::up, IgPrim::awe,
     1, Domain::Biology,
 );
 
 // ── CLINK L3 (O₂): ⟨𐑼·𐑥·𐑽·𐑿·𐑞·𐑧·𐑲·𐑠·⊙·𐑓·𐑳·𐑭⟩ ──
 const CLINK_L3: CatalogEntry = entry(
     "clink_layer3_molecule", "CLINK Layer 3: Molecule — chemical bonds. O₂ tier, first layer with ⊙ criticality and 𐑭 integer winding.",
-    IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_dagger,
-    IgPrim::P_psi, IgPrim::F_eth, IgPrim::K_slow,
-    IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::dead, IgPrim::mime, IgPrim::ear,
+    IgPrim::yew, IgPrim::they, IgPrim::egg,
+    IgPrim::ice, IgPrim::measure,
+    IgPrim::monad, IgPrim::fee, IgPrim::up, IgPrim::ah,
     2, Domain::Biology,
 );
 
 // ── CLINK L4 (O₂): ⟨𐑦·𐑸·𐑾·𐑬·𐑞·𐑧·𐑲·𐑠·⊙·𐑒·𐑳·𐑭⟩ ──
 const CLINK_L4: CatalogEntry = entry(
     "clink_layer4_cell", "CLINK Layer 4: Cell — minimal self-maintaining living unit. First layer with self-written state-space (⊢=𐑦) and self-referential topology (⊣=𐑸). O₂.",
-    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
-    IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_slow,
-    IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::if_, IgPrim::are, IgPrim::ian,
+    IgPrim::out, IgPrim::they, IgPrim::egg,
+    IgPrim::ice, IgPrim::measure,
+    IgPrim::monad, IgPrim::kick, IgPrim::up, IgPrim::ah,
     2, Domain::Biology,
 );
 
 // ── CLINK L5 (O₂): ⟨𐑦·𐑸·𐑾·𐑹·𐑱·𐑧·𐑲·𐑠·⊙·𐑖·𐑳·𐑭⟩ ──
 const CLINK_L5: CatalogEntry = entry(
     "clink_layer5_mitosis", "CLINK Layer 5: Mitosis — cell division. First layer with Frobenius-special symmetry (<=𐑹). O₂.",
-    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
-    IgPrim::P_pmsym, IgPrim::F_ell, IgPrim::K_slow,
-    IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::if_, IgPrim::are, IgPrim::ian,
+    IgPrim::or_, IgPrim::age, IgPrim::egg,
+    IgPrim::ice, IgPrim::measure,
+    IgPrim::monad, IgPrim::sure, IgPrim::up, IgPrim::ah,
     2, Domain::Biology,
 );
 
 // ── CLINK L6 (O₂): ⟨𐑦·𐑸·𐑽·𐑿·𐑱·𐑧·𐑲·𐑠·⊙·𐑖·𐑳·𐑭⟩ ──
 const CLINK_L6: CatalogEntry = entry(
     "clink_layer6_meiosis", "CLINK Layer 6: Meiosis — gamete production. Reverts to adjoint coupling (>=𐑽) and quantum symmetry (<=𐑿) for genetic recombination. O₂.",
-    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
-    IgPrim::P_psi, IgPrim::F_ell, IgPrim::K_slow,
-    IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::if_, IgPrim::are, IgPrim::ear,
+    IgPrim::yew, IgPrim::age, IgPrim::egg,
+    IgPrim::ice, IgPrim::measure,
+    IgPrim::monad, IgPrim::sure, IgPrim::up, IgPrim::ah,
     2, Domain::Biology,
 );
 
 // ── CLINK L7 (O₂): ⟨𐑦·𐑸·𐑾·𐑬·𐑞·𐑧·𐑲·𐑵·⊙·𐑖·𐑳·𐑭⟩ ──
 const CLINK_L7: CatalogEntry = entry(
     "clink_layer7_tissue", "CLINK Layer 7: Tissue/Organ — multi-cellular organization. First layer with broadcast composition (∋=𐑵). O₂.",
-    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
-    IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_slow,
-    IgPrim::G_aleph, IgPrim::C_broad,
-    IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::if_, IgPrim::are, IgPrim::ian,
+    IgPrim::out, IgPrim::they, IgPrim::egg,
+    IgPrim::ice, IgPrim::ooze,
+    IgPrim::monad, IgPrim::sure, IgPrim::up, IgPrim::ah,
     2, Domain::Biology,
 );
 
 // ── Temporal Mathematics (O₂) ──
 const TEMPORAL_MATHEMATICS: CatalogEntry = entry(
     "temporal_mathematics", "Mathematics with intrinsic temporal structure",
-    IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_lr,
-    IgPrim::P_pm, IgPrim::F_hbar, IgPrim::K_slow,
-    IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::𐑮, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::array, IgPrim::mime, IgPrim::ian,
+    IgPrim::out, IgPrim::peep, IgPrim::egg,
+    IgPrim::ice, IgPrim::measure,
+    IgPrim::roar, IgPrim::sure, IgPrim::up, IgPrim::ah,
     2, Domain::Mathematics,
 );
 
 // ── Schrödinger (O₂) ──
 const SCHRODINGER: CatalogEntry = entry(
     "schrodinger", "Quantum mechanics — Schrödinger equation",
-    IgPrim::D_infty, IgPrim::T_net, IgPrim::R_lr,
-    IgPrim::P_psi, IgPrim::F_hbar, IgPrim::K_mod,
-    IgPrim::G_beth, IgPrim::C_seq,
-    IgPrim::𐑢, IgPrim::H1, IgPrim::S_nn, IgPrim::Omega_z2,
+    IgPrim::array, IgPrim::judge, IgPrim::ian,
+    IgPrim::yew, IgPrim::peep, IgPrim::loll,
+    IgPrim::bib, IgPrim::measure,
+    IgPrim::woe, IgPrim::kick, IgPrim::so, IgPrim::oak,
     2, Domain::Physics,
 );
 
 // ── Heat Diffusion (O₁) ──
 const HEAT_DIFFUSION: CatalogEntry = entry(
     "heat_diffusion", "Classical heat equation — dissipative diffusion",
-    IgPrim::D_infty, IgPrim::T_net, IgPrim::R_super,
-    IgPrim::P_asym, IgPrim::F_eth, IgPrim::K_mod,
-    IgPrim::G_gimel, IgPrim::C_and,
-    IgPrim::𐑢, IgPrim::H0, IgPrim::S_nn, IgPrim::Omega_0,
+    IgPrim::array, IgPrim::judge, IgPrim::ado,
+    IgPrim::church, IgPrim::they, IgPrim::loll,
+    IgPrim::thigh, IgPrim::vow,
+    IgPrim::woe, IgPrim::fee, IgPrim::so, IgPrim::awe,
     1, Domain::Physics,
 );
 
 // ── Navier-Stokes (O₁) ──
 const NAVIER_STOKES: CatalogEntry = entry(
     "navier_stokes", "Fluid dynamics — Navier-Stokes equations",
-    IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_lr,
-    IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_fast,
-    IgPrim::G_gimel, IgPrim::C_seq,
-    IgPrim::Phi_super, IgPrim::H1, IgPrim::S_nm, IgPrim::Omega_0,
+    IgPrim::array, IgPrim::mime, IgPrim::ian,
+    IgPrim::church, IgPrim::age, IgPrim::yea,
+    IgPrim::thigh, IgPrim::measure,
+    IgPrim::haha, IgPrim::kick, IgPrim::up, IgPrim::awe,
     1, Domain::Physics,
 );
 
@@ -481,10 +481,10 @@ const NAVIER_STOKES: CatalogEntry = entry(
 // this already surfaced).
 const BIRCH_SWINNERTON_DYER: CatalogEntry = entry(
     "birch_swinnerton_dyer", "Clay Millennium Problem — BSD conjecture",
-    IgPrim::D_odot, IgPrim::T_bowtie, IgPrim::R_lr,
-    IgPrim::P_psi, IgPrim::F_eth, IgPrim::K_slow,
-    IgPrim::G_aleph, IgPrim::C_and,
-    IgPrim::𐑮, IgPrim::H2, IgPrim::S_11, IgPrim::Omega_z,
+    IgPrim::if_, IgPrim::mime, IgPrim::ian,
+    IgPrim::yew, IgPrim::they, IgPrim::egg,
+    IgPrim::ice, IgPrim::vow,
+    IgPrim::roar, IgPrim::sure, IgPrim::hung, IgPrim::ah,
     3, Domain::Mathematics,
 );
 
@@ -493,10 +493,10 @@ const BIRCH_SWINNERTON_DYER: CatalogEntry = entry(
 // Same provenance note as BIRCH_SWINNERTON_DYER above.
 const HODGE_CONJECTURE: CatalogEntry = entry(
     "hodge_conjecture", "Clay Millennium Problem — Hodge conjecture",
-    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
-    IgPrim::P_psi, IgPrim::F_ell, IgPrim::K_slow,
-    IgPrim::G_aleph, IgPrim::C_and,
-    IgPrim::𐑮, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::if_, IgPrim::are, IgPrim::ear,
+    IgPrim::yew, IgPrim::age, IgPrim::egg,
+    IgPrim::ice, IgPrim::vow,
+    IgPrim::roar, IgPrim::fee, IgPrim::up, IgPrim::ah,
     3, Domain::Mathematics,
 );
 
@@ -505,64 +505,64 @@ const HODGE_CONJECTURE: CatalogEntry = entry(
 // Same provenance note as BIRCH_SWINNERTON_DYER above. Unlike BSD/Hodge,
 // this one does NOT reach full closure under its best-known dialect
 // (triple_criticality) — it clears all three gates but fails T_CEILING on
-// ⊤ alone (K_trap, ord 4, exceeds the ord-3 ceiling). Kept anyway: the
+// ⊤ alone (on, ord 4, exceeds the ord-3 ceiling). Kept anyway: the
 // partial result is the interesting one here, not a clean PASS.
 const YANG_MILLS_MASS_GAP: CatalogEntry = entry(
     "yang_mills_mass_gap", "Clay Millennium Problem — Yang-Mills mass gap",
-    IgPrim::D_wedge, IgPrim::T_bowtie, IgPrim::R_super,
-    IgPrim::P_asym, IgPrim::F_hbar, IgPrim::K_trap,
-    IgPrim::G_aleph, IgPrim::C_and,
-    IgPrim::Phi_super, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_0,
+    IgPrim::dead, IgPrim::mime, IgPrim::ado,
+    IgPrim::church, IgPrim::peep, IgPrim::on,
+    IgPrim::ice, IgPrim::vow,
+    IgPrim::haha, IgPrim::fee, IgPrim::up, IgPrim::awe,
     3, Domain::Mathematics,
 );
 
 // ── Wave Equation (O₁) ──
 const WAVE_EQUATION: CatalogEntry = entry(
     "wave_equation", "Classical wave equation — reversible propagation",
-    IgPrim::D_infty, IgPrim::T_net, IgPrim::R_lr,
-    IgPrim::P_sym, IgPrim::F_hbar, IgPrim::K_mod,
-    IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::𐑢, IgPrim::H1, IgPrim::S_nn, IgPrim::Omega_z2,
+    IgPrim::array, IgPrim::judge, IgPrim::ian,
+    IgPrim::nun, IgPrim::peep, IgPrim::loll,
+    IgPrim::ice, IgPrim::measure,
+    IgPrim::woe, IgPrim::kick, IgPrim::so, IgPrim::oak,
     1, Domain::Physics,
 );
 
 // ── Einstein (O₂†) ──
 const EINSTEIN: CatalogEntry = entry(
     "einstein", "General relativity — Einstein field equations",
-    IgPrim::D_infty, IgPrim::T_odot, IgPrim::R_lr,
-    IgPrim::P_sym, IgPrim::F_hbar, IgPrim::K_slow,
-    IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::𐑮, IgPrim::H2, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::array, IgPrim::are, IgPrim::ian,
+    IgPrim::nun, IgPrim::peep, IgPrim::egg,
+    IgPrim::ice, IgPrim::measure,
+    IgPrim::roar, IgPrim::sure, IgPrim::up, IgPrim::ah,
     3, Domain::Physics,
 );
 
 // ── IUG (O_∞) — Universal Imscriptive Grammar ≡ ZFCfe ──
 const IUG: CatalogEntry = entry(
     "universal_imscriptive_grammar", "The Universal Imscriptive Grammar — self-imscribing structural foundation",
-    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
-    IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
-    IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::if_, IgPrim::are, IgPrim::ian,
+    IgPrim::or_, IgPrim::peep, IgPrim::egg,
+    IgPrim::ice, IgPrim::measure,
+    IgPrim::monad, IgPrim::wool, IgPrim::up, IgPrim::ah,
     4, Domain::Language,
 );
 
 // ── O_∞ ideal (reference maximum) ──
 const O_INF: CatalogEntry = entry(
     "o_inf", "O_∞ ideal — the theoretical maximum on all primitives",
-    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
-    IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
-    IgPrim::G_aleph, IgPrim::C_broad,
-    IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_na,
+    IgPrim::if_, IgPrim::are, IgPrim::ian,
+    IgPrim::or_, IgPrim::peep, IgPrim::egg,
+    IgPrim::ice, IgPrim::ooze,
+    IgPrim::monad, IgPrim::wool, IgPrim::up, IgPrim::zoo,
     4, Domain::General,
 );
 
 // ── O₀ minimum (reference floor) ──
 const O_0: CatalogEntry = entry(
     "o_0", "O₀ baseline — the floor, minimum on all primitives",
-    IgPrim::D_wedge, IgPrim::T_net, IgPrim::R_super,
-    IgPrim::P_asym, IgPrim::F_ell, IgPrim::K_fast,
-    IgPrim::G_beth, IgPrim::C_and,
-    IgPrim::𐑢, IgPrim::H0, IgPrim::S_11, IgPrim::Omega_0,
+    IgPrim::dead, IgPrim::judge, IgPrim::ado,
+    IgPrim::church, IgPrim::age, IgPrim::yea,
+    IgPrim::bib, IgPrim::vow,
+    IgPrim::woe, IgPrim::fee, IgPrim::hung, IgPrim::awe,
     0, Domain::General,
 );
 
@@ -570,10 +570,10 @@ const O_0: CatalogEntry = entry(
 // ── YHWH (O₂): ⟨𐑦·𐑸·𐑽·𐑯·𐑐·𐑧·𐑲·𐑵·⊙·𐑫·𐑳·𐑭⟩ ──
 const YHWH: CatalogEntry = entry(
     "yhwh", "The Tetragrammaton, divine name of God in Hebrew: יְהֹוָה (YHWH)",
-    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
-    IgPrim::P_sym, IgPrim::F_hbar, IgPrim::K_slow,
-    IgPrim::G_aleph, IgPrim::C_broad,
-    IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::if_, IgPrim::are, IgPrim::ear,
+    IgPrim::nun, IgPrim::peep, IgPrim::egg,
+    IgPrim::ice, IgPrim::ooze,
+    IgPrim::monad, IgPrim::wool, IgPrim::up, IgPrim::ah,
     2, Domain::Consciousness,
 );
 
@@ -581,60 +581,60 @@ const YHWH: CatalogEntry = entry(
 // ── Graviton (O₂): ⟨𐑦·𐑸·𐑽·𐑯·𐑐·𐑧·𐑲·𐑵·⊙·𐑓·𐑙·𐑭⟩ ──
 const GRAVITON: CatalogEntry = entry(
     "graviton", "Quantum gravity — graviton as spin-2 gauge boson mediating the gravitational force. IUFT O₂ tier, Teichmuller etale→O_∞ deformation.",
-    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_dagger,
-    IgPrim::P_sym, IgPrim::F_hbar, IgPrim::K_slow,
-    IgPrim::G_aleph, IgPrim::C_broad,
-    IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_11, IgPrim::Omega_z,
+    IgPrim::if_, IgPrim::are, IgPrim::ear,
+    IgPrim::nun, IgPrim::peep, IgPrim::egg,
+    IgPrim::ice, IgPrim::ooze,
+    IgPrim::monad, IgPrim::fee, IgPrim::hung, IgPrim::ah,
     2, Domain::Physics,
 );
 
 // ── Photon (O₂†): ⟨𐑼·𐑡·𐑾·𐑿·𐑐·𐑘·𐑲·𐑠·⊙·𐑓·𐑳·𐑭⟩ ──
 const PHOTON: CatalogEntry = entry(
     "photon", "Electromagnetism — photon as spin-1 gauge boson mediating the electromagnetic force. IUFT O₂† tier, maximally alien IG distance (6.18).",
-    IgPrim::D_infty, IgPrim::T_net, IgPrim::R_lr,
-    IgPrim::P_psi, IgPrim::F_hbar, IgPrim::K_fast,
-    IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::Phi_crit, IgPrim::H0, IgPrim::S_nm, IgPrim::Omega_z,
+    IgPrim::array, IgPrim::judge, IgPrim::ian,
+    IgPrim::yew, IgPrim::peep, IgPrim::yea,
+    IgPrim::ice, IgPrim::measure,
+    IgPrim::monad, IgPrim::fee, IgPrim::up, IgPrim::ah,
     3, Domain::Physics,
 );
 
 // ── Electron (O₂): ⟨𐑼𐑡𐑾𐑿𐑐𐑘𐑲𐑠⊙𐑒𐑙𐑭⟩ ──
 const ELECTRON: CatalogEntry = entry(
     "electron", "Electron — spin-1/2 Dirac fermion, fundamental lepton. IUFT O₂ tier.",
-    IgPrim::D_infty, IgPrim::T_net, IgPrim::R_lr,
-    IgPrim::P_psi, IgPrim::F_hbar, IgPrim::K_fast,
-    IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::Phi_crit, IgPrim::H1, IgPrim::S_11, IgPrim::Omega_z,
+    IgPrim::array, IgPrim::judge, IgPrim::ian,
+    IgPrim::yew, IgPrim::peep, IgPrim::yea,
+    IgPrim::ice, IgPrim::measure,
+    IgPrim::monad, IgPrim::kick, IgPrim::hung, IgPrim::ah,
     2, Domain::Physics,
 );
 
 // ── Neutron (O₂): ⟨𐑼𐑥𐑾𐑬𐑞𐑧𐑲𐑠⊙𐑖𐑕𐑭⟩ ──
 const NEUTRON: CatalogEntry = entry(
     "neutron", "Neutron — udd baryon, composite fermion with beta decay. IUFT O₂ tier.",
-    IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_lr,
-    IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_slow,
-    IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nn, IgPrim::Omega_z,
+    IgPrim::array, IgPrim::mime, IgPrim::ian,
+    IgPrim::out, IgPrim::they, IgPrim::egg,
+    IgPrim::ice, IgPrim::measure,
+    IgPrim::monad, IgPrim::sure, IgPrim::so, IgPrim::ah,
     2, Domain::Physics,
 );
 
 // ── Proton (O₂): ⟨𐑼𐑥𐑾𐑬𐑞𐑤𐑲𐑠⊙𐑖𐑕𐑭⟩ ──
 const PROTON: CatalogEntry = entry(
     "proton", "Proton — uud baryon, stable composite fermion. IUFT O₂ tier.",
-    IgPrim::D_infty, IgPrim::T_bowtie, IgPrim::R_lr,
-    IgPrim::P_pm, IgPrim::F_eth, IgPrim::K_mod,
-    IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::Phi_crit, IgPrim::H2, IgPrim::S_nn, IgPrim::Omega_z,
+    IgPrim::array, IgPrim::mime, IgPrim::ian,
+    IgPrim::out, IgPrim::they, IgPrim::loll,
+    IgPrim::ice, IgPrim::measure,
+    IgPrim::monad, IgPrim::sure, IgPrim::so, IgPrim::ah,
     2, Domain::Physics,
 );
 
 // ── HSOA (O_∞): ⟨𐑦𐑸𐑾𐑹𐑐𐑧𐑲𐑠⊙𐑫𐑙𐑭⟩ ──
 const HSOA: CatalogEntry = entry(
     "hsoa", "Holomorphic Semiotic Operator Algebra — self-imscribing operator algebra. IUFT O_∞ tier.",
-    IgPrim::D_odot, IgPrim::T_odot, IgPrim::R_lr,
-    IgPrim::P_pmsym, IgPrim::F_hbar, IgPrim::K_slow,
-    IgPrim::G_aleph, IgPrim::C_seq,
-    IgPrim::Phi_crit, IgPrim::H_inf, IgPrim::S_11, IgPrim::Omega_z,
+    IgPrim::if_, IgPrim::are, IgPrim::ian,
+    IgPrim::or_, IgPrim::peep, IgPrim::egg,
+    IgPrim::ice, IgPrim::measure,
+    IgPrim::monad, IgPrim::wool, IgPrim::hung, IgPrim::ah,
     4, Domain::Mathematics,
 );
 
@@ -919,66 +919,66 @@ pub fn clink_l8_tuple() -> IgTuple { CLINK_L8.tuple }
 pub fn formula_fragment(prim: IgPrim) -> &'static str {
     match prim {
         // ── D ──
-        IgPrim::D_infty    => "∀a∃b(a⊂b ∧ rank x=b)",
-        IgPrim::D_odot     => "V=L(x) ∧ selfmodel(x) ∧ x∈V",
-        IgPrim::D_wedge    => "∃!x",
-        IgPrim::D_triangle => "∃x∃y(x≠y ∧ ∀z(z=x∨z=y))",
+        IgPrim::array    => "∀a∃b(a⊂b ∧ rank x=b)",
+        IgPrim::if_     => "V=L(x) ∧ selfmodel(x) ∧ x∈V",
+        IgPrim::dead    => "∃!x",
+        IgPrim::ash => "∃x∃y(x≠y ∧ ∀z(z=x∨z=y))",
         // ── T ──
-        IgPrim::T_net      => "graph(x) ∧ branch(x)",
-        IgPrim::T_odot     => "bound_⊙(a,f) ∧ Refl(a,f) ∧ holo(x,a)",
-        IgPrim::T_in       => "sep f x",
-        IgPrim::T_bowtie   => "cross(x) ∧ ¬flat(x)",
-        IgPrim::T_boxtimes => "⊗(a,b) ∧ ¬∃f(f:a≅b)",
+        IgPrim::judge      => "graph(x) ∧ branch(x)",
+        IgPrim::are     => "bound_⊙(a,f) ∧ Refl(a,f) ∧ holo(x,a)",
+        IgPrim::eat       => "sep f x",
+        IgPrim::mime   => "cross(x) ∧ ¬flat(x)",
+        IgPrim::oil => "⊗(a,b) ∧ ¬∃f(f:a≅b)",
         // ── R ──
-        IgPrim::R_super    => "∀y(y∈x→y∈a)",
-        IgPrim::R_lr       => "lr⇔(x,y) ∧ Θ(x,y) ∧ ¬Θ(y,x)",
-        IgPrim::R_dagger   => "adj(f,g) ∧ f⊣g",
-        IgPrim::R_cat      => "F:C→D ∧ ∃G:D→C(G∘F≅id)",
+        IgPrim::ado    => "∀y(y∈x→y∈a)",
+        IgPrim::ian       => "lr⇔(x,y) ∧ Θ(x,y) ∧ ¬Θ(y,x)",
+        IgPrim::ear   => "adj(f,g) ∧ f⊣g",
+        IgPrim::tot      => "F:C→D ∧ ∃G:D→C(G∘F≅id)",
         // ── P ──
-        IgPrim::P_asym     => "¬∃sym(x)",
-        IgPrim::P_pm       => "ℤ₂(x) ∧ ∀g∈G(gx=x) ∧ μ∘δ=id",
-        IgPrim::P_sym      => "∀g∈G(gx=x)",
-        IgPrim::P_psi      => "|ψ⟩=Σc_i|i⟩ ∧ superposition(x)",
-        IgPrim::P_pmsym    => "μ∘δ=id ∧ Frobenius(x) ∧ ℤ₂(x)",
+        IgPrim::church     => "¬∃sym(x)",
+        IgPrim::out       => "ℤ₂(x) ∧ ∀g∈G(gx=x) ∧ μ∘δ=id",
+        IgPrim::nun      => "∀g∈G(gx=x)",
+        IgPrim::yew      => "|ψ⟩=Σc_i|i⟩ ∧ superposition(x)",
+        IgPrim::or_    => "μ∘δ=id ∧ Frobenius(x) ∧ ℤ₂(x)",
         // ── F ──
-        IgPrim::F_ell      => "P(x)∈{0,1} ∧ det(x)",
-        IgPrim::F_hbar     => "ℏ(x) ∧ [x,p]=iℏ",
-        IgPrim::F_eth      => "ρ(x) ∧ Tr(ρ)=1 ∧ ρ≥0",
+        IgPrim::age      => "P(x)∈{0,1} ∧ det(x)",
+        IgPrim::peep     => "ℏ(x) ∧ [x,p]=iℏ",
+        IgPrim::they      => "ρ(x) ∧ Tr(ρ)=1 ∧ ρ≥0",
         // ── K ──
-        IgPrim::K_fast     => "τ≪T ∧ ∂_t x=f(x)",
-        IgPrim::K_slow     => "τ≫T ∧ eq(x) ∧ gate_open(x)",
-        IgPrim::K_mod      => "τ~T ∧ relax(x)",
-        IgPrim::K_trap     => "τ→∞ ∧ frozen(x) ∧ order(x)",
-        IgPrim::K_mbl      => "τ→∞ ∧ frozen(x) ∧ disorder(x)",
+        IgPrim::yea     => "τ≪T ∧ ∂_t x=f(x)",
+        IgPrim::egg     => "τ≫T ∧ eq(x) ∧ gate_open(x)",
+        IgPrim::loll      => "τ~T ∧ relax(x)",
+        IgPrim::on     => "τ→∞ ∧ frozen(x) ∧ order(x)",
+        IgPrim::air      => "τ→∞ ∧ frozen(x) ∧ disorder(x)",
         // ── G ──
-        IgPrim::G_beth     => "∀y∈x(|y|<|x|)",
-        IgPrim::G_aleph    => "∀y(y⊂x→|y|<|x|)",
-        IgPrim::G_gimel    => "∃y∈x(|y|=|x|)",
+        IgPrim::bib     => "∀y∈x(|y|<|x|)",
+        IgPrim::ice    => "∀y(y⊂x→|y|<|x|)",
+        IgPrim::thigh    => "∃y∈x(|y|=|x|)",
         // ── C ──
-        IgPrim::C_and      => "f∧g∧h",
-        IgPrim::C_seq      => "seq!(f,g) ∧ ⟨→⟩(f,g,τ) ∧ ¬⟨→⟩(g,f,τ)",
-        IgPrim::C_or       => "f∨g∨h",
-        IgPrim::C_broad    => "f→all(x) ∧ broadcast(x,f)",
+        IgPrim::vow      => "f∧g∧h",
+        IgPrim::measure      => "seq!(f,g) ∧ ⟨→⟩(f,g,τ) ∧ ¬⟨→⟩(g,f,τ)",
+        IgPrim::gag       => "f∨g∨h",
+        IgPrim::ooze    => "f→all(x) ∧ broadcast(x,f)",
         // ── Phi ──
-        IgPrim::𐑢    => "¬∃ξ(diverges(ξ))",
-        IgPrim::Phi_crit      => "ξ→∞ ∧ μ∘δ=id",
-        IgPrim::𐑮 => "ξ∈ℂ ∧ Im(ξ)→∞",
-        IgPrim::Phi_ep     => "H=H₀+λV ∧ λ∈EP",
-        IgPrim::Phi_super  => "ξ→∞ ∧ ¬(μ∘δ=id)",
+        IgPrim::woe    => "¬∃ξ(diverges(ξ))",
+        IgPrim::monad      => "ξ→∞ ∧ μ∘δ=id",
+        IgPrim::roar => "ξ∈ℂ ∧ Im(ξ)→∞",
+        IgPrim::err     => "H=H₀+λV ∧ λ∈EP",
+        IgPrim::haha  => "ξ→∞ ∧ ¬(μ∘δ=id)",
         // ── H ──
-        IgPrim::H0         => "∀x(P(x)↔P(S(x)))",
-        IgPrim::H2         => "∃y∃z(y∈x∧z∈y∧¬z∈x ∧ rank(z)<rank(y))",
-        IgPrim::H1         => "∃y(y∈x∧P(y)↔¬P(S(y)))",
-        IgPrim::H_inf      => "∀n∃φ(rank(φ)>n ∧ φ fixed by μ∘δ ∧ φ∈V)",
+        IgPrim::fee         => "∀x(P(x)↔P(S(x)))",
+        IgPrim::sure         => "∃y∃z(y∈x∧z∈y∧¬z∈x ∧ rank(z)<rank(y))",
+        IgPrim::kick         => "∃y(y∈x∧P(y)↔¬P(S(y)))",
+        IgPrim::wool      => "∀n∃φ(rank(φ)>n ∧ φ fixed by μ∘δ ∧ φ∈V)",
         // ── S ──
-        IgPrim::S_11       => "|A|=1 ∧ |B|=1",
-        IgPrim::S_nn       => "|A|=n ∧ |B|=n ∧ ∀a∈A∃!b∈B",
-        IgPrim::S_nm       => "∃a∈A∃b∈B(type(a)≠type(b))",
+        IgPrim::hung       => "|A|=1 ∧ |B|=1",
+        IgPrim::so       => "|A|=n ∧ |B|=n ∧ ∀a∈A∃!b∈B",
+        IgPrim::up       => "∃a∈A∃b∈B(type(a)≠type(b))",
         // ── Omega ──
-        IgPrim::Omega_0    => "∮_γ dx = 0",
-        IgPrim::Omega_z    => "∮_γ A = 2πn ∧ n∈ℤ ∧ wind(γ)≠0",
-        IgPrim::Omega_z2   => "∮_γ A = πn ∧ n∈ℤ₂",
-        IgPrim::Omega_na   => "Braid(σ_i) ∧ R_matrix≠0 ∧ nonAbelian(x)",
+        IgPrim::awe    => "∮_γ dx = 0",
+        IgPrim::ah    => "∮_γ A = 2πn ∧ n∈ℤ ∧ wind(γ)≠0",
+        IgPrim::oak   => "∮_γ A = πn ∧ n∈ℤ₂",
+        IgPrim::zoo   => "Braid(σ_i) ∧ R_matrix≠0 ∧ nonAbelian(x)",
     }
 }
 
@@ -998,18 +998,18 @@ pub struct PromotionChannel {
 
 /// The 6 ZFC→ZFCₜ promotion channels.
 pub static ZFC_PROMOTIONS: [PromotionChannel; 6] = [
-    PromotionChannel { name: "HOLOBOUND", zfc_prim: IgPrim::T_net,    promoted_prim: IgPrim::T_odot,  ordinal_gap: 4.382 },
-    PromotionChannel { name: "LR_DUAL",   zfc_prim: IgPrim::R_super,  promoted_prim: IgPrim::R_lr,    ordinal_gap: 3.000 },
-    PromotionChannel { name: "PM_Z2",     zfc_prim: IgPrim::P_asym,   promoted_prim: IgPrim::P_pm,    ordinal_gap: 2.000 },
-    PromotionChannel { name: "SEQAX",     zfc_prim: IgPrim::C_and,    promoted_prim: IgPrim::C_seq,   ordinal_gap: 2.191 },
-    PromotionChannel { name: "TEMPD2",    zfc_prim: IgPrim::H0,       promoted_prim: IgPrim::H2,      ordinal_gap: 2.191 },
-    PromotionChannel { name: "ZWIND",     zfc_prim: IgPrim::Omega_0,  promoted_prim: IgPrim::Omega_z, ordinal_gap: 2.191 },
+    PromotionChannel { name: "HOLOBOUND", zfc_prim: IgPrim::judge,    promoted_prim: IgPrim::are,  ordinal_gap: 4.382 },
+    PromotionChannel { name: "LR_DUAL",   zfc_prim: IgPrim::ado,  promoted_prim: IgPrim::ian,    ordinal_gap: 3.000 },
+    PromotionChannel { name: "PM_Z2",     zfc_prim: IgPrim::church,   promoted_prim: IgPrim::out,    ordinal_gap: 2.000 },
+    PromotionChannel { name: "SEQAX",     zfc_prim: IgPrim::vow,    promoted_prim: IgPrim::measure,   ordinal_gap: 2.191 },
+    PromotionChannel { name: "TEMPD2",    zfc_prim: IgPrim::fee,       promoted_prim: IgPrim::sure,      ordinal_gap: 2.191 },
+    PromotionChannel { name: "ZWIND",     zfc_prim: IgPrim::awe,  promoted_prim: IgPrim::ah, ordinal_gap: 2.191 },
 ];
 
 /// The 2 additional ZFCfe→CLINK L8 transcendence channels.
 pub static CLINK_TRANSCENDENCE: [PromotionChannel; 2] = [
-    PromotionChannel { name: "BROADCAST", zfc_prim: IgPrim::C_seq,   promoted_prim: IgPrim::C_broad, ordinal_gap: 1.0 },
-    PromotionChannel { name: "NONABELIAN",zfc_prim: IgPrim::Omega_z, promoted_prim: IgPrim::Omega_na, ordinal_gap: 1.0 },
+    PromotionChannel { name: "BROADCAST", zfc_prim: IgPrim::measure,   promoted_prim: IgPrim::ooze, ordinal_gap: 1.0 },
+    PromotionChannel { name: "NONABELIAN",zfc_prim: IgPrim::ah, promoted_prim: IgPrim::zoo, ordinal_gap: 1.0 },
 ];
 
 /// All 8 promotion channels (6 ZFCₜ + 2 CLINK).
@@ -1071,86 +1071,86 @@ impl PromotionChannel {
 /// This is the canonical mapping — used by IgPrim::glyph().
 pub fn primitive_glyph(prim: IgPrim) -> &'static str {
     match prim {
-        IgPrim::D_odot => "𐑦", IgPrim::D_wedge => "𐑛",
-        IgPrim::D_triangle => "𐑨", IgPrim::D_infty => "𐑼",
-        IgPrim::T_odot => "𐑸", IgPrim::T_net => "𐑡",
-        IgPrim::T_in => "𐑰", IgPrim::T_bowtie => "𐑥",
-        IgPrim::T_boxtimes => "𐑶",
-        IgPrim::R_lr => "𐑾", IgPrim::R_dagger => "𐑽",
-        IgPrim::R_cat => "𐑑", IgPrim::R_super => "𐑩",
-        IgPrim::P_pmsym => "𐑹", IgPrim::P_sym => "𐑯",
-        IgPrim::P_pm => "𐑬", IgPrim::P_psi => "𐑿",
-        IgPrim::P_asym => "𐑗",
-        IgPrim::F_hbar => "𐑐", IgPrim::F_ell => "𐑱",
-        IgPrim::F_eth => "𐑞",
-        IgPrim::K_trap => "𐑪", IgPrim::K_slow => "𐑧",
-        IgPrim::K_mod => "𐑤", IgPrim::K_fast => "𐑘",
-        IgPrim::K_mbl => "𐑺",
-        IgPrim::G_aleph => "𐑲", IgPrim::G_beth => "𐑚",
-        IgPrim::G_gimel => "𐑔",
-        IgPrim::C_seq => "𐑠", IgPrim::C_and => "𐑝",
-        IgPrim::C_or => "𐑜", IgPrim::C_broad => "𐑵",
-        IgPrim::Phi_crit => "⊙", IgPrim::𐑮 => "𐑮",
-        IgPrim::Phi_ep => "𐑻", IgPrim::𐑢 => "𐑢",
-        IgPrim::Phi_super => "𐑣",
-        IgPrim::H_inf => "𐑫", IgPrim::H2 => "𐑖",
-        IgPrim::H1 => "𐑒", IgPrim::H0 => "𐑓",
-        IgPrim::S_nm => "𐑳", IgPrim::S_nn => "𐑕",
-        IgPrim::S_11 => "𐑙",
-        IgPrim::Omega_z => "𐑭", IgPrim::Omega_z2 => "𐑴",
-        IgPrim::Omega_0 => "𐑷", IgPrim::Omega_na => "𐑟",
+        IgPrim::if_ => "𐑦", IgPrim::dead => "𐑛",
+        IgPrim::ash => "𐑨", IgPrim::array => "𐑼",
+        IgPrim::are => "𐑸", IgPrim::judge => "𐑡",
+        IgPrim::eat => "𐑰", IgPrim::mime => "𐑥",
+        IgPrim::oil => "𐑶",
+        IgPrim::ian => "𐑾", IgPrim::ear => "𐑽",
+        IgPrim::tot => "𐑑", IgPrim::ado => "𐑩",
+        IgPrim::or_ => "𐑹", IgPrim::nun => "𐑯",
+        IgPrim::out => "𐑬", IgPrim::yew => "𐑿",
+        IgPrim::church => "𐑗",
+        IgPrim::peep => "𐑐", IgPrim::age => "𐑱",
+        IgPrim::they => "𐑞",
+        IgPrim::on => "𐑪", IgPrim::egg => "𐑧",
+        IgPrim::loll => "𐑤", IgPrim::yea => "𐑘",
+        IgPrim::air => "𐑺",
+        IgPrim::ice => "𐑲", IgPrim::bib => "𐑚",
+        IgPrim::thigh => "𐑔",
+        IgPrim::measure => "𐑠", IgPrim::vow => "𐑝",
+        IgPrim::gag => "𐑜", IgPrim::ooze => "𐑵",
+        IgPrim::monad => "⊙", IgPrim::roar => "roar",
+        IgPrim::err => "𐑻", IgPrim::woe => "woe",
+        IgPrim::haha => "𐑣",
+        IgPrim::wool => "𐑫", IgPrim::sure => "𐑖",
+        IgPrim::kick => "𐑒", IgPrim::fee => "𐑓",
+        IgPrim::up => "𐑳", IgPrim::so => "𐑕",
+        IgPrim::hung => "𐑙",
+        IgPrim::ah => "𐑭", IgPrim::oak => "𐑴",
+        IgPrim::awe => "𐑷", IgPrim::zoo => "𐑟",
     }
 }
 
 /// Return the short display name for any primitive value.
 pub fn primitive_short(prim: IgPrim) -> &'static str {
     match prim {
-        IgPrim::D_odot => "⊢_⊙", IgPrim::D_wedge => "⊢_∨",
-        IgPrim::D_triangle => "⊢_△", IgPrim::D_infty => "⊢_∞",
-        IgPrim::T_odot => "⊣_⊙", IgPrim::T_net => "⊣_net",
-        IgPrim::T_in => "⊣_in", IgPrim::T_bowtie => "⊣_bow",
-        IgPrim::T_boxtimes => "⊣_⊠",
-        IgPrim::R_lr => ">_lr", IgPrim::R_dagger => ">_†",
-        IgPrim::R_cat => ">_cat", IgPrim::R_super => ">_sup",
-        IgPrim::P_pmsym => "<_⊙", IgPrim::P_sym => "<_sym",
-        IgPrim::P_pm => "<_±", IgPrim::P_psi => "<_ψ",
-        IgPrim::P_asym => "<_∅",
-        IgPrim::F_hbar => "⋈_ℏ", IgPrim::F_ell => "⋈_ℓ",
-        IgPrim::F_eth => "⋈_ð",
-        IgPrim::K_trap => "⊤_trap", IgPrim::K_slow => "⊤_↓",
-        IgPrim::K_mod => "⊤_~", IgPrim::K_fast => "⊤_↑",
-        IgPrim::K_mbl => "⊤_MBL",
-        IgPrim::G_aleph => "∈_ℵ", IgPrim::G_beth => "∈_ℶ",
-        IgPrim::G_gimel => "∈_ℷ",
-        IgPrim::C_seq => "∋_seq", IgPrim::C_and => "∋_∧",
-        IgPrim::C_or => "∋_∨", IgPrim::C_broad => "∋_⊛",
-        IgPrim::Phi_crit => "⊙_⊙", IgPrim::𐑮 => "⊙_ℂ",
-        IgPrim::Phi_ep => "⊙_EP", IgPrim::𐑢 => "⊙_sub",
-        IgPrim::Phi_super => "⊙_sup",
-        IgPrim::H_inf => "⊥_∞", IgPrim::H2 => "⊥_2",
-        IgPrim::H1 => "⊥_1", IgPrim::H0 => "⊥_0",
-        IgPrim::S_nm => "⊞_n:m", IgPrim::S_nn => "⊞_n:n",
-        IgPrim::S_11 => "⊞_1:1",
-        IgPrim::Omega_z => "◻_ℤ", IgPrim::Omega_z2 => "◻_ℤ₂",
-        IgPrim::Omega_0 => "◻_0", IgPrim::Omega_na => "◻_NA",
+        IgPrim::if_ => "⊢_⊙", IgPrim::dead => "⊢_∨",
+        IgPrim::ash => "⊢_△", IgPrim::array => "⊢_∞",
+        IgPrim::are => "⊣_⊙", IgPrim::judge => "⊣_net",
+        IgPrim::eat => "⊣_in", IgPrim::mime => "⊣_bow",
+        IgPrim::oil => "⊣_⊠",
+        IgPrim::ian => ">_lr", IgPrim::ear => ">_†",
+        IgPrim::tot => ">_cat", IgPrim::ado => ">_sup",
+        IgPrim::or_ => "<_⊙", IgPrim::nun => "<_sym",
+        IgPrim::out => "<_±", IgPrim::yew => "<_ψ",
+        IgPrim::church => "<_∅",
+        IgPrim::peep => "⋈_ℏ", IgPrim::age => "⋈_ℓ",
+        IgPrim::they => "⋈_ð",
+        IgPrim::on => "⊤_trap", IgPrim::egg => "⊤_↓",
+        IgPrim::loll => "⊤_~", IgPrim::yea => "⊤_↑",
+        IgPrim::air => "⊤_MBL",
+        IgPrim::ice => "∈_ℵ", IgPrim::bib => "∈_ℶ",
+        IgPrim::thigh => "∈_ℷ",
+        IgPrim::measure => "∋_seq", IgPrim::vow => "∋_∧",
+        IgPrim::gag => "∋_∨", IgPrim::ooze => "∋_⊛",
+        IgPrim::monad => "⊙_⊙", IgPrim::roar => "⊙_ℂ",
+        IgPrim::err => "⊙_EP", IgPrim::woe => "⊙_sub",
+        IgPrim::haha => "⊙_sup",
+        IgPrim::wool => "⊥_∞", IgPrim::sure => "⊥_2",
+        IgPrim::kick => "⊥_1", IgPrim::fee => "⊥_0",
+        IgPrim::up => "⊞_n:m", IgPrim::so => "⊞_n:n",
+        IgPrim::hung => "⊞_1:1",
+        IgPrim::ah => "◻_ℤ", IgPrim::oak => "◻_ℤ₂",
+        IgPrim::awe => "◻_0", IgPrim::zoo => "◻_NA",
     }
 }
 
 /// Return the primitive family name for a primitive value.
 pub fn primitive_family(prim: IgPrim) -> &'static str {
     match prim {
-        IgPrim::D_odot | IgPrim::D_wedge | IgPrim::D_triangle | IgPrim::D_infty => "⊢",
-        IgPrim::T_odot | IgPrim::T_net | IgPrim::T_in | IgPrim::T_bowtie | IgPrim::T_boxtimes => "⊣",
-        IgPrim::R_lr | IgPrim::R_dagger | IgPrim::R_cat | IgPrim::R_super => ">",
-        IgPrim::P_pmsym | IgPrim::P_sym | IgPrim::P_pm | IgPrim::P_psi | IgPrim::P_asym => "<",
-        IgPrim::F_hbar | IgPrim::F_ell | IgPrim::F_eth => "⋈",
-        IgPrim::K_trap | IgPrim::K_slow | IgPrim::K_mod | IgPrim::K_fast | IgPrim::K_mbl => "⊤",
-        IgPrim::G_aleph | IgPrim::G_beth | IgPrim::G_gimel => "∈",
-        IgPrim::C_seq | IgPrim::C_and | IgPrim::C_or | IgPrim::C_broad => "∋",
-        IgPrim::Phi_crit | IgPrim::𐑮 | IgPrim::Phi_ep | IgPrim::𐑢 | IgPrim::Phi_super => "⊙",
-        IgPrim::H_inf | IgPrim::H2 | IgPrim::H1 | IgPrim::H0 => "⊥",
-        IgPrim::S_nm | IgPrim::S_nn | IgPrim::S_11 => "⊞",
-        IgPrim::Omega_z | IgPrim::Omega_z2 | IgPrim::Omega_0 | IgPrim::Omega_na => "◻",
+        IgPrim::if_ | IgPrim::dead | IgPrim::ash | IgPrim::array => "⊢",
+        IgPrim::are | IgPrim::judge | IgPrim::eat | IgPrim::mime | IgPrim::oil => "⊣",
+        IgPrim::ian | IgPrim::ear | IgPrim::tot | IgPrim::ado => ">",
+        IgPrim::or_ | IgPrim::nun | IgPrim::out | IgPrim::yew | IgPrim::church => "<",
+        IgPrim::peep | IgPrim::age | IgPrim::they => "⋈",
+        IgPrim::on | IgPrim::egg | IgPrim::loll | IgPrim::yea | IgPrim::air => "⊤",
+        IgPrim::ice | IgPrim::bib | IgPrim::thigh => "∈",
+        IgPrim::measure | IgPrim::vow | IgPrim::gag | IgPrim::ooze => "∋",
+        IgPrim::monad | IgPrim::roar | IgPrim::err | IgPrim::woe | IgPrim::haha => "⊙",
+        IgPrim::wool | IgPrim::sure | IgPrim::kick | IgPrim::fee => "⊥",
+        IgPrim::up | IgPrim::so | IgPrim::hung => "⊞",
+        IgPrim::ah | IgPrim::oak | IgPrim::awe | IgPrim::zoo => "◻",
     }
 }
 

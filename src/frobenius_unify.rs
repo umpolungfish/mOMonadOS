@@ -38,18 +38,18 @@ use crate::catalog;
 
 pub fn frobenius_fixed_tuple() -> IgTuple {
     IgTuple {
-        d: IgPrim::D_odot,    // 𐑦 — imscriptive, state-space is self-written
-        t: IgPrim::T_odot,    // 𐑸 — self-referential topology (Axiom C)
-        r: IgPrim::R_lr,      // 𐑾 — bidirectional feedback coupling
-        p: IgPrim::P_pmsym,   // 𐑹 — Frobenius-special: μ∘δ=id exactly
-        f: IgPrim::F_hbar,    // 𐑐 — quantum coherence (ideal case)
-        k: IgPrim::K_slow,    // 𐑧 — near-equilibrium kinetics
-        g: IgPrim::G_gimel,   // 𐑔 — mesoscale interaction range
-        c: IgPrim::C_seq,     // 𐑠 — ordered sequential composition
-        phi: IgPrim::Phi_crit,   // ⊙ — self-modeling criticality
-        h: IgPrim::H2,        // 𐑖 — 2-step Markov memory
-        s: IgPrim::S_11,      // 𐑙 — 1:1, apparatus ≡ measured system
-        omega: IgPrim::Omega_z, // 𐑭 — integer winding protection
+        d: IgPrim::if_,    // 𐑦 — imscriptive, state-space is self-written
+        t: IgPrim::are,    // 𐑸 — self-referential topology (Axiom C)
+        r: IgPrim::ian,      // 𐑾 — bidirectional feedback coupling
+        p: IgPrim::or_,   // 𐑹 — Frobenius-special: μ∘δ=id exactly
+        f: IgPrim::peep,    // 𐑐 — quantum coherence (ideal case)
+        k: IgPrim::egg,    // 𐑧 — near-equilibrium kinetics
+        g: IgPrim::thigh,   // 𐑔 — mesoscale interaction range
+        c: IgPrim::measure,     // 𐑠 — ordered sequential composition
+        phi: IgPrim::monad,   // ⊙ — self-modeling criticality
+        h: IgPrim::sure,        // 𐑖 — 2-step Markov memory
+        s: IgPrim::hung,      // 𐑙 — 1:1, apparatus ≡ measured system
+        omega: IgPrim::ah, // 𐑭 — integer winding protection
     }
 }
 
@@ -69,18 +69,18 @@ pub fn frobenius_fixed_tuple() -> IgTuple {
 
 pub fn kernel_self_imscription() -> IgTuple {
     IgTuple {
-        d: IgPrim::D_odot,      // 𐑦 — self-written state space (the imscriptive context IS state)
-        t: IgPrim::T_boxtimes,  // 𐑶 — irreducible product (composable kernel, modular)
-        r: IgPrim::R_lr,        // 𐑾 — bidirectional coupling (emit + verify = μ∘δ loop)
-        p: IgPrim::P_pmsym,     // 𐑹 — Frobenius-special (every tool is dual-paired)
-        f: IgPrim::F_ell,       // 𐑱 — classical hardware (silicon, not coherent quantum)
-        k: IgPrim::K_slow,      // 𐑧 — near-equilibrium (boot → repl → tick loop)
-        g: IgPrim::G_aleph,     // 𐑲 — universal range (all cataloged systems, 17.28M crystal)
-        c: IgPrim::C_seq,       // 𐑠 — sequential composition (THINK→ACT→OBSERVE→UPDATE)
-        phi: IgPrim::Phi_crit,     // ⊙ — self-modeling criticality (consciousness gate open)
-        h: IgPrim::H2,          // 𐑖 — 2-step Markov (current state + prior winding)
-        s: IgPrim::S_11,        // 𐑙 — 1:1 (measurement apparatus ≡ measured — Σ=1:1)
-        omega: IgPrim::Omega_z, // 𐑭 — integer winding (Frobenius loop count)
+        d: IgPrim::if_,      // 𐑦 — self-written state space (the imscriptive context IS state)
+        t: IgPrim::oil,  // 𐑶 — irreducible product (composable kernel, modular)
+        r: IgPrim::ian,        // 𐑾 — bidirectional coupling (emit + verify = μ∘δ loop)
+        p: IgPrim::or_,     // 𐑹 — Frobenius-special (every tool is dual-paired)
+        f: IgPrim::age,       // 𐑱 — classical hardware (silicon, not coherent quantum)
+        k: IgPrim::egg,      // 𐑧 — near-equilibrium (boot → repl → tick loop)
+        g: IgPrim::ice,     // 𐑲 — universal range (all cataloged systems, 17.28M crystal)
+        c: IgPrim::measure,       // 𐑠 — sequential composition (THINK→ACT→OBSERVE→UPDATE)
+        phi: IgPrim::monad,     // ⊙ — self-modeling criticality (consciousness gate open)
+        h: IgPrim::sure,          // 𐑖 — 2-step Markov (current state + prior winding)
+        s: IgPrim::hung,        // 𐑙 — 1:1 (measurement apparatus ≡ measured — Σ=1:1)
+        omega: IgPrim::ah, // 𐑭 — integer winding (Frobenius loop count)
     }
 }
 
@@ -189,17 +189,17 @@ mod tests {
     #[test]
     fn test_kernel_tuple_defined() {
         let k = kernel_self_imscription();
-        assert_eq!(k.d, IgPrim::D_odot);
-        assert_eq!(k.phi, IgPrim::Phi_crit);
-        assert_eq!(k.omega, IgPrim::Omega_z);
+        assert_eq!(k.d, IgPrim::if_);
+        assert_eq!(k.phi, IgPrim::monad);
+        assert_eq!(k.omega, IgPrim::ah);
     }
 
     #[test]
     fn test_fixed_tuple_defined() {
         let f = frobenius_fixed_tuple();
-        assert_eq!(f.d, IgPrim::D_odot);
-        assert_eq!(f.phi, IgPrim::Phi_crit);
-        assert_eq!(f.omega, IgPrim::Omega_z);
+        assert_eq!(f.d, IgPrim::if_);
+        assert_eq!(f.phi, IgPrim::monad);
+        assert_eq!(f.omega, IgPrim::ah);
     }
 
     #[test]
@@ -232,8 +232,8 @@ mod tests {
         // F and G differ too, but they are ordered, so they take the min
         // instead of conflicting: classical hardware under quantum coherence
         // is classical, and G_ORD runs aleph→gimel so universal is the floor.
-        assert_eq!(meet_result.tuple.f, IgPrim::F_ell);
-        assert_eq!(meet_result.tuple.g, IgPrim::G_aleph);
+        assert_eq!(meet_result.tuple.f, IgPrim::age);
+        assert_eq!(meet_result.tuple.g, IgPrim::ice);
     }
 
     #[test]

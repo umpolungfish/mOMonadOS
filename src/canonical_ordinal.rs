@@ -82,18 +82,18 @@ pub const CANON_PHI_C_COMPLEX:  f32 = 7.0 / 3.0; // ≈ 2.333...
 pub const CANON_PHI_EP:         f32 = 8.0 / 3.0; // ≈ 2.667...
 pub const CANON_PHI_SUPER:      f32 = 3.0;
 
-/// H canonical ordinals: H0=1, H1=2, H2=3, H_inf=4
+/// H canonical ordinals: fee=1, kick=2, sure=3, wool=4
 pub const CANON_H_H0:   f32 = 1.0;
 pub const CANON_H_H1:   f32 = 2.0;
 pub const CANON_H_H2:   f32 = 3.0;
 pub const CANON_H_HINF: f32 = 4.0;
 
-/// S canonical ordinals: S_11=1, S_nn=2, S_nm=3
+/// S canonical ordinals: hung=1, so=2, up=3
 pub const CANON_S_11: f32 = 1.0;
 pub const CANON_S_NN: f32 = 2.0;
 pub const CANON_S_NM: f32 = 3.0;
 
-/// Omega canonical ordinals: Omega_0=1, Omega_z2=2, Omega_z=3, Omega_na=4
+/// Omega canonical ordinals: awe=1, oak=2, ah=3, zoo=4
 pub const CANON_OMEGA_0:  f32 = 1.0;
 pub const CANON_OMEGA_Z2: f32 = 2.0;
 pub const CANON_OMEGA_Z:  f32 = 3.0;
@@ -116,129 +116,129 @@ pub fn verify_canonical_ordinals() -> (bool, &'static str) {
     use IgPrim::*;
 
     // ── D (4 values) ──
-    if D_wedge.ordinal() != CANON_D_WEDGE
-    { return (false, "D_wedge ordinal drift"); }
-    if D_triangle.ordinal() != CANON_D_TRIANGLE
-    { return (false, "D_triangle ordinal drift"); }
-    if D_infty.ordinal() != CANON_D_INFTY
-    { return (false, "D_infty ordinal drift"); }
-    if D_odot.ordinal() != CANON_D_ODOT
-    { return (false, "D_odot ordinal drift"); }
+    if dead.ordinal() != CANON_D_WEDGE
+    { return (false, "dead ordinal drift"); }
+    if ash.ordinal() != CANON_D_TRIANGLE
+    { return (false, "ash ordinal drift"); }
+    if array.ordinal() != CANON_D_INFTY
+    { return (false, "array ordinal drift"); }
+    if if_.ordinal() != CANON_D_ODOT
+    { return (false, "if_ ordinal drift"); }
 
     // ── T (5 values) ──
-    if T_net.ordinal() != CANON_T_NET
-    { return (false, "T_net ordinal drift"); }
-    if T_in.ordinal() != CANON_T_IN
-    { return (false, "T_in ordinal drift"); }
-    if T_bowtie.ordinal() != CANON_T_BOWTIE
-    { return (false, "T_bowtie ordinal drift"); }
-    if T_boxtimes.ordinal() != CANON_T_BOXTIMES
-    { return (false, "T_boxtimes ordinal drift"); }
-    if T_odot.ordinal() != CANON_T_ODOT
-    { return (false, "T_odot ordinal drift"); }
+    if judge.ordinal() != CANON_T_NET
+    { return (false, "judge ordinal drift"); }
+    if eat.ordinal() != CANON_T_IN
+    { return (false, "eat ordinal drift"); }
+    if mime.ordinal() != CANON_T_BOWTIE
+    { return (false, "mime ordinal drift"); }
+    if oil.ordinal() != CANON_T_BOXTIMES
+    { return (false, "oil ordinal drift"); }
+    if are.ordinal() != CANON_T_ODOT
+    { return (false, "are ordinal drift"); }
 
     // ── R (4 values) ──
-    if R_super.ordinal() != CANON_R_SUPER
-    { return (false, "R_super ordinal drift"); }
-    if R_cat.ordinal() != CANON_R_CAT
-    { return (false, "R_cat ordinal drift"); }
-    if R_dagger.ordinal() != CANON_R_DAGGER
-    { return (false, "R_dagger ordinal drift"); }
-    if R_lr.ordinal() != CANON_R_LR
-    { return (false, "R_lr ordinal drift"); }
+    if ado.ordinal() != CANON_R_SUPER
+    { return (false, "ado ordinal drift"); }
+    if tot.ordinal() != CANON_R_CAT
+    { return (false, "tot ordinal drift"); }
+    if ear.ordinal() != CANON_R_DAGGER
+    { return (false, "ear ordinal drift"); }
+    if ian.ordinal() != CANON_R_LR
+    { return (false, "ian ordinal drift"); }
 
     // ── P (5 values) ──
-    if P_asym.ordinal() != CANON_P_ASYM
-    { return (false, "P_asym ordinal drift"); }
-    if P_psi.ordinal() != CANON_P_PSI
-    { return (false, "P_psi ordinal drift"); }
-    if P_pm.ordinal() != CANON_P_PM
-    { return (false, "P_pm ordinal drift"); }
-    if P_sym.ordinal() != CANON_P_SYM
-    { return (false, "P_sym ordinal drift"); }
-    if P_pmsym.ordinal() != CANON_P_PMSYM
-    { return (false, "P_pmsym ordinal drift"); }
+    if church.ordinal() != CANON_P_ASYM
+    { return (false, "church ordinal drift"); }
+    if yew.ordinal() != CANON_P_PSI
+    { return (false, "yew ordinal drift"); }
+    if out.ordinal() != CANON_P_PM
+    { return (false, "out ordinal drift"); }
+    if nun.ordinal() != CANON_P_SYM
+    { return (false, "nun ordinal drift"); }
+    if or_.ordinal() != CANON_P_PMSYM
+    { return (false, "or_ ordinal drift"); }
 
     // ── F (3 values) ──
-    if F_ell.ordinal() != CANON_F_ELL
-    { return (false, "F_ell ordinal drift"); }
-    if F_eth.ordinal() != CANON_F_ETH
-    { return (false, "F_eth ordinal drift"); }
-    if F_hbar.ordinal() != CANON_F_HBAR
-    { return (false, "F_hbar ordinal drift"); }
+    if age.ordinal() != CANON_F_ELL
+    { return (false, "age ordinal drift"); }
+    if they.ordinal() != CANON_F_ETH
+    { return (false, "they ordinal drift"); }
+    if peep.ordinal() != CANON_F_HBAR
+    { return (false, "peep ordinal drift"); }
 
     // ── K (5 values, non-uniform) ──
-    if K_fast.ordinal() != CANON_K_FAST
-    { return (false, "K_fast ordinal drift"); }
-    if K_mod.ordinal() != CANON_K_MOD
-    { return (false, "K_mod ordinal drift"); }
-    if K_slow.ordinal() != CANON_K_SLOW
-    { return (false, "K_slow ordinal drift"); }
-    if K_trap.ordinal() != CANON_K_TRAP
-    { return (false, "K_trap ordinal drift"); }
-    // ⚠ CRITICAL: K_mbl must be 4.5 (9/2), not 5.0
-    if (K_mbl.ordinal() - CANON_K_MBL).abs() > 0.001
-    { return (false, "K_mbl ordinal drift — the air=9/2 bug!"); }
+    if yea.ordinal() != CANON_K_FAST
+    { return (false, "yea ordinal drift"); }
+    if loll.ordinal() != CANON_K_MOD
+    { return (false, "loll ordinal drift"); }
+    if egg.ordinal() != CANON_K_SLOW
+    { return (false, "egg ordinal drift"); }
+    if on.ordinal() != CANON_K_TRAP
+    { return (false, "on ordinal drift"); }
+    // ⚠ CRITICAL: air must be 4.5 (9/2), not 5.0
+    if (air.ordinal() - CANON_K_MBL).abs() > 0.001
+    { return (false, "air ordinal drift — the air=9/2 bug!"); }
 
     // ── G (3 values) ──
-    if G_beth.ordinal() != CANON_G_BETH
-    { return (false, "G_beth ordinal drift"); }
-    if G_gimel.ordinal() != CANON_G_GIMEL
-    { return (false, "G_gimel ordinal drift"); }
-    if G_aleph.ordinal() != CANON_G_ALEPH
-    { return (false, "G_aleph ordinal drift"); }
+    if bib.ordinal() != CANON_G_BETH
+    { return (false, "bib ordinal drift"); }
+    if thigh.ordinal() != CANON_G_GIMEL
+    { return (false, "thigh ordinal drift"); }
+    if ice.ordinal() != CANON_G_ALEPH
+    { return (false, "ice ordinal drift"); }
 
     // ── C / ∋ (4 values) ──
-    if C_and.ordinal() != CANON_C_AND
-    { return (false, "C_and ordinal drift"); }
-    if C_or.ordinal() != CANON_C_OR
-    { return (false, "C_or ordinal drift"); }
-    if C_seq.ordinal() != CANON_C_SEQ
-    { return (false, "C_seq ordinal drift"); }
-    if C_broad.ordinal() != CANON_C_BROAD
-    { return (false, "C_broad ordinal drift"); }
+    if vow.ordinal() != CANON_C_AND
+    { return (false, "vow ordinal drift"); }
+    if gag.ordinal() != CANON_C_OR
+    { return (false, "gag ordinal drift"); }
+    if measure.ordinal() != CANON_C_SEQ
+    { return (false, "measure ordinal drift"); }
+    if ooze.ordinal() != CANON_C_BROAD
+    { return (false, "ooze ordinal drift"); }
 
     // ── Phi / ⊙ (5 values, NON-UNIFORM — ⚠ ⊙-ordinal healing) ──
-    if 𐑢.ordinal() != CANON_PHI_SUB
-    { return (false, "𐑢 ordinal drift"); }
-    if Phi_crit.ordinal() != CANON_PHI_C
-    { return (false, "Phi_crit ordinal drift"); }
-    // ⚠ CRITICAL: 𐑮 must be 7/3≈2.333, not 3.0
-    if (𐑮.ordinal() - CANON_PHI_C_COMPLEX).abs() > 0.01
-    { return (false, "𐑮 ordinal drift — the roar=7/3 bug!"); }
-    // ⚠ CRITICAL: Phi_ep must be 8/3≈2.667, not 3.0
-    if (Phi_ep.ordinal() - CANON_PHI_EP).abs() > 0.01
-    { return (false, "Phi_ep ordinal drift — the err=8/3 bug!"); }
-    if Phi_super.ordinal() != CANON_PHI_SUPER
-    { return (false, "Phi_super ordinal drift"); }
+    if woe.ordinal() != CANON_PHI_SUB
+    { return (false, "woe ordinal drift"); }
+    if monad.ordinal() != CANON_PHI_C
+    { return (false, "monad ordinal drift"); }
+    // ⚠ CRITICAL: roar must be 7/3≈2.333, not 3.0
+    if (roar.ordinal() - CANON_PHI_C_COMPLEX).abs() > 0.01
+    { return (false, "roar ordinal drift — the roar=7/3 bug!"); }
+    // ⚠ CRITICAL: err must be 8/3≈2.667, not 3.0
+    if (err.ordinal() - CANON_PHI_EP).abs() > 0.01
+    { return (false, "err ordinal drift — the err=8/3 bug!"); }
+    if haha.ordinal() != CANON_PHI_SUPER
+    { return (false, "haha ordinal drift"); }
 
     // ── H (4 values) ──
-    if H0.ordinal() != CANON_H_H0
-    { return (false, "H0 ordinal drift"); }
-    if H1.ordinal() != CANON_H_H1
-    { return (false, "H1 ordinal drift"); }
-    if H2.ordinal() != CANON_H_H2
-    { return (false, "H2 ordinal drift"); }
-    if H_inf.ordinal() != CANON_H_HINF
-    { return (false, "H_inf ordinal drift"); }
+    if fee.ordinal() != CANON_H_H0
+    { return (false, "fee ordinal drift"); }
+    if kick.ordinal() != CANON_H_H1
+    { return (false, "kick ordinal drift"); }
+    if sure.ordinal() != CANON_H_H2
+    { return (false, "sure ordinal drift"); }
+    if wool.ordinal() != CANON_H_HINF
+    { return (false, "wool ordinal drift"); }
 
     // ── S (3 values) ──
-    if S_11.ordinal() != CANON_S_11
-    { return (false, "S_11 ordinal drift"); }
-    if S_nn.ordinal() != CANON_S_NN
-    { return (false, "S_nn ordinal drift"); }
-    if S_nm.ordinal() != CANON_S_NM
-    { return (false, "S_nm ordinal drift"); }
+    if hung.ordinal() != CANON_S_11
+    { return (false, "hung ordinal drift"); }
+    if so.ordinal() != CANON_S_NN
+    { return (false, "so ordinal drift"); }
+    if up.ordinal() != CANON_S_NM
+    { return (false, "up ordinal drift"); }
 
     // ── Omega (4 values) ──
-    if Omega_0.ordinal() != CANON_OMEGA_0
-    { return (false, "Omega_0 ordinal drift"); }
-    if Omega_z2.ordinal() != CANON_OMEGA_Z2
-    { return (false, "Omega_z2 ordinal drift"); }
-    if Omega_z.ordinal() != CANON_OMEGA_Z
-    { return (false, "Omega_z ordinal drift"); }
-    if Omega_na.ordinal() != CANON_OMEGA_NA
-    { return (false, "Omega_na ordinal drift"); }
+    if awe.ordinal() != CANON_OMEGA_0
+    { return (false, "awe ordinal drift"); }
+    if oak.ordinal() != CANON_OMEGA_Z2
+    { return (false, "oak ordinal drift"); }
+    if ah.ordinal() != CANON_OMEGA_Z
+    { return (false, "ah ordinal drift"); }
+    if zoo.ordinal() != CANON_OMEGA_NA
+    { return (false, "zoo ordinal drift"); }
 
     (true, "")
 }

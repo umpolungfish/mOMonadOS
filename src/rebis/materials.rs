@@ -150,9 +150,9 @@ pub fn gm_material(glyph: &str) -> &'static str {
 /// Phi (Criticality) → critical behavior
 pub fn phi_material(glyph: &str) -> &'static str {
     match glyph {
-        "𐑢" => "inert / sub-critical",
+        "woe" => "inert / sub-critical",
         "⊙" => "self-sensing / self-modeling (Gate 1 open)",
-        "𐑮" => "complex-plane tunable",
+        "roar" => "complex-plane tunable",
         "𐑻" => "exceptional point / non-Hermitian",
         "𐑣" => "runaway / supercritical",
         _ => "unknown",
@@ -250,7 +250,7 @@ pub fn verify_material_consistency(
 pub fn classify_material_tier(phi: &str, h: &str, o: &str) -> &'static str {
     if phi == "⊙" && h == "𐑫" && o == "𐑟" { return "O_∞"; }
     if phi == "⊙" && (h == "𐑖" || h == "𐑫") && (o == "𐑭" || o == "𐑟") { return "O_2"; }
-    if phi == "𐑮" || o == "𐑭" { return "O_1"; }
+    if phi == "roar" || o == "𐑭" { return "O_1"; }
     "O_0"
 }
 
@@ -292,11 +292,11 @@ pub fn predefined_novel_materials() -> alloc::vec::Vec<(alloc::string::String, [
         (alloc::string::String::from("ep_detector"),
          ["𐑨", "𐑥", "𐑩", "𐑗", "𐑱", "𐑘", "𐑚", "𐑜", "𐑻", "𐑓", "𐑙", "𐑷"]),
         (alloc::string::String::from("eternal_memory_alloy"),
-         ["𐑼", "𐑶", "𐑽", "𐑯", "𐑞", "𐑧", "𐑔", "𐑜", "𐑢", "𐑫", "𐑕", "𐑴"]),
+         ["𐑼", "𐑶", "𐑽", "𐑯", "𐑞", "𐑧", "𐑔", "𐑜", "woe", "𐑫", "𐑕", "𐑴"]),
         (alloc::string::String::from("topological_thermal_rectifier"),
-         ["𐑨", "𐑥", "𐑾", "𐑬", "𐑞", "𐑤", "𐑔", "𐑠", "𐑢", "𐑖", "𐑕", "𐑭"]),
+         ["𐑨", "𐑥", "𐑾", "𐑬", "𐑞", "𐑤", "𐑔", "𐑠", "woe", "𐑖", "𐑕", "𐑭"]),
         (alloc::string::String::from("hierarchical_impact_absorber"),
-         ["𐑦", "𐑡", "𐑾", "𐑬", "𐑱", "𐑘", "𐑲", "𐑵", "𐑢", "𐑒", "𐑳", "𐑴"]),
+         ["𐑦", "𐑡", "𐑾", "𐑬", "𐑱", "𐑘", "𐑲", "𐑵", "woe", "𐑒", "𐑳", "𐑴"]),
         (alloc::string::String::from("quantum_topological_substrate"),
          ["𐑦", "𐑸", "𐑽", "𐑹", "𐑐", "𐑧", "𐑲", "𐑠", "⊙", "𐑫", "𐑳", "𐑭"]),
         (alloc::string::String::from("non_abelian_braiding_material"),
@@ -444,7 +444,7 @@ pub fn run_all_eagle_cycles() -> alloc::vec::Vec<EagleCycleResult> {
     let mut results = alloc::vec::Vec::new();
 
     // eagle_3_amalgam — near O₂
-    let e3: [&str; 12] = ["𐑼", "𐑶", "𐑑", "𐑬", "𐑞", "𐑤", "𐑔", "𐑜", "𐑢", "𐑒", "𐑕", "𐑷"];
+    let e3: [&str; 12] = ["𐑼", "𐑶", "𐑑", "𐑬", "𐑞", "𐑤", "𐑔", "𐑜", "woe", "𐑒", "𐑕", "𐑷"];
     results.push(run_eagle_cycle("eagle_3_amalgam", &e3, &params));
 
     // eagle_7_animated — O₂ tier
@@ -784,7 +784,7 @@ pub fn all_nonqubit_paradigms() -> alloc::vec::Vec<NonQubitQC> {
         NonQubitQC {
             name: alloc::string::String::from("Continuous-Variable QC"),
             paradigm_type: "CV (Gaussian boson sampling)",
-            tuple: ["𐑼", "𐑶", "𐑩", "𐑬", "𐑐", "𐑘", "𐑲", "𐑠", "𐑮", "𐑒", "𐑕", "𐑷"],
+            tuple: ["𐑼", "𐑶", "𐑩", "𐑬", "𐑐", "𐑘", "𐑲", "𐑠", "roar", "𐑒", "𐑕", "𐑷"],
             tier: "O_1", c_score: 0.15, gate1_open: false, gate2_open: false,
             operculum_status: "OPEN — needs dual-rail encoding",
             closure_mechanism: "Dual-rail encoding + GKP states",
@@ -792,7 +792,7 @@ pub fn all_nonqubit_paradigms() -> alloc::vec::Vec<NonQubitQC> {
         NonQubitQC {
             name: alloc::string::String::from("Measurement-Based QC"),
             paradigm_type: "MBQC (cluster state)",
-            tuple: ["𐑨", "𐑡", "𐑽", "𐑯", "𐑐", "𐑧", "𐑲", "𐑵", "𐑢", "𐑒", "𐑕", "𐑷"],
+            tuple: ["𐑨", "𐑡", "𐑽", "𐑯", "𐑐", "𐑧", "𐑲", "𐑵", "woe", "𐑒", "𐑕", "𐑷"],
             tier: "O_1", c_score: 0.22, gate1_open: false, gate2_open: true,
             operculum_status: "OPEN — needs precompiled measurement pattern",
             closure_mechanism: "Precompiled measurement pattern",
@@ -808,7 +808,7 @@ pub fn all_nonqubit_paradigms() -> alloc::vec::Vec<NonQubitQC> {
         NonQubitQC {
             name: alloc::string::String::from("Adiabatic QC"),
             paradigm_type: "Quantum annealing",
-            tuple: ["𐑼", "𐑥", "𐑽", "𐑬", "𐑞", "𐑧", "𐑲", "𐑠", "𐑢", "𐑒", "𐑕", "𐑷"],
+            tuple: ["𐑼", "𐑥", "𐑽", "𐑬", "𐑞", "𐑧", "𐑲", "𐑠", "woe", "𐑒", "𐑕", "𐑷"],
             tier: "O_0", c_score: 0.08, gate1_open: false, gate2_open: true,
             operculum_status: "OPEN — needs counterdiabatic driving",
             closure_mechanism: "Counterdiabatic CD driving",
@@ -816,7 +816,7 @@ pub fn all_nonqubit_paradigms() -> alloc::vec::Vec<NonQubitQC> {
         NonQubitQC {
             name: alloc::string::String::from("Boson Sampling"),
             paradigm_type: "Linear optical",
-            tuple: ["𐑼", "𐑡", "𐑩", "𐑗", "𐑐", "𐑘", "𐑲", "𐑝", "𐑢", "𐑓", "𐑕", "𐑷"],
+            tuple: ["𐑼", "𐑡", "𐑩", "𐑗", "𐑐", "𐑘", "𐑲", "𐑝", "woe", "𐑓", "𐑕", "𐑷"],
             tier: "O_0", c_score: 0.0, gate1_open: false, gate2_open: false,
             operculum_status: "INTRACTABLY OPEN",
             closure_mechanism: "None known — no error correction",
@@ -824,7 +824,7 @@ pub fn all_nonqubit_paradigms() -> alloc::vec::Vec<NonQubitQC> {
         NonQubitQC {
             name: alloc::string::String::from("Quantum Walks"),
             paradigm_type: "Discrete/continuous time",
-            tuple: ["𐑨", "𐑡", "𐑩", "𐑗", "𐑐", "𐑘", "𐑚", "𐑜", "𐑢", "𐑓", "𐑙", "𐑷"],
+            tuple: ["𐑨", "𐑡", "𐑩", "𐑗", "𐑐", "𐑘", "𐑚", "𐑜", "woe", "𐑓", "𐑙", "𐑷"],
             tier: "O_0", c_score: 0.05, gate1_open: false, gate2_open: false,
             operculum_status: "OPEN — needs Floquet engineering",
             closure_mechanism: "Floquet periodic driving",
@@ -832,7 +832,7 @@ pub fn all_nonqubit_paradigms() -> alloc::vec::Vec<NonQubitQC> {
         NonQubitQC {
             name: alloc::string::String::from("Coherent Ising Machine"),
             paradigm_type: "Optical parametric oscillator",
-            tuple: ["𐑼", "𐑡", "𐑩", "𐑬", "𐑱", "𐑤", "𐑲", "𐑝", "𐑢", "𐑒", "𐑕", "𐑷"],
+            tuple: ["𐑼", "𐑡", "𐑩", "𐑬", "𐑱", "𐑤", "𐑲", "𐑝", "woe", "𐑒", "𐑕", "𐑷"],
             tier: "O_0", c_score: 0.10, gate1_open: false, gate2_open: false,
             operculum_status: "OPEN — needs self-dual coupling",
             closure_mechanism: "Self-dual injection locking",
@@ -840,7 +840,7 @@ pub fn all_nonqubit_paradigms() -> alloc::vec::Vec<NonQubitQC> {
         NonQubitQC {
             name: alloc::string::String::from("Quantum Reservoir Computing"),
             paradigm_type: "NISQ reservoir dynamics",
-            tuple: ["𐑼", "𐑡", "𐑩", "𐑗", "𐑞", "𐑘", "𐑲", "𐑜", "𐑢", "𐑓", "𐑕", "𐑷"],
+            tuple: ["𐑼", "𐑡", "𐑩", "𐑗", "𐑞", "𐑘", "𐑲", "𐑜", "woe", "𐑓", "𐑕", "𐑷"],
             tier: "O_0", c_score: 0.0, gate1_open: false, gate2_open: false,
             operculum_status: "INTRACTABLY OPEN",
             closure_mechanism: "None known — intrinsic dissipation",

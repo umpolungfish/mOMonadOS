@@ -15,12 +15,12 @@ use libm::{sqrt, fabs, floor, cos, sin, pow};
 
 // ── Constants ────────────────────────────────────────────────
 pub const TUPLE_PF: &str = "𐑦𐑥𐑑𐑹𐑐𐑤𐑔𐑝⊙𐑒𐑙𐑷";
-const SLOT_NAMES: [&str; 12] = ["⊢","⊣",">","<","⋈","⊤","∈","∋","⊙","⊥","⊞","◻"];
+use crate::canonical_ig::PRIMITIVE_ORDER as SLOT_NAMES;
 
 // Sibling tuples for distance
 const TUPLE_GRAMMAR: &str = "𐑦𐑸𐑾𐑹𐑐𐑧𐑲𐑵⊙𐑫𐑳𐑟";
 const TUPLE_TROQ: &str = "𐑦𐑸𐑽𐑹𐑐𐑧𐑔𐑝⊙𐑖𐑕𐑭";
-const TUPLE_HQE: &str = "𐑦𐑡𐑾𐑿𐑐𐑧𐑲𐑜𐑢𐑓𐑳𐑷";
+const TUPLE_HQE: &str = "𐑦𐑡𐑾𐑿𐑐𐑧𐑲𐑜woe𐑓𐑳𐑷";
 const TUPLE_DYSON: &str = "𐑼𐑸𐑾𐑹𐑞𐑧𐑔𐑠⊙𐑖𐑳𐑭";
 const TUPLE_AFDMC: &str = "𐑼𐑰𐑑𐑯𐑞𐑧𐑔𐑠⊙𐑒𐑳𐑴";
 const TUPLE_CLINK_L8: &str = "𐑦𐑸𐑾𐑹𐑐𐑧𐑔𐑵⊙𐑫𐑳𐑟";
@@ -47,7 +47,7 @@ fn glyph_value(slot: &str, g: &str) -> f64 {
         "⊤" => match g {"𐑘"=>1.0,"𐑤"=>2.0,"𐑧"=>3.0,"𐑪"=>4.0,"𐑺"=>5.0,_=>0.0},
         "∈" => match g {"𐑲"=>1.0,"𐑚"=>2.0,"𐑔"=>3.0,_=>0.0},
         "∋" => match g {"𐑝"=>1.0,"𐑜"=>2.0,"𐑠"=>3.0,"𐑵"=>4.0,_=>0.0},
-        "⊙" => match g {"𐑢"=>1.0,"⊙"=>2.0,"𐑮"=>3.0,"𐑻"=>4.0,"𐑣"=>5.0,_=>0.0},
+        "⊙" => match g {"woe"=>1.0,"⊙"=>2.0,"roar"=>3.0,"𐑻"=>4.0,"𐑣"=>5.0,_=>0.0},
         "⊥" => match g {"𐑓"=>1.0,"𐑒"=>2.0,"𐑖"=>3.0,"𐑫"=>4.0,_=>0.0},
         "⊞" => match g {"𐑙"=>1.0,"𐑕"=>2.0,"𐑳"=>3.0,_=>0.0},
         "◻" => match g {"𐑷"=>1.0,"𐑴"=>2.0,"𐑭"=>3.0,"𐑟"=>4.0,_=>0.0},

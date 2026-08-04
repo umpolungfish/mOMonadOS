@@ -106,7 +106,7 @@ fn tuple_hamming(a: &IgTuple, b: &IgTuple) -> u8 {
 }
 
 fn named_defects(a: &IgTuple, b: &IgTuple) -> Vec<&'static str> {
-    let keys = ["D", "T", "R", "P", "F", "K", "G", "C", "<", "H", "S", "◻"];
+    let keys = crate::canonical_ig::PRIMITIVE_ORDER;
     let av = [a.d, a.t, a.r, a.p, a.f, a.k, a.g, a.c, a.phi, a.h, a.s, a.omega];
     let bv = [b.d, b.t, b.r, b.p, b.f, b.k, b.g, b.c, b.phi, b.h, b.s, b.omega];
     let mut out = Vec::new();

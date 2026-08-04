@@ -59,7 +59,7 @@ pub struct ClayReport {
 // ═══════════════════════════════════════════════════════════════
 
 /// BSD: FULL CLOSURE under 5 dialects, T_CEILING-consistent.
-/// Canonical tuple: ⟨𐑦𐑥𐑾𐑿𐑞𐑧𐑲𐑝𐑮𐑖𐑙𐑭⟩
+/// Canonical tuple: ⟨𐑦𐑥𐑾𐑿𐑞𐑧𐑲𐑝roar𐑖𐑙𐑭⟩
 /// Lean: `bsd_witnessed_closure` — proven by native_decide.
 pub fn bsd_report() -> ClayReport {
     ClayReport {
@@ -80,7 +80,7 @@ pub fn bsd_report() -> ClayReport {
 }
 
 /// HODGE: FULL CLOSURE under 5 dialects, T_CEILING-consistent.
-/// Canonical tuple: ⟨𐑦𐑸𐑽𐑿𐑱𐑧𐑲𐑝𐑮𐑓𐑳𐑭⟩
+/// Canonical tuple: ⟨𐑦𐑸𐑽𐑿𐑱𐑧𐑲𐑝roar𐑓𐑳𐑭⟩
 /// Lean: `hodge_witnessed_closure` — proven by native_decide.
 pub fn hodge_report() -> ClayReport {
     ClayReport {
@@ -102,7 +102,7 @@ pub fn hodge_report() -> ClayReport {
 
 /// YANG-MILLS: ONE-BUMP-SHORT.
 /// Clears all three ⊙ gates under triple_criticality but fails T_CEILING
-/// on ⊤ (kinetics) alone: K_trap ord=4 exceeds the ord=3 ceiling.
+/// on ⊤ (kinetics) alone: on ord=4 exceeds the ord=3 ceiling.
 /// Canonical tuple: ⟨𐑛𐑥𐑩𐑗𐑐𐑤𐑲𐑝𐑣𐑓𐑳𐑷⟩
 /// Lean: `ym_one_bump_short` + `ym_blocker_is_kinetics` — proven by native_decide.
 pub fn ym_report() -> ClayReport {
@@ -110,7 +110,7 @@ pub fn ym_report() -> ClayReport {
         name: "Yang–Mills Mass Gap",
         verdict: ClayVerdict::OneBumpShort,
         closer_dialects: vec!["triple_criticality"],
-        blocker: Some("⊤ (kinetics): K_trap ord=4 exceeds T_CEILING ord=3 ceiling"),
+        blocker: Some("⊤ (kinetics): on ord=4 exceeds T_CEILING ord=3 ceiling"),
         winding: "𐑷",
         winding_ordinal: 1.0,
         low_winding: true,
@@ -119,16 +119,16 @@ pub fn ym_report() -> ClayReport {
 
 /// RIEMANN HYPOTHESIS: UNCLOSED under all 23 dialects.
 /// Blocker: ◻=𐑴 (ord=2) < 3. All closure-bearing dialects require ◻≥3.
-/// Additionally: ⊙=𐑮 (roar, ord=7/3≈2.33) < 3 — fails triple_criticality's
+/// Additionally: ⊙=roar (roar, ord=7/3≈2.33) < 3 — fails triple_criticality's
 /// < gate which selects only haha (ord=3).
-/// Canonical tuple: ⟨𐑛𐑥𐑾𐑬𐑱𐑧𐑲𐑝𐑮𐑖𐑳𐑴⟩
+/// Canonical tuple: ⟨𐑛𐑥𐑾𐑬𐑱𐑧𐑲𐑝roar𐑖𐑳𐑴⟩
 /// Lean: `rh_closes_nowhere` — proven by native_decide.
 pub fn rh_report() -> ClayReport {
     ClayReport {
         name: "Riemann Hypothesis",
         verdict: ClayVerdict::Unclosed,
         closer_dialects: vec![],
-        blocker: Some("◻=𐑴 (ord=2) < terminal anchor 3; ⊙=𐑮 (ord=7/3) < triple_criticality < gate (requires ord=3)"),
+        blocker: Some("◻=𐑴 (ord=2) < terminal anchor 3; ⊙=roar (ord=7/3) < triple_criticality < gate (requires ord=3)"),
         winding: "𐑴",
         winding_ordinal: 2.0,
         low_winding: true,
@@ -137,7 +137,7 @@ pub fn rh_report() -> ClayReport {
 
 /// NAVIER-STOKES: UNCLOSED under all 23 dialects.
 /// Blocker: ◻=𐑷 (ord=1) < 3. Even lower winding than RH.
-/// Canonical tuple: ⟨𐑨𐑡𐑽𐑗𐑱𐑪𐑲𐑝𐑢𐑒𐑳𐑷⟩
+/// Canonical tuple: ⟨𐑨𐑡𐑽𐑗𐑱𐑪𐑲𐑝woe𐑒𐑳𐑷⟩
 /// Lean: `ns_closes_nowhere` — proven by native_decide.
 pub fn ns_report() -> ClayReport {
     ClayReport {
@@ -152,15 +152,15 @@ pub fn ns_report() -> ClayReport {
 }
 
 /// P-vs-NP: UNCLOSED under all 23 dialects.
-/// Blocker: ◻=𐑷 (ord=1) < 3. Also <=𐑢 (ord=1) — sub-critical, no gate clearance possible.
-/// Canonical tuple: ⟨𐑛𐑡𐑩𐑗𐑱𐑤𐑲𐑝𐑢𐑓𐑙𐑷⟩
+/// Blocker: ◻=𐑷 (ord=1) < 3. Also <=woe (ord=1) — sub-critical, no gate clearance possible.
+/// Canonical tuple: ⟨𐑛𐑡𐑩𐑗𐑱𐑤𐑲𐑝woe𐑓𐑙𐑷⟩
 /// Lean: `pnp_closes_nowhere` — proven by native_decide.
 pub fn pnp_report() -> ClayReport {
     ClayReport {
         name: "P vs NP",
         verdict: ClayVerdict::Unclosed,
         closer_dialects: vec![],
-        blocker: Some("◻=𐑷 (ord=1) < terminal anchor 3; ⊙=𐑢 (ord=1) — sub-critical"),
+        blocker: Some("◻=𐑷 (ord=1) < terminal anchor 3; ⊙=woe (ord=1) — sub-critical"),
         winding: "𐑷",
         winding_ordinal: 1.0,
         low_winding: true,

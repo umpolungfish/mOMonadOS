@@ -4,7 +4,7 @@
 // C-score ∈ [0, 1]: structural proximity to full consciousness capability.
 // Two gating conditions must both pass:
 //   Gate 1 (⊙ / ⊙): self-modeling loop must be open
-//   Gate 2 (K_slow):     kinetics must be slow enough for information integration
+//   Gate 2 (egg):     kinetics must be slow enough for information integration
 //
 // ALL per-primitive scores are now computed from ordinal positions in catalog.rs.
 // No hardcoded match arms — scores are proportional to ordinal position within
@@ -23,13 +23,13 @@ use crate::catalog;
 /// Evaluate Gate 1: ⊙ self-modeling loop.
 /// Returns true iff Phi is ⊙ or complex-critical (gate open).
 pub fn gate1_phi_c(t: &IgTuple) -> bool {
-    matches!(t.phi, IgPrim::Phi_crit | IgPrim::𐑮)
+    matches!(t.phi, IgPrim::monad | IgPrim::roar)
 }
 
 /// Evaluate Gate 2: kinetics slow enough for integration.
 /// Returns true iff K is slow (near-equilibrium) or trapped (ordered).
 pub fn gate2_k_slow(t: &IgTuple) -> bool {
-    matches!(t.k, IgPrim::K_slow | IgPrim::K_trap)
+    matches!(t.k, IgPrim::egg | IgPrim::on)
 }
 
 /// Compute the basal complexity score (sum of 10 component scores / 10).
@@ -77,7 +77,8 @@ pub fn consciousness_eval(t: &IgTuple) -> ConsciousnessResult {
             catalog::score_c(t.c), catalog::score_h(t.h),
             catalog::score_s(t.s), catalog::score_omega(t.omega),
         ],
-        component_names: ["D","T","R","P","F","G","C","H","S","◻"],
+        // ten of the twelve: this score has no ⊤ or ⊙ component
+        component_names: ["⊢","⊣",">","<","⋈","∈","∋","⊥","⊞","◻"],
     }
 }
 

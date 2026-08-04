@@ -46,8 +46,8 @@ pub fn rh_involution_identity() -> bool {
     [B4::N, B4::T, B4::F, B4::B].iter().all(|&x| x.bnot().bnot() == x)
 }
 
-/// RH bridge imscription: D_holo·T_holo·R_dagger·P_pm_sym·F_hbar·K_slow
-/// ·G_aleph·Gamma_seq·⊙·H2·n_m·Omega_Z2
+/// RH bridge imscription: D_holo·T_holo·ear·P_pm_sym·peep·egg
+/// ·ice·Gamma_seq·⊙·sure·n_m·Omega_Z2
 pub const RH_IMSCRIPTION: &str = "⟨𐑦·𐑸·𐑽·𐑹·𐑐·𐑧·𐑲·𐑠·⊙·𐑖·𐑳·𐑴⟩";
 
 /// Contains both ⊙ (⊙) and 𐑹 (P_pm_sym) → O_∞ tier.

@@ -175,8 +175,8 @@ pub fn dialect_gates(u: u8) -> String {
         7 => "G1:Phi>=pmsym  G2:Phc>=c  G3:Omega>=Z  T:Gm=seq".to_string(),
         8 => "G1:⊥≥𐑖  G2:⊙≥⊙  G3:◻≥𐑭  T:ceiling(5)".to_string(),
         9 => "G1:∈≥𐑲  G2:⊙≥⊙  G3:◻≥𐑭  T:ceiling(5)".to_string(),
-        10 => "G1:⊙≥𐑢  G2:⊙≥⊙  G3:⊙≥𐑣  T:ceiling(5)".to_string(),
-        11 => "G1:⊙≥𐑢  G2:⊙≥⊙  G3:⊙≥𐑣  T:ceiling(⊤≤𐑪)".to_string(),
+        10 => "G1:⊙≥woe  G2:⊙≥⊙  G3:⊙≥𐑣  T:ceiling(5)".to_string(),
+        11 => "G1:⊙≥woe  G2:⊙≥⊙  G3:⊙≥𐑣  T:ceiling(⊤≤𐑪)".to_string(),
         _ if is_expansion(u) => {
             let unis = all_dialects();
             let uni = &unis[u as usize];

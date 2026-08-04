@@ -127,28 +127,28 @@ fn element_tuple(sym: &str) -> IgTuple {
     // Map element symbol to a tuple based on periodicity
     match sym {
         // Noble gases: fully symmetric, high criticality
-        "Rn" => IgTuple { d: IgPrim::D_odot, t: IgPrim::T_odot, r: IgPrim::R_lr, p: IgPrim::P_sym, f: IgPrim::F_ell, k: IgPrim::K_mod, g: IgPrim::G_aleph, c: IgPrim::C_broad, phi: IgPrim::Phi_crit, h: IgPrim::H0, s: IgPrim::S_11, omega: IgPrim::Omega_0 },
+        "Rn" => IgTuple { d: IgPrim::if_, t: IgPrim::are, r: IgPrim::ian, p: IgPrim::nun, f: IgPrim::age, k: IgPrim::loll, g: IgPrim::ice, c: IgPrim::ooze, phi: IgPrim::monad, h: IgPrim::fee, s: IgPrim::hung, omega: IgPrim::awe },
         // Lead (Pb-206/207/208): stable — Frobenius fixed point
-        "Pb" => IgTuple { d: IgPrim::D_odot, t: IgPrim::T_odot, r: IgPrim::R_lr, p: IgPrim::P_pmsym, f: IgPrim::F_ell, k: IgPrim::K_trap, g: IgPrim::G_aleph, c: IgPrim::C_or, phi: IgPrim::Phi_crit, h: IgPrim::H0, s: IgPrim::S_11, omega: IgPrim::Omega_0 },
+        "Pb" => IgTuple { d: IgPrim::if_, t: IgPrim::are, r: IgPrim::ian, p: IgPrim::or_, f: IgPrim::age, k: IgPrim::on, g: IgPrim::ice, c: IgPrim::gag, phi: IgPrim::monad, h: IgPrim::fee, s: IgPrim::hung, omega: IgPrim::awe },
         // Bismuth: near stable, Bi-209 is stable
-        "Bi" => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_bowtie, r: IgPrim::R_dagger, p: IgPrim::P_psi, f: IgPrim::F_ell, k: IgPrim::K_mod, g: IgPrim::G_gimel, c: IgPrim::C_and, phi: IgPrim::𐑢, h: IgPrim::H1, s: IgPrim::S_11, omega: IgPrim::Omega_z2 },
+        "Bi" => IgTuple { d: IgPrim::ash, t: IgPrim::mime, r: IgPrim::ear, p: IgPrim::yew, f: IgPrim::age, k: IgPrim::loll, g: IgPrim::thigh, c: IgPrim::vow, phi: IgPrim::woe, h: IgPrim::kick, s: IgPrim::hung, omega: IgPrim::oak },
         // Actinides: complex, high criticality
-        "U"  => IgTuple { d: IgPrim::D_odot, t: IgPrim::T_bowtie, r: IgPrim::R_dagger, p: IgPrim::P_psi, f: IgPrim::F_hbar, k: IgPrim::K_mod, g: IgPrim::G_gimel, c: IgPrim::C_or, phi: IgPrim::Phi_ep, h: IgPrim::H2, s: IgPrim::S_nn, omega: IgPrim::Omega_z2 },
-        "Th" => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_bowtie, r: IgPrim::R_dagger, p: IgPrim::P_psi, f: IgPrim::F_hbar, k: IgPrim::K_mod, g: IgPrim::G_gimel, c: IgPrim::C_or, phi: IgPrim::Phi_ep, h: IgPrim::H2, s: IgPrim::S_nn, omega: IgPrim::Omega_z2 },
-        "Pa" => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_net, r: IgPrim::R_dagger, p: IgPrim::P_psi, f: IgPrim::F_hbar, k: IgPrim::K_fast, g: IgPrim::G_gimel, c: IgPrim::C_or, phi: IgPrim::Phi_ep, h: IgPrim::H1, s: IgPrim::S_nn, omega: IgPrim::Omega_z2 },
-        "Ac" => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_net, r: IgPrim::R_super, p: IgPrim::P_psi, f: IgPrim::F_hbar, k: IgPrim::K_mod, g: IgPrim::G_gimel, c: IgPrim::C_or, phi: IgPrim::𐑢, h: IgPrim::H1, s: IgPrim::S_nn, omega: IgPrim::Omega_z2 },
+        "U"  => IgTuple { d: IgPrim::if_, t: IgPrim::mime, r: IgPrim::ear, p: IgPrim::yew, f: IgPrim::peep, k: IgPrim::loll, g: IgPrim::thigh, c: IgPrim::gag, phi: IgPrim::err, h: IgPrim::sure, s: IgPrim::so, omega: IgPrim::oak },
+        "Th" => IgTuple { d: IgPrim::ash, t: IgPrim::mime, r: IgPrim::ear, p: IgPrim::yew, f: IgPrim::peep, k: IgPrim::loll, g: IgPrim::thigh, c: IgPrim::gag, phi: IgPrim::err, h: IgPrim::sure, s: IgPrim::so, omega: IgPrim::oak },
+        "Pa" => IgTuple { d: IgPrim::ash, t: IgPrim::judge, r: IgPrim::ear, p: IgPrim::yew, f: IgPrim::peep, k: IgPrim::yea, g: IgPrim::thigh, c: IgPrim::gag, phi: IgPrim::err, h: IgPrim::kick, s: IgPrim::so, omega: IgPrim::oak },
+        "Ac" => IgTuple { d: IgPrim::ash, t: IgPrim::judge, r: IgPrim::ado, p: IgPrim::yew, f: IgPrim::peep, k: IgPrim::loll, g: IgPrim::thigh, c: IgPrim::gag, phi: IgPrim::woe, h: IgPrim::kick, s: IgPrim::so, omega: IgPrim::oak },
         // Middle elements
-        "Ra" => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_bowtie, r: IgPrim::R_dagger, p: IgPrim::P_psi, f: IgPrim::F_hbar, k: IgPrim::K_mod, g: IgPrim::G_beth, c: IgPrim::C_and, phi: IgPrim::𐑢, h: IgPrim::H1, s: IgPrim::S_11, omega: IgPrim::Omega_z2 },
-        "Po" => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_bowtie, r: IgPrim::R_dagger, p: IgPrim::P_psi, f: IgPrim::F_eth, k: IgPrim::K_mod, g: IgPrim::G_beth, c: IgPrim::C_or, phi: IgPrim::𐑢, h: IgPrim::H1, s: IgPrim::S_11, omega: IgPrim::Omega_z2 },
-        "Tl" => IgTuple { d: IgPrim::D_wedge, t: IgPrim::T_net, r: IgPrim::R_super, p: IgPrim::P_psi, f: IgPrim::F_ell, k: IgPrim::K_mod, g: IgPrim::G_beth, c: IgPrim::C_and, phi: IgPrim::𐑢, h: IgPrim::H0, s: IgPrim::S_11, omega: IgPrim::Omega_0 },
+        "Ra" => IgTuple { d: IgPrim::ash, t: IgPrim::mime, r: IgPrim::ear, p: IgPrim::yew, f: IgPrim::peep, k: IgPrim::loll, g: IgPrim::bib, c: IgPrim::vow, phi: IgPrim::woe, h: IgPrim::kick, s: IgPrim::hung, omega: IgPrim::oak },
+        "Po" => IgTuple { d: IgPrim::ash, t: IgPrim::mime, r: IgPrim::ear, p: IgPrim::yew, f: IgPrim::they, k: IgPrim::loll, g: IgPrim::bib, c: IgPrim::gag, phi: IgPrim::woe, h: IgPrim::kick, s: IgPrim::hung, omega: IgPrim::oak },
+        "Tl" => IgTuple { d: IgPrim::dead, t: IgPrim::judge, r: IgPrim::ado, p: IgPrim::yew, f: IgPrim::age, k: IgPrim::loll, g: IgPrim::bib, c: IgPrim::vow, phi: IgPrim::woe, h: IgPrim::fee, s: IgPrim::hung, omega: IgPrim::awe },
         // Default: middle of periodic table
-        _ => IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_net, r: IgPrim::R_super, p: IgPrim::P_asym, f: IgPrim::F_ell, k: IgPrim::K_mod, g: IgPrim::G_beth, c: IgPrim::C_and, phi: IgPrim::𐑢, h: IgPrim::H0, s: IgPrim::S_11, omega: IgPrim::Omega_0 },
+        _ => IgTuple { d: IgPrim::ash, t: IgPrim::judge, r: IgPrim::ado, p: IgPrim::church, f: IgPrim::age, k: IgPrim::loll, g: IgPrim::bib, c: IgPrim::vow, phi: IgPrim::woe, h: IgPrim::fee, s: IgPrim::hung, omega: IgPrim::awe },
     }
 }
 
 fn frobenius_fires(tup: &IgTuple) -> bool {
     // ⊙ fires (self-referential criticality) when phi == ⊙
-    tup.phi == IgPrim::Phi_crit
+    tup.phi == IgPrim::monad
 }// ─── Core analysis ────────────────────────────────────────────────────────────
 
 pub fn analyze_chain(series_key: &str) -> Option<(&'static DecaySeries, Vec<DecayStep>)> {

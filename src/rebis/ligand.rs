@@ -38,10 +38,10 @@ impl BindingMode {
     }
 
     pub fn to_primitive(&self) -> IgPrim {
-        match self { Self::Covalent => IgPrim::R_dagger,
-            Self::Ionic => IgPrim::R_lr, Self::HydrogenBond => IgPrim::R_cat,
-            Self::PiStacking => IgPrim::R_super, Self::Hydrophobic => IgPrim::R_super,
-            Self::MetalCoord => IgPrim::R_dagger, Self::Unknown => IgPrim::R_super }
+        match self { Self::Covalent => IgPrim::ear,
+            Self::Ionic => IgPrim::ian, Self::HydrogenBond => IgPrim::tot,
+            Self::PiStacking => IgPrim::ado, Self::Hydrophobic => IgPrim::ado,
+            Self::MetalCoord => IgPrim::ear, Self::Unknown => IgPrim::ado }
     }
 }
 
@@ -59,57 +59,57 @@ pub struct FunctionalGroup {
 pub const ALL_FUNCTIONAL_GROUPS: &[FunctionalGroup] = &[
     // ── Hydrogen bond donors/acceptors ──
     FunctionalGroup { name: "carboxyl", smiles_pattern: "C(=O)O", rotatable_bonds: 1,
-        ig_tuple: IgTuple { d: IgPrim::D_wedge, t: IgPrim::T_net, r: IgPrim::R_dagger,
-            p: IgPrim::P_psi, f: IgPrim::F_hbar, k: IgPrim::K_mod, g: IgPrim::G_beth,
-            c: IgPrim::C_seq, phi: IgPrim::𐑢, h: IgPrim::H1, s: IgPrim::S_11,
-            omega: IgPrim::Omega_z2 },
+        ig_tuple: IgTuple { d: IgPrim::dead, t: IgPrim::judge, r: IgPrim::ear,
+            p: IgPrim::yew, f: IgPrim::peep, k: IgPrim::loll, g: IgPrim::bib,
+            c: IgPrim::measure, phi: IgPrim::woe, h: IgPrim::kick, s: IgPrim::hung,
+            omega: IgPrim::oak },
         binding_modes: &[BindingMode::Ionic, BindingMode::HydrogenBond],
     },
     FunctionalGroup { name: "amine", smiles_pattern: "C[NH2]", rotatable_bonds: 0,
-        ig_tuple: IgTuple { d: IgPrim::D_wedge, t: IgPrim::T_net, r: IgPrim::R_dagger,
-            p: IgPrim::P_psi, f: IgPrim::F_eth, k: IgPrim::K_mod, g: IgPrim::G_beth,
-            c: IgPrim::C_and, phi: IgPrim::𐑢, h: IgPrim::H1, s: IgPrim::S_11,
-            omega: IgPrim::Omega_z2 },
+        ig_tuple: IgTuple { d: IgPrim::dead, t: IgPrim::judge, r: IgPrim::ear,
+            p: IgPrim::yew, f: IgPrim::they, k: IgPrim::loll, g: IgPrim::bib,
+            c: IgPrim::vow, phi: IgPrim::woe, h: IgPrim::kick, s: IgPrim::hung,
+            omega: IgPrim::oak },
         binding_modes: &[BindingMode::Ionic, BindingMode::HydrogenBond],
     },
     // ── Aromatic ──
     FunctionalGroup { name: "phenyl", smiles_pattern: "c1ccccc1", rotatable_bonds: 0,
-        ig_tuple: IgTuple { d: IgPrim::D_wedge, t: IgPrim::T_in, r: IgPrim::R_super,
-            p: IgPrim::P_asym, f: IgPrim::F_ell, k: IgPrim::K_mod, g: IgPrim::G_beth,
-            c: IgPrim::C_and, phi: IgPrim::𐑢, h: IgPrim::H0, s: IgPrim::S_11,
-            omega: IgPrim::Omega_0 },
+        ig_tuple: IgTuple { d: IgPrim::dead, t: IgPrim::eat, r: IgPrim::ado,
+            p: IgPrim::church, f: IgPrim::age, k: IgPrim::loll, g: IgPrim::bib,
+            c: IgPrim::vow, phi: IgPrim::woe, h: IgPrim::fee, s: IgPrim::hung,
+            omega: IgPrim::awe },
         binding_modes: &[BindingMode::PiStacking, BindingMode::Hydrophobic],
     },
     FunctionalGroup { name: "pyridine", smiles_pattern: "c1ccncc1", rotatable_bonds: 0,
-        ig_tuple: IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_in, r: IgPrim::R_dagger,
-            p: IgPrim::P_psi, f: IgPrim::F_eth, k: IgPrim::K_mod, g: IgPrim::G_beth,
-            c: IgPrim::C_or, phi: IgPrim::𐑢, h: IgPrim::H1, s: IgPrim::S_11,
-            omega: IgPrim::Omega_z2 },
+        ig_tuple: IgTuple { d: IgPrim::ash, t: IgPrim::eat, r: IgPrim::ear,
+            p: IgPrim::yew, f: IgPrim::they, k: IgPrim::loll, g: IgPrim::bib,
+            c: IgPrim::gag, phi: IgPrim::woe, h: IgPrim::kick, s: IgPrim::hung,
+            omega: IgPrim::oak },
         binding_modes: &[BindingMode::PiStacking, BindingMode::HydrogenBond,
             BindingMode::MetalCoord],
     },
     // ── Metal-coordinating ──
     FunctionalGroup { name: "hydroxamate", smiles_pattern: "C(=O)NO", rotatable_bonds: 1,
-        ig_tuple: IgTuple { d: IgPrim::D_triangle, t: IgPrim::T_bowtie, r: IgPrim::R_lr,
-            p: IgPrim::P_pmsym, f: IgPrim::F_hbar, k: IgPrim::K_slow, g: IgPrim::G_gimel,
-            c: IgPrim::C_seq, phi: IgPrim::Phi_crit, h: IgPrim::H1, s: IgPrim::S_11,
-            omega: IgPrim::Omega_z2 },
+        ig_tuple: IgTuple { d: IgPrim::ash, t: IgPrim::mime, r: IgPrim::ian,
+            p: IgPrim::or_, f: IgPrim::peep, k: IgPrim::egg, g: IgPrim::thigh,
+            c: IgPrim::measure, phi: IgPrim::monad, h: IgPrim::kick, s: IgPrim::hung,
+            omega: IgPrim::oak },
         binding_modes: &[BindingMode::MetalCoord, BindingMode::HydrogenBond],
     },
     // ── Sulfur-containing ──
     FunctionalGroup { name: "thiol", smiles_pattern:  "C[SH]", rotatable_bonds: 1,
-        ig_tuple: IgTuple { d: IgPrim::D_wedge, t: IgPrim::T_net, r: IgPrim::R_dagger,
-            p: IgPrim::P_asym, f: IgPrim::F_ell, k: IgPrim::K_mod, g: IgPrim::G_beth,
-            c: IgPrim::C_and, phi: IgPrim::𐑢, h: IgPrim::H0, s: IgPrim::S_11,
-            omega: IgPrim::Omega_0 },
+        ig_tuple: IgTuple { d: IgPrim::dead, t: IgPrim::judge, r: IgPrim::ear,
+            p: IgPrim::church, f: IgPrim::age, k: IgPrim::loll, g: IgPrim::bib,
+            c: IgPrim::vow, phi: IgPrim::woe, h: IgPrim::fee, s: IgPrim::hung,
+            omega: IgPrim::awe },
         binding_modes: &[BindingMode::Covalent, BindingMode::MetalCoord],
     },
     // ── Amide (peptide bond) ──
     FunctionalGroup { name: "amide", smiles_pattern:  "C(=O)N", rotatable_bonds: 0,
-        ig_tuple: IgTuple { d: IgPrim::D_wedge, t: IgPrim::T_net, r: IgPrim::R_cat,
-            p: IgPrim::P_asym, f: IgPrim::F_eth, k: IgPrim::K_slow, g: IgPrim::G_beth,
-            c: IgPrim::C_seq, phi: IgPrim::𐑢, h: IgPrim::H1, s: IgPrim::S_11,
-            omega: IgPrim::Omega_z2 },
+        ig_tuple: IgTuple { d: IgPrim::dead, t: IgPrim::judge, r: IgPrim::tot,
+            p: IgPrim::church, f: IgPrim::they, k: IgPrim::egg, g: IgPrim::bib,
+            c: IgPrim::measure, phi: IgPrim::woe, h: IgPrim::kick, s: IgPrim::hung,
+            omega: IgPrim::oak },
         binding_modes: &[BindingMode::HydrogenBond],
     },
 ];// ─── Active Site Pocket ───────────────────────────────────────────────────────
@@ -161,10 +161,10 @@ pub fn binding_compatibility(mode: BindingMode, group: &FunctionalGroup) -> f32 
     else {
         // Partial score from tuple distance
         let mode_tuple = IgTuple {
-            d: IgPrim::D_wedge, t: IgPrim::T_net, r: mode.to_primitive(),
-            p: IgPrim::P_asym, f: IgPrim::F_ell, k: IgPrim::K_mod,
-            g: IgPrim::G_beth, c: IgPrim::C_and, phi: IgPrim::𐑢,
-            h: IgPrim::H0, s: IgPrim::S_11, omega: IgPrim::Omega_0,
+            d: IgPrim::dead, t: IgPrim::judge, r: mode.to_primitive(),
+            p: IgPrim::church, f: IgPrim::age, k: IgPrim::loll,
+            g: IgPrim::bib, c: IgPrim::vow, phi: IgPrim::woe,
+            h: IgPrim::fee, s: IgPrim::hung, omega: IgPrim::awe,
         };
         let dist = tuple_distance(&mode_tuple, &group.ig_tuple);
         (1.0 - (dist / 12.0).min(1.0)).max(0.0)

@@ -41,6 +41,11 @@ fn vocab() -> Vec<String> {
         v.push(s.glyph().to_string());
     }
     v.push("⊤".to_string());
+    // NOT canonical_ig::PRIMITIVE_ORDER. This is the probe's vocabulary, not an
+    // axis order: id_of() takes the first match and falls back to voc.len()-1,
+    // so the exact length and position of every entry is load-bearing and the
+    // probe is bit-exact against the metal implementation. ⊙ is deliberately
+    // absent here because the token loop above already emitted it.
     for p in ["⊢", "⊣", ">", "<", "⋈", "⊤", "∈", "∋", "⊥", "⊞", "◻"] {
         v.push(p.to_string());
     }

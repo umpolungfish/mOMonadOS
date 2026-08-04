@@ -32,12 +32,10 @@ OUT = ROOT / "src" / "catalog_ask_subset.rs"
 # The twelve slots, in canonical order, keyed as they appear in IG_catalog.json.
 SLOTS = ["⊢", "⊣", ">", "<", "⋈", "⊤", "∈", "∋", "⊙", "⊥", "⊞", "◻"]
 
-# Which enum prefix owns which slot. A glyph can repeat across slots only if
-# the enum keeps them distinct, so the prefix disambiguates the lookup.
-SLOT_PREFIX = {
-    "⊢": "D_", "⊣": "T_", ">": "R_", "<": "P_", "⋈": "F_", "⊤": "K_",
-    "∈": "G_", "∋": "C_", "⊙": "Phi_", "⊥": "H", "⊞": "S_", "◻": "Omega_",
-}
+# The variant names are the Core.lean constructors now, so there is no prefix
+# to disambiguate by. There does not need to be: all 49 value glyphs are
+# distinct, so a glyph names exactly one variant. If that ever stops being true
+# the lookup below fails loudly rather than guessing.
 
 # Two Criticality variants are named with the glyph itself (𐑮, 𐑢), so the
 # identifier pattern has to admit non-ASCII rather than assume [A-Za-z_].
@@ -71,11 +69,9 @@ def pick(glyph, slot, vmap):
         raise KeyError("glyph %r (slot %s) has no IgPrim variant" % (glyph, slot))
     if len(cands) == 1:
         return cands[0]
-    pref = SLOT_PREFIX[slot]
-    for c in cands:
-        if c.startswith(pref):
-            return c
-    raise KeyError("glyph %r ambiguous in slot %s: %s" % (glyph, slot, cands))
+    raise KeyError("glyph %r names %d variants (slot %s): %s — the 49 value "
+                   "glyphs are supposed to be distinct"
+                   % (glyph, len(cands), slot, cands))
 
 
 def rust_str(s, limit):

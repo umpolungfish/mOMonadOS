@@ -103,8 +103,8 @@ fn lattice_op(a: &IgTuple, b: &IgTuple, is_meet: bool) -> LatticeResult {
     let op_name = if is_meet { "meet" } else { "join" };
 
     // ⊙ absorption: ⊙ is absorbing under both meet and join
-    let phi = if a.phi == IgPrim::Phi_crit || b.phi == IgPrim::Phi_crit {
-        IgPrim::Phi_crit
+    let phi = if a.phi == IgPrim::monad || b.phi == IgPrim::monad {
+        IgPrim::monad
     } else if is_meet {
         catalog::ord_min(a.phi, b.phi, &catalog::PHI_ORD)
     } else {
@@ -168,10 +168,10 @@ pub fn tensor(a: &IgTuple, b: &IgTuple) -> IgTuple {
     let g = catalog::ord_max(a.g, b.g, &catalog::G_ORD);
 
     // Phi: ⊙ absorption rule — tensor(⊙, EP) = EP
-    let phi = if a.phi == IgPrim::Phi_ep || b.phi == IgPrim::Phi_ep {
-        IgPrim::Phi_ep
-    } else if a.phi == IgPrim::Phi_crit || b.phi == IgPrim::Phi_crit {
-        IgPrim::Phi_crit
+    let phi = if a.phi == IgPrim::err || b.phi == IgPrim::err {
+        IgPrim::err
+    } else if a.phi == IgPrim::monad || b.phi == IgPrim::monad {
+        IgPrim::monad
     } else {
         catalog::ord_max(a.phi, b.phi, &catalog::PHI_ORD)
     };
@@ -218,7 +218,7 @@ impl fmt::Display for LatticeResult {
         write!(f, "{}: {}", self.op, self.tuple.display_shavian())?;
         if !self.is_valid() {
             write!(f, " [CONFLICTS:")?;
-            let names = ["D","T","R","P","F","K","C","<","◻","S","H"];
+            let names = crate::canonical_ig::PRIMITIVE_ORDER;
             for i in 0..12 {
                 if self.conflicts[i] {
                     write!(f, " {}", names[i])?;
@@ -287,17 +287,17 @@ mod tests {
         let a = oinf();
         let b = o0();
         let t = tensor(&a, &b);
-        assert_eq!(t.p, IgPrim::P_asym);
-        assert_eq!(t.f, IgPrim::F_ell);
-        assert_eq!(t.d, IgPrim::D_odot);
+        assert_eq!(t.p, IgPrim::church);
+        assert_eq!(t.f, IgPrim::age);
+        assert_eq!(t.d, IgPrim::if_);
     }
 
     #[test]
     fn test_tensor_phi_absorption() {
         let mut ep = oinf();
-        ep.phi = IgPrim::Phi_ep;
+        ep.phi = IgPrim::err;
         let o = oinf();
         let t = tensor(&o, &ep);
-        assert_eq!(t.phi, IgPrim::Phi_ep);
+        assert_eq!(t.phi, IgPrim::err);
     }
 }

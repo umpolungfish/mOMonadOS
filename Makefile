@@ -35,9 +35,12 @@ ordinals: hosted
 	   > .ordinals.log || true
 	@if grep -aq 'ALL 44 VALUES MATCH' .ordinals.log; then \
 	   grep -am1 'Ordinal faithfulness' .ordinals.log; rm -f .ordinals.log; \
+	 elif grep -aq 'ORDINAL DRIFT DETECTED' .ordinals.log; then \
+	   echo "ORDINAL DRIFT DETECTED"; \
+	   grep -aE 'DRIFT' .ordinals.log | tail -3; rm -f .ordinals.log; exit 1; \
 	 else \
-	   echo "ORDINAL DRIFT or no boot output:"; \
-	   grep -aE 'BOOT|DRIFT' .ordinals.log | tail -5; rm -f .ordinals.log; exit 1; \
+	   echo "NO BOOT OUTPUT — the guard did not speak, which is not a pass"; \
+	   tail -3 .ordinals.log; rm -f .ordinals.log; exit 3; \
 	 fi
 
 clean:

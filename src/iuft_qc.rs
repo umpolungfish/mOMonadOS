@@ -149,11 +149,11 @@ pub fn encode_entry(entry: &CatalogEntry) -> IuftQcGate {
 /// ψ(⊙): self-modeling phase from criticality.
 ///
 /// Mapping:
-///   𐑢 (sub-critical)     →   0°
+///   woe (sub-critical)     →   0°
 ///   ⊙  (critical)         →  90°  (canonical self-modeling)
-///   𐑮 (complex critical) → 180°
-///   Phi_ep (exceptional)  → 270°
-///   Phi_super (supercrit) →   0°  (wraps — self-modeling complete)
+///   roar (complex critical) → 180°
+///   err (exceptional)  → 270°
+///   haha (supercrit) →   0°  (wraps — self-modeling complete)
 fn encode_psi(phi_prim: IgPrim) -> f64 {
     let ord = phi_prim.ordinal() as f64;  // 1.0, 2.0, 2.33, 2.67, 3.0
     // Map to [0°, 360°]: ⊙=2.0 → 90°, linear interpolation
@@ -467,66 +467,66 @@ pub fn glyph_to_primitive(glyph: &str) -> Option<IgPrim> {
     let ch = g.chars().next()?;
     match ch {
         // D Dimensionality
-        '𐑦' => Some(IgPrim::D_odot),
-        '𐑛' => Some(IgPrim::D_wedge),
-        '𐑨' => Some(IgPrim::D_triangle),
-        '𐑼' => Some(IgPrim::D_infty),
+        '𐑦' => Some(IgPrim::if_),
+        '𐑛' => Some(IgPrim::dead),
+        '𐑨' => Some(IgPrim::ash),
+        '𐑼' => Some(IgPrim::array),
         // T Topology
-        '𐑸' => Some(IgPrim::T_odot),
-        '𐑡' => Some(IgPrim::T_net),
-        '𐑰' => Some(IgPrim::T_in),
-        '𐑥' => Some(IgPrim::T_bowtie),
-        '𐑶' => Some(IgPrim::T_boxtimes),
+        '𐑸' => Some(IgPrim::are),
+        '𐑡' => Some(IgPrim::judge),
+        '𐑰' => Some(IgPrim::eat),
+        '𐑥' => Some(IgPrim::mime),
+        '𐑶' => Some(IgPrim::oil),
         // R Coupling
-        '𐑾' => Some(IgPrim::R_lr),
-        '𐑽' => Some(IgPrim::R_dagger),
-        '𐑑' => Some(IgPrim::R_cat),
-        '𐑩' => Some(IgPrim::R_super),
+        '𐑾' => Some(IgPrim::ian),
+        '𐑽' => Some(IgPrim::ear),
+        '𐑑' => Some(IgPrim::tot),
+        '𐑩' => Some(IgPrim::ado),
         // P Parity
-        '𐑹' => Some(IgPrim::P_pmsym),
-        '𐑯' => Some(IgPrim::P_sym),
-        '𐑬' => Some(IgPrim::P_pm),
-        '𐑿' => Some(IgPrim::P_psi),
-        '𐑗' => Some(IgPrim::P_asym),
+        '𐑹' => Some(IgPrim::or_),
+        '𐑯' => Some(IgPrim::nun),
+        '𐑬' => Some(IgPrim::out),
+        '𐑿' => Some(IgPrim::yew),
+        '𐑗' => Some(IgPrim::church),
         // F Fidelity
-        '𐑐' => Some(IgPrim::F_hbar),
-        '𐑱' => Some(IgPrim::F_ell),
-        '𐑞' => Some(IgPrim::F_eth),
+        '𐑐' => Some(IgPrim::peep),
+        '𐑱' => Some(IgPrim::age),
+        '𐑞' => Some(IgPrim::they),
         // K Kinetics
-        '𐑪' => Some(IgPrim::K_trap),
-        '𐑧' => Some(IgPrim::K_slow),
-        '𐑤' => Some(IgPrim::K_mod),
-        '𐑘' => Some(IgPrim::K_fast),
-        '𐑺' => Some(IgPrim::K_mbl),
+        '𐑪' => Some(IgPrim::on),
+        '𐑧' => Some(IgPrim::egg),
+        '𐑤' => Some(IgPrim::loll),
+        '𐑘' => Some(IgPrim::yea),
+        '𐑺' => Some(IgPrim::air),
         // G Cardinality
-        '𐑲' => Some(IgPrim::G_aleph),
-        '𐑚' => Some(IgPrim::G_beth),
-        '𐑔' => Some(IgPrim::G_gimel),
+        '𐑲' => Some(IgPrim::ice),
+        '𐑚' => Some(IgPrim::bib),
+        '𐑔' => Some(IgPrim::thigh),
         // C Composition
-        '𐑠' => Some(IgPrim::C_seq),
-        '𐑝' => Some(IgPrim::C_and),
-        '𐑜' => Some(IgPrim::C_or),
-        '𐑵' => Some(IgPrim::C_broad),
+        '𐑠' => Some(IgPrim::measure),
+        '𐑝' => Some(IgPrim::vow),
+        '𐑜' => Some(IgPrim::gag),
+        '𐑵' => Some(IgPrim::ooze),
         // Phi Criticality
-        '⊙' => Some(IgPrim::Phi_crit),
-        '𐑮' => Some(IgPrim::𐑮),
-        '𐑻' => Some(IgPrim::Phi_ep),
-        '𐑢' => Some(IgPrim::𐑢),
-        '𐑣' => Some(IgPrim::Phi_super),
+        '⊙' => Some(IgPrim::monad),
+        '𐑮' => Some(IgPrim::roar),
+        '𐑻' => Some(IgPrim::err),
+        '𐑢' => Some(IgPrim::woe),
+        '𐑣' => Some(IgPrim::haha),
         // H Chirality
-        '𐑫' => Some(IgPrim::H_inf),
-        '𐑖' => Some(IgPrim::H2),
-        '𐑒' => Some(IgPrim::H1),
-        '𐑓' => Some(IgPrim::H0),
+        '𐑫' => Some(IgPrim::wool),
+        '𐑖' => Some(IgPrim::sure),
+        '𐑒' => Some(IgPrim::kick),
+        '𐑓' => Some(IgPrim::fee),
         // S Stoichiometry
-        '𐑳' => Some(IgPrim::S_nm),
-        '𐑕' => Some(IgPrim::S_nn),
-        '𐑙' => Some(IgPrim::S_11),
+        '𐑳' => Some(IgPrim::up),
+        '𐑕' => Some(IgPrim::so),
+        '𐑙' => Some(IgPrim::hung),
         // Omega Winding
-        '𐑭' => Some(IgPrim::Omega_z),
-        '𐑴' => Some(IgPrim::Omega_z2),
-        '𐑷' => Some(IgPrim::Omega_0),
-        '𐑟' => Some(IgPrim::Omega_na),
+        '𐑭' => Some(IgPrim::ah),
+        '𐑴' => Some(IgPrim::oak),
+        '𐑷' => Some(IgPrim::awe),
+        '𐑟' => Some(IgPrim::zoo),
         _ => None,
     }
 }

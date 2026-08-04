@@ -45,6 +45,7 @@ mod para_ym;
 mod para_temporal;
 mod para_category;
 mod algebra;
+mod canonical_ig;
 mod catalog;
 mod cl8nk;
 mod consciousness;

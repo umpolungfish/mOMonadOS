@@ -44,8 +44,8 @@ pub fn witness_name(i: usize) -> &'static str {
 /// Witness program description.
 pub fn witness_description(i: usize) -> &'static str {
     match i {
-        0 => "BSD closure witness — 5 dialects, T_CEILING-consistent. ⟨𐑦𐑥𐑾𐑿𐑞𐑧𐑲𐑝𐑮𐑖𐑙𐑭⟩",
-        1 => "Hodge closure witness — 5 dialects, T_CEILING-consistent. ⟨𐑦𐑸𐑽𐑿𐑱𐑧𐑲𐑝𐑮𐑓𐑳𐑭⟩",
+        0 => "BSD closure witness — 5 dialects, T_CEILING-consistent. ⟨𐑦𐑥𐑾𐑿𐑞𐑧𐑲𐑝roar𐑖𐑙𐑭⟩",
+        1 => "Hodge closure witness — 5 dialects, T_CEILING-consistent. ⟨𐑦𐑸𐑽𐑿𐑱𐑧𐑲𐑝roar𐑓𐑳𐑭⟩",
         2 => "YM one-bump-short witness — gate closed under triple_criticality, T_CEILING blocked on ⊤",
         _ => "Unknown",
     }

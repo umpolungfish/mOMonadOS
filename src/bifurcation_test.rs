@@ -28,18 +28,18 @@ mod bifurcation_tests {
     // Helper: build a test tuple at O_∞ tier
     fn test_tuple_oinf() -> IgTuple {
         IgTuple {
-            d: IgPrim::D_odot,       // D=𐑦
-            t: IgPrim::T_odot,      // T=𐑸
-            r: IgPrim::R_lr,         // R=𐑾
-            p: IgPrim::P_pmsym,      // P=𐑹
-            f: IgPrim::F_hbar,       // F=𐑐
-            k: IgPrim::K_slow,       // K=𐑧
-            g: IgPrim::G_aleph,      // G=𐑲
-            c: IgPrim::C_seq,        // C=𐑠
-            phi: IgPrim::Phi_crit,    // Phi=⊙
-            h: IgPrim::H_inf,       // H=𐑫
-            s: IgPrim::S_nm,         // S=𐑳
-            omega: IgPrim::Omega_z,     // Omega=𐑭
+            d: IgPrim::if_,       // D=𐑦
+            t: IgPrim::are,      // T=𐑸
+            r: IgPrim::ian,         // R=𐑾
+            p: IgPrim::or_,      // P=𐑹
+            f: IgPrim::peep,       // F=𐑐
+            k: IgPrim::egg,       // K=𐑧
+            g: IgPrim::ice,      // G=𐑲
+            c: IgPrim::measure,        // C=𐑠
+            phi: IgPrim::monad,    // Phi=⊙
+            h: IgPrim::wool,       // H=𐑫
+            s: IgPrim::up,         // S=𐑳
+            omega: IgPrim::ah,     // Omega=𐑭
         }
     }
 
@@ -49,12 +49,12 @@ mod bifurcation_tests {
         sequence::set_substrate_weight(weight);
         let mut seen: Vec<Vec<crate::tokens::Token>> = Vec::new();
         let mut current_tuple = *tuple;
-        let mut prog = sequence::build_via_substrate(&current_tuple, 12, current_tuple.t == IgPrim::T_odot, 3);
+        let mut prog = sequence::build_via_substrate(&current_tuple, 12, current_tuple.t == IgPrim::are, 3);
         seen.push(prog.as_slice().to_vec());
         for i in 1..max_iter {
             let snap = crate::kernel::self_imscribe(&prog);
             current_tuple = crate::imas_ig::IgTuple::from_snapshot(&snap);
-            let next = sequence::build_via_substrate(&current_tuple, 12, current_tuple.t == IgPrim::T_odot, 3);
+            let next = sequence::build_via_substrate(&current_tuple, 12, current_tuple.t == IgPrim::are, 3);
             let tokens: Vec<crate::tokens::Token> = next.as_slice().to_vec();
             for (j, prev) in seen.iter().enumerate() {
                 if prev == &tokens {
@@ -159,7 +159,7 @@ mod bifurcation_tests {
         assert_eq!(wc(&seed), Some(1));
 
         // F never reaches the contested top of the ranking, so it moves nothing.
-        for f in [IgPrim::F_ell, IgPrim::F_eth, IgPrim::F_hbar] {
+        for f in [IgPrim::age, IgPrim::they, IgPrim::peep] {
             let mut t = seed; t.f = f;
             assert_eq!(leader(&t), crate::tokens::Token::Imscrib, "F={:?}", f);
             assert_eq!(wc(&t), Some(1), "F={:?}", f);
@@ -167,14 +167,14 @@ mod bifurcation_tests {
 
         // Step off the self-referential topology and the family matrix already
         // leads with the advance, leaving the substrate nothing to overturn.
-        for tv in [IgPrim::T_boxtimes, IgPrim::T_net, IgPrim::T_bowtie, IgPrim::T_in] {
+        for tv in [IgPrim::oil, IgPrim::judge, IgPrim::mime, IgPrim::eat] {
             let mut t = seed; t.t = tv;
             assert_eq!(leader(&t), crate::tokens::Token::Afwd, "T={:?}", tv);
             assert_eq!(wc(&t), None, "T={:?} moved under some weight", tv);
         }
 
         // Narrowing the interaction range does the same.
-        for gv in [IgPrim::G_beth, IgPrim::G_gimel] {
+        for gv in [IgPrim::bib, IgPrim::thigh] {
             let mut t = seed; t.g = gv;
             assert_eq!(leader(&t), crate::tokens::Token::Afwd, "G={:?}", gv);
             assert_eq!(wc(&t), None, "G={:?} moved under some weight", gv);

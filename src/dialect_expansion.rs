@@ -143,7 +143,7 @@ pub static ABS_MONARCHY: &[AbsorptionRule] = &[
 
 /// Inverted: trivial values absorb
 pub static ABS_INVERTED: &[AbsorptionRule] = &[
-    AbsorptionRule { prim: "⊙", value: "𐑢", ops_mask: 7, direction: 0 },
+    AbsorptionRule { prim: "⊙", value: "woe", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "◻", value: "𐑷", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊞", value: "𐑙", ops_mask: 7, direction: 0 },
 ];
@@ -333,7 +333,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 1: low_gate ──
     unis[1] = Dialect {
         name: "low_gate",
-        description: "Lowered thresholds: G1 fires at <≥𐑬 (directional parity), G2 at ⊙≥𐑢 (any criticality), G3 unchanged. Easier O_∞ access.",
+        description: "Lowered thresholds: G1 fires at <≥𐑬 (directional parity), G2 at ⊙≥woe (any criticality), G3 unchanged. Easier O_∞ access.",
         g1: g_phi_3, g2: g_odot_1, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -365,7 +365,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 5: high_gate ──
     unis[5] = Dialect {
         name: "high_gate",
-        description: "Strictest thresholds: G1=<=𐑹, G2=⊙≥𐑮 (above bare self-model), G3=◻=𐑟 (max winding). O_∞ nearly unreachable — only maximally wound, fully self-modeling, parity-perfect objects.",
+        description: "Strictest thresholds: G1=<=𐑹, G2=⊙≥roar (above bare self-model), G3=◻=𐑟 (max winding). O_∞ nearly unreachable — only maximally wound, fully self-modeling, parity-perfect objects.",
         g1: g_phi_5, g2: g_odot_233, g3: g_omega_4, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -433,7 +433,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 13: triple_criticality ──
     unis[13] = Dialect {
         name: "triple_criticality",
-        description: "Criticality is everything — three rungs: G1=⊙≥𐑢, G2=⊙≥⊙, G3=⊙≥𐑣 (super-critical). Consciousness depth is the only structural filter.",
+        description: "Criticality is everything — three rungs: G1=⊙≥woe, G2=⊙≥⊙, G3=⊙≥𐑣 (super-critical). Consciousness depth is the only structural filter.",
         g1: g_odot_1, g2: g_odot_2, g3: g_odot_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: false,
     };
@@ -505,7 +505,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 22: absorption_inverted ──
     unis[22] = Dialect {
         name: "absorption_inverted",
-        description: "The antimonarchy: sub-critical (𐑢), trivial winding (𐑷), 1:1 stoichiometry (𐑙) are the absorbing values. The ground state always wins. Complexity is fragile.",
+        description: "The antimonarchy: sub-critical (woe), trivial winding (𐑷), 1:1 stoichiometry (𐑙) are the absorbing values. The ground state always wins. Complexity is fragile.",
         g1: g_phi_5, g2: g_odot_2, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_INVERTED, is_expansion: false,
     };
@@ -717,7 +717,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 48: parallel_low ──
     unis[48] = Dialect {
         name: "parallel_low",
-        description: "Low gates, parallel: <≥𐑬, ⊙≥𐑢, ◻≥𐑭. Easiest possible O_∞ access — three independent low bars.",
+        description: "Low gates, parallel: <≥𐑬, ⊙≥woe, ◻≥𐑭. Easiest possible O_∞ access — three independent low bars.",
         g1: g_phi_3, g2: g_odot_1, g3: g_omega_3, gate_ordering: false,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -725,7 +725,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 49: parallel_high ──
     unis[49] = Dialect {
         name: "parallel_high",
-        description: "High gates, parallel: <≥𐑹, ⊙≥𐑮, ◻≥𐑟. Strictest bars but independently checked — a system can be Frobenius without self-modeling or winding.",
+        description: "High gates, parallel: <≥𐑹, ⊙≥roar, ◻≥𐑟. Strictest bars but independently checked — a system can be Frobenius without self-modeling or winding.",
         g1: g_phi_5, g2: g_odot_233, g3: g_omega_4, gate_ordering: false,
         t_entries: T_CANONICAL, abs_rules: ABS_CANONICAL, is_expansion: true,
     };
@@ -889,7 +889,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     // ── 68: absorb_sub ──
     unis[68] = Dialect {
         name: "absorb_sub",
-        description: "Sub-critical absorption: ⊙ absorbs all sub-critical (𐑢) composites. No system that was ever sub-critical may rise to ⊙ through coupling — sub-criticality is an absorbing floor. Meets preserve the lower rung.",
+        description: "Sub-critical absorption: ⊙ absorbs all sub-critical (woe) composites. No system that was ever sub-critical may rise to ⊙ through coupling — sub-criticality is an absorbing floor. Meets preserve the lower rung.",
         g1: g_odot_2, g2: g_phi_sub_1, g3: g_omega_3, gate_ordering: true,
         t_entries: T_CANONICAL, abs_rules: ABS_SUB, is_expansion: true,
     };
@@ -1122,10 +1122,10 @@ pub static ABS_EP: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 },
 ];
 
-/// Sub-critical absorption: ⊙ absorbs sub-critical (𐑢) under all ops
+/// Sub-critical absorption: ⊙ absorbs sub-critical (woe) under all ops
 pub static ABS_SUB: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
-    AbsorptionRule { prim: "⊙", value: "𐑢", ops_mask: 7, direction: 0 }, // absorb sub-critical
+    AbsorptionRule { prim: "⊙", value: "woe", ops_mask: 7, direction: 0 }, // absorb sub-critical
     AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 },
 ];
 
@@ -1133,7 +1133,7 @@ pub static ABS_SUB: &[AbsorptionRule] = &[
 pub static ABS_DUAL: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊙", value: "𐑻", ops_mask: 7, direction: 0 },
-    AbsorptionRule { prim: "⊙", value: "𐑢", ops_mask: 7, direction: 0 },
+    AbsorptionRule { prim: "⊙", value: "woe", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 },
 ];
 
@@ -1211,7 +1211,7 @@ pub fn dialect_counts() -> (usize, usize) {
 #[allow(non_upper_case_globals)]
     pub const g_phi_E_4: GateSpec = GateSpec { prim: "⊙", min_ord: 4.0 };
 
-/// Sub-critical gate: ⊙≥𐑢 (ordinal 1, below critical — always passes)
+/// Sub-critical gate: ⊙≥woe (ordinal 1, below critical — always passes)
 #[allow(non_upper_case_globals)]
     pub const g_phi_sub_1: GateSpec = GateSpec { prim: "⊙", min_ord: 1.0 };
 

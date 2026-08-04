@@ -80,26 +80,26 @@ pub fn fingerprint(arr: &[u8]) -> StructFingerprint {
 pub fn fingerprint_to_ig(fp: &StructFingerprint) -> IgTuple {
     use IgPrim::*;
     let td = fp.token_diversity();
-    let d = if td<=2 {D_wedge} else if td<=5 {D_triangle} else if td<=9 {D_infty} else {D_odot};
-    let t = if fp.self_ref {T_odot} else if fp.period==1 {T_net}
-        else if fp.period==2 {T_bowtie} else if fp.frobenius_order>0 {T_boxtimes} else {T_in};
-    let r = match fp.frobenius_order {1=>R_lr,2=>R_dagger,3=>R_cat,_=>R_super};
-    let p = if fp.frobenius_order==1 {P_pmsym} else if fp.frobenius_order==2 {P_sym}
-        else if fp.frobenius_order==3 {P_pm} else if fp.dialetheia_complete {P_psi} else {P_asym};
-    let f = if fp.dialetheia_complete {F_hbar} else if fp.period==1 {F_ell} else {F_eth};
-    let k = if fp.sig_x==8 {K_mod} else if fp.period==1 {K_slow}
-        else if fp.period<=4 {K_trap} else {K_mbl};
-    let g = if fp.sig_x>=3 {G_beth} else if fp.sig_x>=1 {G_aleph}
-        else if td<=3 {G_gimel} else {G_aleph};
-    let c = if fp.frobenius_order>0 {C_seq} else if fp.period==1 {C_and}
-        else if fp.period==2 {C_or} else {C_broad};
-    let phi = if fp.self_ref&&fp.dialetheia_complete {Phi_crit} else if fp.self_ref {𐑮}
-        else if fp.dialetheia_complete {Phi_ep} else if fp.period==1 {𐑢} else {Phi_super};
-    let h = match fp.period {1=>H0,2=>H1,3=>H2,_=>H_inf};
+    let d = if td<=2 {dead} else if td<=5 {ash} else if td<=9 {array} else {if_};
+    let t = if fp.self_ref {are} else if fp.period==1 {judge}
+        else if fp.period==2 {mime} else if fp.frobenius_order>0 {oil} else {eat};
+    let r = match fp.frobenius_order {1=>ian,2=>ear,3=>tot,_=>ado};
+    let p = if fp.frobenius_order==1 {or_} else if fp.frobenius_order==2 {nun}
+        else if fp.frobenius_order==3 {out} else if fp.dialetheia_complete {yew} else {church};
+    let f = if fp.dialetheia_complete {peep} else if fp.period==1 {age} else {they};
+    let k = if fp.sig_x==8 {loll} else if fp.period==1 {egg}
+        else if fp.period<=4 {on} else {air};
+    let g = if fp.sig_x>=3 {bib} else if fp.sig_x>=1 {ice}
+        else if td<=3 {thigh} else {ice};
+    let c = if fp.frobenius_order>0 {measure} else if fp.period==1 {vow}
+        else if fp.period==2 {gag} else {ooze};
+    let phi = if fp.self_ref&&fp.dialetheia_complete {monad} else if fp.self_ref {roar}
+        else if fp.dialetheia_complete {err} else if fp.period==1 {woe} else {haha};
+    let h = match fp.period {1=>fee,2=>kick,3=>sure,_=>wool};
     let nz = (fp.sig_l>0)as u8+(fp.sig_f>0)as u8+(fp.sig_d>0)as u8+(fp.sig_x>0)as u8;
-    let s = if nz==1 {S_11} else if nz==2 {S_nn} else {S_nm};
-    let omega = if fp.frobenius_order==1 {Omega_z} else if fp.frobenius_order==2 {Omega_z2}
-        else if fp.self_ref {Omega_z} else if fp.period==2 {Omega_z2} else {Omega_0};
+    let s = if nz==1 {hung} else if nz==2 {so} else {up};
+    let omega = if fp.frobenius_order==1 {ah} else if fp.frobenius_order==2 {oak}
+        else if fp.self_ref {ah} else if fp.period==2 {oak} else {awe};
     IgTuple{d,t,r,p,f,k,g,c,phi,h,s,omega}
 }
 

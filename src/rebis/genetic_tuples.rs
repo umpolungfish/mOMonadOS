@@ -310,8 +310,8 @@ impl PhiVal {
                      PhiVal::Super => "super" }
     }
     pub fn glyph(&self) -> &'static str {
-        match self { PhiVal::Sub => "𐑢", PhiVal::C => "\u{2299}",
-                     PhiVal::CComplex => "𐑮", PhiVal::EP => "𐑻",
+        match self { PhiVal::Sub => "woe", PhiVal::C => "\u{2299}",
+                     PhiVal::CComplex => "roar", PhiVal::EP => "𐑻",
                      PhiVal::Super => "𐑣" }
     }
     pub fn ordinal(&self) -> u8 {
@@ -504,7 +504,7 @@ pub fn scan_activations(aa_chain: &str) -> alloc::collections::BTreeMap<&'static
         }
         if act.phi_activates.is_some() { *counts.entry("Phi_active").or_default() += 1; }
         if act.s_activates.is_some() { *counts.entry("S_hetero").or_default() += 1; }
-        if act.d_activates.is_some() { *counts.entry("D_odot").or_default() += 1; }
+        if act.d_activates.is_some() { *counts.entry("if_").or_default() += 1; }
     }
     counts
 }
@@ -818,7 +818,7 @@ mod tests {
         assert!(counts.get("Phi_active").unwrap_or(&0) >= &2, "G+W+Y activate Phi");
         assert!(counts.get("K_branched").unwrap_or(&0) >= &2, "I+V activate K");
         assert!(counts.get("H_high").unwrap_or(&0) >= &2, "F+Y activate H≥2");
-        assert!(counts.get("D_odot").unwrap_or(&0) == &0, "No K or R in test chain");
+        assert!(counts.get("if_").unwrap_or(&0) == &0, "No K or R in test chain");
     }
 
     #[test]
@@ -921,98 +921,98 @@ mod igprim_consistency {
     /// Verify DVal glyphs match IgPrim glyphs.
     #[test]
     fn dval_glyphs_match_igprim() {
-        assert_eq!(DVal::Wedge.glyph(), IgPrim::D_wedge.glyph());
-        assert_eq!(DVal::Tri.glyph(),   IgPrim::D_triangle.glyph());
-        assert_eq!(DVal::Infty.glyph(), IgPrim::D_infty.glyph());
-        assert_eq!(DVal::Odot.glyph(),  IgPrim::D_odot.glyph());
+        assert_eq!(DVal::Wedge.glyph(), IgPrim::dead.glyph());
+        assert_eq!(DVal::Tri.glyph(),   IgPrim::ash.glyph());
+        assert_eq!(DVal::Infty.glyph(), IgPrim::array.glyph());
+        assert_eq!(DVal::Odot.glyph(),  IgPrim::if_.glyph());
     }
 
     #[test]
     fn tval_glyphs_match_igprim() {
-        assert_eq!(TVal::Network.glyph(),  IgPrim::T_net.glyph());
-        assert_eq!(TVal::In.glyph(),       IgPrim::T_in.glyph());
-        assert_eq!(TVal::Bowtie.glyph(),   IgPrim::T_bowtie.glyph());
-        assert_eq!(TVal::Boxtimes.glyph(), IgPrim::T_boxtimes.glyph());
-        assert_eq!(TVal::Odot.glyph(),     IgPrim::T_odot.glyph());
+        assert_eq!(TVal::Network.glyph(),  IgPrim::judge.glyph());
+        assert_eq!(TVal::In.glyph(),       IgPrim::eat.glyph());
+        assert_eq!(TVal::Bowtie.glyph(),   IgPrim::mime.glyph());
+        assert_eq!(TVal::Boxtimes.glyph(), IgPrim::oil.glyph());
+        assert_eq!(TVal::Odot.glyph(),     IgPrim::are.glyph());
     }
 
     #[test]
     fn rval_glyphs_match_igprim() {
-        assert_eq!(RVal::Super.glyph(),  IgPrim::R_super.glyph());
-        assert_eq!(RVal::Cat.glyph(),    IgPrim::R_cat.glyph());
-        assert_eq!(RVal::Dagger.glyph(), IgPrim::R_dagger.glyph());
-        assert_eq!(RVal::LR.glyph(),     IgPrim::R_lr.glyph());
+        assert_eq!(RVal::Super.glyph(),  IgPrim::ado.glyph());
+        assert_eq!(RVal::Cat.glyph(),    IgPrim::tot.glyph());
+        assert_eq!(RVal::Dagger.glyph(), IgPrim::ear.glyph());
+        assert_eq!(RVal::LR.glyph(),     IgPrim::ian.glyph());
     }
 
     #[test]
     fn pval_glyphs_match_igprim() {
-        assert_eq!(PVal::Asym.glyph(),  IgPrim::P_asym.glyph());
-        assert_eq!(PVal::Psi.glyph(),   IgPrim::P_psi.glyph());
-        assert_eq!(PVal::Pm.glyph(),    IgPrim::P_pm.glyph());
-        assert_eq!(PVal::Sym.glyph(),   IgPrim::P_sym.glyph());
-        assert_eq!(PVal::PmSym.glyph(), IgPrim::P_pmsym.glyph());
+        assert_eq!(PVal::Asym.glyph(),  IgPrim::church.glyph());
+        assert_eq!(PVal::Psi.glyph(),   IgPrim::yew.glyph());
+        assert_eq!(PVal::Pm.glyph(),    IgPrim::out.glyph());
+        assert_eq!(PVal::Sym.glyph(),   IgPrim::nun.glyph());
+        assert_eq!(PVal::PmSym.glyph(), IgPrim::or_.glyph());
     }
 
     #[test]
     fn fval_glyphs_match_igprim() {
-        assert_eq!(FVal::Ell.glyph(),  IgPrim::F_ell.glyph());
-        assert_eq!(FVal::Eth.glyph(),  IgPrim::F_eth.glyph());
-        assert_eq!(FVal::Hbar.glyph(), IgPrim::F_hbar.glyph());
+        assert_eq!(FVal::Ell.glyph(),  IgPrim::age.glyph());
+        assert_eq!(FVal::Eth.glyph(),  IgPrim::they.glyph());
+        assert_eq!(FVal::Hbar.glyph(), IgPrim::peep.glyph());
     }
 
     #[test]
     fn kval_glyphs_match_igprim() {
-        assert_eq!(KVal::Fast.glyph(), IgPrim::K_fast.glyph());
-        assert_eq!(KVal::Mod.glyph(),  IgPrim::K_mod.glyph());
-        assert_eq!(KVal::Slow.glyph(), IgPrim::K_slow.glyph());
-        assert_eq!(KVal::Trap.glyph(), IgPrim::K_trap.glyph());
-        assert_eq!(KVal::MBL.glyph(),  IgPrim::K_mbl.glyph());
+        assert_eq!(KVal::Fast.glyph(), IgPrim::yea.glyph());
+        assert_eq!(KVal::Mod.glyph(),  IgPrim::loll.glyph());
+        assert_eq!(KVal::Slow.glyph(), IgPrim::egg.glyph());
+        assert_eq!(KVal::Trap.glyph(), IgPrim::on.glyph());
+        assert_eq!(KVal::MBL.glyph(),  IgPrim::air.glyph());
     }
 
     #[test]
     fn gval_glyphs_match_igprim() {
-        assert_eq!(GVal::Beth.glyph(),  IgPrim::G_beth.glyph());
-        assert_eq!(GVal::Gimel.glyph(), IgPrim::G_gimel.glyph());
-        assert_eq!(GVal::Aleph.glyph(), IgPrim::G_aleph.glyph());
+        assert_eq!(GVal::Beth.glyph(),  IgPrim::bib.glyph());
+        assert_eq!(GVal::Gimel.glyph(), IgPrim::thigh.glyph());
+        assert_eq!(GVal::Aleph.glyph(), IgPrim::ice.glyph());
     }
 
     #[test]
     fn gmval_glyphs_match_igprim() {
-        assert_eq!(GmVal::And.glyph(),   IgPrim::C_and.glyph());
-        assert_eq!(GmVal::Or.glyph(),    IgPrim::C_or.glyph());
-        assert_eq!(GmVal::Seq.glyph(),   IgPrim::C_seq.glyph());
-        assert_eq!(GmVal::Broad.glyph(), IgPrim::C_broad.glyph());
+        assert_eq!(GmVal::And.glyph(),   IgPrim::vow.glyph());
+        assert_eq!(GmVal::Or.glyph(),    IgPrim::gag.glyph());
+        assert_eq!(GmVal::Seq.glyph(),   IgPrim::measure.glyph());
+        assert_eq!(GmVal::Broad.glyph(), IgPrim::ooze.glyph());
     }
 
     #[test]
     fn phival_glyphs_match_igprim() {
-        assert_eq!(PhiVal::Sub.glyph(),      IgPrim::𐑢.glyph());
-        assert_eq!(PhiVal::C.glyph(),         IgPrim::Phi_crit.glyph());
-        assert_eq!(PhiVal::CComplex.glyph(),  IgPrim::𐑮.glyph());
-        assert_eq!(PhiVal::EP.glyph(),        IgPrim::Phi_ep.glyph());
-        assert_eq!(PhiVal::Super.glyph(),     IgPrim::Phi_super.glyph());
+        assert_eq!(PhiVal::Sub.glyph(),      IgPrim::woe.glyph());
+        assert_eq!(PhiVal::C.glyph(),         IgPrim::monad.glyph());
+        assert_eq!(PhiVal::CComplex.glyph(),  IgPrim::roar.glyph());
+        assert_eq!(PhiVal::EP.glyph(),        IgPrim::err.glyph());
+        assert_eq!(PhiVal::Super.glyph(),     IgPrim::haha.glyph());
     }
 
     #[test]
     fn hval_glyphs_match_igprim() {
-        assert_eq!(HVal::M0.glyph(),  IgPrim::H0.glyph());
-        assert_eq!(HVal::M1.glyph(),  IgPrim::H1.glyph());
-        assert_eq!(HVal::M2.glyph(),  IgPrim::H2.glyph());
-        assert_eq!(HVal::Inf.glyph(), IgPrim::H_inf.glyph());
+        assert_eq!(HVal::M0.glyph(),  IgPrim::fee.glyph());
+        assert_eq!(HVal::M1.glyph(),  IgPrim::kick.glyph());
+        assert_eq!(HVal::M2.glyph(),  IgPrim::sure.glyph());
+        assert_eq!(HVal::Inf.glyph(), IgPrim::wool.glyph());
     }
 
     #[test]
     fn sval_glyphs_match_igprim() {
-        assert_eq!(SVal::One.glyph(),    IgPrim::S_11.glyph());
-        assert_eq!(SVal::Many.glyph(),   IgPrim::S_nn.glyph());
-        assert_eq!(SVal::Hetero.glyph(), IgPrim::S_nm.glyph());
+        assert_eq!(SVal::One.glyph(),    IgPrim::hung.glyph());
+        assert_eq!(SVal::Many.glyph(),   IgPrim::so.glyph());
+        assert_eq!(SVal::Hetero.glyph(), IgPrim::up.glyph());
     }
 
     #[test]
     fn oval_glyphs_match_igprim() {
-        assert_eq!(OVal::Trivial.glyph(), IgPrim::Omega_0.glyph());
-        assert_eq!(OVal::Z2.glyph(),      IgPrim::Omega_z2.glyph());
-        assert_eq!(OVal::Z.glyph(),       IgPrim::Omega_z.glyph());
-        assert_eq!(OVal::NA.glyph(),      IgPrim::Omega_na.glyph());
+        assert_eq!(OVal::Trivial.glyph(), IgPrim::awe.glyph());
+        assert_eq!(OVal::Z2.glyph(),      IgPrim::oak.glyph());
+        assert_eq!(OVal::Z.glyph(),       IgPrim::ah.glyph());
+        assert_eq!(OVal::NA.glyph(),      IgPrim::zoo.glyph());
     }
 }

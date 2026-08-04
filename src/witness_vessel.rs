@@ -67,18 +67,18 @@ fn tuple_prim(ig: &IgTuple, glyph: &str) -> Option<IgPrim> {
 
 /// Every IgPrim value, for glyph → ordinal resolution.
 const ALL_VALUES: [IgPrim; 49] = [
-    IgPrim::D_odot, IgPrim::D_wedge, IgPrim::D_triangle, IgPrim::D_infty,
-    IgPrim::T_odot, IgPrim::T_net, IgPrim::T_in, IgPrim::T_bowtie, IgPrim::T_boxtimes,
-    IgPrim::R_lr, IgPrim::R_dagger, IgPrim::R_cat, IgPrim::R_super,
-    IgPrim::P_pmsym, IgPrim::P_sym, IgPrim::P_pm, IgPrim::P_psi, IgPrim::P_asym,
-    IgPrim::F_hbar, IgPrim::F_ell, IgPrim::F_eth,
-    IgPrim::K_trap, IgPrim::K_slow, IgPrim::K_mod, IgPrim::K_fast, IgPrim::K_mbl,
-    IgPrim::G_aleph, IgPrim::G_beth, IgPrim::G_gimel,
-    IgPrim::C_seq, IgPrim::C_and, IgPrim::C_or, IgPrim::C_broad,
-    IgPrim::Phi_crit, IgPrim::𐑮, IgPrim::Phi_ep, IgPrim::𐑢, IgPrim::Phi_super,
-    IgPrim::H_inf, IgPrim::H2, IgPrim::H1, IgPrim::H0,
-    IgPrim::S_nm, IgPrim::S_nn, IgPrim::S_11,
-    IgPrim::Omega_z, IgPrim::Omega_z2, IgPrim::Omega_0, IgPrim::Omega_na,
+    IgPrim::if_, IgPrim::dead, IgPrim::ash, IgPrim::array,
+    IgPrim::are, IgPrim::judge, IgPrim::eat, IgPrim::mime, IgPrim::oil,
+    IgPrim::ian, IgPrim::ear, IgPrim::tot, IgPrim::ado,
+    IgPrim::or_, IgPrim::nun, IgPrim::out, IgPrim::yew, IgPrim::church,
+    IgPrim::peep, IgPrim::age, IgPrim::they,
+    IgPrim::on, IgPrim::egg, IgPrim::loll, IgPrim::yea, IgPrim::air,
+    IgPrim::ice, IgPrim::bib, IgPrim::thigh,
+    IgPrim::measure, IgPrim::vow, IgPrim::gag, IgPrim::ooze,
+    IgPrim::monad, IgPrim::roar, IgPrim::err, IgPrim::woe, IgPrim::haha,
+    IgPrim::wool, IgPrim::sure, IgPrim::kick, IgPrim::fee,
+    IgPrim::up, IgPrim::so, IgPrim::hung,
+    IgPrim::ah, IgPrim::oak, IgPrim::awe, IgPrim::zoo,
 ];
 
 /// Ordinal of a Shavian VALUE glyph (e.g. "𐑹" → 5.0).
@@ -135,11 +135,11 @@ pub fn t_seal(u: &Dialect, ig: &IgTuple) -> bool {
 /// Clay_WitnessedClosure.lean / SIC_D12_WitnessVessel.lean and of the
 /// U8-U10 dialect gates.
 pub fn t_ceiling(ig: &IgTuple) -> bool {
-    ig.p.ordinal() <= IgPrim::P_pmsym.ordinal()
-        && ig.f.ordinal() <= IgPrim::F_hbar.ordinal()
-        && ig.k.ordinal() <= IgPrim::K_slow.ordinal()
-        && ig.h.ordinal() <= IgPrim::H_inf.ordinal()
-        && ig.omega.ordinal() <= IgPrim::Omega_z.ordinal()
+    ig.p.ordinal() <= IgPrim::or_.ordinal()
+        && ig.f.ordinal() <= IgPrim::peep.ordinal()
+        && ig.k.ordinal() <= IgPrim::egg.ordinal()
+        && ig.h.ordinal() <= IgPrim::wool.ordinal()
+        && ig.omega.ordinal() <= IgPrim::ah.ordinal()
 }
 
 // ═══════════════════════════════════════════════════════════════

@@ -50,7 +50,7 @@ impl BraidWord {
     fn gram_comp(&self) -> &'static str { match self.generators.len() { 0..=2=>"𐑝",3..=5=>"𐑠",_=>"𐑵" } }
     fn gram_crit(&self) -> &'static str {
         let w = self.topological_spin();
-        if fabs(w)<0.01{"𐑢"}else if fabs(w-0.4)<0.05{"⊙"}else if fabs(w-0.5)<0.05{"𐑻"}else{"𐑣"}
+        if fabs(w)<0.01{"woe"}else if fabs(w-0.4)<0.05{"⊙"}else if fabs(w-0.5)<0.05{"𐑻"}else{"𐑣"}
     }
     fn gram_chir(&self) -> &'static str {
         let w = self.writhe();
