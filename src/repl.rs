@@ -439,6 +439,9 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("fibqc knot [name]        — Jones value for a knot from the census");
                         sprintln!("fibqc winding            — the phase lattice, in windings");
                         sprintln!("fibqc protocol           — show the IMASM braiding protocol report");
+                        sprintln!("fibqc braid <gens...>    — δ: compile a braid word to an IMASM program");
+                        sprintln!("fibqc braid <gens...> close — same, closed (trace closure)");
+                        sprintln!("fibqc tangle <program>   — μ: read an IMASM program back as a braid word");
                         sprintln!("");
                         sprintln!("The circuit compiles as ONE unitary, so the error is incurred once");
                         sprintln!("rather than accumulating gate by gate. Several braid words sit at the");
@@ -535,6 +538,72 @@ pub fn repl(k: &mut Kernel) {
                     }
                     "protocol" => {
                         sprint!("{}", crate::braid_protocol::report());
+                    }
+                    // δ and μ of the braid dual, reachable at last. The pair was written
+                    // correctly and had no verb, so nothing could call it and nothing could
+                    // close it. μ∘δ = id is gated in the lib tests, on the generator word:
+                    // δ chooses a depth path between crossings and μ does not record which,
+                    // so the identity is on the braid, which is the object, and not on the
+                    // program, which is one presentation of it.
+                    "braid" => {
+                        let tail: alloc::vec::Vec<&str> = parts.collect();
+                        let joined = tail.join(" ");
+                        let rest: alloc::vec::Vec<&str> = joined.split_whitespace().collect();
+                        let close = rest.last().map(|s| *s == "close").unwrap_or(false);
+                        let gens: alloc::vec::Vec<i32> = rest
+                            .iter()
+                            .filter(|s| **s != "close")
+                            .filter_map(|s| s.parse::<i32>().ok())
+                            .collect();
+                        if gens.is_empty() && !rest.is_empty() {
+                            sprintln!("fibqc braid: give signed generators, e.g. `fibqc braid 1 2 -1`.");
+                        } else {
+                            let prog = crate::braid_protocol::braid_to_imasm(&gens, 1, close);
+                            sprintln!("braid word: {:?}{}", gens, if close { " (closed)" } else { "" });
+                            sprint!("IMASM: ");
+                            for tok in prog.iter() {
+                                sprint!("{} ", crate::braid_protocol::token_name(tok));
+                            }
+                            sprintln!("");
+                            match crate::braid_protocol::read_tangle(&prog, gens.len() + 2, 1) {
+                                Ok(r) => sprintln!(
+                                    "μ∘δ: {} — writhe {}, {} crossings, closes {}",
+                                    if r.generators == gens { "id" } else { "NOT id" },
+                                    r.writhe, r.crossings, r.closes
+                                ),
+                                Err(e) => sprintln!("μ refused: {}", e),
+                            }
+                        }
+                    }
+                    "tangle" => {
+                        let tail: alloc::vec::Vec<&str> = parts.collect();
+                        let joined = tail.join(" ");
+                        let names: alloc::vec::Vec<&str> = joined.split_whitespace().collect();
+                        let mut prog = alloc::vec::Vec::new();
+                        let mut bad = None;
+                        for n in names.iter() {
+                            match crate::braid_protocol::parse_token_name(n) {
+                                Some(tok) => prog.push(tok),
+                                None => { bad = Some(*n); break; }
+                            }
+                        }
+                        if let Some(b) = bad {
+                            sprintln!("fibqc tangle: '{}' is not a token name. Try `imasm ref`.", b);
+                        } else if prog.is_empty() {
+                            sprintln!("fibqc tangle: give an IMASM program, e.g. `fibqc tangle FSPLIT AFWD FFUSE`.");
+                        } else {
+                            match crate::braid_protocol::read_tangle(&prog, prog.len() + 2, 1) {
+                                Ok(r) => {
+                                    sprintln!("braid word: {:?}", r.generators);
+                                    sprintln!(
+                                        "writhe {}, {} crossings, closes {}, markov-closed {}",
+                                        r.writhe, r.crossings, r.closes, r.is_markov_closed
+                                    );
+                                    sprintln!("depth profile: {:?}", r.depth_profile);
+                                }
+                                Err(e) => sprintln!("μ refused: {}", e),
+                            }
+                        }
                     }
                     other => sprintln!("fibqc: unknown subcommand '{}'. Try `fibqc help`.", other),
                 }

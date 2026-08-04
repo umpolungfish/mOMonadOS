@@ -11,6 +11,14 @@ imasm_core = { path = "../MoDoT/imasm_core", default-features = false }
 name = "momonados"
 path = "src/main.rs"
 
+# The kernel is a bare-metal binary and had no host target at all, so the
+# braid_protocol dual pair could never be run, let alone closed. This lib
+# carries only the portable modules; main.rs declares its own tree and does not
+# see it, so the kernel build is unaffected.
+[lib]
+name = "momonados"
+path = "src/lib.rs"
+
 [features]
 vita = []
 # Run on any host that has Rust, without QEMU and without bare metal. The
