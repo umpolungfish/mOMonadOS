@@ -50,6 +50,8 @@ pub mod sidechain;
 pub mod ligand;
 pub mod ligand_imasm;
 pub mod decay_chain;
+pub mod orbital;
+pub mod quark;
 
 // ── SINGLE SOURCE OF TRUTH: re-export IgPrim from the grammar kernel ──
 // ALL primitive values across the entire codebase are this ONE type.
