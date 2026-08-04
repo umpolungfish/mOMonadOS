@@ -27,8 +27,8 @@ cp "$ELF" "$OUT/momonados"
 # Copy source files for inspection and compilation
 cp -r src "$OUT/src"
 mkdir -p "$OUT/imasm_core"
-cp -r ../2m3iosis/imasm_core/src "$OUT/imasm_core/src"
-cp ../2m3iosis/imasm_core/Cargo.toml "$OUT/imasm_core/Cargo.toml"
+cp -r ../MoDoT/imasm_core/src "$OUT/imasm_core/src"
+cp ../MoDoT/imasm_core/Cargo.toml "$OUT/imasm_core/Cargo.toml"
 
 # Copy config and build files
 cp Cargo.lock "$OUT/"
@@ -39,7 +39,7 @@ mkdir -p "$OUT/.cargo"
 cp .cargo/config.toml "$OUT/.cargo/"
 
 # Adjust Cargo.toml dependency path for portable relative build
-sed 's|path = "../2m3iosis/imasm_core"|path = "imasm_core"|g' Cargo.toml > "$OUT/Cargo.toml"
+sed 's|path = "../MoDoT/imasm_core"|path = "imasm_core"|g' Cargo.toml > "$OUT/Cargo.toml"
 
 # Copy Lean formalization from p4rakernel/p4ramill
 mkdir -p "$OUT/lean"
