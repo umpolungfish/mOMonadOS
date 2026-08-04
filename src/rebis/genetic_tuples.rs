@@ -310,8 +310,8 @@ impl CritVal {
                      CritVal::Haha => "super" }
     }
     pub fn glyph(&self) -> &'static str {
-        match self { CritVal::Woe => "woe", CritVal::Monad => "\u{2299}",
-                     CritVal::Roar => "roar", CritVal::Err => "𐑻",
+        match self { CritVal::Woe => "𐑢", CritVal::Monad => "\u{2299}",
+                     CritVal::Roar => "𐑮", CritVal::Err => "𐑻",
                      CritVal::Haha => "𐑣" }
     }
     pub fn ordinal(&self) -> u8 {

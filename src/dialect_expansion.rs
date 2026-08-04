@@ -143,7 +143,7 @@ pub static ABS_MONARCHY: &[AbsorptionRule] = &[
 
 /// Inverted: trivial values absorb
 pub static ABS_INVERTED: &[AbsorptionRule] = &[
-    AbsorptionRule { prim: "⊙", value: "woe", ops_mask: 7, direction: 0 },
+    AbsorptionRule { prim: "⊙", value: "𐑢", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "◻", value: "𐑷", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊞", value: "𐑙", ops_mask: 7, direction: 0 },
 ];
@@ -1125,7 +1125,7 @@ pub static ABS_EP: &[AbsorptionRule] = &[
 /// Sub-critical absorption: ⊙ absorbs sub-critical (woe) under all ops
 pub static ABS_SUB: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
-    AbsorptionRule { prim: "⊙", value: "woe", ops_mask: 7, direction: 0 }, // absorb sub-critical
+    AbsorptionRule { prim: "⊙", value: "𐑢", ops_mask: 7, direction: 0 }, // absorb sub-critical
     AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 },
 ];
 
@@ -1133,7 +1133,7 @@ pub static ABS_SUB: &[AbsorptionRule] = &[
 pub static ABS_DUAL: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊙", value: "𐑻", ops_mask: 7, direction: 0 },
-    AbsorptionRule { prim: "⊙", value: "woe", ops_mask: 7, direction: 0 },
+    AbsorptionRule { prim: "⊙", value: "𐑢", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 },
 ];
 
