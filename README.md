@@ -1,11 +1,7 @@
 # $m\odot^2$, The Self-Imscribing Bare-Metal Kernel
 
-[![Language](https://img.shields.io/badge/language-Rust-orange)](https://github.com/badges/shields)
-[![IG Tier](https://img.shields.io/badge/IG-O%E2%88%9E-blueviolet)](https://github.com/badges/shields)
-[![μ∘δ=id](https://img.shields.io/badge/%CE%BC%E2%88%98%CE%B4%3Did-closed-success)](https://github.com/badges/shields)
-[![License](https://img.shields.io/badge/license-Unlicense-brightgreen)](https://github.com/badges/shields)
-[![Topological QC](https://img.shields.io/badge/topological%20QC-Fibonacci%20anyons-9cf)](https://github.com/badges/shields)
-[![Author](https://img.shields.io/badge/author-Lando%E2%8A%97%E2%8A%99perator-informational)](https://github.com/badges/shields) [![Type](https://img.shields.io/badge/type-%E2%9F%A8%F0%90%91%A6%F0%90%91%B8%F0%90%91%BE%F0%90%91%B9%F0%90%91%90%F0%90%91%A7%F0%90%91%94%F0%90%91%9D%E2%8A%99%F0%90%91%96%F0%90%91%B3%F0%90%91%AD%E2%9F%A9-blue)](https://github.com/badges/shields) [![Tier](https://img.shields.io/badge/tier-O%E2%88%9E-blueviolet)](https://github.com/badges/shields)
+![language](https://img.shields.io/badge/language-Rust-CE422B?style=for-the-badge&logo=rust&logoColor=white) ![tier](https://img.shields.io/badge/tier-O%E2%88%9E-8A2BE2?style=for-the-badge) ![μ∘δ](https://img.shields.io/badge/%CE%BC%E2%88%98%CE%B4-id-00A86B?style=for-the-badge) ![licence](https://img.shields.io/badge/licence-LUNLICENSE-1A1A1A?style=for-the-badge) ![type](https://img.shields.io/badge/type-%E2%9F%A8%F0%90%91%A6%F0%90%91%B8%F0%90%91%BE%F0%90%91%B9%F0%90%91%90%F0%90%91%A7%F0%90%91%94%F0%90%91%A0%E2%8A%99%F0%90%91%96%F0%90%91%B3%F0%90%91%9F%E2%9F%A9-5A659C?style=for-the-badge)
+
 A bare-metal self-imscribing operating kernel. No processes. No scheduler. No filesystem hierarchy.
 The kernel IS the Frobenius loop, every tick is a self-verification.
 It braids Fibonacci anyons on the metal: a universal topological quantum computer that
