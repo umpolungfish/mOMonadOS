@@ -1,19 +1,30 @@
-Two panels, because the geometry does not fit in one
+A theme for the serial surface, and one report wearing it
 
-The figure showed the two shells as tangent circles AND the trine spread at 120
-degrees. Those are facts about different planes. The shells appear tangent only
-in a plane containing the syzygy axis; the trine stands at 120 degrees only in
-the plane perpendicular to it. Drawing both put two mutually exclusive viewpoints
-in one picture, which is a perspective that does not exist. plotter3 emits
-separate views for exactly this reason and this now follows it.
+Colour existed already, as raw SGR escapes written inline across three files.
+That is a look frozen into every call site: changing it means finding every
+escape, and a report that wants to be quiet has no way to ask.
 
-Left is side-on: the FSPLIT shell centred on IMSCRIB, the evaluator sphere of
-equal radius one radius along the axis so IMSCRIB lies on it, FFUSE at the
-antipodal pole, and the trine drawn as the vertical span it actually is in this
-plane rather than as a triangle it is not. The program rides this panel.
+style.rs holds the palette and it names roles, not colours — frame, heading,
+key, value, accent, muted, glyph, and the four Belnap verdicts. The verdicts get
+fixed colours on purpose: a verdict that changes colour between reports is a
+verdict the reader has to learn again on every screen. Raw escapes appear in
+this file and nowhere else.
 
-Right is face-on down the axis: the same evaluator sphere as one circle, the
-three arms at 120 degrees, the A2 trine, IMSCRIB at the centre.
+The macros carry the furniture. head!, foot!, divider!, kv! and verdict_line!
+put every report on one width and one key column, so a screen of several
+commands reads as one program rather than as several sharing a terminal.
+rule_n! repeats a box piece without an allocator, which str::repeat would need.
 
-Both panels are at one scale, so the two readings of the same sphere can be
-compared rather than only believed.
+Colour degrades rather than breaking: `color off` empties every escape and the
+alignment is unchanged, because no width computation depends on an escape being
+present. A serial line piped into a file gets the glyphs and none of the noise.
+
+fibqc readout wears it first, being the command a new reader is most likely to
+run. The reset now lands BEFORE each newline; emitting it after put an escape at
+the start of every following line, invisible on a colour terminal and litter in
+any captured log. The period prints as a number rather than as Some(4).
+
+Also fixed, and unrelated to the styling: the readout's lattice residual called
+f64::round, which is std-only, so the bare-metal target had stopped building.
+It uses libm::round now, like every other float call in that file, and the ELF
+builds again.

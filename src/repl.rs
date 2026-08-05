@@ -654,6 +654,19 @@ pub fn repl(k: &mut Kernel) {
                     other => sprintln!("fibqc: unknown subcommand '{}'. Try `fibqc help`.", other),
                 }
             }
+            "color" | "colour" => {
+                match parts.next().unwrap_or("") {
+                    "off" | "no" | "0" => {
+                        crate::style::set_colour(false);
+                        sprintln!("colour off — escapes suppressed, alignment unchanged");
+                    }
+                    "on" | "yes" | "1" | "" => {
+                        crate::style::set_colour(true);
+                        sprintln!("colour {}on{}", crate::style::accent(), crate::style::reset());
+                    }
+                    other => sprintln!("color on|off  (got '{}')", other),
+                }
+            }
             "iuft" => {
                 match parts.next().unwrap_or("") {
                     "" | "help" => {

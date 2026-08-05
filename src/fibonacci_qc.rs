@@ -2286,9 +2286,11 @@ pub fn repl_readout(a: u64, n_val: u64) {
     let braid = crate::fibonacci_shor::assemble_shor_braid(n, a, n_val);
     let word = &braid.mod_exp_word;
     let strands = word.iter().map(|g| g.unsigned_abs() as usize).max().unwrap_or(0) + 1;
-    sprintln!("readout: N={} a={} period={:?}  ModExp strands={} gens={}",
-        n_val, a, braid.params.period, strands, word.len());
-    if strands > 14 {
+    head!("one-shot topological readout");
+    kv!("modulus N", "{}", n_val);
+    kv!("base a", "{}", a);
+    kv!("ModExp braid", "{} strands, {} generators", strands, word.len());
+    if strands > 20 {
         sprintln!("  ModExp segment too wide for the kernel heap (V_{} = {} dims);",
             strands, strands);
         sprintln!("  use `fibqc jones <gens...>` on a trimmed word, or read the H/IQFT layers.");
@@ -2298,16 +2300,28 @@ pub fn repl_readout(a: u64, n_val: u64) {
     let vw = winding_of(v);
     let mut turns = libm::atan2(v.im, v.re) / TWO_PI;
     if turns < 0.0 { turns += 1.0; }  // a winding is a turn, not a signed angle
-    let resid = (turns - (turns * 10.0).round() / 10.0).abs();  // vs the native tenths lattice
-    sprintln!("  invariant V(t=1/5)   : {:.6} {:+.6}i   |V|={:.6}", v.re, v.im, v.norm());
-    sprintln!("  phase (ONE SHOT)     : {}/{} winding   (lattice residual {:.2e})",
-        vw.num, vw.den, resid);
-    sprintln!("  period r             : {:?}", braid.params.period);
+    // libm, not the f64 method: `round` is std-only and the kernel builds no_std.
+    let resid = fabs(turns - libm::round(turns * 10.0) / 10.0);  // vs the native tenths lattice
+    divider!();
+    kv!("invariant V(t=1/5)", "{:.6} {:+.6}i", v.re, v.im);
+    kv!("|V|", "{:.6}", v.norm());
+    kv!("phase, ONE SHOT", "{}{}/{}{} winding", crate::style::accent(), vw.num, vw.den, crate::style::reset());
+    kv!("distance to tenths", "{:.2e}", resid);
+    kv!("period r", "{}{}{}", crate::style::accent(),
+        braid.params.period.map(|r| r as i64).unwrap_or(-1), crate::style::reset());
+    divider!();
     if resid < 1e-6 {
-        sprintln!("  readout verdict      : ON LATTICE — the invariant is the winding, exact in one shot");
+        verdict_line!('T');
+        sprintln!("  {}the invariant sits on the lattice: the winding is exact in one shot{}",
+            crate::style::muted(), crate::style::reset());
     } else {
-        sprintln!("  readout verdict      : snapped (invariant off the tenths lattice at this segment width)");
+        verdict_line!('B');
+        sprintln!("  {}off the tenths lattice, as a real mixture of generator{}",
+            crate::style::muted(), crate::style::reset());
+        sprintln!("  {}phases must be; the period rides the braid, not the phase{}",
+            crate::style::muted(), crate::style::reset());
     }
+    foot!();
 }
 
 
@@ -2335,7 +2349,7 @@ pub fn repl_alkahest(a: u64, n_val: u64) {
     let braid = crate::fibonacci_shor::assemble_shor_braid(n, a, n_val);
     let word = &braid.mod_exp_word;
     let strands = word.iter().map(|g| g.unsigned_abs() as usize).max().unwrap_or(0) + 1;
-    if strands > 14 {
+    if strands > 20 {
         sprintln!("alkahest: ModExp segment too wide for the kernel heap (V_{} = {} dims);", strands, strands);
         sprintln!("  use a smaller N, or `fibqc jones <gens...>` on a trimmed word.");
         return;

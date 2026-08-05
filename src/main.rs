@@ -23,6 +23,8 @@ use core::sync::atomic::{AtomicUsize, Ordering};
 use core::alloc::Layout;
 
 mod serial;
+#[macro_use]
+mod style;
 mod belnap;
 mod tokens;
 mod crystal;
