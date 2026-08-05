@@ -84,7 +84,11 @@ pub fn verdict_word(v: char) -> &'static str {
 // One width for every report. A screen where each command picks its own box
 // width reads as several programs sharing a terminal.
 
+/// Report width, and the column the value half of a key/value row starts in.
+/// Both are named because a literal repeated at every call site is a width that
+/// can only be changed by finding all of them.
 pub const W: usize = 66;
+pub const KEY_COL: usize = 22;
 
 pub const TL: &str = "╭";
 pub const TR: &str = "╮";
@@ -102,7 +106,7 @@ macro_rules! rule_n {
     ($piece:expr, $n:expr) => {{
         let mut i = 0usize;
         while i < $n {
-            sprint!("{}", $piece);
+            $crate::sprint!("{}", $piece);
             i += 1;
         }
     }};
@@ -113,15 +117,15 @@ macro_rules! rule_n {
 macro_rules! head {
     ($title:expr) => {{
         let t = $title;
-        sprint!("{}{}{}{} ", $crate::style::frame(), $crate::style::TL,
+        $crate::sprint!("{}{}{}{} ", $crate::style::frame(), $crate::style::TL,
                 $crate::style::H, $crate::style::H);
-        sprint!("{}{}{} ", $crate::style::heading(), t, $crate::style::frame());
+        $crate::sprint!("{}{}{} ", $crate::style::heading(), t, $crate::style::frame());
         // The title's own width is subtracted so every report ends in the same
         // column whatever it is called.
         let used = 4 + t.chars().count() + 1;
         let pad = if $crate::style::W > used { $crate::style::W - used } else { 0 };
         $crate::rule_n!($crate::style::H, pad);
-        sprintln!("{}{}", $crate::style::TR, $crate::style::reset());
+        $crate::sprintln!("{}{}", $crate::style::TR, $crate::style::reset());
     }};
 }
 
@@ -129,9 +133,9 @@ macro_rules! head {
 #[macro_export]
 macro_rules! foot {
     () => {{
-        sprint!("{}{}", $crate::style::frame(), $crate::style::BL);
+        $crate::sprint!("{}{}", $crate::style::frame(), $crate::style::BL);
         $crate::rule_n!($crate::style::H, $crate::style::W - 1);
-        sprintln!("{}{}", $crate::style::BR, $crate::style::reset());
+        $crate::sprintln!("{}{}", $crate::style::BR, $crate::style::reset());
     }};
 }
 
@@ -139,9 +143,9 @@ macro_rules! foot {
 #[macro_export]
 macro_rules! divider {
     () => {{
-        sprint!("{}{}", $crate::style::frame(), $crate::style::TEE_L);
+        $crate::sprint!("{}{}", $crate::style::frame(), $crate::style::TEE_L);
         $crate::rule_n!($crate::style::H, $crate::style::W - 1);
-        sprintln!("{}{}", $crate::style::TEE_R, $crate::style::reset());
+        $crate::sprintln!("{}{}", $crate::style::TEE_R, $crate::style::reset());
     }};
 }
 
@@ -151,16 +155,16 @@ macro_rules! divider {
 macro_rules! kv {
     ($k:expr, $($v:tt)*) => {{
         let k = $k;
-        sprint!("  {}{}{}", $crate::style::key(), k, $crate::style::reset());
+        $crate::sprint!("  {}{}{}", $crate::style::key(), k, $crate::style::reset());
         let n = k.chars().count();
-        let pad = if 22 > n { 22 - n } else { 1 };
+        let pad = if $crate::style::KEY_COL > n { $crate::style::KEY_COL - n } else { 1 };
         $crate::rule_n!(" ", pad);
         // The reset goes BEFORE the newline. Emitting it after put an escape at
         // the start of every following line, which is invisible on a colour
         // terminal and litters any captured log.
-        sprint!("{}", $crate::style::value());
-        sprint!($($v)*);
-        sprintln!("{}", $crate::style::reset());
+        $crate::sprint!("{}", $crate::style::value());
+        $crate::sprint!($($v)*);
+        $crate::sprintln!("{}", $crate::style::reset());
     }};
 }
 
@@ -169,7 +173,7 @@ macro_rules! kv {
 macro_rules! verdict_line {
     ($v:expr) => {{
         let v: char = $v;
-        sprintln!("  {}VERDICT {}{}  {}{}{}",
+        $crate::sprintln!("  {}VERDICT {}{}  {}{}{}",
             $crate::style::bold(), $crate::style::verdict(v), v,
             $crate::style::muted(), $crate::style::verdict_word(v),
             $crate::style::reset());

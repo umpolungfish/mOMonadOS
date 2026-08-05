@@ -74,9 +74,10 @@ pub fn repl(k: &mut Kernel) {
     let mut ctx_stack = ContextStack::new();
     let mut ask_paste = crate::ask::AskPaste::new();
 
-    sprintln!("Type '?' for menu, 'help' for categories, Tab to complete.");
-    sprintln!("Kernel ask: structural dry-run (serial). Full wet-run (files, Gemini-length answers):");
-    sprintln!("  host: ./ask --file path | ./ask --ask \"…\" | ./ask -i   (no Python)");
+    sprintln!("   {}ask{} runs a structural dry-run here; the full wet-run is on the host:",
+        crate::style::key(), crate::style::reset());
+    sprintln!("   {}./ask --file <path> | ./ask --ask \"…\" | ./ask -i{}",
+        crate::style::muted(), crate::style::reset());
     sprintln!();
 
     loop {
@@ -1919,15 +1920,28 @@ Stopped after {} ticks.", ran);
                         }
                     }
                     "list" => {
-                        sprintln!("╔══════════════════════════════════════════════════════════╗");
-                        sprintln!("   ═══ ALL 12 DIALECTS ═══");
-                        for u in 0u8..88u8 {
-                            let marker = if u == k.active_dialect { "★" } else { " " };
-                            sprintln!("  {} {:<3} {:<20} {}     O_∞:{}",
-                                marker, dialect_display(u), dialect_name(u),
-                                dialect_gates(u), dialect_o_inf(u));
+                        // The title said 12 while the loop ran to 88, and the
+                        // bound was written out rather than taken from the one
+                        // place that knows it.
+                        use crate::dialect_expansion::DIALECT_COUNT;
+                        head!("dialects");
+                        for u in 0u8..(DIALECT_COUNT as u8) {
+                            let active = u == k.active_dialect;
+                            let (mark, col) = if active {
+                                ("*", crate::style::accent())
+                            } else {
+                                (" ", crate::style::value())
+                            };
+                            sprintln!("  {}{} {:<3} {:<20}{} {}{}{}  {}O_∞ {}{}",
+                                col, mark, dialect_display(u), dialect_name(u),
+                                crate::style::reset(),
+                                crate::style::muted(), dialect_gates(u), crate::style::reset(),
+                                crate::style::muted(), dialect_o_inf(u), crate::style::reset());
                         }
-                        sprintln!("╚══════════════════════════════════════════════════════════╝");
+                        divider!();
+                        sprintln!("  {}{} dialects, active marked{}",
+                            crate::style::muted(), DIALECT_COUNT, crate::style::reset());
+                        foot!();
                         if k.liminal_target.is_some() {
                             sprintln!("  ⚠ Liminal jump pending. Use 'seal' to commit or 'jump' again to override.");
                         }
@@ -2749,149 +2763,10 @@ fn handle_jump(k: &mut Kernel, rest: &str) {
 
 // ─── Helpers ──────────────────────────────────────────────────
 
-// NOTE: unreferenced. The live help is menu.rs::print_help_topic / GRAMMAR_MENU;
-// additions here are never displayed. Kept only because removing it is a
-// separate decision from the one this comment exists to prevent.
-#[allow(dead_code)]
-fn print_help() {
-    sprintln!("mOMonadOS REPL commands:");
-    sprintln!();
-    sprintln!("══ Execution ══");
-    sprintln!("  {:<30} — run N manual ticks (default 1)", "tick [N]");
-    sprintln!("  {:<30} — run N ticks; no arg = continuous (ESC to stop)", "run [N]");
-    sprintln!("  {:<30} — live terminal HUD, refresh every N ticks (ESC to stop)", "watch [N]");
-    sprintln!("  {:<30} — run N ticks, one per PIT interrupt (ESC to stop)", "timer [N]");
-    sprintln!("  {:<30} — load any program + run continuously", "boot <I–XXVIII>");
-    sprintln!("  {:<30} — load any program by Roman numeral", "load <I–XXVIII>");
-    sprintln!();
-    sprintln!("══ Status ══");
-    sprintln!("  {:<30} — kernel status (tick, IP, stack, fork, frob, halted)", "status");
-    sprintln!("  {:<30} — show loaded program + fork depth", "program");
-    sprintln!("  {:<30} — structural snapshot (sig, tier, period, dialeth, ...)", "snapshot");
-    sprintln!("  {:<30} — ASCII-art token graph with nesting", "graph");
-    sprintln!("  {:<30} — B4 memory heatmap with color blocks", "heatmap [start] [n]");
-    sprintln!("  {:<30} — dump B4 memory", "memory [start] [n]");
-    sprintln!("  {:<30} — show R0-R7", "registers");
-    sprintln!("  {:<30} — ⊥ hop: read snapshot through the R1↔R2 mirror", "arev [test]");
-    sprintln!("  {:<30} — stack depth", "stack");
-    sprintln!();
-    sprintln!("══ Program Loading ══");
-    sprintln!("  {:<30} — list all programs (I–XXVIII)", "list");
-    sprintln!("  {:<30} — load canonical program", "canonical <I–XII>");
-    sprintln!("  {:<30} — load continuous program", "continuous <1–4>");
-    sprintln!("  {:<30} — load novel program (XVII–XIX)", "novel <1–3>");
-    sprintln!("  {:<30} — load shunted program (XX–XXVIII)", "shunt <1–9>");
-    sprintln!();
-    sprintln!("══ Crystal FS ══");
-    sprintln!("  {:<30} — decode address to 12-tuple", "crystal <addr>");
-    sprintln!("  {:<30} — store entry", "crystal store <n> [d]");
-    sprintln!("  {:<30} — retrieve by name", "crystal name <n>");
-    sprintln!("  {:<30} — list stored entries", "crystal find");
-    sprintln!();
-    sprintln!("══ Grammar Bridges ══");
-    sprintln!("  {:<32} — IG tuple + crystal address", "ig");
-    sprintln!("  {:<32} — nearest-catalog classification", "classify");
-    sprintln!("  {:<32} — Frobenius harness status (closed/open ratio)", "frob");
-    sprintln!("  {:<32} — Hebrew glyph encoding + gematria", "aleph <Hebrew word>");
-    sprintln!("  {:<32} — Belnap Shor pipeline (N=15, N=21)", "shor");
-    sprintln!("  {:<32} — Fibonacci anyon QC: verify | compile <gates> | jones | knot | winding", "fibqc <action>");
-    sprintln!("  {:<32} — walk an IMASM word around its ROTAT orbit", "cycle <word>");
-    sprintln!("  {:<32} — where the weight moves through an IMASM word", "weight <word>");
-    sprintln!("  {:<32} — was a count cleared with nothing banked?", "banked <word>");
-    sprintln!("  {:<32} — every one-glyph repair for an exposed word", "insert <word>");
-    sprintln!("  {:<32} — transitions counted on the ring, closing edge included", "trans <word>");
-    sprintln!("  {:<32} — IUFT QC gates: gate|distance|list", "iuft <action>");
-    sprintln!("  {:<32} — Riemann Hypothesis bridge", "rh");
-    sprintln!("  {:<32} — Yang-Mills mass gap bridge", "ym");
-    sprintln!("  {:<32} — Temporal logic bridge", "temp");
-    sprintln!("  {:<32} — Category theory bridge", "cat");
-    sprintln!("  {:<32} — distance|meet|join|tensor vs ZFC baseline", "algebra <op>");
-    sprintln!("  {:<32} — promotions | entry <name> (any catalog system)", "cl8nk <action> [name]");
-    sprintln!("  {:<32} — consciousness score (dual-gate)", "cscore");
-    sprintln!("  {:<32} — SIC-POVM d=12 identity (3 lattice proofs)", "sic");
-    sprintln!("  {:<32} — Triple Frame vN superoperator algebra: report|verify|cycle|bridge", "triple [subcmd]");
-    sprintln!("  {:<32} — entropy experiment: ΔS vs tier promotion", "entropy [tier|transition]");
-    sprintln!("  {:<32} — d=12 SIC-POVM Phase VI: tower,magnitudes,orbits,existence,duallink,z0", "d12 [subcmd]");
-    sprintln!("  {:<32} — d=2048 moduli tower ascent: tower,redei,grammar,pari,next", "d2048 [subcmd]");
-    sprintln!("  {:<32} — witness-vessel transport: Clay payloads x 88 dialects, frob-gated", "vessel [run]");
-    sprintln!("  {:<32} — manuscript spine: PROVE→UNIFY→PORT × vessel (no Python)", "spine [run|lean]");
-    sprintln!("  {:<32} — kernel structural ask (dry). Full wet: host ./ask --file| -i", "ask [opts] <question>");
-    sprintln!("  {:<32} — Clay Millennium structural status (machine-checked)", "clay");
-    #[cfg(feature = "vita")]
-    sprintln!("  {:<32} — one certified turn from the on-board vae_vita trunk", "vita [seed] [temp]");
-    sprintln!();
-    sprintln!("══ Rebis (Red-Hot Rebis) ══");
-    sprintln!("  {:<34} — codon→AA or AA→codons (bidirectional)", "rebis codon <XXX|AA>");
-    sprintln!("  {:<32} — Clay witness IMASM programs (BSD/Hodge/YM)", "clay witness <problem>");
-    sprintln!("  {:<34} — gene→protein pipeline (DNA→mRNA→AA)", "rebis translate <DNA>");
-    sprintln!("  {:<34} — protein→mRNA→DNA (reverse pipeline)", "rebis reverse <Prot>");
-    sprintln!("  {:<34} — Frobenius filtration (64 codons, power-law)", "rebis frob");
-    sprintln!("  {:<34} — 7-stage genetic code verification", "rebis genetics");
-    sprintln!("  {:<34} — Belnap hadron analysis (p, n, π+)", "rebis hadron");
-    sprintln!("  {:<34} — serpent rod motif analysis", "rebis serpent [name]");
-    sprintln!("  {:<34} — DNA/RNA->folded protein (SerpentRod)", "rebis fold <DNA|RNA> [mito]");
-    sprintln!("  {:<34} — IG promotion pipeline", "rebis pipeline [src]");
-    sprintln!("  {:<34} — codon stratum counts", "rebis strata");
-    sprintln!("  {:<34} — genetic ParaASM programs", "rebis asm [prog]");
-    sprintln!("  {:<34} — 7-stage generative tuple pipeline", "rebis tuples <DNA>");
-    sprintln!("  {:<34} — CLU power-law clustering", "rebis clu walk|verify");
-    sprintln!("  {:<34} — orbital occupancy as Belnap FOUR, Pauli ceiling", "rebis orbital");
-    sprintln!("  {:<34} — quark colour as Belnap FIVE, confinement", "rebis quark");
-    sprintln!("  {:<34} — exotic hadron Frobenius verification", "rebis exotic");
-    sprintln!("  {:<34} — PDB structure validation", "rebis pdb validate|..");
-    sprintln!("  {:<34} — antibody CDR design", "rebis antibody epi|des");
-    sprintln!("  {:<34} — IG material forge & metamaterials", "rebis material forge|..");
-    sprintln!("  {:<34} — biological sim (tissue, telomere)", "rebis bio");
-    sprintln!("  {:<34} — therapeutics (chemo, pill, antidote)", "rebis tx");
-    sprintln!();
-    sprintln!("══ cr3echrz — Theorem Operationalization ══");
-    sprintln!("  {:<34} — list all theorems + p4rakernel + vault", "cr3 --list");
-    sprintln!("  {:<34} — list 281 vault ob3ects", "cr3 --list-ob3ects");
-    sprintln!("  {:<34} — collatz|goldbach|three_body|burnside|...", "cr3 <theorem> [params]");
-    sprintln!("  {:<34} — Collatz 3n+1 (e.g. cr3 collatz 27)", "cr3 collatz <seed>");
-    sprintln!("  {:<34} — Goldbach partitions (e.g. cr3 goldbach 100)", "cr3 goldbach <n>");
-    sprintln!("  {:<34} — Three-Body figure-8 orbit", "cr3 three_body");
-    sprintln!("  {:<34} — Burnside B(m,n) finiteness", "cr3 burnside <gens> <exp>");
-    sprintln!("  {:<34} — Erdős–Straus 4/n decomposition", "cr3 erdos_straus <n>");
-    sprintln!("  {:<34} — Inverse Galois realizability", "cr3 inverse_galois <group>");
-    sprintln!("  {:<34} — Baum–Connes assembly map", "cr3 baum_connes <class>");
-    sprintln!("  {:<34} — Belnap+Frobenius 13-step bootstrap", "p4ra <module> [params]");
-    sprintln!("  {:<34} — list p4rakernel modules", "p4ra --list");
-    sprintln!("  {:<34} — burnside|connes|erdos_straus|goldbach|...", "p4ra <module>");
-    sprintln!();
-    sprintln!("══ Cross-Dialect Navigation (Phase 8) ══");
-    sprintln!("══ Ruleset / Dialect ══");
-    sprintln!("  {:<36} — show active ruleset", "ruleset show");
-    sprintln!("  {:<36} — list all 88 dialects (★ = active)", "ruleset list");
-    sprintln!("  {:<36} — invariant check (live snapshot)", "ruleset verify");
-    sprintln!("  {:<36} — invariant check (named catalog entry)", "ruleset verify <name>");
-    sprintln!("  {:<36} — cross-dialect jump", "jump <U> using <compound>");
-    sprintln!("  {:<36} — probe without IFIX seal", "jump <U> using <c> --liminal");
-    sprintln!("  {:<36} — two-stage jump", "jump <U> via <V> using <c1> <c2>");
-    sprintln!("  {:<36} — IFIX commit to current ruleset", "seal");
-    sprintln!("  <U> = U_0–U_11 or U₀–U₁₁    <compound> = see 'compound list'");
-    sprintln!("  {:<36} — tensor under active absorption", "tensor <compound_a> <compound_b>");
-    sprintln!("  {:<36} — meet under active absorption", "meet <compound_a> <compound_b>");
-    sprintln!("  {:<36} — test absorption rule", "absorb_test <a> <b> <prim> <op>");
-    sprintln!("  {:<36} — IG tuple under active ruleset", "whoami --ruleset");
-    sprintln!("  {:<36} — Frobenius fixed-point identity check", "whoami --frobenius");
-    sprintln!("  {:<36} — list all absorption rules", "absorption show");
-    sprintln!("  {:<36} — T-constitution pass/fail report", "tstatus");
-    sprintln!("  {:<36} — list 11 diaschizic compounds", "compound list");
-    sprintln!("  {:<36} — show compound tuple + IMASM", "compound show <name>");
-    sprintln!("  {:<36} — load compound IMASM into buffer", "compound load <name>");
-    sprintln!();
-    sprintln!("══ ParaASM ══");
-    sprintln!("  {:<36} — dialetheic alignment + measurement tests", "psm test");
-    sprintln!("  {:<36} — Frobenius identity cycle (ENGAGR→FSPLIT→FFUSE→HALT)", "psm frob");
-    sprintln!("  {:<36} — kernel-state B3 invariant loop", "psm kernel");
-    sprintln!("  {:<36} — inline ParaASM program (; separator)", "psm load <prog>");
-    sprintln!();
-    sprintln!("  {:<36} — exit (μ∘δ=id)", "halt/quit");
-    sprintln!();
-    sprintln!("Control flow: FSPLIT=fork  FFUSE=join  EVALT/EVALF=branch");
-    sprintln!("              TANCH=halt  VINIT=source  IMSCRIB=self-loop");
-}
+/// Section headings inside the long reports. Named once so the whole listing
+/// moves with the theme rather than by search-and-replace across 31 sites.
+fn style_section() -> &'static str { crate::style::heading() }
+
 fn print_status(k: &Kernel) {
     let tier = k.snapshot.map(|s| s.tier_name()).unwrap_or("?");
     sprintln!("╔══════════════════════════════════════╗");
@@ -3074,7 +2949,7 @@ fn name_hash(name: &str) -> usize {
 
 fn print_ym() {
     use para_ym::*;
-    sprintln!("══ Yang-Mills Mass Gap ══");
+    sprintln!("  {}Yang-Mills Mass Gap{}", style_section(), crate::style::reset());
     sprintln!("  gap exists:    {}", if ym_gap_exists() { "PASS" } else { "FAIL" });
     sprintln!("  not dialetheic: {}", if ym_gap_not_dialetheic() { "PASS" } else { "FAIL" });
     sprintln!("  vacuum canon:  {}", if ym_vacuum_canonical() { "PASS" } else { "FAIL" });
@@ -3087,7 +2962,7 @@ fn print_ym() {
 }
 fn print_temporal() {
     use para_temporal::*;
-    sprintln!("══ Temporal Logic ══");
+    sprintln!("  {}Temporal Logic{}", style_section(), crate::style::reset());
     sprintln!("  B fixed point: {}", if b_temporal_fixed() { "PASS" } else { "FAIL" });
     sprintln!("  next involution: {}", if next_involution() { "PASS" } else { "FAIL" });
     sprintln!("  B absorbs until: {}", if b_absorbs_until() { "PASS" } else { "FAIL" });
@@ -3095,7 +2970,7 @@ fn print_temporal() {
 }
 fn print_cat() {
     use para_category::*;
-    sprintln!("══ Category Theory ══");
+    sprintln!("  {}Category Theory{}", style_section(), crate::style::reset());
     sprintln!("  N initial:    {}", if n_initial() { "PASS" } else { "FAIL" });
     sprintln!("  T terminal:   {}", if t_terminal() { "PASS" } else { "FAIL" });
     sprintln!("  B zero:       {}", if b_zero() { "PASS" } else { "FAIL" });
@@ -3108,7 +2983,7 @@ fn print_rh() {
     use crate::belnap::B4;
     use para_rh::*;
 
-    sprintln!("══ Riemann Hypothesis Bridge ══");
+    sprintln!("  {}Riemann Hypothesis Bridge{}", style_section(), crate::style::reset());
     sprintln!("  involution:     {}", if rh_involution_identity() { "PASS" } else { "FAIL" });
     sprintln!("  fixed point:    {}", if rh_frobenius_fixed_point() { "PASS" } else { "FAIL" });
     sprintln!("  belnap RH:      {}", if rh_belnap_statement() { "PASS" } else { "FAIL" });
@@ -3136,7 +3011,7 @@ fn print_shor() {
     use crate::belnap::B4;
     use belnap_shor::*;
 
-    sprintln!("══ Belnap Shor Pipeline ══");
+    sprintln!("  {}Belnap Shor Pipeline{}", style_section(), crate::style::reset());
 
     sprintln!("── SIC-POVM Axioms ──");
     sprintln!("  verify: {}", if verify_sic_povm() { "PASS" } else { "FAIL" });
@@ -3173,7 +3048,7 @@ fn print_shor_phase(n_val: u64, a_val: u64) {
 
     if n_val == 0 || a_val == 0 {
         // Default: show phase-augmented analysis for canonical cases
-        sprintln!("══ Phase-Augmented Belnap Shor (Problems 1-2 Solution) ══");
+        sprintln!("  {}Phase-Augmented Belnap Shor (Problems 1-2 Solution){}", style_section(), crate::style::reset());
         sprintln!();
         sprintln!("  The phase-augmented model adds complex phase to B4 lattice.");
         sprintln!("  B-bias measurement cost = 2 + |sin(π·phase)|");
@@ -3212,7 +3087,7 @@ fn print_shor_ring(n_val: u64, a_val: u64) {
     use crate::belnap_ring_shor::{verify_period_full, Sic2048Bridge, period_to_glyph_word};
 
     if n_val == 0 || a_val == 0 {
-        sprintln!("══ IMASM Ring Walk Period Verification (Problem 4) ══");
+        sprintln!("  {}IMASM Ring Walk Period Verification (Problem 4){}", style_section(), crate::style::reset());
         sprintln!();
         let sic = Sic2048Bridge::new();
         sprintln!("  d=2048 SIC Bridge:");
@@ -3242,7 +3117,7 @@ fn print_shor_fib(n_val: u64, a_val: u64) {
     use crate::fibonacci_shor::{assemble_shor_braid, certify_advantage, ShorCircuitParams, strands_for_qubits, estimate_braid_length};
 
     if n_val == 0 || a_val == 0 {
-        sprintln!("══ Fibonacci Anyon Braid Compiler for Shor (Problem 3) ══");
+        sprintln!("  {}Fibonacci Anyon Braid Compiler for Shor (Problem 3){}", style_section(), crate::style::reset());
         sprintln!();
         for (n_q, a, N) in &[(4usize, 7u64, 15u64), (5, 5, 21), (8, 2, 35)] {
             let p = ShorCircuitParams::new(*n_q, *a, *N);
@@ -3278,7 +3153,7 @@ fn print_shor_integrated(n_val: u64, a_val: u64) {
     use crate::belnap_shor::run_belnap_shor_output;
 
     if n_val == 0 || a_val == 0 {
-        sprintln!("══ Integrated Shor Pipeline (All 4 Problems) ══");
+        sprintln!("  {}Integrated Shor Pipeline (All 4 Problems){}", style_section(), crate::style::reset());
         sprintln!();
         for (N, a) in &[(15u64, 7u64), (21, 5), (35, 2)] {
             let r = run_integrated_shor(*N, *a);
@@ -3403,7 +3278,7 @@ fn print_shor_gap(n_val: u64, a_val: u64) {
 
     if n_val == 0 || a_val == 0 {
         // Default: show gap for canonical cases
-        sprintln!("══ Belnap Shor Coherence Gap Analysis ══");
+        sprintln!("  {}Belnap Shor Coherence Gap Analysis{}", style_section(), crate::style::reset());
         sprintln!();
         let cases = [(4usize, 7u64, 15u64, 4u64), (5, 5, 21, 6), (6, 2, 35, 12), (7, 2, 77, 30)];
         sprintln!("  {:<6} {:<6} {:<6} {:<10} {:<10} {:<8}", "N", "a", "r", "belnapCost", "2r", "gap");
@@ -3601,7 +3476,7 @@ fn print_cl8nk(action: &str, name: &str) {
     match action {
         "promotions" | "promo" => {
             let result = generate_promotions();
-            sprintln!("══ CL8NK Promotion Ladder ══");
+            sprintln!("  {}CL8NK Promotion Ladder{}", style_section(), crate::style::reset());
             sprintln!("  ZFC (O₀) → ZFCₜ (O₂†) → ZFC_fe (O_∞) → CLINK L8 (O_∞⁺)");
             sprintln!("  Total promotions: {}  d(ZFC, CLINK L8): {:.4}", result.total_promotions, result.total_distance);
             sprintln!();
@@ -3680,7 +3555,7 @@ fn print_cl8nk(action: &str, name: &str) {
                 let cl8 = cl8nk_ref();
                 let (d, conflicts) = tuple_distance_cl8nk(&cat_entry.tuple, &cl8);
                 let tier = assess_tier(&cat_entry.tuple);
-                sprintln!("══ CL8NK Distance ══");
+                sprintln!("  {}CL8NK Distance{}", style_section(), crate::style::reset());
                 sprintln!("  System: {}  →  CLINK L8", cat_entry.name);
                 sprintln!("  d = {:.4}  tier: {}", d, tier);
                 sprintln!("  Conflicts ({}):", conflicts.len());
@@ -3697,7 +3572,7 @@ fn print_cl8nk(action: &str, name: &str) {
         }
         "transcendence" => {
             let tr = compute_transcendence();
-            sprintln!("══ The ◻/∋ Transcendence — CLINK L8 beyond ZFC_fe ══");
+            sprintln!("  {}The ◻/∋ Transcendence — CLINK L8 beyond ZFC_fe{}", style_section(), crate::style::reset());
             sprintln!("  d(ZFC_fe, CLINK L8) = {:.4}", tr.d_zfcfe_to_cl8nk);
             sprintln!();
             sprintln!("  ◻: {} → {}",
@@ -3758,7 +3633,7 @@ fn print_cl8nk(action: &str, name: &str) {
                 let tier = assess_tier(&cat_entry.tuple);
                 let cl8 = cl8nk_ref();
                 let (d, _) = tuple_distance_cl8nk(&cat_entry.tuple, &cl8);
-                sprintln!("══ CL8NK Tier ══");
+                sprintln!("  {}CL8NK Tier{}", style_section(), crate::style::reset());
                 sprintln!("  System: {}  tier: {}  d(CLINK L8): {:.4}", cat_entry.name, tier, d);
             } else {
                 sprintln!("[CL8NK] System '{}' not found in catalog.", lookup_name);
@@ -3766,7 +3641,7 @@ fn print_cl8nk(action: &str, name: &str) {
         }
         "chain" => {
             let layers = chain_analysis();
-            sprintln!("══ CLINK Chain — Distance Ladder from CLINK L8 ══");
+            sprintln!("  {}CLINK Chain — Distance Ladder from CLINK L8{}", style_section(), crate::style::reset());
             sprintln!("  {} layers discovered in catalog", layers.len());
             sprintln!();
             for layer in &layers {
@@ -3776,7 +3651,7 @@ fn print_cl8nk(action: &str, name: &str) {
         }
         "systems" => {
             let systems = catalog_systems();
-            sprintln!("══ CL8NK — Catalog Systems ══");
+            sprintln!("  {}CL8NK — Catalog Systems{}", style_section(), crate::style::reset());
             sprintln!("  {} entries", systems.len());
             for s in &systems {
                 sprintln!("    {}", s);
@@ -3784,7 +3659,7 @@ fn print_cl8nk(action: &str, name: &str) {
         }
         "stats" => {
             let (count, cl8_found, zfcfe_found) = catalog_stats();
-            sprintln!("══ CL8NK — Catalog Statistics ══");
+            sprintln!("  {}CL8NK — Catalog Statistics{}", style_section(), crate::style::reset());
             sprintln!("  Total entries: {}", count);
             sprintln!("  CLINK L8 found: {}", cl8_found);
             sprintln!("  ZFC_fe found: {}", zfcfe_found);
@@ -3846,7 +3721,7 @@ fn print_cscore(k: &Kernel) {
     if let Some(snap) = k.snapshot {
         let ig = IgTuple::from_snapshot(&snap);
         let r = consciousness_eval(&ig);
-        sprintln!("══ Consciousness Score ══");
+        sprintln!("  {}Consciousness Score{}", style_section(), crate::style::reset());
         sprintln!("  C-score:    {:.4}", r.c_score);
         sprintln!("  Gate 1 (⊙): {}", if r.gate1_open { "OPEN" } else { "CLOSED" });
         sprintln!("  Gate 2 (K): {}", if r.gate2_open { "OPEN" } else { "CLOSED" });
@@ -4622,7 +4497,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                     // Forge a material from a 12-glyph IG tuple
                     let predefined = crate::rebis::materials::predefined_novel_materials();
                     if rest.is_empty() {
-                        sprintln!("══ IG Material Forge ══");
+                        sprintln!("  {}IG Material Forge{}", style_section(), crate::style::reset());
                         sprintln!("  Predefined materials:");
                         for (name, _) in &predefined {
                             sprintln!("    {}", name);
@@ -4652,7 +4527,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                 "alloy" => {
                     let mut alloy = crate::rebis::materials::OuroboricAlloy::new(64);
                     let result = alloy.run_mechanical_test(800.0, 40);
-                    sprintln!("══ Ouroboric Alloy (64 grains) ══");
+                    sprintln!("  {}Ouroboric Alloy (64 grains){}", style_section(), crate::style::reset());
                     sprintln!("  Cycles: {}", result.cycles);
                     sprintln!("  Damage fraction: {:.4}", result.damage_fraction);
                     sprintln!("  Final stress: {:.1} MPa", result.final_stress_mpa);
@@ -4718,20 +4593,20 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                 "list" => {
                     use crate::rebis::sidechain;
                     let sc = sidechain::all_sidechains();
-                    sprintln!("══ All 20 AA Sidechains ══");
+                    sprintln!("  {}All 20 AA Sidechains{}", style_section(), crate::style::reset());
                     for (name, _) in sc {
                         sprintln!("  {}", name);
                     }
                     sprintln!();
                     let env = sidechain::all_environments();
-                    sprintln!("══ 4 Environments ══");
+                    sprintln!("  {}4 Environments{}", style_section(), crate::style::reset());
                     for (name, _) in env {
                         sprintln!("  {}", name);
                     }
                 }
                 "frustration" => {
                     let mat = crate::rebis::sidechain::frustration_matrix();
-                    sprintln!("══ Frustration Matrix (min tensor distance per pair) ══");
+                    sprintln!("  {}Frustration Matrix (min tensor distance per pair){}", style_section(), crate::style::reset());
                     sprintln!("  {:<16} {:<16} {:<10}", "Sidechain", "Environment", "Dist");
                     for (sc, env, d) in &mat {
                         sprintln!("  {:<16} {:<16} {:<10.2}", sc, env, d);
@@ -4766,7 +4641,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
             match arg {
                 "groups" | "fg" | "functional" => {
                     let names = crate::rebis::ligand::all_functional_group_names();
-                    sprintln!("══ Functional Groups ══");
+                    sprintln!("  {}Functional Groups{}", style_section(), crate::style::reset());
                     for name in &names {
                         sprintln!("  {}", name);
                     }
@@ -4792,7 +4667,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
             match arg {
                 "list" | "" => {
                     let series = crate::rebis::decay_chain::known_series();
-                    sprintln!("══ Decay Series ══");
+                    sprintln!("  {}Decay Series{}", style_section(), crate::style::reset());
                     for s in &series {
                         let dist = crate::rebis::decay_chain::series_distance(s);
                         sprintln!("  {}  (total IMASM distance: {:.1})", s, dist);
@@ -4823,7 +4698,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                     let mut tel = crate::rebis::biology::OuroboricTelomere::new(5000);
                     let divs: usize = rest.parse().unwrap_or(20);
                     tel.run(divs);
-                    sprintln!("══ Ouroboric Telomere Computation ══");
+                    sprintln!("  {}Ouroboric Telomere Computation{}", style_section(), crate::style::reset());
                     sprintln!("{}", tel.report());
                 }
                 "frob" | _ => {
@@ -4843,7 +4718,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
             match arg {
                 "chemo" => {
                     let chemo = Chemotherapeutic::new("RB-001", "TOP2A", 5.0, 500.0);
-                    sprintln!("══ Chemotherapeutic ══");
+                    sprintln!("  {}Chemotherapeutic{}", style_section(), crate::style::reset());
                     sprintln!("  Name: {}  Target: {}", chemo.name, chemo.target_protein);
                     sprintln!("  Kd: {:.1} nM  Selectivity: {:.0}x", chemo.binding_affinity_nm, chemo.selectivity_ratio);
                     sprintln!("  Delivery: {}  Gate1(⊙): {}", chemo.delivery_mechanism,
@@ -4853,7 +4728,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                 }
                 "pill" => {
                     let pill = crate::rebis::therapeutics::OuroboricPill::new("OP-001", 24.0);
-                    sprintln!("══ Ouroboric Pill ══");
+                    sprintln!("  {}Ouroboric Pill{}", style_section(), crate::style::reset());
                     sprintln!("  Name: {}  Half-life: {:.1}h", pill.name, pill.half_life_hours);
                     sprintln!("  Frobenius: {}  Gate1: {}",
                         if pill.frobenius_verified { "μ∘δ=id" } else { "FAIL" },
@@ -4861,14 +4736,14 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                 }
                 "antidote" => {
                     let antidote = crate::rebis::therapeutics::UniversalAntidote::new("UA-001");
-                    sprintln!("══ Universal Antidote ══");
+                    sprintln!("  {}Universal Antidote{}", style_section(), crate::style::reset());
                     sprintln!("  Name: {}  Targets: {}", antidote.name, antidote.n_targets);
                     sprintln!("  Library diversity: {} clones", antidote.library_diversity);
                     sprintln!("  Frobenius: {}", if antidote.frobenius_verified { "PASS" } else { "OPEN" });
                 }
                 "neuro" => {
                     let nf = crate::rebis::therapeutics::NeurotrophicFactor::new("NF-001", 25.0, 48.0);
-                    sprintln!("══ Neurotrophic Factor ══");
+                    sprintln!("  {}Neurotrophic Factor{}", style_section(), crate::style::reset());
                     sprintln!("  Name: {}  Receptor: {}", nf.name, nf.target_receptor);
                     sprintln!("  EC50: {:.1} nM  Half-life: {:.1}h", nf.ec50_nm, nf.half_life_hours);
                     sprintln!("  Pathway: {}  Frobenius: {}",
@@ -4876,7 +4751,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                 }
                 _ => {
                     let chemo = Chemotherapeutic::new("RB-001", "TOP2A", 5.0, 500.0);
-                    sprintln!("══ Therapeutics ══");
+                    sprintln!("  {}Therapeutics{}", style_section(), crate::style::reset());
                     sprintln!("  Chemotherapeutic: {} → {}  Kd={:.1}nM frob={}",
                         chemo.name, chemo.target_protein, chemo.binding_affinity_nm,
                         if chemo.verify() { "PASS" } else { "FAIL" });

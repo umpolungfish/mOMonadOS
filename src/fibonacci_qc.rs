@@ -23,6 +23,15 @@ use alloc::string::String;
 use alloc::format;
 use libm::{sqrt, sin, cos, fabs, atan2, acos, asin};
 
+/// The generator phase lattice: every R-matrix eigenvalue phase is a multiple
+/// of 1/LATTICE_DEN. The readout's residual is measured against this and
+/// nothing else, so it is named once here.
+const LATTICE_DEN: u32 = 10;
+/// What counts as "on the lattice". A measured invariant is a float; equality
+/// with a rational is a tolerance, and the tolerance is a decision, not a
+/// constant to be inlined at the site that happens to need it.
+const LATTICE_EPS: f64 = 1e-9;
+
 use crate::{sprint, sprintln};
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -2301,7 +2310,10 @@ pub fn repl_readout(a: u64, n_val: u64) {
     let mut turns = libm::atan2(v.im, v.re) / TWO_PI;
     if turns < 0.0 { turns += 1.0; }  // a winding is a turn, not a signed angle
     // libm, not the f64 method: `round` is std-only and the kernel builds no_std.
-    let resid = fabs(turns - libm::round(turns * 10.0) / 10.0);  // vs the native tenths lattice
+    // LATTICE_DEN is the model's own generator lattice; writing 10.0 here would
+    // be asserting it a second time, in a place nothing checks.
+    let d = LATTICE_DEN as f64;
+    let resid = fabs(turns - libm::round(turns * d) / d);
     divider!();
     kv!("invariant V(t=1/5)", "{:.6} {:+.6}i", v.re, v.im);
     kv!("|V|", "{:.6}", v.norm());
@@ -2310,7 +2322,7 @@ pub fn repl_readout(a: u64, n_val: u64) {
     kv!("period r", "{}{}{}", crate::style::accent(),
         braid.params.period.map(|r| r as i64).unwrap_or(-1), crate::style::reset());
     divider!();
-    if resid < 1e-6 {
+    if resid < LATTICE_EPS {
         verdict_line!('T');
         sprintln!("  {}the invariant sits on the lattice: the winding is exact in one shot{}",
             crate::style::muted(), crate::style::reset());
@@ -2358,14 +2370,23 @@ pub fn repl_alkahest(a: u64, n_val: u64) {
     let vw = winding_of(v);
     let r = braid.params.period.unwrap_or(0);
     let fp = if r > 0 { alkahest_mod_pow(a, r, n_val) == 1 } else { false };
-    sprintln!("alkahest: N={} a={} — the four names of the readout", n_val, a);
-    sprintln!("  precondition of preconditions : Jones root t = {}/{} winding (evaluation point)",
-        WIND_JONES_ROOT.num, WIND_JONES_ROOT.den);
-    sprintln!("  unmoved mover                 : r = {} ; fixed point a^r ≡ 1 (mod {}) : {}",
-        r, n_val, if fp { "VERIFIED" } else { "OPEN" });
-    sprintln!("  miracle of One Thing          : ONE Jones evaluation, phase {}/{} winding (⊞=𐑙, information-complete)",
-        vw.num, vw.den);
-    sprintln!("  Alkahest (dissolution)        : NA braid ({} gens) -> integer period r — the ◻-promotion 𐑟→𐑭", word.len());
+    head!("the four names of the readout");
+    kv!("N, a", "{}, {}", n_val, a);
+    divider!();
+    kv!("precondition", "Jones root t = {}/{} winding", WIND_JONES_ROOT.num, WIND_JONES_ROOT.den);
+    kv!("unmoved mover", "r = {}{}{},  a^r ≡ 1 mod {}  {}{}{}",
+        crate::style::accent(), r, crate::style::reset(), n_val,
+        if fp { crate::style::verdict_t() } else { crate::style::verdict_n() },
+        if fp { "VERIFIED" } else { "OPEN" }, crate::style::reset());
+    kv!("One Thing", "ONE evaluation, phase {}{}/{}{} ({}⊞=𐑙{})",
+        crate::style::accent(), vw.num, vw.den, crate::style::reset(),
+        crate::style::glyph(), crate::style::reset());
+    kv!("dissolution", "{} gens {}𐑟{} → integer r {}𐑭{}", word.len(),
+        crate::style::glyph(), crate::style::reset(),
+        crate::style::glyph(), crate::style::reset());
+    divider!();
+    verdict_line!(if fp { 'T' } else { 'N' });
+    foot!();
 }
 
 /// a^exp mod m by square-and-multiply — the fixed-point check.

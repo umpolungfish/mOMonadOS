@@ -1,30 +1,30 @@
-A theme for the serial surface, and one report wearing it
+Finish the theme, delete the dead help, name the literals
 
-Colour existed already, as raw SGR escapes written inline across three files.
-That is a look frozen into every call site: changing it means finding every
-escape, and a report that wants to be quiet has no way to ask.
+Boot, help, dialects, the IMASM arranger and the alkahest report all wear the
+theme now. Three things this pass turned up that were not styling.
 
-style.rs holds the palette and it names roles, not colours — frame, heading,
-key, value, accent, muted, glyph, and the four Belnap verdicts. The verdicts get
-fixed colours on purpose: a verdict that changes colour between reports is a
-verdict the reader has to learn again on every screen. Raw escapes appear in
-this file and nowhere else.
+There were two banners. The boot lines added last commit duplicated
+print_banner, which had been printing its own box a screen later, and the REPL
+then printed a third line telling the reader how to get help. One banner now,
+leading with the mark and the name before the feature list, and the help hint
+appears once.
 
-The macros carry the furniture. head!, foot!, divider!, kv! and verdict_line!
-put every report on one width and one key column, so a screen of several
-commands reads as one program rather than as several sharing a terminal.
-rule_n! repeats a box piece without an allocator, which str::repeat would need.
+The dead help is gone. print_help in repl.rs was 147 lines that nothing called,
+carrying a comment saying removal was "a separate decision" — it is not, an
+unreachable listing is a listing that will drift and then mislead whoever finds
+it. Its style_section helper turned out to have 31 live callers elsewhere in the
+file, so that stays, in the helpers section where it belongs.
 
-Colour degrades rather than breaking: `color off` empties every escape and the
-alignment is unchanged, because no width computation depends on an escape being
-present. A serial line piped into a file gets the glyphs and none of the noise.
+Three literals became names. KEY_COL was written as 22 inside the kv! macro, a
+column that could only be moved by finding every use. LATTICE_DEN was written as
+10.0 inside the readout's residual, asserting the model's generator lattice a
+second time where nothing checks it against the first. LATTICE_EPS was a bare
+1e-6 at the one site that needed it; what counts as on-lattice is a decision,
+not a constant to inline.
 
-fibqc readout wears it first, being the command a new reader is most likely to
-run. The reset now lands BEFORE each newline; emitting it after put an escape at
-the start of every following line, invisible on a colour terminal and litter in
-any captured log. The period prints as a number rather than as Some(4).
+And the dialect list said "ALL 12 DIALECTS" while looping to 88, with the bound
+written out rather than taken from DIALECT_COUNT. The title is derived now, so
+it cannot disagree with the loop again. The IMASM arranger's count comes from
+the length of its own table for the same reason.
 
-Also fixed, and unrelated to the styling: the readout's lattice residual called
-f64::round, which is std-only, so the bare-metal target had stopped building.
-It uses libm::round now, like every other float call in that file, and the ELF
-builds again.
+Bare metal builds; hosted builds; every surface checked by eye.

@@ -128,10 +128,31 @@ pub fn winding_order(a: u64, N: u64) -> Option<u64> {
 /// still closes — the minimal winding is the denominator left standing.
 pub fn minimal_winding(a: u64, N: u64, mut r: u64) -> u64 {
     if r <= 1 { return r; }
+    // Collect the distinct prime factors of r by trial division, then strip
+    // any factor whose removal still closes, iterating until stable. The old
+    // loop advanced d and bounded by isqrt(r), which skipped the cofactor
+    // after a strip shrank r (e.g. 43 in 258 -> 86) and returned a
+    // non-minimal period for small-order bases.
+    let mut factors: Vec<u64> = Vec::new();
+    let mut rr = r;
     let mut d = 2u64;
-    while d * d <= r {
-        while r % d == 0 && powmod(a, r / d, N) == 1 { r /= d; }
+    while d * d <= rr {
+        if rr % d == 0 {
+            factors.push(d);
+            while rr % d == 0 { rr /= d; }
+        }
         d += if d == 2 { 1 } else { 2 };
+    }
+    if rr > 1 { factors.push(rr); }
+    let mut changed = true;
+    while changed {
+        changed = false;
+        for &p in &factors {
+            if r % p == 0 && powmod(a, r / p, N) == 1 {
+                r /= p;
+                changed = true;
+            }
+        }
     }
     r
 }

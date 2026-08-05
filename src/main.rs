@@ -312,10 +312,6 @@ fn main() {
 
 fn kmain() -> ! {
     serial::init();
-    #[cfg(not(feature = "hosted"))]
-    sprintln!("[BOOT] mOMonadOS — The Self-Imscribing Bare-Metal Kernel");
-    #[cfg(feature = "hosted")]
-    sprintln!("[BOOT] mOMonadOS — hosted build, on the host's runtime");
 
     // The banner used to claim a PIT and a PIC remap on both builds. Hosted,
     // neither happens: the host owns the IDT. Saying so is not decoration --
@@ -323,16 +319,16 @@ fn kmain() -> ! {
     // gets sourced later.
     interrupts::init(100);
     #[cfg(not(feature = "hosted"))]
-    sprintln!("[BOOT] Interrupts online — PIT 100Hz, PIC remapped");
+    sprintln!("{}[boot]{} Interrupts online — PIT 100Hz, PIC remapped", style::muted(), style::reset());
     #[cfg(feature = "hosted")]
-    sprintln!("[BOOT] Interrupts: none — the host owns the IDT, no periodic slot");
+    sprintln!("{}[boot]{} Interrupts: none — the host owns the IDT, no periodic slot", style::muted(), style::reset());
 
     {
         let (used, total) = heap_used();
         #[cfg(not(feature = "hosted"))]
-        sprintln!("[BOOT] Heap: {}MB static BSS", total / (1024 * 1024));
+        sprintln!("{}[boot]{} Heap: {}MB static BSS", style::muted(), style::reset(), total / (1024 * 1024));
         #[cfg(feature = "hosted")]
-        sprintln!("[BOOT] Heap: host allocator, {} bytes counted, {}MB declared budget",
+        sprintln!("{}[boot]{} Heap: host allocator, {} bytes counted, {}MB declared budget", style::muted(), style::reset(),
                   used, total / (1024 * 1024));
         let _ = used;
     }
@@ -340,46 +336,47 @@ fn kmain() -> ! {
     let mut k = Kernel::new();
     k.boot();
     catalog::catalog_init();
-    sprintln!("[BOOT] IG Catalog: {} entries loaded", catalog::catalog_size());
-    sprintln!("[BOOT] Kernel online — graph execution, token-arity driven");
+    sprintln!("{}[boot]{} IG Catalog: {} entries loaded", style::muted(), style::reset(), catalog::catalog_size());
+    sprintln!("{}[boot]{} Kernel online — graph execution, token-arity driven", style::muted(), style::reset());
     // ── ⊙-ordinal faithfulness guard (Track B) ──
-    sprintln!("[BOOT] Canonical ordinal check...");
+    sprintln!("{}[boot]{} Canonical ordinal check...", style::muted(), style::reset());
     match canonical_ordinal::verify_canonical_ordinals() {
-        (true, _) => sprintln!("[BOOT] Ordinal faithfulness: ALL 44 VALUES MATCH Lean canonical ✓"),
+        (true, _) => sprintln!("{}[boot]{} Ordinal faithfulness: {}all 44 values match Lean canonical{}",
+            style::muted(), style::reset(), style::verdict_t(), style::reset()),
         (false, why) => {
-            sprintln!("[BOOT] ⚠ ORDINAL DRIFT DETECTED: {}", why);
-            sprintln!("[BOOT] Kernel will NOT proceed — ordinal drift is a structural integrity violation.");
-            sprintln!("[BOOT] Regenerate canonical_ordinal.rs from CanonicalOrdinalFaithfulness.lean");
+            sprintln!("{}[boot]{} ⚠ ORDINAL DRIFT DETECTED: {}", style::muted(), style::reset(), why);
+            sprintln!("{}[boot]{} Kernel will NOT proceed — ordinal drift is a structural integrity violation.", style::muted(), style::reset());
+            sprintln!("{}[boot]{} Regenerate canonical_ordinal.rs from CanonicalOrdinalFaithfulness.lean", style::muted(), style::reset());
             loop { unsafe { core::arch::asm!("hlt", options(nostack, nomem, preserves_flags)); } }
         }
     }
     // ── Clay closure/resistance status (Track C) ──
-    sprintln!("[BOOT] Clay Millennium status: {} closed, {} one-bump-short, {} unclosed",
+    sprintln!("{}[boot]{} Clay Millennium status: {} closed, {} one-bump-short, {} unclosed", style::muted(), style::reset(),
         clay_status::clay_summary().0, clay_status::clay_summary().1, clay_status::clay_summary().2);
     // Every figure on this line is read from the constants that define it. It
     // used to be typed into the format string -- the d, the 49, the 7, the 144
     // -- so the banner could have gone on asserting a structure the code had
     // stopped having.
-    sprintln!("[BOOT] SIC-POVM d={}: Crystal-forced (dual lattice), Shavian count {}={}², WH group |orbit|={}",
+    sprintln!("{}[boot]{} SIC-POVM d={}: Crystal-forced (dual lattice), Shavian count {}={}², WH group |orbit|={}", style::muted(), style::reset(),
         sic_povm::TOTAL_PRIMS, sic_povm::SHAVIAN_COUNT,
         sic_povm::SHAVIAN_ROOT, sic_povm::WH_GROUP_ORDER);
     // ── Frobenius unification self-verification (Track E) ──
-    sprintln!("[BOOT] Frobenius identity check...");
+    sprintln!("{}[boot]{} Frobenius identity check...", style::muted(), style::reset());
     let (frob_ham, frob_dist) = frobenius_unify::boot_summary();
     if frob_ham == 0 {
-        sprintln!("[BOOT] Frobenius identity: KERNEL IS FROBENIUS FIXED POINT — d=0 ✓");
+        sprintln!("{}[boot]{} Frobenius identity: KERNEL IS FROBENIUS FIXED POINT — d=0 ✓", style::muted(), style::reset());
     } else {
-        sprintln!("[BOOT] Frobenius identity: hamming={}, weighted={:.4} — kernel is grammar operationalized",
+        sprintln!("{}[boot]{} Frobenius identity: hamming={}, weighted={:.4} — kernel is grammar operationalized", style::muted(), style::reset(),
             frob_ham, frob_dist);
     }
 
-    sprintln!("[BOOT] Bootstrap: IMSCRIB→AREV→FSPLIT→AFWD→FFUSE→CLINK→IFIX→IMSCRIB (cyclic)");
-    sprintln!("[BOOT] Fibonacci anyon QC: algebra verified = {}", fibonacci_qc::verify_all());
+    sprintln!("{}[boot]{} Bootstrap: IMSCRIB→AREV→FSPLIT→AFWD→FFUSE→CLINK→IFIX→IMSCRIB (cyclic)", style::muted(), style::reset());
+    sprintln!("{}[boot]{} Fibonacci anyon QC: algebra verified = {}", style::muted(), style::reset(), fibonacci_qc::verify_all());
     // ── Kernel torus winding display (Track A) ──
     let torus_map = kernel_torus::TorusMap::new(&kernel_torus::agent_loop_program());
     kernel_torus::display_banner(&torus_map);
-    sprintln!("[BOOT] Crystal FS: {} addresses", TOTAL);
-    sprintln!("[BOOT] {} total programs (I–XXIX): 12 canonical + {} continuous + {} novel + {} shunted",
+    sprintln!("{}[boot]{} Crystal FS: {} addresses", style::muted(), style::reset(), TOTAL);
+    sprintln!("{}[boot]{} {} total programs (I–XXIX): 12 canonical + {} continuous + {} novel + {} shunted", style::muted(), style::reset(),
         canonical_count() + continuous_count() + novel_count() + shunted_count(),
         continuous_count(), novel_count(), shunted_count());
     sprintln!();
@@ -414,14 +411,23 @@ fn kmain() -> ! {
 }
 
 fn print_banner() {
-    sprintln!("╔══════════════════════════════════════════════════╗");
-    sprintln!("             m O M o n a d O S                    ");
-    sprintln!("     The Self-Imscribing Bare-Metal Kernel         ");
-    sprintln!("     Frobenius Core · Belnap FOUR · Crystal FS     ");
-    sprintln!("     Graph Execution — Token Arity as Topology     ");
-    sprintln!("╚══════════════════════════════════════════════════╝");
+    // The mark, the name, then what it is. This is the one screen where the
+    // reader has no context yet, so it leads with the object and not the
+    // feature list.
     sprintln!();
-    sprintln!("Type 'help' for commands.");
+    sprintln!("   {}⊙{}   {}mOMonadOS{}", style::glyph(), style::reset(),
+              style::heading(), style::reset());
+    #[cfg(not(feature = "hosted"))]
+    sprintln!("   {}the self-imscribing bare-metal kernel{}", style::muted(), style::reset());
+    #[cfg(feature = "hosted")]
+    sprintln!("   {}hosted build, on the host's runtime{}", style::muted(), style::reset());
+    sprintln!("   {}μ∘δ = id{}", style::accent(), style::reset());
+    sprintln!();
+    sprintln!("   {}Frobenius core · Belnap FOUR · crystal FS · graph execution{}",
+              style::muted(), style::reset());
+    sprintln!();
+    sprintln!("   {}help{} for commands, {}?{} for the menu, Tab completes.",
+              style::key(), style::reset(), style::key(), style::reset());
     sprintln!();
 }
 

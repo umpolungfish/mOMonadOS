@@ -301,29 +301,30 @@ pub fn print_help_topic(topic: &str) {
 
     if t.is_empty() {
         // ── General help — list all top-level commands ──
-        crate::sprintln!("═══ mOMonadOS Help ═══\n");
-        crate::sprintln!("Type 'help <topic>' for detailed help on any command.\n");
-        crate::sprintln!("TOP-LEVEL COMMANDS:");
-        for item in MAIN_MENU.iter() {
-            crate::sprintln!("  {:12} — {}", item.name, item.desc);
-        }
+        use crate::style as S;
+        head!("mOMonadOS — help");
+        crate::sprintln!("  {}help <topic>{} for any one command in detail.",
+            S::key(), S::reset());
         crate::sprintln!("");
-        crate::sprintln!("EVERY COMMAND, with an example:");
+        for item in MAIN_MENU.iter() {
+            crate::sprintln!("  {}{:12}{} {}{}{}",
+                S::key(), item.name, S::reset(), S::muted(), item.desc, S::reset());
+        }
         for cat in MAIN_MENU.iter() {
             if let Some(sub) = cat.submenu {
-                crate::sprintln!("");
-                crate::sprintln!("  ── {} ──", cat.name);
+                divider!();
+                crate::sprintln!("  {}{}{}", S::heading(), cat.name, S::reset());
                 for si in sub.iter() {
-                    if si.example.is_empty() {
-                        crate::sprintln!("    {:22} {}", si.cmd, si.desc);
-                    } else {
-                        crate::sprintln!("    {:22} {}", si.cmd, si.desc);
-                        crate::sprintln!("    {:22}   e.g.  {}", "", si.example);
+                    crate::sprintln!("    {}{:22}{} {}", S::accent(), si.cmd, S::reset(), si.desc);
+                    if !si.example.is_empty() {
+                        // The example is the part a new reader actually copies,
+                        // so it is dimmed but never dropped.
+                        crate::sprintln!("    {:22} {}e.g. {}{}", "", S::muted(), si.example, S::reset());
                     }
                 }
             }
         }
-        crate::sprintln!("\nType 'help <cmd>' for examples and detailed usage.");
+        foot!();
         return;
     }
 

@@ -166,13 +166,31 @@ pub fn verify_bootstrap(arr: &[u8]) -> alloc::string::String {
 }
 
 pub fn imasm_summary() -> alloc::string::String {
-    let mut s = alloc::string::String::from("══ IMASM Arranger ══\n  12 tokens, 430M arrangements\n\n  Canonicals:\n");
-    for i in 0..12 {
+    use crate::style as S;
+    // The token count is the length of the canonical table, not a number
+    // written beside it: the two used to be able to disagree.
+    let n = CANONICAL_NAMES.len();
+    let mut s = alloc::string::String::new();
+    s.push_str(&alloc::format!("  {}IMASM arranger{}  {}{} canonicals{}\n\n",
+        S::heading(), S::reset(), S::muted(), n, S::reset()));
+    s.push_str(&alloc::format!("  {}{:2} {:22} {:>4}  {:^4} {:^4} {:^4} {:>4}{}\n",
+        S::muted(), "#", "name", "len", "frob", "self", "dial", "per", S::reset()));
+    for i in 0..n {
         if let Some(seq) = canonical_sequence(i) {
             let fp = fingerprint(seq);
-            s.push_str(&alloc::format!("  {:2} {}  len={} frob={} sf={} dc={} per={}\n",
-                i,CANONICAL_NAMES[i],fp.length, if has_frobenius_pair(seq){"✓"}else{" "},
-                if fp.self_ref{"✓"}else{" "}, if fp.dialetheia_complete{"✓"}else{" "}, fp.period));
+            // A mark that carries a verdict is coloured by that verdict, so the
+            // column reads at a glance instead of tick by tick.
+            let mark = |b: bool| if b {
+                alloc::format!("{}✓{}", S::verdict_t(), S::reset())
+            } else {
+                alloc::format!("{}·{}", S::verdict_n(), S::reset())
+            };
+            s.push_str(&alloc::format!("  {}{:2}{} {}{:22}{} {:>4}  {:^4} {:^4} {:^4} {:>4}\n",
+                S::muted(), i, S::reset(),
+                S::key(), CANONICAL_NAMES[i], S::reset(),
+                fp.length,
+                mark(has_frobenius_pair(seq)), mark(fp.self_ref),
+                mark(fp.dialetheia_complete), fp.period));
         }
     }
     s
