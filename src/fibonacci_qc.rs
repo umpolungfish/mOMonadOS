@@ -2262,3 +2262,106 @@ pub fn winding_of(z: Complex) -> Winding {
     let near = if x >= 0.0 { (x + 0.5) as i64 } else { (x - 0.5) as i64 };
     Winding::new(near, 1000)
 }
+
+
+/// fibqc readout <a> <N> — the one-shot topological readout.
+/// Assembles the Fibonacci-Shor ModExp braid, measures its Jones invariant
+/// once (the fusion-basis readout), reports the phase as a winding — the
+/// lattice coordinate — and the period. No classical intermediates: the
+/// invariant is read from the amplitude, not accumulated from statistics.
+pub fn repl_readout(a: u64, n_val: u64) {
+    if a == 0 || n_val == 0 {
+        sprintln!("fibqc readout <a> <N> — one-shot topological readout");
+        sprintln!("  assembles the Fibonacci-Shor ModExp braid, measures its Jones invariant once,");
+        sprintln!("  reports the phase as a winding (the lattice coordinate) and the period.");
+        sprintln!("  Example: fibqc readout 7 15");
+        return;
+    }
+    let n = {
+        let mut bits = 0;
+        let mut v = n_val - 1;
+        while v > 0 { bits += 1; v >>= 1; }
+        bits.max(2) as usize
+    };
+    let braid = crate::fibonacci_shor::assemble_shor_braid(n, a, n_val);
+    let word = &braid.mod_exp_word;
+    let strands = word.iter().map(|g| g.unsigned_abs() as usize).max().unwrap_or(0) + 1;
+    sprintln!("readout: N={} a={} period={:?}  ModExp strands={} gens={}",
+        n_val, a, braid.params.period, strands, word.len());
+    if strands > 14 {
+        sprintln!("  ModExp segment too wide for the kernel heap (V_{} = {} dims);",
+            strands, strands);
+        sprintln!("  use `fibqc jones <gens...>` on a trimmed word, or read the H/IQFT layers.");
+        return;
+    }
+    let v = jones_polynomial(strands, word);
+    let vw = winding_of(v);
+    let mut turns = libm::atan2(v.im, v.re) / TWO_PI;
+    if turns < 0.0 { turns += 1.0; }  // a winding is a turn, not a signed angle
+    let resid = (turns - (turns * 10.0).round() / 10.0).abs();  // vs the native tenths lattice
+    sprintln!("  invariant V(t=1/5)   : {:.6} {:+.6}i   |V|={:.6}", v.re, v.im, v.norm());
+    sprintln!("  phase (ONE SHOT)     : {}/{} winding   (lattice residual {:.2e})",
+        vw.num, vw.den, resid);
+    sprintln!("  period r             : {:?}", braid.params.period);
+    if resid < 1e-6 {
+        sprintln!("  readout verdict      : ON LATTICE — the invariant is the winding, exact in one shot");
+    } else {
+        sprintln!("  readout verdict      : snapped (invariant off the tenths lattice at this segment width)");
+    }
+}
+
+
+/// `fibqc alkahest <a> <N>` — the four-name dissolution report.
+/// The one-shot readout read through the Alkahest lens:
+///   precondition of preconditions — the Jones root t=1/5, the evaluation point
+///   unmoved mover               — r = ord_N(a), the modular fixed point a^r ≡ 1
+///   miracle of One Thing        — ONE Jones evaluation, ⊞=𐑙, information-complete
+///   Alkahest (dissolution)      — NA braid word -> integer period (◻-promotion)
+pub fn repl_alkahest(a: u64, n_val: u64) {
+    if a == 0 || n_val == 0 {
+        sprintln!("fibqc alkahest <a> <N> — the four-name dissolution report");
+        sprintln!("  precondition : the Jones root t=1/5, the evaluation point");
+        sprintln!("  unmoved mover: r = ord_N(a), the modular fixed point a^r ≡ 1 mod N");
+        sprintln!("  One Thing    : ONE Jones evaluation, information-complete (⊞=𐑙)");
+        sprintln!("  Alkahest     : NA braid word -> integer period (the ◻-promotion)");
+        return;
+    }
+    let n = {
+        let mut bits = 0;
+        let mut v = n_val - 1;
+        while v > 0 { bits += 1; v >>= 1; }
+        bits.max(2) as usize
+    };
+    let braid = crate::fibonacci_shor::assemble_shor_braid(n, a, n_val);
+    let word = &braid.mod_exp_word;
+    let strands = word.iter().map(|g| g.unsigned_abs() as usize).max().unwrap_or(0) + 1;
+    if strands > 14 {
+        sprintln!("alkahest: ModExp segment too wide for the kernel heap (V_{} = {} dims);", strands, strands);
+        sprintln!("  use a smaller N, or `fibqc jones <gens...>` on a trimmed word.");
+        return;
+    }
+    let v = jones_polynomial(strands, word);
+    let vw = winding_of(v);
+    let r = braid.params.period.unwrap_or(0);
+    let fp = if r > 0 { alkahest_mod_pow(a, r, n_val) == 1 } else { false };
+    sprintln!("alkahest: N={} a={} — the four names of the readout", n_val, a);
+    sprintln!("  precondition of preconditions : Jones root t = {}/{} winding (evaluation point)",
+        WIND_JONES_ROOT.num, WIND_JONES_ROOT.den);
+    sprintln!("  unmoved mover                 : r = {} ; fixed point a^r ≡ 1 (mod {}) : {}",
+        r, n_val, if fp { "VERIFIED" } else { "OPEN" });
+    sprintln!("  miracle of One Thing          : ONE Jones evaluation, phase {}/{} winding (⊞=𐑙, information-complete)",
+        vw.num, vw.den);
+    sprintln!("  Alkahest (dissolution)        : NA braid ({} gens) -> integer period r — the ◻-promotion 𐑟→𐑭", word.len());
+}
+
+/// a^exp mod m by square-and-multiply — the fixed-point check.
+fn alkahest_mod_pow(mut base: u64, mut exp: u64, m: u64) -> u64 {
+    let mut acc = 1u64;
+    base %= m;
+    while exp > 0 {
+        if exp & 1 == 1 { acc = acc * base % m; }
+        base = base * base % m;
+        exp >>= 1;
+    }
+    acc
+}

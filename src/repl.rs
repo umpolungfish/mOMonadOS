@@ -184,6 +184,40 @@ pub fn repl(k: &mut Kernel) {
                 print_help_topic(topic);
             },
             "status" => print_status(k),
+            "winding" | "wperiod" => {
+                match parts.next().unwrap_or("") {
+                    "" | "help" => {
+                        sprintln!("winding - period as a torus winding (native Rust, torus by default)");
+                        sprintln!("  winding order <a> <N>    minimal period r of a^x mod N (BSGS winding halving)");
+                        sprintln!("  winding factor <N> [tries] [seed]   end-to-end factorization via the Shor winding step");
+                        sprintln!("  winding closure <N> <B>  Pollard p-1 closure at smoothness bound B");
+                        sprintln!("  winding factorgen <bits> [tries] [seed]   native semiprime + factor (the push)");
+                    }
+                    "order" => {
+                        let a = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        let N = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        crate::winding_period::repl_order(a, N);
+                    }
+                    "factor" => {
+                        let N = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        let tries = parts.next().and_then(|s| s.parse::<u32>().ok()).unwrap_or(12);
+                        let seed = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0x9E37_79B9_7F4A_7C15);
+                        crate::winding_period::repl_factor(N, tries, seed);
+                    }
+                    "closure" => {
+                        let N = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        let B = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(11);
+                        crate::winding_period::repl_closure(N, B);
+                    }
+                    "factorgen" => {
+                        let bits = parts.next().and_then(|s| s.parse::<u32>().ok()).unwrap_or(48);
+                        let tries = parts.next().and_then(|s| s.parse::<u32>().ok()).unwrap_or(12);
+                        let seed = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0x9E37_79B9_7F4A_7C15);
+                        crate::winding_period::repl_factorgen(bits, tries, seed);
+                    }
+                    other => sprintln!("winding: unknown subcommand '{}' (try 'winding help')", other),
+                }
+            },
             "proof" => {
                 match parts.next().unwrap_or("") {
                     "" | "list" => crate::proof::list_proofs(),
@@ -438,6 +472,8 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("fibqc jones <gens...>    — Jones polynomial; strands implied by the word");
                         sprintln!("fibqc knot [name]        — Jones value for a knot from the census");
                         sprintln!("fibqc winding            — the phase lattice, in windings");
+                        sprintln!("fibqc readout <a> <N>    — one-shot topological readout (ModExp invariant -> winding -> period)");
+                        sprintln!("fibqc alkahest <a> <N>   — the four-name dissolution report (root, fixed point, one, ◻-promotion)");
                         sprintln!("fibqc protocol           — show the IMASM braiding protocol report");
                         sprintln!("fibqc braid <gens...>    — δ: compile a braid word to an IMASM program");
                         sprintln!("fibqc braid <gens...> close — same, closed (trace closure)");
@@ -452,6 +488,16 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("so it is the hard ceiling. The command reports its own high-water mark.");
                     }
                     "winding" => crate::fibonacci_qc::repl_winding(),
+                    "readout" => {
+                        let a = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        let N = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        crate::fibonacci_qc::repl_readout(a, N);
+                    }
+                    "alkahest" => {
+                        let a = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        let N = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        crate::fibonacci_qc::repl_alkahest(a, N);
+                    }
                     "verify" => {
                         sprintln!("Fibonacci anyon algebra verified = {}", crate::fibonacci_qc::verify_all());
                     }

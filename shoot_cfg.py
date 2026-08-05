@@ -22,6 +22,27 @@ PAGE = HERE / "dialect_cfg_viz.html"
 CHROME = "/usr/bin/google-chrome"
 
 
+def trim(path: Path) -> None:
+    """Crop the transparent margin.
+
+    The figure element is a fixed 480px panel and the drawing occupies a band in
+    the middle of it, so the raw capture is mostly empty. Placed at column width
+    that empty field is what gets scaled, and the geometry ends up small in a
+    large blank rectangle.
+    """
+    try:
+        from PIL import Image
+    except ImportError:
+        return
+    im = Image.open(path).convert("RGBA")
+    box = im.split()[-1].getbbox()
+    if box:
+        pad = 8
+        box = (max(box[0] - pad, 0), max(box[1] - pad, 0),
+               min(box[2] + pad, im.width), min(box[3] + pad, im.height))
+        im.crop(box).save(path)
+
+
 async def shoot(out: Path, universe: int | None, scale: int) -> None:
     from playwright.async_api import async_playwright
 
@@ -47,6 +68,7 @@ async def shoot(out: Path, universe: int | None, scale: int) -> None:
             raise SystemExit(f"nothing drawn; page errors: {errors or 'none'}")
         el = await page.query_selector("#cfg-view")
         await el.screenshot(path=str(out), omit_background=True)
+        trim(out)
         await browser.close()
         print(f"{out}  ({length} chars of svg, scale {scale}x)")
 

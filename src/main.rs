@@ -89,6 +89,7 @@ mod seals;
 mod constant_closure;
 mod repl;
 mod fibonacci_qc;
+mod winding_period;
 mod lattice_flow;
 mod triple_frame;
 mod iuft_qc;
