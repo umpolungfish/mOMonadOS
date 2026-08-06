@@ -833,6 +833,111 @@ mod tests {
     }
 
     #[test]
+    fn test_imasm_instruction_stream_decoder() {
+        // PLANK 3a: stream the byte decoder over a whole instruction stream.
+        // The read/dispatch/emit block is wrapped in a ROTAT loop (.top). Every
+        // leaf emits its token then loops; the reserved stop-opcode (wire (B,B))
+        // HALTs. Feed a stream ending in a stop byte, collect the full IMASM word.
+        let perm = |w: usize| (w * 7 + 3) % 16;
+        let canon = |ord: usize| -> (usize, usize) {
+            if ord < 12 { (ord / 4, ord % 4) } else { (3, 3) }
+        };
+        let emit_cell = |idx: usize| format!("MOVE %r{} %r4\nEMIT %r4\n", 10 + idx);
+        let cells = ["N", "T", "F", "B"];
+
+        let mut prog = String::from(".top:\nREAD %r0\nREAD %r1\nREAD %r2\nREAD %r3\n");
+        prog += "JT %r0 .h1\nJF %r0 .h2\nJB %r0 .h3\n";
+        for i in 0..4 {
+            prog += &format!(".h{}:\n", i);
+            prog += &format!("JT %r1 .L{}_1\nJF %r1 .L{}_2\nJB %r1 .L{}_3\n", i, i, i);
+            for j in 0..4 {
+                prog += &format!(".L{}_{}:\n", i, j);
+                if i == 3 && j == 3 {
+                    prog += "HALT\n";               // reserved stop-opcode ends the stream
+                } else {
+                    let (hi, lo) = canon(perm(i * 4 + j));
+                    prog += &emit_cell(hi);
+                    prog += &emit_cell(lo);
+                    prog += "EMIT %r2\nEMIT %r3\n";
+                    prog += "JMP .top\n";
+                }
+            }
+        }
+
+        let mut vm = ParaVM::new();
+        vm.set_belief(10, B4::N);
+        vm.set_belief(11, B4::T);
+        vm.set_belief(12, B4::F);
+        vm.set_belief(13, B4::B);
+        let b = |v: usize| B4::from_u8(v as u8);
+        // Two real instructions, then a stop byte (opcode (B,B)).
+        let stream = [1usize, 0, 2, 3,   0, 3, 1, 1,   3, 3, 0, 0];
+        vm.read_buffer = Some(stream.iter().map(|&v| b(v)).collect());
+        vm.load(&prog).unwrap();
+        vm.run(Some(10_000));
+        let word: Vec<String> = vm.emit_buffer.iter()
+            .map(|s| String::from(s.rsplit(' ').next().unwrap_or(""))).collect();
+
+        // Expected: decode of the first two bytes (4 cells each), stop emits nothing.
+        let mut expected = Vec::new();
+        for byte in [[1usize, 0, 2, 3], [0, 3, 1, 1]] {
+            let (chi, clo) = canon(perm(byte[0] * 4 + byte[1]));
+            expected.push(cells[chi].to_string());
+            expected.push(cells[clo].to_string());
+            expected.push(cells[byte[2]].to_string());
+            expected.push(cells[byte[3]].to_string());
+        }
+        assert_eq!(word, expected, "stream decode word mismatch");
+        assert!(vm.halted, "stream did not halt on the stop-opcode");
+    }
+
+    #[test]
+    fn test_evm_lift_reentrancy_verdict() {
+        // PLANK 3b: lift real EVM control structure to an IMASM word and let the
+        // kernel verdict it. The classic reentrancy bug is an ordering: a withdraw
+        // that does its external CALL / commits state BEFORE the branch paths
+        // rejoin leaves a window a re-entrant call slips through. In IMASM that is
+        // a state commit (SSTORE = IFIX ◻) landing inside a fork that has not fused
+        // (JUMPDEST = FFUSE ∋). The engine, knowing nothing about Solidity, reports
+        // the safe ordering CLOSED (T) and the vulnerable one OPEN (B).
+        //
+        // EVM opcode -> IMASM glyph (arm-splitting supplied by the CFG, as a full
+        // lifter would; the per-opcode map is 1:1):
+        let lift = |seq: &[&str]| -> String {
+            seq.iter().map(|op| match *op {
+                "ENTRY"                 => "⊢", // function entry (VINIT)
+                "JUMPI"                 => "∈", // conditional branch = fork (FSPLIT)
+                "THEN_BB"               => ">", // taken basic block, work (AFWD)
+                "THEN_TAG"              => "⊤", // the taken arm (EVALT)
+                "ELSE_BB"               => "<", // fall-through block, work (AREV)
+                "ELSE_TAG"              => "⊥", // the else arm (EVALF)
+                "JUMPDEST"              => "∋", // the merge point (FFUSE)
+                "SSTORE"                => "◻", // state commit, irreversible (IFIX)
+                "STOP" | "RETURN"       => "⊣", // terminator (TANCH)
+                _                       => "⊙", // unmodeled op = identity (IMSCRIB)
+            }).collect()
+        };
+
+        // withdraw(), checks-effects-interactions: the guard's paths MERGE
+        // (JUMPDEST) before the state write. Effects land after the fork resolves.
+        let safe = lift(&["ENTRY", "JUMPI", "THEN_BB", "THEN_TAG",
+                          "ELSE_BB", "ELSE_TAG", "JUMPDEST", "SSTORE", "STOP"]);
+        // withdraw(), vulnerable: SSTORE commits state while the branch is still
+        // open (no JUMPDEST merge before it) — the re-entrancy window.
+        let vuln = lift(&["ENTRY", "JUMPI", "THEN_BB", "THEN_TAG",
+                          "SSTORE", "ELSE_BB", "ELSE_TAG", "STOP"]);
+
+        let verdict = |word: &str| -> char {
+            let steps = imasm_core::imasm16_3::parse_glyph_word(word);
+            imasm_core::imasm16_3::tri_ancestral_verdict(&steps).0
+        };
+        assert_eq!(verdict(&safe), 'T',
+            "checks-effects-interactions should close; word = {safe}");
+        assert_eq!(verdict(&vuln), 'B',
+            "reentrant ordering should open (B); word = {vuln}");
+    }
+
+    #[test]
     fn test_frobenius_identity() {
         // ffuse(fsplit(r)) == r for all r
         for &r in &[B4::N, B4::T, B4::F, B4::B] {

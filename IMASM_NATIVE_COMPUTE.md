@@ -78,10 +78,22 @@ A byte is four cells: two are the OPCODE field, two are the OPERAND.
 1. DONE: a decode step that computes, table-as-trie, running on parasm.
 2. DONE: a full byte decoder (opcode field dispatched to the canonical token,
    operand passed through), the whole 256-byte space as pure structure.
-3. Drive it over a real bytecode re-expressed in B4 (EVM or CPython first, both
-   already stack machines like parasm). Output is the lifted IMASM word; run it
-   through `imasm16_3::tri_ancestral_verdict` for the closure verdict. An open
-   fork in the lift is a leak, an unhandled path, a reentrancy window.
+3. DONE, three ways:
+   - `test_imasm_instruction_stream_decoder`: the byte decoder wrapped in a ROTAT
+     loop, streaming an instruction sequence to a full IMASM word, halting on a
+     reserved stop-opcode.
+   - `test_evm_lift_reentrancy_verdict`: real EVM control lifted to IMASM and
+     verdicted. A withdraw whose branch paths MERGE (JUMPDEST = ∋) before the
+     state commit (SSTORE = ◻) closes (T); the vulnerable ordering, committing
+     while the fork is still open, opens (B). Reentrancy caught structurally, no
+     Solidity knowledge in the engine.
+   - `ob3ect/test_cpython_lift.py`: the same on real CPython bytecode through the
+     Python SIXTEEN_3 engine. A guarded update that merges before commit closes
+     (T); one that commits inside a branch and returns early, so the paths never
+     rejoin, opens (B).
+   One law across two ISAs: a fork that commits before its paths rejoin is a
+   leak, and the grammar names it. This is the bughunter thesis at the bytecode
+   level, running.
 4. The inverse: recompile an IMASM word plus its payload back to the target,
    diff against the original (the b4_diff_scanner pattern promoted to a
    compiler). μ∘δ = id where the round trip closes.
