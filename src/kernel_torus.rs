@@ -26,7 +26,8 @@ use crate::tokens::{Token, Program};
 // ─── Token Glyphs ──────────────────────────────────────────────
 
 pub const TOKEN_GLYPH: [&str; 12] = [
-    "⊢", "⊣", ">", "<", "⋈", "⊙", "∈", "∋", "⊤", "⊥", "⊞", "◻",
+    // Catalog column order; ⊙ at slot nine, Criticality.
+    "⊢", "⊣", ">", "<", "⋈", "⊤", "∈", "∋", "⊙", "⊥", "⊞", "◻",
 ];
 
 fn glyph(t: Token) -> &'static str { TOKEN_GLYPH[t as usize] }

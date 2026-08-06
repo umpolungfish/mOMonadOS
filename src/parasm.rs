@@ -1121,7 +1121,7 @@ mod tests {
             let vals: Vec<u8> = vm.emit_buffer.iter().map(|s| {
                 match s.rsplit(' ').next().unwrap_or("") { "T" => 1, "F" => 2, "B" => 3, _ => 0 }
             }).collect();
-            let alphabet = ["⊢", "⊣", ">", "<", "⋈", "⊙", "∈", "∋", "⊤", "⊥", "⊞", "◻"];
+            let alphabet = ["⊢", "⊣", ">", "<", "⋈", "⊤", "∈", "∋", "⊙", "⊥", "⊞", "◻"];
             let word: String = vals.chunks(2)
                 .map(|p| alphabet[(p[0] * 4 + p.get(1).copied().unwrap_or(0)) as usize])
                 .collect();
