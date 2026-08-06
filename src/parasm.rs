@@ -714,6 +714,61 @@ mod tests {
     }
 
     #[test]
+    fn test_imasm_native_decode_step() {
+        // IMASM-NATIVE COMPUTE, seed of the self-disassembler.
+        // The machine's native alphabet is B4 {N,T,F,B}; a byte is four cells.
+        // This program reads a stream of B4 cells and, for each, DISPATCHES on its
+        // value and emits a TRANSFORMED token — a nontrivial permutation
+        //   N→T, T→F, F→B, B→N
+        // proving data-dependent computation, not an echo. The decode "table" is
+        // NOT data: it is the control-flow trie itself (JT/JF/JB dispatch = the
+        // FSPLIT+EVALT structure), so the computation lives in the shape of the
+        // word — compute inside the twelve. The subroutine call is CLINK; the
+        // per-symbol branch is a fork that resolves to exactly one arm.
+        let mut vm = ParaVM::new();
+        // Constant cells the decode moves into the output register.
+        vm.set_belief(10, B4::T);
+        vm.set_belief(11, B4::F);
+        vm.set_belief(12, B4::B);
+        vm.set_belief(13, B4::N);
+        // The input binary, re-expressed in the native B4 alphabet.
+        vm.read_buffer = Some(vec![B4::T, B4::F, B4::B, B4::N]);
+        vm.load("
+            READ %r0
+            CALL .decode
+            READ %r0
+            CALL .decode
+            READ %r0
+            CALL .decode
+            READ %r0
+            CALL .decode
+            HALT
+            .decode: JT %r0 .dT
+            JF %r0 .dF
+            JB %r0 .dB
+            MOVE %r10 %r1   ; N -> T
+            EMIT %r1
+            RET
+            .dT: MOVE %r11 %r1   ; T -> F
+            EMIT %r1
+            RET
+            .dF: MOVE %r12 %r1   ; F -> B
+            EMIT %r1
+            RET
+            .dB: MOVE %r13 %r1   ; B -> N
+            EMIT %r1
+            RET
+        ").unwrap();
+        vm.run(None);
+        // The permutation applied to [T,F,B,N] is [F,B,N,T].
+        let emitted: Vec<&str> = vm.emit_buffer.iter()
+            .map(|s| s.rsplit(' ').next().unwrap_or(""))
+            .collect();
+        assert_eq!(emitted, vec!["F", "B", "N", "T"],
+            "IMASM-native decode did not apply the permutation; emit = {:?}", vm.emit_buffer);
+    }
+
+    #[test]
     fn test_frobenius_identity() {
         // ffuse(fsplit(r)) == r for all r
         for &r in &[B4::N, B4::T, B4::F, B4::B] {
