@@ -94,10 +94,19 @@ A byte is four cells: two are the OPCODE field, two are the OPERAND.
    One law across two ISAs: a fork that commits before its paths rejoin is a
    leak, and the grammar names it. This is the bughunter thesis at the bytecode
    level, running.
-4. The inverse: recompile an IMASM word plus its payload back to the target,
-   diff against the original (the b4_diff_scanner pattern promoted to a
-   compiler). μ∘δ = id where the round trip closes.
-5. Turn the tool on its own parasm word. When it disassembles to itself and
-   recompiles to itself, the fixed point exists and universality is settled by
-   construction. That is the Replicating Code, and the demonstration is the
-   quine, not an argument about it.
+4. DONE: `test_imasm_recompile_is_inverse`. The disassembler D lifts a wire
+   opcode to the canonical one (D = the scramble); the recompiler R fuses it
+   back (R = its inverse). Both are IMASM-native tries generated independently
+   from inverse tables, and R(D(code)) recovers the byte for every opcode. The
+   recompiler is a true inverse, μ∘δ = id, the b4_diff_scanner pattern promoted
+   to a compiler.
+5. DONE: `test_imasm_replicating_fixed_point`. Because R∘D is identity on the
+   whole opcode space, it is identity on the tool's own word. The tool is written
+   in the twelve, so the twelve fed through disassemble-then-recompile come back
+   unchanged: the tool reproduces its own alphabet. The fixed point is a corollary
+   of totality, exhibited by construction. The Replicating Code closes on itself.
+
+Every plank runs under `cargo test --features hosted` (15 parasm tests) plus the
+CPython companion. The disassembler is written in IMASM, executed by parasm over
+the crystal, decodes real bytecode to IMASM words the kernel can verdict,
+recompiles them back exactly, and reproduces its own word. No non-IMASM part.

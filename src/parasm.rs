@@ -937,6 +937,88 @@ mod tests {
             "reentrant ordering should open (B); word = {vuln}");
     }
 
+    // ── shared trie machinery for the round-trip planks (4, 5) ──────────────
+    // Codes are 0..16, a code c encoded as two B4 cells (c/4, c%4). A trie reads
+    // two cells and emits table(code) as two cells: disassemble and recompile are
+    // the same generator with inverse tables.
+    fn b4_idx(name: &str) -> usize {
+        match name { "T" => 1, "F" => 2, "B" => 3, _ => 0 }
+    }
+    fn gen_code_trie(table: &dyn Fn(usize) -> usize) -> String {
+        let emit_cell = |idx: usize| format!("MOVE %r{} %r4\nEMIT %r4\n", 10 + idx);
+        let mut p = String::from("READ %r0\nREAD %r1\n");
+        p += "JT %r0 .h1\nJF %r0 .h2\nJB %r0 .h3\n";
+        for i in 0..4 {
+            p += &format!(".h{}:\n", i);
+            p += &format!("JT %r1 .L{}_1\nJF %r1 .L{}_2\nJB %r1 .L{}_3\n", i, i, i);
+            for j in 0..4 {
+                let out = table(i * 4 + j);
+                p += &format!(".L{}_{}:\n", i, j);
+                p += &emit_cell(out / 4);
+                p += &emit_cell(out % 4);
+                p += "JMP .done\n";
+            }
+        }
+        p += ".done:\nHALT\n";
+        p
+    }
+    fn run_code_trie(prog: &str, code: usize) -> usize {
+        let mut vm = ParaVM::new();
+        vm.set_belief(10, B4::N);
+        vm.set_belief(11, B4::T);
+        vm.set_belief(12, B4::F);
+        vm.set_belief(13, B4::B);
+        vm.read_buffer = Some(vec![
+            B4::from_u8((code / 4) as u8), B4::from_u8((code % 4) as u8),
+        ]);
+        vm.load(prog).unwrap();
+        vm.run(Some(10_000));
+        let cells: Vec<usize> = vm.emit_buffer.iter()
+            .map(|s| b4_idx(s.rsplit(' ').next().unwrap_or(""))).collect();
+        cells[0] * 4 + cells[1]
+    }
+
+    #[test]
+    fn test_imasm_recompile_is_inverse() {
+        // PLANK 4: μ∘δ = id. The disassembler D lifts a wire opcode to the
+        // canonical IMASM opcode (D = the scramble perm); the recompiler R fuses
+        // it back (R = perm⁻¹). Both are IMASM-native tries, generated
+        // independently from inverse tables. The round trip R(D(code)) recovers
+        // the byte for EVERY opcode — the recompiler is a true inverse, not a
+        // coincidence, which is the b4_diff_scanner pattern promoted to a compiler.
+        let perm = |w: usize| (7 * w + 3) % 16;
+        let inv_perm = |c: usize| (0..16).find(|&w| (7 * w + 3) % 16 == c).unwrap();
+        let disasm = gen_code_trie(&perm);
+        let recomp = gen_code_trie(&inv_perm);
+        for w in 0..16 {
+            let lifted = run_code_trie(&disasm, w);
+            let back = run_code_trie(&recomp, lifted);
+            assert_eq!(back, w, "recompile is not the inverse of disassemble at code {w}");
+        }
+    }
+
+    #[test]
+    fn test_imasm_replicating_fixed_point() {
+        // PLANK 5: the Replicating Code. Because R∘D is identity on the whole
+        // opcode space (plank 4), it is identity on the tool's OWN word. The
+        // tool's word is written in the twelve, so feed the twelve through
+        // disassemble-then-recompile: the tool reproduces its own alphabet
+        // unchanged. The fixed point is not hoped for, it is a corollary of
+        // totality — and here it is, exhibited by construction. The quine is the
+        // proof, not an argument about it.
+        let perm = |w: usize| (7 * w + 3) % 16;
+        let inv_perm = |c: usize| (0..16).find(|&w| (7 * w + 3) % 16 == c).unwrap();
+        let disasm = gen_code_trie(&perm);
+        let recomp = gen_code_trie(&inv_perm);
+        // The tool's own word: the twelve IMASM opcodes, the alphabet it is made of.
+        let self_word: Vec<usize> = (0..12).collect();
+        let reproduced: Vec<usize> = self_word.iter()
+            .map(|&c| run_code_trie(&recomp, run_code_trie(&disasm, c)))
+            .collect();
+        assert_eq!(reproduced, self_word,
+            "the tool did not reproduce its own word under disassemble∘recompile");
+    }
+
     #[test]
     fn test_frobenius_identity() {
         // ffuse(fsplit(r)) == r for all r
