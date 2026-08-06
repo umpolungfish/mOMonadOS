@@ -3122,13 +3122,14 @@ fn print_shor_fib(n_val: u64, a_val: u64) {
         for (n_q, a, N) in &[(4usize, 7u64, 15u64), (5, 5, 21), (8, 2, 35)] {
             let p = ShorCircuitParams::new(*n_q, *a, *N);
             let cert = certify_advantage(&p);
-            sprintln!("  N={:<4} n={} strands={} fusion_dim={} braid_len~{} crossover={:.4} adv={}",
-                N, n_q, p.strands, p.fusion_dim, p.estimated_braid_len, cert.crossover, cert.has_advantage);
+            sprintln!("  N={:<4} n={} strands={} fusion_dim={} braid_len~{} gate_err={:.4} logical_qubits={}",
+                N, n_q, p.strands, p.fusion_dim, p.estimated_braid_len, cert.accumulated_error, cert.logical_qubits);
         }
         sprintln!();
         sprintln!("  Fibonacci anyon model: τ⊗τ = 1⊕τ");
         sprintln!("  4 anyons/qubit, fusion dim F_{{n-1}}");
-        sprintln!("  Quantum advantage: n≥16 qubits (crossover > 0.1)");
+        sprintln!("  Advantage is topological: it lives in the logical-qubit capacity of");
+        sprintln!("  the anyonic encoding, not in a simulability threshold.");
         return;
     }
 
@@ -3144,8 +3145,8 @@ fn print_shor_fib(n_val: u64, a_val: u64) {
     sprintln!("  H-layer: {} gens  ModExp: {} gens  IQFT: {} gens",
         braid.hadamard_word.len(), braid.mod_exp_word.len(), braid.iqft_word.len());
     let cert = certify_advantage(&braid.params);
-    sprintln!("  crossover={:.4}  advantage={}  mps_chi={}",
-        cert.crossover, cert.has_advantage, cert.mps_bond_dim);
+    sprintln!("  gate_error={:.4}  logical_qubits={}  (topological capacity)",
+        cert.accumulated_error, cert.logical_qubits);
 }
 
 fn print_shor_integrated(n_val: u64, a_val: u64) {

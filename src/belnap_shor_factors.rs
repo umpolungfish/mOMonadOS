@@ -231,11 +231,12 @@ mod tests {
 
     #[test]
     fn test_factor_n21_a5() {
-        // N=21, a=5, period=6, a^(r/2)=5^3=125≡20 mod 21
-        // gcd(20-1,21)=gcd(19,21)=1 → trivial
+        // N=21, a=5, period=6, a^(r/2)=5^3=125≡20≡-1 mod 21. The -1 case is the
+        // reason the factors are trivial, and extract_factors reports it as such
+        // (the standard "pick a new a" branch) before falling to the generic gcd.
         let f = extract_factors(21, 5, 6);
         assert!(f.trivial);
-        assert_eq!(f.reason, "factors are trivial (1 or N)");
+        assert_eq!(f.reason, "a^(r/2) ≡ -1 mod N — try different a");
     }
 
     #[test]
