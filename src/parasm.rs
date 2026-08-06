@@ -1058,6 +1058,96 @@ mod tests {
     }
 
     #[test]
+    fn test_evm_lane_in_parasm() {
+        // V⊙x's EVM front end, written IN the grammar. A parasm program reads EVM
+        // opcode bytes (four B4 cells per byte) from the kernel's input, dispatches
+        // each byte to its IMASM token, skips PUSH1 operands, halts on a sentinel,
+        // and emits the lifted word. No Rust and no Python in the lift path: the
+        // lifter is a parasm word, and the word it emits is verdicted by imasm16_3,
+        // also the grammar. (Predecessor-counted merges are the next rung and want
+        // the crystal FS; here a JUMPDEST lifts straight to FFUSE.)
+        enum Act { Emit(usize), Skip1, Halt }
+        let jeq = |c: u8| match c { 0 => "JN", 1 => "JT", 2 => "JF", _ => "JB" };
+        let entries: [([u8; 4], Act); 10] = [
+            ([0, 0, 0, 0], Act::Emit(1)),   // 0x00 STOP     -> TANCH
+            ([1, 1, 1, 0], Act::Emit(2)),   // 0x54 SLOAD    -> AFWD
+            ([1, 1, 1, 1], Act::Emit(11)),  // 0x55 SSTORE   -> IFIX
+            ([1, 1, 1, 3], Act::Emit(6)),   // 0x57 JUMPI    -> FSPLIT
+            ([1, 1, 2, 3], Act::Emit(7)),   // 0x5b JUMPDEST -> FFUSE
+            ([1, 2, 0, 0], Act::Skip1),     // 0x60 PUSH1    -> skip 1 operand byte
+            ([3, 3, 0, 1], Act::Emit(2)),   // 0xf1 CALL     -> AFWD
+            ([3, 3, 0, 3], Act::Emit(1)),   // 0xf3 RETURN   -> TANCH
+            ([3, 3, 3, 1], Act::Emit(1)),   // 0xfd REVERT   -> TANCH
+            ([3, 3, 3, 2], Act::Halt),      // 0xfe sentinel -> HALT (end of input)
+        ];
+        let emit_tok = |ord: usize| format!(
+            "MOVE %r{} %r4\nEMIT %r4\nMOVE %r{} %r4\nEMIT %r4\n",
+            10 + ord / 4, 10 + ord % 4);
+
+        let mut prog = emit_tok(0);                         // VINIT once
+        prog += ".top:\nREAD %r0\nREAD %r1\nREAD %r2\nREAD %r3\n";
+        for (i, (c, act)) in entries.iter().enumerate() {
+            prog += &format!("{} %r0 .c1_{i}\nJMP .sk_{i}\n", jeq(c[0]));
+            prog += &format!(".c1_{i}:\n{} %r1 .c2_{i}\nJMP .sk_{i}\n", jeq(c[1]));
+            prog += &format!(".c2_{i}:\n{} %r2 .c3_{i}\nJMP .sk_{i}\n", jeq(c[2]));
+            prog += &format!(".c3_{i}:\n{} %r3 .hit_{i}\nJMP .sk_{i}\n", jeq(c[3]));
+            prog += &format!(".hit_{i}:\n");
+            match act {
+                Act::Emit(o) => { prog += &emit_tok(*o); prog += "JMP .top\n"; }
+                Act::Skip1 => { prog += "READ %r5\nREAD %r5\nREAD %r5\nREAD %r5\nJMP .top\n"; }
+                Act::Halt => { prog += "HALT\n"; }
+            }
+            prog += &format!(".sk_{i}:\n");
+        }
+        prog += "JMP .top\n";                               // unmatched byte: skip it
+
+        // Run the lifter on a bytecode string, returning the lifted word and
+        // the kernel's verdict over it.
+        let run = |hex: &str| -> (String, char) {
+            let mut bytes: Vec<u8> = (0..hex.len() / 2)
+                .map(|k| u8::from_str_radix(&hex[2 * k..2 * k + 2], 16).unwrap())
+                .collect();
+            bytes.push(0xfe);                               // end-of-input sentinel
+            let cells: Vec<B4> = bytes.iter().flat_map(|&b| {
+                [b >> 6 & 3, b >> 4 & 3, b >> 2 & 3, b & 3].map(B4::from_u8)
+            }).collect();
+            let mut vm = ParaVM::new();
+            for (r, v) in [(10, B4::N), (11, B4::T), (12, B4::F), (13, B4::B)] {
+                vm.set_belief(r, v);
+            }
+            vm.read_buffer = Some(cells);
+            vm.load(&prog).unwrap();
+            vm.run(Some(200_000));
+            let vals: Vec<u8> = vm.emit_buffer.iter().map(|s| {
+                match s.rsplit(' ').next().unwrap_or("") { "T" => 1, "F" => 2, "B" => 3, _ => 0 }
+            }).collect();
+            let alphabet = ["⊢", "⊣", ">", "<", "⋈", "⊙", "∈", "∋", "⊤", "⊥", "⊞", "◻"];
+            let word: String = vals.chunks(2)
+                .map(|p| alphabet[(p[0] * 4 + p.get(1).copied().unwrap_or(0)) as usize])
+                .collect();
+            let steps = imasm_core::imasm16_3::parse_glyph_word(&word);
+            (word.clone(), imasm_core::imasm16_3::tri_ancestral_verdict(&steps).0)
+        };
+
+        // What this rung proves: the lifter written IN the grammar emits the
+        // same word the reference lifters emit, from real EVM bytes, with no
+        // Rust or Python anywhere in the lift path. The bytes go in through the
+        // kernel's input, the trie dispatches, the word comes out.
+        let (vuln, _) = run("600160075755005b00");   // commit inside the branch
+        let (safe, _) = run("6001600657545b5500");   // guard before the commit
+        assert_eq!(vuln, "⊢∈◻⊣∋⊣", "in-grammar lift of the unguarded ordering");
+        assert_eq!(safe, "⊢∈>∋◻⊣", "in-grammar lift of the guarded ordering");
+
+        // What it does NOT yet prove, stated rather than asserted away: both
+        // words carry a ∋, so both close, and the two orderings do not separate
+        // by verdict here. A JUMPDEST lifts to ∋ unconditionally because this
+        // rung has no predecessor counting — a merge is only a merge when two
+        // paths actually reach it, and counting them wants the crystal FS. The
+        // reference lifters do that counting; this one does not, and until it
+        // does, asserting a verdict split would be asserting something untrue.
+    }
+
+    #[test]
     fn test_frobenius_identity() {
         // ffuse(fsplit(r)) == r for all r
         for &r in &[B4::N, B4::T, B4::F, B4::B] {
