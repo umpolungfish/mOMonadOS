@@ -769,6 +769,70 @@ mod tests {
     }
 
     #[test]
+    fn test_imasm_full_byte_decoder() {
+        // PLANK 2: a full-byte instruction decoder, pure structure, no data table.
+        // A byte is four B4 cells. Two carry the OPCODE field (a 16-leaf dispatch
+        // trie, covering the twelve IMASM opcodes plus four spares) and two are the
+        // OPERAND, passed through untouched. The wire opcode encoding is scrambled;
+        // each leaf emits the CANONICAL IMASM token code, so the trie IS a real
+        // 16-entry decode table realized as control flow. 16 opcodes × 16 operands
+        // is the whole 256-byte space, decoded without a byte of data storage.
+        const CELLS: [&str; 4] = ["N", "T", "F", "B"];      // cell index -> B4 name
+        let perm = |w: usize| (w * 7 + 3) % 16;             // wire code -> opcode ordinal (a bijection)
+        let canon = |ord: usize| -> (usize, usize) {        // ordinal -> canonical (hi,lo) cells
+            if ord < 12 { (ord / 4, ord % 4) } else { (3, 3) } // >=12: (B,B) = unknown
+        };
+        // const cells live in r10..r13 (N,T,F,B); emit one canonical cell.
+        let emit_cell = |idx: usize| format!("MOVE %r{} %r4\nEMIT %r4\n", 10 + idx);
+
+        // Generate the decoder once: read 4 cells, two-level fork on the opcode
+        // field, leaf emits canonical token cells then passes the operand through.
+        let mut prog = String::from("READ %r0\nREAD %r1\nREAD %r2\nREAD %r3\n");
+        prog += "JT %r0 .h1\nJF %r0 .h2\nJB %r0 .h3\n"; // r0==N falls through to .h0
+        for i in 0..4 {
+            prog += &format!(".h{}:\n", i);
+            prog += &format!("JT %r1 .L{}_1\nJF %r1 .L{}_2\nJB %r1 .L{}_3\n", i, i, i);
+            for j in 0..4 {
+                let (hi, lo) = canon(perm(i * 4 + j));
+                prog += &format!(".L{}_{}:\n", i, j);
+                prog += &emit_cell(hi);          // canonical opcode hi
+                prog += &emit_cell(lo);          // canonical opcode lo
+                prog += "EMIT %r2\nEMIT %r3\n";  // operand, passed through
+                prog += "JMP .done\n";
+            }
+        }
+        prog += ".done:\nHALT\n";
+
+        let decode_byte = |bytes: [usize; 4]| -> Vec<String> {
+            let mut vm = ParaVM::new();
+            vm.set_belief(10, B4::N);
+            vm.set_belief(11, B4::T);
+            vm.set_belief(12, B4::F);
+            vm.set_belief(13, B4::B);
+            let as_b4 = |v: usize| B4::from_u8(v as u8);
+            vm.read_buffer = Some(bytes.iter().map(|&v| as_b4(v)).collect());
+            vm.load(&prog).unwrap();
+            vm.run(None);
+            vm.emit_buffer.iter()
+                .map(|s| String::from(s.rsplit(' ').next().unwrap_or("")))
+                .collect()
+        };
+
+        // Check several bytes across different opcode leaves and operands. Expected
+        // output is derived from the SAME table, so the assertion tests that the
+        // control-flow trie faithfully realizes the decode, byte for byte.
+        for bytes in [[1usize, 0, 2, 3], [0, 3, 1, 1], [2, 2, 3, 0], [3, 1, 0, 2]] {
+            let (chi, clo) = canon(perm(bytes[0] * 4 + bytes[1]));
+            let expected = vec![
+                CELLS[chi].to_string(), CELLS[clo].to_string(),
+                CELLS[bytes[2]].to_string(), CELLS[bytes[3]].to_string(),
+            ];
+            assert_eq!(decode_byte(bytes), expected,
+                "full-byte decode mismatch for wire byte {:?}", bytes);
+        }
+    }
+
+    #[test]
     fn test_frobenius_identity() {
         // ffuse(fsplit(r)) == r for all r
         for &r in &[B4::N, B4::T, B4::F, B4::B] {

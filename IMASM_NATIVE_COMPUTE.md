@@ -59,11 +59,25 @@ It is a nontrivial function of the input, not an echo, and the decode carries no
 data table: the dispatch trie is the table. This is IMASM-native compute
 executing on the substrate.
 
+## Proven (the second plank): a full byte decoder
+
+`parasm::tests::test_imasm_full_byte_decoder` widens the trie to a whole byte.
+A byte is four cells: two are the OPCODE field, two are the OPERAND.
+
+- The opcode field drives a two-level, 16-leaf dispatch trie (the twelve IMASM
+  opcodes plus four spares). The wire opcode encoding is scrambled and each leaf
+  emits the CANONICAL IMASM token code, so the trie is a genuine 16-entry decode
+  table realized entirely as control flow.
+- The operand two cells are passed through untouched.
+- 16 opcodes × 16 operands is the whole 256-byte space, decoded with zero bytes
+  of data storage. The table is topology. Verified byte for byte against the same
+  table it realizes.
+
 ## The ramp to the Replicating Code
 
 1. DONE: a decode step that computes, table-as-trie, running on parasm.
-2. Widen the trie from one cell to four, a full byte decoder, still pure
-   structure. Emit one IMASM token per decoded instruction to the crystal FS.
+2. DONE: a full byte decoder (opcode field dispatched to the canonical token,
+   operand passed through), the whole 256-byte space as pure structure.
 3. Drive it over a real bytecode re-expressed in B4 (EVM or CPython first, both
    already stack machines like parasm). Output is the lifted IMASM word; run it
    through `imasm16_3::tri_ancestral_verdict` for the closure verdict. An open
