@@ -124,7 +124,6 @@ fn token_style(t: Token) -> &'static str {
         Token::Evalt => BOLD_GREEN, Token::Evalf => BOLD_RED,
         Token::Engagr => BOLD_WHITE, Token::Ifix => DIM,
         Token::Fsplit3 => BOLD_CYAN, Token::Ffuse3 => BOLD_CYAN,
-        Token::Tneg => YELLOW, Token::Ineg => DIM,
         Token::Evali => MAGENTA,
         Token::Rotat => BOLD_WHITE,
     }

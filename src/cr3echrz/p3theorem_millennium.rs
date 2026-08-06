@@ -4,8 +4,9 @@
 #![allow(dead_code)]
 
 use crate::belnap::B4;
-use alloc::string::{String, ToString};
+use alloc::string::String;
 use alloc::vec;
+use crate::cr3echrz::shared::Datum;
 use alloc::collections::BTreeMap;
 use alloc::format;
 
@@ -19,10 +20,10 @@ use super::p3theorem::{TheoremResult, FrobeniusVerifier};
 pub fn run_riemann_hypothesis() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("status"), String::from("O_inf barrier")),
-        (String::from("verified_zeros"), String::from("10^13 (Platt 2017)")),
-        (String::from("critical_line"), String::from("Re(s)=1/2")),
-        (String::from("barrier_type"), String::from("CLINK L8: non-transmissible")),
+        (String::from("status"), Datum::from("O_inf barrier")),
+        (String::from("verified_zeros"), Datum::from("10^13 (Platt 2017)")),
+        (String::from("critical_line"), Datum::from("Re(s)=1/2")),
+        (String::from("barrier_type"), Datum::from("CLINK L8: non-transmissible")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {
@@ -41,10 +42,10 @@ pub fn run_riemann_hypothesis() -> TheoremResult {
 pub fn run_yang_mills() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("status"), String::from("O_inf barrier")),
-        (String::from("group"), String::from("SU(N)")),
-        (String::from("condition"), String::from("mass gap Delta > 0")),
-        (String::from("barrier_type"), String::from("P: Frobenius-special ±s")),
+        (String::from("status"), Datum::from("O_inf barrier")),
+        (String::from("group"), Datum::from("SU(N)")),
+        (String::from("condition"), Datum::from("mass gap Delta > 0")),
+        (String::from("barrier_type"), Datum::from("P: Frobenius-special ±s")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {
@@ -63,9 +64,9 @@ pub fn run_yang_mills() -> TheoremResult {
 pub fn run_hodge() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("status"), String::from("O_inf barrier")),
-        (String::from("statement"), String::from("Hdg^2k(X) = H^2k(X,Q) cap H^k,k")),
-        (String::from("implication"), String::from("Algebraic cycles <-> Hodge classes")),
+        (String::from("status"), Datum::from("O_inf barrier")),
+        (String::from("statement"), Datum::from("Hdg^2k(X) = H^2k(X,Q) cap H^k,k")),
+        (String::from("implication"), Datum::from("Algebraic cycles <-> Hodge classes")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {
@@ -84,9 +85,9 @@ pub fn run_hodge() -> TheoremResult {
 pub fn run_navier_stokes() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("status"), String::from("O_inf barrier")),
-        (String::from("condition"), String::from("Smooth solutions for all t>0")),
-        (String::from("blowup"), String::from("finite-time unknown")),
+        (String::from("status"), Datum::from("O_inf barrier")),
+        (String::from("condition"), Datum::from("Smooth solutions for all t>0")),
+        (String::from("blowup"), Datum::from("finite-time unknown")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {
@@ -105,9 +106,9 @@ pub fn run_navier_stokes() -> TheoremResult {
 pub fn run_p_vs_np() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("status"), String::from("O_inf barrier")),
-        (String::from("conjecture"), String::from("P != NP")),
-        (String::from("barrier_type"), String::from("G: broadcast composition required")),
+        (String::from("status"), Datum::from("O_inf barrier")),
+        (String::from("conjecture"), Datum::from("P != NP")),
+        (String::from("barrier_type"), Datum::from("G: broadcast composition required")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {
@@ -126,9 +127,9 @@ pub fn run_p_vs_np() -> TheoremResult {
 pub fn run_opn() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("status"), String::from("FALSE (conjectured)")),
-        (String::from("lower_bound"), String::from("10^1500 (Ochem-Rao)")),
-        (String::from("condition"), String::from("sigma(N)=2N, N odd")),
+        (String::from("status"), Datum::from("FALSE (conjectured)")),
+        (String::from("lower_bound"), Datum::from("10^1500 (Ochem-Rao)")),
+        (String::from("condition"), Datum::from("sigma(N)=2N, N odd")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {
@@ -147,9 +148,9 @@ pub fn run_opn() -> TheoremResult {
 pub fn run_bsd() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("status"), String::from("O_inf barrier")),
-        (String::from("statement"), String::from("ords=1 L(E,s) = rank E(Q)")),
-        (String::from("known"), String::from("rank 0 and 1 (Gross-Zagier, Kolyvagin)")),
+        (String::from("status"), Datum::from("O_inf barrier")),
+        (String::from("statement"), Datum::from("ords=1 L(E,s) = rank E(Q)")),
+        (String::from("known"), Datum::from("rank 0 and 1 (Gross-Zagier, Kolyvagin)")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {
@@ -169,8 +170,8 @@ pub fn run_bsd() -> TheoremResult {
 pub fn run_beal() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("statement"), String::from("A^x + B^y = C^z => gcd(A,B,C) > 1")),
-        (String::from("reward"), String::from("$1M Beal Prize")),
+        (String::from("statement"), Datum::from("A^x + B^y = C^z => gcd(A,B,C) > 1")),
+        (String::from("reward"), Datum::from("$1M Beal Prize")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {
@@ -189,8 +190,8 @@ pub fn run_beal() -> TheoremResult {
 pub fn run_twin_prime() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("statement"), String::from("Infinitely many primes p where p+2 is prime")),
-        (String::from("known"), String::from("Bounded gaps <= 246 (Polymath 2014)")),
+        (String::from("statement"), Datum::from("Infinitely many primes p where p+2 is prime")),
+        (String::from("known"), Datum::from("Bounded gaps <= 246 (Polymath 2014)")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {
@@ -209,8 +210,8 @@ pub fn run_twin_prime() -> TheoremResult {
 pub fn run_hadwiger_nelson() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("statement"), String::from("Chromatic number of the plane")),
-        (String::from("bounds"), String::from("5 <= chi(R^2) <= 7")),
+        (String::from("statement"), Datum::from("Chromatic number of the plane")),
+        (String::from("bounds"), Datum::from("5 <= chi(R^2) <= 7")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {
@@ -229,8 +230,8 @@ pub fn run_hadwiger_nelson() -> TheoremResult {
 pub fn run_lonely_runner() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("statement"), String::from("Every runner is lonely at some time")),
-        (String::from("known"), String::from("Proven for n <= 7 runners")),
+        (String::from("statement"), Datum::from("Every runner is lonely at some time")),
+        (String::from("known"), Datum::from("Proven for n <= 7 runners")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {
@@ -250,8 +251,8 @@ pub fn run_lonely_runner() -> TheoremResult {
 pub fn run_cramer() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("statement"), String::from("p_{n+1} - p_n = O((log p_n)^2)")),
-        (String::from("known"), String::from("Best: O(p_n^{0.525}) (Baker-Harman-Pintz 2001)")),
+        (String::from("statement"), Datum::from("p_{n+1} - p_n = O((log p_n)^2)")),
+        (String::from("known"), Datum::from("Best: O(p_n^{0.525}) (Baker-Harman-Pintz 2001)")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {
@@ -270,8 +271,8 @@ pub fn run_cramer() -> TheoremResult {
 pub fn run_perfect_cuboid() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("statement"), String::from("Integer-sided cuboid with integer face/space diagonals")),
-        (String::from("known"), String::from("Euler brick exists; perfect cuboid unknown")),
+        (String::from("statement"), Datum::from("Integer-sided cuboid with integer face/space diagonals")),
+        (String::from("known"), Datum::from("Euler brick exists; perfect cuboid unknown")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {
@@ -290,8 +291,8 @@ pub fn run_perfect_cuboid() -> TheoremResult {
 pub fn run_sic_povm() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("statement"), String::from("SIC-POVM in all dimensions (Zauner's conjecture)")),
-        (String::from("known"), String::from("Exact solutions for d <= 53 + sporadic")),
+        (String::from("statement"), Datum::from("SIC-POVM in all dimensions (Zauner's conjecture)")),
+        (String::from("known"), Datum::from("Exact solutions for d <= 53 + sporadic")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {
@@ -310,7 +311,7 @@ pub fn run_sic_povm() -> TheoremResult {
 pub fn run_hecke_landau() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("statement"), String::from("Hecke eigenforms and Landau-Siegel zero barrier")),
+        (String::from("statement"), Datum::from("Hecke eigenforms and Landau-Siegel zero barrier")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {
@@ -329,8 +330,8 @@ pub fn run_hecke_landau() -> TheoremResult {
 pub fn run_solitary_10() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("statement"), String::from("10 is solitary (no friend)")),
-        (String::from("proof"), String::from("Lean 4 verified: Imscribing.Classical.Solitary10.lean")),
+        (String::from("statement"), Datum::from("10 is solitary (no friend)")),
+        (String::from("proof"), Datum::from("Lean 4 verified: Imscribing.Classical.Solitary10.lean")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {
@@ -360,11 +361,11 @@ pub fn run_collatz_ops(n: u64) -> TheoremResult {
     }
     let reached_one = x == 1;
     let data = BTreeMap::from([
-        (String::from("start"), n.to_string()),
-        (String::from("steps"), steps.to_string()),
-        (String::from("max"), max_val.to_string()),
-        (String::from("reached_1"), reached_one.to_string()),
-        (String::from("path_len"), path.len().to_string()),
+        (String::from("start"), Datum::from(n)),
+        (String::from("steps"), Datum::from(steps)),
+        (String::from("max"), Datum::from(max_val)),
+        (String::from("reached_1"), Datum::from(reached_one)),
+        (String::from("path_len"), Datum::from(path.len())),
     ]);
     frob.verify_usize(if reached_one { 1 } else { 0 }, 1);
     TheoremResult {
@@ -385,7 +386,7 @@ pub fn run_collatz_ops(n: u64) -> TheoremResult {
 pub fn run_cosmogeny() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("statement"), String::from("Structural cosmogeny: genesis of the 12-primitive grammar")),
+        (String::from("statement"), Datum::from("Structural cosmogeny: genesis of the 12-primitive grammar")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {
@@ -404,7 +405,7 @@ pub fn run_cosmogeny() -> TheoremResult {
 pub fn run_godel_resolved() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("statement"), String::from("Gödel incompleteness resolved via paraconsistent kernel")),
+        (String::from("statement"), Datum::from("Gödel incompleteness resolved via paraconsistent kernel")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {
@@ -423,7 +424,7 @@ pub fn run_godel_resolved() -> TheoremResult {
 pub fn run_rebis() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("statement"), String::from("Red-Hot Rebis: dual-unified type")),
+        (String::from("statement"), Datum::from("Red-Hot Rebis: dual-unified type")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {
@@ -442,7 +443,7 @@ pub fn run_rebis() -> TheoremResult {
 pub fn run_qg_unified() -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let data = BTreeMap::from([
-        (String::from("statement"), String::from("Quantum gravity unified via Frobenius bridge")),
+        (String::from("statement"), Datum::from("Quantum gravity unified via Frobenius bridge")),
     ]);
     frob.verify_usize(1, 1);
     TheoremResult {

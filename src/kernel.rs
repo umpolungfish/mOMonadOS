@@ -381,15 +381,6 @@ impl Kernel {
                 let v = self.stack.pop();
                 self.stack.push(if v == B4::B { B4::B } else { B4::N });
             }
-            Token::Tneg => {
-                let v = self.stack.pop();
-                self.stack.push(v.bnot());
-            }
-            Token::Ineg => {
-                // Con-negation: swap evidence bits (collapses to bnot in B4).
-                let v = self.stack.pop();
-                self.stack.push(v.bnot());
-            }
             Token::Rotat => {
                 // ROTAT — the first op-opcode: cyclic shift of the program-ring
                 // by k, here realized as stack rotation. Pops k (default 1) and

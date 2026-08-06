@@ -5,6 +5,52 @@
 
 use alloc::string::String;
 use alloc::vec::Vec;
+use core::fmt;
+
+
+// ─── Datum: a typed cell for the theorem/kernel result bags ─────────
+// The result `data` maps were BTreeMap<String, String>, which stringified
+// every integer and bool at the insert site and lost the type. A Datum keeps
+// the type at construction; the print path renders it back to the same text.
+// Int and Bool are the values that were actually being thrown away; Real keeps
+// floats numeric; Text carries genuine tags (PASS/OPEN, classification names)
+// and composite strings that were always textual.
+#[derive(Clone, PartialEq, Debug)]
+pub enum Datum {
+    Int(i128),
+    Real(f64),
+    Bool(bool),
+    Text(String),
+}
+
+impl Datum {
+    /// Integer view when the cell holds one (None for the other variants).
+    pub fn as_int(&self) -> Option<i128> {
+        match self { Datum::Int(n) => Some(*n), _ => None }
+    }
+    /// Bool view when the cell holds one.
+    pub fn as_bool(&self) -> Option<bool> {
+        match self { Datum::Bool(b) => Some(*b), _ => None }
+    }
+}
+
+impl fmt::Display for Datum {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Datum::Int(n) => write!(f, "{}", n),
+            Datum::Real(x) => write!(f, "{}", x),
+            Datum::Bool(b) => write!(f, "{}", b),
+            Datum::Text(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl From<&str> for Datum { fn from(s: &str) -> Self { Datum::Text(s.to_string()) } }
+impl From<String> for Datum { fn from(s: String) -> Self { Datum::Text(s) } }
+impl From<bool> for Datum { fn from(b: bool) -> Self { Datum::Bool(b) } }
+macro_rules! datum_from_int { ($($t:ty),*) => { $( impl From<$t> for Datum {
+    fn from(n: $t) -> Self { Datum::Int(n as i128) } } )* }; }
+datum_from_int!(i32, i64, u32, u64, usize, i128);
 
 
 // ─── 12 Universal IMASM Opcodes ────────────────────────────────────

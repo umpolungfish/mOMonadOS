@@ -263,14 +263,6 @@ impl MiniKernel {
                 let v = self.pop();
                 self.push(if v == B { B } else { N });
             }
-            Token::Tneg    => {
-                let v = self.pop();
-                self.push(v.bnot());
-            }
-            Token::Ineg    => {
-                let v = self.pop();
-                self.push(v.bnot());
-            }
             Token::Rotat   => {
                 // ROTAT — cyclic shift of stack by k (default 1) mod depth.
                 let k_val = self.pop();

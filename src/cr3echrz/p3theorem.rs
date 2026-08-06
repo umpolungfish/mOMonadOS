@@ -7,6 +7,7 @@
 #![allow(dead_code)]
 
 use crate::belnap::B4;
+use crate::cr3echrz::shared::Datum;
 use alloc::string::String;
 use alloc::vec::Vec;
 use libm::{cos, sin};
@@ -86,7 +87,7 @@ pub struct TheoremResult {
     pub frobenius_pass: bool,
     pub phases: usize,
     pub output: String,
-    pub data: BTreeMap<String, String>,
+    pub data: BTreeMap<String, Datum>,
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -141,11 +142,11 @@ pub fn run_collatz(seed: u64) -> TheoremResult {
     }
 
     let mut data = BTreeMap::new();
-    data.insert("seed".into(), format!("{}", seed));
-    data.insert("steps".into(), format!("{}", step_count));
-    data.insert("max_value".into(), format!("{}", max_val));
+    data.insert("seed".into(), seed.into());
+    data.insert("steps".into(), step_count.into());
+    data.insert("max_value".into(), max_val.into());
     let traj_str: Vec<String> = trajectory.iter().map(|v| format!("{}", v)).collect();
-    data.insert("trajectory".into(), traj_str.join(" -> "));
+    data.insert("trajectory".into(), traj_str.join(" -> ").into());
 
     TheoremResult {
         name: "Collatz Conjecture".into(),
@@ -192,10 +193,10 @@ pub fn run_goldbach(n: u64) -> TheoremResult {
 
     let partition = candidates.first().copied();
     let mut data = BTreeMap::new();
-    data.insert("n".into(), format!("{}", n));
-    data.insert("candidate_count".into(), format!("{}", candidates.len()));
+    data.insert("n".into(), n.into());
+    data.insert("candidate_count".into(), candidates.len().into());
     if let Some((p, q)) = partition {
-        data.insert("partition".into(), format!("{} + {} = {}", p, q, n));
+        data.insert("partition".into(), format!("{} + {} = {}", p, q, n).into());
     }
 
     let output = if let Some((p, q)) = partition {
@@ -246,12 +247,12 @@ pub fn run_three_body() -> TheoremResult {
 
     let mut data = BTreeMap::new();
     data.insert("bodies".into(), "3".into());
-    data.insert("masses".into(), format!("[{}, {}, {}]", m1, m2, m3));
+    data.insert("masses".into(), format!("[{}, {}, {}]", m1, m2, m3).into());
     data.insert("orbit_type".into(), "figure-8 (Chenciner-Montgomery 2000)".into());
-    data.insert("t".into(), format!("{:.6}", t));
-    data.insert("COM_x".into(), format!("{:.6}", cx));
-    data.insert("COM_y".into(), format!("{:.6}", cy));
-    data.insert("frobenius_pass".into(), format!("{}", frob.all_pass()));
+    data.insert("t".into(), format!("{:.6}", t).into());
+    data.insert("COM_x".into(), format!("{:.6}", cx).into());
+    data.insert("COM_y".into(), format!("{:.6}", cy).into());
+    data.insert("frobenius_pass".into(), frob.all_pass().into());
 
     TheoremResult {
         name: "Three-Body Problem".into(),
@@ -301,8 +302,8 @@ pub fn run_burnside(generators: usize, exponent: usize) -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let status: B4;
     let mut data = BTreeMap::new();
-    data.insert("generators".into(), format!("{}", generators));
-    data.insert("exponent".into(), format!("{}", exponent));
+    data.insert("generators".into(), generators.into());
+    data.insert("exponent".into(), exponent.into());
 
     let (classification, order_estimate): (&str, usize) = match (generators, exponent) {
         (2, 3) => ("FINITE", 27),
@@ -330,12 +331,12 @@ pub fn run_burnside(generators: usize, exponent: usize) -> TheoremResult {
     if generators <= 4 && exponent <= 6 {
         let words = generate_burnside_words(generators, exponent, 3);
         frob.verify_usize(1, 1);
-        data.insert("word_count".into(), format!("{}", words.len()));
+        data.insert("word_count".into(), words.len().into());
     } else {
-        data.insert("word_count".into(), format!(">(too many)"));
+        data.insert("word_count".into(), format!(">(too many)").into());
     }
     data.insert("classification".into(), classification.into());
-    data.insert("order_estimate".into(), format!("{}", order_estimate));
+    data.insert("order_estimate".into(), order_estimate.into());
 
     TheoremResult {
         name: "Bounded Burnside Problem".into(),
@@ -385,7 +386,7 @@ pub fn run_erdos_straus(n: u64) -> TheoremResult {
     let mut frob = FrobeniusVerifier::new();
     let status: B4;
     let mut data = BTreeMap::new();
-    data.insert("n".into(), format!("{}", n));
+    data.insert("n".into(), n.into());
 
     let decomposition = erdos_straus_decompose(n);
 
@@ -394,9 +395,9 @@ pub fn run_erdos_straus(n: u64) -> TheoremResult {
         let lhs = 4.0 / n as f64;
         let rhs = 1.0/x as f64 + 1.0/y as f64 + 1.0/z as f64;
         frob.verify_f64(lhs, rhs);
-        data.insert("x".into(), format!("{}", x));
-        data.insert("y".into(), format!("{}", y));
-        data.insert("z".into(), format!("{}", z));
+        data.insert("x".into(), x.into());
+        data.insert("y".into(), y.into());
+        data.insert("z".into(), z.into());
     } else if n % 336 == 1 {
         status = B4::B;
         data.insert("note".into(), "n = 1 (mod 336) — unproven congruence class".into());
@@ -455,7 +456,7 @@ pub fn run_inverse_galois(group_name: &str) -> TheoremResult {
         status = B4::F;
     }
 
-    data.insert("realizable".into(), format!("{}", realizable));
+    data.insert("realizable".into(), realizable.into());
     data.insert("notes".into(), notes.into());
     frob.verify_usize(1, 1);
 
@@ -497,7 +498,7 @@ pub fn run_baum_connes(group_class: &str) -> TheoremResult {
     if holds { status = B4::T; }
     else { status = B4::F; }
 
-    data.insert("holds".into(), format!("{}", holds));
+    data.insert("holds".into(), holds.into());
     data.insert("notes".into(), notes.into());
     frob.verify_usize(1, 1);
 

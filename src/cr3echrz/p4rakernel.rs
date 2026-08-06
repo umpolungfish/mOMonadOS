@@ -7,6 +7,7 @@
 #![allow(dead_code)]
 
 use crate::belnap::B4;
+use crate::cr3echrz::shared::Datum;
 use alloc::string::String;
 use alloc::vec::Vec;
 use libm::sqrt;
@@ -23,7 +24,7 @@ pub struct P4RAResult {
     pub status_name: String,
     pub frob_pass: bool,
     pub output: String,
-    pub data: BTreeMap<String, String>,
+    pub data: BTreeMap<String, Datum>,
 }
 
 // ─── Primality check ────────────────────────────────────────────────
@@ -66,8 +67,8 @@ pub fn run_p4ra_burnside(generators: usize, exponent: usize, seed: &[i32]) -> P4
     let mut out_lines: Vec<String> = Vec::new();
 
     out_lines.push(format!("[VINIT]  B({},{}) — VOID", generators, exponent));
-    data.insert("generators".into(), format!("{}", generators));
-    data.insert("exponent".into(), format!("{}", exponent));
+    data.insert("generators".into(), generators.into());
+    data.insert("exponent".into(), exponent.into());
 
     out_lines.push(format!("[TANCH] generators={} exponent={} seed={:?}",
         generators, exponent, seed));
@@ -108,7 +109,7 @@ pub fn run_p4ra_burnside(generators: usize, exponent: usize, seed: &[i32]) -> P4
 
     out_lines.push("[IMSCRIB] Burnside instance verified".into());
     data.insert("classification".into(), classification.0.into());
-    data.insert("order".into(), format!("{}", classification.1));
+    data.insert("order".into(), classification.1.into());
     data.insert("frobenius".into(), if frob_ok { "PASS".into() } else { "OPEN".into() });
 
     P4RAResult {
@@ -161,9 +162,9 @@ pub fn run_p4ra_connes(factor_name: &str, use_2020: bool) -> P4RAResult {
     }
 
     data.insert("factor".into(), factor_name.into());
-    data.insert("embeddable".into(), format!("{}", embeddable));
+    data.insert("embeddable".into(), embeddable.into());
     data.insert("reason".into(), reason.into());
-    data.insert("use_2020".into(), format!("{}", use_2020));
+    data.insert("use_2020".into(), use_2020.into());
 
     P4RAResult {
         name: "Connes Embedding (p4ra)".into(),
@@ -221,9 +222,9 @@ pub fn run_p4ra_erdos_straus(n: u64) -> P4RAResult {
     if let Some((x, y, z)) = found {
         status = B4::T;
         out_lines.push(format!("[EVALT] T-arm: 4/{} = 1/{} + 1/{} + 1/{}", n, x, y, z));
-        data.insert("x".into(), format!("{}", x));
-        data.insert("y".into(), format!("{}", y));
-        data.insert("z".into(), format!("{}", z));
+        data.insert("x".into(), x.into());
+        data.insert("y".into(), y.into());
+        data.insert("z".into(), z.into());
     } else {
         status = B4::F;
         out_lines.push(format!("[EVALF] F-arm: no decomposition for n={}", n));
@@ -243,7 +244,7 @@ pub fn run_p4ra_erdos_straus(n: u64) -> P4RAResult {
     }
 
     out_lines.push(format!("[IMSCRIB] Frobenius={}", if frob_ok { "PASS" } else { "OPEN" }));
-    data.insert("n".into(), format!("{}", n));
+    data.insert("n".into(), n.into());
     data.insert("frobenius".into(), if frob_ok { "PASS".into() } else { "OPEN".into() });
 
     P4RAResult {
@@ -300,8 +301,8 @@ pub fn run_p4ra_goldbach(n: u64) -> P4RAResult {
         status = B4::T;
         let (p, q) = pairs[0];
         out_lines.push(format!("[EVALT] T-arm: {} = {} + {} (found)", n, p, q));
-        data.insert("first_pair".into(), format!("{}+{}", p, q));
-        data.insert("pair_count".into(), format!("{}", pairs.len()));
+        data.insert("first_pair".into(), format!("{}+{}", p, q).into());
+        data.insert("pair_count".into(), pairs.len().into());
         out_lines.push(format!("[AFWD]  first pair: ({} , {})", p, q));
         out_lines.push(format!("[FFUSE] mu: {} + {} = {} — PASS", p, q, p+q));
         out_lines.push(format!("[IFIX]  verified[{}] = ({},{})", n, p, q));
@@ -321,7 +322,7 @@ pub fn run_p4ra_goldbach(n: u64) -> P4RAResult {
         n, if let Some((p,q)) = pairs.first() { format!("{}+{}", p, q) } else { "?".into() }));
     out_lines.push("  Closure: True".into());
 
-    data.insert("n".into(), format!("{}", n));
+    data.insert("n".into(), n.into());
     data.insert("frobenius".into(), if frob_ok { "PASS".into() } else { "OPEN".into() });
 
     P4RAResult {

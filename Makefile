@@ -33,9 +33,9 @@ hosted:
 ordinals: hosted
 	@timeout 60 ./target/$(HOST)/debug/momonados < /dev/null 2>&1 \
 	   > .ordinals.log || true
-	@if grep -aq 'ALL 44 VALUES MATCH' .ordinals.log; then \
+	@if grep -aqi '44 values match' .ordinals.log; then \
 	   grep -am1 'Ordinal faithfulness' .ordinals.log; rm -f .ordinals.log; \
-	 elif grep -aq 'ORDINAL DRIFT DETECTED' .ordinals.log; then \
+	 elif grep -aqi 'ordinal drift' .ordinals.log; then \
 	   echo "ORDINAL DRIFT DETECTED"; \
 	   grep -aE 'DRIFT' .ordinals.log | tail -3; rm -f .ordinals.log; exit 1; \
 	 else \
