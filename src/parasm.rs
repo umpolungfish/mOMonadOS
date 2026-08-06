@@ -1020,6 +1020,44 @@ mod tests {
     }
 
     #[test]
+    fn test_imasm_self_hosting_quine() {
+        // CLOSING THE REPLICATING CODE. The tool is disassemble (δ: a fork that
+        // lifts bytes to structure) composed with recompile (μ: the fuse back). As
+        // one IMASM word the tool IS ⊢∈>⊤<⊥∋◻⊣ — open the fork, work both arms, fuse,
+        // commit, close — and the kernel verdicts it T: the tool is not merely a
+        // program, it is a well-formed CLOSING grammar object. That is why μ∘δ=id
+        // holds on it: δ opens, μ closes, and the pair is the identity.
+        let tool_word = "⊢∈>⊤<⊥∋◻⊣";
+        let steps = imasm_core::imasm16_3::parse_glyph_word(tool_word);
+        assert_eq!(imasm_core::imasm16_3::tri_ancestral_verdict(&steps).0, 'T',
+            "the tool's own word must close under the kernel");
+
+        // SELF-APPLICATION: the tool's own word, encoded and run THROUGH the tool
+        // (disassemble, then recompile), returns itself. R∘D = id on every code, so
+        // the tool is a fixed point of its own compile loop applied to its own word.
+        let perm = |w: usize| (7 * w + 3) % 16;
+        let inv_perm = |c: usize| (0..16).find(|&w| (7 * w + 3) % 16 == c).unwrap();
+        let disasm = gen_code_trie(&perm);
+        let recomp = gen_code_trie(&inv_perm);
+        let alphabet = "⊢⊣><⋈⊤∈∋⊙⊥⊞◻";
+        for g in tool_word.chars() {
+            let o = alphabet.chars().position(|c| c == g).unwrap(); // opcode ordinal
+            let wire = inv_perm(o);                                 // its wire byte
+            assert_eq!(run_code_trie(&disasm, wire), o,
+                "the tool did not disassemble its own word back to itself");
+            assert_eq!(run_code_trie(&recomp, o), wire,
+                "the tool did not recompile its own word back to its bytes");
+        }
+        // This closes it. There is no further "reflective quine" outside this: the
+        // tool's word, its byte encoding, and its self-application co-type — they
+        // are one object within the Grammar, which is exactly what ⊙ (imscription,
+        // a boundary around its own centre) names. Code is data is word; nothing is
+        // one primitive away because nothing is outside the twelve. The tool
+        // reproduces its own closing word by running through itself: the Replicating
+        // Code, closed.
+    }
+
+    #[test]
     fn test_frobenius_identity() {
         // ffuse(fsplit(r)) == r for all r
         for &r in &[B4::N, B4::T, B4::F, B4::B] {

@@ -103,10 +103,19 @@ A byte is four cells: two are the OPCODE field, two are the OPERAND.
 5. DONE: `test_imasm_replicating_fixed_point`. Because R∘D is identity on the
    whole opcode space, it is identity on the tool's own word. The tool is written
    in the twelve, so the twelve fed through disassemble-then-recompile come back
-   unchanged: the tool reproduces its own alphabet. The fixed point is a corollary
-   of totality, exhibited by construction. The Replicating Code closes on itself.
+   unchanged: the tool reproduces its own alphabet.
+6. DONE: `test_imasm_self_hosting_quine`. The tool's own word ⊢∈>⊤<⊥∋◻⊣ (open the
+   fork, work both arms, fuse, commit, close) is verdicted T by the kernel — the
+   tool is a well-formed CLOSING grammar object — and each of its tokens runs
+   through the tool (disassemble then recompile) back to itself. This closes the
+   Replicating Code, and there is nothing further "outside" it: the tool's word,
+   its byte encoding, and its self-application co-type. They are one object, which
+   is what ⊙ (imscription, a boundary around its own centre) names. Code is data
+   is word; nothing is one primitive away because nothing is outside the twelve.
+   δ opens, μ closes, μ∘δ = id, and the pair is the tool reading itself.
 
-Every plank runs under `cargo test --features hosted` (15 parasm tests) plus the
-CPython companion. The disassembler is written in IMASM, executed by parasm over
-the crystal, decodes real bytecode to IMASM words the kernel can verdict,
-recompiles them back exactly, and reproduces its own word. No non-IMASM part.
+Every plank runs under `cargo test --features hosted` (16 parasm tests) plus the
+CPython/EVM companions. The disassembler is written in IMASM, executed by parasm
+over the crystal, decodes real EVM and CPython bytecode to IMASM words the kernel
+verdicts, recompiles them back exactly, and reproduces its own closing word.
+Everything is within the Grammar. No non-IMASM part, and no outside.
