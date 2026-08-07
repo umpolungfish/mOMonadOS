@@ -1,30 +1,19 @@
-Circuit: align to_primitive to the Lean, and close both open questions
+Docs: cut the phase narrative from the README, add the EVM lane to the compute note
 
-AminoAcid::to_primitive disagreed with GeneticCode.lean on three amino acids: Tyr
-was sent to a Criticality value, putting two acids on ⊙ and leaving < with none,
-and His and Asn were transposed. The Lean is built from the primitives and is the
-origin of these truths, so it is the arbiter. Tyr now takes a Polarity value, the
-phenol OH being a ℤ₂ phospho switch, and His and Asn are put back on Scope and
-Composition. `circuit drift` reports agreement.
+README loses the Phase 1 through Phase 5 running commentary. A README says what
+the thing is now, not the order in which it was built, and the completed-phase
+list was the latter. What it is now survives intact: the kernel's thesis, the
+REPL-verb-and-IMASM-program rule, the Crystal of Types addressing, the m3iosis
+mirror named as history rather than as a pattern to extend.
 
-The Python in red-hot_rebis carries a third assignment, His to ⊙ with an
-imidazole-pKa rationale and Gln to Γ. It does not get a vote and is not treated
-as correct; it is left untouched here rather than rewritten from a different
-notation set.
+IMASM_NATIVE_COMPUTE gains the EVM lane: the lifter written as a parasm word and
+run inside parasm, inverting plank 3, which built the IMASM word in Rust and only
+verdicted it in parasm. The dispatch trie is the lifter now rather than a test
+scaffold, plus the exotic one-shots.
 
-Both questions the doc left open are closed rather than deferred.
-
-The section choice is free. μ routes through the amino acid, so μ∘δ = id holds
-for every codon carrying the glyph, not only the representative δ picks.
-section_choice_is_free checks this exhaustively. The section is determined up to
-a choice that changes nothing, so the enumeration order is not load-bearing.
-
-The ground layer is silent by construction. codon_role is total: every codon is a
-primitive, a scaffold, or a stop, and codon_census reports twenty-three, thirty-
-eight and three, summing to sixty-four. strand_word prints scaffold and stop
-distinctly instead of collapsing both to one dot. The eight ground-layer acids
-are exactly the four-fold degenerate ones and the Lean proves they carry no
-primitive, so the silence is the 20 = 8 + 12 theorem rather than a hole.
-
-circuit table gains the degeneracy count per glyph: Met and Trp have one codon,
-Ile three, the rest two.
+The EVM section arrived as a replacement for the whole file rather than an
+addition to it, which dropped the title and every section above it: the machine
+argument for parasm realizing the twelve, the B4 alphabet, the decode table as
+word rather than data, both proven planks, and the ramp to the Replicating Code.
+Those are the file's thesis and they are restored, with the EVM lane appended
+where it belongs.

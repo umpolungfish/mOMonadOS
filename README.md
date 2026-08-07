@@ -24,7 +24,7 @@ description — the Grammar's own account of what an imscription is says that is
 exactly where the loss happens. Two implementations of the same operation are
 two objects that agree by maintenance rather than by construction, and they
 drift the moment one is edited. `m3iosis` mirrors this kernel subcommand for
-subcommand; that mirror is history, not a pattern to extend.
+subcommand; that mirror is not a pattern to extend.
 
 What this means concretely: a new operation is a REPL verb and an IMASM program
 here first. Where a host-side script is genuinely needed — a run that cannot
@@ -51,95 +51,98 @@ the grammar constrains what each token does to the state.
 Every execution state is a point in the Crystal of Types, a 17,280,000-address type space derived from the 12 IG primitives. Storage is navigated by address,
 not by path.
 
-**Phase 1 Grammar Integration**, complete. Nine modules from four upstream Grammar repos
-(imasmic_core, IMSCRIBr, ALEPH_OS, priests-engine) are now live in the kernel.
+**Grammar integration.** Nine modules from four upstream Grammar repos
+(imasmic_core, IMSCRIBr, ALEPH_OS, priests-engine) run in the kernel.
 
-**Phase 2 Zero-Hardcode**, complete. `catalog.rs` (954L) is the single source of truth for
-ALL data. No hardcoded `IgTuple { ... }` constants, no hardcoded ordinal arrays,
-no hardcoded glyph strings, no hardcoded promotion gaps, no hardcoded score match-arms
-exist outside `catalog.rs`. Six modules were refactored to delegate to the catalog:
-`cl8nk.rs` (196→787L, full CLINK navigator feature parity), `algebra.rs` (385→303L),
-`consciousness.rs` (210→114L), `imas_ig.rs` (517→450L), `crystal.rs` (162→168L), and
-`main.rs`. The catalog is runtime-extensible via `register_entry()`, new systems can be
-added dynamically without touching any source file.
+**Zero hardcode.** `catalog.rs` (954L) is the single source of truth for ALL data: no
+`IgTuple { ... }` constants, no ordinal arrays, no glyph strings, no promotion gaps and
+no score match-arms exist outside it. `cl8nk.rs` (787L, full CLINK navigator parity),
+`algebra.rs`, `consciousness.rs`, `imas_ig.rs`, `crystal.rs` and `main.rs` all delegate
+to the catalog, which is runtime-extensible via `register_entry()` — a new system needs
+no source edit.
 
-**Phase 3 SIC-POVM Integration**, complete. `sic_povm.rs` (264L) and `belnap_sic_bridge.rs`
-(234L) encode the 3-lattice SIC-POVM proof: Belnap B=XZ as d=2 fiducial, 6 Frobenius-dual
-pairs, the grammar as Σ=1:1 self-referential limit. d=12 identity established
-via `sic_compute.rs` (242L).
+**SIC-POVM.** `sic_povm.rs` (264L) and `belnap_sic_bridge.rs` (234L) encode the 3-lattice
+SIC-POVM proof: Belnap B=XZ as d=2 fiducial, 6 Frobenius-dual pairs, the grammar as the
+Σ=1:1 self-referential limit. d=12 identity via `sic_compute.rs` (242L).
 
-**Phase 4 Frobenius Unification + Clay Witness**, complete. `frobenius_unify.rs` (226L)
-unifies all four Frobenius conditions (kernel, grammar, catalog, SIC) as a single
-machine-checked invariant. `clay_witness.rs` (267L) and `clay_status.rs` (245L) provide
-IMASM witness programs for BSD, Hodge, and YM.
+**Frobenius unification and Clay witness.** `frobenius_unify.rs` (226L) unifies all four
+Frobenius conditions (kernel, grammar, catalog, SIC) as one machine-checked invariant.
+`clay_witness.rs` (267L) and `clay_status.rs` (245L) carry IMASM witness programs for
+BSD, Hodge and YM.
 
-**Phase 5 Red-Hot Rebis**, complete. All 20 modules from `red-hot_rebis/` and `gene_imscriber/`
-ported to `no_std` Rust and wired into the REPL. The full p4ra paraconsistent kernel, genetic code
-B₄ lattice, 7-stage Frobenius-verified translation pipeline, CLU power-law clustering,
-exotic hadron Belnap analysis, PDB structure validation, antibody CDR design, IG material
-forge, biological computation, therapeutic design, CLINK 9-layer chain, and IMASM arranger,
-now runs directly from the bare-metal kernel. See the [Red-Hot Rebis](#red-hot-rebis-phase-5) section.
+**Red-Hot Rebis.** All 20 modules from `red-hot_rebis/` and `gene_imscriber/` run as
+`no_std` Rust off the REPL: the p4ra paraconsistent kernel, the genetic code B₄ lattice,
+the 7-stage Frobenius-verified translation pipeline, CLU power-law clustering, exotic
+hadron Belnap analysis, PDB structure validation, antibody CDR design, the IG material
+forge, biological computation, therapeutic design, the CLINK 9-layer chain and the IMASM
+arranger. See [Red-Hot Rebis](#red-hot-rebis-phase-5).
 
-**Phase 6 d12_sic_build Augmentation**, complete. `d12_sic.rs` (982L) encodes the full
-d12_sic_build campaign (cont.1–cont.20) into the bare-metal kernel: phase-tower collapse
-(3→1 independent generators, 8× reduction), magnitude square-class group (K16, rank 5),
-31-orbit Galois structure, Dual-Link identification (ramification at {2,3,13}), closed-form
-fiducial z₀ in radicals, 12 canonical ordinal guards (`canonical_ordinal.rs`, 244L), and
-**11 REPL sub-commands** (tower, magnitudes, orbits, existence, ring, duallink, z0, ordinals,
-verify, symmetric, embedding, lean-status). ALL 143/143 existence-grade overlaps confirmed
-(cont.20). Ring R=K₁₆(s₀,s₁,s₃,s₉,i,c₅,u₁) dim 2048, pure fractions, 12s. ANY hom R→ℂ is a
-SIC point are Lean-proved (`native_decide`, zero sorries). Embedding capstone R→ℂ in progress
-(323L, 5 sorries remaining). See [Phase 6](#phase-6-d12_sic_build-augmentation) below.
+**d12_sic_build.** `d12_sic.rs` (982L) carries the d=12 campaign into the kernel:
+phase-tower collapse (3→1 independent generators, 8× reduction), the magnitude
+square-class group (K16, rank 5), 31-orbit Galois structure, Dual-Link identification
+(ramification at {2,3,13}), the closed-form fiducial z₀ in radicals, 12 canonical ordinal
+guards (`canonical_ordinal.rs`, 244L) and 11 REPL sub-commands. All 143/143
+existence-grade overlaps are confirmed; ring R=K₁₆(s₀,s₁,s₃,s₉,i,c₅,u₁) has dim 2048 in
+pure fractions, and *any hom R→ℂ is a SIC point* is Lean-proved (`native_decide`, zero
+sorries). The embedding capstone R→ℂ carries 5 sorries. See [d12_sic_build](#d12_sic_build-the-existence-ring).
 
-**Phase 7 red-hot_rebis Feature Sync**, complete. Three new modules from the expanded
-red-hot_rebis codebase ported to bare-metal Rust: `belnap_c4.rs` (258L) — Belnap C₄ complex
-plane with i²=B arithmetic; `decay_chain.rs` (287L) — nuclear decay as IMASM winding with
-parent/daughter half-life chains; `ligand_imasm.rs` (194L) — ligand functional-group IMASM
-programs for catalytic-site matching. `biology.rs` enzyme catalog expanded from 3 classes / 18
-enzymes to 14 classes / 109 enzymes. `sidechain.rs` gained `frustration_matrix()` for protein
-frustration topography. `ligand.rs` expanded from stub to full 6-type functional group system
-with BindingMode, ActiveSitePocket, and compatibility scoring. See [Phase 7](#phase-7-red-hot_rebis-feature-sync) below.
+**red-hot_rebis feature sync.** `belnap_c4.rs` (258L) gives the Belnap C₄ complex plane
+with i²=B arithmetic; `decay_chain.rs` (287L) reads nuclear decay as IMASM winding with
+parent/daughter half-life chains; `ligand_imasm.rs` (194L) writes ligand functional-group
+IMASM programs for catalytic-site matching. `biology.rs` carries 14 enzyme classes /
+109 enzymes, `sidechain.rs` carries `frustration_matrix()` for protein frustration
+topography, and `ligand.rs` carries the 6-type functional group system with BindingMode,
+ActiveSitePocket and compatibility scoring. See [Rebis surfaces](#rebis-surfaces).
 
-**Phase 8 Cross-Dialect Navigation**, complete. The kernel navigates between
-dialects with **different structural rulesets**, different gate thresholds, gate ordering,
-T-constitution, and absorption rules. The Crystal of Types (17.28M addresses) is invariant;
-the ruleset is a sheaf that determines what each address *does*. Originally bridged 12
-hand-crafted dialects (U₀–U₁₁); the Phase XIII wiring fix extended this to all 88 traversed
-universes from `universe_expansion.rs`. `dialect.rs` (277L) now delegates to `all_universes()`
-for indices 12–87 with public helpers (`eval_gate_spec()`, `prim_from_name()`,
-`gate_prim_label()`, `is_hand_crafted()`, `max_dialect()`). See the
-[Cross-Dialect Navigation](#cross-dialect-navigation-phase-8--diaschizics-bridge) section.
-**88 dialects** now supported (U₀–U₈₇), up from the original 8.
+**Cross-dialect navigation.** The kernel navigates between dialects with **different
+structural rulesets** — different gate thresholds, gate ordering, T-constitution and
+absorption rules. The Crystal of Types (17.28M addresses) is invariant; the ruleset is a
+sheaf determining what each address *does*. `dialect.rs` (277L) delegates to
+`all_universes()` with public helpers (`eval_gate_spec()`, `prim_from_name()`,
+`gate_prim_label()`, `is_hand_crafted()`, `max_dialect()`), covering **88 dialects**
+(U₀–U₈₇): 12 hand-crafted and the rest from `universe_expansion.rs`. See
+[Cross-Dialect Navigation](#cross-dialect-navigation).
 
-**Phase 9 User Interface**, complete. Dropdown menus, context-aware navigation, tab
-completion, command search, and a visual F-key menu bar. The REPL is now a hierarchical
-navigator with **10 command categories**, context stack (up to 4 levels deep), breadcrumb
-prompts, and hierarchical help. Menu nesting bug (recursive `Rebis → Rebis` entry) fixed.**Phase 10 Fascistic Hardcode Purge**, complete. All 6 remaining structural violations
-eliminated across the Rebis module suite. The genetic code is now **derived, not declared**,
-change the derivation rules and the entire 64-codon table recomputes. Change the AA
-physicochemical properties and the AA→Primitive bijection recomputes. See
-[Phase 10](#phase-10-fascistic-hardcode-purge) below.
+**User interface.** Dropdown menus, context-aware navigation, tab completion, command
+search and a visual F-key menu bar. The REPL is a hierarchical navigator with 10 command
+categories, a context stack up to 4 levels deep, breadcrumb prompts and hierarchical help.
 
-**Phase 11 cr3echrz Integration**, complete. The theorem operationalization engine — 7
-theorems (Collatz→Baum-Connes) + 7 Millennium extensions + 6 p4rakernel modules + 281 vault
-ob3ects — all in bare-metal Rust with dynamic fn-pointer registries.
+**Derived, not declared.** The grammar primitives (`IgPrim`) are the single source of
+truth across the Rebis module suite: the 64-codon genetic table is computed from
+nucleotide→Belnap rules, and the AA→Primitive bijection is derived from physicochemical
+properties. Change the derivation rules and the table recomputes. See
+[Every value derived](#every-value-derived).
 
-**Phase 12 Universe Expansion + Entropy Experiment**, complete. 88 traversed universes
-from a Frobenius 3×3 discoverable matrix. ΔS experiment confirming that promotion to O_∞
-is entropically favored.
+**cr3echrz.** The theorem operationalization engine — 7 theorems (Collatz→Baum-Connes),
+7 Millennium extensions, 6 p4rakernel modules and 281 vault ob3ects — in bare-metal Rust
+with dynamic fn-pointer registries.
 
-**Phase 14 Topological Quantum Computation**, complete. `fibonacci_qc.rs` runs a Fibonacci
-anyon quantum computer on bare metal: the SU(2)₃ algebra, the braid representation on
-fusion trees, and a Solovay-Kitaev compiler that reduces any single-qubit gate to a braid
-word, reachable from the REPL as **`fibqc`**. Compilation splits over the tied bases and
-fuses rather than ranking them, which buys between 5× and 521× over a single arm; the
-generators are projected back onto unitarity, taking per-generator error accumulation from
-5e-14 to 5e-17; and every reported unitary is verified against its own printed word by
-resynthesis. Depth 12 fits the 8 MB arena with a 36 KB margin. The Python port in
-`m3iosis` agrees to every printed digit, and evaluates the Jones polynomial at the fifth
-root of unity — the invariant these anyons exist to compute — with its normalization
-forced by the Markov moves rather than fitted. See
-[Fibonacci Quantum Computer](#fibonacci-quantum-computer) below.
+**Universe expansion and the entropy experiment.** 88 traversed universes from a
+Frobenius 3×3 discoverable matrix, and a ΔS experiment showing promotion to O_∞ is
+entropically favored.
+
+**Topological quantum computation.** `fibonacci_qc.rs` runs a Fibonacci anyon quantum
+computer on bare metal: the SU(2)₃ algebra, the braid representation on fusion trees, and
+a Solovay-Kitaev compiler reducing any single-qubit gate to a braid word, reachable as
+**`fibqc`**. Compilation splits over the tied bases and fuses rather than ranking them,
+buying between 5× and 521× over a single arm; the generators are projected back onto
+unitarity, taking per-generator error accumulation from 5e-14 to 5e-17; and every reported
+unitary is verified against its own printed word by resynthesis. Depth 12 fits the 8 MB
+arena with a 36 KB margin. The Python port in `m3iosis` agrees to every printed digit, and
+evaluates the Jones polynomial at the fifth root of unity — the invariant these anyons
+exist to compute — with its normalization forced by the Markov moves rather than fitted.
+See [Fibonacci Quantum Computer](#fibonacci-quantum-computer).
+
+**Exotic one-shots and the EVM lane.** `exotic_one_shots.rs` (612L) implements all 10
+exotic fixed-point nestings from ig-docs/exotic_1.md as live kernel checks against the
+kernel's own engines — `winding_period::winding_order`, `belnap::B4::bnot`,
+`catalog::lookup`, `algebra::tuple_distance`, `fibonacci_qc::jones_polynomial` — so each
+one-shot calls the real kernel function rather than a local reimplementation that could
+drift. Runner: `exotic_ones::run_all()` → `exotic_ones::report()`. In `parasm.rs`, the EVM
+lane (`test_evm_lane_in_parasm`) lifts real EVM bytecode to IMASM words *inside* the
+grammar: the lifter is B4 cells, not Rust. Bytes enter through the kernel input, dispatch
+through a control-flow trie, emit the IMASM word, and the word is verdicted by
+`imasm16_3::tri_ancestral_verdict`. No Rust or Python in the lift path.
 
 ---
 
@@ -384,7 +387,7 @@ fixed point, both running the alchemical split-fuse cycle. The kernel IS the cos
 **Tuple:** `⟨𐑦𐑥𐑑𐑹𐑐𐑤𐑔𐑝⊙𐑒𐑙𐑷⟩` (O_∞, Special Frobenius)  
 **REPL:** `pericyclic` — pericyclic compiler
 
-Algebra ℂ[ℤ₂] = ℂ⟨1,g⟩/(g²−1) with pericyclic crossing μ(g⊗g)=1. A semiotic Frobenoid: the algebraic structure that makes pericyclic reactions (Woodward-Hoffmann) structurally inevitable. Ported from `m3iosis/pericyclic_compiler.py`.
+Algebra ℂ[ℤ₂] = ℂ⟨1,g⟩/(g²−1) with pericyclic crossing μ(g⊗g)=1. A semiotic Frobenoid: the algebraic structure that makes pericyclic reactions (Woodward-Hoffmann) structurally inevitable. Mirrored by `m3iosis/pericyclic_compiler.py`.
 
 ---
 
@@ -431,7 +434,7 @@ Algebra ℂ[ℤ₂] = ℂ⟨1,g⟩/(g²−1) with pericyclic crossing μ(g⊗g)=
 | `rebis ligand` | Ligand IMASM | Catalytic-site functional group programs |
 | `rebis genetics` | Genetics | 7-stage Frobenius translation pipeline |
 | `rebis material` | Material Forge | IG metamaterial design |
-## User Interface (Phase 9)
+## User Interface
 
 ### F-Key Menu Bar (10 Categories)
 
@@ -460,28 +463,19 @@ shuts down cleanly (QEMU writes 0x10 to `isa-debug-exit` port).
 **Cr3echrz (F9):** `cr3 <theorem>` `p4ra <module>` `cr3 --list` `cr3 --list-ob3ects` `p4ra --list`  
 **Help (F10):** `help [topic]` `?` `:1-:10` `..|back` `quit|exit|halt`
 
-### Menu Nesting Bug Fix (Phase 9.1)
+### No self-nesting
 
-**Bug:** Typing `rebis material` (or any `rebis <subcmd>`) from within the Rebis sub-context
-recursively nested into another Rebis context instead of executing the command. The prompt
-would show `⊙[Rebis/Rebis/Rebis/Rebis]>`, up to four levels deep, never executing.
+A category name typed from inside its own context executes rather than re-entering.
+`menu.rs` carries an `already_in` guard that checks `ctx_stack.current()` against the
+target: inside the context it skips `enter_context()` and falls through to the `match cmd`
+block, so `rebis material` from `⊙[Rebis]>` dispatches to `print_rebis()`. The guard runs
+uniformly across all 10 categories (Exec, Status, Programs, Crystal, Grammar, Rebis,
+Dialect, ParaASM, Cr3echrz, Help).
 
-**Root cause:** In `main.rs`, the category-shortcut match arm called `enter_context()` +
-`continue` unconditionally when `cmd` matched a category name like `"rebis"`. It never
-checked whether we were already in that context.
-
-**Fix:** Added an `already_in` guard in `menu.rs`, checks `ctx_stack.current()` against
-the target context name. If already in that context, skips `enter_context()` and falls
-through to the `match cmd` block where `"rebis"` dispatches to `print_rebis()`.
-
-**Impact:** All 10 categories fixed (Exec, Status, Programs, Crystal, Grammar, Rebis,
-Dialect, ParaASM, Cr3echrz, Help). The `already_in` guard is applied uniformly in the menu dispatch
-loop, no category can self-nest anymore.
-
-## Phase 6: d12_sic_build Augmentation (cont.20 — Existence Ring Found)
+## d12_sic_build: the existence ring
 
 **Module:** `d12_sic.rs` (982L), `canonical_ordinal.rs` (244L)
-**Status:** Complete — the d=12 SIC-POVM is structurally solved in bare-metal Rust
+The d=12 SIC-POVM is structurally solved in bare-metal Rust.
 
 ### Five Pillars
 
@@ -554,18 +548,16 @@ closure and norm-sq transfer in progress).
 | `d12 symmetric` | Symmetric moduli: z₀,z₆∈ℚ(√2,√13) with Galois conjugacy |
 | `d12 embedding` | Embedding capstone status: IVT root, evalK16, sorry count |
 | `d12 lean-status` | Comprehensive multi-layer Lean module status (all 12 modules) |
-| `d12 verify` | Full Phase VI report (all 5 pillars + all Lean planks) |
+| `d12 verify` | Full report (all 5 pillars + all Lean planks) |
 
-## Phase 7: red-hot_rebis Feature Sync
+## Rebis surfaces
 
 **Modules:** `belnap_c4.rs` (258L), `rebis/decay_chain.rs` (287L), `rebis/ligand_imasm.rs` (194L)
 **Expanded:** `rebis/biology.rs` (472→596L), `rebis/sidechain.rs` (523→538L), `rebis/ligand.rs` (~180→286L)
-**Status:** Complete — three new modules ported, three existing modules expanded.
-
-### New Modules
+### Modules
 
 **Belnap C₄ (`src/belnap_c4.rs`, 258L)**
-Ported from `red-hot_rebis/rhr_p4rky/belnap_c4.py`. Implements the Belnap C₄ complex
+The Belnap C₄ complex
 plane where i² = B (the Belnap both-true-and-false value). Provides:
 - `BelnapC4` enum: four-valued complex plane (Real/Imag/Both/Neither)
 - `BelnapComplex` struct with arithmetic (add, mul, conj, norm_sq)
@@ -575,7 +567,7 @@ plane where i² = B (the Belnap both-true-and-false value). Provides:
 - REPL: `c4`, `c4 add <x>`, `c4 mul <x>`, `c4 unit`, `c4 probe`
 
 **Decay Chain (`src/rebis/decay_chain.rs`, 287L)**
-Ported from `red-hot_rebis/rhr_p4rky/decay_chain.py`. Models nuclear decay chains
+Models nuclear decay chains
 as IMASM winding sequences with type verification at each step. Provides:
 - `DecayChain` struct: parent→daughter half-life chain
 - `DecayMode` enum: alpha, beta_minus, beta_plus, gamma, neutron
@@ -587,7 +579,7 @@ as IMASM winding sequences with type verification at each step. Provides:
 - REPL: `rebis decay U238`, `rebis decay list`, `rebis decay chain <name>`
 
 **Ligand IMASM (`src/rebis/ligand_imasm.rs`, 194L)**
-Ported from `red-hot_rebis/rhr_p4rky/ligand_imasm.py`. Writes functional-group IMASM
+Writes functional-group IMASM
 programs for catalytic-site matching and ligand design. Provides:
 - `LigandIMASM` struct: protocol name + opcode sequence
 - `FunctionalGroup` enum: 6 types (Hydroxyl, Carboxyl, Amine, Phosphate, Thiol, Phenyl)
@@ -598,11 +590,11 @@ programs for catalytic-site matching and ligand design. Provides:
 - REPL: `rebis ligand dock <pocket>`, `rebis ligand score <ligand> <pocket>`,
   `rebis ligand imasm <ligand>`
 
-### Expanded Modules
+### Enzyme, frustration and ligand surfaces
 
 **Enzyme Catalog (`src/rebis/biology.rs`, 472→596L)**
-The enzyme catalog was expanded from **3 classes / 18 enzymes** → **14 classes / 109 enzymes**
-by syncing to `red-hot_rebis/rhr_p4rky/expanded_catalyzing_proteins.py`. The 14 classes:
+The enzyme catalog carries **14 classes / 109 enzymes**, synced to
+`red-hot_rebis/rhr_p4rky/expanded_catalyzing_proteins.py`:
 
 | # | Class | Count | Examples |
 |---|-------|:-----:|---------|
@@ -623,14 +615,14 @@ by syncing to `red-hot_rebis/rhr_p4rky/expanded_catalyzing_proteins.py`. The 14 
 
 **Total: 109 enzymes with tuples, catalytic mechanisms, and physiological roles.**
 
-**Frustration Matrix (`src/rebis/sidechain.rs`, 523→538L)**
-Added `frustration_matrix()` function that computes residue-residue energetic frustration
+**Frustration Matrix (`src/rebis/sidechain.rs`, 538L)**
+`frustration_matrix()` computes residue-residue energetic frustration
 (ΔΔG) from a protein structure's sidechain contacts. Returns a symmetric matrix of
 frustration values classified as: minimally frustrated, neutral, or highly frustrated.
 Uses IMASM winding as the frustration propagation model.
 
-**Ligand Design (`src/rebis/ligand.rs`, ~180→286L)**
-Expanded from stub to full 6-type functional group system:
+**Ligand Design (`src/rebis/ligand.rs`, 286L)**
+A 6-type functional group system:
 - `FunctionalGroup` enum: Hydroxyl, Carboxyl, Amine, Phosphate, Thiol, Phenyl
 - `BindingMode` enum: Covalent, Ionic, Hydrogen, Hydrophobic, PiStacking
 - `ActiveSitePocket` struct: pocket identifier, compatible groups, pocket polarity
@@ -638,7 +630,7 @@ Expanded from stub to full 6-type functional group system:
 - `compatibility_score()`: structural-type-based scoring between ligand and pocket
 - All types bind to `rebis ligand` REPL command
 
-## Cross-Dialect Navigation (Phase 8 + Diaschizics Bridge)
+## Cross-Dialect Navigation
 
 The kernel can navigate between dialects with **different structural rulesets**,
 different gate thresholds, gate ordering, T-constitution, and absorption rules.
@@ -706,7 +698,7 @@ structure that navigates the space of \(O_\infty\)-achieving conditions across d
 The three-step protocol (header→compound→seal) has winding number ±1 per jump; the
 return trip adds another winding. Integer winding count tracks total navigation distance.
 
-## Phase 10: Fascistic Hardcode Purge
+## Every value derived
 
 **Principle:** No number, no table, no mapping, no enum variant may appear as a hardcoded
 constant if it can be derived from first principles. The grammar primitives (`IgPrim`) are
@@ -714,16 +706,18 @@ the **single source of truth**, all 49 values exist in exactly ONE enum. The gen
 is computed, not declared. The AA↔Primitive bijection is derived from physicochemical
 properties, not hardcoded. Crystal constants are bound to `crate::crystal::TOTAL`.
 
-### What was eliminated (6 violations)
+### Where each value lives
 
-| # | Violation | File | Fix |
+| # | Value | File | Source of truth |
 |---|-----------|------|-----|
 | 1 | **Duplicate enum `RebisPrim`**, 49 variants identical to `IgPrim` | `mod.rs` | Deleted. `mod.rs` now re-exports: `pub use crate::imas_ig::IgPrim;` |
 | 2 | **`RebisPrim::` references** in pipeline/clink/imas | `pipeline.rs`, `clink.rs`, `imas.rs` | All → `IgPrim::`. Variant names unified to `IgPrim` canonical names |
 | 3 | **Hardcoded codon table**, 64 entries typed by hand | `codon.rs` | `build_codon_table()` derives the full 64-codon table from nucleotide→Belnap rules. Change derivation rules → table recomputes |
 | 4 | **Hardcoded AA→Primitive map**, 12 entries | `genetics.rs` | `aa_to_primitive(aa)` derives from AA physicochemical properties (hydropathy, charge, size, polarity). Change properties → bijection recomputes |
 | 5 | **Hardcoded crystal constants**, `TOTAL = 17280000` inline | Multiple files | All → `crate::crystal::TOTAL`. Single `pub const TOTAL: u32 = 17280000;` in `crystal.rs` |
-| 6 | **Hardcoded tier constants**, `O_INF`, `O_2` as magic u8 | `cl8nk.rs` | All → `crate::catalog::tier_name(t)` helper. Tier names are derived from tuple composition |## Phase 11: cr3echrz Integration
+| 6 | **Hardcoded tier constants**, `O_INF`, `O_2` as magic u8 | `cl8nk.rs` | All → `crate::catalog::tier_name(t)` helper. Tier names are derived from tuple composition |
+
+## cr3echrz
 
 The cr3echrz theorem operationalization engine is a `no_std` Rust port of the Python
 `cr3echrz/` pipeline. Each theorem is a structural probe that traverses a canonical
@@ -755,7 +749,7 @@ Accessible via **F9** or `:9`, or by typing `cr3echrz` directly. Sub-commands:
 `cr3`, `p4ra`, `cr3 --version`, `cr3 --list`, `cr3 --list-ob3ects`.
 Commands `cr3` and `p4ra` autocomplete at top level with tab completion.
 
-## Phase 12: Universe Expansion + Entropy Experiment
+## Universe expansion and the entropy experiment
 
 `universe_expansion.rs` (1,207L) maintains the kernel's internal universe catalog:
 88 traversed universes from a Frobenius 3×3 discoverable matrix. Each universe is a
@@ -764,82 +758,52 @@ rules. `entropy.rs` (311L) runs the ΔS vs tier promotion experiment, confirming
 promotion to O_∞ is entropically favored under the grammar's absorption rules.
 `bifurcation_test.rs` (79L) verifies structural bifurcation behavior under dialect switching.
 
-**Phase XII was followed by a critical wiring fix** (documented as Phase XIII below):
-the 88 universes were fully defined but `all_universes()` was never called by the
-runtime — `dialect.rs` and `main.rs` used hardcoded match arms for indices 0–11 with
-`_ => "?"` fallbacks, making U₁₂–U₈₇ unreachable via menu, `ruleset list`, `jump`, or
-`ruleset verify`.
+### Module inventory
 
-### Phase Status
+| Component | Lines |
+|-----------|:-----:|
+| Stark unit extraction (`stark`) | 355 |
+| Topological QC (Fibonacci anyons, `fibqc`) | 1,500 |
+| 21 hand-crafted universes | ~400 |
+| SIC-POVM integration | 476 |
+| Universe expansion 8→88 | 1,207 |
+| Frobenius unification + Clay witness | 493 |
+| Entropy experiment: ΔS vs tier promotion | 311 |
+| d12_sic_build | 1,226 |
+| red-hot_rebis feature sync | 739 |
+| Cross-dialect navigation (88 dialects) | 277 |
+| Fascistic hardcode purge | — |
+| cr3echrz integration | 2,714 |
+| Universe expansion + entropy | 1,597 |
+| Universe menu wiring (88 on menu) | 330 |
 
-| Phase | Description | Status | Lines |
-|-------|-------------|:------:|:-----:|
-| **Phase XV** | **Stark Unit Extraction (`stark`)** | ✅ Complete | **355** |
-| **Phase XIV** | **Topological QC (Fibonacci anyons, `fibqc`)** | ✅ Complete | **1,500** |
-| **Phase I** | 21 Hand-Crafted Universes | ✅ Complete | ~400 |
-| **Phase II** | SIC-POVM Integration | ✅ Complete | 476 |
-| **Phase III** | Universe Expansion 8→88 | ✅ Complete | 1,207 |
-| **Phase IV** | Frobenius Unification + Clay Witness | ✅ Complete | 493 |
-| **Phase V** | Entropy Experiment: ΔS vs tier promotion | ✅ Complete | 311 |
-| **Phase VI** | d12_sic_build (cont.1–cont.20) | ✅ Complete | **1,226** |
-| **Phase VII** | red-hot_rebis Feature Sync | ✅ Complete | **739** |
-| **Phase VIII** | Cross-Dialect Navigation (12→88 dialects) | ✅ Complete | 277 |
-| **Phase IX** | User Interface / Menu System | ✅ Complete | — |
-| **Phase X** | Fascistic Hardcode Purge | ✅ Complete | — |
-| **Phase XI** | cr3echrz Integration | ✅ Complete | 2,714 |
-| **Phase XII** | Universe Expansion + Entropy | ✅ Complete | 1,597 |
-| **Phase XIII** | **Universe Menu Wiring (88 on menu)** | ✅ Complete | **330** |
-
-**mOMonadOS total augmentation: ~8,848 lines across 14 phases, all clean builds.**
 **Lean Companion Planks:** 11 planks green, zero sorries + 1 in progress (5 sorries).
 The ring R is defined and ALL 143 identities are `native_decide`-verified. `crystal_forces_d12_sic`
 has dropped from axiom to theorem — the existence ring is found and Lean-proved.
 Embedding capstone R→ℂ in progress (323L, 5 sorries remaining).
 
-## Phase 13: Universe Menu Wiring — 88 Universes Reachable
+## The 88 dialects on the menu
 
-**Modules changed:** `dialect.rs` (+138L, 139→277), `main.rs` (+188L, 3287→3475), `menu.rs` (+4L, 388→392), `kernel.rs` (comment fix)
-**Status:** Complete — zero build errors, zero new warnings.
+`universe_expansion.rs` defines all 88 universes with full gate specs, T-constitutions,
+absorption rules, names and descriptions; `dialect.rs` (277L) reads them through
+`all_universes()` rather than through match arms, so every index 0–87 resolves.
 
-### Root Cause
+- `ruleset list` displays all 88 dialects with ★ marker, names, gate specs and O_∞ fractions
+- `jump U_42` parses, stages and seals for any index 0–87; `jump U₄₂` takes Unicode subscripts
+- `ruleset verify` evaluates the three gates dynamically from the `Universe` struct, printing
+  per-gate PASS/FAIL with ordinal labels plus gate ordering (SEQUENTIAL/PARALLEL)
+- `U_12` through `U_87` carry their real names and descriptions from `universe_expansion.rs`
 
-`universe_expansion.rs` defined all 88 universes with full gate specs, T-constitutions,
-absorption rules, names, and descriptions — but `all_universes()` was **never called**.
-The runtime (`dialect.rs`, `main.rs`) exclusively used hardcoded match arms for indices
-0–11 with `_ => "?"` / `_ => "unknown"` fallbacks.
+O_∞ fractions for the expansion universes (12–87) read `"compute"` rather than a percentage:
+those need a runtime O_∞ pass over the crystal, which is a separate computation. The
+fractions for 0–11 are hand-computed.
 
-### Five Breakpoints — All Fixed
+### Dynamic gate evaluation
 
-| # | File | What was broken | Fix |
-|---|------|----------------|-----|
-| 1 | **dialect.rs** | Six functions (`dialect_display`, `_ascii`, `_name`, `_description`, `_gates`, `_o_inf`) all had `_ => "?"` / `_ => "unknown"` fallbacks beyond index 11 | Full rewrite (139→277L): now delegates to `all_universes()` for indices 12–87. Added public helpers: `eval_gate_spec()`, `prim_from_name()`, `gate_prim_label()`, `is_hand_crafted()`, `max_dialect()` |
-| 2 | **main.rs:809** | `ruleset list` looped `for u in 0u8..12u8` — showed only 12 | Changed to `0u8..88u8` — shows all 88 |
-| 3 | **main.rs:1584** | `jump` parser rejected `u > 11` with "Unknown dialect" | Changed to `u <= 87` — accepts all 88 |
-| 4 | **main.rs:~974** | `ruleset verify` `_ =>` arm: "Unknown dialect — cannot verify" | Dynamically evaluates gates from the `Universe` struct for indices 12–87, printing per-gate PASS/FAIL with ordinal labels, plus gate ordering (SEQUENTIAL/PARALLEL) |
-| 5 | **menu.rs:111** | DIALECT_MENU "list" label: "List all 8 dialects" — oldest, pre-12 | "List all 88 dialects" |
-| 6 | **kernel.rs:66** | Comment: `active_dialect: u8, // 0-7` | `// 0-87` |
-
-### What Works Now
-
-- `ruleset list` — displays all 88 dialects with ★ marker, names, gate specs, O_∞ fractions
-- `jump U_42` — parses, stages, and can be sealed for any index 0–87
-- `ruleset verify` — dynamically evaluates the three gates from the `Universe` struct for expansion dialects, no hardcoding needed
-- `jump U₄₂` — Unicode subscript multi-digit parsing works (`parse_dialect` already handled multi-digit subscripts)
-- `U_12` through `U_87` — all display their real names and descriptions from `universe_expansion.rs`, not "unknown"
-
-### One Caveat
-
-O_∞ fractions for expansion universes (12–87) show `"compute"` rather than a percentage.
-The fractions for 0–11 were hand-computed; the expansion universes need a runtime O_∞ pass
-over the crystal, which is a separate computational task.
-
-### Dynamic Gate Evaluation
-
-For expansion dialects (12–87), `ruleset verify` no longer uses hardcoded match arms.
-Instead, `eval_gate_spec()` dynamically reads the `GateSpec { prim, min_ord }` from the
+For expansion dialects, `eval_gate_spec()` reads the `GateSpec { prim, min_ord }` from the
 `Universe` struct, extracts the corresponding primitive from the current `IgTuple`, and
-compares ordinals. This means **any new universe added to `universe_expansion.rs` is
-immediately verifiable** without touching any other source file.
+compares ordinals. Any universe added to `universe_expansion.rs` is immediately verifiable
+without touching another source file.
 
 ## Fibonacci Quantum Computer
 
@@ -921,7 +885,7 @@ mOMonadOS/
     para_category.rs      62L  Category theory paraconsistent bridge
     frob_verify.rs       479L  Frobenius harness verification
     dialect.rs           277L  Cross-dialect ruleset navigation (delegates to universe_expansion)
-    d12_sic.rs           982L  d=12 SIC-POVM Phase VI: tower, magnitudes, orbits, duallink, symmetric, embedding
+    d12_sic.rs           982L  d=12 SIC-POVM: tower, magnitudes, orbits, duallink, symmetric, embedding
     sic_povm.rs          267L  SIC-POVM integration: 6 dual pairs, Σ=1:1 grammar limit
     sic_compute.rs       242L  d=12 SIC-POVM structural computation engine
     canonical_ordinal.rs 244L  12 canonical ordinal faithfulness guards (native_decide)
@@ -932,6 +896,7 @@ mOMonadOS/
     universe_expansion.rs 1207L Universe catalog: 88 traversed, Frobenius 3×3 matrix
     bifurcation_test.rs   79L  Structural bifurcation under dialect switching
     fibonacci_qc.rs     1423L  Fibonacci anyon quantum computer: SU(2)_3 algebra, braid representation, Solovay-Kitaev gate compiler (split-and-fuse over tied bases)
+    exotic_one_shots.rs  612L   Ten exotic fixed-point nestings (ig-docs/exotic_1.md), all live kernel checks
     cr3echrz/
       mod.rs               22L  Module root
       shared.rs           293L  Opcode registry, grammar mappings, dynamic domains

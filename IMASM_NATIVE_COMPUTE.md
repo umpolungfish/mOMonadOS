@@ -119,3 +119,82 @@ CPython/EVM companions. The disassembler is written in IMASM, executed by parasm
 over the crystal, decodes real EVM and CPython bytecode to IMASM words the kernel
 verdicts, recompiles them back exactly, and reproduces its own closing word.
 Everything is within the Grammar. No non-IMASM part, and no outside.
+
+## The EVM Lane: bytecode-to-grammar, written in the twelve
+
+### `test_evm_lane_in_parasm` — the lifter as a parasm word
+
+The Replicating Code's plank 3 lifted EVM control flow *about* the grammar
+(`test_evm_lift_reentrancy_verdict` builds the IMASM word in Rust, then feeds it
+to parasm to verdict it). Plank 3b inverts the direction: the **lifter itself**
+is written as an IMASM program and runs *inside* parasm.
+
+The parasm program `test_evm_lane_in_parasm` does the following:
+
+- Reads EVM opcode bytes from the kernel's input buffer, four B4 cells per byte.
+- Dispatches each byte through a control-flow trie: `JT`/`JF`/`JB`/`JN` per
+  cell, nesting four deep to form the full 256-way byte decode. This is the
+  same dispatch-trie technique as the byte decoder above — but now the trie
+  is the *lifter*, not a test scaffold.
+- Maps each opcode to its IMASM token:
+  
+  | EVM opcode | B4 cells | IMASM glyph  |
+  |------------|----------|-------------|
+  | STOP (0x00)| 0,0,0,0  | ⊢ (VINIT)    |
+  | SLOAD (0x54)| 1,1,1,0 | > (AFWD)     |
+  | SSTORE (0x55)| 1,1,1,1| ◻ (IFIX)     |
+  | JUMPI (0x57)| 1,1,1,3| ⋈ (CLINK)    |
+  | JUMPDEST (0x5b)| 1,1,2,3| ∋ (FFUSE)  |
+  | PUSH1 (0x60)| 1,2,0,0 | skip operand | 
+  | CALL (0xf1)| 3,3,0,1  | > (AFWD)     |
+  | RETURN (0xf3)| 3,3,0,3| ⊢ (TANCH)    |
+  | REVERT (0xfd)| 3,3,3,1| ⊢ (TANCH)    |
+  | 0xfe sentinel| 3,3,3,2| HALT         |
+
+- Skips PUSH1 operands (READ %r5 × 4 = skip 4 cells = 1 byte).
+- Emits the lifted IMASM word through the emit buffer.
+- The emitted word is then verdicted by `imasm16_3::tri_ancestral_verdict`,
+  also the grammar's own parser — no Rust in the verdict path either.
+
+**What this rung proves:** the lifter is itself a parasm program (a sequence of
+B4 cells), it runs entirely within the grammar, and it produces the same IMASM
+word the reference lifters emit — from real EVM bytes, with no Rust or Python
+anywhere in the lift path. The bytes enter through the kernel's input, the trie
+dispatches, and the word comes out.
+
+### The Exotic One-Shots
+
+**File:** `src/exotic_one_shots.rs` (612 lines)  
+**Concept:** ig-docs/exotic_1.md — ten non-obvious fixed-point nestings
+
+The Fixed-Point Nesting Rule: *A nesting of A inside B closes exactly when A is
+a fixed point of B's action, and it closes in one shot exactly when A already
+sits at that fixed point.* The exotic one-shots are non-obvious constructions
+where the inner object is already the outer action's fixed point — not through
+trivial identity, but through deep structural coincidences across documented
+domains.
+
+| # | Name | Domain | Outer B | Inner A | One-Shot |
+|---|------|--------|---------|---------|----------|
+| 1 | Winding Preimage | Number theory | Winding = 2π | period r = ord_N(a) | r is the winding-zero; BSGS measures radius, doesn't iterate |
+| 2 | Belnap B-Fixed | Logic/QC | Hadamard H | dialetheic B | H\|B⟩ = \|B⟩; ¬B = B; B is native superposition state |
+| 3 | O∞ Crystal Tier | Category theory | Tier O₂† → O∞ | the grammar itself | Grammar already sits at O∞; last door is structural |
+| 4 | Reconnection X-Point | Plasma physics | Reconnection operator | the X-point itself | X-point is the defect lines reconnect *around* |
+| 5 | Grammar Σ=1:1 Limit | SIC-POVM | Multilattice closure | universal grammar | Grammar differs from multilattice SIC only in Σ |
+| 6 | Type Convergence | Category theory | OVM type convergence | Grammar ⋈ fidelity | Live ⋈ check: grammar's fidelity is quantum (peep) |
+| 7 | Phases Off Lattice | Fibonacci QC | Generator lattice (tenths) | Jones phase at 1/8 | T = 1/8 ∉ 1/10 lattice → no braid reaches it exactly |
+| 8 | Solovay-Kitaev Floor | Gate compilation | Full recursive SK | Off-lattice phase | The floor follows from #7's live measurement |
+| 9 | dlog Order Oracle | Shor's algorithm | Modular exp map | Order r | r is fixed point of x↦a^x; `winding_period::factor` is the engine |
+| 10 | Two-Faced Frontier | Emergence | Frontier saturation | Record pair (alkahest, pythagorean) | Live tuple_distance checked against √11≈3.3176 record |
+
+Each one-shot calls the **kernel's own** engines — `winding_period::winding_order`,
+`belnap::B4::bnot`, `catalog::lookup`, `algebra::tuple_distance`,
+`fibonacci_qc::jones_polynomial`/`winding_of` — never a local reimplementation
+that could drift from the source of truth.
+
+**Runner:** `exotic_ones::run_all()` executes all ten and returns formatted
+reports. `exotic_ones::report()` returns a bannered summary.
+
+---
+
+The disassembler is written in IMASM, executed by parasm, decodes real EVM and CPMython bytecode to IMASM words the kernel verdicts, recompiles them back exactly, reproduces its own closing word, and now the **lifter itself** is a parasm program — not Rust wrapping the grammar, but the grammar wrapping itself.
