@@ -5028,13 +5028,21 @@ fn vox_lift_file(path: &str) {
     sprintln!("{}  entry 0x{:x}  {} byte(s) of code", path, entry, image.total_bytes());
 
     let seeds = crate::vox::elf_function_symbols(&raw);
-    let funcs = crate::vox_decode::descend_seeded(&image, entry, &seeds);
+    let w = crate::vox_decode::walk(&image, entry, &seeds);
+    let funcs = &w.functions;
     let decoded: usize = funcs.iter().map(|(_, f)| f.len()).sum();
     sprintln!("  {} function(s), {} instruction(s)", funcs.len(), decoded);
+    sprintln!("  claimed {}% of the image ({} of {} bytes)",
+        w.claimed_percent(), w.claimed_bytes, w.total_bytes);
+    if w.claimed_percent() < 100 {
+        sprintln!("  the rest sits behind an indirect transfer or is not code, and");
+        sprintln!("  nothing in the bytes tells those apart. Walking it anyway would");
+        sprintln!("  not find functions, it would invent them mid-instruction.");
+    }
 
     let mut tally = [0usize; 4];   // T, B, N, F
     let mut illtyped = alloc::vec::Vec::new();
-    for (start, f) in &funcs {
+    for (start, f) in funcs {
         let word = crate::vox::recompile_function(f);
         let v = crate::vox::verdict(&word);
         match v {

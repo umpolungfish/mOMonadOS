@@ -713,6 +713,31 @@ fn trim_padding(mut f: Vec<Instruction>) -> Vec<Instruction> {
     f
 }
 
+/// What a walk claimed, and what it left.
+///
+/// Which bytes of a stripped binary begin a function is not recoverable from
+/// the bytes. Descent proves it for whatever is reachable from the entry, the
+/// symbol table proves it where one survives, a branch target proves it, and a
+/// padding boundary is strong evidence. Past that there is nothing to read, and
+/// walking the remainder byte by byte does not discover functions — it
+/// manufactures them at offsets that are the middle of something else. So the
+/// unclaimed bytes are counted and reported rather than guessed at.
+pub struct Walk {
+    pub functions: Vec<(u64, Vec<Instruction>)>,
+    pub claimed_bytes: usize,
+    pub total_bytes: usize,
+}
+
+impl Walk {
+    pub fn claimed_percent(&self) -> usize {
+        if self.total_bytes == 0 {
+            100
+        } else {
+            self.claimed_bytes * 100 / self.total_bytes
+        }
+    }
+}
+
 /// Walk an image into functions, seeding descent with known function addresses
 /// on top of the entry point.
 pub fn descend_seeded(
@@ -724,6 +749,10 @@ pub fn descend_seeded(
     let mut covered: BTreeMap<u64, Instruction> = BTreeMap::new();
     let mut seen_funcs: BTreeSet<u64> = BTreeSet::new();
     let mut func_queue: Vec<u64> = Vec::new();
+    // Every address the program branches to, whether or not descent got there.
+    // A target is proof that the bytes at it are code; nothing else in the
+    // leftover is.
+    let mut targets: BTreeSet<u64> = BTreeSet::new();
 
     if image.bytes_at(entry).is_some() {
         func_queue.push(entry);
@@ -768,6 +797,11 @@ pub fn descend_seeded(
             let mn = d.mnemonic;
             let next = addr + d.len as u64;
 
+            if let Some(t) = direct_target(&ins) {
+                if mn == "call" || mn.starts_with('j') {
+                    targets.insert(t);
+                }
+            }
             if mn == "call" {
                 // A call's target is another function; the call itself returns.
                 if let Some(t) = direct_target(&ins) {
@@ -802,42 +836,84 @@ pub fn descend_seeded(
 
     // Sweep whatever descent never reached: code behind an indirect transfer,
     // and data that is not code at all. Split on the same boundary rule.
-    // Skipping a covered byte ends the run: the bytes on either side of what
-    // descent already claimed are not contiguous, and stitching them together
-    // makes one pseudo-function out of two unrelated remainders.
-    let mut runs: Vec<Vec<Instruction>> = Vec::new();
-    let mut run: Vec<Instruction> = Vec::new();
+    // What descent never reached is either code behind an indirect transfer or
+    // it is not code at all, and nothing in the bytes distinguishes the two.
+    // So the sweep does not walk the remainder byte by byte inventing
+    // instructions at offsets nothing enters. It starts only where something
+    // demonstrably starts: an address the program branches to, or the first
+    // byte after a run of padding, which is where a compiler puts a function.
+    let mut starts: BTreeSet<u64> = BTreeSet::new();
+    for t in &targets {
+        if !covered.contains_key(t) && image.bytes_at(*t).is_some() {
+            starts.insert(*t);
+        }
+    }
+    // Walking each section once, in phase, gives two more kinds of start: the
+    // first byte after a run of padding, which is where a compiler puts a
+    // function, and the first byte of any stretch descent did not claim. The
+    // walk stays instruction-aligned throughout, so nothing is invented at an
+    // offset that is only the middle of something else.
     for (base, data) in &image.segments {
         let mut i = 0usize;
+        let mut after_pad = false;
+        let mut prev_covered = true;
         while i < data.len() {
             let addr = base + i as u64;
-            if covered.contains_key(&addr) {
-                // Descent already claimed this byte. Skipping it does not end
-                // the run: descent leaves many small holes inside a stretch
-                // the sweep is walking, and breaking at each one shatters the
-                // remainder into thousands of fragments.
-                i += 1;
-                continue;
-            }
             match decode_one(&data[i..], addr) {
                 Some(d) if d.len > 0 => {
-                    let end = core::cmp::min(i + d.len, data.len());
-                    run.push(instruction_of(&d, addr, &data[i..end]));
+                    let is_pad = crate::vox::PAD_OPS.contains(&d.mnemonic);
+                    let is_covered = covered.contains_key(&addr);
+                    if !is_covered && !is_pad && (after_pad || prev_covered) {
+                        starts.insert(addr);
+                    }
+                    after_pad = is_pad;
+                    prev_covered = is_covered;
                     i += d.len;
                 }
                 _ => {
-                    // A byte that does not decode is not code; it ends the run.
-                    if !run.is_empty() {
-                        runs.push(core::mem::take(&mut run));
-                    }
+                    after_pad = false;
+                    prev_covered = true;
                     i += 1;
                 }
             }
         }
+    }
+
+    let mut runs: Vec<Vec<Instruction>> = Vec::new();
+    let mut swept: BTreeSet<u64> = BTreeSet::new();
+    for start in starts {
+        if covered.contains_key(&start) || swept.contains(&start) {
+            continue;
+        }
+        let mut run: Vec<Instruction> = Vec::new();
+        let mut addr = start;
+        loop {
+            if covered.contains_key(&addr) || swept.contains(&addr) {
+                break;
+            }
+            let bytes = match image.bytes_at(addr) {
+                Some(b) => b,
+                None => break,
+            };
+            let d = match decode_one(bytes, addr) {
+                Some(d) if d.len > 0 => d,
+                _ => break,
+            };
+            let mn = d.mnemonic;
+            run.push(instruction_of(&d, addr, &bytes[..d.len]));
+            swept.insert(addr);
+            addr += d.len as u64;
+            // A terminal ends the walk unless padding follows and more body
+            // comes after it, which split_functions will cut apart.
+            if is_terminal(mn) && !crate::vox::PAD_OPS.contains(&mn) {
+                break;
+            }
+        }
         if !run.is_empty() {
-            runs.push(core::mem::take(&mut run));
+            runs.push(run);
         }
     }
+
     for r in runs {
         for f in crate::vox::split_functions(&r) {
             if let Some(first) = f.first() {
@@ -849,4 +925,30 @@ pub fn descend_seeded(
         }
     }
     out
+}
+
+/// Walk an image and report what the walk could and could not claim.
+pub fn walk(image: &Image, entry: u64, seeds: &[u64]) -> Walk {
+    let functions = descend_seeded(image, entry, seeds);
+    // Bytes, not instructions: the question is how much of the image was read,
+    // so each claimed address contributes the width of the instruction on it.
+    let mut seen: BTreeSet<u64> = BTreeSet::new();
+    let mut bytes = 0usize;
+    for (_, f) in &functions {
+        for i in f {
+            if !seen.insert(i.address) {
+                continue;
+            }
+            if let Some(b) = image.bytes_at(i.address) {
+                if let Some(d) = decode_one(b, i.address) {
+                    bytes += d.len;
+                }
+            }
+        }
+    }
+    Walk {
+        claimed_bytes: bytes,
+        total_bytes: image.total_bytes(),
+        functions,
+    }
 }

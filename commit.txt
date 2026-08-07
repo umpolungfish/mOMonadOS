@@ -1,38 +1,25 @@
-Vox: walk the program instead of sweeping it
+Vox: claim only what is provably code, and report the rest as unread
 
-The Rust lane lifted linearly: decode a section start to end and call the whole
-thing a function. That reads padding and embedded data as code and can only
-guess where one function ends, so its verdicts answered a different question
-from the Python lane's.
+The sweep walked every unclaimed byte and decoded whatever fell out, advancing
+one byte on a failure. That does not discover functions. It manufactures them at
+offsets that are the middle of some other instruction, and the words it produces
+verdict like any other, so an invented function is indistinguishable from a real
+one in the output.
 
-vox_decode::descend walks instead. From the entry point and every direct call
-target, one instruction at a time, following the edges the program has. A call's
-target is a new function and the call returns; a conditional takes both edges;
-an unconditional jump takes one. What descent cannot follow is an indirect
-transfer, which is what ⊙ is for, so the remainder is swept afterwards rather
-than dropped.
+Which bytes of a stripped binary begin a function is not recoverable from the
+bytes. Four things prove it and nothing else does: descent from the entry,
+a surviving symbol table, an address the program branches to, and the first byte
+after a run of padding. The sweep now starts only at those, walks in phase, and
+stops at a terminal.
 
-vox::elf_function_symbols seeds it. A shared object's own entry calls almost
-none of its exported functions, so descent from the entry alone misses them.
-Reading STT_FUNC out of SHT_SYMTAB and SHT_DYNSYM is what turns a handful of
-reachable functions into the program.
+What is left over is reported rather than guessed. `Walk` carries the claimed
+byte count against the image size, and `vox lift` prints it: 12% of /bin/true,
+61% of /bin/ls, 88% of /bin/bash. The remainder sits behind an indirect transfer
+or is not code, and nothing in the bytes tells those apart.
 
-Trailing padding is trimmed before the word is built. Left on, every function
-ends in a run of ⊣ and the verdict moves for a reason that belongs to the
-alignment rather than to the code.
+That is a smaller number than the byte-walk reported and a truer one. The old
+sweep put 29,725 instructions on /bin/ls by decoding through data; this puts
+11,543 on it and says what it did not read.
 
-instruction_of is now the single place a decoded instruction becomes an
-Instruction. Descent and the sweep were synthesising the operand string
-differently, so the same byte read as ◻ in one path and ⊞ in the other.
-
-On /bin/ls: 189 functions before symbol seeding, 295 after, and 1680 once the
-sweep stops stitching unrelated remainders together.
-
-Not converged, and worth naming rather than leaving to be discovered. The Python
-lane reports 584 functions for the same binary against this lane's 1680. Both
-now use descent, symbol seeding and the same boundary rule, so the difference is
-in the sweep: that lane decodes the leftover from a linear disassembly, which
-self-synchronises, while this one decodes byte by byte and advances by one on a
-failure, which can leave misaligned fragments. That is the next thing to fix,
-and it is a difference in how the remainder is read, not in what the Grammar
-says about it.
+Also: every direct branch target seen during descent is recorded even when
+descent could not follow it, since a target is proof the bytes at it are code.
