@@ -24,6 +24,7 @@ extern crate alloc;
 
 pub mod tokens;
 pub mod braid_protocol;
+pub mod vox;
 
 // The gate runs on a host; there is no test harness on bare metal.
 #[cfg(all(test, feature = "hosted"))]

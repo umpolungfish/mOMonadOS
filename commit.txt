@@ -1,30 +1,37 @@
-Finish the theme, delete the dead help, name the literals
+Circuit: substrate round trips through IMASM, and where identity actually holds
 
-Boot, help, dialects, the IMASM arranger and the alkahest report all wear the
-theme now. Three things this pass turned up that were not styling.
+Two circuits, both routed through the twelve-glyph alphabet:
 
-There were two banners. The boot lines added last commit duplicated
-print_banner, which had been printing its own box a screen later, and the REPL
-then printed a third line telling the reader how to get help. One banner now,
-leading with the mark and the name before the feature list, and the help hint
-appears once.
+  x86 → IMASM → RNA → IMASM → x86
+  RNA → IMASM → x86 → IMASM → wasm → IMASM → AA
 
-The dead help is gone. print_help in repl.rs was 147 lines that nothing called,
-carrying a comment saying removal was "a separate decision" — it is not, an
-unreachable listing is a listing that will drift and then mislead whoever finds
-it. Its style_section helper turned out to have 31 live callers elsewhere in the
-file, so that stays, in the helpers section where it belongs.
+A binary cannot return byte-identical. vox's classifier ends in a catch-all, so
+distinct instructions carry the same glyph and the substrate map has a fiber and
+no inverse. Assume identity on the outer composite and sixty-four codons against
+twelve glyphs refutes it outright. What closes is the word: each leg is a
+retraction, μ∘δ = id on glyphs, δ∘μ idempotent rather than identity, and the
+identity holds exactly on the image of δ.
 
-Three literals became names. KEY_COL was written as 22 inside the kv! macro, a
-column that could only be moved by finding every use. LATTICE_DEN was written as
-10.0 inside the readout's residual, asserting the model's generator lattice a
-second time where nothing checks it against the first. LATTICE_EPS was a bare
-1e-6 at the one site that needed it; what counts as on-lattice is a decision,
-not a constant to inline.
+The RNA leg is enumeration rather than assignment. Four bases give sixteen
+ordered pairs at the first two codon positions, four diagonal and twelve not,
+and twelve is the size of the alphabet. The off-diagonal pairs are the glyphs.
+The third position carries no glyph, which is what rebis/codon.rs already says
+about the exact stratum. Diagonal codons are the part of codon space the
+alphabet does not reach, and they cannot enter a circuit.
 
-And the dialect list said "ALL 12 DIALECTS" while looping to 88, with the bound
-written out rather than taken from DIALECT_COUNT. The title is derived now, so
-it cannot disagree with the loop again. The IMASM arranger's count comes from
-the length of its own table for the same reason.
+The two machine substrates differ structurally. wasm has structured control
+flow, so block and end are opcodes and all twelve glyphs are expressible. x86 is
+flat: ⊢ opens a word and ∋ marks a merge, and neither is an instruction. The
+lifter re-derives both from the instruction stream, so the word still closes.
 
-Bare metal builds; hosted builds; every surface checked by eye.
+Circuit two closes on the canonical section and fails off it, and the failure is
+the result. Of four off-section codons in a test sequence, δ∘μ moved all four
+and only one changed the protein: GCC→GCU stays Ala, UGC→UGU stays Cys,
+ACG→ACU stays Thr, AUG→AUU goes Met to Ile. The detour is invisible exactly
+where the code's own third-position degeneracy absorbs the move, and visible
+exactly where that degeneracy breaks. Met is a singleton box, so its third
+position carries information, and the wobble is what discards it.
+
+Built on the existing rebis codon table and the belnap_ring_shor glyph enum
+rather than a second copy of either. REPL command `circuit` with table,
+retract, one, two. Findings in CIRCUIT.md.

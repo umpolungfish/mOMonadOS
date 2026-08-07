@@ -304,6 +304,129 @@ pub fn repl(k: &mut Kernel) {
                     crate::lattice_flow::weight_report(w);
                 }
             }
+            // `vox` reads control flow the way `weight` reads value flow: it takes
+            // the instruction side rather than the word side, classifies each
+            // mnemonic to a glyph, and runs the same verdict over the result.
+            "vox" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> =
+                    tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                if rest.is_empty() || rest[0] == "help" {
+                    sprintln!("vox <sub>        — control-flow closure auditor");
+                    sprintln!("vox verdict <word>   — SIXTEEN_3 verdict over a glyph word");
+                    sprintln!("vox classify <mn>    — which glyph an instruction lifts to");
+                    sprintln!("A word closes at T, carries an open fork at B, and runs clean");
+                    sprintln!("and linear at N. The fork is what the verdict is looking for.");
+                } else {
+                    match rest[0].as_str() {
+                        "verdict" | "words" | "word" => {
+                            if rest.len() > 1 {
+                                let word: Vec<char> = rest[1..].join("").chars().collect();
+                                sprintln!("{}", crate::vox::glyphs(&word));
+                                sprintln!("verdict {}", crate::vox::verdict(&word));
+                            } else {
+                                sprintln!("vox verdict <glyph-word>");
+                            }
+                        }
+                        "classify" => {
+                            if rest.len() > 1 {
+                                let ins = crate::vox::Instruction {
+                                    address: 0,
+                                    mnemonic: rest[1].to_lowercase(),
+                                    op_str: rest[2..].join(" "),
+                                };
+                                let g = crate::vox::classify_instruction(&ins);
+                                sprintln!("{} {}", ins.mnemonic, g);
+                            } else {
+                                sprintln!("vox classify <mnemonic> [operands]");
+                            }
+                        }
+                        other => sprintln!("vox has no `{}`; try `vox help`", other),
+                    }
+                }
+            }
+            // `circuit` runs the substrate round trips. The word is the invariant;
+            // every substrate leg is many-to-one, so what is being checked is
+            // that each leg is a retraction and that the detour changes nothing.
+            "circuit" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> =
+                    tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let sub = rest.first().map(|s| s.as_str()).unwrap_or("help");
+                match sub {
+                    "table" => {
+                        for l in crate::circuit::table_lines() {
+                            sprintln!("{}", l);
+                        }
+                    }
+                    "retract" | "retraction" => {
+                        for l in crate::circuit::retraction_lines() {
+                            sprintln!("{}", l);
+                        }
+                    }
+                    "one" => {
+                        let word: Vec<crate::belnap_ring_shor::Glyph> = if rest.len() > 1 {
+                            rest[1..].join("").chars()
+                                .filter_map(crate::belnap_ring_shor::Glyph::from_char).collect()
+                        } else {
+                            crate::belnap_ring_shor::Glyph::all().to_vec()
+                        };
+                        let r = crate::circuit::circuit_one(&word);
+                        let a: String = r.start.iter().map(|g| g.to_char()).collect();
+                        let b: String = r.returned.iter().map(|g| g.to_char()).collect();
+                        sprintln!("x86 → IMASM → RNA → IMASM → x86");
+                        sprintln!("  in   {}", a);
+                        sprintln!("  rna  {}", r.rna);
+                        sprintln!("  out  {}", b);
+                        sprintln!("  {}", if r.closes() { "closes" } else { "DOES NOT CLOSE" });
+                        for i in &r.instructions {
+                            sprintln!("    {}", i);
+                        }
+                    }
+                    "two" => {
+                        let rna = if rest.len() > 1 {
+                            rest[1..].join("")
+                        } else {
+                            let mut s = alloc::string::String::new();
+                            for g in crate::belnap_ring_shor::Glyph::all() {
+                                s.push_str(&crate::circuit::codon_rna(
+                                    &crate::circuit::glyph_to_codon(g)));
+                            }
+                            s
+                        };
+                        let r = crate::circuit::circuit_two(&rna);
+                        sprintln!("RNA → IMASM → x86 → IMASM → wasm → IMASM → AA");
+                        sprintln!("  rna  {}", rna);
+                        for l in &r.trace {
+                            sprintln!("    {}", l);
+                        }
+                        let d: alloc::vec::Vec<&str> =
+                            r.direct.iter().map(|a| a.code3()).collect();
+                        let o: alloc::vec::Vec<&str> =
+                            r.routed.iter().map(|a| a.code3()).collect();
+                        sprintln!("  direct  {}", d.join("-"));
+                        sprintln!("  routed  {}", o.join("-"));
+                        if r.skipped > 0 {
+                            sprintln!("  {} codon(s) carried no glyph and did not enter", r.skipped);
+                        }
+                        if r.closes() {
+                            sprintln!("  the detour is invisible");
+                        } else {
+                            sprintln!("  the detour changes the protein");
+                            sprintln!("  {} codon(s) sat off the canonical section, and δ∘μ", r.offsection);
+                            sprintln!("  moved them. Identity holds on the section and nowhere else.");
+                        }
+                    }
+                    _ => {
+                        sprintln!("circuit table       — every glyph across every substrate");
+                        sprintln!("circuit retract     — μ∘δ=id, leg by leg");
+                        sprintln!("circuit one [word]  — x86 → IMASM → RNA → IMASM → x86");
+                        sprintln!("circuit two [rna]   — RNA → IMASM → x86 → IMASM → wasm → IMASM → AA");
+                        sprintln!("A binary cannot return byte-identical: each substrate leg is");
+                        sprintln!("many-to-one. The word is what closes.");
+                    }
+                }
+            }
             // The grammar-tool layer calls these `quantum_compile` and
             // `jones_polynomial`, and an agent that knows those names typed them
             // here and got "Unknown: quantum_compile". Same operations, two
