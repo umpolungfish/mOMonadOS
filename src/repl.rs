@@ -5024,38 +5024,27 @@ fn vox_lift_file(path: &str) {
         sprintln!("{}: no executable sections found", path);
         return;
     }
-    sprintln!("{}  entry 0x{:x}  {} executable section(s)", path, entry, segments.len());
+    let image = crate::vox_decode::Image { segments };
+    sprintln!("{}  entry 0x{:x}  {} byte(s) of code", path, entry, image.total_bytes());
+
+    let seeds = crate::vox::elf_function_symbols(&raw);
+    let funcs = crate::vox_decode::descend_seeded(&image, entry, &seeds);
+    let decoded: usize = funcs.iter().map(|(_, f)| f.len()).sum();
+    sprintln!("  {} function(s), {} instruction(s)", funcs.len(), decoded);
+
     let mut tally = [0usize; 4];   // T, B, N, F
     let mut illtyped = alloc::vec::Vec::new();
-    for (addr, bytes) in &segments {
-        let lift = crate::vox_decode::lift_bytes(*addr, bytes);
-        sprintln!("");
-        sprintln!("  section at 0x{:x}  {} bytes", addr, bytes.len());
-        sprintln!("    decoded  {} instruction(s), {}% of bytes",
-            lift.instructions.len(), lift.coverage_percent());
-        if let Some(off) = lift.stopped_at {
-            let end = core::cmp::min(off + 8, bytes.len());
-            let mut hex = alloc::string::String::new();
-            for b in &bytes[off..end] {
-                hex.push_str(&alloc::format!("{:02x} ", b));
-            }
-            sprintln!("    stopped at +0x{:x} on an opcode the decoder does not know: {}",
-                off, hex.trim_end());
-        }
-        let funcs = crate::vox::split_functions(&lift.instructions);
-        sprintln!("    {} function(s)", funcs.len());
-        for f in &funcs {
-            let word = crate::vox::recompile_function(f);
-            let v = crate::vox::verdict(&word);
-            match v {
-                'T' => tally[0] += 1,
-                'B' => tally[1] += 1,
-                'N' => tally[2] += 1,
-                _ => {
-                    tally[3] += 1;
-                    if illtyped.len() < 8 {
-                        illtyped.push((f[0].address, crate::vox::glyphs(&word)));
-                    }
+    for (start, f) in &funcs {
+        let word = crate::vox::recompile_function(f);
+        let v = crate::vox::verdict(&word);
+        match v {
+            'T' => tally[0] += 1,
+            'B' => tally[1] += 1,
+            'N' => tally[2] += 1,
+            _ => {
+                tally[3] += 1;
+                if illtyped.len() < 8 {
+                    illtyped.push((*start, crate::vox::glyphs(&word)));
                 }
             }
         }

@@ -1,29 +1,38 @@
-Vox: refuse to score an ill-formed word, and stop calling a section a function
+Vox: walk the program instead of sweeping it
 
-Two things ported back from the standalone V⊙x in ~/imsgct/Vox, where they were
-found.
+The Rust lane lifted linearly: decode a section start to end and call the whole
+thing a function. That reads padding and embedded data as code and can only
+guess where one function ends, so its verdicts answered a different question
+from the Python lane's.
 
-verdict gains F. T closes, B holds a fork open across a terminal, N never
-forked, and F is not a truth value at all: it reports that the word is
-ill-typed, a fuse with no fork to pair. Scoring such a word T or N buries the
-finding under something that looks like an answer. The engine refusing is the
-correct behaviour, and it is how both defects below were found rather than
-guessed at.
+vox_decode::descend walks instead. From the entry point and every direct call
+target, one instruction at a time, following the edges the program has. A call's
+target is a new function and the call returns; a conditional takes both edges;
+an unconditional jump takes one. What descent cannot follow is an indirect
+transfer, which is what ⊙ is for, so the remainder is swept afterwards rather
+than dropped.
 
-split_functions cuts a decoded run into functions. A contiguous run is not one
-function; it is every function laid end to end. A boundary is a terminal, then
-padding, then a body, and all three are needed: padding alone is not a boundary
-because both compilers also pad for alignment inside a body, and cutting there
-shatters one function into dozens. A stretch that is only padding is not a
-function either.
+vox::elf_function_symbols seeds it. A shared object's own entry calls almost
+none of its exported functions, so descent from the entry alone misses them.
+Reading STT_FUNC out of SHT_SYMTAB and SHT_DYNSYM is what turns a handful of
+reachable functions into the program.
 
-`vox lift` now reports per-function verdicts and a tally instead of verdicting
-whole sections, and prints the ill-typed words with their addresses.
+Trailing padding is trimmed before the word is built. Left on, every function
+ends in a run of ⊣ and the verdict moves for a reason that belongs to the
+alignment rather than to the code.
 
-One difference from the Python lane, recorded rather than smoothed. That lane
-walks by recursive descent, so its ill-typed words are functions cut in the
-wrong place. This lane lifts linearly, so its ill-typed words are dominated by
-loop headers: a back-edge puts the fuse before the fork in address order, and a
-linear reading meets the ∋ with nothing on the stack. Same refusal, two
-different causes, and the second is a property of reading linearly rather than
-of the program.
+instruction_of is now the single place a decoded instruction becomes an
+Instruction. Descent and the sweep were synthesising the operand string
+differently, so the same byte read as ◻ in one path and ⊞ in the other.
+
+On /bin/ls: 189 functions before symbol seeding, 295 after, and 1680 once the
+sweep stops stitching unrelated remainders together.
+
+Not converged, and worth naming rather than leaving to be discovered. The Python
+lane reports 584 functions for the same binary against this lane's 1680. Both
+now use descent, symbol seeding and the same boundary rule, so the difference is
+in the sweep: that lane decodes the leftover from a linear disassembly, which
+self-synchronises, while this one decodes byte by byte and advances by one on a
+failure, which can leave misaligned fragments. That is the next thing to fix,
+and it is a difference in how the remainder is read, not in what the Grammar
+says about it.

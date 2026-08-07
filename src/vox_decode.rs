@@ -622,3 +622,231 @@ fn is_indirect_branch(mnemonic: &str, raw: &[u8]) -> bool {
 pub fn cc_names() -> &'static [&'static str; 16] {
     &CC
 }
+
+// ── Recursive descent ──────────────────────────────────────────
+//
+// A linear sweep decodes padding and embedded data as if they were code, and
+// it cannot tell where one function ends and the next begins except by
+// guessing at padding. Descent walks instead: from the entry point and every
+// direct call target, one instruction at a time, following the edges the
+// program actually has. Anything reachable only through an indirect transfer
+// (⊙) cannot be followed statically — that is what the glyph is for — so what
+// descent never reaches is swept afterwards rather than dropped.
+
+use alloc::collections::{BTreeMap, BTreeSet};
+
+/// The executable image: byte ranges with the addresses they load at.
+pub struct Image {
+    pub segments: Vec<(u64, Vec<u8>)>,
+}
+
+impl Image {
+    pub fn bytes_at(&self, addr: u64) -> Option<&[u8]> {
+        for (base, data) in &self.segments {
+            if addr >= *base && addr < *base + data.len() as u64 {
+                return Some(&data[(addr - *base) as usize..]);
+            }
+        }
+        None
+    }
+
+    pub fn total_bytes(&self) -> usize {
+        self.segments.iter().map(|(_, d)| d.len()).sum()
+    }
+}
+
+/// Build the instruction a Decoded stands for. Descent and the sweep must
+/// agree here: synthesising the operand string differently in the two paths
+/// makes the same byte read as ◻ in one and ⊞ in the other.
+fn instruction_of(d: &Decoded, addr: u64, raw: &[u8]) -> Instruction {
+    Instruction {
+        address: addr,
+        mnemonic: d.mnemonic.to_string(),
+        op_str: match d.target {
+            Some(t) => format!("0x{:x}", t),
+            None => {
+                if d.writes_mem {
+                    "qword ptr [rax], rbx".to_string()
+                } else if is_indirect_branch(d.mnemonic, raw) {
+                    "rax".to_string()
+                } else {
+                    String::new()
+                }
+            }
+        },
+    }
+}
+
+/// The direct target of a branch, when it has one written in the instruction.
+fn direct_target(ins: &Instruction) -> Option<u64> {
+    let s = ins.op_str.trim();
+    if let Some(hex) = s.strip_prefix("0x") {
+        u64::from_str_radix(hex, 16).ok()
+    } else {
+        None
+    }
+}
+
+fn is_terminal(mn: &str) -> bool {
+    mn.starts_with("ret") || matches!(mn, "int3" | "ud2" | "hlt" | "iret" | "jmp")
+}
+
+/// Walk an image into functions.
+///
+/// Returns (start address, instructions) per function, in discovery order for
+/// the descended ones and address order for the swept remainder.
+pub fn descend(image: &Image, entry: u64) -> Vec<(u64, Vec<Instruction>)> {
+    descend_seeded(image, entry, &[])
+}
+
+/// Trailing padding is not part of the function it follows. Leaving it on
+/// makes every function end in a run of ⊣, which changes the verdict.
+fn trim_padding(mut f: Vec<Instruction>) -> Vec<Instruction> {
+    while f.len() > 1 {
+        let last = crate::vox::strip_prefix(&f[f.len() - 1].mnemonic).to_string();
+        if crate::vox::PAD_OPS.contains(&last.as_str()) {
+            f.pop();
+        } else {
+            break;
+        }
+    }
+    f
+}
+
+/// Walk an image into functions, seeding descent with known function addresses
+/// on top of the entry point.
+pub fn descend_seeded(
+    image: &Image,
+    entry: u64,
+    seeds: &[u64],
+) -> Vec<(u64, Vec<Instruction>)> {
+    let mut out: Vec<(u64, Vec<Instruction>)> = Vec::new();
+    let mut covered: BTreeMap<u64, Instruction> = BTreeMap::new();
+    let mut seen_funcs: BTreeSet<u64> = BTreeSet::new();
+    let mut func_queue: Vec<u64> = Vec::new();
+
+    if image.bytes_at(entry).is_some() {
+        func_queue.push(entry);
+    } else if let Some((base, _)) = image.segments.first() {
+        func_queue.push(*base);
+    }
+    for s in seeds {
+        if image.bytes_at(*s).is_some() {
+            func_queue.push(*s);
+        }
+    }
+
+    while let Some(fstart) = func_queue.first().copied() {
+        func_queue.remove(0);
+        if seen_funcs.contains(&fstart) || covered.contains_key(&fstart) {
+            continue;
+        }
+        if image.bytes_at(fstart).is_none() {
+            continue;
+        }
+        seen_funcs.insert(fstart);
+
+        let mut visited: BTreeSet<u64> = BTreeSet::new();
+        let mut body: BTreeMap<u64, Instruction> = BTreeMap::new();
+        let mut queue: Vec<u64> = vec![fstart];
+
+        while let Some(addr) = queue.first().copied() {
+            queue.remove(0);
+            if visited.contains(&addr) || covered.contains_key(&addr) {
+                continue;
+            }
+            let bytes = match image.bytes_at(addr) {
+                Some(b) => b,
+                None => continue,
+            };
+            let d = match decode_one(bytes, addr) {
+                Some(d) if d.len > 0 => d,
+                _ => continue,
+            };
+            visited.insert(addr);
+            let ins = instruction_of(&d, addr, &bytes[..d.len]);
+            let mn = d.mnemonic;
+            let next = addr + d.len as u64;
+
+            if mn == "call" {
+                // A call's target is another function; the call itself returns.
+                if let Some(t) = direct_target(&ins) {
+                    if !seen_funcs.contains(&t) {
+                        func_queue.push(t);
+                    }
+                }
+                queue.push(next);
+            } else if mn.starts_with('j') {
+                if let Some(t) = direct_target(&ins) {
+                    queue.push(t);
+                }
+                if mn != "jmp" {
+                    queue.push(next);   // a conditional takes both edges
+                }
+            } else if !is_terminal(mn) {
+                queue.push(next);
+            }
+            body.insert(addr, ins);
+        }
+
+        if !body.is_empty() {
+            let insns = trim_padding(body.values().cloned().collect());
+            for (a, i) in body {
+                covered.insert(a, i);
+            }
+            if !insns.is_empty() {
+                out.push((fstart, insns));
+            }
+        }
+    }
+
+    // Sweep whatever descent never reached: code behind an indirect transfer,
+    // and data that is not code at all. Split on the same boundary rule.
+    // Skipping a covered byte ends the run: the bytes on either side of what
+    // descent already claimed are not contiguous, and stitching them together
+    // makes one pseudo-function out of two unrelated remainders.
+    let mut runs: Vec<Vec<Instruction>> = Vec::new();
+    let mut run: Vec<Instruction> = Vec::new();
+    for (base, data) in &image.segments {
+        let mut i = 0usize;
+        while i < data.len() {
+            let addr = base + i as u64;
+            if covered.contains_key(&addr) {
+                // Descent already claimed this byte. Skipping it does not end
+                // the run: descent leaves many small holes inside a stretch
+                // the sweep is walking, and breaking at each one shatters the
+                // remainder into thousands of fragments.
+                i += 1;
+                continue;
+            }
+            match decode_one(&data[i..], addr) {
+                Some(d) if d.len > 0 => {
+                    let end = core::cmp::min(i + d.len, data.len());
+                    run.push(instruction_of(&d, addr, &data[i..end]));
+                    i += d.len;
+                }
+                _ => {
+                    // A byte that does not decode is not code; it ends the run.
+                    if !run.is_empty() {
+                        runs.push(core::mem::take(&mut run));
+                    }
+                    i += 1;
+                }
+            }
+        }
+        if !run.is_empty() {
+            runs.push(core::mem::take(&mut run));
+        }
+    }
+    for r in runs {
+        for f in crate::vox::split_functions(&r) {
+            if let Some(first) = f.first() {
+                let trimmed = trim_padding(f.to_vec());
+                if !trimmed.is_empty() {
+                    out.push((first.address, trimmed));
+                }
+            }
+        }
+    }
+    out
+}

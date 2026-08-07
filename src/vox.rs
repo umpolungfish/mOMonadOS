@@ -35,7 +35,7 @@ pub struct Instruction {
 const MNEMONIC_PREFIXES: &[&str] = &["notrack ", "lock ", "bnd ", "rep ", "repe ", "repne ", "data16 "];
 
 /// Strip mnemonic prefixes so classification is consistent
-fn strip_prefix(mn: &str) -> &str {
+pub fn strip_prefix(mn: &str) -> &str {
     for p in MNEMONIC_PREFIXES {
         if mn.starts_with(p) {
             return &mn[p.len()..];
@@ -219,7 +219,7 @@ pub fn recompile_function(insns: &[Instruction]) -> Vec<char> {
 }
 
 /// Instructions a compiler uses to pad between functions.
-const PAD_OPS: &[&str] = &["int3", "nop", "ud2"];
+pub const PAD_OPS: &[&str] = &["int3", "nop", "ud2"];
 
 /// Split a decoded run into functions.
 ///
@@ -355,6 +355,61 @@ pub fn roundtrip_check(functions: &[(String, u64, Vec<Instruction>)]) -> bool {
     }
 
     combined1 == combined2
+}
+
+/// Every defined function address in an ELF's symbol tables.
+///
+/// A shared object's own entry point calls almost none of its exported
+/// functions — those are called from outside, by whoever loads it — so descent
+/// from the entry alone misses them. Seeding every defined function symbol is
+/// what turns a handful of reachable functions into the whole program.
+pub fn elf_function_symbols(raw: &[u8]) -> Vec<u64> {
+    let mut out = Vec::new();
+    if raw.len() < 64 || &raw[0..4] != b"\x7fELF" || raw[4] != 2 {
+        return out;
+    }
+    let rd64 = |o: usize| -> u64 {
+        u64::from_le_bytes(raw[o..o + 8].try_into().unwrap_or([0; 8]))
+    };
+    let rd32 = |o: usize| -> u32 {
+        u32::from_le_bytes(raw[o..o + 4].try_into().unwrap_or([0; 4]))
+    };
+    let rd16 = |o: usize| -> u16 {
+        u16::from_le_bytes(raw[o..o + 2].try_into().unwrap_or([0; 2]))
+    };
+    let shoff = rd64(40) as usize;
+    let shentsize = rd16(58) as usize;
+    let shnum = rd16(60) as usize;
+    for k in 0..shnum {
+        let sh = shoff + k * shentsize;
+        if sh + 64 > raw.len() {
+            break;
+        }
+        let sh_type = rd32(sh + 4);
+        // SHT_SYMTAB = 2, SHT_DYNSYM = 11
+        if sh_type != 2 && sh_type != 11 {
+            continue;
+        }
+        let off = rd64(sh + 24) as usize;
+        let size = rd64(sh + 32) as usize;
+        let entsize = rd64(sh + 56) as usize;
+        if entsize == 0 || off + size > raw.len() {
+            continue;
+        }
+        let mut e = off;
+        while e + entsize <= off + size {
+            let info = raw[e + 4];
+            let value = rd64(e + 8);
+            // STT_FUNC = 2 in the low nibble of st_info
+            if info & 0x0F == 2 && value != 0 {
+                out.push(value);
+            }
+            e += entsize;
+        }
+    }
+    out.sort_unstable();
+    out.dedup();
+    out
 }
 
 /// Parse ELF binary to extract executable sections
