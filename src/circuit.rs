@@ -387,6 +387,55 @@ pub fn circuit_two(rna: &str) -> CircuitTwo {
     CircuitTwo { codons, direct, routed, trace, skipped, offsection }
 }
 
+// ── Strands and frames ─────────────────────────────────────────
+//
+// The glyph is read off the first two codon positions; the third is wobble and
+// carries none. Watson-Crick reverse complement sends (p1,p2,p3) to
+// (comp p3, comp p2, comp p1), so the antisense strand reads its FIRST position
+// off the sense strand's wobble. Whatever the sense strand discards is what the
+// antisense strand puts in a glyph-bearing position.
+
+/// The glyph word a strand carries, with `.` where a codon carries none.
+pub fn strand_word(codons: &[Codon]) -> String {
+    codons
+        .iter()
+        .map(|c| codon_to_glyph(c).map(|g| g.to_char()).unwrap_or('.'))
+        .collect()
+}
+
+/// Reverse complement of a codon list, read 5'→3' on the other strand.
+pub fn antisense(codons: &[Codon]) -> Vec<Codon> {
+    codons.iter().rev().map(|c| c.reverse_complement()).collect()
+}
+
+/// Re-frame a codon list by shifting the underlying base string.
+pub fn frame(rna: &str, shift: usize) -> Vec<Codon> {
+    let cleaned: String = rna.chars().filter(|c| !c.is_whitespace()).collect();
+    if shift >= cleaned.len() {
+        return Vec::new();
+    }
+    parse_rna(&cleaned[shift..])
+}
+
+pub struct StrandReport {
+    pub sense: String,
+    pub antisense: String,
+    pub frames: [String; 3],
+}
+
+pub fn strand_report(rna: &str) -> StrandReport {
+    let c0 = parse_rna(rna);
+    StrandReport {
+        sense: strand_word(&c0),
+        antisense: strand_word(&antisense(&c0)),
+        frames: [
+            strand_word(&frame(rna, 0)),
+            strand_word(&frame(rna, 1)),
+            strand_word(&frame(rna, 2)),
+        ],
+    }
+}
+
 // ── Reports ────────────────────────────────────────────────────
 
 pub fn retraction_lines() -> Vec<String> {

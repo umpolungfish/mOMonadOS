@@ -91,6 +91,7 @@ degenerate.
 
 ```
 circuit table       — every glyph across every substrate
+circuit rc [rna]    — sense, antisense, and all three frames
 circuit retract     — μ∘δ=id, leg by leg
 circuit one [word]  — x86 → IMASM → RNA → IMASM → x86
 circuit two [rna]   — RNA → IMASM → x86 → IMASM → wasm → IMASM → AA
@@ -98,9 +99,77 @@ circuit two [rna]   — RNA → IMASM → x86 → IMASM → wasm → IMASM → A
 
 Both take an argument or fall back to the full alphabet.
 
+## Strands, frames, and what the arcane sequences say
+
+`circuit rc <rna>` prints the sense word, the antisense word, and all three
+frames. `.` marks a codon carrying no glyph.
+
+**The antisense of the canonical section is forced, and it is the control-flow
+triple.** Reverse complement sends `(p1,p2,p3)` to `(comp p3, comp p2, comp p1)`,
+so the antisense reads its FIRST position off the sense strand's wobble. With the
+canonical wobble at `U`, and `comp(U) = A`, every antisense codon of a
+section word begins with `A`. The only glyphs whose first position is `A` are
+`∈`, `∋`, and `⊙`. So:
+
+```
+sense      ⊢⊣><⋈⊤∈∋⊙⊥⊞◻
+antisense  ∈⊙.∋⊙.∋∈.∋∈⊙
+```
+
+Twelve glyphs collapse to three, and the three are fork, fuse, and
+self-reference. This is not a coincidence to admire; it is forced by the choice
+of canonical wobble, and a different wobble selects a different triple. Wobble
+`G` would give every antisense codon a leading `C`, hence `<`, `⋈`, `⊤`.
+Whatever the sense strand discards is exactly what the antisense strand puts in
+a glyph-bearing position.
+
+**Shine-Dalgarno and its recognizer are a ⊙/silence pair.**
+
+```
+AGGAGG…  sense ⊙⊙⊙⊙   antisense ....
+CCUCCU…  sense ....    antisense ⊙⊙⊙⊙
+```
+
+The ribosome binding site carries nothing but `⊙` on the message strand and
+nothing at all on the other; the anti-SD in the small subunit carries the mirror.
+The recognition event is one strand speaking `⊙` into a strand that says nothing.
+
+**The palindromic restriction site is a fixed point of the strand involution.**
+
+```
+GAAUUC…  sense ◻.◻.   antisense ◻.◻.
+```
+
+A true reverse-complement palindrome has an antisense sequence equal to its
+sense sequence, so the words coincide. `GAAUUC` lands on `◻`, winding.
+
+**Poly-A is the maximal silence.** Every frame, both strands, no glyph. `AAA` is
+diagonal and so is its complement `UUU`, and the homopolymer is the one case
+where both sides of the involution sit on the diagonal at once.
+
+**The telomere repeat is silent in its own frame and speaks off it.**
+
+```
+UUAGGG…  frame 0 ......   frame 1 ⊣.⊣.⊣   frame 2 ⊙⊥⊙⊥⊙
+```
+
+Frame 2 alternates criticality and chirality without interruption. Nothing here
+says which frame a non-coding repeat should be read in; the observation is that
+the reading is frame-dependent and this repeat has a frame in which it is
+entirely mute.
+
+**The hammerhead ribozyme core carries a non-repeating word on both strands.**
+
+```
+CUGAUGAGUCCGUGAGGACGAAAC
+  sense      <∈⊙.>.⊤.
+  antisense  ⊥⊢⊢⊢⊤∋⋈⋈
+```
+
 ## What is not settled
 
 Whether the canonical wobble should be the unmarked base. It is `U` here because
 `N` is the unmarked Belnap value and the section has to be picked somehow, but
-nothing yet forces that choice, and a different section would move which codons
-sit off it without changing any of the structure above.
+nothing yet forces that choice. It is not inert, though: the canonical wobble
+selects which triple the antisense strand speaks, so the choice is doing visible
+work and deserves a reason rather than a default.

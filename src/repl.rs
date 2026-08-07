@@ -417,8 +417,23 @@ pub fn repl(k: &mut Kernel) {
                             sprintln!("  moved them. Identity holds on the section and nowhere else.");
                         }
                     }
+                    "rc" | "strand" => {
+                        let rna = if rest.len() > 1 { rest[1..].join("") } else {
+                            "AUGGCCUUUAAAGGGCAUUGCACG".to_string()
+                        };
+                        let r = crate::circuit::strand_report(&rna);
+                        sprintln!("  rna        {}", rna);
+                        sprintln!("  sense      {}", r.sense);
+                        sprintln!("  antisense  {}", r.antisense);
+                        sprintln!("  frame 0    {}", r.frames[0]);
+                        sprintln!("  frame 1    {}", r.frames[1]);
+                        sprintln!("  frame 2    {}", r.frames[2]);
+                        sprintln!("  `.` is a codon that carries no glyph. The antisense strand");
+                        sprintln!("  reads its first position off the sense strand's wobble.");
+                    }
                     _ => {
                         sprintln!("circuit table       — every glyph across every substrate");
+                        sprintln!("circuit rc [rna]    — sense, antisense, and all three frames");
                         sprintln!("circuit retract     — μ∘δ=id, leg by leg");
                         sprintln!("circuit one [word]  — x86 → IMASM → RNA → IMASM → x86");
                         sprintln!("circuit two [rna]   — RNA → IMASM → x86 → IMASM → wasm → IMASM → AA");

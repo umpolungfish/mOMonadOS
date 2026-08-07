@@ -1,37 +1,33 @@
-Circuit: substrate round trips through IMASM, and where identity actually holds
+Circuit: strands and frames, and the antisense triple
 
-Two circuits, both routed through the twelve-glyph alphabet:
+`circuit rc` prints the sense word, the antisense word, and all three reading
+frames of an RNA string.
 
-  x86 → IMASM → RNA → IMASM → x86
-  RNA → IMASM → x86 → IMASM → wasm → IMASM → AA
+The finding worth keeping: the antisense of a canonical-section word is forced
+to a three-glyph vocabulary, and the three are fork, fuse, and self-reference.
+Reverse complement sends (p1,p2,p3) to (comp p3, comp p2, comp p1), so the
+antisense strand reads its FIRST position off the sense strand's wobble. With
+the canonical wobble at U and comp(U)=A, every antisense codon of a section word
+begins with A, and the only glyphs with a leading A are ∈, ∋, ⊙. Twelve
+collapse to three. Whatever the sense strand discards is exactly what the
+antisense strand puts in a glyph-bearing position.
 
-A binary cannot return byte-identical. vox's classifier ends in a catch-all, so
-distinct instructions carry the same glyph and the substrate map has a fiber and
-no inverse. Assume identity on the outer composite and sixty-four codons against
-twelve glyphs refutes it outright. What closes is the word: each leg is a
-retraction, μ∘δ = id on glyphs, δ∘μ idempotent rather than identity, and the
-identity holds exactly on the image of δ.
+This also settles that the canonical wobble is not an inert choice: wobble G
+would give every antisense codon a leading C and hence the triple <, ⋈, ⊤. The
+choice selects which triple the other strand speaks, so it wants a reason rather
+than a default. Recorded as the open question it now is.
 
-The RNA leg is enumeration rather than assignment. Four bases give sixteen
-ordered pairs at the first two codon positions, four diagonal and twelve not,
-and twelve is the size of the alphabet. The off-diagonal pairs are the glyphs.
-The third position carries no glyph, which is what rebis/codon.rs already says
-about the exact stratum. Diagonal codons are the part of codon space the
-alphabet does not reach, and they cannot enter a circuit.
+Sequences run, all reproducible from the REPL:
 
-The two machine substrates differ structurally. wasm has structured control
-flow, so block and end are opcodes and all twelve glyphs are expressible. x86 is
-flat: ⊢ opens a word and ∋ marks a merge, and neither is an instruction. The
-lifter re-derives both from the instruction stream, so the word still closes.
+- Shine-Dalgarno AGGAGG carries ⊙ and nothing else on the message strand and
+  nothing at all on the other. Its recognizer CCUCCU carries the mirror. The
+  recognition is one strand speaking ⊙ into a strand that says nothing.
+- The palindromic site GAAUUC has sense and antisense words that coincide, since
+  a reverse-complement palindrome is its own antisense. It lands on ◻.
+- Poly-A is mute in every frame on both strands: AAA is diagonal and so is UUU,
+  the one case where both sides of the involution sit on the diagonal.
+- The telomere repeat UUAGGG is mute in frame 0 and alternates ⊙⊥ without
+  interruption in frame 2.
+- The hammerhead ribozyme core carries a non-repeating word on both strands.
 
-Circuit two closes on the canonical section and fails off it, and the failure is
-the result. Of four off-section codons in a test sequence, δ∘μ moved all four
-and only one changed the protein: GCC→GCU stays Ala, UGC→UGU stays Cys,
-ACG→ACU stays Thr, AUG→AUU goes Met to Ile. The detour is invisible exactly
-where the code's own third-position degeneracy absorbs the move, and visible
-exactly where that degeneracy breaks. Met is a singleton box, so its third
-position carries information, and the wobble is what discards it.
-
-Built on the existing rebis codon table and the belnap_ring_shor glyph enum
-rather than a second copy of either. REPL command `circuit` with table,
-retract, one, two. Findings in CIRCUIT.md.
+Findings in CIRCUIT.md.
