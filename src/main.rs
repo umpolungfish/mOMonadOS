@@ -97,6 +97,7 @@ mod triple_frame;
 mod iuft_qc;
 mod iuft_teichmuller;
 mod vox;
+mod vox_decode;
 mod circuit;
 
 // ── m3iosis tool ports (native Rust implementations) ────────

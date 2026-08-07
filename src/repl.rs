@@ -328,6 +328,13 @@ pub fn repl(k: &mut Kernel) {
                                 sprintln!("vox verdict <glyph-word>");
                             }
                         }
+                        "lift" => {
+                            if rest.len() < 2 {
+                                sprintln!("vox lift <path>   — lift an ELF's executable sections");
+                            } else {
+                                vox_lift_file(&rest[1]);
+                            }
+                        }
                         "classify" => {
                             if rest.len() > 1 {
                                 let ins = crate::vox::Instruction {
@@ -431,6 +438,21 @@ pub fn repl(k: &mut Kernel) {
                                 l.position, l.changed, l.substitutions, l.percent(), role);
                         }
                     }
+                    "census" => {
+                        let (prim, scaf, stop) = crate::circuit::codon_census();
+                        sprintln!("codon space, classified with no residue:");
+                        sprintln!("  {:>2}  carry a primitive (the twelve promoted acids)", prim);
+                        sprintln!("  {:>2}  scaffold (the eight ground-layer acids, no primitive)", scaf);
+                        sprintln!("  {:>2}  stop", stop);
+                        sprintln!("  {:>2}  total", prim + scaf + stop);
+                        sprintln!("");
+                        sprintln!("section choice is free: {}",
+                            if crate::circuit::section_choice_is_free() {
+                                "yes — μ∘δ=id for every codon carrying the glyph"
+                            } else {
+                                "NO"
+                            });
+                    }
                     "drift" => {
                         let d = crate::circuit::primitive_drift();
                         if d.is_empty() {
@@ -453,7 +475,7 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("  frame 0    {}", r.frames[0]);
                         sprintln!("  frame 1    {}", r.frames[1]);
                         sprintln!("  frame 2    {}", r.frames[2]);
-                        sprintln!("  `.` is a codon that carries no glyph. The antisense strand");
+                        sprintln!("  `·` is scaffold, `|` is stop. The antisense strand");
                         sprintln!("  reads its first position off the sense strand's wobble.");
                     }
                     _ => {
@@ -461,6 +483,7 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("circuit rc [rna]    — sense, antisense, and all three frames");
                         sprintln!("circuit slots       — which codon position the code loads");
                         sprintln!("circuit drift       — to_primitive against the canonical map");
+                        sprintln!("circuit census      — codon space with no residue");
                         sprintln!("circuit retract     — μ∘δ=id, leg by leg");
                         sprintln!("circuit one [word]  — x86 → IMASM → RNA → IMASM → x86");
                         sprintln!("circuit two [rna]   — RNA → IMASM → x86 → IMASM → wasm → IMASM → AA");
@@ -4980,4 +5003,56 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
   rebis imas [bridge|..]    — IMASM arranger bridge");
         }
     }
+}
+
+
+/// Lift an ELF's executable sections to IMASM words.
+///
+/// The decoder stops at the first opcode it does not know rather than guessing
+/// a length, so coverage is reported and a partial lift always reads as partial.
+#[cfg(feature = "hosted")]
+fn vox_lift_file(path: &str) {
+    let raw = match std::fs::read(path) {
+        Ok(r) => r,
+        Err(e) => {
+            sprintln!("cannot read {}: {}", path, e);
+            return;
+        }
+    };
+    let (entry, segments) = crate::vox::parse_elf(&raw);
+    if segments.is_empty() {
+        sprintln!("{}: no executable sections found", path);
+        return;
+    }
+    sprintln!("{}  entry 0x{:x}  {} executable section(s)", path, entry, segments.len());
+    for (addr, bytes) in &segments {
+        let lift = crate::vox_decode::lift_bytes(*addr, bytes);
+        let word = crate::vox::recompile_function(&lift.instructions);
+        sprintln!("");
+        sprintln!("  section at 0x{:x}  {} bytes", addr, bytes.len());
+        sprintln!("    decoded  {} instruction(s), {}% of bytes",
+            lift.instructions.len(), lift.coverage_percent());
+        if let Some(off) = lift.stopped_at {
+            let end = core::cmp::min(off + 8, bytes.len());
+            let mut hex = alloc::string::String::new();
+            for b in &bytes[off..end] {
+                hex.push_str(&alloc::format!("{:02x} ", b));
+            }
+            sprintln!("    stopped at +0x{:x} on an opcode the decoder does not know: {}",
+                off, hex.trim_end());
+        }
+        sprintln!("    verdict  {}", crate::vox::verdict(&word));
+        let g = crate::vox::glyphs(&word);
+        if g.chars().count() <= 120 {
+            sprintln!("    {}", g);
+        } else {
+            let head: alloc::string::String = g.chars().take(120).collect();
+            sprintln!("    {}…", head);
+        }
+    }
+}
+
+#[cfg(not(feature = "hosted"))]
+fn vox_lift_file(_path: &str) {
+    sprintln!("vox lift needs a host filesystem; not available in the kernel build");
 }

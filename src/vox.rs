@@ -4,7 +4,8 @@
 #![allow(dead_code)]
 
 use alloc::vec::Vec;
-use alloc::string::{String, ToString};
+use alloc::collections::BTreeMap;
+use alloc::string::String;
 use alloc::format;
 use alloc::vec;
 
@@ -153,26 +154,29 @@ pub fn classify_instruction(ins: &Instruction) -> char {
     ENGAGR
 }
 
-/// A simple set for no_std compatibility
-struct SimpleSet {
+/// An ordered address set. Instruction addresses arrive ascending, so lookup is
+/// a binary search rather than a scan — a linear scan here makes `compute_merges`
+/// quadratic, which is the difference between lifting a small object file and
+/// lifting a real `.text`.
+struct AddrSet {
     addrs: Vec<u64>,
 }
 
-impl SimpleSet {
-    fn new() -> Self {
-        SimpleSet { addrs: Vec::new() }
+impl AddrSet {
+    fn from_sorted(addrs: Vec<u64>) -> Self {
+        AddrSet { addrs }
     }
 
     fn contains(&self, addr: u64) -> bool {
-        self.addrs.iter().any(|&a| a == addr)
+        self.addrs.binary_search(&addr).is_ok()
     }
 }
 
 /// Compute merge points: addresses with ≥2 predecessors
 pub fn compute_merges(insns: &[Instruction]) -> Vec<u64> {
-    let aset = SimpleSet { addrs: insns.iter().map(|i| i.address).collect() };
+    let aset = AddrSet::from_sorted(insns.iter().map(|i| i.address).collect());
 
-    let mut preds: Vec<(u64, u32)> = Vec::new();
+    let mut preds: BTreeMap<u64, u32> = BTreeMap::new();
 
     for idx in 0..insns.len() {
         let mn = strip_prefix(&insns[idx].mnemonic);
@@ -181,42 +185,31 @@ pub fn compute_merges(insns: &[Instruction]) -> Vec<u64> {
         // Fall-through edge
         if !terminates && idx + 1 < insns.len() {
             let target = insns[idx + 1].address;
-            increment_pred(&mut preds, target);
+            *preds.entry(target).or_insert(0) += 1;
         }
 
         // Jump edge
         if mn.starts_with('j') {
             if let Some(t) = parse_imm(&insns[idx].op_str) {
                 if aset.contains(t) {
-                    increment_pred(&mut preds, t);
+                    *preds.entry(t).or_insert(0) += 1;
                 }
             }
         }
     }
 
-    preds.into_iter()
-        .filter(|(_, c)| *c >= 2)
-        .map(|(a, _)| a)
-        .collect()
-}
-
-fn increment_pred(preds: &mut Vec<(u64, u32)>, addr: u64) {
-    for entry in preds.iter_mut() {
-        if entry.0 == addr {
-            entry.1 += 1;
-            return;
-        }
-    }
-    preds.push((addr, 1));
+    preds.into_iter().filter(|(_, c)| *c >= 2).map(|(a, _)| a).collect()
 }
 
 /// Lift a function's instruction list to an IMASM word
 pub fn recompile_function(insns: &[Instruction]) -> Vec<char> {
+    // `compute_merges` returns ascending addresses, so membership is a binary
+    // search. `Vec::contains` here would make the lift quadratic again.
     let merges = compute_merges(insns);
     let mut tokens = vec![VINIT];
 
     for ins in insns {
-        if merges.contains(&ins.address) {
+        if merges.binary_search(&ins.address).is_ok() {
             tokens.push(FFUSE);
         }
         tokens.push(classify_instruction(ins));
@@ -281,7 +274,7 @@ pub fn emit_word(functions: &[(&str, u64, &[Instruction])]) -> String {
     let mut lines = vec![format!("; ⊙ vox native module")];
     let total: usize = functions.iter().map(|f| recompile_function(f.2).len()).sum();
     lines.push(format!("; {} words   {} glyphs", functions.len(), total));
-    for (label, addr, insns) in functions {
+    for (_label, addr, insns) in functions {
         let word = recompile_function(insns);
         lines.push(format!("0x{:x}", addr));
         lines.push(glyphs(&word));
@@ -362,9 +355,11 @@ pub fn parse_elf(raw: &[u8]) -> (u64, Vec<(u64, Vec<u8>)>) {
         if off >= raw.len() { break; }
 
         if is_64 {
-            // sh_type(4) at off+0, sh_flags(8) at off+8, sh_addr(8) at off+16,
-            // sh_offset(8) at off+24, sh_size(8) at off+32
-            let sh_type = read_u32(off);
+            // ELF64 section header: sh_name(4) at +0, sh_type(4) at +4,
+            // sh_flags(8) at +8, sh_addr(8) at +16, sh_offset(8) at +24,
+            // sh_size(8) at +32. Reading sh_type at +0 picks up sh_name and
+            // nothing ever matches SHT_PROGBITS.
+            let sh_type = read_u32(off + 4);
             let sh_flags = read_u64(off + 8);
             let sh_addr = read_u64(off + 16);
             let sh_offset = read_u64(off + 24);
@@ -378,11 +373,13 @@ pub fn parse_elf(raw: &[u8]) -> (u64, Vec<(u64, Vec<u8>)>) {
                 }
             }
         } else {
-            let sh_type = read_u32(off);
-            let sh_flags = read_u32(off + 4) as u64;
-            let sh_addr = read_u32(off + 8) as u64;
-            let sh_offset = read_u32(off + 12) as u64;
-            let sh_size = read_u32(off + 16) as u64;
+            // ELF32 section header: sh_name(4), sh_type(4), sh_flags(4),
+            // sh_addr(4), sh_offset(4), sh_size(4).
+            let sh_type = read_u32(off + 4);
+            let sh_flags = read_u32(off + 8) as u64;
+            let sh_addr = read_u32(off + 12) as u64;
+            let sh_offset = read_u32(off + 16) as u64;
+            let sh_size = read_u32(off + 20) as u64;
 
             if sh_type == 1 && (sh_flags & 0x4) != 0 && sh_size > 0 {
                 let end = (sh_offset + sh_size) as usize;

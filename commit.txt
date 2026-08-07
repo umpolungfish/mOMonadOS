@@ -1,38 +1,44 @@
-Circuit: put the RNA leg on the canonical correspondence, and report the drift
+Vox: decode the bytes, so the auditor can read a binary
 
-The glyph-to-codon map was a second construction: twelve off-diagonal base pairs
-at the first two codon positions, enumerated. It closed, but it was not the
-Grammar's map. GeneticCode.lean already states the correspondence as
-aaToPrimitive and primitiveToAA, over the twelve promoted amino acids, with
-promoted_card, ground_promoted_disjoint and twenty_eq_eight_plus_twelve behind
-it. There is one Grammar; the enumeration was the copy and it is gone.
+Vox took an instruction list nothing produced. parse_elf handed back raw bytes
+and there was no path from bytes to instructions, so recompile_function,
+compute_merges, emit_word and roundtrip_check all had a parameter that could not
+be filled. Vox could audit a word typed at the prompt, not a program.
 
-The RNA leg now reads codon → amino acid → primitive → axis → glyph, each step
-off something that already existed. δ takes a glyph to the first codon in
-enumeration order that carries it, giving a section that is a real RNA spelling
-the alphabet: AUG UGG UGU UAU UUU AUU CAU AAU CAA GAU AAA GAA. Both circuits
-close on it and μ∘δ = id holds on all twelve for RNA and for wasm.
+vox_decode.rs is the missing leg: an x86-64 length decoder with control-flow
+recognition. It recovers the length, so the walk stays in phase, and enough of
+the shape to name a mnemonic the classifier already understands. Registers and
+operand detail are not reconstructed, because the glyph does not depend on them.
 
-Doing this surfaced a drift in AminoAcid::to_primitive, which derives a primitive
-value from the codon box and is supposed to land on the same axis. On three amino
-acids it does not: Tyr goes to a Criticality value, putting two amino acids on ⊙
-and leaving < with none, and His and Asn are transposed. `circuit drift` reports
-this live. The circuit uses the canonical correspondence; to_primitive is what
-needs fixing, and is left alone here rather than changed underneath its other
-callers.
+An unknown opcode returns None. The walk stops and reports how far it got, so a
+partial lift always reads as partial. This is the load-bearing choice: a length
+decoder that guesses a width goes out of phase and keeps emitting instructions,
+the word still verdicts, and the verdict is fiction. Refusing makes the failure
+visible. Each refusal names the bytes, so extending the table is mechanical:
+coverage on /bin/ls went 15% to 41% to 44% to 100% over four rounds, the stops
+being string operations, the 0F BA bit-test group, the whole x87 D8..DF escape,
+and xchg with the accumulator.
 
-The strand findings move, because the glyph assignment moved. Under the canonical
-map:
+Two defects surfaced underneath.
 
-- The CAG repeat is a run of pure ⊙. CAG is Gln and Gln is Criticality, so the
-  polyglutamine expansion is unbounded repetition of the self-referential glyph.
-  Its complement is silent, CUG being ground-layer Leu.
-- Poly-A is not silent but constant: ⊞ in every frame, complement constant ⋈.
-- The palindromic site GAAUUC remains a fixed point of the strand involution,
-  now reading ◻⋈◻⋈ on both strands.
-- The telomere repeat, Shine-Dalgarno and its recognizer are silent in every
-  frame on both strands. Leu, Gly and Arg are ground layer.
+parse_elf read sh_type at section-header offset +0, which is sh_name. Nothing
+ever matched SHT_PROGBITS, so it always found zero executable sections and the
+ELF path had never run. Both the 64-bit and 32-bit field offsets were shifted by
+one field.
 
-The earlier readings of those sequences, and the claim that the antisense of the
-section collapses to a control-flow triple, were artifacts of the constant wobble
-the old section used. CIRCUIT.md carries the corrected findings.
+compute_merges looked up predecessors and addresses by linear scan, making the
+lift quadratic. It finished on small inputs and hung on a real .text.
+Predecessor counts now use a BTreeMap and address membership a binary search
+over the ascending address list. The 517k-instruction section that hung lifts in
+under two seconds.
+
+Coverage is now 100% of bytes with no stops on /bin/true, /bin/ls, /bin/bash,
+/usr/bin/git, /usr/bin/python3, and on the kernel's own binary: 690,031
+instructions across 3.2MB of its own .text.
+
+Verdicts distribute by shape. The _init thunk closes at T, opening a fork and
+fusing it before the anchor. PLT stubs run N, linear with no fork. A whole .text
+read as one word sits at B, a fork still open at a terminal.
+
+Also cleared the two warnings vox.rs carried: an unused ToString import and an
+unused binding in emit_word. Findings in VOX.md.
