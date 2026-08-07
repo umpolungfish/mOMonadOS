@@ -104,10 +104,61 @@ pub fn codon_to_glyph(c: &Codon) -> Option<Glyph> {
     aa_to_glyph(translate_codon(c))
 }
 
-/// δ_RNA: the canonical codon for a glyph — the first codon in enumeration
-/// order that carries it. A section, picked by order rather than by taste.
+/// Every codon that carries a glyph. The section's representative is the first
+/// of these, and `section_choice_is_free` proves the choice does not matter.
+pub fn codons_for_glyph(g: Glyph) -> Vec<Codon> {
+    all_codons().into_iter().filter(|c| codon_to_glyph(c) == Some(g)).collect()
+}
+
+/// δ_RNA: a codon carrying the glyph. Any of them serves — μ routes through the
+/// amino acid, so every representative returns the same glyph.
 pub fn glyph_to_codon(g: Glyph) -> Option<Codon> {
-    all_codons().into_iter().find(|c| codon_to_glyph(c) == Some(g))
+    codons_for_glyph(g).into_iter().next()
+}
+
+/// **The section choice is free.** μ∘δ = id holds for EVERY codon carrying the
+/// glyph, not merely for the representative δ happens to pick, so the section is
+/// determined up to a choice that changes nothing.
+pub fn section_choice_is_free() -> bool {
+    Glyph::all().iter().all(|&g| {
+        let cs = codons_for_glyph(g);
+        !cs.is_empty() && cs.iter().all(|c| codon_to_glyph(c) == Some(g))
+    })
+}
+
+/// What a codon carries, with no residue left over: a glyph, or a ground-layer
+/// amino acid that carries no primitive, or a stop.
+pub enum CodonRole {
+    Primitive(Glyph, AminoAcid),
+    Scaffold(AminoAcid),
+    Stop,
+}
+
+/// Total classification of codon space. Every codon lands in exactly one arm.
+pub fn codon_role(c: &Codon) -> CodonRole {
+    let aa = translate_codon(c);
+    if aa == AminoAcid::Stop {
+        return CodonRole::Stop;
+    }
+    match aa_to_glyph(aa) {
+        Some(g) => CodonRole::Primitive(g, aa),
+        None => CodonRole::Scaffold(aa),
+    }
+}
+
+/// The census of codon space: primitive-bearing, scaffold, stop. These sum to 64.
+pub fn codon_census() -> (usize, usize, usize) {
+    let mut prim = 0;
+    let mut scaf = 0;
+    let mut stop = 0;
+    for c in all_codons() {
+        match codon_role(&c) {
+            CodonRole::Primitive(..) => prim += 1,
+            CodonRole::Scaffold(_) => scaf += 1,
+            CodonRole::Stop => stop += 1,
+        }
+    }
+    (prim, scaf, stop)
 }
 
 /// The amino acid a glyph's canonical codon translates to.
@@ -452,7 +503,11 @@ pub fn circuit_two(rna: &str) -> CircuitTwo {
 pub fn strand_word(codons: &[Codon]) -> String {
     codons
         .iter()
-        .map(|c| codon_to_glyph(c).map(|g| g.to_char()).unwrap_or('.'))
+        .map(|c| match codon_role(c) {
+            CodonRole::Primitive(g, _) => g.to_char(),
+            CodonRole::Scaffold(_) => '·',
+            CodonRole::Stop => '|',
+        })
         .collect()
 }
 
@@ -588,7 +643,7 @@ pub fn retraction_lines() -> Vec<String> {
 
 /// The whole alphabet, one row per glyph, across every substrate.
 pub fn table_lines() -> Vec<String> {
-    let mut out = vec!["glyph  codon  aa   x86                      wasm".to_string()];
+    let mut out = vec!["glyph  codon  aa   n  x86                      wasm".to_string()];
     for g in Glyph::all() {
         let c = match glyph_to_codon(g) {
             Some(c) => c,
@@ -600,10 +655,11 @@ pub fn table_lines() -> Vec<String> {
             None => "—  (structural)".to_string(),
         };
         out.push(format!(
-            "  {}    {}    {}  {:<24} {}",
+            "  {}    {}    {}  {}  {:<24} {}",
             g.to_char(),
             codon_rna(&c),
             glyph_to_aa(g).map(|a| a.code3()).unwrap_or("—"),
+            codons_for_glyph(g).len(),
             x,
             glyph_to_wasm(g)
         ));

@@ -176,14 +176,14 @@ impl AminoAcid {
         let is_pyr = matches!(c.p3, B4::N | B4::T);
         match (c.p1, c.p2, is_pyr) {
             (B4::N, B4::N, _)      => Some(IgPrim::peep),   // Phe → ⋈
-            (B4::N, B4::F, _)      => Some(IgPrim::woe),   // Tyr → < (Parity, sub-critical gate)
+            (B4::N, B4::F, _)      => Some(IgPrim::out),   // Tyr → < (Polarity: phenol OH is a ℤ₂ phospho switch)
             (B4::N, B4::B, true)   => Some(IgPrim::ian),      // Cys → >
             (B4::N, B4::B, false)  => Some(IgPrim::judge),     // Trp → ⊣
             (B4::F, B4::N, true)   => Some(IgPrim::loll),     // Ile → ⊤
             (B4::F, B4::N, false)  => Some(IgPrim::array),   // Met → ⊢
-            (B4::F, B4::F, true)   => Some(IgPrim::ice),   // Asn → ∋
+            (B4::F, B4::F, true)   => Some(IgPrim::measure),   // Asn → ∋ (Composition)
             (B4::F, B4::F, false)  => Some(IgPrim::up),      // Lys → Σ
-            (B4::T, B4::F, true)   => Some(IgPrim::measure),     // His → ∈
+            (B4::T, B4::F, true)   => Some(IgPrim::ice),     // His → ∈ (Scope)
             (B4::T, B4::F, false)  => Some(IgPrim::monad),     // Gln → ⊙
             (B4::B, B4::F, true)   => Some(IgPrim::sure),        // Asp → ⊥
             (B4::B, B4::F, false)  => Some(IgPrim::ah),   // Glu → ◻

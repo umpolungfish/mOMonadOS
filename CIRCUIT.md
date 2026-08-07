@@ -169,14 +169,31 @@ is not absence of function, it is absence of a primitive — the eight ground-la
 amino acids are structural scaffold, and sequences built from them carry no
 glyph.
 
-## What is not settled
+## Both open questions, closed
 
-Whether δ should take the first codon in enumeration order. The section has to be
-picked somehow and order is at least not taste, but nothing forces it, and a
-different representative moves which codons count as off-section without changing
-the retraction.
+**The section choice is free.** δ takes a glyph to the first codon in
+enumeration order that carries it, and that looked arbitrary. It is not load-
+bearing: μ routes through the amino acid, so `μ∘δ = id` holds for *every* codon
+carrying the glyph, not merely the representative δ picks.
+`section_choice_is_free` checks this exhaustively, and `circuit census` reports
+it. The section is determined up to a choice that changes nothing.
 
-Whether the ground layer should be silent or should carry something the alphabet
-does not yet name. Half of codon space currently says nothing, and the eight
-ground-layer amino acids are exactly the four-fold degenerate ones, which is a
-structural fact rather than a gap in the map.
+**The ground layer is silent by construction, not by omission.** Codon space
+classifies with no residue:
+
+```
+23  carry a primitive (the twelve promoted acids)
+38  scaffold (the eight ground-layer acids, no primitive)
+ 3  stop
+64  total
+```
+
+`codon_role` is total — every codon is a primitive, scaffold, or stop — and
+`strand_word` now prints `·` for scaffold and `|` for stop rather than one
+anonymous dot for both. The eight ground-layer amino acids are exactly the
+four-fold degenerate ones, and `GeneticCode.lean` proves they carry no primitive
+(`ground_promoted_disjoint`, `aaToPrimitive` returning none). Silence here is the
+theorem `20 = 8 + 12`, not a gap in the map.
+
+The degeneracy per glyph is in `circuit table`. Met and Trp have one codon each,
+Ile has three, the rest two — twenty-three in all.

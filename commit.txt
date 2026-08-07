@@ -1,44 +1,30 @@
-Vox: decode the bytes, so the auditor can read a binary
+Circuit: align to_primitive to the Lean, and close both open questions
 
-Vox took an instruction list nothing produced. parse_elf handed back raw bytes
-and there was no path from bytes to instructions, so recompile_function,
-compute_merges, emit_word and roundtrip_check all had a parameter that could not
-be filled. Vox could audit a word typed at the prompt, not a program.
+AminoAcid::to_primitive disagreed with GeneticCode.lean on three amino acids: Tyr
+was sent to a Criticality value, putting two acids on ⊙ and leaving < with none,
+and His and Asn were transposed. The Lean is built from the primitives and is the
+origin of these truths, so it is the arbiter. Tyr now takes a Polarity value, the
+phenol OH being a ℤ₂ phospho switch, and His and Asn are put back on Scope and
+Composition. `circuit drift` reports agreement.
 
-vox_decode.rs is the missing leg: an x86-64 length decoder with control-flow
-recognition. It recovers the length, so the walk stays in phase, and enough of
-the shape to name a mnemonic the classifier already understands. Registers and
-operand detail are not reconstructed, because the glyph does not depend on them.
+The Python in red-hot_rebis carries a third assignment, His to ⊙ with an
+imidazole-pKa rationale and Gln to Γ. It does not get a vote and is not treated
+as correct; it is left untouched here rather than rewritten from a different
+notation set.
 
-An unknown opcode returns None. The walk stops and reports how far it got, so a
-partial lift always reads as partial. This is the load-bearing choice: a length
-decoder that guesses a width goes out of phase and keeps emitting instructions,
-the word still verdicts, and the verdict is fiction. Refusing makes the failure
-visible. Each refusal names the bytes, so extending the table is mechanical:
-coverage on /bin/ls went 15% to 41% to 44% to 100% over four rounds, the stops
-being string operations, the 0F BA bit-test group, the whole x87 D8..DF escape,
-and xchg with the accumulator.
+Both questions the doc left open are closed rather than deferred.
 
-Two defects surfaced underneath.
+The section choice is free. μ routes through the amino acid, so μ∘δ = id holds
+for every codon carrying the glyph, not only the representative δ picks.
+section_choice_is_free checks this exhaustively. The section is determined up to
+a choice that changes nothing, so the enumeration order is not load-bearing.
 
-parse_elf read sh_type at section-header offset +0, which is sh_name. Nothing
-ever matched SHT_PROGBITS, so it always found zero executable sections and the
-ELF path had never run. Both the 64-bit and 32-bit field offsets were shifted by
-one field.
+The ground layer is silent by construction. codon_role is total: every codon is a
+primitive, a scaffold, or a stop, and codon_census reports twenty-three, thirty-
+eight and three, summing to sixty-four. strand_word prints scaffold and stop
+distinctly instead of collapsing both to one dot. The eight ground-layer acids
+are exactly the four-fold degenerate ones and the Lean proves they carry no
+primitive, so the silence is the 20 = 8 + 12 theorem rather than a hole.
 
-compute_merges looked up predecessors and addresses by linear scan, making the
-lift quadratic. It finished on small inputs and hung on a real .text.
-Predecessor counts now use a BTreeMap and address membership a binary search
-over the ascending address list. The 517k-instruction section that hung lifts in
-under two seconds.
-
-Coverage is now 100% of bytes with no stops on /bin/true, /bin/ls, /bin/bash,
-/usr/bin/git, /usr/bin/python3, and on the kernel's own binary: 690,031
-instructions across 3.2MB of its own .text.
-
-Verdicts distribute by shape. The _init thunk closes at T, opening a fork and
-fusing it before the anchor. PLT stubs run N, linear with no fork. A whole .text
-read as one word sits at B, a fork still open at a terminal.
-
-Also cleared the two warnings vox.rs carried: an unused ToString import and an
-unused binding in emit_word. Findings in VOX.md.
+circuit table gains the degeneracy count per glyph: Met and Trp have one codon,
+Ile three, the rest two.
