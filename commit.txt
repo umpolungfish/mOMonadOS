@@ -1,19 +1,29 @@
-Docs: cut the phase narrative from the README, add the EVM lane to the compute note
+Vox: refuse to score an ill-formed word, and stop calling a section a function
 
-README loses the Phase 1 through Phase 5 running commentary. A README says what
-the thing is now, not the order in which it was built, and the completed-phase
-list was the latter. What it is now survives intact: the kernel's thesis, the
-REPL-verb-and-IMASM-program rule, the Crystal of Types addressing, the m3iosis
-mirror named as history rather than as a pattern to extend.
+Two things ported back from the standalone V⊙x in ~/imsgct/Vox, where they were
+found.
 
-IMASM_NATIVE_COMPUTE gains the EVM lane: the lifter written as a parasm word and
-run inside parasm, inverting plank 3, which built the IMASM word in Rust and only
-verdicted it in parasm. The dispatch trie is the lifter now rather than a test
-scaffold, plus the exotic one-shots.
+verdict gains F. T closes, B holds a fork open across a terminal, N never
+forked, and F is not a truth value at all: it reports that the word is
+ill-typed, a fuse with no fork to pair. Scoring such a word T or N buries the
+finding under something that looks like an answer. The engine refusing is the
+correct behaviour, and it is how both defects below were found rather than
+guessed at.
 
-The EVM section arrived as a replacement for the whole file rather than an
-addition to it, which dropped the title and every section above it: the machine
-argument for parasm realizing the twelve, the B4 alphabet, the decode table as
-word rather than data, both proven planks, and the ramp to the Replicating Code.
-Those are the file's thesis and they are restored, with the EVM lane appended
-where it belongs.
+split_functions cuts a decoded run into functions. A contiguous run is not one
+function; it is every function laid end to end. A boundary is a terminal, then
+padding, then a body, and all three are needed: padding alone is not a boundary
+because both compilers also pad for alignment inside a body, and cutting there
+shatters one function into dozens. A stretch that is only padding is not a
+function either.
+
+`vox lift` now reports per-function verdicts and a tally instead of verdicting
+whole sections, and prints the ill-typed words with their addresses.
+
+One difference from the Python lane, recorded rather than smoothed. That lane
+walks by recursive descent, so its ill-typed words are functions cut in the
+wrong place. This lane lifts linearly, so its ill-typed words are dominated by
+loop headers: a back-edge puts the fuse before the fork in address order, and a
+linear reading meets the ∋ with nothing on the stack. Same refusal, two
+different causes, and the second is a property of reading linearly rather than
+of the program.

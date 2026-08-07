@@ -5025,9 +5025,10 @@ fn vox_lift_file(path: &str) {
         return;
     }
     sprintln!("{}  entry 0x{:x}  {} executable section(s)", path, entry, segments.len());
+    let mut tally = [0usize; 4];   // T, B, N, F
+    let mut illtyped = alloc::vec::Vec::new();
     for (addr, bytes) in &segments {
         let lift = crate::vox_decode::lift_bytes(*addr, bytes);
-        let word = crate::vox::recompile_function(&lift.instructions);
         sprintln!("");
         sprintln!("  section at 0x{:x}  {} bytes", addr, bytes.len());
         sprintln!("    decoded  {} instruction(s), {}% of bytes",
@@ -5041,13 +5042,32 @@ fn vox_lift_file(path: &str) {
             sprintln!("    stopped at +0x{:x} on an opcode the decoder does not know: {}",
                 off, hex.trim_end());
         }
-        sprintln!("    verdict  {}", crate::vox::verdict(&word));
-        let g = crate::vox::glyphs(&word);
-        if g.chars().count() <= 120 {
-            sprintln!("    {}", g);
-        } else {
-            let head: alloc::string::String = g.chars().take(120).collect();
-            sprintln!("    {}…", head);
+        let funcs = crate::vox::split_functions(&lift.instructions);
+        sprintln!("    {} function(s)", funcs.len());
+        for f in &funcs {
+            let word = crate::vox::recompile_function(f);
+            let v = crate::vox::verdict(&word);
+            match v {
+                'T' => tally[0] += 1,
+                'B' => tally[1] += 1,
+                'N' => tally[2] += 1,
+                _ => {
+                    tally[3] += 1;
+                    if illtyped.len() < 8 {
+                        illtyped.push((f[0].address, crate::vox::glyphs(&word)));
+                    }
+                }
+            }
+        }
+    }
+    sprintln!("");
+    sprintln!("  verdicts  T {}   B {}   N {}   F {}", tally[0], tally[1], tally[2], tally[3]);
+    if tally[3] > 0 {
+        sprintln!("  F is not a truth value: the word is ill-typed, a ∋ with no ∈ to");
+        sprintln!("  pair. It marks a function cut in the wrong place, not a program.");
+        for (a, g) in &illtyped {
+            let head: alloc::string::String = g.chars().take(90).collect();
+            sprintln!("    0x{:x}  {}", a, head);
         }
     }
 }

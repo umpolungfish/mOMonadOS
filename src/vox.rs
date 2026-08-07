@@ -218,6 +218,48 @@ pub fn recompile_function(insns: &[Instruction]) -> Vec<char> {
     tokens
 }
 
+/// Instructions a compiler uses to pad between functions.
+const PAD_OPS: &[&str] = &["int3", "nop", "ud2"];
+
+/// Split a decoded run into functions.
+///
+/// A contiguous run of instructions is not one function. A boundary is a
+/// terminal, then padding, then a body — all three, because both compilers
+/// also pad for alignment inside a body and cutting on padding alone shatters
+/// one function into dozens.
+pub fn split_functions(insns: &[Instruction]) -> Vec<&[Instruction]> {
+    let mut out = Vec::new();
+    if insns.is_empty() {
+        return out;
+    }
+    let mut start = 0usize;
+    let mut saw_terminal = false;
+    let mut in_pad = false;
+
+    for i in 1..insns.len() {
+        let prev = strip_prefix(&insns[i - 1].mnemonic);
+        let here = strip_prefix(&insns[i].mnemonic);
+        if PAD_OPS.contains(&prev) {
+            in_pad = true;
+        } else if prev.starts_with("ret") || TERMINAL_OPS.contains(&prev) || prev == "jmp" {
+            saw_terminal = true;
+        } else {
+            saw_terminal = false;
+            in_pad = false;
+        }
+        if in_pad && saw_terminal && !PAD_OPS.contains(&here) {
+            out.push(&insns[start..i]);
+            start = i;
+            saw_terminal = false;
+            in_pad = false;
+        }
+    }
+    out.push(&insns[start..]);
+    // A stretch that is nothing but padding is not a function either.
+    out.retain(|f| f.iter().any(|i| !PAD_OPS.contains(&strip_prefix(&i.mnemonic))));
+    out
+}
+
 /// Lift multiple functions to words
 pub fn recompile_module(functions: &[(String, u64, Vec<Instruction>)]) -> Vec<(String, u64, Vec<char>)> {
     let mut result = Vec::new();
@@ -228,8 +270,13 @@ pub fn recompile_module(functions: &[(String, u64, Vec<Instruction>)]) -> Vec<(S
     result
 }
 
-/// Run SIXTEEN_3 verdict on an IMASM word
-/// Verdict: T=closes, B=open-fork, N=clean-linear
+/// Run SIXTEEN_3 verdict on an IMASM word.
+///
+/// T closes, B holds a fork open across a terminal, N never forked, and F is
+/// not a truth value at all: it reports that the word is ill-typed, a ∋ with
+/// no ∈ to pair. Refusing to score an ill-formed word is the point. A fuse
+/// that nothing opened means the lifter cut a function in the wrong place, and
+/// scoring it T or N would bury that under a verdict that looks like an answer.
 pub fn verdict(word: &[char]) -> char {
     let mut depth: i32 = 0;
     let mut has_fork = false;
@@ -244,6 +291,8 @@ pub fn verdict(word: &[char]) -> char {
             FFUSE => {
                 if depth > 0 {
                     depth -= 1;
+                } else {
+                    return 'F';
                 }
             }
             TANCH => {
