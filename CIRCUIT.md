@@ -22,16 +22,51 @@ What closes is the word. Each leg is a retraction, `μ∘δ = id` on glyphs, whi
 image of `δ` — the canonical section — and nowhere else. That is the whole
 result, and both circuits are instruments for reading it.
 
-## The RNA leg is enumeration, not assignment
+## The RNA leg is read off the code, not assigned
 
-Four bases give sixteen ordered pairs at the first two codon positions. Four are
-diagonal, twelve are not, and twelve is the size of the alphabet. So the
-off-diagonal pairs **are** the glyphs and nothing was chosen. The third position
-is the wobble and carries no glyph, which is the same statement `rebis/codon.rs`
-already makes about the exact stratum.
+Nothing in the glyph map is chosen here. A codon translates to an amino acid
+through the live table. An amino acid carries a primitive exactly when every one
+of its codons sits in the split stratum — the twelve promoted amino acids, as
+against the eight ground-layer ones. A primitive belongs to exactly one axis, and
+the axis is the glyph.
 
-The diagonal codons are the part of codon space the alphabet does not reach.
-They carry no glyph and cannot enter a circuit.
+```
+⊢ Met   ⊣ Trp   > Cys   < Tyr   ⋈ Phe   ⊤ Ile
+∈ His   ∋ Asn   ⊙ Gln   ⊥ Asp   ⊞ Lys   ◻ Glu
+```
+
+This is the correspondence `GeneticCode.lean` states as `aaToPrimitive` and
+`primitiveToAA`, with `promoted_card = 12`, `ground_promoted_disjoint` and
+`twenty_eq_eight_plus_twelve` behind it. The eight ground-layer amino acids —
+Leu, Pro, Arg, Thr, Ala, Ser, Val, Gly — carry no primitive and no glyph, and
+neither do the stops. Roughly half of codon space is silent to the alphabet.
+
+δ takes a glyph to the first codon in enumeration order that carries it, which is
+a section picked by order rather than by taste:
+
+```
+AUG UGG UGU UAU UUU AUU CAU AAU CAA GAU AAA GAA
+```
+
+That string is a real RNA that spells the alphabet and translates to the twelve
+primitives in order.
+
+## A drift this surfaced
+
+`AminoAcid::to_primitive` in `src/rebis/mod.rs` derives a primitive value from
+the codon box and is supposed to agree with the correspondence above. It does
+not, on three amino acids:
+
+```
+Tyr  canonical <   to_primitive lands on ⊙
+His  canonical ∈   to_primitive lands on ∋
+Asn  canonical ∋   to_primitive lands on ∈
+```
+
+Tyr is sent to a Criticality value, which puts two amino acids on the ⊙ axis and
+leaves `<` with none. His and Asn are transposed. `circuit drift` reports this
+live rather than routing around it. The circuit uses the canonical
+correspondence; `to_primitive` is the thing that needs fixing.
 
 ## The two machine substrates differ, and the difference is structural
 
@@ -51,47 +86,35 @@ every address with two or more predecessors.
 So x86 realizes ten of twelve directly and re-derives the other two. The word
 still closes, because re-derivation puts them back where they were.
 
-## Circuit one closes
+## Both circuits close on the section
 
 ```
 in   ⊢⊣><⋈⊤∈∋⊙⊥⊞◻
-rna  UCUUAUUGUCUUCAUCGUAUUACUAGUGUUGCUGAU
+rna  AUGUGGUGUUAUUUUAUUCAUAAUCAAGAUAAAGAA
 out  ⊢⊣><⋈⊤∈∋⊙⊥⊞◻
 ```
 
-## Circuit two closes on the section and fails off it
-
-On the canonical section, direct translation and the routed chain agree exactly:
-the detour through two machine substrates is invisible.
-
-On arbitrary RNA it is not invisible, and the way it fails is the point:
-
 ```
-AUG  ∈  jne  if  Ile   off-section: AUU is the canonical codon
-GCC  ⊞  xor  i32.add  Ala   off-section: GCU is the canonical codon
-UGC  >  call  call  Cys   off-section: UGU is the canonical codon
-ACG  ∋  —  end  Thr   off-section: ACU is the canonical codon
-
-direct  Met-Ala-His-Cys-Thr
-routed  Ile-Ala-His-Cys-Thr
+direct  Met-Trp-Cys-Tyr-Phe-Ile-His-Asn-Gln-Asp-Lys-Glu
+routed  Met-Trp-Cys-Tyr-Phe-Ile-His-Asn-Gln-Asp-Lys-Glu
 ```
 
-Four codons sat off the section and `δ∘μ` moved all four, but only one changed
-the protein. `GCC → GCU` stays Ala, `UGC → UGU` stays Cys, `ACG → ACU` stays
-Thr. `AUG → AUU` goes Met to Ile.
+The detour through two machine substrates is invisible on the section, and the
+retraction `μ∘δ = id` holds on all twelve glyphs for RNA and for wasm.
 
-The circuit is invisible exactly where the genetic code's own third-position
-degeneracy absorbs the move, and visible exactly where that degeneracy breaks.
-Met is a singleton box, so its third position carries information, and that
-information is what the wobble discards. The routed protein and the direct
-protein differ at precisely the codons where the code itself refuses to be
-degenerate.
+Off the section it fails, and the mechanism is the one `SerpentRod.lean` now
+states as `frobenius_serpent_rod_exact` and `frobenius_serpent_rod_fails_split`:
+forgetting the third position is lossless on the exact stratum and lossy on the
+split stratum, and the twelve primitives live entirely on the split stratum. The
+Frobenius holds on the ground layer and fails exactly where the Grammar's
+primitives are.
 
 ## Commands
 
 ```
 circuit table       — every glyph across every substrate
 circuit rc [rna]    — sense, antisense, and all three frames
+circuit drift       — to_primitive against the canonical correspondence
 circuit retract     — μ∘δ=id, leg by leg
 circuit one [word]  — x86 → IMASM → RNA → IMASM → x86
 circuit two [rna]   — RNA → IMASM → x86 → IMASM → wasm → IMASM → AA
@@ -99,77 +122,61 @@ circuit two [rna]   — RNA → IMASM → x86 → IMASM → wasm → IMASM → A
 
 Both take an argument or fall back to the full alphabet.
 
-## Strands, frames, and what the arcane sequences say
+## Strands, frames, and what the sequences say
 
 `circuit rc <rna>` prints the sense word, the antisense word, and all three
 frames. `.` marks a codon carrying no glyph.
 
-**The antisense of the canonical section is forced, and it is the control-flow
-triple.** Reverse complement sends `(p1,p2,p3)` to `(comp p3, comp p2, comp p1)`,
-so the antisense reads its FIRST position off the sense strand's wobble. With the
-canonical wobble at `U`, and `comp(U) = A`, every antisense codon of a
-section word begins with `A`. The only glyphs whose first position is `A` are
-`∈`, `∋`, and `⊙`. So:
+The sense glyph is read off the amino acid, so it depends on all three codon
+positions; the antisense reads the reverse complement, which puts the sense
+strand's third position first. The two strands are not independent readings of
+the same content and neither determines the other.
+
+**The CAG repeat is a run of pure criticality.** `CAG` is Gln, and Gln is
+Criticality.
 
 ```
-sense      ⊢⊣><⋈⊤∈∋⊙⊥⊞◻
-antisense  ∈⊙.∋⊙.∋∈.∋∈⊙
+CAGCAGCAG…  sense ⊙⊙⊙⊙⊙   antisense .....
 ```
 
-Twelve glyphs collapse to three, and the three are fork, fuse, and
-self-reference. This is not a coincidence to admire; it is forced by the choice
-of canonical wobble, and a different wobble selects a different triple. Wobble
-`G` would give every antisense codon a leading `C`, hence `<`, `⋈`, `⊤`.
-Whatever the sense strand discards is exactly what the antisense strand puts in
-a glyph-bearing position.
+The expansion that causes polyglutamine disease is, in this alphabet, unbounded
+repetition of a single glyph, and the glyph is the self-referential one. The
+complement strand says nothing: `CUG` is Leu, ground layer.
 
-**Shine-Dalgarno and its recognizer are a ⊙/silence pair.**
+**Poly-A is not silent — it is constant.**
 
 ```
-AGGAGG…  sense ⊙⊙⊙⊙   antisense ....
-CCUCCU…  sense ....    antisense ⊙⊙⊙⊙
+AAAAAA…  sense ⊞⊞⊞⊞ in every frame   antisense ⋈⋈⋈⋈
 ```
 
-The ribosome binding site carries nothing but `⊙` on the message strand and
-nothing at all on the other; the anti-SD in the small subunit carries the mirror.
-The recognition event is one strand speaking `⊙` into a strand that says nothing.
+`AAA` is Lys, Stoichiometry; `UUU` is Phe, Fidelity. A homopolymer reads the
+same in all three frames, so the poly-A tail is a constant ⊞ signal whose
+complement is a constant ⋈.
 
 **The palindromic restriction site is a fixed point of the strand involution.**
 
 ```
-GAAUUC…  sense ◻.◻.   antisense ◻.◻.
+GAAUUC…  sense ◻⋈◻⋈   antisense ◻⋈◻⋈
 ```
 
-A true reverse-complement palindrome has an antisense sequence equal to its
-sense sequence, so the words coincide. `GAAUUC` lands on `◻`, winding.
+A reverse-complement palindrome is its own antisense, so the words coincide.
+`GAA` is Glu, Winding; `UUU` is Phe, Fidelity.
 
-**Poly-A is the maximal silence.** Every frame, both strands, no glyph. `AAA` is
-diagonal and so is its complement `UUU`, and the homopolymer is the one case
-where both sides of the involution sit on the diagonal at once.
-
-**The telomere repeat is silent in its own frame and speaks off it.**
-
-```
-UUAGGG…  frame 0 ......   frame 1 ⊣.⊣.⊣   frame 2 ⊙⊥⊙⊥⊙
-```
-
-Frame 2 alternates criticality and chirality without interruption. Nothing here
-says which frame a non-coding repeat should be read in; the observation is that
-the reading is frame-dependent and this repeat has a frame in which it is
-entirely mute.
-
-**The hammerhead ribozyme core carries a non-repeating word on both strands.**
-
-```
-CUGAUGAGUCCGUGAGGACGAAAC
-  sense      <∈⊙.>.⊤.
-  antisense  ⊥⊢⊢⊢⊤∋⋈⋈
-```
+**Much of the genome is mute to the alphabet.** The telomere repeat `UUAGGG`,
+the Shine-Dalgarno sequence `AGGAGG` and its recognizer `CCUCCU` are silent in
+every frame on both strands: Leu, Gly and Arg are all ground layer. Silence here
+is not absence of function, it is absence of a primitive — the eight ground-layer
+amino acids are structural scaffold, and sequences built from them carry no
+glyph.
 
 ## What is not settled
 
-Whether the canonical wobble should be the unmarked base. It is `U` here because
-`N` is the unmarked Belnap value and the section has to be picked somehow, but
-nothing yet forces that choice. It is not inert, though: the canonical wobble
-selects which triple the antisense strand speaks, so the choice is doing visible
-work and deserves a reason rather than a default.
+Whether δ should take the first codon in enumeration order. The section has to be
+picked somehow and order is at least not taste, but nothing forces it, and a
+different representative moves which codons count as off-section without changing
+the retraction.
+
+Whether the ground layer should be silent or should carry something the alphabet
+does not yet name. Half of codon space currently says nothing, and the eight
+ground-layer amino acids are exactly the four-fold degenerate ones, which is a
+structural fact rather than a gap in the map.

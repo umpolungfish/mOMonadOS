@@ -26,46 +26,93 @@ use crate::vox::{classify_instruction, Instruction};
 
 // ── The RNA leg ────────────────────────────────────────────────
 //
-// Four bases give sixteen ordered pairs at the first two codon positions.
-// Four of those are diagonal (p1 = p2) and twelve are not. Twelve is the size
-// of the alphabet, so the off-diagonal pairs ARE the glyphs, and the assignment
-// is enumeration rather than choice. The third position is the wobble: it
-// carries no glyph, which is the same statement the codon table already makes
-// about the exact stratum.
+// Nothing here is assigned. A codon translates to an amino acid through the
+// live table; an amino acid carries a primitive iff every one of its codons
+// sits in the split stratum (`AminoAcid::to_primitive`); and a primitive value
+// belongs to exactly one axis (`canonical_ig::axis_of`). The axis IS the glyph.
+// So the map is: codon → amino acid → primitive → axis → glyph, each step read
+// off something that already existed.
+//
+// This is the same twelve-to-twelve correspondence `GeneticCode.lean` proves as
+// `aaToPrimitive` / `primitiveToAA`, with `promoted_card = 12` and
+// `twenty_eq_eight_plus_twelve` behind it. The eight ground-layer amino acids
+// carry no primitive and no glyph.
 
 /// B4 in discriminant order. Used only to enumerate; the order is the enum's.
 const B4_ORDER: [B4; 4] = [B4::N, B4::T, B4::F, B4::B];
 
-/// The twelve off-diagonal base pairs, in enumeration order.
-pub fn offdiagonal_pairs() -> Vec<(B4, B4)> {
+/// The twelve-to-twelve correspondence, in the canonical axis order of
+/// `canonical_ig::PRIMITIVE_ORDER`. This mirrors `GeneticCode.lean`'s
+/// `primitiveToAA`, which is the statement of record; the axis order is
+/// `⊢⊣><⋈⊤∈∋⊙⊥⊞◻` and the amino acids are its promoted layer.
+pub const PROMOTED_BY_AXIS: [(char, AminoAcid); 12] = [
+    ('⊢', AminoAcid::Met),  // Dimensionality
+    ('⊣', AminoAcid::Trp),  // Topology
+    ('>', AminoAcid::Cys),  // Relational
+    ('<', AminoAcid::Tyr),  // Polarity
+    ('⋈', AminoAcid::Phe),  // Fidelity
+    ('⊤', AminoAcid::Ile),  // Kinetics
+    ('∈', AminoAcid::His),  // Scope
+    ('∋', AminoAcid::Asn),  // Composition
+    ('⊙', AminoAcid::Gln),  // Criticality
+    ('⊥', AminoAcid::Asp),  // Chirality
+    ('⊞', AminoAcid::Lys),  // Stoichiometry
+    ('◻', AminoAcid::Glu),  // Winding
+];
+
+/// μ_RNA, first half: the glyph an amino acid carries, if any.
+pub fn aa_to_glyph(aa: AminoAcid) -> Option<Glyph> {
+    PROMOTED_BY_AXIS
+        .iter()
+        .find(|(_, a)| *a == aa)
+        .and_then(|(c, _)| Glyph::from_char(*c))
+}
+
+/// Where `AminoAcid::to_primitive` disagrees with the correspondence above.
+///
+/// `to_primitive` derives a primitive VALUE from the codon box and then the
+/// value's axis is supposed to be the glyph. Several of the values it returns
+/// sit on the wrong axis, so the derivation and the canonical correspondence do
+/// not agree. Reported rather than papered over.
+pub fn primitive_drift() -> Vec<String> {
     let mut out = Vec::new();
-    for p1 in B4_ORDER {
-        for p2 in B4_ORDER {
-            if p1 != p2 {
-                out.push((p1, p2));
-            }
+    for (axis, aa) in PROMOTED_BY_AXIS {
+        let derived = aa
+            .to_primitive()
+            .and_then(|p| crate::canonical_ig::axis_of(p.glyph()))
+            .and_then(|s| s.chars().next());
+        match derived {
+            Some(d) if d == axis => {}
+            Some(d) => out.push(format!(
+                "  {}  canonical {}   to_primitive lands on {}",
+                aa.code3(),
+                axis,
+                d
+            )),
+            None => out.push(format!(
+                "  {}  canonical {}   to_primitive lands on no axis",
+                aa.code3(),
+                axis
+            )),
         }
     }
     out
 }
 
-/// δ_RNA: the canonical codon for a glyph. Wobble is set to the unmarked base.
-pub fn glyph_to_codon(g: Glyph) -> Codon {
-    let pairs = offdiagonal_pairs();
-    let idx = Glyph::all().iter().position(|x| *x == g).unwrap_or(0);
-    let (p1, p2) = pairs[idx];
-    Codon { p1, p2, p3: B4::N }
+/// μ_RNA: the glyph a codon carries. Ground-layer codons and stops carry none.
+pub fn codon_to_glyph(c: &Codon) -> Option<Glyph> {
+    aa_to_glyph(translate_codon(c))
 }
 
-/// μ_RNA: the glyph a codon carries. Diagonal codons carry none — they are the
-/// part of codon space the alphabet does not reach.
-pub fn codon_to_glyph(c: &Codon) -> Option<Glyph> {
-    if c.p1 == c.p2 {
-        return None;
-    }
-    let pairs = offdiagonal_pairs();
-    let idx = pairs.iter().position(|(a, b)| *a == c.p1 && *b == c.p2)?;
-    Glyph::all().get(idx).copied()
+/// δ_RNA: the canonical codon for a glyph — the first codon in enumeration
+/// order that carries it. A section, picked by order rather than by taste.
+pub fn glyph_to_codon(g: Glyph) -> Option<Codon> {
+    all_codons().into_iter().find(|c| codon_to_glyph(c) == Some(g))
+}
+
+/// The amino acid a glyph's canonical codon translates to.
+pub fn glyph_to_aa(g: Glyph) -> Option<AminoAcid> {
+    glyph_to_codon(g).map(|c| translate_codon(&c))
 }
 
 /// Render a codon as RNA letters.
@@ -164,13 +211,6 @@ pub fn wasm_to_glyph(op: &str) -> Option<Glyph> {
     Glyph::from_char(c)
 }
 
-// ── The amino acid leg ─────────────────────────────────────────
-
-/// The amino acid a glyph's canonical codon translates to.
-pub fn glyph_to_aa(g: Glyph) -> AminoAcid {
-    translate_codon(&glyph_to_codon(g))
-}
-
 // ── Retractions ────────────────────────────────────────────────
 
 /// A leg's retraction report: which glyphs survive μ∘δ, and which the substrate
@@ -192,13 +232,17 @@ impl Retraction {
 pub fn retraction_rna() -> Retraction {
     let mut closed = Vec::new();
     let mut broken = Vec::new();
+    let mut unexpressed = Vec::new();
     for g in Glyph::all() {
-        match codon_to_glyph(&glyph_to_codon(g)) {
-            Some(h) if h == g => closed.push(g),
-            _ => broken.push(g),
+        match glyph_to_codon(g) {
+            None => unexpressed.push(g),
+            Some(c) => match codon_to_glyph(&c) {
+                Some(h) if h == g => closed.push(g),
+                _ => broken.push(g),
+            },
         }
     }
-    Retraction { leg: "RNA", closed, broken, unexpressed: Vec::new() }
+    Retraction { leg: "RNA", closed, broken, unexpressed }
 }
 
 /// μ∘δ = id on the x86 leg, over the glyphs x86 can express.
@@ -255,7 +299,10 @@ pub fn circuit_one(word: &[Glyph]) -> CircuitOne {
 
     for &g in word {
         // IMASM → RNA
-        let c = glyph_to_codon(g);
+        let c = match glyph_to_codon(g) {
+            Some(c) => c,
+            None => continue,
+        };
         rna.push_str(&codon_rna(&c));
         // RNA → IMASM
         let back = codon_to_glyph(&c);
@@ -355,10 +402,13 @@ pub fn circuit_two(rna: &str) -> CircuitTwo {
         };
 
         // IMASM → AA
-        let aa = glyph_to_aa(g3);
+        let aa = match glyph_to_aa(g3) {
+            Some(a) => a,
+            None => continue,
+        };
         routed.push(aa);
         let canonical = glyph_to_codon(g);
-        let on_section = canonical == *c;
+        let on_section = canonical.as_ref() == Some(c);
         if !on_section {
             offsection += 1;
         }
@@ -372,7 +422,10 @@ pub fn circuit_two(rna: &str) -> CircuitTwo {
             if on_section {
                 String::new()
             } else {
-                format!("   off-section: {} is the canonical codon", codon_rna(&canonical))
+                match &canonical {
+                    Some(k) => format!("   off-section: {} is the canonical codon", codon_rna(k)),
+                    None => String::new(),
+                }
             }
         ));
     }
@@ -436,6 +489,80 @@ pub fn strand_report(rna: &str) -> StrandReport {
     }
 }
 
+// ── Which slot carries the amino acid ──────────────────────────
+//
+// The sense glyph reads (p1,p2); the antisense glyph reads (comp p3, comp p2).
+// The middle position is the only one both strands read, so the question is
+// whether the code itself also loads that position most heavily. Measured here
+// by substitution: over all codon pairs differing in exactly one position, how
+// often does the amino acid change.
+
+pub struct SlotLoad {
+    pub position: usize,
+    pub substitutions: usize,
+    pub changed: usize,
+}
+
+impl SlotLoad {
+    /// Percent of single-position substitutions at this slot that change the AA.
+    pub fn percent(&self) -> usize {
+        if self.substitutions == 0 { 0 } else { self.changed * 100 / self.substitutions }
+    }
+}
+
+/// Every codon, built from the same B4 enumeration the glyphs use.
+pub fn all_codons() -> Vec<Codon> {
+    let mut out = Vec::new();
+    for p1 in B4_ORDER {
+        for p2 in B4_ORDER {
+            for p3 in B4_ORDER {
+                out.push(Codon { p1, p2, p3 });
+            }
+        }
+    }
+    out
+}
+
+fn with_slot(c: &Codon, slot: usize, b: B4) -> Codon {
+    match slot {
+        0 => Codon { p1: b, p2: c.p2, p3: c.p3 },
+        1 => Codon { p1: c.p1, p2: b, p3: c.p3 },
+        _ => Codon { p1: c.p1, p2: c.p2, p3: b },
+    }
+}
+
+fn slot_of(c: &Codon, slot: usize) -> B4 {
+    match slot {
+        0 => c.p1,
+        1 => c.p2,
+        _ => c.p3,
+    }
+}
+
+/// How heavily each codon position is loaded, read off the live codon table.
+pub fn slot_loads() -> Vec<SlotLoad> {
+    let mut out = Vec::new();
+    for slot in 0..3 {
+        let mut substitutions = 0usize;
+        let mut changed = 0usize;
+        for c in all_codons() {
+            let aa = translate_codon(&c);
+            for b in B4_ORDER {
+                if b == slot_of(&c, slot) {
+                    continue;
+                }
+                let d = with_slot(&c, slot, b);
+                substitutions += 1;
+                if translate_codon(&d) != aa {
+                    changed += 1;
+                }
+            }
+        }
+        out.push(SlotLoad { position: slot + 1, substitutions, changed });
+    }
+    out
+}
+
 // ── Reports ────────────────────────────────────────────────────
 
 pub fn retraction_lines() -> Vec<String> {
@@ -463,7 +590,10 @@ pub fn retraction_lines() -> Vec<String> {
 pub fn table_lines() -> Vec<String> {
     let mut out = vec!["glyph  codon  aa   x86                      wasm".to_string()];
     for g in Glyph::all() {
-        let c = glyph_to_codon(g);
+        let c = match glyph_to_codon(g) {
+            Some(c) => c,
+            None => continue,
+        };
         let x = match glyph_to_x86(g) {
             Some((mn, "")) => mn.to_string(),
             Some((mn, ops)) => format!("{} {}", mn, ops),
@@ -473,7 +603,7 @@ pub fn table_lines() -> Vec<String> {
             "  {}    {}    {}  {:<24} {}",
             g.to_char(),
             codon_rna(&c),
-            glyph_to_aa(g).code3(),
+            glyph_to_aa(g).map(|a| a.code3()).unwrap_or("—"),
             x,
             glyph_to_wasm(g)
         ));

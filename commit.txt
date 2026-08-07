@@ -1,33 +1,38 @@
-Circuit: strands and frames, and the antisense triple
+Circuit: put the RNA leg on the canonical correspondence, and report the drift
 
-`circuit rc` prints the sense word, the antisense word, and all three reading
-frames of an RNA string.
+The glyph-to-codon map was a second construction: twelve off-diagonal base pairs
+at the first two codon positions, enumerated. It closed, but it was not the
+Grammar's map. GeneticCode.lean already states the correspondence as
+aaToPrimitive and primitiveToAA, over the twelve promoted amino acids, with
+promoted_card, ground_promoted_disjoint and twenty_eq_eight_plus_twelve behind
+it. There is one Grammar; the enumeration was the copy and it is gone.
 
-The finding worth keeping: the antisense of a canonical-section word is forced
-to a three-glyph vocabulary, and the three are fork, fuse, and self-reference.
-Reverse complement sends (p1,p2,p3) to (comp p3, comp p2, comp p1), so the
-antisense strand reads its FIRST position off the sense strand's wobble. With
-the canonical wobble at U and comp(U)=A, every antisense codon of a section word
-begins with A, and the only glyphs with a leading A are ∈, ∋, ⊙. Twelve
-collapse to three. Whatever the sense strand discards is exactly what the
-antisense strand puts in a glyph-bearing position.
+The RNA leg now reads codon → amino acid → primitive → axis → glyph, each step
+off something that already existed. δ takes a glyph to the first codon in
+enumeration order that carries it, giving a section that is a real RNA spelling
+the alphabet: AUG UGG UGU UAU UUU AUU CAU AAU CAA GAU AAA GAA. Both circuits
+close on it and μ∘δ = id holds on all twelve for RNA and for wasm.
 
-This also settles that the canonical wobble is not an inert choice: wobble G
-would give every antisense codon a leading C and hence the triple <, ⋈, ⊤. The
-choice selects which triple the other strand speaks, so it wants a reason rather
-than a default. Recorded as the open question it now is.
+Doing this surfaced a drift in AminoAcid::to_primitive, which derives a primitive
+value from the codon box and is supposed to land on the same axis. On three amino
+acids it does not: Tyr goes to a Criticality value, putting two amino acids on ⊙
+and leaving < with none, and His and Asn are transposed. `circuit drift` reports
+this live. The circuit uses the canonical correspondence; to_primitive is what
+needs fixing, and is left alone here rather than changed underneath its other
+callers.
 
-Sequences run, all reproducible from the REPL:
+The strand findings move, because the glyph assignment moved. Under the canonical
+map:
 
-- Shine-Dalgarno AGGAGG carries ⊙ and nothing else on the message strand and
-  nothing at all on the other. Its recognizer CCUCCU carries the mirror. The
-  recognition is one strand speaking ⊙ into a strand that says nothing.
-- The palindromic site GAAUUC has sense and antisense words that coincide, since
-  a reverse-complement palindrome is its own antisense. It lands on ◻.
-- Poly-A is mute in every frame on both strands: AAA is diagonal and so is UUU,
-  the one case where both sides of the involution sit on the diagonal.
-- The telomere repeat UUAGGG is mute in frame 0 and alternates ⊙⊥ without
-  interruption in frame 2.
-- The hammerhead ribozyme core carries a non-repeating word on both strands.
+- The CAG repeat is a run of pure ⊙. CAG is Gln and Gln is Criticality, so the
+  polyglutamine expansion is unbounded repetition of the self-referential glyph.
+  Its complement is silent, CUG being ground-layer Leu.
+- Poly-A is not silent but constant: ⊞ in every frame, complement constant ⋈.
+- The palindromic site GAAUUC remains a fixed point of the strand involution,
+  now reading ◻⋈◻⋈ on both strands.
+- The telomere repeat, Shine-Dalgarno and its recognizer are silent in every
+  frame on both strands. Leu, Gly and Arg are ground layer.
 
-Findings in CIRCUIT.md.
+The earlier readings of those sequences, and the claim that the antisense of the
+section collapses to a control-flow triple, were artifacts of the constant wobble
+the old section used. CIRCUIT.md carries the corrected findings.

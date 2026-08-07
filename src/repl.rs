@@ -389,8 +389,9 @@ pub fn repl(k: &mut Kernel) {
                         } else {
                             let mut s = alloc::string::String::new();
                             for g in crate::belnap_ring_shor::Glyph::all() {
-                                s.push_str(&crate::circuit::codon_rna(
-                                    &crate::circuit::glyph_to_codon(g)));
+                                if let Some(c) = crate::circuit::glyph_to_codon(g) {
+                                    s.push_str(&crate::circuit::codon_rna(&c));
+                                }
                             }
                             s
                         };
@@ -417,6 +418,30 @@ pub fn repl(k: &mut Kernel) {
                             sprintln!("  moved them. Identity holds on the section and nowhere else.");
                         }
                     }
+                    "slots" => {
+                        sprintln!("single-position substitutions that change the amino acid,");
+                        sprintln!("read off the live codon table:");
+                        for l in crate::circuit::slot_loads() {
+                            let role = match l.position {
+                                1 => "sense-private",
+                                2 => "SHARED by both strands",
+                                _ => "antisense-private",
+                            };
+                            sprintln!("  p{}  {:>3}/{:<3}  {:>3}%   {}",
+                                l.position, l.changed, l.substitutions, l.percent(), role);
+                        }
+                    }
+                    "drift" => {
+                        let d = crate::circuit::primitive_drift();
+                        if d.is_empty() {
+                            sprintln!("to_primitive agrees with the canonical correspondence");
+                        } else {
+                            sprintln!("AminoAcid::to_primitive disagrees with GeneticCode.lean:");
+                            for l in d {
+                                sprintln!("{}", l);
+                            }
+                        }
+                    }
                     "rc" | "strand" => {
                         let rna = if rest.len() > 1 { rest[1..].join("") } else {
                             "AUGGCCUUUAAAGGGCAUUGCACG".to_string()
@@ -434,6 +459,8 @@ pub fn repl(k: &mut Kernel) {
                     _ => {
                         sprintln!("circuit table       — every glyph across every substrate");
                         sprintln!("circuit rc [rna]    — sense, antisense, and all three frames");
+                        sprintln!("circuit slots       — which codon position the code loads");
+                        sprintln!("circuit drift       — to_primitive against the canonical map");
                         sprintln!("circuit retract     — μ∘δ=id, leg by leg");
                         sprintln!("circuit one [word]  — x86 → IMASM → RNA → IMASM → x86");
                         sprintln!("circuit two [rna]   — RNA → IMASM → x86 → IMASM → wasm → IMASM → AA");
