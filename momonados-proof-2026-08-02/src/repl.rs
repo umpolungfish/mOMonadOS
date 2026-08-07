@@ -8,7 +8,8 @@ use alloc::vec::Vec;
 use alloc::string::{String, ToString};
 use alloc::format;
 
-use crate::{sprint, sprintln};
+use crate::sprint;
+use crate::sprintln;
 use crate::{
     serial, belnap, tokens, crystal, kernel, interrupts, frob_verify, imas_ig,
     aleph, manus, parasm, belnap_shor, para_rh, para_ym, para_temporal,

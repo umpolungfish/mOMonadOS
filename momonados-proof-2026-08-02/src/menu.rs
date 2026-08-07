@@ -266,7 +266,21 @@ pub fn render_prompt(ctx: &ContextStack) {
 
 /// Render the top-level menu bar (F-key shortcuts).
 pub fn render_menu_bar() {
-    // Minimal stub — full menu bar rendering is historical.
+    crate::sprintln!("══════════════════════════════════════════════════════════");
+    crate::sprintln!("  mOMonadOS MAIN MENU");
+    crate::sprintln!("══════════════════════════════════════════════════════════");
+    let mut i = 1u8;
+    for item in MAIN_MENU.iter() {
+        if let Some(sub) = item.submenu {
+            crate::sprintln!("  F{}  {:10} — {} [{} subcommands]",
+                i, item.name, item.desc, sub.len());
+        } else {
+            crate::sprintln!("  F{}  {:10} — {}",
+                i, item.name, item.desc);
+        }
+        i += 1;
+    }
+    crate::sprintln!("══════════════════════════════════════════════════════════");
 }
 
 /// Show the menu hint line below the prompt.

@@ -111,6 +111,7 @@ mod text;
 mod manifold;
 mod kernel_torus;
 mod ovm;
+mod exotic_one_shots;
 
 use tokens::{canonical_count, continuous_count, novel_count, shunted_count};
 use crystal::TOTAL;

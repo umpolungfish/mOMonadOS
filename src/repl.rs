@@ -1447,6 +1447,9 @@ pub fn repl(k: &mut Kernel) {
                 }
                 crate::heap_reset(mark);
             }
+            "oneshots" => {
+                sprintln!("{}", crate::exotic_one_shots::ExoticOneShots::report());
+            }
             "rebis" => {
                 let sub = parts.next().unwrap_or("");
                 print_rebis(sub, parts.next().unwrap_or(""), &parts.collect::<alloc::vec::Vec<&str>>().join(" "));
