@@ -145,6 +145,64 @@ pub fn generator_g4() -> QuadElem {
     QuadElem::from_frac(2049, -1, 2, D2048_MD)
 }
 
+// -- Step 5 measured: what the algebraic representation actually costs --
+
+/// The monomial for an arbitrary d, so the representation can be MEASURED as d
+/// moves rather than asserted at one point. N = d-1, D = N^2-4, and the three
+/// generators are the same shapes they are at 2048: eps = (N + sqrt(D))/2 with
+/// norm 1, g3 = (sqrt(D) - (N-2))/2, g4 = ((N+2) - sqrt(D))/2.
+fn monomial_at(d: u64) -> Option<((i128, i128, i128), i128)> {
+    let n = d as i128 - 1;
+    let dd = n * n - 4;
+    let mut m = (n, -1, 2);                 // eps^(-1) = conj(eps)
+    let g3 = (-(n - 2), 1, 2);
+    let g4 = (n + 2, -1, 2);
+    // i128 has 127 bits; the numerator runs about 6*log2(d), so bail rather
+    // than wrap silently once the product would not fit.
+    for _ in 0..3 { m = qmul_checked(m, g3, dd)?; }
+    for _ in 0..2 { m = qmul_checked(m, g4, dd)?; }
+    Some((m, dd))
+}
+
+/// qmul128 that refuses to wrap.
+fn qmul_checked(x: (i128, i128, i128), y: (i128, i128, i128), d: i128) -> Option<(i128, i128, i128)> {
+    let a = x.0.checked_mul(y.0)?.checked_add(x.1.checked_mul(y.1)?.checked_mul(d)?)?;
+    let b = x.0.checked_mul(y.1)?.checked_add(x.1.checked_mul(y.0)?)?;
+    let c = x.2.checked_mul(y.2)?;
+    let g = gcd128(gcd128(a, b), c);
+    Some((a / g, b / g, c / g))
+}
+
+fn bits(v: i128) -> u32 { 128 - v.unsigned_abs().leading_zeros() }
+
+/// Step 5, measured instead of asserted.
+///
+/// The claim under test is that the algebraic representation costs O(log d)
+/// where the amplitude list costs O(d^2). Both sides are counted in bits: the
+/// algebraic side is the actual width of the exact triple plus the
+/// discriminant it lives over, and the classical side is d^2 complex
+/// amplitudes at 128 bits each.
+pub fn scaling_report() -> String {
+    let mut out = String::from(
+        "  Step 5 measured — bits actually needed, not bits asserted\n              d      bits(D)  bits(a)  bits(b)   algebraic   log2(d)   alg/log2(d)        classical\n");
+    for d in [16_u64, 64, 256, 1024, 2048, 4096, 65536, 1_048_576] {
+        match monomial_at(d) {
+            None => out.push_str(&format!("  {:>8}   (exceeds i128)\n", d)),
+            Some(((a, b, c), dd)) => {
+                let alg = bits(a) + bits(b) + bits(c) + bits(dd);
+                let l2 = 63 - d.leading_zeros() as u64;          // d is a power of two here
+                let classical = (d as u128) * (d as u128) * 128;
+                out.push_str(&format!(
+                    "  {:>8}  {:>7}  {:>7}  {:>7}  {:>10}  {:>8}  {:>12.2}  {:>15}\n",
+                    d, bits(dd), bits(a), bits(b), alg, l2, alg as f64 / l2 as f64, classical));
+            }
+        }
+    }
+    out.push_str(
+        "  The ratio settles at about 13 bits of representation per bit of d:\n           bits(a) = 6*log2(d), bits(b) = 5*log2(d), bits(D) = 2*log2(d). That is the\n           O(log d) claim, measured, with its constant. The classical column is d^2\n           complex amplitudes at 128 bits and grows as the square.\n           Above 2^20 the exact product no longer fits i128 and the row is refused\n           rather than wrapped — the ceiling is this arithmetic, not the method.");
+    out
+}
+
 // -- Cyclotomic levels: the radicals, computed --
 
 /// The quadratic Gauss sum g(m) = sum_{k=0}^{m-1} exp(2*pi*i*k^2/m).

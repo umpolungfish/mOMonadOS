@@ -1486,8 +1486,9 @@ pub fn repl(k: &mut Kernel) {
                     "sieve" | "fold" | "fork" => sprintln!("{}", crate::d2048_sieve::sieve_report()),
                     "verify" | "full" => sprintln!("{}", crate::d2048_sic::d2048_full_report()),
                     "exact" => sprintln!("{}", crate::d2048_exact_sic::exact_extraction_report()),
+                    "scaling" => sprintln!("{}", crate::d2048_exact_sic::scaling_report()),
                     "" => sprintln!("{}", crate::d2048_sic::d2048_summary()),
-                    _ => sprintln!("d2048 [tower|c16|c32|ramified|redei|grammar|pari|next|sieve|verify]"),
+                    _ => sprintln!("d2048 [tower|c16|c32|ramified|redei|grammar|pari|next|sieve|verify|exact|scaling]"),
                 }
             }
             "stark" => {

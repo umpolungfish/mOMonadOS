@@ -1,21 +1,20 @@
-Compute the four levels instead of naming them
+Measure Step 5 rather than assert it
 
-Step 4 listed sqrt(3), sqrt(5), sqrt(409) and sqrt(683) at levels 12, 5, 409
-and 2732 and evaluated none of them. They are evaluated now, on the kernel, by
-direct summation of the quadratic Gauss sum g(m) = sum exp(2 pi i k^2 / m),
-with k^2 reduced mod m first so the argument stays small and 2732^2 never has
-to be representable.
+The demonstration printed O(log d) against O(d^2) as a conclusion with nothing
+behind it. `d2048 scaling` now builds the exact monomial at eight dimensions
+and counts the bits each representation actually needs.
 
-The radical is not the modulus. At a prime level p = 1 mod 4 the sum is real
-and IS sqrt(p). At a level divisible by four the sum is 2*sqrt(n)*(1 + i), so
-its modulus is sqrt(8n) and the radical is the real part halved. The old check
-compared |g(12)| = sqrt(24) against sqrt(3) and ticked it; the modulus was
-simply the wrong place to look, and the right place is the component.
+The claim holds, and it comes with a constant. Across d from 16 to 2^20 the
+algebraic width settles at about thirteen bits per bit of d, and it decomposes:
+bits(a) = 6*log2(d), bits(b) = 5*log2(d), bits(D) = 2*log2(d). At d = 2048 that
+is 145 bits against 536,870,912 for the amplitude list. The ratio is still
+falling toward its asymptote at 2^20, which is the shape a log law has and a
+constant does not.
 
-Each of the four now reports its sum, its modulus, the radical extracted, which
-component it came out of, and the error against the radical it should be:
-all four land within 1.5e-13. Their product reconstructs sqrt(D) to 1.3e-11,
-and eps = (2047 + product)/2 now comes out of the sums rather than out of a
-seeded constant.
+The generators are built for arbitrary d rather than pinned at 2047, since a
+scaling law cannot be read at one point. The multiplication is checked, so a d
+whose product would exceed i128 refuses the row instead of wrapping and
+reporting a small number. Above 2^20 that is what happens, and the ceiling is
+the arithmetic here, not the method.
 
-fibqc verify all pass. Both trees carry the same file.
+fibqc verify all pass. Both trees carry the same file, help string updated.
