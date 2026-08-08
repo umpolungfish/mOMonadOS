@@ -15,7 +15,6 @@ use alloc::string::String;
 use alloc::vec::Vec;
 use alloc::format;
 use crate::d2048_exact_sic::TwoPartExtraction;
-use crate::d2048_exact_sic::{Embedding, stark_unit_d2048};
 
 // ═══════════════════════════════════════════════════════════════
 // Core trait: Every one-shot is a structural recognition

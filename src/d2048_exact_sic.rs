@@ -25,7 +25,6 @@
 #![allow(dead_code)]
 use alloc::string::String;
 use alloc::format;
-use alloc::vec::Vec;
 
 // -- Exact algebraic representation in Q(sqrt(D)) --
 
