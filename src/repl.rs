@@ -314,6 +314,8 @@ pub fn repl(k: &mut Kernel) {
                 if rest.is_empty() || rest[0] == "help" {
                     sprintln!("vox <sub>        — control-flow closure auditor");
                     sprintln!("vox verdict <word>   — SIXTEEN_3 verdict over a glyph word");
+                    sprintln!("vox evm <hex>        — lift EVM bytecode, verdict its closure");
+                    sprintln!("vox wasm <hex>       — lift a WASM body, verdict its closure");
                     sprintln!("vox classify <mn>    — which glyph an instruction lifts to");
                     sprintln!("A word closes at T, carries an open fork at B, and runs clean");
                     sprintln!("and linear at N. The fork is what the verdict is looking for.");
@@ -334,6 +336,18 @@ pub fn repl(k: &mut Kernel) {
                             } else {
                                 vox_lift_file(&rest[1]);
                             }
+                        }
+                        "evm" => {
+                            if rest.len() > 1 {
+                                let w = vox_core::lanes::evm_word(&rest[1]);
+                                sprintln!("EVM  {}  {}", crate::vox::verdict(&w), crate::vox::glyphs(&w));
+                            } else { sprintln!("vox evm <hex>"); }
+                        }
+                        "wasm" => {
+                            if rest.len() > 1 {
+                                let w = vox_core::lanes::wasm_word(&rest[1]);
+                                sprintln!("WASM {}  {}", crate::vox::verdict(&w), crate::vox::glyphs(&w));
+                            } else { sprintln!("vox wasm <hex>"); }
                         }
                         "classify" => {
                             if rest.len() > 1 {

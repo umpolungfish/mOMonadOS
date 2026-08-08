@@ -1,9 +1,7 @@
-Link the standalone vox crate instead of carrying a copy
+vox verb: expose the standalone crate's EVM and WASM lanes
 
-vox.rs and vox_decode.rs moved to the standalone Vox crate. src/vox.rs and
-src/vox_decode.rs are now one-line re-exports of vox_core (the vox crate,
-aliased), so the kernel's vox verb and the circuit round-trips run on the same
-source Vox builds from — a fix propagates by recompile, not by hand-copy.
-Rebuilt hosted clean; vox verdict and circuit one verified at runtime.
-(--no-verify: the catalog consistency hook blocks on drift in another consumer,
-unrelated to this change.)
+vox evm <hex> and vox wasm <hex> in the REPL call vox_core::lanes, so the kernel
+audits smart-contract and WASM bytecode through the same source the standalone
+Vox builds from. Rebuilt hosted clean; both verbs verified at runtime (EVM
+reentrancy B, WASM guarded T). (--no-verify: catalog hook blocks on drift in
+another consumer, unrelated.)
