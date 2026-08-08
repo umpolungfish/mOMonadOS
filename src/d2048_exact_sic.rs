@@ -145,6 +145,82 @@ pub fn generator_g4() -> QuadElem {
     QuadElem::from_frac(2049, -1, 2, D2048_MD)
 }
 
+// -- Welch saturation, verified against the recovered fiducial --
+
+/// The d=12 SIC fiducial recovered in `~/imsgct/d12_sic_build`, normalised.
+///
+/// These are not a construction performed here. They are the coordinates that
+/// campaign produced, carried in at f64 so the kernel can check the property
+/// they are supposed to have rather than restate it. At 200 digits the same
+/// vector saturates Welch to 4.5e-201; what f64 can show is machine precision,
+/// and that is what this reports.
+const D12_FIDUCIAL: [(f64, f64); 12] = [
+    ( 0.17657085022446443,  0.0),
+    (-0.11435757101345763, -0.08013049463884122),
+    (-0.15479561276309548, -0.089371288698146246),
+    ( 0.48321014641873911, -0.023581345898466354),
+    ( 0.12749895151265970,  0.0),
+    (-0.12588270409781341,  0.43212734644653372),
+    ( 0.0,                 -0.42627974133165048),
+    ( 0.19345212691675506,  0.047368456873818477),
+    ( 0.037018799865533485,-0.064118442202327918),
+    ( 0.056930405087088630,-0.20015219612293078),
+    ( 0.0,                 -0.30780969793021268),
+    ( 0.027607026802660757, 0.31435053354897172),
+];
+
+fn cmul(a: (f64, f64), b: (f64, f64)) -> (f64, f64) {
+    (a.0 * b.0 - a.1 * b.1, a.0 * b.1 + a.1 * b.0)
+}
+
+/// Verify the Welch bound where a fiducial actually exists.
+///
+/// |<psi|D_{p,q} psi>|^2 = 1/(d+1) for all d^2-1 nontrivial displacements is
+/// the defining property of a SIC, and it is a property of a VECTOR. Computing
+/// 1/(d+1) from d asserts nothing about whether any vector attains it. So the
+/// d=12 fiducial is displaced through the whole Weyl-Heisenberg group and all
+/// 143 overlaps are measured.
+pub fn welch_report() -> String {
+    let d = 12usize;
+    let dd = d as f64;
+    let two_pi_d = 6.283185307179586_f64 / dd;
+    let pi_d = 3.141592653589793_f64 / dd;
+
+    let mut psi = D12_FIDUCIAL;
+    let nrm = libm::sqrt(psi.iter().map(|z| z.0 * z.0 + z.1 * z.1).sum::<f64>());
+    for z in psi.iter_mut() { z.0 /= nrm; z.1 /= nrm; }
+
+    let target = 1.0_f64 / (dd + 1.0);
+    let (mut lo, mut hi, mut worst) = (f64::MAX, f64::MIN, 0.0_f64);
+    let mut count = 0usize;
+    for p in 0..d {
+        for q in 0..d {
+            if p == 0 && q == 0 { continue; }
+            // D_{p,q}|k> = w^{pq/2} w^{pk} |k+q>
+            let ph = ((p * q) as f64) * pi_d;
+            let pre = (libm::cos(ph), libm::sin(ph));
+            let mut ov = (0.0_f64, 0.0_f64);
+            for k in 0..d {
+                let t = ((p * k) as f64) * two_pi_d;
+                let v = cmul(cmul(pre, (libm::cos(t), libm::sin(t))), psi[k]);
+                let bra = psi[(k + q) % d];
+                // <psi| applied at index k+q: conjugate of the bra component
+                ov.0 += bra.0 * v.0 + bra.1 * v.1;
+                ov.1 += bra.0 * v.1 - bra.1 * v.0;
+            }
+            let m = ov.0 * ov.0 + ov.1 * ov.1;
+            if m < lo { lo = m; }
+            if m > hi { hi = m; }
+            let dev = libm::fabs(m - target);
+            if dev > worst { worst = dev; }
+            count += 1;
+        }
+    }
+    format!(
+        "  Welch saturation, measured on the recovered d=12 fiducial\n           overlaps checked      {} (= d^2 - 1)\n           target 1/(d+1)        {:.17}\n           min |<psi|D psi>|^2   {:.17}\n           max |<psi|D psi>|^2   {:.17}\n           worst deviation       {:.3e}  (f64; the same vector gives 4.5e-201 at 200 digits)\n           source                ~/imsgct/d12_sic_build, d12_psi_uhi.pkl\n\n           At d=2048 this check has nothing to run on. 1/(d+1) = 1/2049 is what a\n           fiducial there WOULD satisfy; no such vector is recovered. The numerical\n           route in that campaign is closed at f ~ 0.7817 against 0.9967 for random,\n           and the arithmetic route is blocked on L-values at conductor p^12*inf_1.\n           So Welch is verified at 12 and open at 2048, and saying otherwise would be\n           reporting arithmetic on d as though it were a property of a vector.",
+        count, target, lo, hi, worst)
+}
+
 // -- The crossover threshold, with its model exposed --
 
 /// Gate-count models for SIC-POVM tomography in dimension d.

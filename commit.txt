@@ -1,24 +1,20 @@
-Expose the gate model the threshold was hiding
+Verify Welch where a fiducial exists
 
-eps_2q < 2.38e-8 was reported as a property of d=2048. It is a property of
-n_gates(d), and n_gates(d) = d^2 was a modelling choice the single number
-concealed. `d2048 crossover` names four models and varies them.
+|<psi|D psi>|^2 = 1/(d+1) is a property of a VECTOR, and the report was
+computing 1/2049 from 2048, which asserts nothing about whether any vector
+attains it. The d=12 fiducial recovered in d12_sic_build attains it, so the
+kernel now displaces that vector through the whole Weyl-Heisenberg group and
+measures all 143 overlaps: worst deviation 6.4e-16 in f64, and the same
+coordinates give 4.5e-201 at 200 digits.
 
-At d=2048 the required error spans 1.16e-11 to 4.88e-5 across the four, four
-orders at one dimension, with d^2 landing on the 2.38e-8 the demonstration
-reports. t_gate enters as a bare multiplier and is varied too rather than being
-silently set to one.
+At 2048 the check has nothing to run on and the report says so. That campaign's
+numerical route is closed at f ~ 0.7817 against 0.9967 for random, and the
+arithmetic route is blocked on L-values at conductor p^12*inf_1 -- bnrL1
+OOM-killed at 38.6 GB, lfun overflowing 28 GB for one character, and the ascent
+walk superpolynomial with a climbing exponent. Welch is verified at 12 and open
+at 2048.
 
-Read against hardware the metric says something the single number did not.
-Advantage at eps_2q = 1e-3 needs fewer than a hundred gates total, so the
-largest dimension that clears it is 9 under d^2, 6 under d^2 log d, 4 under
-d^3, and 99 under the cheapest floor of one gate per amplitude. d=2048 is out
-of reach under every model, not only under the one that was chosen. Reporting
-one threshold made that look like a fact about the hardware gap; it was a fact
-about the model, and now both are on the surface.
-
-The algebraic representation is what the extraction buys, and Step 5 measures
-that: about thirteen bits per bit of d. This metric is not where it is bought,
-and the report says so where it is printed.
+The fiducial is carried in, not reconstructed. It is that campaign's result and
+this is the kernel checking the property it is supposed to have.
 
 fibqc verify all pass. Both trees carry the same file, help string updated.
