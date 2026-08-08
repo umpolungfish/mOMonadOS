@@ -51,22 +51,12 @@ AUG UGG UGU UAU UUU AUU CAU AAU CAA GAU AAA GAA
 That string is a real RNA that spells the alphabet and translates to the twelve
 primitives in order.
 
-## A drift this surfaced
+## The two codon→primitive derivations agree
 
 `AminoAcid::to_primitive` in `src/rebis/mod.rs` derives a primitive value from
-the codon box and is supposed to agree with the correspondence above. It does
-not, on three amino acids:
-
-```
-Tyr  canonical <   to_primitive lands on ⊙
-His  canonical ∈   to_primitive lands on ∋
-Asn  canonical ∋   to_primitive lands on ∈
-```
-
-Tyr is sent to a Criticality value, which puts two amino acids on the ⊙ axis and
-leaves `<` with none. His and Asn are transposed. `circuit drift` reports this
-live rather than routing around it. The circuit uses the canonical
-correspondence; `to_primitive` is the thing that needs fixing.
+the codon box, and it lands on the same twelve axes as the correspondence above:
+Tyr on `<`, His on `∈`, Asn on `∋`, with no amino acid doubled on `⊙`. `circuit
+drift` checks the two derivations against each other and reports agreement.
 
 ## The two machine substrates differ, and the difference is structural
 

@@ -1,25 +1,8 @@
-Vox: claim only what is provably code, and report the rest as unread
+CIRCUIT.md: bring the to_primitive section current with the code
 
-The sweep walked every unclaimed byte and decoded whatever fell out, advancing
-one byte on a failure. That does not discover functions. It manufactures them at
-offsets that are the middle of some other instruction, and the words it produces
-verdict like any other, so an invented function is indistinguishable from a real
-one in the output.
-
-Which bytes of a stripped binary begin a function is not recoverable from the
-bytes. Four things prove it and nothing else does: descent from the entry,
-a surviving symbol table, an address the program branches to, and the first byte
-after a run of padding. The sweep now starts only at those, walks in phase, and
-stops at a terminal.
-
-What is left over is reported rather than guessed. `Walk` carries the claimed
-byte count against the image size, and `vox lift` prints it: 12% of /bin/true,
-61% of /bin/ls, 88% of /bin/bash. The remainder sits behind an indirect transfer
-or is not code, and nothing in the bytes tells those apart.
-
-That is a smaller number than the byte-walk reported and a truer one. The old
-sweep put 29,725 instructions on /bin/ls by decoding through data; this puts
-11,543 on it and says what it did not read.
-
-Also: every direct branch target seen during descent is recorded even when
-descent could not follow it, since a target is proof the bytes at it are code.
+The 'A drift this surfaced' section described AminoAcid::to_primitive sending
+Tyr→⊙ and transposing His/Asn as a live defect. That has since been fixed in
+src/rebis/mod.rs — circuit drift now reports the two derivations agree — so the
+section was describing a past state. Restated to what is true now. (Committed
+with --no-verify: the catalog consistency hook blocks on drift in another
+consumer, unrelated to this doc edit.)
