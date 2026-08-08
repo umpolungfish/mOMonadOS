@@ -18,4 +18,9 @@ version = "0.1.0"
 dependencies = [
  "imasm_core",
  "libm",
+ "vox",
 ]
+
+[[package]]
+name = "vox"
+version = "0.1.0"

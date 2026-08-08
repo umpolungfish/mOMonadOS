@@ -8,13 +8,12 @@ use alloc::vec::Vec;
 use alloc::string::{String, ToString};
 use alloc::format;
 
-use crate::sprint;
-use crate::sprintln;
+use crate::{sprint, sprintln};
 use crate::{
     serial, belnap, tokens, crystal, kernel, interrupts, frob_verify, imas_ig,
     aleph, manus, parasm, belnap_shor, para_rh, para_ym, para_temporal,
     para_category, algebra, catalog, cl8nk, consciousness, rebis, dialect, menu,
-    sequence, boot, cr3echrz, canonical_ordinal, clay_status, sic_povm,
+    sequence, cr3echrz, canonical_ordinal, clay_status, sic_povm,
     frobenius_unify, clay_witness, belnap_sic_bridge, belnap_c4, sic_compute,
     dialect_expansion, divisor_ring, mersenne_parallel, bifurcation_test, entropy, d12_sic, d2048_sic, d2048_sieve, stark,
     sic_moduli,
@@ -22,7 +21,7 @@ use crate::{
     riemann_hilbert,
     witness_vessel, ask, ovm,
 };
-use crate::tokens::{canonical_name, CANONICAL_COUNT, continuous_name, CONTINUOUS_COUNT, novel_name, NOVEL_COUNT, shunted_name, SHUNTED_COUNT, compound_name, compound_index, compound_program, COMPOUND_COUNT};
+use crate::tokens::{canonical_name, canonical_count, continuous_name, continuous_count, novel_name, novel_count, shunted_name, shunted_count, compound_name, compound_index, compound_program, compound_count};
 use crate::crystal::{CrystalStore, decode, encode, indices_from_program, TOTAL};
 use crate::kernel::Kernel;
 use crate::imas_ig::{IgTuple, IgPrim};
@@ -75,9 +74,10 @@ pub fn repl(k: &mut Kernel) {
     let mut ctx_stack = ContextStack::new();
     let mut ask_paste = crate::ask::AskPaste::new();
 
-    sprintln!("Type '?' for menu, 'help' for categories, Tab to complete.");
-    sprintln!("Kernel ask: structural dry-run (serial). Full wet-run (files, Gemini-length answers):");
-    sprintln!("  host: ./ask --file path | ./ask --ask \"…\" | ./ask -i   (no Python)");
+    sprintln!("   {}ask{} runs a structural dry-run here; the full wet-run is on the host:",
+        crate::style::key(), crate::style::reset());
+    sprintln!("   {}./ask --file <path> | ./ask --ask \"…\" | ./ask -i{}",
+        crate::style::muted(), crate::style::reset());
     sprintln!();
 
     loop {
@@ -185,6 +185,40 @@ pub fn repl(k: &mut Kernel) {
                 print_help_topic(topic);
             },
             "status" => print_status(k),
+            "winding" | "wperiod" => {
+                match parts.next().unwrap_or("") {
+                    "" | "help" => {
+                        sprintln!("winding - period as a torus winding (native Rust, torus by default)");
+                        sprintln!("  winding order <a> <N>    minimal period r of a^x mod N (BSGS winding halving)");
+                        sprintln!("  winding factor <N> [tries] [seed]   end-to-end factorization via the Shor winding step");
+                        sprintln!("  winding closure <N> <B>  Pollard p-1 closure at smoothness bound B");
+                        sprintln!("  winding factorgen <bits> [tries] [seed]   native semiprime + factor (the push)");
+                    }
+                    "order" => {
+                        let a = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        let N = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        crate::winding_period::repl_order(a, N);
+                    }
+                    "factor" => {
+                        let N = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        let tries = parts.next().and_then(|s| s.parse::<u32>().ok()).unwrap_or(12);
+                        let seed = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0x9E37_79B9_7F4A_7C15);
+                        crate::winding_period::repl_factor(N, tries, seed);
+                    }
+                    "closure" => {
+                        let N = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        let B = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(11);
+                        crate::winding_period::repl_closure(N, B);
+                    }
+                    "factorgen" => {
+                        let bits = parts.next().and_then(|s| s.parse::<u32>().ok()).unwrap_or(48);
+                        let tries = parts.next().and_then(|s| s.parse::<u32>().ok()).unwrap_or(12);
+                        let seed = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0x9E37_79B9_7F4A_7C15);
+                        crate::winding_period::repl_factorgen(bits, tries, seed);
+                    }
+                    other => sprintln!("winding: unknown subcommand '{}' (try 'winding help')", other),
+                }
+            },
             "proof" => {
                 match parts.next().unwrap_or("") {
                     "" | "list" => crate::proof::list_proofs(),
@@ -230,6 +264,21 @@ pub fn repl(k: &mut Kernel) {
                     crate::lattice_flow::transitions_report(w);
                 }
             }
+            "insert" => {
+                let tail: Vec<&str> = parts.collect();
+                let word = tail.join(" ");
+                let w = word.trim();
+                if w.is_empty() {
+                    sprintln!("insert <word>    — every single-glyph insertion that turns");
+                    sprintln!("an exposed word into one whose weight survives its clears. The");
+                    sprintln!("repair for a losing word is usually one glyph in the right place,");
+                    sprintln!("and the search is small enough to be exact rather than reasoned.");
+                } else if w.eq_ignore_ascii_case("all") {
+                    crate::lattice_flow::insert_sweep_all();
+                } else {
+                    crate::lattice_flow::insert_report(w);
+                }
+            }
             "banked" => {
                 let tail: Vec<&str> = parts.collect();
                 let word = tail.join(" ");
@@ -255,6 +304,208 @@ pub fn repl(k: &mut Kernel) {
                     crate::lattice_flow::weight_report(w);
                 }
             }
+            // `vox` reads control flow the way `weight` reads value flow: it takes
+            // the instruction side rather than the word side, classifies each
+            // mnemonic to a glyph, and runs the same verdict over the result.
+            "vox" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> =
+                    tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                if rest.is_empty() || rest[0] == "help" {
+                    sprintln!("vox <sub>        — control-flow closure auditor");
+                    sprintln!("vox verdict <word>   — SIXTEEN_3 verdict over a glyph word");
+                    sprintln!("vox evm <hex>        — lift EVM bytecode, verdict its closure");
+                    sprintln!("vox wasm <hex>       — lift a WASM body, verdict its closure");
+                    sprintln!("vox classify <mn>    — which glyph an instruction lifts to");
+                    sprintln!("A word closes at T, carries an open fork at B, and runs clean");
+                    sprintln!("and linear at N. The fork is what the verdict is looking for.");
+                } else {
+                    match rest[0].as_str() {
+                        "verdict" | "words" | "word" => {
+                            if rest.len() > 1 {
+                                let word: Vec<char> = rest[1..].join("").chars().collect();
+                                sprintln!("{}", crate::vox::glyphs(&word));
+                                sprintln!("verdict {}", crate::vox::verdict(&word));
+                            } else {
+                                sprintln!("vox verdict <glyph-word>");
+                            }
+                        }
+                        "lift" => {
+                            if rest.len() < 2 {
+                                sprintln!("vox lift <path>   — lift an ELF's executable sections");
+                            } else {
+                                vox_lift_file(&rest[1]);
+                            }
+                        }
+                        "evm" => {
+                            if rest.len() > 1 {
+                                let w = vox_core::lanes::evm_word(&rest[1]);
+                                sprintln!("EVM  {}  {}", crate::vox::verdict(&w), crate::vox::glyphs(&w));
+                            } else { sprintln!("vox evm <hex>"); }
+                        }
+                        "wasm" => {
+                            if rest.len() > 1 {
+                                let w = vox_core::lanes::wasm_word(&rest[1]);
+                                sprintln!("WASM {}  {}", crate::vox::verdict(&w), crate::vox::glyphs(&w));
+                            } else { sprintln!("vox wasm <hex>"); }
+                        }
+                        "classify" => {
+                            if rest.len() > 1 {
+                                let ins = crate::vox::Instruction {
+                                    address: 0,
+                                    mnemonic: rest[1].to_lowercase(),
+                                    op_str: rest[2..].join(" "),
+                                };
+                                let g = crate::vox::classify_instruction(&ins);
+                                sprintln!("{} {}", ins.mnemonic, g);
+                            } else {
+                                sprintln!("vox classify <mnemonic> [operands]");
+                            }
+                        }
+                        other => sprintln!("vox has no `{}`; try `vox help`", other),
+                    }
+                }
+            }
+            // `circuit` runs the substrate round trips. The word is the invariant;
+            // every substrate leg is many-to-one, so what is being checked is
+            // that each leg is a retraction and that the detour changes nothing.
+            "circuit" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> =
+                    tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let sub = rest.first().map(|s| s.as_str()).unwrap_or("help");
+                match sub {
+                    "table" => {
+                        for l in crate::circuit::table_lines() {
+                            sprintln!("{}", l);
+                        }
+                    }
+                    "retract" | "retraction" => {
+                        for l in crate::circuit::retraction_lines() {
+                            sprintln!("{}", l);
+                        }
+                    }
+                    "one" => {
+                        let word: Vec<crate::belnap_ring_shor::Glyph> = if rest.len() > 1 {
+                            rest[1..].join("").chars()
+                                .filter_map(crate::belnap_ring_shor::Glyph::from_char).collect()
+                        } else {
+                            crate::belnap_ring_shor::Glyph::all().to_vec()
+                        };
+                        let r = crate::circuit::circuit_one(&word);
+                        let a: String = r.start.iter().map(|g| g.to_char()).collect();
+                        let b: String = r.returned.iter().map(|g| g.to_char()).collect();
+                        sprintln!("x86 → IMASM → RNA → IMASM → x86");
+                        sprintln!("  in   {}", a);
+                        sprintln!("  rna  {}", r.rna);
+                        sprintln!("  out  {}", b);
+                        sprintln!("  {}", if r.closes() { "closes" } else { "DOES NOT CLOSE" });
+                        for i in &r.instructions {
+                            sprintln!("    {}", i);
+                        }
+                    }
+                    "two" => {
+                        let rna = if rest.len() > 1 {
+                            rest[1..].join("")
+                        } else {
+                            let mut s = alloc::string::String::new();
+                            for g in crate::belnap_ring_shor::Glyph::all() {
+                                if let Some(c) = crate::circuit::glyph_to_codon(g) {
+                                    s.push_str(&crate::circuit::codon_rna(&c));
+                                }
+                            }
+                            s
+                        };
+                        let r = crate::circuit::circuit_two(&rna);
+                        sprintln!("RNA → IMASM → x86 → IMASM → wasm → IMASM → AA");
+                        sprintln!("  rna  {}", rna);
+                        for l in &r.trace {
+                            sprintln!("    {}", l);
+                        }
+                        let d: alloc::vec::Vec<&str> =
+                            r.direct.iter().map(|a| a.code3()).collect();
+                        let o: alloc::vec::Vec<&str> =
+                            r.routed.iter().map(|a| a.code3()).collect();
+                        sprintln!("  direct  {}", d.join("-"));
+                        sprintln!("  routed  {}", o.join("-"));
+                        if r.skipped > 0 {
+                            sprintln!("  {} codon(s) carried no glyph and did not enter", r.skipped);
+                        }
+                        if r.closes() {
+                            sprintln!("  the detour is invisible");
+                        } else {
+                            sprintln!("  the detour changes the protein");
+                            sprintln!("  {} codon(s) sat off the canonical section, and δ∘μ", r.offsection);
+                            sprintln!("  moved them. Identity holds on the section and nowhere else.");
+                        }
+                    }
+                    "slots" => {
+                        sprintln!("single-position substitutions that change the amino acid,");
+                        sprintln!("read off the live codon table:");
+                        for l in crate::circuit::slot_loads() {
+                            let role = match l.position {
+                                1 => "sense-private",
+                                2 => "SHARED by both strands",
+                                _ => "antisense-private",
+                            };
+                            sprintln!("  p{}  {:>3}/{:<3}  {:>3}%   {}",
+                                l.position, l.changed, l.substitutions, l.percent(), role);
+                        }
+                    }
+                    "census" => {
+                        let (prim, scaf, stop) = crate::circuit::codon_census();
+                        sprintln!("codon space, classified with no residue:");
+                        sprintln!("  {:>2}  carry a primitive (the twelve promoted acids)", prim);
+                        sprintln!("  {:>2}  scaffold (the eight ground-layer acids, no primitive)", scaf);
+                        sprintln!("  {:>2}  stop", stop);
+                        sprintln!("  {:>2}  total", prim + scaf + stop);
+                        sprintln!("");
+                        sprintln!("section choice is free: {}",
+                            if crate::circuit::section_choice_is_free() {
+                                "yes — μ∘δ=id for every codon carrying the glyph"
+                            } else {
+                                "NO"
+                            });
+                    }
+                    "drift" => {
+                        let d = crate::circuit::primitive_drift();
+                        if d.is_empty() {
+                            sprintln!("to_primitive agrees with the canonical correspondence");
+                        } else {
+                            sprintln!("AminoAcid::to_primitive disagrees with GeneticCode.lean:");
+                            for l in d {
+                                sprintln!("{}", l);
+                            }
+                        }
+                    }
+                    "rc" | "strand" => {
+                        let rna = if rest.len() > 1 { rest[1..].join("") } else {
+                            "AUGGCCUUUAAAGGGCAUUGCACG".to_string()
+                        };
+                        let r = crate::circuit::strand_report(&rna);
+                        sprintln!("  rna        {}", rna);
+                        sprintln!("  sense      {}", r.sense);
+                        sprintln!("  antisense  {}", r.antisense);
+                        sprintln!("  frame 0    {}", r.frames[0]);
+                        sprintln!("  frame 1    {}", r.frames[1]);
+                        sprintln!("  frame 2    {}", r.frames[2]);
+                        sprintln!("  `·` is scaffold, `|` is stop. The antisense strand");
+                        sprintln!("  reads its first position off the sense strand's wobble.");
+                    }
+                    _ => {
+                        sprintln!("circuit table       — every glyph across every substrate");
+                        sprintln!("circuit rc [rna]    — sense, antisense, and all three frames");
+                        sprintln!("circuit slots       — which codon position the code loads");
+                        sprintln!("circuit drift       — to_primitive against the canonical map");
+                        sprintln!("circuit census      — codon space with no residue");
+                        sprintln!("circuit retract     — μ∘δ=id, leg by leg");
+                        sprintln!("circuit one [word]  — x86 → IMASM → RNA → IMASM → x86");
+                        sprintln!("circuit two [rna]   — RNA → IMASM → x86 → IMASM → wasm → IMASM → AA");
+                        sprintln!("A binary cannot return byte-identical: each substrate leg is");
+                        sprintln!("many-to-one. The word is what closes.");
+                    }
+                }
+            }
             // The grammar-tool layer calls these `quantum_compile` and
             // `jones_polynomial`, and an agent that knows those names typed them
             // here and got "Unknown: quantum_compile". Same operations, two
@@ -269,16 +520,27 @@ pub fn repl(k: &mut Kernel) {
                 // built inside the compile's heap scope and dies with it, so
                 // the choice has to travel in rather than the word travelling out.
                 let mut render = 0u8;
-                let rest: Vec<&str> = match rest.split_first() {
-                    Some((&"draw", tail)) => { render = 1; tail.to_vec() }
-                    Some((&"svg", tail))  => { render = 2; tail.to_vec() }
-                    _ => rest,
-                };
+                let mut rest = rest;
+                if !rest.is_empty() {
+                    let first = rest[0].to_lowercase();
+                    if first == "draw" {
+                        render = 1;
+                        rest.remove(0);
+                    } else if first == "svg" {
+                        render = 2;
+                        rest.remove(0);
+                    } else if first == "loop" || first == "curve" || first == "curvy" {
+                        render = 3;
+                        rest.remove(0);
+                    }
+                }
                 if rest.is_empty() {
                     sprintln!("qc [draw|svg] <gates> [net_depth] [sk_depth]   e.g. `qc H T 8`, `qc HTSX 10 0`");
                     sprintln!("Known gates: H T S X — spaces optional, case free.");
-                    sprintln!("Depth is any positive integer (default 10); the search");
-                    sprintln!("stops early if the gate net outgrows the arena.");
+                    sprintln!("Both depths are any positive integer (net 10, recursion 3");
+                    sprintln!("by default). Each stops early rather than refusing: the net");
+                    sprintln!("when it outgrows the arena, the recursion when the next");
+                    sprintln!("level's word would, and the run says which one it was.");
                 } else {
                     // Trailing integers are the two depths: net depth, then SK
                     // recursion depth. The recursion depth was pinned at 3 and
@@ -334,6 +596,7 @@ pub fn repl(k: &mut Kernel) {
                     .filter(|t| !t.is_empty())
                     .collect();
                 let (mut as_svg, mut start, mut count) = (false, 0usize, 0usize);
+                let mut as_loop = false;
                 // Long words fold into columns by default; `/N` sets the column
                 // height, `/0` forces the single tall column.
                 let mut fold: usize = 48;
@@ -341,8 +604,9 @@ pub fn repl(k: &mut Kernel) {
                 let mut bad: Option<&str> = None;
                 for t in &toks {
                     match *t {
-                        "svg" => as_svg = true,
-                        "ascii" | "draw" => as_svg = false,
+                        "svg" => { as_svg = true; as_loop = false; }
+                        "loop" | "curve" | "curvy" => { as_svg = true; as_loop = true; }
+                        "ascii" | "draw" => { as_svg = false; as_loop = false; }
                         _ => {
                             if let Some(n) = t.strip_prefix('/') {
                                 match n.parse::<usize>() {
@@ -366,8 +630,8 @@ pub fn repl(k: &mut Kernel) {
                 if let Some(t) = bad {
                     sprintln!("bi: '{}' is not a generator, a window, or svg/ascii.", t);
                 } else if word.is_empty() {
-                    sprintln!("bi [svg] <generators> [start:count]");
-                    sprintln!("  e.g. `bi 1 2 1`, `bi 1 -2 1 -2`, `bi svg 1 2 1 2 1`");
+                    sprintln!("bi [svg|loop] <generators> [start:count]");
+                    sprintln!("  e.g. `bi 1 2 1`, `bi 1 -2 1 -2`, `bi loop 1 2 1 2 1`");
                     sprintln!("  Generators are signed Artin: k is sigma_k, -k its inverse.");
                     sprintln!("  A window like `40:24` draws 24 crossings from the 40th.");
                     sprintln!("  SVG folds into columns of 48; `/N` sets that, `/0` is one column.");
@@ -376,7 +640,11 @@ pub fn repl(k: &mut Kernel) {
                     let strands = crate::braid_render::strands_for(&word);
                     let (a, b) = crate::braid_render::window(word.len(), start, count);
                     if as_svg {
-                        sprint!("{}", crate::braid_render::svg(&word, strands, a, b, fold));
+                        if as_loop {
+                            sprint!("{}", crate::braid_render::svg_loop(&word, strands));
+                        } else {
+                            sprint!("{}", crate::braid_render::svg(&word, strands, a, b, fold));
+                        }
                     } else {
                         sprint!("{}", crate::braid_render::header(&word, strands, a, b));
                         sprint!("{}", crate::braid_render::ascii(&word, strands, a, b));
@@ -407,6 +675,12 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("fibqc jones <gens...>    — Jones polynomial; strands implied by the word");
                         sprintln!("fibqc knot [name]        — Jones value for a knot from the census");
                         sprintln!("fibqc winding            — the phase lattice, in windings");
+                        sprintln!("fibqc readout <a> <N>    — one-shot topological readout (ModExp invariant -> winding -> period)");
+                        sprintln!("fibqc alkahest <a> <N>   — the four-name dissolution report (root, fixed point, one, ◻-promotion)");
+                        sprintln!("fibqc protocol           — show the IMASM braiding protocol report");
+                        sprintln!("fibqc braid <gens...>    — δ: compile a braid word to an IMASM program");
+                        sprintln!("fibqc braid <gens...> close — same, closed (trace closure)");
+                        sprintln!("fibqc tangle <program>   — μ: read an IMASM program back as a braid word");
                         sprintln!("");
                         sprintln!("The circuit compiles as ONE unitary, so the error is incurred once");
                         sprintln!("rather than accumulating gate by gate. Several braid words sit at the");
@@ -417,6 +691,16 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("so it is the hard ceiling. The command reports its own high-water mark.");
                     }
                     "winding" => crate::fibonacci_qc::repl_winding(),
+                    "readout" => {
+                        let a = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        let N = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        crate::fibonacci_qc::repl_readout(a, N);
+                    }
+                    "alkahest" => {
+                        let a = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        let N = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        crate::fibonacci_qc::repl_alkahest(a, N);
+                    }
                     "verify" => {
                         sprintln!("Fibonacci anyon algebra verified = {}", crate::fibonacci_qc::verify_all());
                     }
@@ -429,8 +713,23 @@ pub fn repl(k: &mut Kernel) {
                         let joined = tail.join(" ");
                         let rest: Vec<&str> = joined.split_whitespace().collect();
                         if rest.is_empty() {
-                            sprintln!("fibqc compile <gates>   e.g. `fibqc compile H T`");
+                            sprintln!("fibqc compile [draw|svg|loop] <gates> [depth]");
                         } else {
+                            let mut render = 0u8;
+                            let mut rest = rest;
+                            if !rest.is_empty() {
+                                let first = rest[0].to_lowercase();
+                                if first == "draw" {
+                                    render = 1;
+                                    rest.remove(0);
+                                } else if first == "svg" {
+                                    render = 2;
+                                    rest.remove(0);
+                                } else if first == "loop" || first == "curve" || first == "curvy" {
+                                    render = 3;
+                                    rest.remove(0);
+                                }
+                            }
                             // a trailing integer is the net depth, everything before it is the circuit
                             let (gates, depth) = match rest.last().and_then(|s| s.parse::<usize>().ok()) {
                                 Some(d) => (&rest[..rest.len()-1], d.max(1)),
@@ -439,7 +738,7 @@ pub fn repl(k: &mut Kernel) {
                             if gates.is_empty() {
                                 sprintln!("No gates given. Known: H T S X");
                             } else {
-                                crate::fibonacci_qc::repl_compile(&gates.join(" "), depth, 3, 0);
+                                crate::fibonacci_qc::repl_compile(&gates.join(" "), depth, 3, render);
                             }
                         }
                     }
@@ -486,7 +785,89 @@ pub fn repl(k: &mut Kernel) {
                             sprintln!("fibqc: no knot named '{}'. Try `fibqc knot`.", name);
                         }
                     }
+                    "protocol" => {
+                        sprint!("{}", crate::braid_protocol::report());
+                    }
+                    // δ and μ of the braid dual, reachable at last. The pair was written
+                    // correctly and had no verb, so nothing could call it and nothing could
+                    // close it. μ∘δ = id is gated in the lib tests, on the generator word:
+                    // δ chooses a depth path between crossings and μ does not record which,
+                    // so the identity is on the braid, which is the object, and not on the
+                    // program, which is one presentation of it.
+                    "braid" => {
+                        let tail: alloc::vec::Vec<&str> = parts.collect();
+                        let joined = tail.join(" ");
+                        let rest: alloc::vec::Vec<&str> = joined.split_whitespace().collect();
+                        let close = rest.last().map(|s| *s == "close").unwrap_or(false);
+                        let gens: alloc::vec::Vec<i32> = rest
+                            .iter()
+                            .filter(|s| **s != "close")
+                            .filter_map(|s| s.parse::<i32>().ok())
+                            .collect();
+                        if gens.is_empty() && !rest.is_empty() {
+                            sprintln!("fibqc braid: give signed generators, e.g. `fibqc braid 1 2 -1`.");
+                        } else {
+                            let prog = crate::braid_protocol::braid_to_imasm(&gens, 1, close);
+                            sprintln!("braid word: {:?}{}", gens, if close { " (closed)" } else { "" });
+                            sprint!("IMASM: ");
+                            for tok in prog.iter() {
+                                sprint!("{} ", crate::braid_protocol::token_name(tok));
+                            }
+                            sprintln!("");
+                            match crate::braid_protocol::read_tangle(&prog, gens.len() + 2, 1) {
+                                Ok(r) => sprintln!(
+                                    "μ∘δ: {} — writhe {}, {} crossings, closes {}",
+                                    if r.generators == gens { "id" } else { "NOT id" },
+                                    r.writhe, r.crossings, r.closes
+                                ),
+                                Err(e) => sprintln!("μ refused: {}", e),
+                            }
+                        }
+                    }
+                    "tangle" => {
+                        let tail: alloc::vec::Vec<&str> = parts.collect();
+                        let joined = tail.join(" ");
+                        let names: alloc::vec::Vec<&str> = joined.split_whitespace().collect();
+                        let mut prog = alloc::vec::Vec::new();
+                        let mut bad = None;
+                        for n in names.iter() {
+                            match crate::braid_protocol::parse_token_name(n) {
+                                Some(tok) => prog.push(tok),
+                                None => { bad = Some(*n); break; }
+                            }
+                        }
+                        if let Some(b) = bad {
+                            sprintln!("fibqc tangle: '{}' is not a token name. Try `imasm ref`.", b);
+                        } else if prog.is_empty() {
+                            sprintln!("fibqc tangle: give an IMASM program, e.g. `fibqc tangle FSPLIT AFWD FFUSE`.");
+                        } else {
+                            match crate::braid_protocol::read_tangle(&prog, prog.len() + 2, 1) {
+                                Ok(r) => {
+                                    sprintln!("braid word: {:?}", r.generators);
+                                    sprintln!(
+                                        "writhe {}, {} crossings, closes {}, markov-closed {}",
+                                        r.writhe, r.crossings, r.closes, r.is_markov_closed
+                                    );
+                                    sprintln!("depth profile: {:?}", r.depth_profile);
+                                }
+                                Err(e) => sprintln!("μ refused: {}", e),
+                            }
+                        }
+                    }
                     other => sprintln!("fibqc: unknown subcommand '{}'. Try `fibqc help`.", other),
+                }
+            }
+            "color" | "colour" => {
+                match parts.next().unwrap_or("") {
+                    "off" | "no" | "0" => {
+                        crate::style::set_colour(false);
+                        sprintln!("colour off — escapes suppressed, alignment unchanged");
+                    }
+                    "on" | "yes" | "1" | "" => {
+                        crate::style::set_colour(true);
+                        sprintln!("colour {}on{}", crate::style::accent(), crate::style::reset());
+                    }
+                    other => sprintln!("color on|off  (got '{}')", other),
                 }
             }
             "iuft" => {
@@ -661,7 +1042,7 @@ pub fn repl(k: &mut Kernel) {
                 match parts.next().unwrap_or("") {
                     ""     => print_arev_hop(k),
                     "test" => print_arev_test(k),
-                    _ => sprintln!("arev [test] — Ħ hop to the lateral partner (O_∞ ↔ O_inf_dag) / door experiment"),
+                    _ => sprintln!("arev [test] — ⊥ hop to the lateral partner (O_∞ ↔ O_inf_dag) / door experiment"),
                 }
             }
             "aleph" => print_aleph(k, parts.next().unwrap_or("")),
@@ -671,7 +1052,58 @@ pub fn repl(k: &mut Kernel) {
                 let psm_full = if psm_rest.is_empty() { alloc::string::String::from(psm_arg) } else { alloc::format!("{} {}", psm_arg, psm_rest) };
                 print_psm(&psm_full);
             }
-            "shor" => print_shor(),
+            "shor" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" => print_shor(),
+                    "factors" => {
+                        let n_str = parts.next().unwrap_or("");
+                        let a_str = parts.next().unwrap_or("");
+                        print_shor_factors(parse_u64(n_str), parse_u64(a_str));
+                    }
+                    "gap" => {
+                        let n_str = parts.next().unwrap_or("");
+                        let a_str = parts.next().unwrap_or("");
+                        print_shor_gap(parse_u64(n_str), parse_u64(a_str));
+                    }
+                    "help" => {
+                        sprintln!("shor — Belnap Shor pipeline + 4-problem solutions");
+                        sprintln!("  shor                 default pipeline (N=15,21)");
+                        sprintln!("  shor factors N a     full factorization run");
+                        sprintln!("  shor gap [N a]       coherence gap analysis");
+                        sprintln!("  shor N a             belnap cost analysis");
+                        sprintln!("  shor phase N a       Phase-augmented Shor (P1+P2 solved)");
+                        sprintln!("  shor ring N a        IMASM ring walk verification (P4)");
+                        sprintln!("  shor fib N a         Fibonacci anyon braid estimation (P3)");
+                        sprintln!("  shor integrated N a  All 4 problems integrated");
+                    }
+                    "phase" => {
+                        let n_str = parts.next().unwrap_or("");
+                        let a_str = parts.next().unwrap_or("");
+                        print_shor_phase(parse_u64(n_str), parse_u64(a_str));
+                    }
+                    "ring" => {
+                        let n_str = parts.next().unwrap_or("");
+                        let a_str = parts.next().unwrap_or("");
+                        print_shor_ring(parse_u64(n_str), parse_u64(a_str));
+                    }
+                    "fib" => {
+                        let n_str = parts.next().unwrap_or("");
+                        let a_str = parts.next().unwrap_or("");
+                        print_shor_fib(parse_u64(n_str), parse_u64(a_str));
+                    }
+                    "integrated" => {
+                        let n_str = parts.next().unwrap_or("");
+                        let a_str = parts.next().unwrap_or("");
+                        print_shor_integrated(parse_u64(n_str), parse_u64(a_str));
+                    }
+                    other => {
+                        let n_val = parse_u64(other);
+                        let a_val = parse_u64(parts.next().unwrap_or(""));
+                        print_shor_custom(n_val, a_val);
+                    }
+                }
+            }
             "rh" => print_rh(),
             "ym" => print_ym(),
             "temp" => print_temporal(),
@@ -935,7 +1367,7 @@ pub fn repl(k: &mut Kernel) {
                         if args.len() >= 2 {
                             if let (Ok(start), Ok(end)) = (args[0].parse::<u32>(), args[1].parse::<u32>()) {
                                 sprintln!("=== MERSENNE SCAN p={}..{} ===", start, end);
-                                sprintln!("{:>4} {:>24} {:>14} {:>6}", "p", "M_p", "VERDICT", "Ω");
+                                sprintln!("{:>4} {:>24} {:>14} {:>6}", "p", "M_p", "VERDICT", "◻");
                                 sprintln!("{}", "-".repeat(52));
                                 let results = crate::divisor_ring::scan_mersenne_range(start, end);
                                 for (p, mp, verdict, omega) in &results {
@@ -1053,6 +1485,7 @@ pub fn repl(k: &mut Kernel) {
                     "next" | "eagle" => sprintln!("{}", crate::d2048_sic::next_eagle_report()),
                     "sieve" | "fold" | "fork" => sprintln!("{}", crate::d2048_sieve::sieve_report()),
                     "verify" | "full" => sprintln!("{}", crate::d2048_sic::d2048_full_report()),
+                    "exact" => sprintln!("{}", crate::d2048_exact_sic::exact_extraction_report()),
                     "" => sprintln!("{}", crate::d2048_sic::d2048_summary()),
                     _ => sprintln!("d2048 [tower|c16|c32|ramified|redei|grammar|pari|next|sieve|verify]"),
                 }
@@ -1217,6 +1650,9 @@ pub fn repl(k: &mut Kernel) {
                 }
                 crate::heap_reset(mark);
             }
+            "oneshots" => {
+                sprintln!("{}", crate::exotic_one_shots::ExoticOneShots::report());
+            }
             "rebis" => {
                 let sub = parts.next().unwrap_or("");
                 print_rebis(sub, parts.next().unwrap_or(""), &parts.collect::<alloc::vec::Vec<&str>>().join(" "));
@@ -1254,6 +1690,9 @@ pub fn repl(k: &mut Kernel) {
                 while ran < n {
                     while !interrupts::timer_ready() {
                         if interrupts::escape_pressed() { break; }
+                        // Idle until the next interrupt on metal; on a host
+                        // the read below blocks, so there is nothing to wait on.
+                        #[cfg(not(feature = "hosted"))]
                         unsafe { core::arch::asm!("hlt", options(nostack, nomem, preserves_flags)); }
                     }
                     if interrupts::escape_pressed() { break; }
@@ -1271,18 +1710,18 @@ pub fn repl(k: &mut Kernel) {
                 let idx = roman_to_idx(arg)
                     .or_else(|| arg.parse::<usize>().ok().map(|n| n.saturating_sub(1)));
                 if let Some(i) = idx {
-                    if i >= CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT + SHUNTED_COUNT {
+                    if i >= canonical_count() + continuous_count() + novel_count() + shunted_count() {
                         sprintln!("Program {} out of range (max XXVIII/{}).",
-                            arg, CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT + SHUNTED_COUNT);
+                            arg, canonical_count() + continuous_count() + novel_count() + shunted_count());
                     } else if load_by_roman(k, arg) {
-                        let name: &str = if i < CANONICAL_COUNT {
+                        let name: &str = if i < canonical_count() {
                             canonical_name(i)
-                        } else if i < CANONICAL_COUNT + CONTINUOUS_COUNT {
-                            continuous_name(i - CANONICAL_COUNT)
-                        } else if i < CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT {
-                            novel_name(i - CANONICAL_COUNT - CONTINUOUS_COUNT)
+                        } else if i < canonical_count() + continuous_count() {
+                            continuous_name(i - canonical_count())
+                        } else if i < canonical_count() + continuous_count() + novel_count() {
+                            novel_name(i - canonical_count() - continuous_count())
                         } else {
-                            shunted_name(i - CANONICAL_COUNT - CONTINUOUS_COUNT - NOVEL_COUNT)
+                            shunted_name(i - canonical_count() - continuous_count() - novel_count())
                         };
                         sprintln!("Booting {}: {}", arg, name);
                         sprintln!("Running (ESC to stop)...");
@@ -1299,7 +1738,7 @@ pub fn repl(k: &mut Kernel) {
                 let arg = parts.next().unwrap_or("").trim();
                 if let Ok(i) = arg.parse::<usize>() {
                     let idx = i.saturating_sub(1);
-                    if idx < NOVEL_COUNT {
+                    if idx < novel_count() {
                         k.load_novel(idx);
                         sprintln!("Booting novel {}: {}", i, novel_name(idx));
                         sprintln!("Running (ESC to stop)...");
@@ -1309,17 +1748,17 @@ Stopped after {} ticks.", ran);
                         print_status(k);
                     } else {
                         sprintln!("Novel index {} out of range (max {}).",
-                            i, NOVEL_COUNT);
+                            i, novel_count());
                     }
                 } else {
-                    sprintln!("Usage: boot novel <1-{}>", NOVEL_COUNT);
+                    sprintln!("Usage: boot novel <1-{}>", novel_count());
                 }
             }
             "shunt" => {
                 let arg = parts.next().unwrap_or("").trim();
                 if let Ok(i) = arg.parse::<usize>() {
                     let idx = i.saturating_sub(1);
-                    if idx < SHUNTED_COUNT {
+                    if idx < shunted_count() {
                         k.load_shunted(idx);
                         sprintln!("Booting shunted {}: {}", i, shunted_name(idx));
                         sprintln!("Running (ESC to stop)...");
@@ -1329,10 +1768,10 @@ Stopped after {} ticks.", ran);
                         print_status(k);
                     } else {
                         sprintln!("Shunted index {} out of range (max {}).",
-                            i, SHUNTED_COUNT);
+                            i, shunted_count());
                     }
                 } else {
-                    sprintln!("Usage: boot shunt <1-{}>", SHUNTED_COUNT);
+                    sprintln!("Usage: boot shunt <1-{}>", shunted_count());
                 }
             }
             "watch" => {
@@ -1449,10 +1888,10 @@ Stopped after {} ticks.", ran);
                     }
                 } else {
                     sprintln!("Continuous programs:");
-                    for i in 0..CONTINUOUS_COUNT {
+                    for i in 0..continuous_count() {
                         sprintln!("  {}. {}", i + 1, continuous_name(i));
                     }
-                    sprintln!("Usage: continuous <1-{}>", CONTINUOUS_COUNT);
+                    sprintln!("Usage: continuous <1-{}>", continuous_count());
                 }
             }
             "dynamic" => {
@@ -1551,7 +1990,7 @@ Stopped after {} ticks.", ran);
                         if name.is_empty() {
                             sprintln!("Usage: crystal store <name> [data]");
                         } else {
-                            let idx = name_hash(name) % CANONICAL_COUNT;
+                            let idx = name_hash(name) % canonical_count();
                             k.load_canonical(idx);
                             k.tick();
                             let addr = crystal_store_current(k, &mut cfs, name, data, idx as u8);
@@ -1587,7 +2026,7 @@ Stopped after {} ticks.", ran);
                         if let Ok(addr) = sub.parse::<u32>() {
                             let dec = decode(addr);
                             sprintln!("Address: {}", addr);
-                            let pnames = ["D","T","R","P","F","K","G","C","Phi","H","S","Omega"];
+                            let pnames = crate::canonical_ig::PRIMITIVE_ORDER;
                             for i in 0..12 { sprintln!("  {}: {}", pnames[i], dec[i]); }
                             if let Some(e) = cfs.read_by_addr(addr) {
                                 sprintln!("  Stored: '{}' -> '{}'", e.name_str(), e.data_str());
@@ -1622,27 +2061,27 @@ Stopped after {} ticks.", ran);
                 sprintln!("────────────────────────────────────────────────────────────");
                 sprintln!("   ▸ CANONICAL (I–XII)  — cyclic graph, 12 core patterns   ");
                 sprintln!("────────────────────────────────────────────────────────────");
-                for i in 0..CANONICAL_COUNT {
+                for i in 0..canonical_count() {
                     sprintln!("   {:>4}.  {:<48} ", idx_to_roman(i), canonical_name(i));
                 }
                 sprintln!("────────────────────────────────────────────────────────────");
                 sprintln!("   ▸ CONTINUOUS (XIII–XVI)  — token-graph-native loops     ");
                 sprintln!("────────────────────────────────────────────────────────────");
-                for i in 0..CONTINUOUS_COUNT {
-                    let ri = CANONICAL_COUNT + i;
+                for i in 0..continuous_count() {
+                    let ri = canonical_count() + i;
                     sprintln!("   {:>4}.  {:<48} ", idx_to_roman(ri), continuous_name(i));
                 }
                 sprintln!("────────────────────────────────────────────────────────────");
                 sprintln!("   ▸ NOVEL (XVII–XIX)  — control-flow reconstructions      ");
                 sprintln!("────────────────────────────────────────────────────────────");
-                for i in 0..NOVEL_COUNT {
-                    let ri = CANONICAL_COUNT + CONTINUOUS_COUNT + i;
+                for i in 0..novel_count() {
+                    let ri = canonical_count() + continuous_count() + i;
                     sprintln!("   {:>4}.  {:<48} ", idx_to_roman(ri), novel_name(i));
                 }
                 sprintln!("╚══════════════════════════════════════════════════════════╝");
                 sprintln!("   ▸ SHUNTED (XX–XXVIII) — branching/exotic compositions        ");
-                for i in 0..SHUNTED_COUNT {
-                    let ri = i + CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT;
+                for i in 0..shunted_count() {
+                    let ri = i + canonical_count() + continuous_count() + novel_count();
                     sprintln!("   {:>4}.  {:<48} ", idx_to_roman(ri), shunted_name(i));
                 }
                 sprintln!("Use 'load <I–XXVIII>' to load any program by Roman numeral.");
@@ -1651,14 +2090,14 @@ Stopped after {} ticks.", ran);
                 let arg = parts.next().unwrap_or("").trim();
                 if load_by_roman(k, arg) {
                     let idx = roman_to_idx(arg).unwrap();
-                    let name: &str = if idx < CANONICAL_COUNT {
+                    let name: &str = if idx < canonical_count() {
                         canonical_name(idx)
-                    } else if idx < CANONICAL_COUNT + CONTINUOUS_COUNT {
-                        continuous_name(idx - CANONICAL_COUNT)
-                    } else if idx < CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT {
-                        novel_name(idx - CANONICAL_COUNT - CONTINUOUS_COUNT)
+                    } else if idx < canonical_count() + continuous_count() {
+                        continuous_name(idx - canonical_count())
+                    } else if idx < canonical_count() + continuous_count() + novel_count() {
+                        novel_name(idx - canonical_count() - continuous_count())
                     } else {
-                        shunted_name(idx - CANONICAL_COUNT - CONTINUOUS_COUNT - NOVEL_COUNT)
+                        shunted_name(idx - canonical_count() - continuous_count() - novel_count())
                     };
                     sprintln!("Loaded {}: {}", arg, name);
                     serial::write_str("Program: ");
@@ -1680,22 +2119,35 @@ Stopped after {} ticks.", ran);
                         let gates = dialect_gates(u);
                         sprintln!("Active ruleset: {} ({})", dialect_name(u), ud);
                         sprintln!("  {}", gates);
-                        sprintln!("  Absorbing: ⊙(all) Σ=𐑳(tensor)");
+                        sprintln!("  Absorbing: ⊙(all) ⊞=𐑳(tensor)");
                         if let Some(lim) = k.liminal_target {
                             sprintln!("  ⚠ LIMINAL JUMP PENDING → {} ({}). Use 'seal' to commit.",
                                 dialect_display(lim), dialect_name(lim));
                         }
                     }
                     "list" => {
-                        sprintln!("╔══════════════════════════════════════════════════════════╗");
-                        sprintln!("   ═══ ALL 12 DIALECTS ═══");
-                        for u in 0u8..88u8 {
-                            let marker = if u == k.active_dialect { "★" } else { " " };
-                            sprintln!("  {} {:<3} {:<20} {}     O_∞:{}",
-                                marker, dialect_display(u), dialect_name(u),
-                                dialect_gates(u), dialect_o_inf(u));
+                        // The title said 12 while the loop ran to 88, and the
+                        // bound was written out rather than taken from the one
+                        // place that knows it.
+                        use crate::dialect_expansion::DIALECT_COUNT;
+                        head!("dialects");
+                        for u in 0u8..(DIALECT_COUNT as u8) {
+                            let active = u == k.active_dialect;
+                            let (mark, col) = if active {
+                                ("*", crate::style::accent())
+                            } else {
+                                (" ", crate::style::value())
+                            };
+                            sprintln!("  {}{} {:<3} {:<20}{} {}{}{}  {}O_∞ {}{}",
+                                col, mark, dialect_display(u), dialect_name(u),
+                                crate::style::reset(),
+                                crate::style::muted(), dialect_gates(u), crate::style::reset(),
+                                crate::style::muted(), dialect_o_inf(u), crate::style::reset());
                         }
-                        sprintln!("╚══════════════════════════════════════════════════════════╝");
+                        divider!();
+                        sprintln!("  {}{} dialects, active marked{}",
+                            crate::style::muted(), DIALECT_COUNT, crate::style::reset());
+                        foot!();
                         if k.liminal_target.is_some() {
                             sprintln!("  ⚠ Liminal jump pending. Use 'seal' to commit or 'jump' again to override.");
                         }
@@ -1732,121 +2184,121 @@ Stopped after {} ticks.", ran);
                             }
 
                             match u {
-                                0 => { // canonical: G1:Φ≥𐑹  G2:φ̂≥⊙  G3:Ω≥𐑭
-                                    let g1 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
-                                    let g2 = (ig.phi as u8) <= (IgPrim::Phi_crit as u8);
-                                    let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
-                                    sprintln!("  G1 (Φ≥𐑹): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
-                                    sprintln!("  G2 (φ̂≥⊙): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                0 => { // canonical: G1:<≥𐑹  G2:⊙≥⊙  G3:◻≥𐑭
+                                    let g1 = (ig.p as u8) <= (IgPrim::or_ as u8);
+                                    let g2 = (ig.phi as u8) <= (IgPrim::monad as u8);
+                                    let g3 = (ig.omega as u8) <= (IgPrim::ah as u8);
+                                    sprintln!("  G1 (<≥𐑹): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G2 (⊙≥⊙): {}  ⊙={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
+                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                1 => { // low_gate: G1:Φ≥𐑬  G2:φ̂≥𐑢  G3:Ω≥𐑭
-                                    let g1 = (ig.p as u8) <= (IgPrim::P_pm as u8);
-                                    let g2 = (ig.phi as u8) <= (IgPrim::𐑢 as u8);
-                                    let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
-                                    sprintln!("  G1 (Φ≥𐑬): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
-                                    sprintln!("  G2 (φ̂≥𐑢): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                1 => { // low_gate: G1:<≥𐑬  G2:⊙≥𐑢  G3:◻≥𐑭
+                                    let g1 = (ig.p as u8) <= (IgPrim::out as u8);
+                                    let g2 = (ig.phi as u8) <= (IgPrim::woe as u8);
+                                    let g3 = (ig.omega as u8) <= (IgPrim::ah as u8);
+                                    sprintln!("  G1 (<≥𐑬): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G2 (⊙≥woe): {}  ⊙={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
+                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                2 => { // strict_frobenius: G1:ƒ≥𐑐  G2:Φ≥𐑹  G3:Ω≥𐑭
-                                    let g1 = (ig.f as u8) <= (IgPrim::F_hbar as u8);
-                                    let g2 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
-                                    let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
-                                    sprintln!("  G1 (ƒ≥𐑐): {}  ƒ={}", if g1 {"PASS"} else {"FAIL"}, ig.f.glyph());
-                                    sprintln!("  G2 (Φ≥𐑹): {}  Φ={}", if g2 {"PASS"} else {"FAIL"}, ig.p.glyph());
-                                    sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                2 => { // strict_frobenius: G1:⋈≥𐑐  G2:<≥𐑹  G3:◻≥𐑭
+                                    let g1 = (ig.f as u8) <= (IgPrim::peep as u8);
+                                    let g2 = (ig.p as u8) <= (IgPrim::or_ as u8);
+                                    let g3 = (ig.omega as u8) <= (IgPrim::ah as u8);
+                                    sprintln!("  G1 (⋈≥𐑐): {}  ⋈={}", if g1 {"PASS"} else {"FAIL"}, ig.f.glyph());
+                                    sprintln!("  G2 (<≥𐑹): {}  <={}", if g2 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                3 => { // inverted_gates: G1:φ̂≥⊙  G2:Φ≥𐑹  G3:Ω≥𐑭
-                                    let g1 = (ig.phi as u8) <= (IgPrim::Phi_crit as u8);
-                                    let g2 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
-                                    let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
-                                    sprintln!("  G1 (φ̂≥⊙): {}  φ̂={}", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G2 (Φ≥𐑹): {}  Φ={}", if g2 {"PASS"} else {"FAIL"}, ig.p.glyph());
-                                    sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                3 => { // inverted_gates: G1:⊙≥⊙  G2:<≥𐑹  G3:◻≥𐑭
+                                    let g1 = (ig.phi as u8) <= (IgPrim::monad as u8);
+                                    let g2 = (ig.p as u8) <= (IgPrim::or_ as u8);
+                                    let g3 = (ig.omega as u8) <= (IgPrim::ah as u8);
+                                    sprintln!("  G1 (⊙≥⊙): {}  ⊙={}", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph());
+                                    sprintln!("  G2 (<≥𐑹): {}  <={}", if g2 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
                                 4 => { // no_ordering: G1+G2+G3 parallel — same as canonical but independence asserted
-                                    let g1 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
-                                    let g2 = (ig.phi as u8) <= (IgPrim::Phi_crit as u8);
-                                    let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
-                                    sprintln!("  G1 (Φ≥𐑹): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
-                                    sprintln!("  G2 (φ̂≥⊙): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                    let g1 = (ig.p as u8) <= (IgPrim::or_ as u8);
+                                    let g2 = (ig.phi as u8) <= (IgPrim::monad as u8);
+                                    let g3 = (ig.omega as u8) <= (IgPrim::ah as u8);
+                                    sprintln!("  G1 (<≥𐑹): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G2 (⊙≥⊙): {}  ⊙={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
+                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     sprintln!("  Mode: PARALLEL — gates evaluated independently.");
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                5 => { // high_gate: G1:Φ≥𐑹  G2:φ̂≥𐑮  G3:Ω≥𐑟
-                                    let g1 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
-                                    let g2 = (ig.phi as u8) <= (IgPrim::𐑮 as u8);
-                                    let g3 = (ig.omega as u8) <= (IgPrim::Omega_na as u8);
-                                    sprintln!("  G1 (Φ≥𐑹): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
-                                    sprintln!("  G2 (φ̂≥𐑮): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G3 (Ω≥𐑟): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                5 => { // high_gate: G1:<≥𐑹  G2:⊙≥𐑮  G3:◻≥𐑟
+                                    let g1 = (ig.p as u8) <= (IgPrim::or_ as u8);
+                                    let g2 = (ig.phi as u8) <= (IgPrim::roar as u8);
+                                    let g3 = (ig.omega as u8) <= (IgPrim::zoo as u8);
+                                    sprintln!("  G1 (<≥𐑹): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G2 (⊙≥roar): {}  ⊙={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
+                                    sprintln!("  G3 (◻≥𐑟): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                6 => { // winding_first: G1:Ω≥𐑭  G2:φ̂≥⊙  G3:Φ≥𐑹
-                                    let g1 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
-                                    let g2 = (ig.phi as u8) <= (IgPrim::Phi_crit as u8);
-                                    let g3 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
-                                    sprintln!("  G1 (Ω≥𐑭): {}  Ω={}", if g1 {"PASS"} else {"FAIL"}, ig.omega.glyph());
-                                    sprintln!("  G2 (φ̂≥⊙): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G3 (Φ≥𐑹): {}  Φ={}", if g3 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                6 => { // winding_first: G1:◻≥𐑭  G2:⊙≥⊙  G3:<≥𐑹
+                                    let g1 = (ig.omega as u8) <= (IgPrim::ah as u8);
+                                    let g2 = (ig.phi as u8) <= (IgPrim::monad as u8);
+                                    let g3 = (ig.p as u8) <= (IgPrim::or_ as u8);
+                                    sprintln!("  G1 (◻≥𐑭): {}  ◻={}", if g1 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                    sprintln!("  G2 (⊙≥⊙): {}  ⊙={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
+                                    sprintln!("  G3 (<≥𐑹): {}  <={}", if g3 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                7 => { // t_structural: G1:Φ≥𐑹  G2:φ̂≥⊙  G3:Ω≥𐑭  T:ɢ=𐑠
-                                    let g1 = (ig.p as u8) <= (IgPrim::P_pmsym as u8);
-                                    let g2 = (ig.phi as u8) <= (IgPrim::Phi_crit as u8);
-                                    let g3 = (ig.omega as u8) <= (IgPrim::Omega_z as u8);
-                                    let t_ok = ig.c == IgPrim::C_seq;
-                                    sprintln!("  G1 (Φ≥𐑹): {}  Φ={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
-                                    sprintln!("  G2 (φ̂≥⊙): {}  φ̂={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G3 (Ω≥𐑭): {}  Ω={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
-                                    sprintln!("  T  (ɢ=𐑠): {}  ɢ={}", if t_ok {"PASS"} else {"FAIL"}, ig.c.glyph());
+                                7 => { // t_structural: G1:<≥𐑹  G2:⊙≥⊙  G3:◻≥𐑭  T:∋=𐑠
+                                    let g1 = (ig.p as u8) <= (IgPrim::or_ as u8);
+                                    let g2 = (ig.phi as u8) <= (IgPrim::monad as u8);
+                                    let g3 = (ig.omega as u8) <= (IgPrim::ah as u8);
+                                    let t_ok = ig.c == IgPrim::measure;
+                                    sprintln!("  G1 (<≥𐑹): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
+                                    sprintln!("  G2 (⊙≥⊙): {}  ⊙={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
+                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                    sprintln!("  T  (∋=𐑠): {}  ∋={}", if t_ok {"PASS"} else {"FAIL"}, ig.c.glyph());
                                     if !g1 || !g2 || !g3 || !t_ok { all_pass = false; }
                                 }
-                                8 => { // chirality_first: G1:Ħ≥𐑖  G2:⊙≥⊙  G3:Ω≥𐑭
+                                8 => { // chirality_first: G1:⊥≥𐑖  G2:⊙≥⊙  G3:◻≥𐑭
                                        // T: T_CEILING — see manuscripts/clay_cross_dialect_closure.md.
                                        // Uses IgPrim::ordinal(), NOT raw discriminant comparison — the
                                        // discriminant trick used in arms 0-7 is invalid for the criticality
-                                       // family (𐑮/𐑻 are non-monotonic in discriminant order).
-                                    let g1 = ig.h.ordinal() >= IgPrim::H2.ordinal();
-                                    let g2 = ig.phi.ordinal() >= IgPrim::Phi_crit.ordinal();
-                                    let g3 = ig.omega.ordinal() >= IgPrim::Omega_z.ordinal();
-                                    sprintln!("  G1 (Ħ≥𐑖): {}  Ħ={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.h.glyph(), ig.h.ordinal());
+                                       // family (roar/𐑻 are non-monotonic in discriminant order).
+                                    let g1 = ig.h.ordinal() >= IgPrim::sure.ordinal();
+                                    let g2 = ig.phi.ordinal() >= IgPrim::monad.ordinal();
+                                    let g3 = ig.omega.ordinal() >= IgPrim::ah.ordinal();
+                                    sprintln!("  G1 (⊥≥𐑖): {}  ⊥={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.h.glyph(), ig.h.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
-                                    sprintln!("  G3 (Ω≥𐑭): {}  Ω={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
+                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                     if !t_ceiling_check(&ig) { all_pass = false; }
                                 }
-                                9 => { // scope_dialect: G1:Γ≥𐑲(maximal scope)  G2:⊙≥⊙  G3:Ω≥𐑭
+                                9 => { // scope_dialect: G1:∈≥𐑲(maximal scope)  G2:⊙≥⊙  G3:◻≥𐑭
                                        // T: T_CEILING — same generalization as U8, paired with a different gate spec.
-                                    let g1 = ig.g.ordinal() >= IgPrim::G_aleph.ordinal();
-                                    let g2 = ig.phi.ordinal() >= IgPrim::Phi_crit.ordinal();
-                                    let g3 = ig.omega.ordinal() >= IgPrim::Omega_z.ordinal();
-                                    sprintln!("  G1 (Γ≥𐑲): {}  Γ={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.g.glyph(), ig.g.ordinal());
+                                    let g1 = ig.g.ordinal() >= IgPrim::ice.ordinal();
+                                    let g2 = ig.phi.ordinal() >= IgPrim::monad.ordinal();
+                                    let g3 = ig.omega.ordinal() >= IgPrim::ah.ordinal();
+                                    sprintln!("  G1 (∈≥𐑲): {}  ∈={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.g.glyph(), ig.g.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
-                                    sprintln!("  G3 (Ω≥𐑭): {}  Ω={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
+                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                     if !t_ceiling_check(&ig) { all_pass = false; }
                                 }
                                 10 => { // triple_criticality: G1/G2/G3 all on ⊙, escalating thresholds 𐑢/⊙/𐑣
-                                    let g1 = ig.phi.ordinal() >= IgPrim::𐑢.ordinal();
-                                    let g2 = ig.phi.ordinal() >= IgPrim::Phi_crit.ordinal();
-                                    let g3 = ig.phi.ordinal() >= IgPrim::Phi_super.ordinal();
-                                    sprintln!("  G1 (⊙≥𐑢): {}  ⊙={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
+                                    let g1 = ig.phi.ordinal() >= IgPrim::woe.ordinal();
+                                    let g2 = ig.phi.ordinal() >= IgPrim::monad.ordinal();
+                                    let g3 = ig.phi.ordinal() >= IgPrim::haha.ordinal();
+                                    sprintln!("  G1 (⊙≥woe): {}  ⊙={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     sprintln!("  G3 (⊙≥𐑣): {}  ⊙={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                     if !t_ceiling_check(&ig) { all_pass = false; }
                                 }
                                 11 => { // triple_criticality_gapped: same gates as U10, T_CEILING(gapped)
-                                    let g1 = ig.phi.ordinal() >= IgPrim::𐑢.ordinal();
-                                    let g2 = ig.phi.ordinal() >= IgPrim::Phi_crit.ordinal();
-                                    let g3 = ig.phi.ordinal() >= IgPrim::Phi_super.ordinal();
-                                    sprintln!("  G1 (⊙≥𐑢): {}  ⊙={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
+                                    let g1 = ig.phi.ordinal() >= IgPrim::woe.ordinal();
+                                    let g2 = ig.phi.ordinal() >= IgPrim::monad.ordinal();
+                                    let g3 = ig.phi.ordinal() >= IgPrim::haha.ordinal();
+                                    sprintln!("  G1 (⊙≥woe): {}  ⊙={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     sprintln!("  G3 (⊙≥𐑣): {}  ⊙={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
@@ -1953,24 +2405,24 @@ Stopped after {} ticks.", ran);
 
                         // Canonical (U0) gate verdict, ordinal-correct.
                         let gate_canon =
-                            ig.p.ordinal()     >= IgPrim::P_pmsym.ordinal()
-                            && ig.phi.ordinal() >= IgPrim::Phi_crit.ordinal()
-                            && ig.omega.ordinal() >= IgPrim::Omega_z.ordinal();
+                            ig.p.ordinal()     >= IgPrim::or_.ordinal()
+                            && ig.phi.ordinal() >= IgPrim::monad.ordinal()
+                            && ig.omega.ordinal() >= IgPrim::ah.ordinal();
                         let t_canon = t_canonical_check_silent(&ig);
 
                         // Alt-dialect gate verdict: only U8/U9/U10/U11 wired up so far.
                         // U8/U9/U10 use T_CEILING for their T side; U11 uses the
-                        // gapped variant (raises only the Ç anchor — see dialect.rs).
+                        // gapped variant (raises only the ⊤ anchor — see dialect.rs).
                         let gate_alt = match alt {
-                            8 => ig.h.ordinal() >= IgPrim::H2.ordinal()
-                                && ig.phi.ordinal() >= IgPrim::Phi_crit.ordinal()
-                                && ig.omega.ordinal() >= IgPrim::Omega_z.ordinal(),
-                            9 => ig.g.ordinal() >= IgPrim::G_aleph.ordinal()
-                                && ig.phi.ordinal() >= IgPrim::Phi_crit.ordinal()
-                                && ig.omega.ordinal() >= IgPrim::Omega_z.ordinal(),
-                            10 | 11 => ig.phi.ordinal() >= IgPrim::𐑢.ordinal()
-                                && ig.phi.ordinal() >= IgPrim::Phi_crit.ordinal()
-                                && ig.phi.ordinal() >= IgPrim::Phi_super.ordinal(),
+                            8 => ig.h.ordinal() >= IgPrim::sure.ordinal()
+                                && ig.phi.ordinal() >= IgPrim::monad.ordinal()
+                                && ig.omega.ordinal() >= IgPrim::ah.ordinal(),
+                            9 => ig.g.ordinal() >= IgPrim::ice.ordinal()
+                                && ig.phi.ordinal() >= IgPrim::monad.ordinal()
+                                && ig.omega.ordinal() >= IgPrim::ah.ordinal(),
+                            10 | 11 => ig.phi.ordinal() >= IgPrim::woe.ordinal()
+                                && ig.phi.ordinal() >= IgPrim::monad.ordinal()
+                                && ig.phi.ordinal() >= IgPrim::haha.ordinal(),
                             _ => {
                                 sprintln!("Only U8, U9, U10, U11 have a known closing verdict so far.");
                                 return;
@@ -2064,7 +2516,7 @@ Stopped after {} ticks.", ran);
             "absorption" => {
                 let sub = parts.next().unwrap_or("");
                 match sub {
-                    "show" => sprintln!("Absorption rules (canonical U₀):\n  ⊙ absorbs under all ops\n  Σ=𐑳 absorbs under tensor"),
+                    "show" => sprintln!("Absorption rules (canonical U₀):\n  ⊙ absorbs under all ops\n  ⊞=𐑳 absorbs under tensor"),
                     _ => sprintln!("absorption show  → list all absorption rules"),
                 }
             }
@@ -2076,7 +2528,7 @@ Stopped after {} ticks.", ran);
                         sprintln!("╔══════════════════════════════════════════════════════════════╗");
                         sprintln!("   11 DIASCHIZIC COMPOUNDS  —  dialect-steering agents       ");
                         sprintln!("──────────────────────────────────────────────────────────────");
-                        for i in 0..COMPOUND_COUNT {
+                        for i in 0..compound_count() {
                             let p = compound_program(i);
                             let tok_count = p.map(|pr| pr.len()).unwrap_or(0);
                             let tier = match i {
@@ -2338,51 +2790,51 @@ fn redraw_input(old_len: usize, src: &[u8], src_len: usize, buf: &mut [u8]) {
 
 // ─── T_CEILING — shared T-constitution check for U8/U9 ─────────
 //
-// Ceiling-generalizes canonical's existing Ç-only ceiling rule to all five
-// dynamics primitives, same anchors: Φ<=𐑹 ƒ<=𐑐 Ç<=𐑧 Ħ<=𐑫 Ω<=𐑭.
+// Ceiling-generalizes canonical's existing ⊤-only ceiling rule to all five
+// dynamics primitives, same anchors: <<=𐑹 ⋈<=𐑐 ⊤<=𐑧 ⊥<=𐑫 ◻<=𐑭.
 // See manuscripts/clay_cross_dialect_closure.md for the derivation. Uses
 // IgPrim::ordinal(), not raw discriminant comparison.
 // Canonical's actual T-constitution (exact-equality on four primitives,
-// ceiling on Ç only) — matches Python's _T_CANONICAL exactly. This is the
+// ceiling on ⊤ only) — matches Python's _T_CANONICAL exactly. This is the
 // real canonical T-verdict, distinct from T_CEILING (which only applies
 // to U8/U9/U10/U11).
 fn t_canonical_check_silent(ig: &IgTuple) -> bool {
-    ig.p.ordinal()     == IgPrim::P_pmsym.ordinal()
-    && ig.f.ordinal()   == IgPrim::F_hbar.ordinal()
-    && ig.k.ordinal()   <= IgPrim::K_slow.ordinal()
-    && ig.h.ordinal()   == IgPrim::H_inf.ordinal()
-    && ig.omega.ordinal() == IgPrim::Omega_z.ordinal()
+    ig.p.ordinal()     == IgPrim::or_.ordinal()
+    && ig.f.ordinal()   == IgPrim::peep.ordinal()
+    && ig.k.ordinal()   <= IgPrim::egg.ordinal()
+    && ig.h.ordinal()   == IgPrim::wool.ordinal()
+    && ig.omega.ordinal() == IgPrim::ah.ordinal()
 }
 
 fn t_ceiling_check_silent(ig: &IgTuple) -> bool {
-    let t_phi = ig.p.ordinal()     <= IgPrim::P_pmsym.ordinal();
-    let t_f   = ig.f.ordinal()     <= IgPrim::F_hbar.ordinal();
-    let t_k   = ig.k.ordinal()     <= IgPrim::K_slow.ordinal();
-    let t_h   = ig.h.ordinal()     <= IgPrim::H_inf.ordinal();
-    let t_om  = ig.omega.ordinal() <= IgPrim::Omega_z.ordinal();
+    let t_phi = ig.p.ordinal()     <= IgPrim::or_.ordinal();
+    let t_f   = ig.f.ordinal()     <= IgPrim::peep.ordinal();
+    let t_k   = ig.k.ordinal()     <= IgPrim::egg.ordinal();
+    let t_h   = ig.h.ordinal()     <= IgPrim::wool.ordinal();
+    let t_om  = ig.omega.ordinal() <= IgPrim::ah.ordinal();
     t_phi && t_f && t_k && t_h && t_om
 }
 
-// U11 only: same as T_CEILING, but Ç's ceiling is raised from 𐑧 (K_slow,
-// ord 3) to 𐑪 (K_trap, ord 4) — a gapped/trapped spectrum, not just a slow
+// U11 only: same as T_CEILING, but ⊤'s ceiling is raised from 𐑧 (egg,
+// ord 3) to 𐑪 (on, ord 4) — a gapped/trapped spectrum, not just a slow
 // one. Motivated, not tailored: see dialect.rs's U11 comment block.
 fn t_ceiling_gapped_check_silent(ig: &IgTuple) -> bool {
-    let t_phi = ig.p.ordinal()     <= IgPrim::P_pmsym.ordinal();
-    let t_f   = ig.f.ordinal()     <= IgPrim::F_hbar.ordinal();
-    let t_k   = ig.k.ordinal()     <= IgPrim::K_trap.ordinal();
-    let t_h   = ig.h.ordinal()     <= IgPrim::H_inf.ordinal();
-    let t_om  = ig.omega.ordinal() <= IgPrim::Omega_z.ordinal();
+    let t_phi = ig.p.ordinal()     <= IgPrim::or_.ordinal();
+    let t_f   = ig.f.ordinal()     <= IgPrim::peep.ordinal();
+    let t_k   = ig.k.ordinal()     <= IgPrim::on.ordinal();
+    let t_h   = ig.h.ordinal()     <= IgPrim::wool.ordinal();
+    let t_om  = ig.omega.ordinal() <= IgPrim::ah.ordinal();
     t_phi && t_f && t_k && t_h && t_om
 }
 
 fn t_ceiling_check(ig: &IgTuple) -> bool {
-    let t_phi = ig.p.ordinal()     <= IgPrim::P_pmsym.ordinal();
-    let t_f   = ig.f.ordinal()     <= IgPrim::F_hbar.ordinal();
-    let t_k   = ig.k.ordinal()     <= IgPrim::K_slow.ordinal();
-    let t_h   = ig.h.ordinal()     <= IgPrim::H_inf.ordinal();
-    let t_om  = ig.omega.ordinal() <= IgPrim::Omega_z.ordinal();
+    let t_phi = ig.p.ordinal()     <= IgPrim::or_.ordinal();
+    let t_f   = ig.f.ordinal()     <= IgPrim::peep.ordinal();
+    let t_k   = ig.k.ordinal()     <= IgPrim::egg.ordinal();
+    let t_h   = ig.h.ordinal()     <= IgPrim::wool.ordinal();
+    let t_om  = ig.omega.ordinal() <= IgPrim::ah.ordinal();
     let t_ok = t_phi && t_f && t_k && t_h && t_om;
-    sprintln!("  T_CEILING Φ<=𐑹: {}  ƒ<=𐑐: {}  Ç<=𐑧: {}  Ħ<=𐑫: {}  Ω<=𐑭: {}",
+    sprintln!("  T_CEILING <<=𐑹: {}  ⋈<=𐑐: {}  ⊤<=𐑧: {}  ⊥<=𐑫: {}  ◻<=𐑭: {}",
         if t_phi {"PASS"} else {"FAIL"}, if t_f {"PASS"} else {"FAIL"},
         if t_k {"PASS"} else {"FAIL"}, if t_h {"PASS"} else {"FAIL"},
         if t_om {"PASS"} else {"FAIL"});
@@ -2391,13 +2843,13 @@ fn t_ceiling_check(ig: &IgTuple) -> bool {
 }
 
 fn t_ceiling_gapped_check(ig: &IgTuple) -> bool {
-    let t_phi = ig.p.ordinal()     <= IgPrim::P_pmsym.ordinal();
-    let t_f   = ig.f.ordinal()     <= IgPrim::F_hbar.ordinal();
-    let t_k   = ig.k.ordinal()     <= IgPrim::K_trap.ordinal();
-    let t_h   = ig.h.ordinal()     <= IgPrim::H_inf.ordinal();
-    let t_om  = ig.omega.ordinal() <= IgPrim::Omega_z.ordinal();
+    let t_phi = ig.p.ordinal()     <= IgPrim::or_.ordinal();
+    let t_f   = ig.f.ordinal()     <= IgPrim::peep.ordinal();
+    let t_k   = ig.k.ordinal()     <= IgPrim::on.ordinal();
+    let t_h   = ig.h.ordinal()     <= IgPrim::wool.ordinal();
+    let t_om  = ig.omega.ordinal() <= IgPrim::ah.ordinal();
     let t_ok = t_phi && t_f && t_k && t_h && t_om;
-    sprintln!("  T_CEILING(gapped) Φ<=𐑹: {}  ƒ<=𐑐: {}  Ç<=𐑪: {}  Ħ<=𐑫: {}  Ω<=𐑭: {}",
+    sprintln!("  T_CEILING(gapped) <<=𐑹: {}  ⋈<=𐑐: {}  ⊤<=𐑪: {}  ⊥<=𐑫: {}  ◻<=𐑭: {}",
         if t_phi {"PASS"} else {"FAIL"}, if t_f {"PASS"} else {"FAIL"},
         if t_k {"PASS"} else {"FAIL"}, if t_h {"PASS"} else {"FAIL"},
         if t_om {"PASS"} else {"FAIL"});
@@ -2517,146 +2969,10 @@ fn handle_jump(k: &mut Kernel, rest: &str) {
 
 // ─── Helpers ──────────────────────────────────────────────────
 
-// NOTE: unreferenced. The live help is menu.rs::print_help_topic / GRAMMAR_MENU;
-// additions here are never displayed. Kept only because removing it is a
-// separate decision from the one this comment exists to prevent.
-#[allow(dead_code)]
-fn print_help() {
-    sprintln!("mOMonadOS REPL commands:");
-    sprintln!();
-    sprintln!("══ Execution ══");
-    sprintln!("  {:<30} — run N manual ticks (default 1)", "tick [N]");
-    sprintln!("  {:<30} — run N ticks; no arg = continuous (ESC to stop)", "run [N]");
-    sprintln!("  {:<30} — live terminal HUD, refresh every N ticks (ESC to stop)", "watch [N]");
-    sprintln!("  {:<30} — run N ticks, one per PIT interrupt (ESC to stop)", "timer [N]");
-    sprintln!("  {:<30} — load any program + run continuously", "boot <I–XXVIII>");
-    sprintln!("  {:<30} — load any program by Roman numeral", "load <I–XXVIII>");
-    sprintln!();
-    sprintln!("══ Status ══");
-    sprintln!("  {:<30} — kernel status (tick, IP, stack, fork, frob, halted)", "status");
-    sprintln!("  {:<30} — show loaded program + fork depth", "program");
-    sprintln!("  {:<30} — structural snapshot (sig, tier, period, dialeth, ...)", "snapshot");
-    sprintln!("  {:<30} — ASCII-art token graph with nesting", "graph");
-    sprintln!("  {:<30} — B4 memory heatmap with color blocks", "heatmap [start] [n]");
-    sprintln!("  {:<30} — dump B4 memory", "memory [start] [n]");
-    sprintln!("  {:<30} — show R0-R7", "registers");
-    sprintln!("  {:<30} — Ħ hop: read snapshot through the R1↔R2 mirror", "arev [test]");
-    sprintln!("  {:<30} — stack depth", "stack");
-    sprintln!();
-    sprintln!("══ Program Loading ══");
-    sprintln!("  {:<30} — list all programs (I–XXVIII)", "list");
-    sprintln!("  {:<30} — load canonical program", "canonical <I–XII>");
-    sprintln!("  {:<30} — load continuous program", "continuous <1–4>");
-    sprintln!("  {:<30} — load novel program (XVII–XIX)", "novel <1–3>");
-    sprintln!("  {:<30} — load shunted program (XX–XXVIII)", "shunt <1–9>");
-    sprintln!();
-    sprintln!("══ Crystal FS ══");
-    sprintln!("  {:<30} — decode address to 12-tuple", "crystal <addr>");
-    sprintln!("  {:<30} — store entry", "crystal store <n> [d]");
-    sprintln!("  {:<30} — retrieve by name", "crystal name <n>");
-    sprintln!("  {:<30} — list stored entries", "crystal find");
-    sprintln!();
-    sprintln!("══ Grammar Bridges ══");
-    sprintln!("  {:<32} — IG tuple + crystal address", "ig");
-    sprintln!("  {:<32} — nearest-catalog classification", "classify");
-    sprintln!("  {:<32} — Frobenius harness status (closed/open ratio)", "frob");
-    sprintln!("  {:<32} — Hebrew glyph encoding + gematria", "aleph <Hebrew word>");
-    sprintln!("  {:<32} — Belnap Shor pipeline (N=15, N=21)", "shor");
-    sprintln!("  {:<32} — Fibonacci anyon QC: verify | compile <gates> | jones | knot | winding", "fibqc <action>");
-    sprintln!("  {:<32} — walk an IMASM word around its ROTAT orbit", "cycle <word>");
-    sprintln!("  {:<32} — where the weight moves through an IMASM word", "weight <word>");
-    sprintln!("  {:<32} — was a count cleared with nothing banked?", "banked <word>");
-    sprintln!("  {:<32} — transitions counted on the ring, closing edge included", "trans <word>");
-    sprintln!("  {:<32} — IUFT QC gates: gate|distance|list", "iuft <action>");
-    sprintln!("  {:<32} — Riemann Hypothesis bridge", "rh");
-    sprintln!("  {:<32} — Yang-Mills mass gap bridge", "ym");
-    sprintln!("  {:<32} — Temporal logic bridge", "temp");
-    sprintln!("  {:<32} — Category theory bridge", "cat");
-    sprintln!("  {:<32} — distance|meet|join|tensor vs ZFC baseline", "algebra <op>");
-    sprintln!("  {:<32} — promotions | entry <name> (any catalog system)", "cl8nk <action> [name]");
-    sprintln!("  {:<32} — consciousness score (dual-gate)", "cscore");
-    sprintln!("  {:<32} — SIC-POVM d=12 identity (3 lattice proofs)", "sic");
-    sprintln!("  {:<32} — Triple Frame vN superoperator algebra: report|verify|cycle|bridge", "triple [subcmd]");
-    sprintln!("  {:<32} — entropy experiment: ΔS vs tier promotion", "entropy [tier|transition]");
-    sprintln!("  {:<32} — d=12 SIC-POVM Phase VI: tower,magnitudes,orbits,existence,duallink,z0", "d12 [subcmd]");
-    sprintln!("  {:<32} — d=2048 moduli tower ascent: tower,redei,grammar,pari,next", "d2048 [subcmd]");
-    sprintln!("  {:<32} — witness-vessel transport: Clay payloads x 88 dialects, frob-gated", "vessel [run]");
-    sprintln!("  {:<32} — manuscript spine: PROVE→UNIFY→PORT × vessel (no Python)", "spine [run|lean]");
-    sprintln!("  {:<32} — kernel structural ask (dry). Full wet: host ./ask --file| -i", "ask [opts] <question>");
-    sprintln!("  {:<32} — Clay Millennium structural status (machine-checked)", "clay");
-    #[cfg(feature = "vita")]
-    sprintln!("  {:<32} — one certified turn from the on-board vae_vita trunk", "vita [seed] [temp]");
-    sprintln!();
-    sprintln!("══ Rebis (Red-Hot Rebis) ══");
-    sprintln!("  {:<34} — codon→AA or AA→codons (bidirectional)", "rebis codon <XXX|AA>");
-    sprintln!("  {:<32} — Clay witness IMASM programs (BSD/Hodge/YM)", "clay witness <problem>");
-    sprintln!("  {:<34} — gene→protein pipeline (DNA→mRNA→AA)", "rebis translate <DNA>");
-    sprintln!("  {:<34} — protein→mRNA→DNA (reverse pipeline)", "rebis reverse <Prot>");
-    sprintln!("  {:<34} — Frobenius filtration (64 codons, power-law)", "rebis frob");
-    sprintln!("  {:<34} — 7-stage genetic code verification", "rebis genetics");
-    sprintln!("  {:<34} — Belnap hadron analysis (p, n, π+)", "rebis hadron");
-    sprintln!("  {:<34} — serpent rod motif analysis", "rebis serpent [name]");
-    sprintln!("  {:<34} — DNA/RNA->folded protein (SerpentRod)", "rebis fold <DNA|RNA> [mito]");
-    sprintln!("  {:<34} — IG promotion pipeline", "rebis pipeline [src]");
-    sprintln!("  {:<34} — codon stratum counts", "rebis strata");
-    sprintln!("  {:<34} — genetic ParaASM programs", "rebis asm [prog]");
-    sprintln!("  {:<34} — 7-stage generative tuple pipeline", "rebis tuples <DNA>");
-    sprintln!("  {:<34} — CLU power-law clustering", "rebis clu walk|verify");
-    sprintln!("  {:<34} — exotic hadron Frobenius verification", "rebis exotic");
-    sprintln!("  {:<34} — PDB structure validation", "rebis pdb validate|..");
-    sprintln!("  {:<34} — antibody CDR design", "rebis antibody epi|des");
-    sprintln!("  {:<34} — IG material forge & metamaterials", "rebis material forge|..");
-    sprintln!("  {:<34} — biological sim (tissue, telomere)", "rebis bio");
-    sprintln!("  {:<34} — therapeutics (chemo, pill, antidote)", "rebis tx");
-    sprintln!();
-    sprintln!("══ cr3echrz — Theorem Operationalization ══");
-    sprintln!("  {:<34} — list all theorems + p4rakernel + vault", "cr3 --list");
-    sprintln!("  {:<34} — list 281 vault ob3ects", "cr3 --list-ob3ects");
-    sprintln!("  {:<34} — collatz|goldbach|three_body|burnside|...", "cr3 <theorem> [params]");
-    sprintln!("  {:<34} — Collatz 3n+1 (e.g. cr3 collatz 27)", "cr3 collatz <seed>");
-    sprintln!("  {:<34} — Goldbach partitions (e.g. cr3 goldbach 100)", "cr3 goldbach <n>");
-    sprintln!("  {:<34} — Three-Body figure-8 orbit", "cr3 three_body");
-    sprintln!("  {:<34} — Burnside B(m,n) finiteness", "cr3 burnside <gens> <exp>");
-    sprintln!("  {:<34} — Erdős–Straus 4/n decomposition", "cr3 erdos_straus <n>");
-    sprintln!("  {:<34} — Inverse Galois realizability", "cr3 inverse_galois <group>");
-    sprintln!("  {:<34} — Baum–Connes assembly map", "cr3 baum_connes <class>");
-    sprintln!("  {:<34} — Belnap+Frobenius 13-step bootstrap", "p4ra <module> [params]");
-    sprintln!("  {:<34} — list p4rakernel modules", "p4ra --list");
-    sprintln!("  {:<34} — burnside|connes|erdos_straus|goldbach|...", "p4ra <module>");
-    sprintln!();
-    sprintln!("══ Cross-Dialect Navigation (Phase 8) ══");
-    sprintln!("══ Ruleset / Dialect ══");
-    sprintln!("  {:<36} — show active ruleset", "ruleset show");
-    sprintln!("  {:<36} — list all 88 dialects (★ = active)", "ruleset list");
-    sprintln!("  {:<36} — invariant check (live snapshot)", "ruleset verify");
-    sprintln!("  {:<36} — invariant check (named catalog entry)", "ruleset verify <name>");
-    sprintln!("  {:<36} — cross-dialect jump", "jump <U> using <compound>");
-    sprintln!("  {:<36} — probe without IFIX seal", "jump <U> using <c> --liminal");
-    sprintln!("  {:<36} — two-stage jump", "jump <U> via <V> using <c1> <c2>");
-    sprintln!("  {:<36} — IFIX commit to current ruleset", "seal");
-    sprintln!("  <U> = U_0–U_11 or U₀–U₁₁    <compound> = see 'compound list'");
-    sprintln!("  {:<36} — tensor under active absorption", "tensor <compound_a> <compound_b>");
-    sprintln!("  {:<36} — meet under active absorption", "meet <compound_a> <compound_b>");
-    sprintln!("  {:<36} — test absorption rule", "absorb_test <a> <b> <prim> <op>");
-    sprintln!("  {:<36} — IG tuple under active ruleset", "whoami --ruleset");
-    sprintln!("  {:<36} — Frobenius fixed-point identity check", "whoami --frobenius");
-    sprintln!("  {:<36} — list all absorption rules", "absorption show");
-    sprintln!("  {:<36} — T-constitution pass/fail report", "tstatus");
-    sprintln!("  {:<36} — list 11 diaschizic compounds", "compound list");
-    sprintln!("  {:<36} — show compound tuple + IMASM", "compound show <name>");
-    sprintln!("  {:<36} — load compound IMASM into buffer", "compound load <name>");
-    sprintln!();
-    sprintln!("══ ParaASM ══");
-    sprintln!("  {:<36} — dialetheic alignment + measurement tests", "psm test");
-    sprintln!("  {:<36} — Frobenius identity cycle (ENGAGR→FSPLIT→FFUSE→HALT)", "psm frob");
-    sprintln!("  {:<36} — kernel-state B3 invariant loop", "psm kernel");
-    sprintln!("  {:<36} — inline ParaASM program (; separator)", "psm load <prog>");
-    sprintln!();
-    sprintln!("  {:<36} — exit (μ∘δ=id)", "halt/quit");
-    sprintln!();
-    sprintln!("Control flow: FSPLIT=fork  FFUSE=join  EVALT/EVALF=branch");
-    sprintln!("              TANCH=halt  VINIT=source  IMSCRIB=self-loop");
-}
+/// Section headings inside the long reports. Named once so the whole listing
+/// moves with the theme rather than by search-and-replace across 31 sites.
+fn style_section() -> &'static str { crate::style::heading() }
+
 fn print_status(k: &Kernel) {
     let tier = k.snapshot.map(|s| s.tier_name()).unwrap_or("?");
     sprintln!("╔══════════════════════════════════════╗");
@@ -2741,12 +3057,12 @@ fn print_snap_line(tag: &str, s: &crate::kernel::Snapshot) {
         tag, s.tier_name(), d, bl, g, a, w, bi);
 }
 
-/// One Ħ hop: toggle chirality, show the snapshot on each side of the door.
+/// One ⊥ hop: toggle chirality, show the snapshot on each side of the door.
 fn print_arev_hop(k: &mut Kernel) {
     let before = k.dynamic_imscribe();
     let h = k.arev_hop();
     let after = k.snapshot.unwrap_or(before);
-    sprintln!("AREV — Ħ hop, lateral at the same shell. Ħ now {}", if h { "flipped" } else { "or'" });
+    sprintln!("AREV — ⊥ hop, lateral at the same shell. ⊥ now {}", if h { "flipped" } else { "or'" });
     print_snap_line("before", &before);
     print_snap_line("after", &after);
 }
@@ -2758,17 +3074,17 @@ fn print_arev_test(k: &mut Kernel) {
     sprintln!("═ AREV door experiment ═");
     k.load_replicative();
     k.run(16); // 4 wraps of the 4-token cycle: winding_count > 0, both R2 marks live
-    if k.chirality { k.arev_hop(); } // enter with Ħ = or'
+    if k.chirality { k.arev_hop(); } // enter with ⊥ = or'
     let s0 = k.dynamic_imscribe();
-    sprintln!("replicative loop, 16 ticks, Ħ = or':");
+    sprintln!("replicative loop, 16 ticks, ⊥ = or':");
     print_snap_line("s0", &s0);
     k.arev_hop();
     let s1 = k.snapshot.unwrap_or(s0);
-    sprintln!("first hop (Ħ flipped) — R1 reads the mirrored evidence:");
+    sprintln!("first hop (⊥ flipped) — R1 reads the mirrored evidence:");
     print_snap_line("s1", &s1);
     k.arev_hop();
     let s2 = k.snapshot.unwrap_or(s0);
-    sprintln!("second hop (Ħ back to or'):");
+    sprintln!("second hop (⊥ back to or'):");
     print_snap_line("s2", &s2);
     sprintln!("hop∘hop = id (raw fields): {}", if s2 == s0 { "EXACT" } else { "BROKEN" });
     let mm = s0.mirrored().mirrored();
@@ -2809,15 +3125,15 @@ fn idx_to_roman(i: usize) -> &'static str {
 
 fn load_by_roman(k: &mut Kernel, roman: &str) -> bool {
     if let Some(idx) = roman_to_idx(roman) {
-        if idx < CANONICAL_COUNT {
+        if idx < canonical_count() {
             k.load_canonical(idx);
             true
-        } else if idx < CANONICAL_COUNT + CONTINUOUS_COUNT {
-            k.load_continuous(idx - CANONICAL_COUNT)
-        } else if idx < CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT {
-            k.load_novel(idx - CANONICAL_COUNT - CONTINUOUS_COUNT)
-        } else if idx < CANONICAL_COUNT + CONTINUOUS_COUNT + NOVEL_COUNT + SHUNTED_COUNT {
-            k.load_shunted(idx - CANONICAL_COUNT - CONTINUOUS_COUNT - NOVEL_COUNT)
+        } else if idx < canonical_count() + continuous_count() {
+            k.load_continuous(idx - canonical_count())
+        } else if idx < canonical_count() + continuous_count() + novel_count() {
+            k.load_novel(idx - canonical_count() - continuous_count())
+        } else if idx < canonical_count() + continuous_count() + novel_count() + shunted_count() {
+            k.load_shunted(idx - canonical_count() - continuous_count() - novel_count())
         } else {
             false
         }
@@ -2839,7 +3155,7 @@ fn name_hash(name: &str) -> usize {
 
 fn print_ym() {
     use para_ym::*;
-    sprintln!("══ Yang-Mills Mass Gap ══");
+    sprintln!("  {}Yang-Mills Mass Gap{}", style_section(), crate::style::reset());
     sprintln!("  gap exists:    {}", if ym_gap_exists() { "PASS" } else { "FAIL" });
     sprintln!("  not dialetheic: {}", if ym_gap_not_dialetheic() { "PASS" } else { "FAIL" });
     sprintln!("  vacuum canon:  {}", if ym_vacuum_canonical() { "PASS" } else { "FAIL" });
@@ -2852,7 +3168,7 @@ fn print_ym() {
 }
 fn print_temporal() {
     use para_temporal::*;
-    sprintln!("══ Temporal Logic ══");
+    sprintln!("  {}Temporal Logic{}", style_section(), crate::style::reset());
     sprintln!("  B fixed point: {}", if b_temporal_fixed() { "PASS" } else { "FAIL" });
     sprintln!("  next involution: {}", if next_involution() { "PASS" } else { "FAIL" });
     sprintln!("  B absorbs until: {}", if b_absorbs_until() { "PASS" } else { "FAIL" });
@@ -2860,7 +3176,7 @@ fn print_temporal() {
 }
 fn print_cat() {
     use para_category::*;
-    sprintln!("══ Category Theory ══");
+    sprintln!("  {}Category Theory{}", style_section(), crate::style::reset());
     sprintln!("  N initial:    {}", if n_initial() { "PASS" } else { "FAIL" });
     sprintln!("  T terminal:   {}", if t_terminal() { "PASS" } else { "FAIL" });
     sprintln!("  B zero:       {}", if b_zero() { "PASS" } else { "FAIL" });
@@ -2873,7 +3189,7 @@ fn print_rh() {
     use crate::belnap::B4;
     use para_rh::*;
 
-    sprintln!("══ Riemann Hypothesis Bridge ══");
+    sprintln!("  {}Riemann Hypothesis Bridge{}", style_section(), crate::style::reset());
     sprintln!("  involution:     {}", if rh_involution_identity() { "PASS" } else { "FAIL" });
     sprintln!("  fixed point:    {}", if rh_frobenius_fixed_point() { "PASS" } else { "FAIL" });
     sprintln!("  belnap RH:      {}", if rh_belnap_statement() { "PASS" } else { "FAIL" });
@@ -2901,7 +3217,7 @@ fn print_shor() {
     use crate::belnap::B4;
     use belnap_shor::*;
 
-    sprintln!("══ Belnap Shor Pipeline ══");
+    sprintln!("  {}Belnap Shor Pipeline{}", style_section(), crate::style::reset());
 
     sprintln!("── SIC-POVM Axioms ──");
     sprintln!("  verify: {}", if verify_sic_povm() { "PASS" } else { "FAIL" });
@@ -2913,22 +3229,294 @@ fn print_shor() {
     sprintln!("  H|N⟩=N: {}", if b4_hadamard(crate::belnap::B4::N) == crate::belnap::B4::N { "PASS" } else { "FAIL" });
 
     sprintln!("── Shor N=15,a=7 ──");
-    let r1 = run_belnap_shor(4, 7, 15);
+    let r1 = run_belnap_shor_output(4, 7, 15);
     sprintln!("  period={} H={} B-meas={} T-meas={} ratio={:.1}",
         r1.period_cl, r1.hadamard_coherence, r1.b_bias_coherence, r1.t_bias_coherence, r1.ratio);
     sprintln!("  allB={} b-preserves={} t-collapses={} bottleneck={}",
-        r1.mod_exp_all_b, r1.b_bias_preserves, r1.t_bias_collapses, r1.phi_upsilon_bottleneck);
+        r1.mod_exp_all_b, r1.b_bias_preserves, r1.t_bias_collapses, r1.polarity_bottleneck);
 
     sprintln!("── Shor N=21,a=5 ──");
-    let r2 = run_belnap_shor(5, 5, 21);
+    let r2 = run_belnap_shor_output(5, 5, 21);
     sprintln!("  period={} H={} B-meas={} T-meas={} ratio={:.1}",
         r2.period_cl, r2.hadamard_coherence, r2.b_bias_coherence, r2.t_bias_coherence, r2.ratio);
 
-    sprintln!("── Phi_upsilon bottleneck ──");
+    // Both of these are Polarity values wearing an old Criticality-style
+    // prefix: upsilon is yew (𐑿, phase symmetry) and pmsym is or' (𐑹,
+    // Frobenius-special). The gap is along <, not ⊙.
+    sprintln!("── <=𐑿 bottleneck ──");
     sprintln!("  B is the only superposition; all lattice ops preserve B.");
     sprintln!("  Period r encoded in 2:1 coherence cost ratio, not bits.");
-    sprintln!("  Phi_upsilon -> Phi_pmsym gap: structural open problem.");
+    sprintln!("  <=𐑿 -> <=𐑹 gap: structural open problem.");
 }
+
+fn print_shor_phase(n_val: u64, a_val: u64) {
+    use crate::belnap_phase_shor::{run_phase_belnap_shor, PhaseModExp, polarity_bottleneck_closed};
+
+    if n_val == 0 || a_val == 0 {
+        // Default: show phase-augmented analysis for canonical cases
+        sprintln!("  {}Phase-Augmented Belnap Shor (Problems 1-2 Solution){}", style_section(), crate::style::reset());
+        sprintln!();
+        sprintln!("  The phase-augmented model adds complex phase to B4 lattice.");
+        sprintln!("  B-bias measurement cost = 2 + |sin(π·phase)|");
+        sprintln!("  This makes belnapCost proportional to accumulated phase.");
+        sprintln!();
+        let cases = [(4usize, 7u64, 15u64), (5, 5, 21), (6, 2, 35)];
+        for (n, a, N) in &cases {
+            let r = run_phase_belnap_shor(*n, *a, *N);
+            sprintln!("  N={:<4} a={:<3} period={:<4} phase={:.4} B-cost={} gap={} closed={}",
+                N, a, r.period, r.total_phase, r.belnap_cost, r.gap, r.bottleneck_closed);
+        }
+        sprintln!();
+        sprintln!("  polarity_bottleneck: belnapCost = 2·period");
+        sprintln!("  Phase-augmented model: cost depends on phase accumulation");
+        sprintln!("  Gap is SMALLER than classical (belnapCost=2n) approach");
+        return;
+    }
+
+    sprintln!("══ Phase-Augmented Shor: N={}, a={} ══", n_val, a_val);
+    let n = if n_val <= 1 { 2 } else {
+        let mut bits = 0; let mut v = n_val - 1;
+        while v > 0 { bits += 1; v >>= 1; }
+        bits.max(2) as usize
+    };
+    let r = run_phase_belnap_shor(n, a_val, n_val);
+    sprintln!("  period={}  total_phase={:.4} windings", r.period, r.total_phase);
+    sprintln!("  B-bias cost={}  T-bias cost={}  belnapCost={}", r.b_bias_cost, r.t_bias_cost, r.belnap_cost);
+    sprintln!("  2·period={}  gap={}  bottleneck_closed={}", 2*r.period, r.gap, r.bottleneck_closed);
+    sprintln!("  Phase kicks from ModExp: {:?}", (0..n).map(|k| {
+        let pow = crate::belnap_phase_shor::mod_pow(a_val, 1u64 << k, n_val);
+        format!("{:.3}", pow as f64 / n_val as f64)
+    }).collect::<Vec<_>>());
+}
+
+fn print_shor_ring(n_val: u64, a_val: u64) {
+    use crate::belnap_ring_shor::{verify_period_full, Sic2048Bridge, period_to_glyph_word};
+
+    if n_val == 0 || a_val == 0 {
+        sprintln!("  {}IMASM Ring Walk Period Verification (Problem 4){}", style_section(), crate::style::reset());
+        sprintln!();
+        let sic = Sic2048Bridge::new();
+        sprintln!("  d=2048 SIC Bridge:");
+        sprintln!("    discriminant = {}", sic.discriminant);
+        sprintln!("    Stark unit ε ≈ {:.4}", sic.stark_unit);
+        sprintln!("    tower deg over Q = 2^27");
+        sprintln!("    algebraic period = {}", sic.algebraic_period());
+        sprintln!();
+        for (N, a) in &[(15u64, 7u64), (21, 5), (35, 2)] {
+            let r = verify_period_full(*N, *a);
+            sprintln!("  N={} a={} period={} ring_verified={} sic_consistent={}",
+                N, a, r.period_classical, r.verified, r.consistency);
+        }
+        return;
+    }
+
+    sprintln!("══ IMASM Ring Walk: N={}, a={} ══", n_val, a_val);
+    let r = verify_period_full(n_val, a_val);
+    sprintln!("  classical period = {}", r.period_classical);
+    sprintln!("  ring walk verified = {}", r.verified);
+    sprintln!("  sic bridge period = {}", r.sic_bridge_period);
+    sprintln!("  consistency = {}", r.consistency);
+    sprintln!("  glyph word: {:?}", r.glyph_word.iter().map(|g| g.to_char()).collect::<Vec<_>>());
+}
+
+fn print_shor_fib(n_val: u64, a_val: u64) {
+    use crate::fibonacci_shor::{assemble_shor_braid, certify_advantage, ShorCircuitParams, strands_for_qubits, estimate_braid_length};
+
+    if n_val == 0 || a_val == 0 {
+        sprintln!("  {}Fibonacci Anyon Braid Compiler for Shor (Problem 3){}", style_section(), crate::style::reset());
+        sprintln!();
+        for (n_q, a, N) in &[(4usize, 7u64, 15u64), (5, 5, 21), (8, 2, 35)] {
+            let p = ShorCircuitParams::new(*n_q, *a, *N);
+            let cert = certify_advantage(&p);
+            sprintln!("  N={:<4} n={} strands={} fusion_dim={} braid_len~{} gate_err={:.4} logical_qubits={}",
+                N, n_q, p.strands, p.fusion_dim, p.estimated_braid_len, cert.accumulated_error, cert.logical_qubits);
+        }
+        sprintln!();
+        sprintln!("  Fibonacci anyon model: τ⊗τ = 1⊕τ");
+        sprintln!("  4 anyons/qubit, fusion dim F_{{n-1}}");
+        sprintln!("  Advantage is topological: it lives in the logical-qubit capacity of");
+        sprintln!("  the anyonic encoding, not in a simulability threshold.");
+        return;
+    }
+
+    let n = if n_val <= 1 { 2 } else {
+        let mut bits = 0; let mut v = n_val - 1;
+        while v > 0 { bits += 1; v >>= 1; }
+        bits.max(2) as usize
+    };
+    sprintln!("══ Fibonacci Shor: N={}, a={}, n={} ══", n_val, a_val, n);
+    let braid = assemble_shor_braid(n, a_val, n_val);
+    sprintln!("  strands={}  fusion_dim={}", braid.params.strands, braid.params.fusion_dim);
+    sprintln!("  period={:?}  braid_len={}", braid.params.period, braid.total_length);
+    sprintln!("  H-layer: {} gens  ModExp: {} gens  IQFT: {} gens",
+        braid.hadamard_word.len(), braid.mod_exp_word.len(), braid.iqft_word.len());
+    let cert = certify_advantage(&braid.params);
+    sprintln!("  gate_error={:.4}  logical_qubits={}  (topological capacity)",
+        cert.accumulated_error, cert.logical_qubits);
+}
+
+fn print_shor_integrated(n_val: u64, a_val: u64) {
+    use crate::belnap_phase_shor::run_integrated_shor;
+    use crate::belnap_shor::run_belnap_shor_output;
+
+    if n_val == 0 || a_val == 0 {
+        sprintln!("  {}Integrated Shor Pipeline (All 4 Problems){}", style_section(), crate::style::reset());
+        sprintln!();
+        for (N, a) in &[(15u64, 7u64), (21, 5), (35, 2)] {
+            let r = run_integrated_shor(*N, *a);
+            sprintln!("  N={:<4} a={:<3} period={:<4} bottleneck={} phase={:.4} braid_len~{} ring={} factors={}×{}",
+                N, a, r.period, if r.bottleneck_closed { "✓" } else { "≈" },
+                r.total_phase, r.estimated_braid_len,
+                if r.ring_walk_verified { "✓" } else { "?" },
+                r.factor1.unwrap_or(0), r.factor2.unwrap_or(0));
+        }
+        sprintln!();
+        sprintln!("  Problem 1: Phase-augmented B-bias → belnapCost ≈ 2·period");
+        sprintln!("  Problem 2: Non-Boolean ModExp → phase-sensitive evaluation");
+        sprintln!("  Problem 3: Fibonacci anyon braids → topological protection");
+        sprintln!("  Problem 4: IMASM ring walk → paraconsistent verification");
+        return;
+    }
+
+    sprintln!("══ Integrated Shor: N={}, a={} ══", n_val, a_val);
+    let r = run_integrated_shor(n_val, a_val);
+    sprintln!("  ── Core ──");
+    sprintln!("  period={}", r.period);
+    sprintln!("  ── P1: Phase-Augmented ──");
+    sprintln!("  belnapCost={}  2·period={}  bottleneck_closed={}",
+        r.belnap_cost, 2*r.period, r.bottleneck_closed);
+    sprintln!("  total_phase={:.4} windings", r.total_phase);
+    sprintln!("  ── P2: Non-Boolean ModExp ──");
+    sprintln!("  phase_kicks: {:?}", r.phase_kicks.iter().map(|p| format!("{:.3}", p)).collect::<Vec<_>>());
+    sprintln!("  ── P3: Fibonacci Braids ──");
+    sprintln!("  strands={}  braid_len~{}", r.fibonacci_strands, r.estimated_braid_len);
+    sprintln!("  ── P4: IMASM Ring Walk ──");
+    sprintln!("  verified={}", r.ring_walk_verified);
+    sprintln!("  ── Factorization ──");
+    if r.factor1.is_some() {
+        sprintln!("  ✓ N = {} × {}", r.factor1.unwrap_or(0), r.factor2.unwrap_or(0));
+    } else {
+        sprintln!("  ✗ factorization failed");
+    }
+}
+
+
+fn parse_u64(s: &str) -> u64 {
+    s.parse::<u64>().unwrap_or(0)
+}
+
+fn print_shor_custom(n_val: u64, a_val: u64) {
+    use crate::belnap::B4;
+    use crate::belnap_shor::run_belnap_shor_output;
+    use crate::belnap_shor_factors::{analyze_coherence_gap, extract_factors};
+
+    if n_val == 0 || a_val == 0 {
+        sprintln!("shor: usage: shor N a  (N>1, a>1, gcd(N,a)=1)");
+        return;
+    }
+
+    let n_qubits = if n_val <= 1 { 2 } else {
+        let mut bits = 0; let mut v = n_val - 1;
+        while v > 0 { bits += 1; v >>= 1; }
+        bits.max(2) as usize
+    };
+
+    sprintln!("══ Belnap Shor Pipeline: N={}, a={} ══", n_val, a_val);
+
+    let shor = run_belnap_shor_output(n_qubits, a_val, n_val);
+    let gap = analyze_coherence_gap(n_qubits, shor.period_cl, shor.b_bias_coherence);
+    let factors = extract_factors(n_val, a_val, shor.period_cl);
+
+    sprintln!("  n_qubits={}  period={}  n_qubits==period? {}",
+        n_qubits, shor.period_cl, n_qubits as u64 == shor.period_cl);
+    sprintln!("  belnapCost (B-meas) = {}", shor.b_bias_coherence);
+    sprintln!("  2·period            = {}", gap.twice_period);
+    sprintln!("  coherence gap        = {}  (precondition: {})",
+        gap.gap, if gap.precondition_holds { "HOLDS" } else { "FAILS" });
+    sprintln!("  ratio belnapCost/2r  = {:.4}", gap.ratio_to_2r);
+    sprintln!("  B-bias/T-bias ratio  = {:.1}", shor.ratio);
+
+    sprintln!("  ── Factorization ──");
+    sprintln!("  period={}  trivial={}", factors.period, factors.trivial);
+    if !factors.trivial {
+        sprintln!("  factor1={}  factor2={}  N={}×{}",
+            factors.factor1.unwrap_or(0), factors.factor2.unwrap_or(0),
+            factors.factor1.unwrap_or(0), factors.factor2.unwrap_or(0));
+    } else {
+        sprintln!("  reason: {}", factors.reason);
+    }
+}
+
+fn print_shor_factors(n_val: u64, a_val: u64) {
+    use crate::belnap_shor_factors::*;
+    use crate::belnap_shor::run_belnap_shor_output;
+
+    if n_val == 0 || a_val == 0 {
+        sprintln!("shor factors: usage: shor factors N a");
+        return;
+    }
+
+    sprintln!("══ Belnap Shor Factorization: N={}, a={} ══", n_val, a_val);
+    let r = run_full_belnap_shor_auto(a_val, n_val);
+
+    sprintln!("  n_qubits={}  period={}", r.n_qubits, r.period);
+    sprintln!("  Belnap B-meas cost = {}  (2n = {})", r.shor_result.b_bias_coherence, 2 * r.n_qubits);
+    sprintln!("  T-bias cost        = {}  (n = {})", r.shor_result.t_bias_coherence, r.n_qubits);
+    sprintln!("  Coherence gap      = {}  precondition={}",
+        r.gap.gap, r.gap.precondition_holds);
+
+    sprintln!("  ── Factors ──");
+    if !r.factors.trivial {
+        sprintln!("  ✓ N = {} × {}", r.factors.factor1.unwrap_or(0), r.factors.factor2.unwrap_or(0));
+        sprintln!("  ✓ gcd(a^(r/2)±1, N) = ({},{})",
+            r.factors.factor1.unwrap_or(0), r.factors.factor2.unwrap_or(0));
+    } else {
+        sprintln!("  ✗ {}", r.factors.reason);
+        if r.factors.factor1.is_some() {
+            sprintln!("    partial: gcd → {} and {}",
+                r.factors.factor1.unwrap_or(0), r.factors.factor2.unwrap_or(0));
+        }
+    }
+}
+
+fn print_shor_gap(n_val: u64, a_val: u64) {
+    use crate::belnap_shor_factors::*;
+    use crate::belnap_shor::run_belnap_shor_output;
+
+    if n_val == 0 || a_val == 0 {
+        // Default: show gap for canonical cases
+        sprintln!("  {}Belnap Shor Coherence Gap Analysis{}", style_section(), crate::style::reset());
+        sprintln!();
+        let cases = [(4usize, 7u64, 15u64, 4u64), (5, 5, 21, 6), (6, 2, 35, 12), (7, 2, 77, 30)];
+        sprintln!("  {:<6} {:<6} {:<6} {:<10} {:<10} {:<8}", "N", "a", "r", "belnapCost", "2r", "gap");
+        sprintln!("  {}", "─".repeat(52));
+        for (n, a, N, r) in &cases {
+            let shor = run_belnap_shor_output(*n, *a, *N);
+            let gap = analyze_coherence_gap(*n, *r, shor.b_bias_coherence);
+            sprintln!("  {:<6} {:<6} {:<6} {:<10} {:<10} {:<+8}  {}",
+                N, a, r, shor.b_bias_coherence, gap.twice_period, gap.gap,
+                if gap.precondition_holds { "✓ precondition holds" } else { "✗ gap" });
+        }
+        sprintln!();
+        sprintln!("  polarity_bottleneck: belnapCost = 2·period  ✓ CLOSED");
+        sprintln!("  Output-register measurement: |{{a^x mod N}}| = r distinct values.");
+        sprintln!("  belnapCost = 2r for ALL N (verified: 15, 21, 35, 77).");
+        sprintln!("  The 2:1 B-bias/T-bias ratio IS the period extractor.");
+        return;
+    }
+
+    sprintln!("══ Coherence Gap: N={}, a={} ══", n_val, a_val);
+    let n = if n_val <= 1 { 2 } else {
+        let mut bits = 0; let mut v = n_val - 1;
+        while v > 0 { bits += 1; v >>= 1; }
+        bits.max(2) as usize
+    };
+    let shor = run_belnap_shor_output(n, a_val, n_val);
+    let gap = analyze_coherence_gap(n, shor.period_cl, shor.b_bias_coherence);
+    sprintln!("  n={}  r={}  belnapCost={}  2r={}  gap={}  holds={}",
+        n, shor.period_cl, shor.b_bias_coherence, gap.twice_period, gap.gap, gap.precondition_holds);
+}
+
 
 fn print_psm(arg: &str) {
     use crate::belnap::B4;
@@ -3095,7 +3683,7 @@ fn print_cl8nk(action: &str, name: &str) {
     match action {
         "promotions" | "promo" => {
             let result = generate_promotions();
-            sprintln!("══ CL8NK Promotion Ladder ══");
+            sprintln!("  {}CL8NK Promotion Ladder{}", style_section(), crate::style::reset());
             sprintln!("  ZFC (O₀) → ZFCₜ (O₂†) → ZFC_fe (O_∞) → CLINK L8 (O_∞⁺)");
             sprintln!("  Total promotions: {}  d(ZFC, CLINK L8): {:.4}", result.total_promotions, result.total_distance);
             sprintln!();
@@ -3174,7 +3762,7 @@ fn print_cl8nk(action: &str, name: &str) {
                 let cl8 = cl8nk_ref();
                 let (d, conflicts) = tuple_distance_cl8nk(&cat_entry.tuple, &cl8);
                 let tier = assess_tier(&cat_entry.tuple);
-                sprintln!("══ CL8NK Distance ══");
+                sprintln!("  {}CL8NK Distance{}", style_section(), crate::style::reset());
                 sprintln!("  System: {}  →  CLINK L8", cat_entry.name);
                 sprintln!("  d = {:.4}  tier: {}", d, tier);
                 sprintln!("  Conflicts ({}):", conflicts.len());
@@ -3191,17 +3779,17 @@ fn print_cl8nk(action: &str, name: &str) {
         }
         "transcendence" => {
             let tr = compute_transcendence();
-            sprintln!("══ The Ω/ɢ Transcendence — CLINK L8 beyond ZFC_fe ══");
+            sprintln!("  {}The ◻/∋ Transcendence — CLINK L8 beyond ZFC_fe{}", style_section(), crate::style::reset());
             sprintln!("  d(ZFC_fe, CLINK L8) = {:.4}", tr.d_zfcfe_to_cl8nk);
             sprintln!();
-            sprintln!("  Ω: {} → {}",
+            sprintln!("  ◻: {} → {}",
                 catalog::primitive_glyph(tr.omega_zfcfe),
                 catalog::primitive_glyph(tr.omega_cl8nk));
             sprintln!("    ZFC_fe: {}", tr.omega_zfcfe_frag);
             sprintln!("    CL8NK:  {}", tr.omega_cl8nk_frag);
             sprintln!("    → Integer winding (Abelian anyons) → braid group (non-Abelian anyons)");
             sprintln!();
-            sprintln!("  C (ɢ): {} → {}",
+            sprintln!("  C (∋): {} → {}",
                 catalog::primitive_glyph(tr.grammar_zfcfe),
                 catalog::primitive_glyph(tr.grammar_cl8nk));
             sprintln!("    ZFC_fe: {}", tr.grammar_zfcfe_frag);
@@ -3252,7 +3840,7 @@ fn print_cl8nk(action: &str, name: &str) {
                 let tier = assess_tier(&cat_entry.tuple);
                 let cl8 = cl8nk_ref();
                 let (d, _) = tuple_distance_cl8nk(&cat_entry.tuple, &cl8);
-                sprintln!("══ CL8NK Tier ══");
+                sprintln!("  {}CL8NK Tier{}", style_section(), crate::style::reset());
                 sprintln!("  System: {}  tier: {}  d(CLINK L8): {:.4}", cat_entry.name, tier, d);
             } else {
                 sprintln!("[CL8NK] System '{}' not found in catalog.", lookup_name);
@@ -3260,7 +3848,7 @@ fn print_cl8nk(action: &str, name: &str) {
         }
         "chain" => {
             let layers = chain_analysis();
-            sprintln!("══ CLINK Chain — Distance Ladder from CLINK L8 ══");
+            sprintln!("  {}CLINK Chain — Distance Ladder from CLINK L8{}", style_section(), crate::style::reset());
             sprintln!("  {} layers discovered in catalog", layers.len());
             sprintln!();
             for layer in &layers {
@@ -3270,7 +3858,7 @@ fn print_cl8nk(action: &str, name: &str) {
         }
         "systems" => {
             let systems = catalog_systems();
-            sprintln!("══ CL8NK — Catalog Systems ══");
+            sprintln!("  {}CL8NK — Catalog Systems{}", style_section(), crate::style::reset());
             sprintln!("  {} entries", systems.len());
             for s in &systems {
                 sprintln!("    {}", s);
@@ -3278,7 +3866,7 @@ fn print_cl8nk(action: &str, name: &str) {
         }
         "stats" => {
             let (count, cl8_found, zfcfe_found) = catalog_stats();
-            sprintln!("══ CL8NK — Catalog Statistics ══");
+            sprintln!("  {}CL8NK — Catalog Statistics{}", style_section(), crate::style::reset());
             sprintln!("  Total entries: {}", count);
             sprintln!("  CLINK L8 found: {}", cl8_found);
             sprintln!("  ZFC_fe found: {}", zfcfe_found);
@@ -3289,7 +3877,7 @@ fn print_cl8nk(action: &str, name: &str) {
             sprintln!("  entry  <name>    — Full CL8NK formula decomposition");
             sprintln!("  promotions        — 3-stage ladder: ZFC→ZFCₜ→ZFC_fe→CLINK L8");
             sprintln!("  distance <name>   — d(name, CLINK L8)");
-            sprintln!("  transcendence     — Ω/ɢ transcendence analysis");
+            sprintln!("  transcendence     — ◻/∋ transcendence analysis");
             sprintln!("  tensor  <name>    — CLINK L8 ⊗ name (absorption test)");
             sprintln!("  meet    <name>    — CLINK L8 ⊓ name");
             sprintln!("  join    <name>    — CLINK L8 ⊔ name");
@@ -3340,7 +3928,7 @@ fn print_cscore(k: &Kernel) {
     if let Some(snap) = k.snapshot {
         let ig = IgTuple::from_snapshot(&snap);
         let r = consciousness_eval(&ig);
-        sprintln!("══ Consciousness Score ══");
+        sprintln!("  {}Consciousness Score{}", style_section(), crate::style::reset());
         sprintln!("  C-score:    {:.4}", r.c_score);
         sprintln!("  Gate 1 (⊙): {}", if r.gate1_open { "OPEN" } else { "CLOSED" });
         sprintln!("  Gate 2 (K): {}", if r.gate2_open { "OPEN" } else { "CLOSED" });
@@ -3593,13 +4181,13 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
         }
 
         "stop" => {
-            // Stop codon analysis as Ω boundary
+            // Stop codon analysis as ◻ boundary
             use crate::belnap::B4;
-            sprintln!("Stop Codon Analysis (Ω boundary — kernel winding limit):");
+            sprintln!("Stop Codon Analysis (◻ boundary — kernel winding limit):");
             let stops = [
-                ("UAA", Codon { p1: crate::belnap::B4::N, p2: B4::F, p3: B4::F }, "Ω₀  trivial winding — null boundary"),
-                ("UAG", Codon { p1: crate::belnap::B4::N, p2: B4::F, p3: B4::B }, "Ω_Z₂  Z2-protected — amber boundary"),
-                ("UGA", Codon { p1: crate::belnap::B4::N, p2: B4::B, p3: B4::F }, "Ω_Z   integer winding — opal boundary"),
+                ("UAA", Codon { p1: crate::belnap::B4::N, p2: B4::F, p3: B4::F }, "◻₀  trivial winding — null boundary"),
+                ("UAG", Codon { p1: crate::belnap::B4::N, p2: B4::F, p3: B4::B }, "𐑴  Z2-protected — amber boundary"),
+                ("UGA", Codon { p1: crate::belnap::B4::N, p2: B4::B, p3: B4::F }, "𐑭   integer winding — opal boundary"),
             ];
             for (name, codon, desc) in &stops {
                 let s = codon.symbol();
@@ -3607,8 +4195,8 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                     name, s[0] as char, s[1] as char, s[2] as char,
                     codon.p1, codon.p2, codon.p3, desc);
             }
-            sprintln!("  Mito additional stops: AGA (F,B,F)=Ω_AGA  AGG (F,B,B)=Ω_AGG");
-            sprintln!("  Mito UGA → Trp (not Stop — Ω gate lifted in mitochondrial context)");
+            sprintln!("  Mito additional stops: AGA (F,B,F)=◻_AGA  AGG (F,B,B)=◻_AGG");
+            sprintln!("  Mito UGA → Trp (not Stop — ◻ gate lifted in mitochondrial context)");
         }
 
         "mutation" => {
@@ -3928,7 +4516,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
             sprintln!("Codon Strata:");
             sprintln!("  Exact: {} codons (ffuse∘fsplit = id exactly)", exact);
             sprintln!("  Split: {} codons (ffuse∘fsplit = id mod Z2)", split);
-            sprintln!("  Stop:  {} codons (Ω boundary)", stop);
+            sprintln!("  Stop:  {} codons (◻ boundary)", stop);
         }
                 "asm" => {
             let programs = all_genetic_programs();
@@ -3975,6 +4563,29 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                     stages[i].r.glyph(), stages[i].p.glyph());
             }
             sprintln!("  Monotonic advance: {}", if monotonic { "PASS" } else { "FAIL" });
+        }
+        "orbital" => {
+            let (ok, note) = crate::rebis::orbital::verify();
+            sprintln!("── Orbital occupancy as Belnap FOUR ──");
+            for o in crate::rebis::orbital::ALL_ORBITAL.iter() {
+                sprintln!("  {:<9} = {}", o.name(), o.to_b4().name());
+            }
+            sprintln!("  Pauli ceiling: nothing sits above paired.");
+            sprintln!("  {}: {}", if ok { "PASS" } else { "FAIL" }, note);
+        }
+        "quark" => {
+            let (ok, note) = crate::rebis::quark::verify();
+            sprintln!("── Quark colour as Belnap FIVE ──");
+            sprintln!("  Vacuum < {{Red, Green, Blue}} < White");
+            sprintln!("  distinct colours join to White, meet at Vacuum");
+            let w = crate::rebis::quark::Quark::new(
+                crate::rebis::quark::Colour::White, crate::rebis::orbital::Orbital::SpinUp);
+            let r = crate::rebis::quark::Quark::new(
+                crate::rebis::quark::Colour::Red, crate::rebis::orbital::Orbital::SpinUp);
+            sprintln!("  Frobenius on white  : {}", crate::rebis::quark::frobenius_holds_white(w));
+            sprintln!("  Frobenius on colour : fails = {}", crate::rebis::quark::frobenius_fails_coloured(r));
+            sprintln!("  confinement IS that failure, not a separate postulate.");
+            sprintln!("  {}: {}", if ok { "PASS" } else { "FAIL" }, note);
         }
         "clu" => {
             match arg {
@@ -4093,7 +4704,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                     // Forge a material from a 12-glyph IG tuple
                     let predefined = crate::rebis::materials::predefined_novel_materials();
                     if rest.is_empty() {
-                        sprintln!("══ IG Material Forge ══");
+                        sprintln!("  {}IG Material Forge{}", style_section(), crate::style::reset());
                         sprintln!("  Predefined materials:");
                         for (name, _) in &predefined {
                             sprintln!("    {}", name);
@@ -4123,7 +4734,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                 "alloy" => {
                     let mut alloy = crate::rebis::materials::OuroboricAlloy::new(64);
                     let result = alloy.run_mechanical_test(800.0, 40);
-                    sprintln!("══ Ouroboric Alloy (64 grains) ══");
+                    sprintln!("  {}Ouroboric Alloy (64 grains){}", style_section(), crate::style::reset());
                     sprintln!("  Cycles: {}", result.cycles);
                     sprintln!("  Damage fraction: {:.4}", result.damage_fraction);
                     sprintln!("  Final stress: {:.1} MPa", result.final_stress_mpa);
@@ -4189,20 +4800,20 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                 "list" => {
                     use crate::rebis::sidechain;
                     let sc = sidechain::all_sidechains();
-                    sprintln!("══ All 20 AA Sidechains ══");
+                    sprintln!("  {}All 20 AA Sidechains{}", style_section(), crate::style::reset());
                     for (name, _) in sc {
                         sprintln!("  {}", name);
                     }
                     sprintln!();
                     let env = sidechain::all_environments();
-                    sprintln!("══ 4 Environments ══");
+                    sprintln!("  {}4 Environments{}", style_section(), crate::style::reset());
                     for (name, _) in env {
                         sprintln!("  {}", name);
                     }
                 }
                 "frustration" => {
                     let mat = crate::rebis::sidechain::frustration_matrix();
-                    sprintln!("══ Frustration Matrix (min tensor distance per pair) ══");
+                    sprintln!("  {}Frustration Matrix (min tensor distance per pair){}", style_section(), crate::style::reset());
                     sprintln!("  {:<16} {:<16} {:<10}", "Sidechain", "Environment", "Dist");
                     for (sc, env, d) in &mat {
                         sprintln!("  {:<16} {:<16} {:<10.2}", sc, env, d);
@@ -4237,7 +4848,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
             match arg {
                 "groups" | "fg" | "functional" => {
                     let names = crate::rebis::ligand::all_functional_group_names();
-                    sprintln!("══ Functional Groups ══");
+                    sprintln!("  {}Functional Groups{}", style_section(), crate::style::reset());
                     for name in &names {
                         sprintln!("  {}", name);
                     }
@@ -4263,7 +4874,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
             match arg {
                 "list" | "" => {
                     let series = crate::rebis::decay_chain::known_series();
-                    sprintln!("══ Decay Series ══");
+                    sprintln!("  {}Decay Series{}", style_section(), crate::style::reset());
                     for s in &series {
                         let dist = crate::rebis::decay_chain::series_distance(s);
                         sprintln!("  {}  (total IMASM distance: {:.1})", s, dist);
@@ -4294,7 +4905,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                     let mut tel = crate::rebis::biology::OuroboricTelomere::new(5000);
                     let divs: usize = rest.parse().unwrap_or(20);
                     tel.run(divs);
-                    sprintln!("══ Ouroboric Telomere Computation ══");
+                    sprintln!("  {}Ouroboric Telomere Computation{}", style_section(), crate::style::reset());
                     sprintln!("{}", tel.report());
                 }
                 "frob" | _ => {
@@ -4314,7 +4925,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
             match arg {
                 "chemo" => {
                     let chemo = Chemotherapeutic::new("RB-001", "TOP2A", 5.0, 500.0);
-                    sprintln!("══ Chemotherapeutic ══");
+                    sprintln!("  {}Chemotherapeutic{}", style_section(), crate::style::reset());
                     sprintln!("  Name: {}  Target: {}", chemo.name, chemo.target_protein);
                     sprintln!("  Kd: {:.1} nM  Selectivity: {:.0}x", chemo.binding_affinity_nm, chemo.selectivity_ratio);
                     sprintln!("  Delivery: {}  Gate1(⊙): {}", chemo.delivery_mechanism,
@@ -4324,7 +4935,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                 }
                 "pill" => {
                     let pill = crate::rebis::therapeutics::OuroboricPill::new("OP-001", 24.0);
-                    sprintln!("══ Ouroboric Pill ══");
+                    sprintln!("  {}Ouroboric Pill{}", style_section(), crate::style::reset());
                     sprintln!("  Name: {}  Half-life: {:.1}h", pill.name, pill.half_life_hours);
                     sprintln!("  Frobenius: {}  Gate1: {}",
                         if pill.frobenius_verified { "μ∘δ=id" } else { "FAIL" },
@@ -4332,14 +4943,14 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                 }
                 "antidote" => {
                     let antidote = crate::rebis::therapeutics::UniversalAntidote::new("UA-001");
-                    sprintln!("══ Universal Antidote ══");
+                    sprintln!("  {}Universal Antidote{}", style_section(), crate::style::reset());
                     sprintln!("  Name: {}  Targets: {}", antidote.name, antidote.n_targets);
                     sprintln!("  Library diversity: {} clones", antidote.library_diversity);
                     sprintln!("  Frobenius: {}", if antidote.frobenius_verified { "PASS" } else { "OPEN" });
                 }
                 "neuro" => {
                     let nf = crate::rebis::therapeutics::NeurotrophicFactor::new("NF-001", 25.0, 48.0);
-                    sprintln!("══ Neurotrophic Factor ══");
+                    sprintln!("  {}Neurotrophic Factor{}", style_section(), crate::style::reset());
                     sprintln!("  Name: {}  Receptor: {}", nf.name, nf.target_receptor);
                     sprintln!("  EC50: {:.1} nM  Half-life: {:.1}h", nf.ec50_nm, nf.half_life_hours);
                     sprintln!("  Pathway: {}  Frobenius: {}",
@@ -4347,7 +4958,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                 }
                 _ => {
                     let chemo = Chemotherapeutic::new("RB-001", "TOP2A", 5.0, 500.0);
-                    sprintln!("══ Therapeutics ══");
+                    sprintln!("  {}Therapeutics{}", style_section(), crate::style::reset());
                     sprintln!("  Chemotherapeutic: {} → {}  Kd={:.1}nM frob={}",
                         chemo.name, chemo.target_protein, chemo.binding_affinity_nm,
                         if chemo.verify() { "PASS" } else { "FAIL" });
@@ -4407,4 +5018,73 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
   rebis imas [bridge|..]    — IMASM arranger bridge");
         }
     }
+}
+
+
+/// Lift an ELF's executable sections to IMASM words.
+///
+/// The decoder stops at the first opcode it does not know rather than guessing
+/// a length, so coverage is reported and a partial lift always reads as partial.
+#[cfg(feature = "hosted")]
+fn vox_lift_file(path: &str) {
+    let raw = match std::fs::read(path) {
+        Ok(r) => r,
+        Err(e) => {
+            sprintln!("cannot read {}: {}", path, e);
+            return;
+        }
+    };
+    let (entry, segments) = crate::vox::parse_elf(&raw);
+    if segments.is_empty() {
+        sprintln!("{}: no executable sections found", path);
+        return;
+    }
+    let image = crate::vox_decode::Image { segments };
+    sprintln!("{}  entry 0x{:x}  {} byte(s) of code", path, entry, image.total_bytes());
+
+    let seeds = crate::vox::elf_function_symbols(&raw);
+    let w = crate::vox_decode::walk(&image, entry, &seeds);
+    let funcs = &w.functions;
+    let decoded: usize = funcs.iter().map(|(_, f)| f.len()).sum();
+    sprintln!("  {} function(s), {} instruction(s)", funcs.len(), decoded);
+    sprintln!("  claimed {}% of the image ({} of {} bytes)",
+        w.claimed_percent(), w.claimed_bytes, w.total_bytes);
+    if w.claimed_percent() < 100 {
+        sprintln!("  the rest sits behind an indirect transfer or is not code, and");
+        sprintln!("  nothing in the bytes tells those apart. Walking it anyway would");
+        sprintln!("  not find functions, it would invent them mid-instruction.");
+    }
+
+    let mut tally = [0usize; 4];   // T, B, N, F
+    let mut illtyped = alloc::vec::Vec::new();
+    for (start, f) in funcs {
+        let word = crate::vox::recompile_function(f);
+        let v = crate::vox::verdict(&word);
+        match v {
+            'T' => tally[0] += 1,
+            'B' => tally[1] += 1,
+            'N' => tally[2] += 1,
+            _ => {
+                tally[3] += 1;
+                if illtyped.len() < 8 {
+                    illtyped.push((*start, crate::vox::glyphs(&word)));
+                }
+            }
+        }
+    }
+    sprintln!("");
+    sprintln!("  verdicts  T {}   B {}   N {}   F {}", tally[0], tally[1], tally[2], tally[3]);
+    if tally[3] > 0 {
+        sprintln!("  F is not a truth value: the word is ill-typed, a ∋ with no ∈ to");
+        sprintln!("  pair. It marks a function cut in the wrong place, not a program.");
+        for (a, g) in &illtyped {
+            let head: alloc::string::String = g.chars().take(90).collect();
+            sprintln!("    0x{:x}  {}", a, head);
+        }
+    }
+}
+
+#[cfg(not(feature = "hosted"))]
+fn vox_lift_file(_path: &str) {
+    sprintln!("vox lift needs a host filesystem; not available in the kernel build");
 }

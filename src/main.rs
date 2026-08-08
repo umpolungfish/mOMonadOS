@@ -105,6 +105,7 @@ mod stark;
 mod hqe;
 mod dyson;
 mod afdmc;
+mod d2048_exact_sic;
 mod troq;
 mod hop;
 mod braid_grammar;

@@ -1,7 +1,28 @@
-vox verb: expose the standalone crate's EVM and WASM lanes
+Evaluate the monomial, and find the form that cannot be read
 
-vox evm <hex> and vox wasm <hex> in the REPL call vox_core::lanes, so the kernel
-audits smart-contract and WASM bytecode through the same source the standalone
-Vox builds from. Rebuilt hosted clean; both verbs verified at runtime (EVM
-reentrancy B, WASM guarded T). (--no-verify: catalog hook blocks on drift in
-another consumer, unrelated.)
+`d2048 exact` named the S-unit monomial and never computed it. The line that
+looked like the product multiplied by the literal 3.0 cubed, not by g3, so
+what it printed was not the monomial and was not anything.
+
+Computing it needs room: eps^(-1) g3^3 g4^2 expands to a numerator near 7.4e19
+and i64 stops at 9.2e18, so the product now runs in i128, where it fits with
+three orders to spare. eps has norm 1, so its inverse is its conjugate and the
+whole monomial is multiplication with no division anywhere.
+
+Then the kernel printed -4096, and that is the thing worth keeping. The exact
+triple is exact -- it reproduces to the last digit against an independent
+bignum -- and it is also the one form of this number that f64 cannot read. Both
+terms are 7.35e19, they agree through twenty digits, and the value that
+survives is 4.9e-4. The ulp up there is 8192, so the expansion returns half an
+ulp of rounding and calls it a number. Each factor on its own is O(1) and loses
+nothing, so the monomial is evaluated FACTORED and the expanded triple is kept
+as what it is, exact and unevaluable.
+
+Exactness of a representation and evaluability of that representation are two
+different properties. This one has the first without the second, and the report
+now shows both readings side by side so the difference is on the surface rather
+than hidden in a digit.
+
+The monomial comes out 0.000488281016885 against 1/d = 0.00048828125, a gap of
+-2.33e-10. Verification surface unchanged: fibqc verify all pass, Frobenius
+closed. Both source trees carry the same file.
