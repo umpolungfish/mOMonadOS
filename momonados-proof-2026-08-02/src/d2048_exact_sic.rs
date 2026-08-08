@@ -145,6 +145,66 @@ pub fn generator_g4() -> QuadElem {
     QuadElem::from_frac(2049, -1, 2, D2048_MD)
 }
 
+// -- The crossover threshold, with its model exposed --
+
+/// Gate-count models for SIC-POVM tomography in dimension d.
+///
+/// The threshold eps_2q < 0.1 / (t_gate * n_gates) is not a fact about d. It is
+/// a fact about n_gates(d), and n_gates(d) is a modelling choice that the
+/// single number 2.38e-8 hides. Naming the models and varying them is the only
+/// way the threshold reports its own sensitivity.
+fn n_gates(model: u8, d: f64) -> f64 {
+    match model {
+        // one gate per measurement outcome: the d^2 the demonstration assumes
+        0 => d * d,
+        // d^2 outcomes, each prepared by a circuit of depth log2(d)
+        1 => d * d * (libm::log(d) / libm::log(2.0)),
+        // Weyl-Heisenberg orbit: d^2 displacements over a fiducial of depth d
+        2 => d * d * d,
+        // one gate per amplitude, the cheapest defensible floor
+        _ => d,
+    }
+}
+
+fn model_name(model: u8) -> &'static str {
+    match model { 0 => "d^2        (one gate per outcome)",
+                  1 => "d^2 log2 d (outcome x preparation depth)",
+                  2 => "d^3        (WH orbit over a depth-d fiducial)",
+                  _ => "d          (one gate per amplitude)" }
+}
+
+/// The crossover metric with its assumptions on the surface.
+///
+/// t_gate * n_gates * eps_2q > 0.1 says noise has eaten the circuit and a
+/// classical simulation wins. So advantage needs eps_2q < 0.1/(t_gate*n_gates).
+/// t_gate enters as a pure multiplier, so it is varied too rather than being
+/// silently set to one.
+pub fn crossover_report() -> String {
+    let mut out = String::from(
+        "  Crossover metric  t_gate * n_gates * eps_2q > 0.1  =>  classical simulation wins\n           Required 2-qubit error for advantage: eps_2q < 0.1 / (t_gate * n_gates(d))\n\n           t_gate = 1 (the demonstration's implicit choice):\n           model                                        d=64        d=2048       d=65536\n");
+    for model in [0_u8, 1, 2, 3] {
+        out.push_str(&format!("    {:<42}", model_name(model)));
+        for d in [64.0_f64, 2048.0, 65536.0] {
+            out.push_str(&format!(" {:>12.2e}", 0.1 / n_gates(model, d)));
+        }
+        out.push('\n');
+    }
+    out.push_str("\n  The d^2 row at d=2048 is 2.38e-08, which is the number the demonstration\n          reports. The other rows are the same claim under other equally stated\n          assumptions, and they span four orders at one dimension. The threshold is\n          a property of the gate model at least as much as of d.\n\n          t_gate sensitivity at d=2048, model d^2 (t_gate is a bare multiplier):\n");
+    for t in [0.1_f64, 1.0, 10.0, 100.0] {
+        out.push_str(&format!("    t_gate = {:>6.1}  ->  eps_2q < {:.2e}\n", t, 0.1 / (t * n_gates(0, 2048.0))));
+    }
+    out.push_str("\n  Against hardware. Taking eps_2q = 1e-3 as measured today, advantage under\n          each model needs n_gates < 0.1/eps_2q = 100 gates, so the largest d that\n          clears it is:\n");
+    for model in [0_u8, 1, 2, 3] {
+        let mut best = 0_u64;
+        for d in 2..=100_000_u64 {
+            if n_gates(model, d as f64) < 100.0 { best = d; } else { break; }
+        }
+        out.push_str(&format!("    {:<42} d <= {}\n", model_name(model), best));
+    }
+    out.push_str("\n  Every model puts the reachable dimension in the single or double digits at\n          1e-3, so d=2048 is out of reach under all of them, not only under d^2. The\n          algebraic representation is what the extraction buys; this metric is not\n          where it is bought.");
+    out
+}
+
 // -- Step 5 measured: what the algebraic representation actually costs --
 
 /// The monomial for an arbitrary d, so the representation can be MEASURED as d
