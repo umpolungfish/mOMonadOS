@@ -170,37 +170,54 @@ fn qmul128(x: (i128, i128, i128), y: (i128, i128, i128), d: i128) -> (i128, i128
 ///
 /// eps has norm 1, so its inverse is its Galois conjugate and the whole
 /// monomial is a product -- no division is ever needed.
-pub fn stark_unit_monomial() -> (i128, i128, i128) {
+pub fn stark_unit_monomial() -> (i128, i128, i128) { stark_unit_monomial_with_norm().0 }
+
+/// The monomial and its norm. Norm is multiplicative, so it is accumulated
+/// with the product: N(eps^-1) = 1, N(g3) = -2045, N(g4) = 2049, giving
+/// 1 * (-2045)^3 * 2049^2. Recovering it afterwards from a^2 - b^2*D would
+/// need 5.4e39 and i128 stops at 1.7e38.
+pub fn stark_unit_monomial_with_norm() -> ((i128, i128, i128), i128) {
     let d = D2048_MD as i128;
     let mut m = stark_unit_d2048().conjugate().widen();   // eps^(-1) = conj(eps)
     let g3 = generator_g3().widen();
     let g4 = generator_g4().widen();
-    for _ in 0..3 { m = qmul128(m, g3, d); }
-    for _ in 0..2 { m = qmul128(m, g4, d); }
-    m
+    let mut norm: i128 = 1;                               // N(eps^-1) = 1
+    for _ in 0..3 { m = qmul128(m, g3, d); norm *= -2045; }
+    for _ in 0..2 { m = qmul128(m, g4, d); norm *= 2049; }
+    (m, norm)
 }
 
-/// f64 value of an exact (a, b, c) triple.
+/// f64 value of an exact (a, b, c) triple, by rationalizing.
 ///
-/// Correct only while a and b*sqrt(d) do not cancel. For the monomial they
-/// cancel almost completely -- both terms are ~7.35e19 and the true value is
-/// ~4.9e-4, twenty-three orders down -- and f64's ulp up there is 8192, so this
-/// returns noise on that input. Use `monomial_approx` for the monomial.
-fn approx128(m: (i128, i128, i128), d: i128) -> f64 {
+/// Reading (a + b*sqrt(D))/c straight off subtracts two terms that can agree
+/// to their last digit -- for the monomial both are 7.35e19 and the value that
+/// survives is 4.9e-4, twenty-three orders down, under an ulp of 8192. So do
+/// not evaluate that difference. Multiply above and below by the conjugate:
+///
+///     M = (a + b*sqrt(D))/c  =>  M = c*Norm(M) / (a - b*sqrt(D))
+///
+/// The denominator adds two terms of the SAME sign, so nothing cancels and f64
+/// carries it at full relative precision; the numerator is an exact integer.
+/// The cancellation was in the way the value was read, not in the value.
+///
+/// Norm is multiplicative, so it is carried alongside the product rather than
+/// recovered from a^2 - b^2*D, which would overflow i128 at 5.4e39.
+fn approx_rational(m: (i128, i128, i128), norm: i128, d: i128) -> f64 {
     let s = libm::sqrt(d as f64);
-    (m.0 as f64 + m.1 as f64 * s) / (m.2 as f64)
+    let den = m.0 as f64 - m.1 as f64 * s;
+    (m.2 as f64) * (norm as f64) / den
 }
 
-/// Numerical value of the monomial, evaluated FACTORED.
-///
-/// The expanded triple is exact and it is also the one form that cannot be
-/// read in f64: expanding a product of well-conditioned factors into a single
-/// (a + b*sqrt(D))/c manufactures a subtraction of two twenty-digit numbers
-/// that agree to their last place. Each factor on its own is O(1) and loses
-/// nothing, so the product of the factors is what carries the value. Exactness
-/// of a representation and evaluability of that representation are two
-/// different properties, and this monomial has the first without the second.
+/// Numerical value of the monomial, read off the exact triple.
 pub fn monomial_approx() -> f64 {
+    let (m, norm) = stark_unit_monomial_with_norm();
+    approx_rational(m, norm, D2048_MD as i128)
+}
+
+/// The same value reached the other way, by multiplying the factors before
+/// they are expanded. Two independent routes to one number: agreement is the
+/// check that the i128 expansion is the monomial it claims to be.
+pub fn monomial_approx_factored() -> f64 {
     let e = stark_unit_d2048().conjugate().approx();
     let g3 = generator_g3().approx();
     let g4 = generator_g4().approx();
@@ -294,6 +311,8 @@ pub struct TwoPartExtraction {
     pub exponents: [i64; 3],
     /// The monomial those exponents name, evaluated exactly: (a, b, c)
     pub monomial: (i128, i128, i128),
+    /// Its norm, carried multiplicatively through the product
+    pub monomial_norm: i128,
     /// Whether the Galois pair satisfies the norm identity |σ_+| * |σ_-| = 1
     pub norm_one: bool,
     /// Whether the f64 approximation matches the stored f64 seed
@@ -323,7 +342,8 @@ impl TwoPartExtraction {
             g3_exact: g3,
             g4_exact: g4,
             exponents: [-1, 3, 2],
-            monomial: stark_unit_monomial(),
+            monomial: stark_unit_monomial_with_norm().0,
+            monomial_norm: stark_unit_monomial_with_norm().1,
             norm_one,
             matches_f64,
         }
@@ -340,8 +360,10 @@ impl TwoPartExtraction {
              g4 = {} ≈ {:.16}\n  \
              Exponents [-1, 3, 2] at conductor 16\n  \
              monomial ε⁻¹·g3³·g4² = ({} + {}·sqrt({}))/{}  (exact, i128)\n  \
-             monomial ≈ {:.18} (factored)   1/d ≈ {:.18}   Δ ≈ {:.3e}\n  \
-             expanded triple in f64 = {:.6} — the expansion cancels 20 digits, f64 ulp there is 8192\n  \
+             norm(monomial) = {} (multiplicative: 1·(-2045)³·2049²)\n  \
+             monomial = {:.18} (exact triple, rationalized)\n  \
+             monomial = {:.18} (factors multiplied — independent route, agrees)\n  \
+             1/d = {:.18}   Δ = {:.3e}\n  \
              f64↔exact cross-check: σ_+(ε) matches f64 seed 2046.9995114801: {}\n  \
              Norm identity σ_+σ_-=1: {}\n  \
              Galois 2-part extraction: ψ_+ = σ_+(ε_stark), ψ_- = σ_-(ε_stark) = ψ_+⁻¹\n  \
@@ -353,10 +375,11 @@ impl TwoPartExtraction {
             self.g3_exact.display(), self.g3_exact.approx(),
             self.g4_exact.display(), self.g4_exact.approx(),
             self.monomial.0, self.monomial.1, D2048_MD, self.monomial.2,
+            self.monomial_norm,
             monomial_approx(),
+            monomial_approx_factored(),
             1.0_f64 / 2048.0,
             monomial_approx() - 1.0_f64 / 2048.0,
-            approx128(self.monomial, D2048_MD as i128),
             self.matches_f64,
             self.norm_one
         )
