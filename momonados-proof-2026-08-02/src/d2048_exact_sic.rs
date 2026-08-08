@@ -145,6 +145,64 @@ pub fn generator_g4() -> QuadElem {
     QuadElem::from_frac(2049, -1, 2, D2048_MD)
 }
 
+// -- Cyclotomic levels: the radicals, computed --
+
+/// The quadratic Gauss sum g(m) = sum_{k=0}^{m-1} exp(2*pi*i*k^2/m).
+///
+/// k*k is reduced mod m before the phase is formed, so the argument stays
+/// small and 2732^2 never has to be representable.
+pub fn gauss_sum(m: u32) -> (f64, f64) {
+    let (mut re, mut im) = (0.0_f64, 0.0_f64);
+    let two_pi = 6.283185307179586_f64;
+    for k in 0..m {
+        let r = ((k as u64 * k as u64) % m as u64) as f64;
+        let t = two_pi * r / m as f64;
+        re += libm::cos(t);
+        im += libm::sin(t);
+    }
+    (re, im)
+}
+
+/// The radical a level carries, extracted from the sum rather than from its
+/// modulus.
+///
+/// At a prime level p = 1 mod 4 the sum is real and IS sqrt(p). At a level
+/// divisible by 4 the sum is 2*sqrt(n)*(1 + i), so its modulus is sqrt(8n) and
+/// the radical sits in the real part halved. Comparing |g| against the radical
+/// at those levels compares sqrt(8n) with sqrt(n) and they are not equal --
+/// the modulus is the wrong place to look, not a failed check.
+pub fn level_radical(m: u32) -> f64 {
+    let (re, _im) = gauss_sum(m);
+    if m % 4 == 0 { re / 2.0 } else { re }
+}
+
+/// Step 4 computed: the four cyclotomic levels of D = 3*5*409*683, each
+/// radical extracted from its own Gauss sum, and their product against sqrt(D).
+pub fn cyclotomic_levels_report() -> String {
+    let levels: [(u32, i64); 4] = [(5, 5), (12, 3), (409, 409), (2732, 683)];
+    let mut out = String::new();
+    let mut product = 1.0_f64;
+    for (m, radicand) in levels.iter() {
+        let (re, im) = gauss_sum(*m);
+        let r = level_radical(*m);
+        let want = libm::sqrt(*radicand as f64);
+        product *= r;
+        out.push_str(&format!(
+            "  g({:4}) = {:>14.9} {:+.9}i  |g| = {:>12.9}  ->  sqrt({:4}) = {:.9}  (want {:.9}, err {:.2e}) [{}]\n",
+            m, re, im, libm::sqrt(re * re + im * im), radicand, r, want, r - want,
+            if *m % 4 == 0 { "Re/2" } else { "Re" }));
+    }
+    let sqrt_d = libm::sqrt(D2048_MD as f64);
+    out.push_str(&format!(
+        "  product of radicals = {:.9}\n  sqrt(D)             = {:.9}   err {:.2e}\n",
+        product, sqrt_d, product - sqrt_d));
+    let eps = (2047.0_f64 + product) / 2.0;
+    out.push_str(&format!(
+        "  eps = (2047 + product)/2 = {:.10}   (from the sums, not from a seed)",
+        eps));
+    out
+}
+
 /// The S-unit monomial: epsilon_fund^(-1) * g3^3 * g4^2
 /// Exponents [-1, 3, 2] at conductor 16.
 /// Returns the EXACT algebraic value (not f64).
@@ -367,7 +425,8 @@ impl TwoPartExtraction {
              f64↔exact cross-check: σ_+(ε) matches f64 seed 2046.9995114801: {}\n  \
              Norm identity σ_+σ_-=1: {}\n  \
              Galois 2-part extraction: ψ_+ = σ_+(ε_stark), ψ_- = σ_-(ε_stark) = ψ_+⁻¹\n  \
-             Base field discriminant: 4190205 = 3×5×409×683 (6 Frobenius-dual pairs)",
+             Base field discriminant: 4190205 = 3×5×409×683 (6 Frobenius-dual pairs)\n\
+             Cyclotomic levels, each radical computed from its own Gauss sum:\n{}",
             self.eps_exact.display(),
             self.eps_large,
             self.eps_small,
@@ -381,7 +440,8 @@ impl TwoPartExtraction {
             1.0_f64 / 2048.0,
             monomial_approx() - 1.0_f64 / 2048.0,
             self.matches_f64,
-            self.norm_one
+            self.norm_one,
+            cyclotomic_levels_report()
         )
     }
 

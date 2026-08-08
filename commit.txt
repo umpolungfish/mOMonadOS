@@ -1,30 +1,21 @@
-Rationalize the monomial: the cancellation was in the reading
+Compute the four levels instead of naming them
 
-Last change found that the expanded triple could not be read in f64 and then
-labelled it, which fixes nothing. The cancellation was never in the number. It
-was in the choice to evaluate a + b*sqrt(D) when those two terms agree through
-twenty digits. Multiply above and below by the conjugate and it is gone:
+Step 4 listed sqrt(3), sqrt(5), sqrt(409) and sqrt(683) at levels 12, 5, 409
+and 2732 and evaluated none of them. They are evaluated now, on the kernel, by
+direct summation of the quadratic Gauss sum g(m) = sum exp(2 pi i k^2 / m),
+with k^2 reduced mod m first so the argument stays small and 2732^2 never has
+to be representable.
 
-    M = (a + b*sqrt(D))/c   =>   M = c*Norm(M) / (a - b*sqrt(D))
+The radical is not the modulus. At a prime level p = 1 mod 4 the sum is real
+and IS sqrt(p). At a level divisible by four the sum is 2*sqrt(n)*(1 + i), so
+its modulus is sqrt(8n) and the radical is the real part halved. The old check
+compared |g(12)| = sqrt(24) against sqrt(3) and ticked it; the modulus was
+simply the wrong place to look, and the right place is the component.
 
-The denominator now ADDS two terms of the same sign, so nothing cancels and
-f64 carries it at full relative precision, and the numerator is an exact
-integer. Reading the exact triple gives 0.000488281016884806, correct in every
-digit printed.
+Each of the four now reports its sum, its modulus, the radical extracted, which
+component it came out of, and the error against the radical it should be:
+all four land within 1.5e-13. Their product reconstructs sqrt(D) to 1.3e-11,
+and eps = (2047 + product)/2 now comes out of the sums rather than out of a
+seeded constant.
 
-Norm is carried multiplicatively through the product -- 1 * (-2045)^3 * 2049^2
--- rather than recovered afterwards from a^2 - b^2*D, which needs 5.4e39 where
-i128 stops at 1.7e38.
-
-The factored evaluation stays as a second, independent route to the same
-number, and the roles have swapped: rationalizing the exact triple is now the
-ACCURATE reading at fifteen digits, and multiplying the factors is the one that
-drifts, at thirteen. Agreement between the two is the check that the i128
-expansion is the monomial it claims to be.
-
-The naive reader is deleted rather than kept with a warning on it. A function
-that returns noise on the input it exists to serve is not a function with a
-caveat.
-
-Monomial 0.000488281016884806 against 1/d = 0.00048828125, gap -2.331e-10.
 fibqc verify all pass. Both trees carry the same file.
