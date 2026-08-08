@@ -18,7 +18,7 @@ use crate::{
     dialect_expansion, divisor_ring, mersenne_parallel, bifurcation_test, entropy, d12_sic, d2048_sic, d2048_sieve, stark,
     sic_moduli,
     riemann_sic,
-    riemann_hilbert,
+    riemann_hilbert, bip39_sic_grover,
     witness_vessel, ask, ovm,
 };
 use crate::tokens::{canonical_name, canonical_count, continuous_name, continuous_count, novel_name, novel_count, shunted_name, shunted_count, compound_name, compound_index, compound_program, compound_count};
@@ -1218,6 +1218,37 @@ pub fn repl(k: &mut Kernel) {
                     "tuple" => sprintln!("{}", crate::triple_frame::TRIPLE_FRAME_TUPLE),
                     "help" | "--help" | "-h" => sprintln!("{}", crate::triple_frame::triple_help()),
                     _ => sprintln!("{}", crate::triple_frame::triple_help()),
+                }
+            }
+
+
+            "bip39" => {
+                let sic = parts.next().unwrap_or("");
+                if sic != "sic" {
+                    sprintln!("bip39 sic — BIP39-SIC-POVM structural correspondence");
+                    sprintln!("  bip39 sic search   run Grover search over d=2048 frame");
+                    sprintln!("  bip39 sic words    word-level search structure");
+                    sprintln!("  bip39 sic verify   B4 Frobenius verification");
+                    sprintln!("  bip39 sic map      wordlist/Hilbert space correspondence");
+                    sprintln!("  bip39 sic gap      gap analysis (2^106 -> 2^53 Grover)");
+                    continue;
+                }
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "search" => sprintln!("{}", crate::bip39_sic_grover::bip39_sic_grover_search(133)),
+                    "words" => sprintln!("{}", crate::bip39_sic_grover::bip39_word_level_analysis()),
+                    "verify" => sprintln!("B4 Frobenius: {}", crate::bip39_sic_grover::b4_frobenius_check()),
+                    "map" => sprintln!("BIP39 wordlist {} <-> d={} Hilbert space", crate::bip39_sic_grover::BIP39_WORDLIST_SIZE, crate::bip39_sic_grover::BIP39_WORDLIST_SIZE),
+                    "gap" => sprintln!("BIP39 gap: 2^106 (from 2^128 entropy - 2^22 frame); Grover iterations: 2^53"),
+                    "" => {
+                        sprintln!("bip39 sic — BIP39-SIC-POVM structural correspondence");
+                        sprintln!("  bip39 sic search   run Grover search over d=2048 frame");
+                        sprintln!("  bip39 sic words    word-level search structure");
+                        sprintln!("  bip39 sic verify   B4 Frobenius verification");
+                        sprintln!("  bip39 sic map      wordlist/Hilbert space correspondence");
+                        sprintln!("  bip39 sic gap      gap analysis (2^106 -> 2^53 Grover)");
+                    }
+                    _ => sprintln!("bip39 sic — see 'bip39 sic' (no subcommand)"),
                 }
             }
 
