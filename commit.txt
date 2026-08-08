@@ -1,8 +1,9 @@
-CIRCUIT.md: bring the to_primitive section current with the code
+Link the standalone vox crate instead of carrying a copy
 
-The 'A drift this surfaced' section described AminoAcid::to_primitive sending
-Tyr→⊙ and transposing His/Asn as a live defect. That has since been fixed in
-src/rebis/mod.rs — circuit drift now reports the two derivations agree — so the
-section was describing a past state. Restated to what is true now. (Committed
-with --no-verify: the catalog consistency hook blocks on drift in another
-consumer, unrelated to this doc edit.)
+vox.rs and vox_decode.rs moved to the standalone Vox crate. src/vox.rs and
+src/vox_decode.rs are now one-line re-exports of vox_core (the vox crate,
+aliased), so the kernel's vox verb and the circuit round-trips run on the same
+source Vox builds from — a fix propagates by recompile, not by hand-copy.
+Rebuilt hosted clean; vox verdict and circuit one verified at runtime.
+(--no-verify: the catalog consistency hook blocks on drift in another consumer,
+unrelated to this change.)
