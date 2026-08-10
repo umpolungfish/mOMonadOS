@@ -120,6 +120,7 @@ mod exotic_one_shots;
 mod ctc;
 mod nesting;
 mod carriers;
+mod substrate;
 
 use tokens::{canonical_count, continuous_count, novel_count, shunted_count};
 use crystal::TOTAL;
