@@ -1693,6 +1693,9 @@ pub fn repl(k: &mut Kernel) {
             "nesting" => {
                 sprintln!("{}", crate::nesting::Nesting::report());
             }
+            "carriers" => {
+                sprintln!("{}", crate::carriers::Carriers::report());
+            }
             "rebis" => {
                 let sub = parts.next().unwrap_or("");
                 print_rebis(sub, parts.next().unwrap_or(""), &parts.collect::<alloc::vec::Vec<&str>>().join(" "));
