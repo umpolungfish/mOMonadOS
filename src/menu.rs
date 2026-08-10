@@ -65,6 +65,39 @@ pub static EXEC_MENU: &[MenuItem] = &[
     MenuItem { name: "load",     cmd: "load",     desc: "Load program by Roman numeral", example: "load XII", submenu: None },
 ];
 
+// ─── Fixed-point instruments ──────────────────────────────
+// Each names its own forms. `ctc` and `nesting` take a pairing and answer about
+// that pairing; bare, they sweep. `carriers` and `substrate` read kernel state
+// and take nothing, so their submenus say what they read rather than inventing
+// arguments they do not have.
+
+pub static CTC_MENU: &[MenuItem] = &[
+    MenuItem { name: "sweep",    cmd: "ctc",          desc: "every value in every action, with the price each closure cost", example: "ctc", submenu: None },
+    MenuItem { name: "not",      cmd: "ctc not",      desc: "Belnap negation — fixed at Neither and Both, a 2-cycle between True and False", example: "ctc not T", submenu: None },
+    MenuItem { name: "next",     cmd: "ctc next",     desc: "temporal step — True and False swap, Neither and Both hold", example: "ctc next N", submenu: None },
+    MenuItem { name: "collapse", cmd: "ctc collapse", desc: "everything to Both in one step — one fixed point, whole space in its basin", example: "ctc collapse T", submenu: None },
+    MenuItem { name: "cycle",    cmd: "ctc cycle",    desc: "T→F→N→B→T — no fixed point at all, so closure must be manufactured", example: "ctc cycle T", submenu: None },
+    MenuItem { name: "meet",     cmd: "ctc meet",     desc: "lattice meet against Both", example: "ctc meet T", submenu: None },
+    MenuItem { name: "join",     cmd: "ctc join",     desc: "lattice join against Both", example: "ctc join F", submenu: None },
+];
+
+pub static NESTING_MENU: &[MenuItem] = &[
+    MenuItem { name: "sweep",    cmd: "nesting",         desc: "the reference pairings, each predicted then run", example: "nesting", submenu: None },
+    MenuItem { name: "halve",    cmd: "nesting halve",   desc: "halve the distance to 3 — settles from anywhere, q = 0.5", example: "nesting halve 203", submenu: None },
+    MenuItem { name: "newton",   cmd: "nesting newton",  desc: "Newton on x³−2x−5 — settles fast in range, q well below 1", example: "nesting newton 2", submenu: None },
+    MenuItem { name: "shift",    cmd: "nesting shift",   desc: "add one forever — never settles, and its gap never changes", example: "nesting shift 0", submenu: None },
+    MenuItem { name: "rotate",   cmd: "nesting rotate",  desc: "turn a third of a circle — a closed orbit, needs x and y", example: "nesting rotate 1 0", submenu: None },
+    MenuItem { name: "project",  cmd: "nesting project", desc: "flatten onto the first axis — settles in one step, needs x and y", example: "nesting project 1 5", submenu: None },
+];
+
+pub static CARRIERS_MENU: &[MenuItem] = &[
+    MenuItem { name: "census",   cmd: "carriers", desc: "reads the catalog: every entry meeting the closure condition, the distance between each pair, and the classes they fall into", example: "carriers", submenu: None },
+];
+
+pub static SUBSTRATE_MENU: &[MenuItem] = &[
+    MenuItem { name: "sweep",    cmd: "substrate", desc: "reads the sequence builder: return time and behaviour across the weight range, plus where a critical weight can exist at all", example: "substrate", submenu: None },
+];
+
 pub static STATUS_MENU: &[MenuItem] = &[
     MenuItem { name: "status",   cmd: "status",   desc: "Kernel status (tick, IP, stack, fork, frob)", example: "status", submenu: None },
     MenuItem { name: "program",  cmd: "program",  desc: "Show loaded program + fork depth", example: "program", submenu: None },
@@ -150,10 +183,10 @@ pub static GRAMMAR_MENU: &[MenuItem] = &[
     MenuItem { name: "constants", cmd: "constants", desc: "MoDoT constant closure: fine-structure, proton-electron, lepton, boson, gravity", example: "constants", submenu: None },
     MenuItem { name: "ovm", cmd: "ovm", desc: "OVM Computation Tools", example: "ovm list", submenu: None },
     MenuItem { name: "oneshots", cmd: "oneshots", desc: "the 10 exotic fixed-point nestings: inner already at outer's fixed point", example: "oneshots", submenu: None },
-    MenuItem { name: "ctc",      cmd: "ctc",      desc: "nest a value in an action; closure imposed where the action has none, priced by the width it smears. Bare for the full sweep", example: "ctc cycle T", submenu: None },
-    MenuItem { name: "nesting",  cmd: "nesting",  desc: "read a point against a map: q=r2/r1 splits attracted from never-arrives where one gap cannot. Bare for the full sweep", example: "nesting halve 203", submenu: None },
-    MenuItem { name: "carriers", cmd: "carriers", desc: "census of the mu-delta=id carriers by class: one fixed point seen many ways, or a family", example: "carriers", submenu: None },
-    MenuItem { name: "substrate", cmd: "substrate", desc: "closure constant, content bifurcating: the conservative substrate read on both observables", example: "substrate", submenu: None },
+    MenuItem { name: "ctc",      cmd: "ctc",      desc: "nest a value in an action; closure imposed where the action has none, priced by the width it smears", example: "ctc cycle T", submenu: Some(CTC_MENU) },
+    MenuItem { name: "nesting",  cmd: "nesting",  desc: "read a point against a map: q=r2/r1 splits attracted from never-arrives where one gap cannot", example: "nesting halve 203", submenu: Some(NESTING_MENU) },
+    MenuItem { name: "carriers", cmd: "carriers", desc: "census of the mu-delta=id carriers by class: one fixed point seen many ways, or a family", example: "carriers", submenu: Some(CARRIERS_MENU) },
+    MenuItem { name: "substrate", cmd: "substrate", desc: "closure constant, content bifurcating: the conservative substrate read on both observables", example: "substrate", submenu: Some(SUBSTRATE_MENU) },
     MenuItem { name: "stark", cmd: "stark", desc: "Stark unit extraction: formula,fibqc,tower,exponents,verify", example: "stark formula 2048", submenu: None },
     MenuItem { name: "riemann", cmd: "riemann", desc: "Riemann-SIC report; sub-actions available", example: "riemann", submenu: None },
     MenuItem { name: "distance", cmd: "distance", desc: "Hamming + weighted distance vs the ZFC baseline tuple (alias dist)", example: "distance", submenu: None },

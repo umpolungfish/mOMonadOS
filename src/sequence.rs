@@ -452,6 +452,32 @@ fn build_program_from_scores(scores: &Scores, len: usize, self_ref: bool) -> Pro
 /// This is the primary production function in dynamic mode.  The sequence
 /// builder is itself an IMASM execution — the substrate constructs its own
 /// continuation.
+/// The weight beyond which the ranking cannot change again.
+///
+/// combined[i] = sub[i]·w + family[i], so for any pair the sign of the
+/// difference is (Δsub)·w + Δfamily. Where Δsub is zero the pair is ordered by
+/// Δfamily alone and no weight ever moves it. Where Δsub is non-zero the sign is
+/// settled for good once w exceeds |Δfamily|, and |Δsub| ≥ 1 makes the largest
+/// |Δfamily| over such pairs the last weight at which anything can flip.
+///
+/// A scan to this bound is exhaustive rather than merely long: past it the
+/// program is a fixed function of the tuple, so "no critical weight below the
+/// bound" and "no critical weight" are the same statement.
+pub fn ranking_settles_beyond(tuple: &IgTuple, tier: u8) -> i32 {
+    let family_s = aggregate_votes(tuple);
+    let sub_s    = substrate_votes(tuple, tier);
+    let mut worst = 0;
+    for i in 0..12 {
+        for j in 0..12 {
+            if sub_s[i] != sub_s[j] {
+                let d = (family_s[i] - family_s[j]).abs();
+                if d > worst { worst = d; }
+            }
+        }
+    }
+    worst
+}
+
 pub fn build_via_substrate(tuple: &IgTuple, len: usize, self_ref: bool, tier: u8) -> Program {
     let family_s = aggregate_votes(tuple);
     let sub_s    = substrate_votes(tuple, tier);

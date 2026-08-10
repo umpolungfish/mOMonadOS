@@ -107,6 +107,22 @@ fn varying_slots(pop: &[Carrier]) -> Vec<(&'static str, usize)> {
 pub struct Carriers;
 
 impl Carriers {
+    pub fn help() -> String {
+        let mut s = String::from("carriers — survey everything that asserts the closure condition\n\n");
+        s.push_str("The condition says a thing split apart and put back together is the\n");
+        s.push_str("thing you started with. Many parts of the kernel claim it. Three were\n");
+        s.push_str("once shown to be the same object, but only because they were already\n");
+        s.push_str("suspected of it; the rest had never been compared.\n\n");
+        s.push_str("This reads the catalog, takes every entry meeting the condition, and\n");
+        s.push_str("measures the distance between each pair with the kernel's own metric.\n");
+        s.push_str("Nothing is entered by hand. It reports the pairs, the classes they fall\n");
+        s.push_str("into, which slots vary across them, and how much of the catalog the\n");
+        s.push_str("condition could actually be read on.\n\n");
+        s.push_str("  carriers        the census\n");
+        s.push_str("  carriers help   this\n");
+        s
+    }
+
     pub fn report() -> String {
         let pop = population();
         let n = pop.len();

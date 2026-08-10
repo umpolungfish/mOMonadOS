@@ -40,8 +40,6 @@ use crate::imas_ig::{IgTuple, IgPrim};
 use crate::tokens::Token;
 
 const SWEEP_HI: i32 = 10;
-/// How far to look for a critical weight before concluding there is none.
-const WC_SEARCH: i32 = 64;
 
 /// The seed: O_∞, self-referential topology, universal range. This is the tuple
 /// the family matrix leaves leading with self-imscription, which is exactly where
@@ -61,13 +59,20 @@ fn program_at(t: &IgTuple, w: i32) -> Vec<Token> {
 
 /// Cycle length under repeated self-imscription. One means the program returns
 /// to itself in a single step: the parameter is AT the fixed point.
-fn cycle_length(t: &IgTuple, w: i32, max_iter: usize) -> usize {
+///
+/// The loop needs no iteration limit. A program is a bounded sequence of tokens
+/// drawn from a finite alphabet, so the orbit of self-imscription lives in a
+/// finite set and must revisit a state it has already been in. The `seen` list
+/// detects that revisit exactly, and the return happens there.
+fn cycle_length(t: &IgTuple, w: i32) -> usize {
     sequence::set_substrate_weight(w);
     let mut seen: Vec<Vec<Token>> = Vec::new();
     let mut cur = *t;
     let mut prog = sequence::build_via_substrate(&cur, 12, cur.t == IgPrim::are, 3);
     seen.push(prog.as_slice().to_vec());
-    for i in 1..max_iter {
+    let mut i = 0usize;
+    loop {
+        i += 1;
         let snap = crate::kernel::self_imscribe(&prog);
         cur = IgTuple::from_snapshot(&snap);
         let next = sequence::build_via_substrate(&cur, 12, cur.t == IgPrim::are, 3);
@@ -78,7 +83,6 @@ fn cycle_length(t: &IgTuple, w: i32, max_iter: usize) -> usize {
         seen.push(toks);
         prog = next;
     }
-    max_iter
 }
 
 /// The token the ranking puts after the opening self-imscription. This is the
@@ -89,9 +93,15 @@ fn leader(t: &IgTuple, w: i32) -> Token {
 }
 
 /// Lowest weight whose program differs from the zero-weight program, if any.
+///
+/// The scan runs to the weight past which the ranking provably cannot change
+/// again, computed from the tuple's own score vectors rather than chosen. So a
+/// `None` here means there is no critical weight at all, not that none was found
+/// within some budget I picked.
 fn critical_weight(t: &IgTuple) -> Option<i32> {
     let base = program_at(t, 0);
-    for w in 1..=WC_SEARCH {
+    let settles = sequence::ranking_settles_beyond(t, 3);
+    for w in 1..=settles + 1 {
         if program_at(t, w) != base { return Some(w); }
     }
     None
@@ -100,6 +110,23 @@ fn critical_weight(t: &IgTuple) -> Option<i32> {
 pub struct Substrate;
 
 impl Substrate {
+    pub fn help() -> String {
+        let mut s = String::from("substrate — two questions asked of one parameter sweep\n\n");
+        s.push_str("Does the program come back to itself, and which program does it come\n");
+        s.push_str("back to? They are not the same question, and here they answer\n");
+        s.push_str("differently: the return is immediate at every setting, while the\n");
+        s.push_str("behaviour changes sharply at one point inside the range.\n\n");
+        s.push_str("A flat return column reads like a broken measurement and is not one. It\n");
+        s.push_str("is what a system looks like when every setting already sits at its own\n");
+        s.push_str("answer, so there is nothing left for the return to report.\n\n");
+        s.push_str("It also sweeps variants, to show where a critical setting can exist at\n");
+        s.push_str("all, scanning to the weight past which the ranking provably cannot\n");
+        s.push_str("change again — so 'none' means none, not none found.\n\n");
+        s.push_str("  substrate        the sweep\n");
+        s.push_str("  substrate help   this\n");
+        s
+    }
+
     pub fn report() -> String {
         let t = seed();
         let mut s = String::from("The Substrate That Closes Everywhere\n");
@@ -112,7 +139,7 @@ impl Substrate {
         let mut all_one = true;
         let base = program_at(&t, 0);
         for w in 0..=SWEEP_HI {
-            let c = cycle_length(&t, w, 20);
+            let c = cycle_length(&t, w);
             if c != 1 { all_one = false; }
             let ld = leader(&t, w);
             let regime = if program_at(&t, w) == base { "self-imscription" } else { "advancing" };
@@ -128,7 +155,9 @@ impl Substrate {
             Some(w) => s.push_str(&format!(
                 "content bifurcation:      w_c = {} — the ranking flips once and never again\n", w)),
             None => s.push_str(
-                "content bifurcation:      none up to the search bound\n"),
+                "content bifurcation:      none — scanned past the weight where the\n\
+                 \x20                        ranking provably stops changing, so this\n\
+                 \x20                        is no critical weight, not none found\n"),
         }
 
         // Where a critical weight can exist at all. The substrate vote can only
@@ -136,8 +165,8 @@ impl Substrate {
         // with, so stepping off the self-referential topology or narrowing the
         // range leaves it nothing to overturn.
         s.push_str("\nWhere a critical weight exists at all\n");
-        s.push_str("  variant                        | leader at w=0        | w_c\n");
-        s.push_str("  -------------------------------|----------------------|------\n");
+        s.push_str("  variant                        | leader at w=0        | w_c  | settles beyond\n");
+        s.push_str("  -------------------------------|----------------------|------|---------------\n");
         let mut rows: Vec<(&'static str, IgTuple)> = Vec::new();
         rows.push(("seed (self-ref, universal)", t));
         for (label, tv) in [("topology → oil", IgPrim::oil), ("topology → judge", IgPrim::judge),
@@ -150,8 +179,10 @@ impl Substrate {
         for (label, v) in &rows {
             let ld = leader(v, 0);
             let w = critical_weight(v);
-            s.push_str(&format!("  {:<30} | {:<20} | {}\n", label, ld.name(),
-                match w { Some(x) => format!("{}", x), None => String::from("none") }));
+            let settles = sequence::ranking_settles_beyond(v, 3);
+            s.push_str(&format!("  {:<30} | {:<20} | {:<4} | {}\n", label, ld.name(),
+                match w { Some(x) => format!("{}", x), None => String::from("none") },
+                settles));
         }
 
         s.push_str("\nReading\n");

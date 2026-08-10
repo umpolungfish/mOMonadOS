@@ -17,7 +17,10 @@ ELF="target/x86_64-unknown-none/${PROFILE}/momonados"
     sleep 0.5
   done
   echo quit
-} | timeout 60 qemu-system-x86_64 \
+# No timeout. A turn that takes minutes (vita bakes a neural turn on emulated
+# bare metal) was being killed at 60s and read as a hang, which is the harness
+# lying about the kernel. If a command genuinely wedges, Ctrl-C is the tool.
+} | qemu-system-x86_64 \
   -kernel "$ELF" \
   -m 256M \
   -display none \

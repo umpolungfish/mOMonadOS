@@ -1,22 +1,37 @@
-vita always builds; ctc and nesting take arguments
+No caps: every limit replaced by the condition that ends the loop
 
-vita was in the menu and out of the binary at the same time. The command sat
-behind a `vita` feature, the module behind the same gate, and no build enabled
-it, so typing vita answered "Unknown: vita" while help listed it. The weights
-were on disk the whole time. Gate removed from the module, the arm, the Cargo
-feature and the menu text; vita_weights.bin is baked in unconditionally, which
-is what takes the kernel from 2.9M to 5.3M. It answers, and its turn is
-admitted. It needs more than the 60s run_serial_cmds.sh allows, which is a
-property of a neural turn on emulated bare metal, not a fault.
+I had numbers standing in for reasoning, and each one was hiding something.
 
-ctc and nesting were glossaries. They took no arguments and printed a fixed
-table of six and seven cases I had chosen, so neither could be pointed at
-anything. They described general instruments and implemented a printout. Both
-now take a pairing and answer about it: `ctc <action> <T|F|N|B>` over the six
-Belnap actions, `nesting <map> <x> [y]` over the five maps, each bare form
-falling back to the full sweep. Unknown names are refused with what is
-available rather than silently doing something else. The menu examples show
-real arguments instead of repeating the command name.
+nesting ran its confirming nest to a 10,000-step ceiling. It now stops when the
+gap stops shrinking, which is the run reporting the answer rather than me
+waiting for one, and a map that never arrives says so at the step that shows it.
+The edge is stated in the code: a map converging non-monotonically would be
+stopped at its widening, and none offered here does that.
 
-Nothing about the mathematics changed. What changed is that two of the four are
-no longer demonstrations of themselves.
+ctc had two `> 8` breaks in loops that already terminate on their own — the
+value walk by cycle detection, the set lift by saturation. Dead rails, removed.
+
+substrate scanned to weight 64 for a critical value and reported "none up to the
+search bound", which is not the same claim as "none". The ranking is
+sub·w + family, so past the largest family gap between tokens whose substrate
+scores differ, no ordering can flip again. sequence.rs now derives that bound
+and substrate scans to it, so none means none. It comes out at 36 for the seed
+and 35 for the variants, which my 64 happened to clear — the old result stands,
+now by construction instead of by luck.
+
+run_serial_cmds.sh killed qemu at 60s. A vita turn takes longer than that on
+emulated bare metal, so the harness was reporting a hang that was a computation.
+Removed.
+
+And the one that was hiding under the others. f64_sqrt was Newton with exactly
+ten iterations from z = x. For a small argument the first step overshoots to
+near 0.5 and ten halvings cannot come back, so sqrt(4.9e-19) answered about
+5e-4 — five orders out. Every small distance compared against a tolerance was
+wrong. It now starts by halving the exponent in the bit pattern and runs until
+the sequence stops descending, which terminates on its own at full precision.
+`nesting halve 203` settled in 60 steps before and settles in 37 now.
+
+Help, which I should have written first. All four take `help` and answer for
+themselves, and all four have submenus naming every form they accept rather
+than the bare `submenu: None` I left. ctc's help computes each action's fixed
+points as it prints them, so the table cannot drift from the code.

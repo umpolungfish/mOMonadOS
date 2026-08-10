@@ -42,8 +42,6 @@ const TOL: f64 = 1e-9;
 /// shrinking. A near-fixed point must NOT be read as one-shot, and a genuine
 /// translation must NOT be read as attracted, so this band is deliberately tight.
 const FLAT_BAND: f64 = 1e-6;
-/// Budget for the confirming nest.
-const MAXIT: u32 = 10_000;
 
 fn abs(x: f64) -> f64 { if x < 0.0 { -x } else { x } }
 
@@ -106,16 +104,33 @@ pub fn read(f: fn(&[f64], &mut [f64]), a: &[f64]) -> Reading {
 /// Run the nest to confirm what the reading predicted. This is the check, not
 /// the instrument: the reading is made first and the nest is allowed to
 /// disagree with it.
+///
+/// There is no iteration budget. The loop ends on a condition the run itself
+/// produces: either the gap closes, or a step fails to shrink it. A gap that
+/// stops shrinking is the run saying it will not arrive, which is the answer
+/// being asked for rather than a limit being hit — so "never arrives" is
+/// reported at the step that demonstrates it, not after an arbitrary wait.
+///
+/// The honest edge: a map that converges non-monotonically, widening the gap on
+/// some step before closing in later, would be stopped at that widening and
+/// called open. Every map offered here shrinks monotonically inside its basin,
+/// so none of them meets that edge, and a map that did would need its own
+/// stopping condition rather than a bigger number.
 pub fn confirm(f: fn(&[f64], &mut [f64]), a: &[f64]) -> (bool, u32) {
     let n = a.len();
     let mut x: Vec<f64> = a.to_vec();
     let mut nx = alloc::vec![0.0; n];
-    for k in 0..MAXIT {
+    let mut prev_gap = f64::INFINITY;
+    let mut k: u32 = 0;
+    loop {
         f(&x, &mut nx);
-        if dist(&nx, &x) < TOL { return (true, k); }
+        let gap = dist(&nx, &x);
+        if gap < TOL { return (true, k); }
+        if gap >= prev_gap { return (false, k); }
+        prev_gap = gap;
         x.copy_from_slice(&nx);
+        k += 1;
     }
-    (false, MAXIT)
 }
 
 // ── The operator families, one per axis ─────────────────────────────────────
@@ -180,7 +195,7 @@ fn describe(label: &str, f: fn(&[f64], &mut [f64]), a: &[f64]) -> String {
     s.push_str(&format!("  from two gaps: {}\n", rd.class.name()));
     s.push_str(&format!("  running it:    {}\n",
         if closed { format!("settled in {} step(s)", steps) }
-        else { format!("still open at the {}-step cap", steps) }));
+        else { format!("stopped shrinking at step {} — it never arrives", steps) }));
     let agrees = match rd.class {
         Class::OneShot      => closed && steps == 0,
         Class::Attracted    => closed,
@@ -191,6 +206,32 @@ fn describe(label: &str, f: fn(&[f64], &mut [f64]), a: &[f64]) -> String {
 }
 
 impl Nesting {
+    /// What this command does and every form it takes, from the command itself.
+    pub fn help() -> String {
+        let mut s = String::from("nesting — read a point against a map before running it\n\n");
+        s.push_str("One gap tells you whether the point is already the answer, and nothing\n");
+        s.push_str("more: every other case reads the same. Two gaps tell you the rest. If\n");
+        s.push_str("the gap shrank it is being drawn in and will arrive; if it held or grew\n");
+        s.push_str("it never will. The cost is one extra application of the map.\n\n");
+        s.push_str("  nesting                    the reference pairings\n");
+        s.push_str("  nesting <map> <x>          one point, for a map on the line\n");
+        s.push_str("  nesting <map> <x> <y>      one point, for a map on the plane\n");
+        s.push_str("  nesting help               this\n\n");
+        s.push_str("maps:\n");
+        for (name, dim, what) in [
+            ("halve",   1, "halve the distance to 3 — arrives from anywhere, q = 0.5"),
+            ("newton",  1, "Newton on x³−2x−5 — arrives fast in range, q well under 1"),
+            ("shift",   1, "add one forever — never arrives, and its gap never changes"),
+            ("rotate",  2, "turn a third of a circle — a closed orbit, never arrives"),
+            ("project", 2, "flatten onto the first axis — arrives in a single step"),
+        ] {
+            s.push_str(&format!("  {:<8} {} coord{}  {}\n",
+                name, dim, if dim == 1 { " " } else { "s" }, what));
+        }
+        s.push_str("\nexample:  nesting shift 0   — gap 1.0 both times, so it never arrives\n");
+        s
+    }
+
     /// Read one caller-chosen point against one caller-chosen map.
     pub fn run(map: &str, args: &[&str]) -> String {
         let (f, dim) = match map_by_name(map) {

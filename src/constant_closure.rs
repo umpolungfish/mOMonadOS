@@ -16,11 +16,30 @@ pub fn f64_powi(x: f64, n: i32) -> f64 {
     r
 }
 
+/// Square root by Newton, run to convergence rather than for a fixed count.
+///
+/// The previous version started at z = x and took exactly ten steps. For a small
+/// argument that is badly wrong, not slightly wrong: from z = 4.9e-19 the first
+/// step lands near 0.5, and ten halvings cannot return to the true root at
+/// 7e-10, so it answered about 5e-4. Anything comparing a small distance against
+/// a tolerance was reading a number five orders of magnitude too large.
+///
+/// The fix is in both places the ten was covering for. The initial guess halves
+/// the exponent through the bit pattern, which starts the iteration beside the
+/// answer instead of thirty halvings away. And the loop runs until the sequence
+/// stops descending: after the first step Newton approaches the root from above
+/// and decreases monotonically, so a strictly decreasing run of floats bounded
+/// below terminates on its own, at full precision, with nothing to choose.
 pub fn f64_sqrt(x: f64) -> f64 {
     if x <= 0.0 { return 0.0; }
-    let mut z = x;
-    for _ in 0..10 { z = (z + x / z) * 0.5; }
-    z
+    if !(x == x) || x == f64::INFINITY { return x; }
+    let mut z = f64::from_bits((x.to_bits() + (1023u64 << 52)) >> 1);
+    z = (z + x / z) * 0.5;
+    loop {
+        let next = (z + x / z) * 0.5;
+        if !(next < z) { return z; }
+        z = next;
+    }
 }
 
 pub fn f64_exp(x: f64) -> f64 {

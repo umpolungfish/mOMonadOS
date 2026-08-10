@@ -1688,26 +1688,32 @@ pub fn repl(k: &mut Kernel) {
             }
             "ctc" => {
                 let a: alloc::vec::Vec<&str> = parts.collect();
-                match a.len() {
-                    0 => sprintln!("{}", crate::ctc::Ctc::sweep()),
-                    2 => sprintln!("{}", crate::ctc::Ctc::run(a[0], a[1])),
-                    _ => sprintln!("usage: ctc [<action> <T|F|N|B>]   actions: {}",
-                                   crate::ctc::ACTIONS.join(", ")),
+                match a.as_slice() {
+                    [] => sprintln!("{}", crate::ctc::Ctc::sweep()),
+                    ["help"] | ["-h"] | ["--help"] | ["?"] => sprintln!("{}", crate::ctc::Ctc::help()),
+                    [act, val] => sprintln!("{}", crate::ctc::Ctc::run(act, val)),
+                    _ => sprintln!("{}", crate::ctc::Ctc::help()),
                 }
             }
             "nesting" => {
                 let a: alloc::vec::Vec<&str> = parts.collect();
-                if a.is_empty() {
-                    sprintln!("{}", crate::nesting::Nesting::sweep());
-                } else {
-                    sprintln!("{}", crate::nesting::Nesting::run(a[0], &a[1..]));
+                match a.as_slice() {
+                    [] => sprintln!("{}", crate::nesting::Nesting::sweep()),
+                    ["help"] | ["-h"] | ["--help"] | ["?"] => sprintln!("{}", crate::nesting::Nesting::help()),
+                    _ => sprintln!("{}", crate::nesting::Nesting::run(a[0], &a[1..])),
                 }
             }
             "carriers" => {
-                sprintln!("{}", crate::carriers::Carriers::report());
+                match parts.next() {
+                    None => sprintln!("{}", crate::carriers::Carriers::report()),
+                    Some(_) => sprintln!("{}", crate::carriers::Carriers::help()),
+                }
             }
             "substrate" => {
-                sprintln!("{}", crate::substrate::Substrate::report());
+                match parts.next() {
+                    None => sprintln!("{}", crate::substrate::Substrate::report()),
+                    Some(_) => sprintln!("{}", crate::substrate::Substrate::help()),
+                }
             }
             "rebis" => {
                 let sub = parts.next().unwrap_or("");

@@ -159,8 +159,9 @@ pub fn nest(g: fn(B4) -> B4, seed: B4) -> Closure {
         };
     }
 
-    // 2. Basin. Walk the value orbit; the state space is finite, so this
-    //    terminates either at a fixed point or on a cycle.
+    // 2. Basin. Walk the value orbit. No iteration limit is needed or wanted:
+    //    B4 has four values, so the walk either reaches a fixed point or steps
+    //    onto a value it has already visited, and `seen` catches that exactly.
     let mut x = seed;
     let mut steps = 0u32;
     let mut seen = B4Set::single(seed);
@@ -186,13 +187,12 @@ pub fn nest(g: fn(B4) -> B4, seed: B4) -> Closure {
         seen.insert(next);
         x = next;
         steps += 1;
-        if steps > 8 { break; } // B4 has four values; this cannot be reached
     }
 
     // 3. Manufacture. Iterate the LIFTED map until the set stops changing.
-    //    The sequence of sets is non-decreasing once unioned with its image, so
-    //    it saturates in at most |B4| steps, and the saturated set maps into
-    //    itself by construction.
+    //    Each round unions the set with its own image, so the set never shrinks
+    //    and is bounded above by all of B4: it must stop growing, and the round
+    //    where it stops is the answer. Nothing to cut short.
     let mut s = B4Set::single(seed);
     let mut lift_steps = 0u32;
     loop {
@@ -200,7 +200,6 @@ pub fn nest(g: fn(B4) -> B4, seed: B4) -> Closure {
         lift_steps += 1;
         if next == s { break; }
         s = next;
-        if lift_steps > 8 { break; }
     }
 
     // The claim is checked, not asserted: does the support map to itself?
@@ -275,6 +274,34 @@ pub fn value_by_name(name: &str) -> Option<B4> {
 pub const ACTIONS: [&str; 6] = ["not", "next", "collapse", "cycle", "meet", "join"];
 
 impl Ctc {
+    /// What this command does and every form it takes, from the command itself.
+    pub fn help() -> String {
+        let mut s = String::from("ctc — nest a value inside an action and report what closes\n\n");
+        s.push_str("Possession is tested first, then the basin, then imposition. Where the\n");
+        s.push_str("action leaves no value alone, the action is lifted to SETS of values,\n");
+        s.push_str("where a fixed point always exists — and the price is the width it had\n");
+        s.push_str("to smear, zero for a value held outright.\n\n");
+        s.push_str("  ctc                     every value in every action\n");
+        s.push_str("  ctc <action> <value>    just that pairing\n");
+        s.push_str("  ctc help                this\n\n");
+        s.push_str("values:  T (true)  F (false)  N (neither)  B (both)\n\n");
+        s.push_str("actions:\n");
+        for (name, what) in [
+            ("not",      "Belnap negation: fixed at N and B, a 2-cycle between T and F"),
+            ("next",     "temporal step: T and F swap, N and B hold"),
+            ("collapse", "everything to B in one step: one fixed point, all else its basin"),
+            ("cycle",    "T→F→N→B→T: no fixed point at all, so closure must be made"),
+            ("meet",     "lattice meet against B"),
+            ("join",     "lattice join against B"),
+        ] {
+            let g = action_by_name(name).unwrap();
+            s.push_str(&format!("  {:<9} {:<62} fixed: {}\n",
+                                name, what, pure_fixed_points(g).to_notation()));
+        }
+        s.push_str("\nexample:  ctc cycle T   — no fixed point, closes at width 4, price 3\n");
+        s
+    }
+
     /// Nest one caller-chosen value inside one caller-chosen action.
     pub fn run(action: &str, seed: &str) -> String {
         let g = match action_by_name(action) {
