@@ -118,6 +118,7 @@ mod kernel_torus;
 mod ovm;
 mod exotic_one_shots;
 mod ctc;
+mod nesting;
 
 use tokens::{canonical_count, continuous_count, novel_count, shunted_count};
 use crystal::TOTAL;

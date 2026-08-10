@@ -151,6 +151,7 @@ pub static GRAMMAR_MENU: &[MenuItem] = &[
     MenuItem { name: "ovm", cmd: "ovm", desc: "OVM Computation Tools", example: "ovm list", submenu: None },
     MenuItem { name: "oneshots", cmd: "oneshots", desc: "the 10 exotic fixed-point nestings: inner already at outer's fixed point", example: "oneshots", submenu: None },
     MenuItem { name: "ctc",      cmd: "ctc",      desc: "manufactured fixed points: closure imposed where the action has none, priced by the width it smears", example: "ctc", submenu: None },
+    MenuItem { name: "nesting",  cmd: "nesting",  desc: "the two-step observable: q=r2/r1 splits attracted from never-arrives where the residual alone cannot", example: "nesting", submenu: None },
     MenuItem { name: "stark", cmd: "stark", desc: "Stark unit extraction: formula,fibqc,tower,exponents,verify", example: "stark formula 2048", submenu: None },
     MenuItem { name: "riemann", cmd: "riemann", desc: "Riemann-SIC report; sub-actions available", example: "riemann", submenu: None },
     MenuItem { name: "distance", cmd: "distance", desc: "Hamming + weighted distance vs the ZFC baseline tuple (alias dist)", example: "distance", submenu: None },
