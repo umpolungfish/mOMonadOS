@@ -369,3 +369,66 @@ mod tests {
         assert_eq!(sic.algebraic_period(), 8);
     }
 }
+
+// ── Token ↔ Glyph ───────────────────────────────────────────────────────────
+//
+// Two alphabets described the same twelve marks and never met. `Token::code()`
+// emits the canonical glyph for an opcode; `Glyph::from_char` accepts exactly
+// the canonical twelve as grammar axes. Nothing joined them, so an IMASM program
+// could not be read as a glyph word and a glyph word could not be read as a
+// program, though both spell the marks identically.
+//
+// The correspondence is not a bijection and pretending otherwise would be the
+// error. Token carries sixteen variants: FSPLIT3 and FFUSE3 share ∈ and ∋ with
+// the two-arity dyad, EVALI shares ⊞ with ENGAGR, and ROTAT is ↻, which is no
+// grammar axis at all. So Token → Glyph is total on the twelve core opcodes,
+// partial overall, and many-to-one; Glyph → Token picks the core opcode, which
+// is the only choice that round-trips.
+
+use crate::tokens::{Program, Token};
+
+/// The grammar axis an opcode writes, if it writes one. `None` for ROTAT, which
+/// has a glyph but not an axis.
+pub fn token_to_glyph(t: Token) -> Option<Glyph> {
+    Glyph::from_char(t.code().chars().next()?)
+}
+
+/// The core opcode that writes a given axis. Total: every axis has exactly one
+/// two-arity opcode, and the extension opcodes are never chosen here.
+pub fn glyph_to_token(g: Glyph) -> Token {
+    match g {
+        Glyph::Dim  => Token::Vinit,
+        Glyph::Top  => Token::Tanch,
+        Glyph::Rel  => Token::Afwd,
+        Glyph::Pol  => Token::Arev,
+        Glyph::Fid  => Token::Clink,
+        Glyph::Kin  => Token::Evalt,
+        Glyph::Car  => Token::Fsplit,
+        Glyph::Com  => Token::Ffuse,
+        Glyph::Cri  => Token::Imscrib,
+        Glyph::Chi  => Token::Evalf,
+        Glyph::Stoi => Token::Engagr,
+        Glyph::Win  => Token::Ifix,
+    }
+}
+
+/// Read a glyph word as an IMASM program. Any character that is not one of the
+/// twelve is rejected by position, so a retired mark fails loudly rather than
+/// being dropped and silently shortening the program.
+pub fn program_from_glyphs(word: &str) -> Result<Program, (usize, char)> {
+    let mut p = Program::empty();
+    for (i, c) in word.chars().filter(|c| !c.is_whitespace()).enumerate() {
+        match Glyph::from_char(c) {
+            Some(g) => p.push(glyph_to_token(g)),
+            None => return Err((i, c)),
+        }
+    }
+    Ok(p)
+}
+
+/// Write an IMASM program as a glyph word.
+pub fn glyphs_from_program(prog: &Program) -> alloc::string::String {
+    let mut s = alloc::string::String::new();
+    for t in prog.as_slice() { s.push_str(t.code()); }
+    s
+}

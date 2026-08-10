@@ -20,41 +20,24 @@ use crate::tokens::Token;
 // 1. THE TOKEN TABLE
 // ===========================================================================
 
-pub fn token_name(tok: &Token) -> &'static str {
-    match tok {
-        Token::Vinit => "VINIT",
-        Token::Tanch => "TANCH",
-        Token::Afwd => "AFWD",
-        Token::Arev => "AREV",
-        Token::Clink => "CLINK",
-        Token::Imscrib => "IMSCRIB",
-        Token::Fsplit => "FSPLIT",
-        Token::Ffuse => "FFUSE",
-        Token::Evalt => "EVALT",
-        Token::Evalf => "EVALF",
-        Token::Engagr => "ENGAGR",
-        Token::Ifix => "IFIX",
-        _ => "UNKNOWN",
-    }
-}
+// One table, not two. Token already knows its own name and its own glyph, and
+// a second copy here answered "UNKNOWN" for the three-arity and rotation tokens
+// the type has carried for some time. Delegate.
+pub fn token_name(tok: &Token) -> &'static str { tok.name() }
 
-pub fn parse_token_name(name: &str) -> Option<Token> {
-    match name {
-        "VINIT" => Some(Token::Vinit),
-        "TANCH" => Some(Token::Tanch),
-        "AFWD" => Some(Token::Afwd),
-        "AREV" => Some(Token::Arev),
-        "CLINK" => Some(Token::Clink),
-        "IMSCRIB" => Some(Token::Imscrib),
-        "FSPLIT" => Some(Token::Fsplit),
-        "FFUSE" => Some(Token::Ffuse),
-        "EVALT" => Some(Token::Evalt),
-        "EVALF" => Some(Token::Evalf),
-        "ENGAGR" => Some(Token::Engagr),
-        "IFIX" => Some(Token::Ifix),
-        _ => None,
-    }
-}
+/// The token's canonical glyph — ⋈ for CLINK, ∈ ∋ for the dyad, ⊤ ⊥ for the
+/// evaluators, ◻ for IFIX. Exposed here so a caller reaching for the braid
+/// protocol does not have to know which module owns the alphabet.
+pub fn token_glyph(tok: &Token) -> &'static str { tok.code() }
+
+/// Parse a token from a name OR a glyph.
+///
+/// This used to carry its own table of the twelve ASCII names and reject every
+/// glyph, so `⋈` parsed through `Token::parse` and failed here — two parsers for
+/// one type, disagreeing about the alphabet. `Token::parse` is the one that
+/// knows both, including the short forms and the δ/μ spellings, and it is
+/// explicit that the retired marks ◇ ● ☊ ☋ are not tokens.
+pub fn parse_token_name(name: &str) -> Option<Token> { Token::parse(name) }
 
 pub fn stack_delta(tok: &Token) -> i32 {
     match tok {

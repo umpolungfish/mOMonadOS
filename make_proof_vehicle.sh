@@ -84,6 +84,22 @@ exec qemu-system-x86_64 -kernel momonados -m 256M -display none \
 RUNNER
 chmod +x "$OUT/run.sh"
 
+# A vehicle is a snapshot, and the last time this was forgotten a review
+# reported the live kernel as broken on the strength of a two-month-old copy of
+# imasm_core carried in here. The stamp goes in first, at the top of the README
+# and in a file whose name cannot be skimmed past.
+cat > "$OUT/NOT_CANONICAL.md" <<STAMP
+# This directory is a snapshot, not the source
+
+Built $(date -u +%Y-%m-%dT%H:%M:%SZ) from the tree at
+/home/mrnob0dy666/imsgct/mOMonadOS.
+
+It carries copies — imasm_core among them — that were current on the build date
+and drift from the moment the source moves. Read it to RUN the kernel as it
+stood. Do not read it to learn what the kernel does now, and never cite a path
+inside it as canonical: cite the live tree.
+STAMP
+
 cat > "$OUT/README.md" <<'NOTE'
 # mOMonadOS — proof vehicle
 

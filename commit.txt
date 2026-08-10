@@ -1,37 +1,30 @@
-No caps: every limit replaced by the condition that ends the loop
+One alphabet: braid_protocol delegates, and Token meets Glyph
 
-I had numbers standing in for reasoning, and each one was hiding something.
+A review reported the kernel emitting the retired glyphs and rejecting the
+canonical ones. It read momonados-proof-2026-08-02/imasm_core/src/classic.rs and
+called that the canonical reference. That path is a frozen vehicle — a copy of
+the tree made for emailing, two months stale — and the live imasm_core had
+already migrated: code() emits ⋈ ∈ ∋ ⊤ ⊥ ◻ and parse() takes all twelve marks
+and says in its own comment that ◇ ● ☊ ☋ are not tokens. Two of the four claims
+were about a snapshot. Two were about the kernel, and both were right.
 
-nesting ran its confirming nest to a 10,000-step ceiling. It now stops when the
-gap stops shrinking, which is the run reporting the answer rather than me
-waiting for one, and a map that never arrives says so at the step that shows it.
-The edge is stated in the code: a map converging non-monotonically would be
-stopped at its widening, and none offered here does that.
+braid_protocol carried its own parser: twelve ASCII names, every glyph refused.
+So ⋈ parsed through Token::parse and failed here, two parsers for one type
+disagreeing about the alphabet. It delegates now, and token_name delegates too —
+its private table answered UNKNOWN for the three-arity and rotation tokens the
+type has carried for a while.
 
-ctc had two `> 8` breaks in loops that already terminate on their own — the
-value walk by cycle detection, the set lift by saturation. Dead rails, removed.
+And nothing joined Token to Glyph, though both spell the same twelve marks.
+belnap_ring_shor now carries the bridge, being the module that owns Glyph. It is
+not a bijection and does not pretend to be: FSPLIT3 and FFUSE3 share ∈ and ∋
+with the dyad, EVALI shares ⊞ with ENGAGR, ROTAT is ↻ and no axis at all. So
+Token → Glyph is partial and many-to-one, Glyph → Token picks the core opcode,
+and a glyph word that contains a retired mark fails at the position that holds
+it rather than dropping it and quietly shortening the program.
 
-substrate scanned to weight 64 for a critical value and reported "none up to the
-search bound", which is not the same claim as "none". The ranking is
-sub·w + family, so past the largest family gap between tokens whose substrate
-scores differ, no ordering can flip again. sequence.rs now derives that bound
-and substrate scans to it, so none means none. It comes out at 36 for the seed
-and 35 for the variants, which my 64 happened to clear — the old result stands,
-now by construction instead of by luck.
+`fibqc tangle ∈ > ∋` and `fibqc tangle FSPLIT AFWD FFUSE` now agree, and
+`fibqc tangle ◇ > ●` is refused.
 
-run_serial_cmds.sh killed qemu at 60s. A vita turn takes longer than that on
-emulated bare metal, so the harness was reporting a hang that was a computation.
-Removed.
-
-And the one that was hiding under the others. f64_sqrt was Newton with exactly
-ten iterations from z = x. For a small argument the first step overshoots to
-near 0.5 and ten halvings cannot come back, so sqrt(4.9e-19) answered about
-5e-4 — five orders out. Every small distance compared against a tolerance was
-wrong. It now starts by halving the exponent in the bit pattern and runs until
-the sequence stops descending, which terminates on its own at full precision.
-`nesting halve 203` settled in 60 steps before and settles in 37 now.
-
-Help, which I should have written first. All four take `help` and answer for
-themselves, and all four have submenus naming every form they accept rather
-than the bare `submenu: None` I left. ctc's help computes each action's fixed
-points as it prints them, so the table cannot drift from the code.
+The vehicles stamp themselves NOT_CANONICAL.md from now on, and the two that
+already misled a reader are stamped by hand. A snapshot dated in its own
+directory name is evidence about that date and nothing else.

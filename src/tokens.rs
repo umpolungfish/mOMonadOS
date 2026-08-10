@@ -21,6 +21,7 @@
 /// Jump: FSPLIT→[EVALT|EVALF]→...→FFUSE selects branches. No JNZ/JZ needed.
 pub use imasm_core::classic::{Family, Token};
 
+
 /// Fixed-capacity program: up to 64 tokens.
 #[derive(Copy, Clone)]
 pub struct Program {
