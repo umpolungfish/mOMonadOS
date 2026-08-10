@@ -1668,7 +1668,6 @@ pub fn repl(k: &mut Kernel) {
             }
             // The trunk's mouth: one certified turn from the on-board vae_vita
             // lattice, gated by the kernel's own close condition.
-            #[cfg(feature = "vita")]
             "vita" => {
                 // seed ↔ word is 1:1 — there is no default word, so there is no
                 // default seed: unseeded turns draw from the machine's moment.
@@ -1688,10 +1687,21 @@ pub fn repl(k: &mut Kernel) {
                 sprintln!("{}", crate::exotic_one_shots::ExoticOneShots::report());
             }
             "ctc" => {
-                sprintln!("{}", crate::ctc::Ctc::report());
+                let a: alloc::vec::Vec<&str> = parts.collect();
+                match a.len() {
+                    0 => sprintln!("{}", crate::ctc::Ctc::sweep()),
+                    2 => sprintln!("{}", crate::ctc::Ctc::run(a[0], a[1])),
+                    _ => sprintln!("usage: ctc [<action> <T|F|N|B>]   actions: {}",
+                                   crate::ctc::ACTIONS.join(", ")),
+                }
             }
             "nesting" => {
-                sprintln!("{}", crate::nesting::Nesting::report());
+                let a: alloc::vec::Vec<&str> = parts.collect();
+                if a.is_empty() {
+                    sprintln!("{}", crate::nesting::Nesting::sweep());
+                } else {
+                    sprintln!("{}", crate::nesting::Nesting::run(a[0], &a[1..]));
+                }
             }
             "carriers" => {
                 sprintln!("{}", crate::carriers::Carriers::report());

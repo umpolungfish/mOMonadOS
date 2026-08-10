@@ -29,7 +29,6 @@ mod belnap;
 mod tokens;
 mod crystal;
 mod kernel;
-#[cfg(feature = "vita")]
 mod vita;
 #[cfg(not(feature = "hosted"))]
 mod interrupts;

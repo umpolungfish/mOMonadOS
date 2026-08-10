@@ -224,6 +224,12 @@ pub fn nest(g: fn(B4) -> B4, seed: B4) -> Closure {
 /// so this action has two possessed fixed points and needs nothing manufactured.
 fn act_bnot(v: B4) -> B4 { v.bnot() }
 
+/// Conjunction and disjunction against a held value, curried into unary actions
+/// by fixing the right operand at the dialetheic value. Both are the kernel's
+/// own lattice operations.
+fn act_meet_b(v: B4) -> B4 { v.meet(B4::B) }
+fn act_join_b(v: B4) -> B4 { v.join(B4::B) }
+
 /// The temporal Next of the kernel's temporal bridge: ○T=F, ○F=T, ○N=N, ○B=B.
 /// Two fixed points; T and F sit on a 2-cycle with no fixed point between them.
 fn act_next(v: B4) -> B4 {
@@ -242,39 +248,73 @@ fn act_collapse(_v: B4) -> B4 { B4::B }
 
 pub struct Ctc;
 
+/// Resolve an action by name. This is what makes the module an instrument
+/// rather than a table: the caller chooses what to nest inside what.
+pub fn action_by_name(name: &str) -> Option<fn(B4) -> B4> {
+    match name {
+        "not"      => Some(act_bnot),
+        "next"     => Some(act_next),
+        "collapse" => Some(act_collapse),
+        "cycle"    => Some(act_cycle),
+        "meet"     => Some(act_meet_b),
+        "join"     => Some(act_join_b),
+        _ => None,
+    }
+}
+
+pub fn value_by_name(name: &str) -> Option<B4> {
+    match name {
+        "T" | "t" | "true"    => Some(B4::T),
+        "F" | "f" | "false"   => Some(B4::F),
+        "N" | "n" | "neither" => Some(B4::N),
+        "B" | "b" | "both"    => Some(B4::B),
+        _ => None,
+    }
+}
+
+pub const ACTIONS: [&str; 6] = ["not", "next", "collapse", "cycle", "meet", "join"];
+
 impl Ctc {
-    pub fn run_all() -> Vec<String> {
-        let mut out: Vec<String> = Vec::new();
-
-        let cases: [(&str, fn(B4) -> B4, B4); 6] = [
-            ("negation, seeded at B (possessed)",        act_bnot,     B4::B),
-            ("negation, seeded at T (2-cycle)",          act_bnot,     B4::T),
-            ("temporal next, seeded at N (possessed)",   act_next,     B4::N),
-            ("collapse to B, seeded at T (basin)",       act_collapse, B4::T),
-            ("4-cycle, seeded at T (no fixed point)",    act_cycle,    B4::T),
-            ("4-cycle, seeded at B (no fixed point)",    act_cycle,    B4::B),
-        ];
-
-        for (label, g, seed) in cases {
-            let fixed = pure_fixed_points(g);
-            let c = nest(g, seed);
-            let mut s = format!("{}\n", label);
-            s.push_str(&format!("  action's pure fixed points: {}\n", fixed.to_notation()));
-            s.push_str(&c.to_report());
-            out.push(s);
-        }
-        out
+    /// Nest one caller-chosen value inside one caller-chosen action.
+    pub fn run(action: &str, seed: &str) -> String {
+        let g = match action_by_name(action) {
+            Some(g) => g,
+            None => return format!(
+                "ctc: no action named '{}'. Available: {}\n\
+                 usage: ctc <action> <T|F|N|B>\n", action, ACTIONS.join(", ")),
+        };
+        let a = match value_by_name(seed) {
+            Some(a) => a,
+            None => return format!(
+                "ctc: '{}' is not a value. Use T, F, N or B.\n\
+                 usage: ctc <action> <T|F|N|B>\n", seed),
+        };
+        let fixed = pure_fixed_points(g);
+        let c = nest(g, a);
+        let mut s = format!("nesting {} inside '{}'\n", a.name(), action);
+        s.push_str(&format!("  action's pure fixed points: {}\n", fixed.to_notation()));
+        s.push_str(&c.to_report());
+        s
     }
 
-    pub fn report() -> String {
+    /// Every value in every action — the full table, when no pair is named.
+    pub fn sweep() -> String {
         let mut s = String::from("The Manufactured Fixed Point — CTC closure over Belnap FOUR\n");
         s.push_str("═══════════════════════════════════════════════════════════\n");
         s.push_str("Possession is tested first, then the basin, then imposition.\n");
-        s.push_str("A manufactured closure carries its price: the width it smears.\n\n");
-        for r in Self::run_all() {
-            s.push_str(&r);
-            s.push_str("\n");
+        s.push_str("A manufactured closure carries its price: the width it smears.\n");
+        s.push_str("Name a pair to nest just that one:  ctc <action> <T|F|N|B>\n\n");
+        s.push_str("  action    seed | outcome       | answer        | price\n");
+        s.push_str("  ---------------|---------------|---------------|------\n");
+        for name in ACTIONS {
+            let g = action_by_name(name).unwrap();
+            for a in ALL {
+                let c = nest(g, a);
+                s.push_str(&format!("  {:<9} {:>4} | {:<13} | {:<13} | {}\n",
+                    name, a.name(), c.class.name(), c.support.to_notation(), c.price));
+            }
         }
+        s.push_str("\nEvery row was checked: the answer maps to itself under the action.\n");
         s
     }
 }

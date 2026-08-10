@@ -1,21 +1,22 @@
-Restore the hosted build and the proof vehicle
+vita always builds; ctc and nesting take arguments
 
-Two builds had been dead and neither said so where I would see it.
+vita was in the menu and out of the binary at the same time. The command sat
+behind a `vita` feature, the module behind the same gate, and no build enabled
+it, so typing vita answered "Unknown: vita" while help listed it. The weights
+were on disk the whole time. Gate removed from the module, the arm, the Cargo
+feature and the menu text; vita_weights.bin is baked in unconditionally, which
+is what takes the kernel from 2.9M to 5.3M. It answers, and its turn is
+admitted. It needs more than the 60s run_serial_cmds.sh allows, which is a
+property of a neural turn on emulated bare metal, not a fault.
 
-src/vox_decode.rs held nothing but the line saying it re-exports the Vox
-decoder. c544d09 removed the carried copy in favour of linking the standalone
-crate and never wrote the link, so repl.rs asked for vox_decode::Image and
-vox_decode::walk against an empty module. The bare target never noticed,
-because the vox command compiles only under the hosted feature. So the hosted
-build has been broken since that commit, and with it `make ordinals` — the
-guard that fails loudly when the canonical ordinals drift from the Lean table.
-It was not reporting drift. It was not reporting anything. It now runs, and all
-44 values match Lean canonical.
+ctc and nesting were glossaries. They took no arguments and printed a fixed
+table of six and seven cases I had chosen, so neither could be pointed at
+anything. They described general instruments and implemented a printout. Both
+now take a pairing and answer about it: `ctc <action> <T|F|N|B>` over the six
+Belnap actions, `nesting <map> <x> [y]` over the five maps, each bare form
+falling back to the full sweep. Unknown names are refused with what is
+available rather than silently doing something else. The menu examples show
+real arguments instead of repeating the command name.
 
-make_proof_vehicle.sh copied p4ramill/Primitives beside p4ramill/Imscribing.
-Primitives lives under Imscribing and is carried by the copy above it, so the
-stale line failed with cannot stat, and the script is set -e, so the whole
-vehicle aborted on it. Removed; the vehicle builds at 4.5M.
-
-Everything now builds: debug, release, bootimage, hosted, the ordinal guard and
-the proof vehicle. The four fixed-point commands still answer.
+Nothing about the mathematics changed. What changed is that two of the four are
+no longer demonstrations of themselves.
