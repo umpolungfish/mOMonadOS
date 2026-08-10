@@ -1,24 +1,21 @@
-substrate: closure constant, content bifurcating
+Restore the hosted build and the proof vehicle
 
-I recorded the weight scan as having chosen the wrong observable, because cycle
-length came back as one at every weight and a constant column locates no
-critical point. It is the right observable. An entire one-parameter family in
-the one-shot class with no member in a basin is the signature of a conservative
-action, and that is a stronger statement than inertness: closure cannot move
-because every parameter is already at the fixed point.
+Two builds had been dead and neither said so where I would see it.
 
-The content does bifurcate, at w_c = 1, and the two facts are compatible
-because they are not the same question. Closure asks whether the program
-returns to itself. Content asks which program it returns to. The transition is
-a change of sector, not of closure — the program crosses from one self-closing
-regime to another and never fails to close on the way.
+src/vox_decode.rs held nothing but the line saying it re-exports the Vox
+decoder. c544d09 removed the carried copy in favour of linking the standalone
+crate and never wrote the link, so repl.rs asked for vox_decode::Image and
+vox_decode::walk against an empty module. The bare target never noticed,
+because the vox command compiles only under the hosted feature. So the hosted
+build has been broken since that commit, and with it `make ordinals` — the
+guard that fails loudly when the canonical ordinals drift from the Lean table.
+It was not reporting drift. It was not reporting anything. It now runs, and all
+44 values match Lean canonical.
 
-The variant sweep is what was not visible before. A critical weight exists only
-where the family matrix leads with self-imscription. Step off the
-self-referential topology or narrow the range and the leader is already the
-advance, the substrate vote has nothing to overturn, and no weight to 64 moves
-anything. What the vote does is carry a self-referential tuple out of pure
-self-imscription, and on this evidence nothing else.
+make_proof_vehicle.sh copied p4ramill/Primitives beside p4ramill/Imscribing.
+Primitives lives under Imscribing and is carried by the copy above it, so the
+stale line failed with cannot stat, and the script is set -e, so the whole
+vehicle aborted on it. Removed; the vehicle builds at 4.5M.
 
-The weight, the builder and the self-imscriber are the kernel's own. Only the
-reading is new.
+Everything now builds: debug, release, bootimage, hosted, the ordinal guard and
+the proof vehicle. The four fixed-point commands still answer.

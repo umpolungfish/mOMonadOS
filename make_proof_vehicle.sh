@@ -44,7 +44,9 @@ sed 's|path = "../MoDoT/imasm_core"|path = "imasm_core"|g' Cargo.toml > "$OUT/Ca
 # Copy Lean formalization from p4rakernel/p4ramill
 mkdir -p "$OUT/lean"
 cp -r ../p4rakernel/p4ramill/Imscribing "$OUT/lean/"
-cp -r ../p4rakernel/p4ramill/Primitives "$OUT/lean/"
+# Primitives lives under Imscribing/ and is carried by the line above. It used
+# to sit beside it, and the stale second copy aborted the whole vehicle build
+# with `cannot stat` — the script is `set -e`, so nothing downstream ran.
 cp ../p4rakernel/p4ramill/lakefile.toml "$OUT/lean/"
 cp ../p4rakernel/p4ramill/lean-toolchain "$OUT/lean/"
 cp ../p4rakernel/p4ramill/lake-manifest.json "$OUT/lean/"
