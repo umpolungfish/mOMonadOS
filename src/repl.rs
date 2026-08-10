@@ -1687,6 +1687,9 @@ pub fn repl(k: &mut Kernel) {
             "oneshots" => {
                 sprintln!("{}", crate::exotic_one_shots::ExoticOneShots::report());
             }
+            "ctc" => {
+                sprintln!("{}", crate::ctc::Ctc::report());
+            }
             "rebis" => {
                 let sub = parts.next().unwrap_or("");
                 print_rebis(sub, parts.next().unwrap_or(""), &parts.collect::<alloc::vec::Vec<&str>>().join(" "));
