@@ -1703,6 +1703,9 @@ pub fn repl(k: &mut Kernel) {
                     _ => sprintln!("{}", crate::nesting::Nesting::run(a[0], &a[1..])),
                 }
             }
+            "ig" => {
+                print_ig(k);
+            }
             "carriers" => {
                 match parts.next() {
                     None => sprintln!("{}", crate::carriers::Carriers::report()),
@@ -3087,14 +3090,57 @@ fn print_aleph(_k: &Kernel, word: &str) {
     }
     sprintln!("");
 }
+/// An imscription and the word that writes it, together.
+///
+/// A tuple says what something IS; the word says what it DOES, and they are two
+/// readings of one object rather than two facts about it. The kernel already
+/// held both maps and never showed them side by side: `build_via_substrate`
+/// takes a tuple to its program, and `from_snapshot` takes a program's execution
+/// back to a tuple. Printing the tuple alone left the operative half invisible,
+/// so an imscription looked like a label instead of something you can run.
+///
+/// The round trip is the check, not decoration. tuple → word → tuple returning
+/// the tuple it started from is mu-delta = id at the level of the imscription
+/// itself, and it can fail — a tuple whose word imscribes to something else is
+/// reporting a real disagreement between what it claims and what it does.
 fn print_ig(k: &Kernel) {
     use crate::imas_ig::IgTuple;
-    if let Some(snap) = k.snapshot {
-        let ig = IgTuple::from_snapshot(&snap);
-        sprintln!("IG: {}", ig.display());
-        sprintln!("Crystal: {}", ig.crystal_address());
-    } else {
+    let Some(snap) = k.snapshot else {
         sprintln!("No snapshot. Tick first.");
+        return;
+    };
+    let ig = IgTuple::from_snapshot(&snap);
+    sprintln!("IG:      {}", ig.display());
+    sprintln!("Crystal: {}", ig.crystal_address());
+
+    // The word this tuple writes.
+    let prog = crate::sequence::build_via_substrate(
+        &ig, 12, ig.t == crate::imas_ig::IgPrim::are, 3);
+    let word = crate::belnap_ring_shor::glyphs_from_program(&prog);
+    sprintln!("IMASM:   {}", word);
+
+    // And what that word imscribes back to. Two questions, not one, because the
+    // tuple to word map is many-to-one: several tuples write the same word, so
+    // the word can be a fixed point while the tuple is not. Reporting only the
+    // strict test would call that a failure when it is the map being lossy.
+    let back = IgTuple::from_snapshot(&crate::kernel::self_imscribe(&prog));
+    let prog_back = crate::sequence::build_via_substrate(
+        &back, 12, back.t == crate::imas_ig::IgPrim::are, 3);
+    let word_back = crate::belnap_ring_shor::glyphs_from_program(&prog_back);
+
+    if back == ig {
+        sprintln!("Round:   tuple -> word -> tuple returns itself — mu.delta = id");
+    } else if word_back == word {
+        sprintln!("Round:   the WORD is fixed, the tuple is not.");
+        sprintln!("         word -> {}", back.display());
+        sprintln!("         and that tuple writes the same word back, so the pair");
+        sprintln!("         closes on the word. The tuple->word map is many-to-one:");
+        sprintln!("         what the imscription DOES is recoverable, what it CLAIMS");
+        sprintln!("         is not recoverable from it alone.");
+    } else {
+        sprintln!("Round:   OPEN — neither the tuple nor the word returns.");
+        sprintln!("         word -> {}", back.display());
+        sprintln!("         which writes {}", word_back);
     }
 }
 

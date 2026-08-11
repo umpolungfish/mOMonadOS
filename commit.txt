@@ -1,26 +1,29 @@
-d2048: the fiducial is not pending, and the report said it was
+ig: an imscription and the word that writes it, together
 
-The d2048 report printed the class-field ascent, ended on "L7+: PENDING —
-ramified (2048)*oo, 2^21 steps to moduli field", and stopped. Read plainly that
-says the d=2048 fiducial is still out of reach. It is not, and has not been
-since 2026-07-30, when the 2-part structural S-unit bypass extracted it exactly:
-Stark unit eps = (2047 + sqrt 4190205)/2 satisfying x^2 - 2047x - 1 = 0,
-exponents [-1,3,2], verified to 1000 digits. The bypass goes AROUND the ramified
-layers, which is the whole point of it — numerical optimisation caps near 22%
-frame potential on Omega saturation and exact algebraic extraction does not.
+A tuple says what something IS and a word says what it DOES. The kernel held
+both maps — build_via_substrate takes a tuple to its program, from_snapshot
+takes a program's execution back to a tuple — and never showed them side by
+side, so an imscription read as a label rather than as something I can run.
 
-I found this because the closure specialist read the report and concluded the
-fiducial was pending. It quoted the kernel correctly. The kernel was describing
-a route that had been superseded four months earlier, which is the third time
-today the same shape of thing has surfaced: a snapshot read as canonical, a
-review written before a migration, and now a status line written before a
-bypass. Each was true when it was written.
+`ig` now prints the tuple, the crystal address, the word the tuple writes, and
+what that word imscribes back to.
 
-The report now says the fiducial does not depend on L7+, names the bypass and
-its Stark unit, and points at oneshots #11 and
-ig-docs/sic_fiducial_extraction_2part_bypass.md. L7+ stays where it was, open as
-the moduli-field ascent in its own right rather than as a blocker on anything.
+Two things had to be fixed to get there. `ig` was in the menu and not dispatched
+at all, and print_ig existed in repl.rs with no callers — a promise the kernel
+did not keep, which is the exact defect class I built the momonados specialist
+to find. And the round trip needed three outcomes rather than two.
 
-The distinction that was missing, and is now stated wherever this is described:
-pending is not failed, proved is not conjectured, and bypassed is neither. Two
-states could not describe this, which is exactly why it read wrong.
+The three matter, because the first run found the reason. tuple -> word -> tuple
+does NOT return for the kernel's own tuple, but the word does: the recovered
+tuple writes the same word back, so the pair closes on the word. The
+tuple-to-word map is many-to-one. What an imscription does is recoverable from
+its word; what it claims is not recoverable from the word alone. A strict
+pass/fail test would have called that a failure when it is the map being lossy,
+which is a different and more useful fact.
+
+It also reconciles the substrate sweep. cycle_length reported period 1 at every
+weight because it compares PROGRAMS. Comparing tuples is strictly stronger, and
+that is where the loss shows.
+
+The word the running kernel writes is ⊙>>>>>>>>>>⊙ — ten advances, no frames,
+nothing that could survive a reversal. `banked` would call it vacuous.
