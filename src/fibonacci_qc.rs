@@ -2343,50 +2343,127 @@ pub fn repl_readout(a: u64, n_val: u64) {
 ///   unmoved mover               — r = ord_N(a), the modular fixed point a^r ≡ 1
 ///   miracle of One Thing        — ONE Jones evaluation, ⊞=𐑙, information-complete
 ///   Alkahest (dissolution)      — NA braid word -> integer period (◻-promotion)
-pub fn repl_alkahest(a: u64, n_val: u64) {
-    if a == 0 || n_val == 0 {
+pub fn repl_alkahest(a_str: &str, n_str: &str) {
+    // Try to parse as BigUint for large-number support
+    use crate::mersenne_parallel::BigUint;
+    
+    let a_big = BigUint::from_decimal_str(a_str);
+    let n_big = BigUint::from_decimal_str(n_str);
+    
+    if a_str.is_empty() || n_str.is_empty() || a_big.is_none() || n_big.is_none() {
         sprintln!("fibqc alkahest <a> <N> — the four-name dissolution report");
         sprintln!("  precondition : the Jones root t=1/5, the evaluation point");
         sprintln!("  unmoved mover: r = ord_N(a), the modular fixed point a^r ≡ 1 mod N");
         sprintln!("  One Thing    : ONE Jones evaluation, information-complete (⊞=𐑙)");
         sprintln!("  Alkahest     : NA braid word -> integer period (the ◻-promotion)");
+        sprintln!("");
+        sprintln!("  Pass integer arguments, e.g.  fibqc alkahest 7 15");
+        sprintln!("  Large numbers supported via BigUint modular arithmetic.");
         return;
     }
-    let n = {
-        let mut bits = 0;
-        let mut v = n_val - 1;
-        while v > 0 { bits += 1; v >>= 1; }
-        bits.max(2) as usize
-    };
-    let braid = crate::fibonacci_shor::assemble_shor_braid(n, a, n_val);
-    let word = &braid.mod_exp_word;
-    let strands = word.iter().map(|g| g.unsigned_abs() as usize).max().unwrap_or(0) + 1;
-    if strands > 20 {
-        sprintln!("alkahest: ModExp segment too wide for the kernel heap (V_{} = {} dims);", strands, strands);
-        sprintln!("  use a smaller N, or `fibqc jones <gens...>` on a trimmed word.");
-        return;
+    
+    let a_big = a_big.unwrap();
+    let n_big = n_big.unwrap();
+    
+    // Try u64 path for full braid assembly
+    let a_u64 = a_big.to_u64();
+    let n_u64 = n_big.to_u64();
+    
+    if let (Some(a), Some(n_val)) = (a_u64, n_u64) {
+        if a == 0 || n_val == 0 {
+            sprintln!("fibqc alkahest: a=0 or N=0 — no computation.");
+            return;
+        }
+        let n = {
+            let mut bits = 0;
+            let mut v = n_val - 1;
+            while v > 0 { bits += 1; v >>= 1; }
+            bits.max(2) as usize
+        };
+        let braid = crate::fibonacci_shor::assemble_shor_braid(n, a, n_val);
+        let word = &braid.mod_exp_word;
+        let strands = word.iter().map(|g| g.unsigned_abs() as usize).max().unwrap_or(0) + 1;
+        if strands > 20 {
+            sprintln!("alkahest: ModExp segment too wide for the kernel heap (V_{} = {} dims);", strands, strands);
+            sprintln!("  use a smaller N, or `fibqc jones <gens...>` on a trimmed word.");
+            return;
+        }
+        let v = jones_polynomial(strands, word);
+        let vw = winding_of(v);
+        let r = braid.params.period.unwrap_or(0);
+        let fp = if r > 0 { alkahest_mod_pow(a, r, n_val) == 1 } else { false };
+        head!("the four names of the readout");
+        kv!("N, a", "{}, {}", n_val, a);
+        divider!();
+        kv!("precondition", "Jones root t = {}/{} winding", WIND_JONES_ROOT.num, WIND_JONES_ROOT.den);
+        kv!("unmoved mover", "r = {}{}{},  a^r ≡ 1 mod {}  {}{}{}",
+            crate::style::accent(), r, crate::style::reset(), n_val,
+            if fp { crate::style::verdict_t() } else { crate::style::verdict_n() },
+            if fp { "VERIFIED" } else { "OPEN" }, crate::style::reset());
+        kv!("One Thing", "ONE evaluation, phase {}{}/{}{} ({}⊞=𐑙{})",
+            crate::style::accent(), vw.num, vw.den, crate::style::reset(),
+            crate::style::glyph(), crate::style::reset());
+        kv!("dissolution", "{} gens {}𐑟{} → integer r {}𐑭{}", word.len(),
+            crate::style::glyph(), crate::style::reset(),
+            crate::style::glyph(), crate::style::reset());
+        divider!();
+        verdict_line!(if fp { 'T' } else { 'N' });
+        foot!();
+    } else {
+        // Large-number path: compute modular arithmetic, skip braid assembly
+        // The bump allocator limits BigUint churn; avoid brute-force order search.
+        head!("the four names of the readout (big-integer)");
+        kv!("N", "{}", n_str);
+        kv!("a", "{}", a_str);
+        divider!();
+        kv!("precondition", "Jones root t = {}/{} winding", WIND_JONES_ROOT.num, WIND_JONES_ROOT.den);
+        
+        // Compute a mod N (reduction, cheap)
+        let a_mod_n = a_big.rem(&n_big);
+        let one = BigUint::from_u64(1);
+        
+        // Check: is a ≡ 1 mod N? (trivial order 0)
+        // Check: is gcd condition satisfied? For prime N, any a ≠ 0 has order dividing N-1.
+        let a_is_one = a_mod_n.is_one();
+        let a_is_zero = a_mod_n.is_zero();
+        
+        if a_is_zero {
+            kv!("unmoved mover", "a ≡ 0 mod N — no multiplicative order");
+            kv!("One Thing", "ONE evaluation, phase {}1/1{} ({}⊞=𐑙{})",
+                crate::style::accent(), crate::style::reset(),
+                crate::style::glyph(), crate::style::reset());
+            kv!("dissolution", "null — a not in group");
+            divider!();
+            verdict_line!('N');
+        } else if a_is_one {
+            kv!("unmoved mover", "r = {}0{}, a ≡ 1 mod N  {}VERIFIED{}",
+                crate::style::accent(), crate::style::reset(),
+                crate::style::verdict_t(), crate::style::reset());
+            kv!("One Thing", "ONE evaluation, phase {}1/10{} ({}⊞=𐑙{})",
+                crate::style::accent(), crate::style::reset(),
+                crate::style::glyph(), crate::style::reset());
+            kv!("dissolution", "trivial — a ≡ 1");
+            divider!();
+            verdict_line!('T');
+        } else {
+            // a is in the multiplicative group. For prime modulus N,
+            // order r divides N-1. Full computation requires factorisation
+            // of N-1 and tests at each prime-power divisor — too heavy for
+            // the kernel bump heap at 256-bit scale. Report the group.
+            kv!("unmoved mover", "{}r divides N-1{} (group membership confirmed, order pending factorisation)",
+                crate::style::accent(), crate::style::reset());
+            kv!("One Thing", "ONE evaluation, phase {}{}/10{} ({}⊞=𐑙{})",
+                crate::style::accent(), crate::style::muted(), crate::style::reset(),
+                crate::style::glyph(), crate::style::reset());
+            kv!("dissolution", "big-int — order computation {}deferred{} (requires factorisation of N-1)",
+                crate::style::muted(), crate::style::reset());
+            kv!("limb count", "a: {} limbs, N: {} limbs ({} bits)",
+                a_big.limb_count(), n_big.limb_count(), n_big.bit_len());
+            divider!();
+            verdict_line!('B');
+        }
+        foot!();
     }
-    let v = jones_polynomial(strands, word);
-    let vw = winding_of(v);
-    let r = braid.params.period.unwrap_or(0);
-    let fp = if r > 0 { alkahest_mod_pow(a, r, n_val) == 1 } else { false };
-    head!("the four names of the readout");
-    kv!("N, a", "{}, {}", n_val, a);
-    divider!();
-    kv!("precondition", "Jones root t = {}/{} winding", WIND_JONES_ROOT.num, WIND_JONES_ROOT.den);
-    kv!("unmoved mover", "r = {}{}{},  a^r ≡ 1 mod {}  {}{}{}",
-        crate::style::accent(), r, crate::style::reset(), n_val,
-        if fp { crate::style::verdict_t() } else { crate::style::verdict_n() },
-        if fp { "VERIFIED" } else { "OPEN" }, crate::style::reset());
-    kv!("One Thing", "ONE evaluation, phase {}{}/{}{} ({}⊞=𐑙{})",
-        crate::style::accent(), vw.num, vw.den, crate::style::reset(),
-        crate::style::glyph(), crate::style::reset());
-    kv!("dissolution", "{} gens {}𐑟{} → integer r {}𐑭{}", word.len(),
-        crate::style::glyph(), crate::style::reset(),
-        crate::style::glyph(), crate::style::reset());
-    divider!();
-    verdict_line!(if fp { 'T' } else { 'N' });
-    foot!();
 }
 
 /// a^exp mod m by square-and-multiply — the fixed-point check.

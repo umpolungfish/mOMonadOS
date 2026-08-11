@@ -163,6 +163,102 @@ impl BigUint {
         }
         s
     }
+
+    /// Number of limbs
+    pub fn limb_count(&self) -> usize { self.limbs.len() }
+
+    /// Decimal string parse
+    pub fn from_decimal_str(s: &str) -> Option<Self> {
+        if s.is_empty() { return None; }
+        let mut result = BigUint::zero();
+        let ten = BigUint::from_u64(10);
+        for ch in s.chars() {
+            let digit = ch.to_digit(10)? as u64;
+            result = result.mul(&ten);
+            result.add_assign(&BigUint::from_u64(digit));
+        }
+        Some(result)
+    }
+
+    /// Convert to u64 if it fits
+    pub fn to_u64(&self) -> Option<u64> {
+        if self.limbs.is_empty() { return Some(0); }
+        if self.limbs.len() > 1 { return None; }
+        Some(self.limbs[0])
+    }
+
+    /// self < other
+    pub fn lt(&self, other: &BigUint) -> bool {
+        if self.limbs.len() != other.limbs.len() {
+            return self.limbs.len() < other.limbs.len();
+        }
+        for i in (0..self.limbs.len()).rev() {
+            if self.limbs[i] != other.limbs[i] {
+                return self.limbs[i] < other.limbs[i];
+            }
+        }
+        false
+    }
+
+    /// self == 1
+    pub fn is_one(&self) -> bool {
+        self.limbs.len() == 1 && self.limbs[0] == 1
+    }
+
+    /// self % modulus using binary long division
+    pub fn rem(&self, modulus: &BigUint) -> BigUint {
+        if modulus.is_zero() { return BigUint::zero(); }
+        if self.lt(modulus) { return self.clone(); }
+        let mut r = self.clone();
+        let mut shifted = modulus.clone();
+        let mut shift: usize = 0;
+        let r_bits = r.bit_len();
+        let m_bits = modulus.bit_len();
+        if r_bits > m_bits {
+            shift = r_bits - m_bits;
+            for _ in 0..shift {
+                let s2 = shifted.mul(&BigUint::from_u64(2));
+                if r.lt(&s2) { break; }
+                shifted = s2;
+            }
+        }
+        loop {
+            if !r.lt(&shifted) {
+                r.sub_assign(&shifted);
+            }
+            if shift == 0 { break; }
+            shift -= 1;
+            let mut carry = 0u64;
+            let n_limbs = shifted.limbs.len();
+            for i in 0..n_limbs {
+                let val = shifted.limbs[i];
+                shifted.limbs[i] = (val >> 1) | (carry << 63);
+                carry = val & 1;
+            }
+            while shifted.limbs.len() > 1 && shifted.limbs.last() == Some(&0) {
+                shifted.limbs.pop();
+            }
+        }
+        r
+    }
+
+    /// a^exp mod modulus
+    pub fn mod_pow(base: &BigUint, exp: &BigUint, modulus: &BigUint) -> BigUint {
+        if modulus.is_zero() || modulus.is_one() { return BigUint::zero(); }
+        let mut result = BigUint::from_u64(1);
+        let mut b = base.rem(modulus);
+        let mut e = exp.clone();
+        while !e.is_zero() {
+            if e.limbs[0] & 1 == 1 {
+                result = result.mul(&b).rem(modulus);
+            }
+            e.shr_assign(1);
+            if !e.is_zero() {
+                b = b.mul(&b).rem(modulus);
+            }
+        }
+        result
+    }
 }
 
 // ─── Lucas-Lehmer Test ─────────────────────────────────────────────────

@@ -697,9 +697,9 @@ pub fn repl(k: &mut Kernel) {
                         crate::fibonacci_qc::repl_readout(a, N);
                     }
                     "alkahest" => {
-                        let a = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
-                        let N = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
-                        crate::fibonacci_qc::repl_alkahest(a, N);
+                        let a_str = parts.next().unwrap_or("");
+                        let n_str = parts.next().unwrap_or("");
+                        crate::fibonacci_qc::repl_alkahest(a_str, n_str);
                     }
                     "verify" => {
                         sprintln!("Fibonacci anyon algebra verified = {}", crate::fibonacci_qc::verify_all());
@@ -1235,7 +1235,7 @@ pub fn repl(k: &mut Kernel) {
                 }
                 let sub = parts.next().unwrap_or("");
                 match sub {
-                    "search" => sprintln!("{}", crate::bip39_sic_grover::bip39_sic_grover_search(133)),
+                    "search" => sprintln!("{}", crate::bip39_sic_grover::bip39_sic_grover_search(1661)),
                     "words" => sprintln!("{}", crate::bip39_sic_grover::bip39_word_level_analysis()),
                     "verify" => sprintln!("B4 Frobenius: {}", crate::bip39_sic_grover::b4_frobenius_check()),
                     "map" => sprintln!("BIP39 wordlist {} <-> d={} Hilbert space", crate::bip39_sic_grover::BIP39_WORDLIST_SIZE, crate::bip39_sic_grover::BIP39_WORDLIST_SIZE),
