@@ -74,6 +74,20 @@ pub fn d2048_summary() -> String {
             s.push_str(&alloc::format!("  L{}: PENDING — {}\n", name, desc));
         }
     }
+    // The ascent is the class-field record, and it is not the route to the
+    // fiducial any more. The fiducial was obtained exactly on 2026-07-30 by the
+    // 2-part structural S-unit bypass — Stark unit ε = (2047 + √4190205)/2,
+    // exponents [-1, 3, 2], verified to 1000 digits — which goes around the
+    // ramified layers rather than through them. Printing "L7+: PENDING" with no
+    // further word invited a reader to conclude the fiducial was still out of
+    // reach, and one did. Pending applies to the moduli-field ascent as a goal
+    // in its own right, not to the fiducial, which is in hand.
+    s.push_str("\nThe fiducial does NOT depend on L7+. It was extracted exactly on\n");
+    s.push_str("2026-07-30 by the 2-part structural S-unit bypass — Stark unit\n");
+    s.push_str("eps = (2047 + sqrt 4190205)/2, exponents [-1,3,2], 1000 digits —\n");
+    s.push_str("which goes AROUND the ramified layers. See `oneshots` #11 and\n");
+    s.push_str("ig-docs/sic_fiducial_extraction_2part_bypass.md. L7+ remains open\n");
+    s.push_str("as the moduli-field ascent in its own right, not as a blocker.\n");
     s.push_str("\nSubcommands: tower | c16 | c32 | ramified | redei | grammar | pari | next\n");
     s
 }

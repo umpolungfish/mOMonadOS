@@ -1,30 +1,26 @@
-One alphabet: braid_protocol delegates, and Token meets Glyph
+d2048: the fiducial is not pending, and the report said it was
 
-A review reported the kernel emitting the retired glyphs and rejecting the
-canonical ones. It read momonados-proof-2026-08-02/imasm_core/src/classic.rs and
-called that the canonical reference. That path is a frozen vehicle — a copy of
-the tree made for emailing, two months stale — and the live imasm_core had
-already migrated: code() emits ⋈ ∈ ∋ ⊤ ⊥ ◻ and parse() takes all twelve marks
-and says in its own comment that ◇ ● ☊ ☋ are not tokens. Two of the four claims
-were about a snapshot. Two were about the kernel, and both were right.
+The d2048 report printed the class-field ascent, ended on "L7+: PENDING —
+ramified (2048)*oo, 2^21 steps to moduli field", and stopped. Read plainly that
+says the d=2048 fiducial is still out of reach. It is not, and has not been
+since 2026-07-30, when the 2-part structural S-unit bypass extracted it exactly:
+Stark unit eps = (2047 + sqrt 4190205)/2 satisfying x^2 - 2047x - 1 = 0,
+exponents [-1,3,2], verified to 1000 digits. The bypass goes AROUND the ramified
+layers, which is the whole point of it — numerical optimisation caps near 22%
+frame potential on Omega saturation and exact algebraic extraction does not.
 
-braid_protocol carried its own parser: twelve ASCII names, every glyph refused.
-So ⋈ parsed through Token::parse and failed here, two parsers for one type
-disagreeing about the alphabet. It delegates now, and token_name delegates too —
-its private table answered UNKNOWN for the three-arity and rotation tokens the
-type has carried for a while.
+I found this because the closure specialist read the report and concluded the
+fiducial was pending. It quoted the kernel correctly. The kernel was describing
+a route that had been superseded four months earlier, which is the third time
+today the same shape of thing has surfaced: a snapshot read as canonical, a
+review written before a migration, and now a status line written before a
+bypass. Each was true when it was written.
 
-And nothing joined Token to Glyph, though both spell the same twelve marks.
-belnap_ring_shor now carries the bridge, being the module that owns Glyph. It is
-not a bijection and does not pretend to be: FSPLIT3 and FFUSE3 share ∈ and ∋
-with the dyad, EVALI shares ⊞ with ENGAGR, ROTAT is ↻ and no axis at all. So
-Token → Glyph is partial and many-to-one, Glyph → Token picks the core opcode,
-and a glyph word that contains a retired mark fails at the position that holds
-it rather than dropping it and quietly shortening the program.
+The report now says the fiducial does not depend on L7+, names the bypass and
+its Stark unit, and points at oneshots #11 and
+ig-docs/sic_fiducial_extraction_2part_bypass.md. L7+ stays where it was, open as
+the moduli-field ascent in its own right rather than as a blocker on anything.
 
-`fibqc tangle ∈ > ∋` and `fibqc tangle FSPLIT AFWD FFUSE` now agree, and
-`fibqc tangle ◇ > ●` is refused.
-
-The vehicles stamp themselves NOT_CANONICAL.md from now on, and the two that
-already misled a reader are stamped by hand. A snapshot dated in its own
-directory name is evidence about that date and nothing else.
+The distinction that was missing, and is now stated wherever this is described:
+pending is not failed, proved is not conjectured, and bypassed is neither. Two
+states could not describe this, which is exactly why it read wrong.
