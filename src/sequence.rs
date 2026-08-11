@@ -70,6 +70,51 @@ const FAMILY_TOKEN_AFFINITY: [[i32; 12]; 12] = [
     [  1,    0,    1,   0,   0,    2,      0,     0,    1,    1,    2,     0 ], // Omega Winding
 ];
 
+/// Per-slot votes: slot `i` is chosen by the `i`-th axis's OWN row, scaled by
+/// that axis's variant ordinal, with the substrate scores added underneath.
+///
+/// This exists because `aggregate_votes` sums all twelve rows into one vector
+/// before anything is chosen, and that sum is where the tuple was being lost.
+/// Every entry of FAMILY_TOKEN_AFFINITY is non-negative, so a positive
+/// combination of the rows has its argmax at the heaviest COLUMN of the matrix
+/// almost regardless of the weights — AFWD and IMSCRIB tie heaviest at 11, and
+/// AFWD sorts first. The variant ordinals rescale rows; they cannot move the
+/// winner to another column. That is why every tuple composed to twelve AFWDs.
+///
+/// Reading the rows one per slot keeps the twelve axes distinguishable, which
+/// is the whole content of a twelve-mark word: mark `i` answers axis `i`.
+/// Returns the per-slot score rows and, beside them, the per-slot OFFSET into
+/// the ranked candidates that the axis's variant selects.
+///
+/// The offset is why the variant is read separately from the score. Scaling a
+/// row by the ordinal is order-preserving: it cannot reorder that row, so it
+/// cannot change which token wins. Slot 8's row is [0,…,0,2,2,2,0] — EVALT,
+/// EVALF and ENGAGR tied — and scaling by `haha`=3.0 against `monad`=2.0 keeps
+/// them exactly as tied, which is why swapping the criticality left the whole
+/// word unchanged. The family names the candidates; the value says which one.
+fn slot_votes(tuple: &IgTuple, tier: u8) -> ([Scores; 12], [usize; 12]) {
+    let sub = substrate_votes(tuple, tier);
+    let fields: [IgPrim; 12] = [
+        tuple.d, tuple.t, tuple.r, tuple.p, tuple.f, tuple.k,
+        tuple.g, tuple.c, tuple.phi, tuple.h, tuple.s, tuple.omega,
+    ];
+    let mut out: [Scores; 12] = [[0; 12]; 12];
+    let mut off: [usize; 12] = [0; 12];
+    let mut slot = 0;
+    while slot < 12 {
+        let ord = ord_round(fields[slot].ordinal());
+        let row = &FAMILY_TOKEN_AFFINITY[slot];
+        let mut tok = 0;
+        while tok < 12 {
+            out[slot][tok] = row[tok] * substrate_weight() + sub[tok];
+            tok += 1;
+        }
+        off[slot] = if ord > 0 { (ord as usize) - 1 } else { 0 };
+        slot += 1;
+    }
+    (out, off)
+}
+
 /// Derive token votes from the IgTuple via the family affinity matrix.
 /// contribution per primitive = affinity[family][token] × ordinal.
 fn aggregate_votes(tuple: &IgTuple) -> Scores {
@@ -381,9 +426,9 @@ fn stack_delta(tok: Token) -> i32 {
 ///   4. Never emit FFUSE with no open fork.
 ///   5. Limit FSPLIT so remaining capacity can close all open forks.
 ///   6. Otherwise: highest-voted valid token.
-fn build_program_from_scores(scores: &Scores, len: usize, self_ref: bool) -> Program {
+fn build_program_from_slots(slots: &[Scores; 12], offs: &[usize; 12],
+                            len: usize, self_ref: bool) -> Program {
     let len = len.max(4).min(62);
-    let preferred = sorted_by_score(scores);
 
     let mut p = Program::empty();
     let mut est_depth: i32 = 1;
@@ -413,6 +458,12 @@ fn build_program_from_scores(scores: &Scores, len: usize, self_ref: bool) -> Pro
             continue;
         }
 
+        // The slot's own axis drives the choice; the guards below only reject
+        // words that would not run.
+        let preferred = sorted_by_score(&slots[i % 12]);
+        // The variant's ordinal steps down the ranked candidates: the axis says
+        // which tokens are in play, the value says which of them this is.
+        let mut skip = offs[i % 12];
         let mut chosen = Token::Afwd;
         let mut found = false;
         let mut pi = 0;
@@ -423,6 +474,7 @@ fn build_program_from_scores(scores: &Scores, len: usize, self_ref: bool) -> Pro
             if tok == Token::Ffuse && open_forks == 0 { pi += 1; continue; }
             if tok == Token::Fsplit && (remaining as u32) <= open_forks + 2 { pi += 1; continue; }
             if tok == Token::Tanch && (!is_last || self_ref || open_forks > 0) { pi += 1; continue; }
+            if skip > 0 { skip -= 1; pi += 1; continue; }
             chosen = tok;
             found = true;
             break;
@@ -479,21 +531,15 @@ pub fn ranking_settles_beyond(tuple: &IgTuple, tier: u8) -> i32 {
 }
 
 pub fn build_via_substrate(tuple: &IgTuple, len: usize, self_ref: bool, tier: u8) -> Program {
-    let family_s = aggregate_votes(tuple);
-    let sub_s    = substrate_votes(tuple, tier);
-    let mut combined: Scores = [0; 12];
-    for i in 0..12 {
-        // Substrate execution is the primary signal (×3); family matrix is baseline.
-        combined[i] = sub_s[i] * substrate_weight() + family_s[i];
-    }
-    build_program_from_scores(&combined, len, self_ref)
+    let (slots, offs) = slot_votes(tuple, tier);
+    build_program_from_slots(&slots, &offs, len, self_ref)
 }
 
 /// Build from family affinity scores only (no substrate execution).
 /// Kept for compatibility; `build_via_substrate` is used in dynamic mode.
 pub fn build_next_program(tuple: &IgTuple, len: usize, self_ref: bool) -> Program {
     let scores = aggregate_votes(tuple);
-    build_program_from_scores(&scores, len, self_ref)
+    build_program_from_slots(&[scores; 12], &[0; 12], len, self_ref)
 }
 
 /// Recommended sequence length for the next program.

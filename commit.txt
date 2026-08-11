@@ -1,18 +1,30 @@
-imasm write and derive: the commands the rider has always named
+imasm write composed every tuple to the same word
 
-The grammar-first rider tells operators to use `imasm write tuple=⟨…⟩` and
-`imasm derive word=…` and says never to hand-pick the twelve glyphs. Neither
-command existed. An agent following the instruction failed and fell back on
-conventional method, which is exactly the behaviour the rider was written to
-prevent — so the rule was not being ignored, it was unimplementable.
+Every tuple came out as >>>>>>>>>>>> — twelve AFWDs — whatever went in. Two
+faults, one on top of the other, and both are the same mistake made twice: a
+positive combination cannot move an argmax.
 
-Both directions exist now. `imasm write <12 glyphs>` gives the word a tuple
-composes to; `imasm derive <word>` gives the tuple a word imscribes to, with its
-crystal address. Bare `imasm` prints both plus the word instruments.
+aggregate_votes summed all twelve family rows into one score vector before
+anything was chosen. Every entry of FAMILY_TOKEN_AFFINITY is non-negative, so
+the winner of that sum is just the heaviest COLUMN of the matrix — AFWD and
+IMSCRIB tie at 11 and AFWD sorts first — and the tuple, which only reweights
+rows, could never reach it. build_program_from_scores then recomputed the same
+argmax at all twelve positions with nothing positional in the choice, and
+AFWD is depth-neutral so no guard ever excluded it. Now each slot is ranked by
+its own axis's row, so the twelve axes stay distinguishable, which is the whole
+content of a twelve-mark word.
 
-Two pieces were missing underneath. catalog.rs had primitive_glyph and no
-inverse, so nothing could read a tuple out of its glyphs — 49 pairs, one
-direction only. primitive_from_glyph is generated from the same pairs and sits
-beside it. And IgTuple had no parser: from_glyphs takes the canonical slot order
-with brackets and separators optional, and names the slot of the first glyph it
-cannot read rather than failing wholesale.
+Underneath that, the variant was inert. Scaling a row by the ordinal is
+order-preserving: it cannot reorder the row it scales, so it cannot change which
+token wins. Slot 8's row is [0,…,0,2,2,2,0] with EVALT, EVALF and ENGAGR tied,
+and swapping haha (3.0) for monad (2.0) scaled all three equally and left the
+entire word unchanged — likewise ah for zoo at slot 11. The ordinal now steps
+down the ranked candidates instead of shouting louder at them: the axis names
+which tokens are in play, the value says which of them this is. Every
+single-axis substitution moves the word now, including those two.
+
+Still open, and it is the more important one: write and derive are not inverse.
+Writing a tuple and deriving the word back gives a different tuple, and the boot
+line has been reporting that as hamming=3, weighted=3.5 all along. A measured
+gap, not a silent one — but if write is δ and derive is μ then μ∘δ=id is the
+thing the pair is for, and it does not hold yet.
