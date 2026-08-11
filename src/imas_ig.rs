@@ -177,6 +177,36 @@ impl IgPrim {
 impl IgTuple {
     /// Map a kernel Snapshot to its IG 12-tuple.
     /// This is the structural bridge — same rules as imas_ig_bridge.py.
+    /// Parse a 12-glyph tuple, with or without ⟨⟩ brackets and any separators.
+    ///
+    /// Slot order is the canonical ⊢ ⊣ > < ⋈ ⊤ ∈ ∋ ⊙ ⊥ ⊞ ◻. Returns the index
+    /// of the first glyph that is not a primitive, so a bad tuple names its own
+    /// fault rather than failing wholesale.
+    pub fn from_glyphs(src: &str) -> Result<IgTuple, (usize, alloc::string::String)> {
+        let mut vals: alloc::vec::Vec<IgPrim> = alloc::vec::Vec::new();
+        let mut idx = 0usize;
+        for c in src.chars() {
+            if c.is_whitespace() || c == '⟨' || c == '⟩' || c == ';' || c == ',' || c == '·' {
+                continue;
+            }
+            let mut buf = [0u8; 4];
+            let g: &str = c.encode_utf8(&mut buf);
+            match crate::catalog::primitive_from_glyph(g) {
+                Some(p) => vals.push(p),
+                None => return Err((idx, alloc::string::String::from(g))),
+            }
+            idx += 1;
+        }
+        if vals.len() != 12 {
+            return Err((vals.len(), alloc::format!("expected 12 glyphs, got {}", vals.len())));
+        }
+        Ok(IgTuple {
+            d: vals[0], t: vals[1], r: vals[2], p: vals[3],
+            f: vals[4], k: vals[5], g: vals[6], c: vals[7],
+            phi: vals[8], h: vals[9], s: vals[10], omega: vals[11],
+        })
+    }
+
     pub fn from_snapshot(snap: &Snapshot) -> Self {
         let d = snap.token_diversity;
         let p = snap.period;

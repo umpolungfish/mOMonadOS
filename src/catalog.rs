@@ -1101,6 +1101,67 @@ pub fn primitive_glyph(prim: IgPrim) -> &'static str {
         IgPrim::awe => "𐑷", IgPrim::zoo => "𐑟",
     }
 }
+/// The inverse of `primitive_glyph`: a glyph back to its primitive.
+///
+/// Built from the same pairs as the forward table and kept beside it, because a
+/// glyph table with only one direction is why `imasm write` and `imasm derive`
+/// were promised in the agent rider for months and never existed — nothing
+/// could read a tuple back out of its glyphs.
+pub fn primitive_from_glyph(g: &str) -> Option<IgPrim> {
+    match g {
+        "𐑦" => Some(IgPrim::if_),
+        "𐑛" => Some(IgPrim::dead),
+        "𐑨" => Some(IgPrim::ash),
+        "𐑼" => Some(IgPrim::array),
+        "𐑸" => Some(IgPrim::are),
+        "𐑡" => Some(IgPrim::judge),
+        "𐑰" => Some(IgPrim::eat),
+        "𐑥" => Some(IgPrim::mime),
+        "𐑶" => Some(IgPrim::oil),
+        "𐑾" => Some(IgPrim::ian),
+        "𐑽" => Some(IgPrim::ear),
+        "𐑑" => Some(IgPrim::tot),
+        "𐑩" => Some(IgPrim::ado),
+        "𐑹" => Some(IgPrim::or_),
+        "𐑯" => Some(IgPrim::nun),
+        "𐑬" => Some(IgPrim::out),
+        "𐑿" => Some(IgPrim::yew),
+        "𐑗" => Some(IgPrim::church),
+        "𐑐" => Some(IgPrim::peep),
+        "𐑱" => Some(IgPrim::age),
+        "𐑞" => Some(IgPrim::they),
+        "𐑪" => Some(IgPrim::on),
+        "𐑧" => Some(IgPrim::egg),
+        "𐑤" => Some(IgPrim::loll),
+        "𐑘" => Some(IgPrim::yea),
+        "𐑺" => Some(IgPrim::air),
+        "𐑲" => Some(IgPrim::ice),
+        "𐑚" => Some(IgPrim::bib),
+        "𐑔" => Some(IgPrim::thigh),
+        "𐑠" => Some(IgPrim::measure),
+        "𐑝" => Some(IgPrim::vow),
+        "𐑜" => Some(IgPrim::gag),
+        "𐑵" => Some(IgPrim::ooze),
+        "⊙" => Some(IgPrim::monad),
+        "𐑮" => Some(IgPrim::roar),
+        "𐑻" => Some(IgPrim::err),
+        "𐑢" => Some(IgPrim::woe),
+        "𐑣" => Some(IgPrim::haha),
+        "𐑫" => Some(IgPrim::wool),
+        "𐑖" => Some(IgPrim::sure),
+        "𐑒" => Some(IgPrim::kick),
+        "𐑓" => Some(IgPrim::fee),
+        "𐑳" => Some(IgPrim::up),
+        "𐑕" => Some(IgPrim::so),
+        "𐑙" => Some(IgPrim::hung),
+        "𐑭" => Some(IgPrim::ah),
+        "𐑴" => Some(IgPrim::oak),
+        "𐑷" => Some(IgPrim::awe),
+        "𐑟" => Some(IgPrim::zoo),
+        _ => None,
+    }
+}
+
 
 /// Return the short display name for any primitive value.
 pub fn primitive_short(prim: IgPrim) -> &'static str {

@@ -1,6 +1,18 @@
-Proof vehicle 2026-08-10
+imasm write and derive: the commands the rider has always named
 
-Rebuilt after the vehicle script was repaired — it had been aborting on a stale
-copy of p4ramill/Primitives, which lives under Imscribing now. 4.5M, carrying
-the ELF, a runner and the Lean sources, and stamped NOT_CANONICAL.md so the copy
-of imasm_core inside it is not read as the source again.
+The grammar-first rider tells operators to use `imasm write tuple=⟨…⟩` and
+`imasm derive word=…` and says never to hand-pick the twelve glyphs. Neither
+command existed. An agent following the instruction failed and fell back on
+conventional method, which is exactly the behaviour the rider was written to
+prevent — so the rule was not being ignored, it was unimplementable.
+
+Both directions exist now. `imasm write <12 glyphs>` gives the word a tuple
+composes to; `imasm derive <word>` gives the tuple a word imscribes to, with its
+crystal address. Bare `imasm` prints both plus the word instruments.
+
+Two pieces were missing underneath. catalog.rs had primitive_glyph and no
+inverse, so nothing could read a tuple out of its glyphs — 49 pairs, one
+direction only. primitive_from_glyph is generated from the same pairs and sits
+beside it. And IgTuple had no parser: from_glyphs takes the canonical slot order
+with brackets and separators optional, and names the slot of the first glyph it
+cannot read rather than failing wholesale.

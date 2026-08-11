@@ -1706,6 +1706,48 @@ pub fn repl(k: &mut Kernel) {
             "ig" => {
                 print_ig(k);
             }
+            // The two halves of tuple <-> word. The agent rider has told
+            // operators to use `imasm write` and `imasm derive` for a long time
+            // and neither existed, so an agent following the instruction failed
+            // and fell back on conventional method — which is the behaviour the
+            // rider was written to prevent.
+            "imasm" => {
+                use crate::imas_ig::IgTuple;
+                match parts.next().unwrap_or("") {
+                    "write" => {
+                        let rest: alloc::vec::Vec<&str> = parts.collect();
+                        match IgTuple::from_glyphs(&rest.join(" ")) {
+                            Ok(t) => {
+                                let prog = crate::sequence::build_via_substrate(
+                                    &t, 12, t.t == crate::imas_ig::IgPrim::are, 3);
+                                sprintln!("tuple: {}", t.display());
+                                sprintln!("word:  {}",
+                                    crate::belnap_ring_shor::glyphs_from_program(&prog));
+                            }
+                            Err((i, g)) => sprintln!("imasm write: {} at slot {}", g, i),
+                        }
+                    }
+                    "derive" => {
+                        let rest: alloc::vec::Vec<&str> = parts.collect();
+                        match crate::belnap_ring_shor::program_from_glyphs(&rest.join(" ")) {
+                            Ok(prog) => {
+                                let t = IgTuple::from_snapshot(
+                                    &crate::kernel::self_imscribe(&prog));
+                                sprintln!("word:  {}",
+                                    crate::belnap_ring_shor::glyphs_from_program(&prog));
+                                sprintln!("tuple: {}", t.display());
+                                sprintln!("crystal: {}", t.crystal_address());
+                            }
+                            Err((i, c)) => sprintln!("imasm derive: '{}' at position {} is not a mark", c, i),
+                        }
+                    }
+                    _ => {
+                        sprintln!("imasm write <12 glyphs>   the word a tuple composes to");
+                        sprintln!("imasm derive <word>       the tuple a word imscribes to");
+                        sprintln!("Word instruments: weight | banked | cycle | insert | trans");
+                    }
+                }
+            }
             "carriers" => {
                 match parts.next() {
                     None => sprintln!("{}", crate::carriers::Carriers::report()),
