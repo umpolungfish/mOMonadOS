@@ -1,29 +1,6 @@
-ig: an imscription and the word that writes it, together
+Proof vehicle 2026-08-10
 
-A tuple says what something IS and a word says what it DOES. The kernel held
-both maps — build_via_substrate takes a tuple to its program, from_snapshot
-takes a program's execution back to a tuple — and never showed them side by
-side, so an imscription read as a label rather than as something I can run.
-
-`ig` now prints the tuple, the crystal address, the word the tuple writes, and
-what that word imscribes back to.
-
-Two things had to be fixed to get there. `ig` was in the menu and not dispatched
-at all, and print_ig existed in repl.rs with no callers — a promise the kernel
-did not keep, which is the exact defect class I built the momonados specialist
-to find. And the round trip needed three outcomes rather than two.
-
-The three matter, because the first run found the reason. tuple -> word -> tuple
-does NOT return for the kernel's own tuple, but the word does: the recovered
-tuple writes the same word back, so the pair closes on the word. The
-tuple-to-word map is many-to-one. What an imscription does is recoverable from
-its word; what it claims is not recoverable from the word alone. A strict
-pass/fail test would have called that a failure when it is the map being lossy,
-which is a different and more useful fact.
-
-It also reconciles the substrate sweep. cycle_length reported period 1 at every
-weight because it compares PROGRAMS. Comparing tuples is strictly stronger, and
-that is where the loss shows.
-
-The word the running kernel writes is ⊙>>>>>>>>>>⊙ — ten advances, no frames,
-nothing that could survive a reversal. `banked` would call it vacuous.
+Rebuilt after the vehicle script was repaired — it had been aborting on a stale
+copy of p4ramill/Primitives, which lives under Imscribing now. 4.5M, carrying
+the ELF, a runner and the Lean sources, and stamped NOT_CANONICAL.md so the copy
+of imasm_core inside it is not read as the source again.
