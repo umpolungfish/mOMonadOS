@@ -165,6 +165,35 @@ fn rotate3(x: &[f64], out: &mut [f64]) {
 /// the fixed set from anywhere.
 fn project(x: &[f64], out: &mut [f64]) { out[0] = x[0]; out[1] = 0.0; }
 
+/// Greedy unit-fraction removal — the Erdős–Straus action.
+///
+/// The outer action is one greedy Fibonacci–Sylvester step: from `x`, subtract
+/// the largest unit fraction that fits, `1/⌈1/x⌉`. The nested point is `4/n`,
+/// and zero is the fixed point: a representation of `4/n` as unit fractions IS
+/// an orbit that arrives.
+///
+/// So the conjecture is a BUDGET on this nesting, not a question of whether it
+/// arrives — Fibonacci–Sylvester always arrives, for every rational in (0,1).
+/// Erdős and Straus ask whether the budget is three for every `n ≥ 2`. That is
+/// the shape the fixed-point rule assigns it: not the "never" bin, where the ctc
+/// machinery would be needed, but the attracted bin with a step count asked to
+/// be uniform. Reading it here is what makes the distinction measurable rather
+/// than asserted.
+fn greedy_unit(x: &[f64], out: &mut [f64]) {
+    let v = x[0];
+    if v <= 0.0 {
+        out[0] = 0.0;
+        return;
+    }
+    // ⌈1/v⌉ without libm: 1/v is well inside f64 range for the sizes read here.
+    let inv = 1.0 / v;
+    let mut d = inv as i64;
+    if (d as f64) < inv { d += 1; }
+    if d < 1 { d = 1; }
+    let r = v - 1.0 / (d as f64);
+    out[0] = if r < 1e-15 { 0.0 } else { r };
+}
+
 pub struct Nesting;
 
 /// Resolve a map by name, with the dimension it acts on. Naming the map is what
@@ -176,11 +205,12 @@ pub fn map_by_name(name: &str) -> Option<(fn(&[f64], &mut [f64]), usize)> {
         "shift"   => Some((translate, 1)),
         "rotate"  => Some((rotate3, 2)),
         "project" => Some((project, 2)),
+        "greedy"  => Some((greedy_unit, 1)),
         _ => None,
     }
 }
 
-pub const MAPS: [&str; 5] = ["halve", "newton", "shift", "rotate", "project"];
+pub const MAPS: [&str; 6] = ["halve", "newton", "shift", "rotate", "project", "greedy"];
 
 fn describe(label: &str, f: fn(&[f64], &mut [f64]), a: &[f64]) -> String {
     let rd = read(f, a);
@@ -219,6 +249,7 @@ impl Nesting {
         s.push_str("  nesting help               this\n\n");
         s.push_str("maps:\n");
         for (name, dim, what) in [
+            ("greedy",  1, "greedy unit-fraction removal — Erdős–Straus is its BUDGET, not its arrival"),
             ("halve",   1, "halve the distance to 3 — arrives from anywhere, q = 0.5"),
             ("newton",  1, "Newton on x³−2x−5 — arrives fast in range, q well under 1"),
             ("shift",   1, "add one forever — never arrives, and its gap never changes"),

@@ -1,30 +1,9 @@
-imasm write composed every tuple to the same word
+nesting greedy — Erdős–Straus as a reading, not a description
 
-Every tuple came out as >>>>>>>>>>>> — twelve AFWDs — whatever went in. Two
-faults, one on top of the other, and both are the same mistake made twice: a
-positive combination cannot move an argmax.
-
-aggregate_votes summed all twelve family rows into one score vector before
-anything was chosen. Every entry of FAMILY_TOKEN_AFFINITY is non-negative, so
-the winner of that sum is just the heaviest COLUMN of the matrix — AFWD and
-IMSCRIB tie at 11 and AFWD sorts first — and the tuple, which only reweights
-rows, could never reach it. build_program_from_scores then recomputed the same
-argmax at all twelve positions with nothing positional in the choice, and
-AFWD is depth-neutral so no guard ever excluded it. Now each slot is ranked by
-its own axis's row, so the twelve axes stay distinguishable, which is the whole
-content of a twelve-mark word.
-
-Underneath that, the variant was inert. Scaling a row by the ordinal is
-order-preserving: it cannot reorder the row it scales, so it cannot change which
-token wins. Slot 8's row is [0,…,0,2,2,2,0] with EVALT, EVALF and ENGAGR tied,
-and swapping haha (3.0) for monad (2.0) scaled all three equally and left the
-entire word unchanged — likewise ah for zoo at slot 11. The ordinal now steps
-down the ranked candidates instead of shouting louder at them: the axis names
-which tokens are in play, the value says which of them this is. Every
-single-axis substitution moves the word now, including those two.
-
-Still open, and it is the more important one: write and derive are not inverse.
-Writing a tuple and deriving the word back gives a different tuple, and the boot
-line has been reporting that as hamming=3, weighted=3.5 all along. A measured
-gap, not a silent one — but if write is δ and derive is μ then μ∘δ=id is the
-thing the pair is for, and it does not hold yet.
+The instrument only knew five maps, so no conjecture could be posed to it. The
+greedy Fibonacci–Sylvester step is now one of them: from x, subtract the largest
+unit fraction that fits. Nesting 4/n in it puts Erdős–Straus in the ATTRACTED
+bin with a finite budget — the orbit always arrives, and the conjecture is the
+claim that the budget is three. That distinction is what the reading buys, and
+it is what sent the Lean work at the denominator structure instead of at a
+search.
