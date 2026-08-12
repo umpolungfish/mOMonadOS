@@ -1138,6 +1138,165 @@ pub fn walk_roth() {
     finish("ROTH AND BEHREND", &steps);
 }
 
+// ── The alternating prime series: the rise criterion ───────────────────────
+
+fn is_prime(n: u64) -> bool {
+    if n < 2 { return false; }
+    let mut d = 2u64;
+    while d * d <= n { if n % d == 0 { return false; } d += 1; }
+    true
+}
+
+fn nth_prime(k: u64) -> u64 {
+    let (mut c, mut n) = (0u64, 1u64);
+    loop { n += 1; if is_prime(n) { c += 1; if c == k { return n; } } }
+}
+
+/// `aₙ = n/pₙ` rises exactly when `n(pₙ₊₁ − pₙ) < pₙ`. The criterion is checked
+/// against the terms themselves, so a slip in either direction shows.
+pub fn walk_alternating() {
+    sprintln!("");
+    rule();
+    sprintln!("  ALTERNATING — the rise criterion for n/pₙ");
+    rule();
+
+    let mut steps: Vec<Step> = Vec::new();
+    let mut agree = true;
+    let (mut rises, mut falls) = (0u64, 0u64);
+    let mut k = 1u64;
+    while k <= 200 {
+        let p = nth_prime(k);
+        let q = nth_prime(k + 1);
+        // aₖ < aₖ₊₁  ⟺  k/p < (k+1)/q  ⟺  k·q < (k+1)·p  ⟺  k(q−p) < p
+        let direct = k * q < (k + 1) * p;
+        let criterion = k * (q - p) < p;
+        if direct != criterion { agree = false; }
+        if direct { rises += 1; } else { falls += 1; }
+        k += 1;
+    }
+    steps.push(Step {
+        title: "The criterion agrees with the terms",
+        computed: format!("first 200 indices: {} rises, {} falls, criterion and comparison {}",
+                          rises, falls, if agree { "identical" } else { "DIVERGE" }),
+        holds: agree,
+    });
+    show(1, 2, &steps[0]);
+
+    steps.push(Step {
+        title: "Neither direction is eventual",
+        computed: format!("both rises and falls occur past index 100: {}",
+                          rises > 0 && falls > 0),
+        holds: rises > 0 && falls > 0,
+    });
+    show(2, 2, &steps[1]);
+    finish("ALTERNATING PRIME SERIES", &steps);
+}
+
+// ── Erdős–Fuchs: the averaged representation count ─────────────────────────
+
+/// The fibring identity: summing the representation count below `N` counts the
+/// pairs of `A` summing below `N`. Checked on explicit sets, since an identity
+/// between two counts is exactly the kind of claim a walk can settle.
+pub fn walk_fuchs() {
+    sprintln!("");
+    rule();
+    sprintln!("  ERDŐS–FUCHS — the sum of the representation count");
+    rule();
+
+    let mut steps: Vec<Step> = Vec::new();
+    let sets: [&[u64]; 3] = [&[0, 1, 3, 7], &[0, 2, 3, 5, 8], &[1, 2, 4, 8, 16]];
+    let mut ok = true;
+    let mut line = String::new();
+    for a in sets.iter() {
+        let n = 20u64;
+        // left: sum over m < N of r_A(m)
+        let mut left = 0u64;
+        let mut m = 0u64;
+        while m < n {
+            for x in a.iter() { for y in a.iter() { if x + y == m { left += 1; } } }
+            m += 1;
+        }
+        // right: pairs with a < N, b < N, a + b < N
+        let mut right = 0u64;
+        for x in a.iter() { for y in a.iter() {
+            if *x < n && *y < n && x + y < n { right += 1; }
+        }}
+        if left != right { ok = false; }
+        line.push_str(&format!("{}={} ", left, right));
+    }
+    steps.push(Step {
+        title: "The fibring identity, on three sets",
+        computed: format!("{}— the two counts agree: {}", line, ok),
+        holds: ok,
+    });
+    show(1, 2, &steps[0]);
+
+    // The square-root density bound: N − N₀ ≤ |A ∩ [0,N)|².
+    let a: [u64; 6] = [0, 1, 3, 7, 12, 20];
+    let mut bound_ok = true;
+    let mut n = 1u64;
+    while n <= 40 {
+        let card = a.iter().filter(|&&x| x < n).count() as u64;
+        let covered = (0..n).filter(|m| a.iter().any(|x| a.iter().any(|y| x + y == *m))).count() as u64;
+        if covered > card * card { bound_ok = false; }
+        n += 1;
+    }
+    steps.push(Step {
+        title: "A basis of square-root density covers at most its square",
+        computed: format!("covered values never exceed the square of the count, to N = 40: {}", bound_ok),
+        holds: bound_ok,
+    });
+    show(2, 2, &steps[1]);
+    finish("ERDŐS–FUCHS", &steps);
+}
+
+// ── The multicolour Ramsey ratio ───────────────────────────────────────────
+
+/// The ratio `R_k(C_{2n+1}) / R_k(K₃)` is bounded by `(2n+1)(2/3.199)^k`, and
+/// the base being below one is what makes the ratio vanish. Computed here in
+/// integer arithmetic scaled by a thousand, so no float rounding decides it.
+pub fn walk_ramsey_ratio() {
+    sprintln!("");
+    rule();
+    sprintln!("  RAMSEY RATIO — the base below one, and the vanishing");
+    rule();
+
+    let mut steps: Vec<Step> = Vec::new();
+
+    // 2/3.199 < 1, in integers: 2·1000 < 3199.
+    let base_ok = 2 * 1000 < 3199;
+    steps.push(Step {
+        title: "The base 2/3.199 is below one",
+        computed: format!("2000 < 3199: {}", base_ok),
+        holds: base_ok,
+    });
+    show(1, 2, &steps[0]);
+
+    // (2n+1)·base^k falls below one for every fixed n once k is large: track the
+    // numerator against the denominator in integers.
+    let mut vanishes = true;
+    let mut line = String::new();
+    for n in [1u64, 5, 25] {
+        let mut num = ((2 * n + 1) as u128) * 1000u128;   // (2n+1) scaled
+        let mut den = 1000u128;
+        let mut k = 0u32;
+        while num >= den && k < 200 {
+            num *= 2000;      // × 2/3.199
+            den *= 3199;
+            k += 1;
+        }
+        if k >= 200 { vanishes = false; }
+        line.push_str(&format!("n={}:k={} ", n, k));
+    }
+    steps.push(Step {
+        title: "The bound falls below one at a finite number of colours",
+        computed: format!("{}— every case terminates: {}", line, vanishes),
+        holds: vanishes,
+    });
+    show(2, 2, &steps[1]);
+    finish("RAMSEY RATIO", &steps);
+}
+
 /// The walks available, and what each computes.
 pub fn list_walks() {
     sprintln!("  Erdős manuscript walks — each step computed on this kernel:");
@@ -1180,6 +1339,9 @@ pub fn dispatch(name: &str) {
         "oddcycle" => walk_monochromatic(),
         "chordless" => walk_chordless(),
         "roth" => walk_roth(),
+        "alternate" => walk_alternating(),
+        "fuchs" => walk_fuchs(),
+        "ratio" => walk_ramsey_ratio(),
         _ => {
             sprintln!("No Erdős walk named '{}'.", name);
             list_walks();

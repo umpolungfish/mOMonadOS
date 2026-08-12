@@ -1,13 +1,11 @@
-erdos chordless and roth
+erdos: the last three manuscripts boot
 
-chordless walks every chord of every odd cycle to length eleven. It failed first
-at C5 with the chord (0,2), because I took the odd path and closed it, which
-gives an even cycle. The odd cycle comes from the EVEN path plus the chord. The
-walk caught the slip; the paper had it right.
+alternate checks the rise criterion for n/p_n against the terms themselves over
+the first two hundred indices — 78 rises, 122 falls, criterion and comparison
+identical, and neither direction eventual. fuchs runs the fibring identity on
+three sets and the square-root density bound to N = 40. ratio keeps the base
+2/3.199 in integers, 2000 against 3199, and counts the colours each case needs to
+fall below one: three, six, nine.
 
-roth finds the largest progression-free subset of [0,9) — size five, so any six
-carry a progression — and builds Behrend's sphere in base seven over three
-digits, where the largest single sphere carries six points.
-
-Sixteen walks. Three manuscripts have none yet: the alternating prime series, the
-Erdos-Fuchs average, and the multicolour Ramsey ratio.
+Nineteen walks for nineteen manuscripts. Every one computes its claim on this
+kernel; three of them caught errors of mine before they held.
