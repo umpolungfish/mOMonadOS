@@ -1,9 +1,10 @@
-erdos kac: the window that carries no prime power
+erdos sdr: the window is open below
 
-Two steps. The first checks that omega = 1 holds exactly at the prime powers to
-n = 2000 — the reason an interval on which omega exceeds one excludes them. The
-second finds the longest such window below two thousand, [1332, 1360] of length
-twenty-nine, and confirms it carries none.
+f(n,n) for the first nine, and the walk disagreed with the manuscript at n = 6
+and n = 8 until the convention was right. The window is (n, n+L] — open below,
+closed above — and taking it closed below hands index n the value n for free,
+which shortens the answer to 7 and 9 where the table says 8 and 10. The kernel's
+own definition settled it.
 
-Nine walks: schutte, landau, lcm, sumset, ramsey33, binomial, reptiling, mantel,
-kac.
+Ten walks: schutte, landau, lcm, sumset, ramsey33, binomial, reptiling, mantel,
+kac, sdr.

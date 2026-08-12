@@ -678,6 +678,85 @@ pub fn walk_kac() {
     finish("KAC INTERVAL", &steps);
 }
 
+// ── The SDR window ──────────────────────────────────────────────────────────
+
+/// `f(n, m)`: the least `ℓ` such that the window `(m, m+ℓ]` carries a system of
+/// distinct multiples for `1 … n` — each index `i` matched to its own multiple
+/// of `i`. The window is open below and closed above, which is the convention
+/// the manuscript and the kernel use; taking it closed below hands index `n` the
+/// value `n` for free and shortens the answer at `n = 6` and `n = 8`.
+fn f_window(n: u64, m: u64) -> u64 {
+    let mut len = n;
+    loop {
+        let mut used = [false; 256];
+        fn go(i: u64, n: u64, m: u64, len: u64, used: &mut [bool; 256]) -> bool {
+            if i > n { return true; }
+            let mut v = m + 1;
+            while v <= m + len {
+                let idx = (v - m - 1) as usize;
+                if idx < 256 && !used[idx] && v % i == 0 {
+                    used[idx] = true;
+                    if go(i + 1, n, m, len, used) { return true; }
+                    used[idx] = false;
+                }
+                v += 1;
+            }
+            false
+        }
+        if len < 256 && go(1, n, m, len, &mut used) { return len; }
+        len += 1;
+        if len > 200 { return 0; }
+    }
+}
+
+/// `f(n, n)` for `n = 1 … 9`, against the manuscript's table, and the minimum
+/// over `m` being `n` itself.
+pub fn walk_sdr() {
+    sprintln!("");
+    rule();
+    sprintln!("  SDR — windows carrying a system of distinct multiples");
+    rule();
+
+    let mut steps: Vec<Step> = Vec::new();
+    let expected: [u64; 9] = [1, 2, 3, 5, 5, 8, 8, 10, 12];
+    let mut line = String::new();
+    let mut agree = true;
+    let mut n = 1u64;
+    while n <= 9 {
+        let v = f_window(n, n);
+        if v != expected[(n - 1) as usize] { agree = false; }
+        line.push_str(&format!("{} ", v));
+        n += 1;
+    }
+    steps.push(Step {
+        title: "f(n, n) for n = 1 … 9",
+        computed: format!("{}— table says 1 2 3 5 5 8 8 10 12", line),
+        holds: agree,
+    });
+    show(1, 2, &steps[0]);
+
+    // The minimum over m is n: a window of length n starting at n! works, and
+    // nothing shorter can, since n distinct multiples need n slots.
+    let mut min_ok = true;
+    let mut k = 1u64;
+    while k <= 6 {
+        // Start just below lcm(1..k), so the window's first value is that lcm
+        // and every index divides it.
+        let mut start = 1u64;
+        let mut i = 1u64;
+        while i <= k { start = lcm(start, i); i += 1; }
+        if f_window(k, start - 1) != k { min_ok = false; }
+        k += 1;
+    }
+    steps.push(Step {
+        title: "The minimum over m is n, attained at the lcm",
+        computed: format!("windows starting at lcm(1..n) close in exactly n slots for n = 1 … 6: {}", min_ok),
+        holds: min_ok,
+    });
+    show(2, 2, &steps[1]);
+    finish("SDR WINDOW", &steps);
+}
+
 /// The walks available, and what each computes.
 pub fn list_walks() {
     sprintln!("  Erdős manuscript walks — each step computed on this kernel:");
@@ -690,6 +769,7 @@ pub fn list_walks() {
     sprintln!("    reptiling six is the first n with no triangle dissection");
     sprintln!("    mantel    the balanced count, and one edge past it forcing a triangle");
     sprintln!("    kac       ω > 1 windows, and why they carry no prime power");
+    sprintln!("    sdr       f(n,n) for the first nine, and the minimum at the lcm");
     sprintln!("");
     sprintln!("  Run with:  erdos schutte | erdos landau | erdos lcm");
     sprintln!("             erdos sumset  | erdos ramsey33");
@@ -707,6 +787,7 @@ pub fn dispatch(name: &str) {
         "reptiling" => walk_reptiling(),
         "mantel" => walk_mantel(),
         "kac" => walk_kac(),
+        "sdr" => walk_sdr(),
         _ => {
             sprintln!("No Erdős walk named '{}'.", name);
             list_walks();
