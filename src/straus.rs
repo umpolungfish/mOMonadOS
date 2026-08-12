@@ -174,10 +174,45 @@ pub fn classify(n: u64, max_rung: u64) -> NestClass {
             why: "3 ∣ n²+8 identically for 3∤n; 2 ∣ M exactly when n ≡ 5 (mod 8)",
         };
     }
+    // The rest of the price-zero layer: a rung r = 3 (mod 4) dividing n, n+1 or
+    // n+4 is READ OFF n. Writing the divisor as u = n^i a^j and using 4a = n
+    // (mod r), the congruence r | M+u leaves exactly these three outcomes — the
+    // other exponent pairs demand r | 8 or r | 5, both dead for r = 3 (mod 4).
+    if let Some((r, u, why)) = price_zero_rung(n) {
+        return NestClass::OneShot { u, r, why };
+    }
     match lowest_rung(n, max_rung) {
         Some(g) => NestClass::Iterated { r: g.r, u: g.b },
         None => NestClass::NoClosure,
     }
+}
+
+/// The smallest rung supplied by the price-zero layer: `r = 3 (mod 4)` dividing
+/// `n`, `n+1` or `n+4`. Nothing is searched — the rung is a divisor of a number
+/// `n` already carries.
+/// Returns the rung, the divisor it commits to, and which of the three it is.
+pub fn price_zero_rung(n: u64) -> Option<(u64, u64, &'static str)> {
+    let mut r = 3u64;
+    while r <= n + 4 {
+        let a = (n + r) / 4;
+        if n % r == 0 {
+            return Some((r, n.saturating_mul(a), "r | n — the prime-factor family, u = M"));
+        }
+        if (n + 1) % r == 0 {
+            return Some((r, a, "r | n+1 — the divisor family, u = a"));
+        }
+        if (n + 4) % r == 0 {
+            return Some((r, n, "r | n+4 — the n-family, u = n"));
+        }
+        r += 4;
+    }
+    None
+}
+
+/// Is `n` on the frontier — outside the one-shot and outside the price-zero
+/// layer, so its rung must be searched? Every such `n` is `1 (mod 24)`.
+pub fn on_frontier(n: u64) -> bool {
+    n % 4 == 1 && n % 3 != 0 && n % 8 != 5 && price_zero_rung(n).is_none()
 }
 
 pub struct Straus;
@@ -189,6 +224,7 @@ impl Straus {
         s.push_str("═══════════════════════════════════════════════════════════\n");
         s.push_str("  straus <n>            the lowest rung that closes 4/n\n");
         s.push_str("  straus sweep <lo> <hi>  the rung spectrum across a range\n");
+        s.push_str("  straus frontier <lo> <hi>  what price zero does not reach\n");
         s.push_str("\n");
         s.push_str("A rung is r ≡ 3 (mod 4): the first term is 1/((n+r)/4) and the\n");
         s.push_str("remainder has numerator exactly r. r = 3 is the greedy step.\n");
@@ -241,11 +277,13 @@ impl Straus {
                 s.push_str(&format!("  class:   ONE-SHOT at rung {}\n", r));
                 s.push_str(&format!("  divisor: u = {} — already at the fixed point\n", u));
                 s.push_str(&format!("  why:     {}\n", why));
-                let a = (n + r) / 4;
-                let m = n.saturating_mul(a);
-                let w = m / 2;
-                let b = (m + 2) / 3;
-                s.push_str(&format!("  4/{} = 1/{} + 1/{} + 1/{}\n", n, a, b, (w as u128 * b as u128)));
+                if r == 3 && u == 2 {
+                    let a = (n + r) / 4;
+                    let m = n.saturating_mul(a);
+                    let w = m / 2;
+                    let b = (m + 2) / 3;
+                    s.push_str(&format!("  4/{} = 1/{} + 1/{} + 1/{}\n", n, a, b, (w as u128 * b as u128)));
+                }
                 s.push_str("  price:   0 — nothing was searched\n");
             }
             NestClass::Iterated { r, .. } => {
@@ -283,6 +321,39 @@ impl Straus {
             it, if tot > 0 { it as f64 * 100.0 / tot as f64 } else { 0.0 }));
         s.push_str(&format!("  no closure {:>6}  ({:.1}%)\n",
             no, if tot > 0 { no as f64 * 100.0 / tot as f64 } else { 0.0 }));
+        s
+    }
+
+    /// The frontier across a range: the values both zero-price layers miss.
+    ///
+    /// The one-shot `u = 2` at rung 3 takes `n ≡ 5 (mod 8)`; the price-zero
+    /// layer takes every `n` where one of `n`, `n+1`, `n+4` carries a divisor
+    /// `≡ 3 (mod 4)`. What is left must draw its divisor from a prime of `a`
+    /// that `n` does not carry — a searched rung — and every such value is
+    /// `1 (mod 24)`.
+    pub fn frontier(lo: u64, hi: u64) -> String {
+        let mut s = format!("the price-zero frontier, {} ≤ n ≤ {}\n", lo, hi);
+        let (mut tot, mut left) = (0u64, 0u64);
+        let mut first: Vec<u64> = Vec::new();
+        let mut n = if lo % 4 == 1 { lo } else { lo + (5 - lo % 4) % 4 };
+        while n <= hi {
+            if n >= 5 && n % 3 != 0 {
+                tot += 1;
+                if on_frontier(n) {
+                    left += 1;
+                    if first.len() < 12 { first.push(n); }
+                }
+            }
+            n += 4;
+        }
+        s.push_str(&format!("  {} values in the surviving class\n", tot));
+        s.push_str(&format!("  closed at price zero: {}\n", tot - left));
+        s.push_str(&format!("  on the frontier:      {}  ({:.1}%)\n", left,
+            if tot > 0 { left as f64 * 100.0 / tot as f64 } else { 0.0 }));
+        s.push_str("  first of them:       ");
+        for v in &first { s.push_str(&format!(" {}", v)); }
+        s.push('\n');
+        s.push_str("  every one is n ≡ 1 (mod 24) — straus_frontier_mod_24 in p4ramill.\n");
         s
     }
 

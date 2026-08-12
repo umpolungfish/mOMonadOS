@@ -1769,6 +1769,12 @@ pub fn repl(k: &mut Kernel) {
                             _ => sprintln!("straus sweep <lo> <hi> — both must be numbers"),
                         }
                     }
+                    ["frontier", lo, hi] => {
+                        match (lo.parse::<u64>(), hi.parse::<u64>()) {
+                            (Ok(l), Ok(h)) => sprintln!("{}", crate::straus::Straus::frontier(l, h)),
+                            _ => sprintln!("straus frontier <lo> <hi> — both must be numbers"),
+                        }
+                    }
                     [n] => match n.parse::<u64>() {
                         Ok(v) => sprintln!("{}", crate::straus::Straus::read(v)),
                         Err(_) => sprintln!("straus <n> — n must be a number"),
