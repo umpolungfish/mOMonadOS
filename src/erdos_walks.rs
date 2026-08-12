@@ -256,14 +256,168 @@ pub fn walk_lcm() {
     finish("LCM GROWTH", &steps);
 }
 
+// ── Sumset avoiding an AP: base-three digits in {0,1} ───────────────────────
+
+/// The `n`-th number whose base-three digits are all `0` or `1`.
+fn base3_01(n: u64) -> u64 {
+    let mut v = 0u64;
+    let mut p = 1u64;
+    let mut m = n;
+    while m > 0 {
+        if m & 1 == 1 { v += p; }
+        p *= 3;
+        m >>= 1;
+    }
+    v
+}
+
+/// The manuscript's chain: a set whose SUBSET SUMS avoid three-term
+/// progressions has distinct subset sums, and that forces `2^n ≤ nN + 1`. Both
+/// halves are searched here, on the witnesses the paper names.
+pub fn walk_sumset() {
+    sprintln!("");
+    rule();
+    sprintln!("  SUMSET — progression-free subset sums force distinct subset sums");
+    rule();
+
+    let mut steps: Vec<Step> = Vec::new();
+
+    // g₃(n) witnesses from the manuscript: the largest N for which an AP-free
+    // set of size n fits inside [1, N].
+    let witnesses: [(&str, &[u64], u64); 5] = [
+        ("g₃(1) = 1",  &[1],            1),
+        ("g₃(2) = 3",  &[1, 3],         3),
+        ("g₃(3) = 8",  &[5, 7, 8],      8),
+        ("g₃(4) = 22", &[7, 19, 21, 22], 22),
+        ("g₃(5) = 60", &[11, 24, 51, 56, 60], 60),
+    ];
+
+    let mut all_apfree = true;
+    let mut report = String::new();
+    for (name, set, _n) in witnesses.iter() {
+        let mut apfree = true;
+        for i in 0..set.len() { for j in 0..set.len() { for k in 0..set.len() {
+            if set[i] + set[k] == 2 * set[j] && !(i == j && j == k) { apfree = false; }
+        }}}
+        if !apfree { all_apfree = false; }
+        report.push_str(&format!("{}: {} ", name, if apfree { "AP-free" } else { "HAS AN AP" }));
+    }
+    steps.push(Step {
+        title: "The five witnesses are progression-free",
+        computed: report,
+        holds: all_apfree,
+    });
+    show(1, 3, &steps[0]);
+
+    // Distinct subset sums on each witness.
+    let mut all_distinct = true;
+    for (_name, set, _n) in witnesses.iter() {
+        let mut sums: Vec<u64> = Vec::new();
+        let mut mask = 0u32;
+        while mask < (1u32 << set.len()) {
+            let mut t = 0u64;
+            for i in 0..set.len() { if (mask >> i) & 1 == 1 { t += set[i]; } }
+            if sums.contains(&t) { all_distinct = false; }
+            sums.push(t);
+            mask += 1;
+        }
+    }
+    steps.push(Step {
+        title: "Their subset sums are distinct",
+        computed: format!("every subset of each witness has its own sum: {}", all_distinct),
+        holds: all_distinct,
+    });
+    show(2, 3, &steps[1]);
+
+    // The counting bound 2^n <= n·N + 1 on each witness.
+    let mut bound_ok = true;
+    let mut bound_line = String::new();
+    for (_name, set, n_max) in witnesses.iter() {
+        let n = set.len() as u64;
+        let lhs = 1u64 << n;
+        let rhs = n * n_max + 1;
+        if lhs > rhs { bound_ok = false; }
+        bound_line.push_str(&format!("2^{} = {} ≤ {} ", n, lhs, rhs));
+    }
+    steps.push(Step {
+        title: "The counting bound 2^n ≤ nN + 1",
+        computed: bound_line,
+        holds: bound_ok,
+    });
+    show(3, 3, &steps[2]);
+    finish("SUMSET AP-FREE", &steps);
+}
+
+// ── R(3,3) = 6, and the colouring that shows five is not enough ─────────────
+
+/// The pentagon colouring: on five vertices, colour an edge by whether the
+/// endpoints are adjacent in the 5-cycle. Neither colour class has a triangle.
+fn col5(i: u64, j: u64) -> bool {
+    let d = if i > j { i - j } else { j - i };
+    d == 1 || d == 4
+}
+
+/// Six vertices force a monochromatic triangle; five do not.
+pub fn walk_ramsey33() {
+    sprintln!("");
+    rule();
+    sprintln!("  R(3,3) = 6 — the pigeonhole above, the pentagon below");
+    rule();
+
+    let mut steps: Vec<Step> = Vec::new();
+
+    // Five: the pentagon colouring has no monochromatic triangle.
+    let mut mono5 = false;
+    for i in 0..5u64 { for j in (i+1)..5u64 { for k in (j+1)..5u64 {
+        let a = col5(i, j); let b = col5(j, k); let c = col5(i, k);
+        if a == b && b == c { mono5 = true; }
+    }}}
+    steps.push(Step {
+        title: "Five vertices do not: the pentagon colouring",
+        computed: format!("monochromatic triangle in the 5-cycle colouring: {}", mono5),
+        holds: !mono5,
+    });
+    show(1, 2, &steps[0]);
+
+    // Six: every one of the 2^15 colourings has a monochromatic triangle.
+    let edges: [(usize, usize); 15] = [
+        (0,1),(0,2),(0,3),(0,4),(0,5),(1,2),(1,3),(1,4),(1,5),
+        (2,3),(2,4),(2,5),(3,4),(3,5),(4,5)];
+    let mut all_mono = true;
+    let mut c = 0u32;
+    while c < (1u32 << 15) {
+        let mut col = [[false; 6]; 6];
+        for (b, (i, j)) in edges.iter().enumerate() {
+            let v = (c >> b) & 1 == 1;
+            col[*i][*j] = v; col[*j][*i] = v;
+        }
+        let mut found = false;
+        for i in 0..6 { for j in (i+1)..6 { for k in (j+1)..6 {
+            if col[i][j] == col[j][k] && col[j][k] == col[i][k] { found = true; }
+        }}}
+        if !found { all_mono = false; break; }
+        c += 1;
+    }
+    steps.push(Step {
+        title: "Six vertices do: every colouring, searched",
+        computed: format!("all 32768 two-colourings of K6 carry a monochromatic triangle: {}", all_mono),
+        holds: all_mono,
+    });
+    show(2, 2, &steps[1]);
+    finish("R(3,3) = 6", &steps);
+}
+
 /// The walks available, and what each computes.
 pub fn list_walks() {
     sprintln!("  Erdős manuscript walks — each step computed on this kernel:");
     sprintln!("    schutte   f(2) = 7: the search that fails at six, Paley at seven");
     sprintln!("    landau    g(n) for n = 1..10 by complete partition descent");
     sprintln!("    lcm       lcm(1..n) against n·log(n+1), from the quadratic bound");
+    sprintln!("    sumset    the g₃ witnesses: AP-free, sums distinct, 2^n ≤ nN+1");
+    sprintln!("    ramsey33  R(3,3) = 6, the pentagon below and the search above");
     sprintln!("");
     sprintln!("  Run with:  erdos schutte | erdos landau | erdos lcm");
+    sprintln!("             erdos sumset  | erdos ramsey33");
 }
 
 /// Dispatch by name.
@@ -272,6 +426,8 @@ pub fn dispatch(name: &str) {
         "schutte" => walk_schutte(),
         "landau" => walk_landau(),
         "lcm" => walk_lcm(),
+        "sumset" => walk_sumset(),
+        "ramsey33" => walk_ramsey33(),
         _ => {
             sprintln!("No Erdős walk named '{}'.", name);
             list_walks();

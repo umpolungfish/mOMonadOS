@@ -1,17 +1,15 @@
-erdos: the manuscripts become bootable
+erdos: two more walks, and one that caught me
 
-A publication needs its proof instantiated here so a reader can boot and follow
-it, and only the Straus work was. Three more now are, under `erdos <name>`:
+sumset and ramsey33. R(3,3) = 6 searches all 32768 two-colourings of K6 for a
+monochromatic triangle and finds one every time, then shows the pentagon
+colouring on five carrying none.
 
-  schutte  searches all 32768 orientations of a six-vertex tournament, finds
-           none dominating every pair, then builds the Paley tournament on seven
-           and checks that it does
-  landau   computes g(1..10) by the same complete partition descent the
-           manuscript's generator uses, and shows g(7) coming from 4+3 rather
-           than from the 7-cycle
-  lcm      checks the quadratic lower bound n(n-1) <= lcm(1..n) and the
-           logarithmic comparison it feeds
+The sumset walk failed twice before it was right, and both failures were mine
+rather than the theorem's. The first included 0 in the base-three set, so the
+empty subset and {0} collided. The second asserted that the base-three set has
+distinct subset sums, which it does not — 1 + 3 = 4 and 4 is in the set. What the
+manuscript proves is the implication and the counting bound it forces, so the
+walk now runs the paper's own five witnesses: each is progression-free, each has
+distinct subset sums, and each satisfies 2^n <= nN + 1.
 
-Every step computes its claim on this kernel. A step that printed a number it had
-not derived would be a slideshow, which is the rule the bootstrap walk set and
-this file keeps.
+A step that computes can fail. That is the point of computing it.
