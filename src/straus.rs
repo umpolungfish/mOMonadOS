@@ -100,10 +100,10 @@ fn divisors_of_square(m: u64, cap: usize) -> Vec<u64> {
 /// no-closure, so a stabiliser set that is too small does not report "nearly":
 /// it reports nothing. n = 2521 was called unreachable on that account, and
 /// rung 23 closes it.
-fn split_second(r: u64, m: u64) -> Option<(u64, u64)> {
+fn split_second(r: u64, m: u64, cap: usize) -> Option<(u64, u64)> {
     if r < 2 || m == 0 { return None; }
     let mm = (m as u128) * (m as u128);
-    for u in divisors_of_square(m, 8192) {
+    for u in divisors_of_square(m, cap) {
         if (u + m) % r != 0 { continue; }
         let v128 = mm / (u as u128);
         if v128 > u64::MAX as u128 { continue; }
@@ -121,18 +121,63 @@ fn split_second(r: u64, m: u64) -> Option<(u64, u64)> {
 /// `r = 3` is the greedy step; higher rungs are the committed arms `imasm check`
 /// asked for when it answered B on the two-fork form.
 pub fn lowest_rung(n: u64, max_rung: u64) -> Option<Rung> {
+    lowest_rung_cap(n, max_rung, 8192)
+}
+
+/// The same, with the divisor budget named. A sweep asks for less per value:
+/// the kernel heap is 48 MiB and a wide range times a full divisor set exhausts
+/// it, which is a budget fact about the instrument, not about the ladder.
+pub fn lowest_rung_cap(n: u64, max_rung: u64, cap: usize) -> Option<Rung> {
     if n < 2 || n % 4 != 1 { return None; }
     let mut r = 3u64;
     while r <= max_rung {
         let a = (n + r) / 4;
         let m = n.saturating_mul(a);
         if m == 0 { r += 4; continue; }
-        if let Some((b, c)) = split_second(r, m) {
+        if let Some((b, c)) = split_second(r, m, cap) {
             return Some(Rung { r, a, d: 0, e: 0, b, c });
         }
         r += 4;
     }
     None
+}
+
+/// The nesting classes of the Fixed-Point Nesting Rule, read for one `n`.
+///
+/// The rule: a nesting of A inside B closes exactly when A is a fixed point of
+/// B's action, and ONE-SHOTS exactly when A already sits at that fixed point
+/// rather than merely in its basin. Here B is the rung's congruence and A is the
+/// divisor offered to it.
+///
+/// - **one-shot**  the divisor is fixed by the congruence for EVERY `n` in its
+///   residue class, so nothing is searched. `u = 2` at rung 3 is one: `3 ∣ n²+8`
+///   holds identically when `3 ∤ n`, and `2 ∣ M` exactly when `n ≡ 5 (mod 8)`.
+/// - **iterated**  a divisor exists but has to be found: the rung is reached by
+///   walking `r = 3, 7, 11, …` until one lands.
+/// - **no closure**  no rung within the budget lands, which on a conservative
+///   action means the stabiliser set being read is wrong, not that the value is
+///   far away.
+pub enum NestClass {
+    OneShot { u: u64, r: u64, why: &'static str },
+    Iterated { r: u64, u: u64 },
+    NoClosure,
+}
+
+/// Read `n` against the ladder and classify the nesting.
+pub fn classify(n: u64, max_rung: u64) -> NestClass {
+    // The one-shot: u = 2 at rung 3. `3 ∣ n² + 8` is identical for 3 ∤ n, so the
+    // only condition left is `2 ∣ M`, i.e. `a` even, i.e. `n ≡ 5 (mod 8)`.
+    if n % 8 == 5 && n % 3 != 0 {
+        return NestClass::OneShot {
+            u: 2,
+            r: 3,
+            why: "3 ∣ n²+8 identically for 3∤n; 2 ∣ M exactly when n ≡ 5 (mod 8)",
+        };
+    }
+    match lowest_rung(n, max_rung) {
+        Some(g) => NestClass::Iterated { r: g.r, u: g.b },
+        None => NestClass::NoClosure,
+    }
 }
 
 pub struct Straus;
@@ -184,6 +229,63 @@ impl Straus {
         s
     }
 
+    /// The nesting class of one `n`, in the rule's vocabulary.
+    pub fn nest(n: u64) -> String {
+        let mut s = format!("4/{} — the nesting read\n", n);
+        if n % 4 != 1 {
+            s.push_str("  not in the surviving class.\n");
+            return s;
+        }
+        match classify(n, 400) {
+            NestClass::OneShot { u, r, why } => {
+                s.push_str(&format!("  class:   ONE-SHOT at rung {}\n", r));
+                s.push_str(&format!("  divisor: u = {} — already at the fixed point\n", u));
+                s.push_str(&format!("  why:     {}\n", why));
+                let a = (n + r) / 4;
+                let m = n.saturating_mul(a);
+                let w = m / 2;
+                let b = (m + 2) / 3;
+                s.push_str(&format!("  4/{} = 1/{} + 1/{} + 1/{}\n", n, a, b, (w as u128 * b as u128)));
+                s.push_str("  price:   0 — nothing was searched\n");
+            }
+            NestClass::Iterated { r, .. } => {
+                s.push_str(&format!("  class:   ITERATED — the rung was walked to {}\n", r));
+                s.push_str("  price:   the walk; the divisor exists but is not identical\n");
+            }
+            NestClass::NoClosure => {
+                s.push_str("  class:   NO CLOSURE within the budget\n");
+                s.push_str("  reading: on a conservative action that means the stabiliser\n");
+                s.push_str("           set is wrong, not that the value is far away.\n");
+            }
+        }
+        s
+    }
+
+    /// How the three classes populate across a range.
+    pub fn nest_census(lo: u64, hi: u64) -> String {
+        let mut s = format!("nesting classes, {} ≤ n ≤ {}\n", lo, hi);
+        let (mut one, mut it, mut no) = (0u64, 0u64, 0u64);
+        let mut n = if lo % 4 == 1 { lo } else { lo + (5 - lo % 4) % 4 };
+        while n <= hi {
+            if n >= 5 && n % 3 != 0 {
+                match classify(n, 400) {
+                    NestClass::OneShot { .. } => one += 1,
+                    NestClass::Iterated { .. } => it += 1,
+                    NestClass::NoClosure => no += 1,
+                }
+            }
+            n += 4;
+        }
+        let tot = one + it + no;
+        s.push_str(&format!("  one-shot   {:>6}  ({:.1}%)  — nothing searched\n",
+            one, if tot > 0 { one as f64 * 100.0 / tot as f64 } else { 0.0 }));
+        s.push_str(&format!("  iterated   {:>6}  ({:.1}%)  — the rung was walked\n",
+            it, if tot > 0 { it as f64 * 100.0 / tot as f64 } else { 0.0 }));
+        s.push_str(&format!("  no closure {:>6}  ({:.1}%)\n",
+            no, if tot > 0 { no as f64 * 100.0 / tot as f64 } else { 0.0 }));
+        s
+    }
+
     /// The spectrum across a range: which rung each `n` needed.
     pub fn sweep(lo: u64, hi: u64) -> String {
         let mut s = format!("rung spectrum, n ≡ 1 (mod 4), {} ≤ n ≤ {}\n", lo, hi);
@@ -197,7 +299,7 @@ impl Straus {
         while n <= hi {
             if n >= 5 && n % 3 != 0 {
                 total += 1;
-                match lowest_rung(n, 400) {
+                match lowest_rung_cap(n, 400, 1024) {
                     None => unreached.push(n),
                     Some(g) => {
                         if g.r > worst { worst = g.r; worst_n = n; }

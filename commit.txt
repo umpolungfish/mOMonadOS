@@ -1,16 +1,15 @@
-straus reads the right stabiliser set
+straus nest / census — the ladder classified by the nesting rule
 
-The rung's second split tested divisors of M for d ≡ −1 (mod r). That is one
-sufficient family inside the criterion, not the criterion: r/M = 1/b + 1/c holds
-when some u dividing M² has u ≡ −M (mod r). Divisors of M² are strictly more, and
-the difference is n = 2521, which the instrument called unreachable and which
-rung 23 closes.
+A new creature beside `nesting` and `ctc`: it reads one n against the ladder and
+names which of the rule's three classes the pairing falls in.
 
-The fixed-point rule is why that was worth suspecting rather than accepting. A
-congruence test is a conservative action, and conservative operators admit only
-one-shot or no-closure — no basin. A value that will not close is therefore never
-"almost" closing, so a persistent no-closure points at the stabiliser set being
-read, not at the value. It was the set.
+  one-shot   the divisor is fixed by the congruence for every n in its residue
+             class, so nothing is searched. u = 2 at rung 3 is one: 3 ∣ n²+8
+             holds identically for 3∤n, and 2 ∣ M exactly when n ≡ 5 (mod 8).
+  iterated   a divisor exists but the rung has to be walked to find it.
+  no closure nothing lands inside the budget — which on a conservative action
+             means the stabiliser set being read is wrong, not that the value is
+             far away. That reading is what found the M² correction earlier.
 
-Sweep with the criterion right: 5 ≤ n ≤ 20000, 3333 values, none unreached, the
-highest rung needed 23.
+`straus census 5 4000`: 50.2% one-shot, 49.8% iterated, 0% no closure. The
+one-shot half is proved in p4ramill as straus_one_shot.

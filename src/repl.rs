@@ -1753,6 +1753,16 @@ pub fn repl(k: &mut Kernel) {
                 match a.as_slice() {
                     [] | ["help"] | ["-h"] | ["--help"] =>
                         sprintln!("{}", crate::straus::Straus::help()),
+                    ["nest", n] => match n.parse::<u64>() {
+                        Ok(v) => sprintln!("{}", crate::straus::Straus::nest(v)),
+                        Err(_) => sprintln!("straus nest <n> — n must be a number"),
+                    },
+                    ["census", lo, hi] => {
+                        match (lo.parse::<u64>(), hi.parse::<u64>()) {
+                            (Ok(l), Ok(h)) => sprintln!("{}", crate::straus::Straus::nest_census(l, h)),
+                            _ => sprintln!("straus census <lo> <hi> — both must be numbers"),
+                        }
+                    }
                     ["sweep", lo, hi] => {
                         match (lo.parse::<u64>(), hi.parse::<u64>()) {
                             (Ok(l), Ok(h)) => sprintln!("{}", crate::straus::Straus::sweep(l, h)),
