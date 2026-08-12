@@ -757,6 +757,135 @@ pub fn walk_sdr() {
     finish("SDR WINDOW", &steps);
 }
 
+// ── Lenz: unit distances in four dimensions ────────────────────────────────
+
+/// The Lenz configuration: two orthogonal circles of radius `1/√2` in ℝ⁴, one
+/// in the first two coordinates and one in the last two. Every cross pair sits
+/// at distance exactly one, because the squared distance is
+/// `1/2 + 1/2 = 1` whatever the two angles.
+///
+/// The count is `⌈n/2⌉·⌊n/2⌋ = ⌊n²/4⌋` cross pairs, which is the bound the
+/// manuscript proves. Here the identity is checked and the geometric fact is
+/// verified in exact arithmetic on the squared distance.
+pub fn walk_lenz() {
+    sprintln!("");
+    rule();
+    sprintln!("  LENZ — unit distances in four dimensions");
+    rule();
+
+    let mut steps: Vec<Step> = Vec::new();
+
+    // Rational points on each circle, from Pythagorean triples: the point
+    // (a/c, b/c) with a² + b² = c² lies on the unit circle exactly, and scaling
+    // by 1/√2 puts it on the circle of squared radius 1/2. The squared distance
+    // between a point of block A and one of block B is then
+    //   |p|² + |q|² = 1/2 + 1/2 = 1
+    // with no cross term, since the blocks share no coordinate. Everything here
+    // is integer arithmetic on the numerators: for the pair to sit at distance
+    // one, 2(a²+b²)d² + 2(e²+f²)c² must equal 4c²d².
+    let triples: [(i64, i64, i64); 4] = [(3, 4, 5), (5, 12, 13), (8, 15, 17), (7, 24, 25)];
+    let mut exact = true;
+    let mut checked = 0u32;
+    for (a, b, c) in triples.iter() {
+        for (e, f, d) in triples.iter() {
+            let lhs = 2 * (a * a + b * b) * (d * d) + 2 * (e * e + f * f) * (c * c);
+            let rhs = 4 * (c * c) * (d * d);
+            if lhs != rhs { exact = false; }
+            checked += 1;
+        }
+    }
+    steps.push(Step {
+        title: "Every cross pair sits at the same distance",
+        computed: format!("{} rational cross pairs from Pythagorean triples, each at squared distance exactly 1: {}",
+                          checked, exact),
+        holds: exact,
+    });
+    show(1, 2, &steps[0]);
+
+    let mut count_ok = true;
+    let mut line = String::new();
+    let mut n = 2u64;
+    while n <= 40 {
+        let cross = ((n + 1) / 2) * (n / 2);
+        if cross != (n * n) / 4 { count_ok = false; }
+        if n <= 10 { line.push_str(&format!("{}:{} ", n, cross)); }
+        n += 1;
+    }
+    steps.push(Step {
+        title: "The cross pairs number ⌊n²/4⌋",
+        computed: format!("{}… checked to n = 40: {}", line, if count_ok { "identical" } else { "DIFFERS" }),
+        holds: count_ok,
+    });
+    show(2, 2, &steps[1]);
+    finish("LENZ d = 4", &steps);
+}
+
+// ── Thick and syndetic ──────────────────────────────────────────────────────
+
+/// A set is thick when it contains arbitrarily long runs; syndetic when its
+/// gaps are bounded. The duality — thick iff the complement is not syndetic —
+/// is checked here on every subset of a window, which is where a claim about
+/// two infinite conditions can actually be exercised.
+pub fn walk_syndetic() {
+    sprintln!("");
+    rule();
+    sprintln!("  SYNDETIC — thick iff the complement has unbounded gaps");
+    rule();
+
+    let mut steps: Vec<Step> = Vec::new();
+
+    // On a window of 16, "thick at level L" = contains a run of L; "syndetic at
+    // level G" = no gap of G. The duality is: a run of L in S is a gap of L in
+    // the complement.
+    let n = 16usize;
+    let mut dual_ok = true;
+    let mut mask = 0u32;
+    while mask < (1u32 << n) {
+        // longest run of ones, and longest run of zeros
+        let (mut run1, mut best1, mut run0, mut best0) = (0, 0, 0, 0);
+        for i in 0..n {
+            if (mask >> i) & 1 == 1 { run1 += 1; run0 = 0; } else { run0 += 1; run1 = 0; }
+            if run1 > best1 { best1 = run1; }
+            if run0 > best0 { best0 = run0; }
+        }
+        // The duality at this window: the longest run in S is the longest gap
+        // in its complement.
+        let comp = !mask & ((1u32 << n) - 1);
+        let (mut r, mut b) = (0, 0);
+        for i in 0..n {
+            if (comp >> i) & 1 == 0 { r += 1; } else { r = 0; }
+            if r > b { b = r; }
+        }
+        if b != best1 { dual_ok = false; break; }
+        mask += 1;
+    }
+    steps.push(Step {
+        title: "A run in S is a gap in its complement",
+        computed: format!("checked all {} subsets of a window of {}: {}", 1u32 << n, n,
+                          if dual_ok { "the two lengths agree every time" } else { "DISAGREE" }),
+        holds: dual_ok,
+    });
+    show(1, 2, &steps[0]);
+
+    // The powers of two have difference set of density zero: gaps double.
+    let mut gaps_grow = true;
+    let mut prev = 1u64;
+    let mut i = 1u32;
+    while i <= 20 {
+        let cur = 1u64 << i;
+        if cur - prev != prev { gaps_grow = false; }
+        prev = cur;
+        i += 1;
+    }
+    steps.push(Step {
+        title: "The powers of two have doubling gaps",
+        computed: format!("gap after 2^k is exactly 2^k, to k = 20: {}", gaps_grow),
+        holds: gaps_grow,
+    });
+    show(2, 2, &steps[1]);
+    finish("THICK AND SYNDETIC", &steps);
+}
+
 /// The walks available, and what each computes.
 pub fn list_walks() {
     sprintln!("  Erdős manuscript walks — each step computed on this kernel:");
@@ -770,6 +899,8 @@ pub fn list_walks() {
     sprintln!("    mantel    the balanced count, and one edge past it forcing a triangle");
     sprintln!("    kac       ω > 1 windows, and why they carry no prime power");
     sprintln!("    sdr       f(n,n) for the first nine, and the minimum at the lcm");
+    sprintln!("    lenz      the four-dimensional construction and its ⌊n²/4⌋ pairs");
+    sprintln!("    syndetic  a run in a set is a gap in its complement");
     sprintln!("");
     sprintln!("  Run with:  erdos schutte | erdos landau | erdos lcm");
     sprintln!("             erdos sumset  | erdos ramsey33");
@@ -788,6 +919,8 @@ pub fn dispatch(name: &str) {
         "mantel" => walk_mantel(),
         "kac" => walk_kac(),
         "sdr" => walk_sdr(),
+        "lenz" => walk_lenz(),
+        "syndetic" => walk_syndetic(),
         _ => {
             sprintln!("No Erdős walk named '{}'.", name);
             list_walks();
