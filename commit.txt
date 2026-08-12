@@ -1,13 +1,13 @@
-erdos straus and oddcycle
+erdos chordless and roth
 
-straus reads the price-zero layer through the instrument that carries it: 3248 of
-the 3333 values of the surviving class below 20000 close with the rung read off n
-rather than searched, and 2521 comes back at rung 23 with no cofactor of M there,
-which is what puts its divisor in M^2.
+chordless walks every chord of every odd cycle to length eleven. It failed first
+at C5 with the chord (0,2), because I took the odd path and closed it, which
+gives an even cycle. The odd cycle comes from the EVEN path plus the chord. The
+walk caught the slip; the paper had it right.
 
-oddcycle searches all 1024 two-colourings of K5 and finds none leaving both
-classes bipartite, so the bound of four vertices at two colours is tight, then
-searches all 32 side assignments of C5 and finds no proper split. The step that
-stood first counted to 2^n, which is arithmetic rather than the theorem.
+roth finds the largest progression-free subset of [0,9) — size five, so any six
+carry a progression — and builds Behrend's sphere in base seven over three
+digits, where the largest single sphere carries six points.
 
-Fourteen walks. Every manuscript but four now boots.
+Sixteen walks. Three manuscripts have none yet: the alternating prime series, the
+Erdos-Fuchs average, and the multicolour Ramsey ratio.

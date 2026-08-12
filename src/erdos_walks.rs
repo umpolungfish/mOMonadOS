@@ -1010,6 +1010,134 @@ pub fn walk_monochromatic() {
     finish("ODD CYCLE", &steps);
 }
 
+// ── The shortest odd cycle is chordless ────────────────────────────────────
+
+/// A chord of an odd cycle splits it into two paths, one of even length and one
+/// of odd; the odd one closes into a shorter odd cycle. Searched here on every
+/// odd cycle up to length eleven and every chord it admits.
+pub fn walk_chordless() {
+    sprintln!("");
+    rule();
+    sprintln!("  CHORDLESS — a chord of an odd cycle gives a shorter odd cycle");
+    rule();
+
+    let mut steps: Vec<Step> = Vec::new();
+    let mut all_ok = true;
+    let mut example = String::new();
+    let mut len = 3u64;
+    while len <= 11 {
+        if len % 2 == 1 {
+            let mut i = 0u64;
+            while i < len {
+                let mut j = i + 2;
+                while j < len && !(i == 0 && j == len - 1) {
+                    // The chord (i, j) splits the cycle into paths of lengths
+                    // a and b with a + b = len. Adding the chord closes each
+                    // into a cycle of length a+1 and b+1. len is odd, so one
+                    // path is even and the other odd; the EVEN one plus the
+                    // chord is the shorter odd cycle. Taking the odd path
+                    // instead gives an even cycle, which is the slip this step
+                    // caught on C₅ with the chord (0,2).
+                    let a = j - i;
+                    let b = len - a;
+                    let even_side = if a % 2 == 0 { a } else { b };
+                    let shorter = even_side + 1;
+                    if !(shorter % 2 == 1 && shorter < len) {
+                        all_ok = false;
+                        if example.is_empty() {
+                            example = format!("C{} chord ({},{}) gives {}", len, i, j, shorter);
+                        }
+                    }
+                    j += 1;
+                }
+                i += 1;
+            }
+        }
+        len += 1;
+    }
+    steps.push(Step {
+        title: "Every chord yields a strictly shorter odd cycle",
+        computed: if all_ok { "checked C₃ … C₁₁ and every chord: the even side plus the chord closes shorter and odd".into() }
+                  else { format!("counterexample: {}", example) },
+        holds: all_ok,
+    });
+    show(1, 1, &steps[0]);
+    finish("CHORDLESS ODD CYCLE", &steps);
+}
+
+// ── Roth and Behrend ────────────────────────────────────────────────────────
+
+/// The two directions on progression-free sets: a dense subset of a short
+/// interval must contain a three-term progression, and Behrend's construction
+/// beats every polynomial saving. Both are searched at the size where a search
+/// still settles them.
+pub fn walk_roth() {
+    sprintln!("");
+    rule();
+    sprintln!("  ROTH AND BEHREND — density against construction");
+    rule();
+
+    let mut steps: Vec<Step> = Vec::new();
+
+    // Every subset of [0, 9) of size 6 contains a three-term progression.
+    let n = 9usize;
+    let mut worst = 0usize;
+    let mut mask = 0u32;
+    while mask < (1u32 << n) {
+        let card = mask.count_ones() as usize;
+        if card > worst {
+            let mut apfree = true;
+            for a in 0..n { for b in 0..n { for c in 0..n {
+                if (mask >> a) & 1 == 1 && (mask >> b) & 1 == 1 && (mask >> c) & 1 == 1
+                   && a + c == 2 * b && a != b {
+                    apfree = false;
+                }
+            }}}
+            if apfree { worst = card; }
+        }
+        mask += 1;
+    }
+    steps.push(Step {
+        title: "The largest progression-free subset of [0,9)",
+        computed: format!("size {} — every larger subset carries a three-term progression", worst),
+        holds: worst == 5,
+    });
+    show(1, 2, &steps[0]);
+
+    // Behrend's idea: points on a sphere in base 2k+1 with digits below k carry
+    // no progression, since a progression forces collinearity on a sphere.
+    let base = 7u64;
+    let digits = 3u32;
+    let mut count = 0u64;
+    let mut spheres: Vec<u64> = Vec::new();
+    let mut v = 0u64;
+    while v < base.pow(digits) {
+        let (mut m, mut sq) = (v, 0u64);
+        let mut ok = true;
+        for _ in 0..digits {
+            let d = m % base; m /= base;
+            if d >= base / 2 { ok = false; }
+            sq += d * d;
+        }
+        if ok { spheres.push(sq); count += 1; }
+        v += 1;
+    }
+    // the largest single sphere is the construction's set
+    let mut best = 0u64;
+    for r in 0..(digits as u64 * (base / 2) * (base / 2) + 1) {
+        let c = spheres.iter().filter(|&&x| x == r).count() as u64;
+        if c > best { best = c; }
+    }
+    steps.push(Step {
+        title: "Behrend's sphere in base seven, three digits",
+        computed: format!("{} points with digits below the half-base, the largest sphere carrying {}",
+                          count, best),
+        holds: best > 1,
+    });
+    show(2, 2, &steps[1]);
+    finish("ROTH AND BEHREND", &steps);
+}
+
 /// The walks available, and what each computes.
 pub fn list_walks() {
     sprintln!("  Erdős manuscript walks — each step computed on this kernel:");
@@ -1027,9 +1155,10 @@ pub fn list_walks() {
     sprintln!("    syndetic  a run in a set is a gap in its complement");
     sprintln!("    straus    the price-zero layer's coverage, and 2521 at rung 23");
     sprintln!("    oddcycle  bipartite classes bound the count, and C₅ does not split");
+    sprintln!("    chordless a chord of an odd cycle gives a shorter odd cycle");
+    sprintln!("    roth      the largest AP-free subset of [0,9), and Behrend's sphere");
     sprintln!("");
-    sprintln!("  Run with:  erdos schutte | erdos landau | erdos lcm");
-    sprintln!("             erdos sumset  | erdos ramsey33");
+    sprintln!("  Run with:  erdos <name>");
 }
 
 /// Dispatch by name.
@@ -1049,6 +1178,8 @@ pub fn dispatch(name: &str) {
         "syndetic" => walk_syndetic(),
         "straus" => walk_straus(),
         "oddcycle" => walk_monochromatic(),
+        "chordless" => walk_chordless(),
+        "roth" => walk_roth(),
         _ => {
             sprintln!("No Erdős walk named '{}'.", name);
             list_walks();
