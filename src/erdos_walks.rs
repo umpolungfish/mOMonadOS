@@ -407,6 +407,139 @@ pub fn walk_ramsey33() {
     finish("R(3,3) = 6", &steps);
 }
 
+// ── The gcd of a binomial row ───────────────────────────────────────────────
+
+fn binom(n: u64, k: u64) -> u64 {
+    if k > n { return 0; }
+    let mut num = 1u64;
+    let mut den = 1u64;
+    let kk = if k > n - k { n - k } else { k };
+    let mut i = 0u64;
+    while i < kk {
+        num = num.saturating_mul(n - i);
+        den = den.saturating_mul(i + 1);
+        let g = gcd(num, den);
+        num /= g; den /= g;
+        i += 1;
+    }
+    num / den
+}
+
+/// `h(n)` — the gcd of the interior of row `n` of Pascal's triangle.
+fn row_gcd(n: u64) -> u64 {
+    let mut g = 0u64;
+    let mut k = 1u64;
+    while k < n { g = gcd(g, binom(n, k)); k += 1; }
+    g
+}
+
+/// The row gcd is `p` at a prime power `p^m` and `1` otherwise — computed on
+/// the range where the binomials fit a machine word.
+pub fn walk_binomial() {
+    sprintln!("");
+    rule();
+    sprintln!("  BINOMIAL — the gcd of a row of Pascal's triangle");
+    rule();
+
+    fn prime_power_base(n: u64) -> u64 {
+        let mut p = 2u64;
+        while p <= n {
+            if n % p == 0 {
+                let mut m = n;
+                while m % p == 0 { m /= p; }
+                return if m == 1 { p } else { 1 };
+            }
+            p += 1;
+        }
+        1
+    }
+
+    let mut steps: Vec<Step> = Vec::new();
+    let mut agree = true;
+    let mut line = String::new();
+    let mut n = 2u64;
+    while n <= 30 {
+        let g = row_gcd(n);
+        let want = prime_power_base(n);
+        if g != want { agree = false; }
+        if n <= 12 { line.push_str(&format!("h({})={} ", n, g)); }
+        n += 1;
+    }
+    steps.push(Step {
+        title: "h(n) = p at a prime power, 1 otherwise",
+        computed: format!("{}… checked to n = 30: {}", line, if agree { "agrees" } else { "DISAGREES" }),
+        holds: agree,
+    });
+    show(1, 1, &steps[0]);
+    finish("BINOMIAL ROW GCD", &steps);
+}
+
+// ── Rep-tiling: the ratio, and which n admit a dissection ───────────────────
+
+/// A triangle dissects into `n` congruent copies of itself only when `n` is a
+/// square, a sum of two squares, or three times a square.
+fn rep_admissible(n: u64) -> bool {
+    let is_sq = |m: u64| { let r = isqrt_u64(m); r * r == m };
+    if is_sq(n) { return true; }
+    if n % 3 == 0 && is_sq(n / 3) { return true; }
+    let mut a = 0u64;
+    while a * a <= n {
+        let rest = n - a * a;
+        if a > 0 && is_sq(rest) && rest > 0 { return true; }
+        a += 1;
+    }
+    false
+}
+
+fn isqrt_u64(n: u64) -> u64 {
+    if n < 2 { return n; }
+    let mut x = n;
+    let mut y = (x + 1) / 2;
+    while y < x { x = y; y = (x + n / x) / 2; }
+    x
+}
+
+/// Six is the first `n` admitting no dissection — the manuscript's title.
+pub fn walk_reptiling() {
+    sprintln!("");
+    rule();
+    sprintln!("  REP-TILING — six, and the two dissection problems");
+    rule();
+
+    let mut steps: Vec<Step> = Vec::new();
+    let mut first_bad = 0u64;
+    let mut n = 1u64;
+    while n <= 40 {
+        if !rep_admissible(n) { first_bad = n; break; }
+        n += 1;
+    }
+    steps.push(Step {
+        title: "The first n with no admissible ratio",
+        computed: format!("smallest n that is neither a square, a sum of two squares, nor three times a square: {}", first_bad),
+        holds: first_bad == 6,
+    });
+    show(1, 2, &steps[0]);
+
+    // Which n admit a ratio at all, below twenty. The step that stood here
+    // checked that n copies of area 1/n fill area 1, which is arithmetic rather
+    // than a result: the content is WHICH n pass the classification.
+    let mut admissible = String::new();
+    let mut blocked = String::new();
+    let mut k = 1u64;
+    while k <= 20 {
+        if rep_admissible(k) { admissible.push_str(&format!("{} ", k)); }
+        else { blocked.push_str(&format!("{} ", k)); }
+        k += 1;
+    }
+    steps.push(Step {
+        title: "The classification below twenty",
+        computed: format!("admissible: {}| blocked: {}", admissible, blocked),
+        holds: blocked.starts_with("6 "),
+    });
+    show(2, 2, &steps[1]);
+    finish("REP-TILING SIX", &steps);
+}
+
 /// The walks available, and what each computes.
 pub fn list_walks() {
     sprintln!("  Erdős manuscript walks — each step computed on this kernel:");
@@ -415,6 +548,8 @@ pub fn list_walks() {
     sprintln!("    lcm       lcm(1..n) against n·log(n+1), from the quadratic bound");
     sprintln!("    sumset    the g₃ witnesses: AP-free, sums distinct, 2^n ≤ nN+1");
     sprintln!("    ramsey33  R(3,3) = 6, the pentagon below and the search above");
+    sprintln!("    binomial  the row gcd: p at a prime power, one otherwise");
+    sprintln!("    reptiling six is the first n with no triangle dissection");
     sprintln!("");
     sprintln!("  Run with:  erdos schutte | erdos landau | erdos lcm");
     sprintln!("             erdos sumset  | erdos ramsey33");
@@ -428,6 +563,8 @@ pub fn dispatch(name: &str) {
         "lcm" => walk_lcm(),
         "sumset" => walk_sumset(),
         "ramsey33" => walk_ramsey33(),
+        "binomial" => walk_binomial(),
+        "reptiling" => walk_reptiling(),
         _ => {
             sprintln!("No Erdős walk named '{}'.", name);
             list_walks();

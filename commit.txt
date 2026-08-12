@@ -1,15 +1,10 @@
-erdos: two more walks, and one that caught me
+erdos: binomial and rep-tiling walks
 
-sumset and ramsey33. R(3,3) = 6 searches all 32768 two-colourings of K6 for a
-monochromatic triangle and finds one every time, then shows the pentagon
-colouring on five carrying none.
+binomial computes the gcd of the interior of each Pascal row to n = 30 and finds
+p at every prime power and one elsewhere. reptiling searches for the first n that
+is neither a square, a sum of two squares, nor three times a square, and finds
+six, then prints the classification below twenty: blocked at 6, 7, 11, 14, 15, 19.
 
-The sumset walk failed twice before it was right, and both failures were mine
-rather than the theorem's. The first included 0 in the base-three set, so the
-empty subset and {0} collided. The second asserted that the base-three set has
-distinct subset sums, which it does not — 1 + 3 = 4 and 4 is in the set. What the
-manuscript proves is the implication and the counting bound it forces, so the
-walk now runs the paper's own five witnesses: each is progression-free, each has
-distinct subset sums, and each satisfies 2^n <= nN + 1.
-
-A step that computes can fail. That is the point of computing it.
+The rep-tiling walk had a second step checking that n copies of area 1/n fill
+area 1. That is arithmetic, not a result, and a walk that prints one is the
+slideshow this file exists to avoid. It now prints which n pass.
