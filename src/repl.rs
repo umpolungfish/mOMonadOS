@@ -1748,6 +1748,24 @@ pub fn repl(k: &mut Kernel) {
                     }
                 }
             }
+            "straus" => {
+                let a: alloc::vec::Vec<&str> = parts.collect();
+                match a.as_slice() {
+                    [] | ["help"] | ["-h"] | ["--help"] =>
+                        sprintln!("{}", crate::straus::Straus::help()),
+                    ["sweep", lo, hi] => {
+                        match (lo.parse::<u64>(), hi.parse::<u64>()) {
+                            (Ok(l), Ok(h)) => sprintln!("{}", crate::straus::Straus::sweep(l, h)),
+                            _ => sprintln!("straus sweep <lo> <hi> — both must be numbers"),
+                        }
+                    }
+                    [n] => match n.parse::<u64>() {
+                        Ok(v) => sprintln!("{}", crate::straus::Straus::read(v)),
+                        Err(_) => sprintln!("straus <n> — n must be a number"),
+                    },
+                    _ => sprintln!("{}", crate::straus::Straus::help()),
+                }
+            }
             "carriers" => {
                 match parts.next() {
                     None => sprintln!("{}", crate::carriers::Carriers::report()),
