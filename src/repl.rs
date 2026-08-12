@@ -1769,6 +1769,10 @@ pub fn repl(k: &mut Kernel) {
                             _ => sprintln!("straus sweep <lo> <hi> — both must be numbers"),
                         }
                     }
+                    ["defect", v] => match v.parse::<u64>() {
+                        Ok(v) => sprintln!("{}", crate::straus::Straus::defect(v)),
+                        Err(_) => sprintln!("straus defect <n> — n must be a number"),
+                    }
                     ["frontier", lo, hi] => {
                         match (lo.parse::<u64>(), hi.parse::<u64>()) {
                             (Ok(l), Ok(h)) => sprintln!("{}", crate::straus::Straus::frontier(l, h)),

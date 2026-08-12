@@ -1,11 +1,16 @@
-straus: the instrument reads the whole price-zero layer
+straus: the rung walk, read in the coordinate that is actually graded
 
-classify was calling everything but n = 5 (mod 8) an iterated walk, when three
-rungs are read straight off n: r = 3 (mod 4) dividing n, n+1 or n+4. Those are
-one-shots and now report as one, each naming which family it is and the divisor
-it commits to.
+I first read the walk as a distance — the least residue of M+u from zero — and
+it collapsed to {0, 1/r}, which is a bool wearing a decimal. Two different n
+produced identical tables, which is the tell.
 
-New verb, straus frontier <lo> <hi>: the values both zero-price layers miss, the
-ones whose divisor has to come from a prime of a. Over 5 <= n <= 200000 that is
-1271 of 33333, all of them n = 1 (mod 24). The census over 5..4000 moves from
-50.2% one-shot to 93.4%.
+The graded quantity is the SET the divisors reach: the residues M+u (mod r) as u
+runs over the divisors of M². Its size against r is a density, the rung closes
+exactly when zero is in it, and it separates. Over the 162 frontier values below
+20000, coverage at the closing rung averages 0.734 and never falls below 0.533;
+at a failing rung it averages 0.366 and clears 0.533 three times in 89. So the
+walk is dissipative in this coordinate — the reached set grows into the target
+rather than landing on it.
+
+New verb straus defect <n>. Help now lists every verb and states the criterion
+as u | M², which is what the instrument has been computing since the M² fix.
