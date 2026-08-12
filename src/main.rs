@@ -120,6 +120,7 @@ mod ctc;
 mod nesting;
 mod carriers;
 mod straus;
+mod erdos_walks;
 mod substrate;
 
 use tokens::{canonical_count, continuous_count, novel_count, shunted_count};

@@ -230,6 +230,12 @@ pub fn repl(k: &mut Kernel) {
                     }
                 }
             },
+            "erdos" => {
+                match parts.next().unwrap_or("") {
+                    "" | "list" => crate::erdos_walks::list_walks(),
+                    other => crate::erdos_walks::dispatch(other),
+                }
+            },
             "seals" => {
                 match parts.next().unwrap_or("") {
                     "" | "list" => crate::seals::list_seals(),

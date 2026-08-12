@@ -1,7 +1,17 @@
-straus cof: the height at which a cofactor of M appears
+erdos: the manuscripts become bootable
 
-The square stratum is the set of n whose divisor lives in M^2 and not in M, so
-the quantity that defines it is the rung height searched without a cofactor
-arriving. straus cof <n> <maxrung> reads it. 2521 has none to rung 4000, which
-settles it as a stratum member rather than a value beyond a small budget; 196561
-gets one at rung 75 and 1201 at rung 23.
+A publication needs its proof instantiated here so a reader can boot and follow
+it, and only the Straus work was. Three more now are, under `erdos <name>`:
+
+  schutte  searches all 32768 orientations of a six-vertex tournament, finds
+           none dominating every pair, then builds the Paley tournament on seven
+           and checks that it does
+  landau   computes g(1..10) by the same complete partition descent the
+           manuscript's generator uses, and shows g(7) coming from 4+3 rather
+           than from the 7-cycle
+  lcm      checks the quadratic lower bound n(n-1) <= lcm(1..n) and the
+           logarithmic comparison it feeds
+
+Every step computes its claim on this kernel. A step that printed a number it had
+not derived would be a slideshow, which is the rule the bootstrap walk set and
+this file keeps.
