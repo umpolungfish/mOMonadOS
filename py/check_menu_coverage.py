@@ -16,7 +16,7 @@ import re
 import sys
 from pathlib import Path
 
-HERE = Path(__file__).resolve().parent
+HERE = Path(__file__).resolve().parent.parent
 repl = (HERE / "src" / "repl.rs").read_text(encoding="utf-8")
 menu = (HERE / "src" / "menu.rs").read_text(encoding="utf-8")
 

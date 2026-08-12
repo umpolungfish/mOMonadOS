@@ -49,6 +49,7 @@ pub static SEALS_MENU: &[MenuItem] = &[
     MenuItem { name: "winding",        cmd: "seals winding",        desc: "ω = 2π — all angles in windings (1 step)", example: "seals winding", submenu: None },
     MenuItem { name: "residuals",      cmd: "seals residuals",      desc: "Where every remainders comes from (1 step)", example: "seals residuals", submenu: None },
     MenuItem { name: "all",            cmd: "seals all",            desc: "GRAND SEAL — walk through all 10", example: "seals all", submenu: None },
+    MenuItem { name: "erdos",          cmd: "erdos",                desc: "Guided walks through the Erdős manuscripts — list | schutte | landau | lcm", example: "erdos schutte", submenu: None },
 ];
 
 pub static PROOF_MENU: &[MenuItem] = &[
@@ -106,6 +107,7 @@ pub static STATUS_MENU: &[MenuItem] = &[
     MenuItem { name: "heatmap",  cmd: "heatmap",  desc: "B4 memory heatmap", example: "heatmap", submenu: None },
     MenuItem { name: "memory",   cmd: "memory",   desc: "Dump B4 memory", example: "memory", submenu: None },
     MenuItem { name: "registers",cmd: "registers",desc: "Show R0-R7", example: "registers", submenu: None },
+    MenuItem { name: "color",      cmd: "color",      desc: "Toggle terminal colour (alias colour)", example: "color on", submenu: None },
     MenuItem { name: "stack",    cmd: "stack",    desc: "Stack depth", example: "stack", submenu: None },
 ];
 
@@ -143,16 +145,18 @@ pub static KERNEL_MENU: &[MenuItem] = &[
     MenuItem { name: "ruleset", cmd: "ruleset", desc: "show the active ruleset", example: "ruleset", submenu: None },
     MenuItem { name: "absorption", cmd: "absorption", desc: "list all absorption rules", example: "absorption", submenu: None },
     MenuItem { name: "replicative", cmd: "replicative", desc: "load the program targeting O_inf_dag (R2) deliberately", example: "replicative", submenu: None },
+    MenuItem { name: "vox",        cmd: "vox",        desc: "Control-flow closure auditor: verdict <word> | evm <hex> | wasm <hex> | classify <mn>", example: "vox verdict ⊢∈⊤><>∋◻", submenu: None },
     MenuItem { name: "quit", cmd: "quit", desc: "halt the kernel (aliases exit, halt)", example: "quit", submenu: None },
 ];
 
 pub static QUANTUM_MENU: &[MenuItem] = &[
     MenuItem { name: "fibqc",      cmd: "fibqc",      desc: "Fibonacci anyon QC: verify | compile | jones | knot | winding (see also qc, jp)", example: "fibqc verify", submenu: None },
     MenuItem { name: "qc", cmd: "qc", desc: "Compile a circuit over H T S X to a braid word; spaces optional; draw|svg|loop before the gates renders it, and two depths size the net and the recursion (aliases quantum_compile, fibqc compile)", example: "qc loop HTSX 10 3", submenu: None },
-    MenuItem { name: "bi", cmd: "bi", desc: "Draw a braid word — strand diagram in the terminal, SVG with `svg`, the closed braid as a ring with `loop`; window with start:count, column height with /N", example: "bi loop 1 2 -1 -2 1 2", submenu: None },
+    MenuItem { name: "bi", cmd: "bi", desc: "Draw a braid word — strand diagram in the terminal, SVG with `svg`, the closed braid as a ring with `loop`; window with start:count, column height with /N (alias braid_image)", example: "bi loop 1 2 -1 -2 1 2", submenu: None },
     MenuItem { name: "jp", cmd: "jp", desc: "Jones polynomial at the 1/5 winding; signed Artin generators (alias jones_polynomial)", example: "jp 1 1 1", submenu: None },
     MenuItem { name: "bg",         cmd: "bg",         desc: "Braid word to grammar tuple (alias braid-grammar); winding is a closed form in the writhe", example: "bg tuple 1,2,1 3", submenu: None },
     MenuItem { name: "shor",       cmd: "shor",       desc: "Belnap Shor pipeline, N=15 and N=21", example: "shor", submenu: None },
+    MenuItem { name: "winding",    cmd: "winding",    desc: "Period as a torus winding: order | factor | closure | factorgen (alias wperiod)", example: "winding order 2 101", submenu: None },
     MenuItem { name: "iuft",       cmd: "iuft",       desc: "IUFT QC gates — the 12->3 Euler-angle SU(2) encoding of an IG tuple", example: "iuft list", submenu: None },
     MenuItem { name: "teich",      cmd: "teich",      desc: "IUFT <-> IUTT bridge: Teichmuller deformation paths as gate trajectories", example: "teich canonical", submenu: None },
     MenuItem { name: "hqe",        cmd: "hqe",        desc: "Holonomic quasi-ergodic quantale, MBL holonomy", example: "hqe report", submenu: None },
@@ -163,6 +167,7 @@ pub static QUANTUM_MENU: &[MenuItem] = &[
     MenuItem { name: "manifold",   cmd: "manifold",   desc: "Topological manifold operations", example: "manifold", submenu: None },
     MenuItem { name: "triple",     cmd: "triple",     desc: "Triple-frame von Neumann superoperator algebra", example: "triple report", submenu: None },
     MenuItem { name: "sic",        cmd: "sic",        desc: "SIC-POVM d=12 identity, three lattice proofs", example: "sic", submenu: None },
+    MenuItem { name: "bip39",      cmd: "bip39",      desc: "BIP39-SIC-POVM: search | words | verify | map | gap", example: "bip39 sic verify", submenu: None },
     MenuItem { name: "d12",        cmd: "d12",        desc: "d=12 SIC Phase VI: tower, magnitudes, orbits, existence, duallink, z0", example: "d12 tower", submenu: None },
     MenuItem { name: "d2048",      cmd: "d2048",      desc: "d=2048 moduli tower ascent (alias d2k)", example: "d2048 next", submenu: None },
 ];
