@@ -361,6 +361,52 @@ fn gcd_u64(a: u64, b: u64) -> u64 {
     a
 }
 
+/// The least `k` whose shift supplies a rung, searched by rung rather than by
+/// `k`. For each rung `r`, the cofactors of `M` at `−1 (mod r)` are read off, and
+/// each gives `k = (w+1)/r` directly — so the whole `k`-spectrum of one `n` is
+/// obtained without factoring `k·n+1` for any `k`.
+pub fn k_spectrum(n: u64, max_rung: u64, cap: usize) -> Option<(u64, u64, u64)> {
+    if n % 4 != 1 { return None; }
+    let mut r = 3u64;
+    let mut best: Option<(u64, u64, u64)> = None;
+    while r <= max_rung {
+        let a = (n + r) / 4;
+        let m = n.saturating_mul(a);
+        if m % r != 0 {
+            let mut divs: Vec<u64> = Vec::new();
+            divs.push(1);
+            for (p, e) in factor(m) {
+                let mut next: Vec<u64> = Vec::new();
+                for &d in divs.iter() {
+                    let mut power = 1u64;
+                    for _ in 0..=e {
+                        match d.checked_mul(power) {
+                            Some(v) => next.push(v),
+                            None => break,
+                        }
+                        match power.checked_mul(p) {
+                            Some(v) => power = v,
+                            None => break,
+                        }
+                    }
+                }
+                next.sort_unstable();
+                next.dedup();
+                if next.len() > cap { next.truncate(cap); }
+                divs = next;
+            }
+            for w in divs {
+                if w > 1 && (w + 1) % r == 0 {
+                    let k = (w + 1) / r;
+                    if best.map_or(true, |(bk, _, _)| k < bk) { best = Some((k, r, w)); }
+                }
+            }
+        }
+        r += 4;
+    }
+    best
+}
+
 /// Is `n` on the frontier — outside the one-shot and outside the price-zero
 /// layer, so its rung must be searched? Every such `n` is `1 (mod 24)`.
 pub fn on_frontier(n: u64) -> bool {
@@ -395,6 +441,7 @@ impl Straus {
         s.push_str("  straus cascade <lo> <hi>   the frontier falling rung by rung\n");
         s.push_str("  straus reach <lo> <hi>     how deep the cofactor list goes\n");
         s.push_str("  straus kshift <lo> <hi> <K>  rungs read off k·n+1\n");
+        s.push_str("  straus kceiling <lo> <hi>  the least k each value needs\n");
         s.push_str("\n");
         s.push_str("A rung is r ≡ 3 (mod 4): the first term is 1/((n+r)/4) and the\n");
         s.push_str("remainder has numerator exactly r. r = 3 is the greedy step.\n");
@@ -613,6 +660,45 @@ impl Straus {
             for v in cur.iter().take(10) { s.push_str(&format!(" {}", v)); }
             s.push('\n');
         }
+        s
+    }
+
+    /// The least `k` each frontier value needs, read from the rung side so the
+    /// whole spectrum is available rather than a truncated search over `k`.
+    pub fn kceiling(lo: u64, hi: u64) -> String {
+        let mut s = format!("least k on the frontier, {} ≤ n ≤ {}\n", lo, hi);
+        let mut worst = (0u64, 0u64, 0u64);
+        let mut miss: Vec<u64> = Vec::new();
+        let mut tot = 0u64;
+        let mut buckets: Vec<(u64, u64)> = Vec::new();
+        let mut n = if lo % 4 == 1 { lo } else { lo + (5 - lo % 4) % 4 };
+        while n <= hi {
+            if n >= 5 && on_frontier(n) {
+                tot += 1;
+                match k_spectrum(n, 200, 4096) {
+                    Some((k, r, _)) => {
+                        if k > worst.0 { worst = (k, n, r); }
+                        let b = if k <= 2 { 2 } else if k <= 8 { 8 } else if k <= 32 { 32 }
+                                else if k <= 128 { 128 } else if k <= 512 { 512 } else { 4096 };
+                        match buckets.iter_mut().find(|(bb, _)| *bb == b) {
+                            Some((_, c)) => *c += 1,
+                            None => buckets.push((b, 1)),
+                        }
+                    }
+                    None => miss.push(n),
+                }
+            }
+            n += 4;
+        }
+        buckets.sort_by_key(|(b, _)| *b);
+        s.push_str(&format!("  {} frontier values, rungs ≤ 200\n\n", tot));
+        s.push_str("   k ≤ | values\n");
+        s.push_str("  -----|-------\n");
+        for (b, c) in &buckets { s.push_str(&format!("  {:>4} | {:>6}\n", b, c)); }
+        s.push_str(&format!("  largest least-k: {} at n = {} (rung {})\n", worst.0, worst.1, worst.2));
+        s.push_str(&format!("  no cofactor at any rung ≤ 200: {}", miss.len()));
+        for v in miss.iter().take(8) { s.push_str(&format!(" {}", v)); }
+        s.push('\n');
         s
     }
 

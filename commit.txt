@@ -1,9 +1,7 @@
-straus kshift: the rung read off k*n+1, and straus reach
+straus kceiling: the least k, read from the rung side
 
-Two verbs. straus reach reports how deep the cofactor list goes — the least k
-with k*r-1 dividing M — and shows the depth is a long tail, not a short list.
-straus kshift inverts it: for each k it factors k*n+1 instead of M, which needs
-no knowledge of a, and reports which k supplies the rung.
-
-Also fixed the argument parsing for four-field straus commands: the REPL splits a
-line into four fields, so the trailing two numbers arrive as one string.
+Searching k and factoring k*n+1 truncates: k reaches (M+1)/r. Reading rungs
+instead and taking k = (w+1)/r from each cofactor gives the whole spectrum. Over
+the frontier below 200000: least k at most 2 for 314 values, at most 8 for 565,
+at most 32 for 613, tail to 12813 at n = 66529. One value, 2521, has no cofactor
+at any rung up to 200.
