@@ -407,6 +407,17 @@ pub fn k_spectrum(n: u64, max_rung: u64, cap: usize) -> Option<(u64, u64, u64)> 
     best
 }
 
+/// Integer square root by Newton, for the `n^{1/4}` reading. The kernel has no
+/// libm, and the ratio wanted here is coarse enough that the integer root is the
+/// honest quantity rather than an approximation to a float one.
+fn isqrt(n: u64) -> u64 {
+    if n < 2 { return n; }
+    let mut x = n;
+    let mut y = (x + 1) / 2;
+    while y < x { x = y; y = (x + n / x) / 2; }
+    x
+}
+
 /// Is `n` on the frontier — outside the one-shot and outside the price-zero
 /// layer, so its rung must be searched? Every such `n` is `1 (mod 24)`.
 pub fn on_frontier(n: u64) -> bool {
@@ -442,6 +453,7 @@ impl Straus {
         s.push_str("  straus reach <lo> <hi>     how deep the cofactor list goes\n");
         s.push_str("  straus kshift <lo> <hi> <K>  rungs read off k·n+1\n");
         s.push_str("  straus kceiling <lo> <hi>  the least k each value needs\n");
+        s.push_str("  straus ceiling <lo> <hi>   rung records against n^(1/4)\n");
         s.push_str("\n");
         s.push_str("A rung is r ≡ 3 (mod 4): the first term is 1/((n+r)/4) and the\n");
         s.push_str("remainder has numerator exactly r. r = 3 is the greedy step.\n");
@@ -660,6 +672,41 @@ impl Straus {
             for v in cur.iter().take(10) { s.push_str(&format!(" {}", v)); }
             s.push('\n');
         }
+        s
+    }
+
+    /// The rung ceiling against `n^{1/4}`: the constant a bound would need.
+    ///
+    /// `RungBounded` in p4ramill asks for a function bounding the least closing
+    /// rung. Everything measured is consistent with `C·n^{1/4}`, so the quantity
+    /// to watch is `r/n^{1/4}` at the values that force the highest rungs — if
+    /// that ratio drifts upward the shape is wrong, and if it holds the constant
+    /// is what a proof would have to supply.
+    pub fn ceiling(lo: u64, hi: u64) -> String {
+        let mut s = format!("rung ceiling against n^(1/4), {} ≤ n ≤ {}\n", lo, hi);
+        let mut worst: Vec<(u64, u64, f64)> = Vec::new();
+        let mut n = if lo % 4 == 1 { lo } else { lo + (5 - lo % 4) % 4 };
+        let mut running = 0u64;
+        while n <= hi {
+            if n >= 5 && n % 3 != 0 {
+                if let Some(g) = lowest_rung_cap(n, 400, 1024) {
+                    if g.r > running {
+                        running = g.r;
+                        // n^{1/4} without libm: two rounds of integer square root.
+                        let q = isqrt(isqrt(n));
+                        let ratio = if q > 0 { g.r as f64 / q as f64 } else { 0.0 };
+                        worst.push((n, g.r, ratio));
+                    }
+                }
+            }
+            n += 4;
+        }
+        s.push_str("       n |  rung | rung / n^(1/4)\n");
+        s.push_str("  -------|-------|---------------\n");
+        for (v, r, ratio) in worst.iter() {
+            s.push_str(&format!("  {:>7} | {:>5} | {:>13.3}\n", v, r, ratio));
+        }
+        s.push_str("  A record is a value forcing a higher rung than anything before it.\n");
         s
     }
 
