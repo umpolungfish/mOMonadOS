@@ -1,10 +1,9 @@
-erdos: binomial and rep-tiling walks
+erdos mantel: the balanced count, and what one edge past it forces
 
-binomial computes the gcd of the interior of each Pascal row to n = 30 and finds
-p at every prime power and one elsewhere. reptiling searches for the first n that
-is neither a square, a sum of two squares, nor three times a square, and finds
-six, then prints the classification below twenty: blocked at 6, 7, 11, 14, 15, 19.
+Two steps. The first checks that the balanced bipartite graph's edge count is
+exactly the floor of n^2/4, as an identity to n = 40 rather than as a quotation.
+The second searches every graph on 4, 5 and 6 vertices carrying one edge more
+than that bound and finds none triangle-free.
 
-The rep-tiling walk had a second step checking that n copies of area 1/n fill
-area 1. That is arithmetic, not a result, and a walk that prints one is the
-slideshow this file exists to avoid. It now prints which n pass.
+Seven walks now: schutte, landau, lcm, sumset, ramsey33, binomial, reptiling,
+mantel.

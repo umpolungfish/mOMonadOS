@@ -540,6 +540,69 @@ pub fn walk_reptiling() {
     finish("REP-TILING SIX", &steps);
 }
 
+// ── Mantel: the balanced bipartite edge count ───────────────────────────────
+
+/// The complete bipartite graph on parts of size `⌈n/2⌉` and `⌊n/2⌋` has
+/// `⌊n²/4⌋` edges — Mantel's extremal count, checked as an identity rather than
+/// quoted, and the anti-Ramsey regimes read off beside it.
+pub fn walk_mantel() {
+    sprintln!("");
+    rule();
+    sprintln!("  MANTEL — the balanced bipartite edge count");
+    rule();
+
+    let mut steps: Vec<Step> = Vec::new();
+
+    let mut ok = true;
+    let mut line = String::new();
+    let mut n = 1u64;
+    while n <= 40 {
+        let lhs = ((n + 1) / 2) * (n / 2);
+        let rhs = (n * n) / 4;
+        if lhs != rhs { ok = false; }
+        if n <= 10 { line.push_str(&format!("{}:{} ", n, lhs)); }
+        n += 1;
+    }
+    steps.push(Step {
+        title: "⌈n/2⌉·⌊n/2⌋ = ⌊n²/4⌋",
+        computed: format!("{}… checked to n = 40: {}", line, if ok { "identical" } else { "DIFFERS" }),
+        holds: ok,
+    });
+    show(1, 2, &steps[0]);
+
+    // One edge above the bound forces a triangle at small n: search K5 and K6.
+    let mut forced = true;
+    for n in [4usize, 5, 6] {
+        let bound = (n * n) / 4;
+        let pairs: Vec<(usize, usize)> = (0..n).flat_map(|i| ((i+1)..n).map(move |j| (i, j))).collect();
+        let m = pairs.len();
+        let mut found_free = false;
+        let mut mask = 0u32;
+        while mask < (1u32 << m) {
+            if (mask.count_ones() as usize) == bound + 1 {
+                let mut adj = [[false; 8]; 8];
+                for (b, (i, j)) in pairs.iter().enumerate() {
+                    if (mask >> b) & 1 == 1 { adj[*i][*j] = true; adj[*j][*i] = true; }
+                }
+                let mut tri = false;
+                for i in 0..n { for j in (i+1)..n { for k in (j+1)..n {
+                    if adj[i][j] && adj[j][k] && adj[i][k] { tri = true; }
+                }}}
+                if !tri { found_free = true; break; }
+            }
+            mask += 1;
+        }
+        if found_free { forced = false; }
+    }
+    steps.push(Step {
+        title: "One edge past the bound forces a triangle",
+        computed: format!("searched every graph on 4, 5 and 6 vertices with ⌊n²/4⌋+1 edges; triangle-free found: {}", !forced),
+        holds: forced,
+    });
+    show(2, 2, &steps[1]);
+    finish("MANTEL", &steps);
+}
+
 /// The walks available, and what each computes.
 pub fn list_walks() {
     sprintln!("  Erdős manuscript walks — each step computed on this kernel:");
@@ -550,6 +613,7 @@ pub fn list_walks() {
     sprintln!("    ramsey33  R(3,3) = 6, the pentagon below and the search above");
     sprintln!("    binomial  the row gcd: p at a prime power, one otherwise");
     sprintln!("    reptiling six is the first n with no triangle dissection");
+    sprintln!("    mantel    the balanced count, and one edge past it forcing a triangle");
     sprintln!("");
     sprintln!("  Run with:  erdos schutte | erdos landau | erdos lcm");
     sprintln!("             erdos sumset  | erdos ramsey33");
@@ -565,6 +629,7 @@ pub fn dispatch(name: &str) {
         "ramsey33" => walk_ramsey33(),
         "binomial" => walk_binomial(),
         "reptiling" => walk_reptiling(),
+        "mantel" => walk_mantel(),
         _ => {
             sprintln!("No Erdős walk named '{}'.", name);
             list_walks();
