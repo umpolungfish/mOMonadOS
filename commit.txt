@@ -1,26 +1,16 @@
-straus — the ladder as an instrument, and the value it does not reach
+straus reads the right stabiliser set
 
-nesting greedy reads Erdős–Straus as attracted with a finite budget; imasm check
-on the two-fork form answers B and names the remedy — COMMIT one arm rather than
-search it. This is what committing it gives, as a command.
+The rung's second split tested divisors of M for d ≡ −1 (mod r). That is one
+sufficient family inside the criterion, not the criterion: r/M = 1/b + 1/c holds
+when some u dividing M² has u ≡ −M (mod r). Divisors of M² are strictly more, and
+the difference is n = 2521, which the instrument called unreachable and which
+rung 23 closes.
 
-A rung is r ≡ 3 (mod 4): the first term is 1/((n+r)/4), the remainder has
-numerator exactly r, and the second term comes from a divisor d ≡ −1 (mod r) of
-n·a. r = 3 is the greedy step; the higher rungs are the committed arms. Both
-identities are proved in p4ramill; this module is the reading, and it checks each
-representation it prints by cross-multiplying in u128 rather than trusting the
-construction.
+The fixed-point rule is why that was worth suspecting rather than accepting. A
+congruence test is a conservative action, and conservative operators admit only
+one-shot or no-closure — no basin. A value that will not close is therefore never
+"almost" closing, so a persistent no-closure points at the stabiliser set being
+read, not at the value. It was the set.
 
-The spectrum over 5 ≤ n ≤ 4000, 666 values in the class: rung 3 closes 91.0%,
-rung 7 another 6.8%, then 1.4%, 0.3%, 0.2%, 0.3% at rungs 11, 15, 19, 23. The
-highest rung needed is 23, at n = 1201.
-
-And one value is not reached by any rung up to 400: n = 2521. Naming it is the
-point of the sweep — a count says a residue exists, the name says what the next
-rung or the next mechanism has to answer for. It is not a counterexample to
-anything: 4/2521 has representations, and what fails is this ladder's way of
-finding one.
-
-The instrument cannot settle the conjecture and says so where it prints: a
-bounded spectrum across a range is evidence about the range, and the open
-question is whether the height is bounded at all.
+Sweep with the criterion right: 5 ≤ n ≤ 20000, 3333 values, none unreached, the
+highest rung needed 23.

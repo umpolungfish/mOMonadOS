@@ -43,45 +43,92 @@ fn divisor_closes(d: u64, r: u64) -> bool {
     r >= 2 && d % r == r - 1
 }
 
-/// Find the lowest rung `r ≡ 3 (mod 4)` that closes `4/n`, scanning divisors of
-/// `n·a` for one congruent to `−1 (mod r)`.
-///
-/// `r = 3` is the greedy step. Higher rungs are the committed arms.
-pub fn lowest_rung(n: u64, max_rung: u64) -> Option<Rung> {
-    if n < 2 || n % 4 != 1 {
-        return None;
-    }
-    let mut r = 3u64;
-    while r <= max_rung {
-        // a = (n + r)/4 is an integer exactly when r ≡ 3 (mod 4), which the step
-        // of 4 below maintains.
-        let a = (n + r) / 4;
-        let m = n.saturating_mul(a);
-        if m == 0 {
-            r += 4;
-            continue;
+/// Prime factorisation of `m` by trial division. `m` here is `n·a`, a few
+/// million at most, so the loop to √m is short.
+fn factor(mut m: u64) -> Vec<(u64, u32)> {
+    let mut out: Vec<(u64, u32)> = Vec::new();
+    let mut d = 2u64;
+    while d.saturating_mul(d) <= m {
+        if m % d == 0 {
+            let mut k = 0u32;
+            while m % d == 0 { m /= d; k += 1; }
+            out.push((d, k));
         }
-        // Scan divisors of m for one ≡ −1 (mod r). The smallest such divisor
-        // gives the smallest second denominator, so the scan runs upward.
-        let mut d = 1u64;
-        while d.saturating_mul(d) <= m {
-            if m % d == 0 {
-                for cand in [d, m / d] {
-                    if divisor_closes(cand, r) {
-                        let t = (cand - (r - 1)) / r;
-                        let e = m / cand;
-                        return Some(Rung {
-                            r,
-                            a,
-                            d: cand,
-                            e,
-                            b: e.saturating_mul(t + 1),
-                            c: m.saturating_mul(t + 1),
-                        });
-                    }
+        d += if d == 2 { 1 } else { 2 };
+    }
+    if m > 1 { out.push((m, 1)); }
+    out
+}
+
+/// The divisors of `m²`, from the factorisation of `m` with every exponent
+/// doubled. Capped so a pathological input cannot exhaust the kernel's heap.
+fn divisors_of_square(m: u64, cap: usize) -> Vec<u64> {
+    let mut divs: Vec<u64> = Vec::new();
+    divs.push(1);
+    for (p, k) in factor(m) {
+        let mut next: Vec<u64> = Vec::new();
+        for &d in divs.iter() {
+            let mut power = 1u64;
+            for _ in 0..=(2 * k) {
+                match d.checked_mul(power) {
+                    Some(v) => next.push(v),
+                    None => break,
+                }
+                match power.checked_mul(p) {
+                    Some(v) => power = v,
+                    None => break,
                 }
             }
-            d += 1;
+        }
+        next.sort_unstable();
+        next.dedup();
+        if next.len() > cap { next.truncate(cap); }
+        divs = next;
+    }
+    divs
+}
+
+/// The second term's REAL criterion.
+///
+/// `r/M = 1/b + 1/c` exactly when some `u` dividing `M²` satisfies
+/// `u ≡ −M (mod r)`; then `b = (M+u)/r` and `c = (M + M²/u)/r`, because
+/// `(M+u)(M+v) = M(2M+u+v)` whenever `uv = M²`.
+///
+/// The first version of this instrument tested divisors of `M` for `d ≡ −1
+/// (mod r)` — one sufficient family inside this criterion, not the criterion.
+/// On a conservative operator the fixed-point rule admits only one-shot or
+/// no-closure, so a stabiliser set that is too small does not report "nearly":
+/// it reports nothing. n = 2521 was called unreachable on that account, and
+/// rung 23 closes it.
+fn split_second(r: u64, m: u64) -> Option<(u64, u64)> {
+    if r < 2 || m == 0 { return None; }
+    let mm = (m as u128) * (m as u128);
+    for u in divisors_of_square(m, 8192) {
+        if (u + m) % r != 0 { continue; }
+        let v128 = mm / (u as u128);
+        if v128 > u64::MAX as u128 { continue; }
+        let v = v128 as u64;
+        if (v + m) % r != 0 { continue; }
+        let b = (m + u) / r;
+        let c = (m + v) / r;
+        if b > 0 && c > 0 { return Some((b, c)); }
+    }
+    None
+}
+
+/// Find the lowest rung `r ≡ 3 (mod 4)` whose second split closes.
+///
+/// `r = 3` is the greedy step; higher rungs are the committed arms `imasm check`
+/// asked for when it answered B on the two-fork form.
+pub fn lowest_rung(n: u64, max_rung: u64) -> Option<Rung> {
+    if n < 2 || n % 4 != 1 { return None; }
+    let mut r = 3u64;
+    while r <= max_rung {
+        let a = (n + r) / 4;
+        let m = n.saturating_mul(a);
+        if m == 0 { r += 4; continue; }
+        if let Some((b, c)) = split_second(r, m) {
+            return Some(Rung { r, a, d: 0, e: 0, b, c });
         }
         r += 4;
     }
@@ -122,7 +169,7 @@ impl Straus {
                 s.push_str(&format!("  rung r = {}{}\n", g.r,
                     if g.r == 3 { "   (the greedy step)" } else { "   (a committed arm)" }));
                 s.push_str(&format!("  first term    1/{}\n", g.a));
-                s.push_str(&format!("  divisor       d = {} ≡ −1 (mod {}),  e = {}\n", g.d, g.r, g.e));
+                s.push_str(&format!("  second split  u | M², u ≡ −M (mod {})\n", g.r));
                 s.push_str(&format!("  4/{} = 1/{} + 1/{} + 1/{}\n", n, g.a, g.b, g.c));
                 // The identity is checked here, not asserted: cross-multiplied
                 // over u128 so nothing is taken on trust from the construction.
