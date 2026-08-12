@@ -1,10 +1,10 @@
-straus cascade: the frontier falling rung by rung
+straus: the shift family and descent fold into the frontier
 
-New verb, straus cascade <lo> <hi>. At each rung it asks whether M = n(n+r)/4
-carries a divisor w with w = -1 (mod r); the cofactor u = M/w is then the closing
-divisor. Over the 1271 frontier values below 200000 the cascade is 873 at rung 3,
-277 at 7, 64 at 11, and down to two values that no cofactor of M reaches at any
-rung up to 51 — 2521 and 196561, which need a divisor of M^2.
+on_frontier now asks three things beyond the class conditions: no price-zero
+rung, no shift rung — r = 3 (mod 4) dividing d+1 for a divisor d of n — and no
+proper divisor that is itself off the frontier, which is multiplicative descent.
+The frontier below 200000 falls from 1271 to 624, and the reading now reports how
+many of them are prime: 622.
 
-At the greedy rung the test is a prime residue and nothing more, since every
-frontier value has M = 1 (mod 3).
+The cascade rerun on the smaller set closes every value but 2521 and 196561 with
+a rung no larger than 51.

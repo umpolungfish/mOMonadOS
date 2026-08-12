@@ -272,10 +272,50 @@ pub fn rung_coverage(n: u64, r: u64, cap: usize) -> (f64, bool) {
     (count as f64 / r as f64, zero)
 }
 
+/// **The shift family.** Any divisor `d` of `n` is a divisor of `M = n·a`, so a
+/// rung `r ≡ 3 (mod 4)` dividing `d+1` closes: `M = u·d` with `r ∣ d+1`. The
+/// rung is read off the factorisation of `n` alone — nothing about `a` is
+/// consulted, so nothing is searched, and unlike `r ∣ n+1` the shift may be
+/// taken at any divisor rather than at `n` itself.
+pub fn shift_rung(n: u64) -> Option<(u64, u64)> {
+    let mut d = 1u64;
+    let mut best: Option<(u64, u64)> = None;
+    while d * d <= n {
+        if n % d == 0 {
+            for cand in [d, n / d] {
+                if cand < 2 { continue; }
+                let m = cand + 1;
+                let mut r = 3u64;
+                while r <= m {
+                    if m % r == 0 && r % 4 == 3 {
+                        if best.map_or(true, |(br, _)| r < br) { best = Some((r, cand)); }
+                        break;
+                    }
+                    r += 4;
+                }
+            }
+        }
+        d += 1;
+    }
+    best
+}
+
 /// Is `n` on the frontier — outside the one-shot and outside the price-zero
 /// layer, so its rung must be searched? Every such `n` is `1 (mod 24)`.
 pub fn on_frontier(n: u64) -> bool {
-    n % 4 == 1 && n % 3 != 0 && n % 8 != 5 && price_zero_rung(n).is_none()
+    if !(n % 4 == 1 && n % 3 != 0 && n % 8 != 5) { return false; }
+    if price_zero_rung(n).is_some() || shift_rung(n).is_some() { return false; }
+    // Multiplicative descent: every class but this one is settled by a family,
+    // so a proper divisor that is not itself on the frontier represents 4/d, and
+    // scaling every denominator by n/d represents 4/n.
+    let mut d = 2u64;
+    while d * d <= n {
+        if n % d == 0 {
+            if !on_frontier(d) || !on_frontier(n / d) { return false; }
+        }
+        d += 1;
+    }
+    true
 }
 
 pub struct Straus;
@@ -403,7 +443,7 @@ impl Straus {
     /// `1 (mod 24)`.
     pub fn frontier(lo: u64, hi: u64) -> String {
         let mut s = format!("the price-zero frontier, {} ≤ n ≤ {}\n", lo, hi);
-        let (mut tot, mut left) = (0u64, 0u64);
+        let (mut tot, mut left, mut primes) = (0u64, 0u64, 0u64);
         let mut first: Vec<u64> = Vec::new();
         let mut n = if lo % 4 == 1 { lo } else { lo + (5 - lo % 4) % 4 };
         while n <= hi {
@@ -411,6 +451,7 @@ impl Straus {
                 tot += 1;
                 if on_frontier(n) {
                     left += 1;
+                    if factor(n).len() == 1 && factor(n)[0].1 == 1 { primes += 1; }
                     if first.len() < 12 { first.push(n); }
                 }
             }
@@ -420,6 +461,7 @@ impl Straus {
         s.push_str(&format!("  closed at price zero: {}\n", tot - left));
         s.push_str(&format!("  on the frontier:      {}  ({:.1}%)\n", left,
             if tot > 0 { left as f64 * 100.0 / tot as f64 } else { 0.0 }));
+        s.push_str(&format!("  of those, prime:      {}\n", primes));
         s.push_str("  first of them:       ");
         for v in &first { s.push_str(&format!(" {}", v)); }
         s.push('\n');
