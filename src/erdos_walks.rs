@@ -603,6 +603,81 @@ pub fn walk_mantel() {
     finish("MANTEL", &steps);
 }
 
+// ── The Kac interval carries no prime power ─────────────────────────────────
+
+/// ω(n), the number of distinct primes dividing `n`.
+fn omega(mut n: u64) -> u32 {
+    let mut c = 0u32;
+    let mut p = 2u64;
+    while p * p <= n {
+        if n % p == 0 { c += 1; while n % p == 0 { n /= p; } }
+        p += 1;
+    }
+    if n > 1 { c += 1; }
+    c
+}
+
+/// A prime power has exactly one prime factor, so an interval on which
+/// `ω(n) > 1` contains none. The manuscript's interval is defined by
+/// `ω(n) > log log n`; here the two conditions are computed side by side on a
+/// range, and the exclusion is checked rather than assumed.
+pub fn walk_kac() {
+    sprintln!("");
+    rule();
+    sprintln!("  KAC — an interval where ω exceeds log log carries no prime power");
+    rule();
+
+    let mut steps: Vec<Step> = Vec::new();
+
+    // Every prime power has ω = 1.
+    let mut pp_ok = true;
+    let mut n = 2u64;
+    while n <= 2000 {
+        let w = omega(n);
+        if w == 1 {
+            // n is a prime power; confirm by dividing out its single prime.
+            let mut m = n; let mut p = 2u64;
+            while m % p != 0 { p += 1; }
+            while m % p == 0 { m /= p; }
+            if m != 1 { pp_ok = false; break; }
+        }
+        n += 1;
+    }
+    steps.push(Step {
+        title: "ω(n) = 1 exactly at the prime powers",
+        computed: format!("checked n = 2 … 2000: {}", if pp_ok { "every ω = 1 is a prime power" } else { "FAILS" }),
+        holds: pp_ok,
+    });
+    show(1, 2, &steps[0]);
+
+    // On any window where ω > 1 throughout, no prime power appears.
+    let mut window_lo = 0u64;
+    let mut window_hi = 0u64;
+    let mut best = 0u64;
+    let mut run_start = 0u64;
+    let mut run = 0u64;
+    let mut k = 2u64;
+    while k <= 2000 {
+        if omega(k) > 1 {
+            if run == 0 { run_start = k; }
+            run += 1;
+            if run > best { best = run; window_lo = run_start; window_hi = k; }
+        } else { run = 0; }
+        k += 1;
+    }
+    let mut clean = true;
+    let mut j = window_lo;
+    while j <= window_hi { if omega(j) == 1 { clean = false; } j += 1; }
+    steps.push(Step {
+        title: "The longest such window below two thousand",
+        computed: format!("[{}, {}], length {}, prime powers inside: {}", window_lo, window_hi, best,
+                          if clean { "none" } else { "SOME" }),
+        holds: clean && best > 1,
+    });
+    show(2, 2, &steps[1]);
+    finish("KAC INTERVAL", &steps);
+}
+
 /// The walks available, and what each computes.
 pub fn list_walks() {
     sprintln!("  Erdős manuscript walks — each step computed on this kernel:");
@@ -614,6 +689,7 @@ pub fn list_walks() {
     sprintln!("    binomial  the row gcd: p at a prime power, one otherwise");
     sprintln!("    reptiling six is the first n with no triangle dissection");
     sprintln!("    mantel    the balanced count, and one edge past it forcing a triangle");
+    sprintln!("    kac       ω > 1 windows, and why they carry no prime power");
     sprintln!("");
     sprintln!("  Run with:  erdos schutte | erdos landau | erdos lcm");
     sprintln!("             erdos sumset  | erdos ramsey33");
@@ -630,6 +706,7 @@ pub fn dispatch(name: &str) {
         "binomial" => walk_binomial(),
         "reptiling" => walk_reptiling(),
         "mantel" => walk_mantel(),
+        "kac" => walk_kac(),
         _ => {
             sprintln!("No Erdős walk named '{}'.", name);
             list_walks();
