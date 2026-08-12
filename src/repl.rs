@@ -1784,6 +1784,12 @@ pub fn repl(k: &mut Kernel) {
                             _ => sprintln!("straus kshift <lo> <hi> <K> — all must be numbers"),
                         }
                     }
+                    ["budget", lo, hi] => {
+                        match (lo.parse::<u64>(), hi.parse::<u64>()) {
+                            (Ok(l), Ok(h)) => sprintln!("{}", crate::straus::Straus::budget(l, h)),
+                            _ => sprintln!("straus budget <lo> <hi> — both must be numbers"),
+                        }
+                    }
                     ["ceiling", lo, hi] => {
                         match (lo.parse::<u64>(), hi.parse::<u64>()) {
                             (Ok(l), Ok(h)) => sprintln!("{}", crate::straus::Straus::ceiling(l, h)),
