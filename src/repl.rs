@@ -1773,6 +1773,12 @@ pub fn repl(k: &mut Kernel) {
                         Ok(v) => sprintln!("{}", crate::straus::Straus::defect(v)),
                         Err(_) => sprintln!("straus defect <n> — n must be a number"),
                     }
+                    ["cascade", lo, hi] => {
+                        match (lo.parse::<u64>(), hi.parse::<u64>()) {
+                            (Ok(l), Ok(h)) => sprintln!("{}", crate::straus::Straus::cascade(l, h)),
+                            _ => sprintln!("straus cascade <lo> <hi> — both must be numbers"),
+                        }
+                    }
                     ["frontier", lo, hi] => {
                         match (lo.parse::<u64>(), hi.parse::<u64>()) {
                             (Ok(l), Ok(h)) => sprintln!("{}", crate::straus::Straus::frontier(l, h)),

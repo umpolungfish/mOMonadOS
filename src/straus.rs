@@ -209,6 +209,41 @@ pub fn price_zero_rung(n: u64) -> Option<(u64, u64, &'static str)> {
     None
 }
 
+/// Does `M` itself carry a cofactor at `−1`? That is the form the frontier's
+/// witnesses actually take: `M = u·w` with `r ∣ w+1`, so `M + u = u(w+1)`.
+/// Strictly weaker than the `u ∣ M²` criterion, and enough for all but two
+/// values below 200000.
+pub fn cofactor_closes(n: u64, r: u64, cap: usize) -> bool {
+    if r < 2 || n % 4 != 1 { return false; }
+    let a = (n + r) / 4;
+    let m = n.saturating_mul(a);
+    if m == 0 || m % r == 0 { return false; }
+    let mut divs: Vec<u64> = Vec::new();
+    divs.push(1);
+    for (p, k) in factor(m) {
+        let mut next: Vec<u64> = Vec::new();
+        for &d in divs.iter() {
+            let mut power = 1u64;
+            for _ in 0..=k {
+                match d.checked_mul(power) {
+                    Some(v) => next.push(v % r),
+                    None => break,
+                }
+                match power.checked_mul(p) {
+                    Some(v) => power = v,
+                    None => break,
+                }
+            }
+        }
+        next.sort_unstable();
+        next.dedup();
+        if next.len() > cap { next.truncate(cap); }
+        divs = next;
+    }
+    let target = (r - (m % r)) % r;
+    divs.iter().any(|&d| d == target)
+}
+
 /// The **residue coverage** at a rung: how much of `Z/r` the available divisors
 /// reach.
 ///
@@ -256,6 +291,7 @@ impl Straus {
         s.push_str("  straus sweep <lo> <hi>     the rung spectrum across a range\n");
         s.push_str("  straus census <lo> <hi>    how the three classes populate\n");
         s.push_str("  straus frontier <lo> <hi>  what price zero does not reach\n");
+        s.push_str("  straus cascade <lo> <hi>   the frontier falling rung by rung\n");
         s.push_str("\n");
         s.push_str("A rung is r ≡ 3 (mod 4): the first term is 1/((n+r)/4) and the\n");
         s.push_str("remainder has numerator exactly r. r = 3 is the greedy step.\n");
@@ -430,6 +466,47 @@ impl Straus {
                 }));
         } else {
             s.push_str("  no rung ≤ 120 reached 0 within the divisor budget.\n");
+        }
+        s
+    }
+
+    /// The cascade: how the frontier falls rung by rung to the cofactor form.
+    ///
+    /// At each rung the test is whether `M = n(n+r)/4` carries a divisor `w`
+    /// with `w ≡ −1 (mod r)`; the cofactor `u = M/w` is then the closing divisor.
+    /// At the greedy rung this is a statement about primes alone — every
+    /// frontier value has `M ≡ 1 (mod 3)`, so a divisor at 2 exists exactly when
+    /// some prime factor of `M` is `≡ 2 (mod 3)`.
+    pub fn cascade(lo: u64, hi: u64) -> String {
+        let mut s = format!("the frontier cascading to the cofactor form, {} ≤ n ≤ {}\n", lo, hi);
+        let mut cur: Vec<u64> = Vec::new();
+        let mut n = if lo % 4 == 1 { lo } else { lo + (5 - lo % 4) % 4 };
+        while n <= hi {
+            if n >= 5 && on_frontier(n) { cur.push(n); }
+            n += 4;
+        }
+        s.push_str(&format!("  {} frontier values\n\n", cur.len()));
+        s.push_str("  rung | closed here | still open\n");
+        s.push_str("  -----|-------------|-----------\n");
+        let mut r = 3u64;
+        while r <= 51 && !cur.is_empty() {
+            let mut next: Vec<u64> = Vec::new();
+            let mut got = 0u64;
+            for &v in cur.iter() {
+                if cofactor_closes(v, r, 4096) { got += 1; } else { next.push(v); }
+            }
+            if got > 0 || !next.is_empty() {
+                s.push_str(&format!("  {:>4} | {:>11} | {:>10}\n", r, got, next.len()));
+            }
+            cur = next;
+            r += 4;
+        }
+        if cur.is_empty() {
+            s.push_str("  every frontier value closed by a cofactor of M at rung ≤ 51.\n");
+        } else {
+            s.push_str("  needing a divisor of M² rather than of M:");
+            for v in cur.iter().take(10) { s.push_str(&format!(" {}", v)); }
+            s.push('\n');
         }
         s
     }

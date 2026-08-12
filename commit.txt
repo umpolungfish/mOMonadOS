@@ -1,16 +1,10 @@
-straus: the rung walk, read in the coordinate that is actually graded
+straus cascade: the frontier falling rung by rung
 
-I first read the walk as a distance — the least residue of M+u from zero — and
-it collapsed to {0, 1/r}, which is a bool wearing a decimal. Two different n
-produced identical tables, which is the tell.
+New verb, straus cascade <lo> <hi>. At each rung it asks whether M = n(n+r)/4
+carries a divisor w with w = -1 (mod r); the cofactor u = M/w is then the closing
+divisor. Over the 1271 frontier values below 200000 the cascade is 873 at rung 3,
+277 at 7, 64 at 11, and down to two values that no cofactor of M reaches at any
+rung up to 51 — 2521 and 196561, which need a divisor of M^2.
 
-The graded quantity is the SET the divisors reach: the residues M+u (mod r) as u
-runs over the divisors of M². Its size against r is a density, the rung closes
-exactly when zero is in it, and it separates. Over the 162 frontier values below
-20000, coverage at the closing rung averages 0.734 and never falls below 0.533;
-at a failing rung it averages 0.366 and clears 0.533 three times in 89. So the
-walk is dissipative in this coordinate — the reached set grows into the target
-rather than landing on it.
-
-New verb straus defect <n>. Help now lists every verb and states the criterion
-as u | M², which is what the instrument has been computing since the M² fix.
+At the greedy rung the test is a prime residue and nothing more, since every
+frontier value has M = 1 (mod 3).
