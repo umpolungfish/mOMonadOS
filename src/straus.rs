@@ -300,6 +300,67 @@ pub fn shift_rung(n: u64) -> Option<(u64, u64)> {
     best
 }
 
+/// **The `w = kr − 1` ladder inside the cofactor form.** A cofactor at `−1` is
+/// `w = kr − 1` for some `k ≥ 1`. Taking `k` small makes the test a divisibility
+/// with no factorisation at all: `k = 1` asks `(r−1) ∣ M`, `k = 2` asks
+/// `(2r−1) ∣ M`. Reading how far up `k` the frontier's witnesses sit says whether
+/// the cofactor search is really a search or a short list.
+pub fn least_k_cofactor(n: u64, max_rung: u64, max_k: u64) -> Option<(u64, u64)> {
+    if n % 4 != 1 { return None; }
+    let mut r = 3u64;
+    while r <= max_rung {
+        let a = (n + r) / 4;
+        let m = n.saturating_mul(a);
+        if m % r != 0 {
+            let mut k = 1u64;
+            while k <= max_k {
+                let w = k * r - 1;
+                if w > 1 && m % w == 0 { return Some((r, k)); }
+                k += 1;
+            }
+        }
+        r += 4;
+    }
+    None
+}
+
+/// **The `k`-shift family.** Every cofactor is `w = kr − 1`, so the rung is
+/// `r = (w+1)/k`, and `w ∣ M` forces `w ∣ k·n + 1`: from `4a = n + r`,
+/// `4k·a = k·n + w + 1`, and `w` is coprime to `4k`. So each `k` reads its rungs
+/// off the factorisation of `k·n + 1` — nothing about `a` is consulted, and the
+/// search over divisors of `M` is a search over `k` instead.
+///
+/// `k = 1` is the divisor family `r ∣ n+1`. `k = 2` reads `2n+1`, and so on.
+pub fn k_shift_rung(n: u64, max_k: u64) -> Option<(u64, u64, u64)> {
+    let mut k = 1u64;
+    while k <= max_k {
+        let target = k.saturating_mul(n) + 1;
+        let mut w = 1u64;
+        while w * w <= target {
+            if target % w == 0 {
+                for cand in [w, target / w] {
+                    if cand < 2 { continue; }
+                    if (cand + 1) % k != 0 { continue; }
+                    let r = (cand + 1) / k;
+                    if r < 3 || r % 4 != 3 { continue; }
+                    if gcd_u64(cand, 4 * k) != 1 { continue; }
+                    if (n + r) % 4 != 0 { continue; }
+                    return Some((r, k, cand));
+                }
+            }
+            w += 1;
+        }
+        k += 1;
+    }
+    None
+}
+
+fn gcd_u64(a: u64, b: u64) -> u64 {
+    let (mut a, mut b) = (a, b);
+    while b != 0 { let t = a % b; a = b; b = t; }
+    a
+}
+
 /// Is `n` on the frontier — outside the one-shot and outside the price-zero
 /// layer, so its rung must be searched? Every such `n` is `1 (mod 24)`.
 pub fn on_frontier(n: u64) -> bool {
@@ -332,6 +393,8 @@ impl Straus {
         s.push_str("  straus census <lo> <hi>    how the three classes populate\n");
         s.push_str("  straus frontier <lo> <hi>  what price zero does not reach\n");
         s.push_str("  straus cascade <lo> <hi>   the frontier falling rung by rung\n");
+        s.push_str("  straus reach <lo> <hi>     how deep the cofactor list goes\n");
+        s.push_str("  straus kshift <lo> <hi> <K>  rungs read off k·n+1\n");
         s.push_str("\n");
         s.push_str("A rung is r ≡ 3 (mod 4): the first term is 1/((n+r)/4) and the\n");
         s.push_str("remainder has numerator exactly r. r = 3 is the greedy step.\n");
@@ -550,6 +613,71 @@ impl Straus {
             for v in cur.iter().take(10) { s.push_str(&format!(" {}", v)); }
             s.push('\n');
         }
+        s
+    }
+
+    /// The k-shift reading: which `k` supplies the rung, over a range's frontier.
+    pub fn kshift(lo: u64, hi: u64, max_k: u64) -> String {
+        let mut s = format!("the k-shift family on the frontier, {} ≤ n ≤ {}\n", lo, hi);
+        let mut counts: Vec<(u64, u64)> = Vec::new();
+        let mut miss: Vec<u64> = Vec::new();
+        let mut tot = 0u64;
+        let mut n = if lo % 4 == 1 { lo } else { lo + (5 - lo % 4) % 4 };
+        while n <= hi {
+            if n >= 5 && on_frontier(n) {
+                tot += 1;
+                match k_shift_rung(n, max_k) {
+                    Some((_, k, _)) => match counts.iter_mut().find(|(kk, _)| *kk == k) {
+                        Some((_, c)) => *c += 1,
+                        None => counts.push((k, 1)),
+                    },
+                    None => miss.push(n),
+                }
+            }
+            n += 4;
+        }
+        counts.sort_by_key(|(k, _)| *k);
+        s.push_str(&format!("  {} frontier values, k ≤ {}\n\n", tot, max_k));
+        s.push_str("     k | closed by a divisor of k·n+1\n");
+        s.push_str("  -----|-----------------------------\n");
+        for (k, c) in &counts { s.push_str(&format!("  {:>4} | {:>28}\n", k, c)); }
+        s.push_str(&format!("  reached by no k ≤ {}: {}", max_k, miss.len()));
+        for v in miss.iter().take(8) { s.push_str(&format!(" {}", v)); }
+        s.push('\n');
+        s
+    }
+
+    /// How deep the cofactor list has to go: the least `k` with `kr − 1` dividing
+    /// `M`, over the frontier values in a range.
+    pub fn reach(lo: u64, hi: u64) -> String {
+        let mut s = format!("cofactor depth on the frontier, {} ≤ n ≤ {}\n", lo, hi);
+        let mut counts: Vec<(u64, u64)> = Vec::new();
+        let mut miss: Vec<u64> = Vec::new();
+        let mut tot = 0u64;
+        let mut n = if lo % 4 == 1 { lo } else { lo + (5 - lo % 4) % 4 };
+        while n <= hi {
+            if n >= 5 && on_frontier(n) {
+                tot += 1;
+                match least_k_cofactor(n, 200, 64) {
+                    Some((_, k)) => match counts.iter_mut().find(|(kk, _)| *kk == k) {
+                        Some((_, c)) => *c += 1,
+                        None => counts.push((k, 1)),
+                    },
+                    None => miss.push(n),
+                }
+            }
+            n += 4;
+        }
+        counts.sort_by_key(|(k, _)| *k);
+        s.push_str(&format!("  {} frontier values\n\n", tot));
+        s.push_str("     k | closed with w = kr−1\n");
+        s.push_str("  -----|---------------------\n");
+        for (k, c) in &counts {
+            s.push_str(&format!("  {:>4} | {:>20}\n", k, c));
+        }
+        s.push_str(&format!("  no k ≤ 64 at any rung ≤ 200: {}", miss.len()));
+        for v in miss.iter().take(8) { s.push_str(&format!(" {}", v)); }
+        s.push('\n');
         s
     }
 

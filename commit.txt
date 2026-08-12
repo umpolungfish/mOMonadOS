@@ -1,10 +1,9 @@
-straus: the shift family and descent fold into the frontier
+straus kshift: the rung read off k*n+1, and straus reach
 
-on_frontier now asks three things beyond the class conditions: no price-zero
-rung, no shift rung — r = 3 (mod 4) dividing d+1 for a divisor d of n — and no
-proper divisor that is itself off the frontier, which is multiplicative descent.
-The frontier below 200000 falls from 1271 to 624, and the reading now reports how
-many of them are prime: 622.
+Two verbs. straus reach reports how deep the cofactor list goes — the least k
+with k*r-1 dividing M — and shows the depth is a long tail, not a short list.
+straus kshift inverts it: for each k it factors k*n+1 instead of M, which needs
+no knowledge of a, and reports which k supplies the rung.
 
-The cascade rerun on the smaller set closes every value but 2521 and 196561 with
-a rung no larger than 51.
+Also fixed the argument parsing for four-field straus commands: the REPL splits a
+line into four fields, so the trailing two numbers arrive as one string.

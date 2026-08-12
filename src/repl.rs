@@ -1773,6 +1773,23 @@ pub fn repl(k: &mut Kernel) {
                         Ok(v) => sprintln!("{}", crate::straus::Straus::defect(v)),
                         Err(_) => sprintln!("straus defect <n> — n must be a number"),
                     }
+                    // The line is split into at most four fields, so the trailing
+                    // "<hi> <K>" arrives as one string and is split here.
+                    ["kshift", lo, rest] => {
+                        let mut it = rest.split_whitespace();
+                        match (lo.parse::<u64>(),
+                               it.next().unwrap_or("").parse::<u64>(),
+                               it.next().unwrap_or("8").parse::<u64>()) {
+                            (Ok(l), Ok(h), Ok(kk)) => sprintln!("{}", crate::straus::Straus::kshift(l, h, kk)),
+                            _ => sprintln!("straus kshift <lo> <hi> <K> — all must be numbers"),
+                        }
+                    }
+                    ["reach", lo, hi] => {
+                        match (lo.parse::<u64>(), hi.parse::<u64>()) {
+                            (Ok(l), Ok(h)) => sprintln!("{}", crate::straus::Straus::reach(l, h)),
+                            _ => sprintln!("straus reach <lo> <hi> — both must be numbers"),
+                        }
+                    }
                     ["cascade", lo, hi] => {
                         match (lo.parse::<u64>(), hi.parse::<u64>()) {
                             (Ok(l), Ok(h)) => sprintln!("{}", crate::straus::Straus::cascade(l, h)),
