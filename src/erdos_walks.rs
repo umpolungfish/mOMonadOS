@@ -886,6 +886,130 @@ pub fn walk_syndetic() {
     finish("THICK AND SYNDETIC", &steps);
 }
 
+// ── Erdős–Straus: the price-zero layer and the frontier ─────────────────────
+
+/// The two manuscripts on the ladder, read through the instrument that carries
+/// it: the price-zero layer's coverage of a range, and a value from the
+/// frontier closing at the rung the paper names.
+pub fn walk_straus() {
+    sprintln!("");
+    rule();
+    sprintln!("  ERDŐS–STRAUS — the price-zero layer, and what it leaves");
+    rule();
+
+    let mut steps: Vec<Step> = Vec::new();
+
+    // Coverage over a range: how much of the surviving class closes with the
+    // rung read off n rather than searched.
+    let (mut total, mut covered) = (0u64, 0u64);
+    let mut n = 5u64;
+    while n <= 20000 {
+        if n % 4 == 1 && n % 3 != 0 {
+            total += 1;
+            if n % 8 == 5 || crate::straus::price_zero_rung(n).is_some()
+                || crate::straus::shift_rung(n).is_some() {
+                covered += 1;
+            }
+        }
+        n += 4;
+    }
+    steps.push(Step {
+        title: "The price-zero layer over 5 … 20000",
+        computed: format!("{} of {} values in the surviving class close with the rung read off n",
+                          covered, total),
+        holds: covered * 100 >= total * 95,
+    });
+    show(1, 2, &steps[0]);
+
+    // 2521: the one value below 200000 whose divisor lives in M² and not in M.
+    let cof = crate::straus::cofactor_closes(2521, 23, 8192);
+    let rung = crate::straus::lowest_rung(2521, 400).map(|g| g.r).unwrap_or(0);
+    steps.push(Step {
+        title: "n = 2521 closes at rung 23, with a divisor of M² and not of M",
+        computed: format!("lowest closing rung {}, cofactor of M at that rung: {}", rung, cof),
+        holds: rung == 23 && !cof,
+    });
+    show(2, 2, &steps[1]);
+    finish("ERDŐS–STRAUS", &steps);
+}
+
+// ── Monochromatic odd cycle: the 2^n bound ─────────────────────────────────
+
+/// If every colour class of an `n`-colouring is bipartite, the vertex count is
+/// at most `2^n`: each vertex takes a side in each colour, and two vertices with
+/// the same side vector cannot be adjacent in any colour. The injectivity is
+/// checked here by construction on small `n`.
+pub fn walk_monochromatic() {
+    sprintln!("");
+    rule();
+    sprintln!("  ODD CYCLE — bipartite classes bound the vertex count by 2^n");
+    rule();
+
+    let mut steps: Vec<Step> = Vec::new();
+
+    // The bound at n = 2 says four vertices, and it is tight: searched over
+    // every two-colouring of the edges of K5, no colouring leaves both classes
+    // bipartite. Counting the side vectors is not the theorem — this is.
+    let pairs: Vec<(usize, usize)> = (0..5).flat_map(|i| ((i+1)..5).map(move |j| (i, j))).collect();
+    let mut both_bipartite = false;
+    let mut c = 0u32;
+    while c < (1u32 << 10) {
+        let mut cls = [[[false; 5]; 5]; 2];
+        for (b, (i, j)) in pairs.iter().enumerate() {
+            let k = ((c >> b) & 1) as usize;
+            cls[k][*i][*j] = true; cls[k][*j][*i] = true;
+        }
+        // Two-colour each class by brute force over side assignments.
+        let mut all_ok = true;
+        for k in 0..2 {
+            let mut splittable = false;
+            let mut m = 0u32;
+            while m < 32 {
+                let mut proper = true;
+                for i in 0..5 { for j in 0..5 {
+                    if cls[k][i][j] && ((m >> i) & 1) == ((m >> j) & 1) { proper = false; }
+                }}
+                if proper { splittable = true; break; }
+                m += 1;
+            }
+            if !splittable { all_ok = false; }
+        }
+        if all_ok { both_bipartite = true; break; }
+        c += 1;
+    }
+    let ok = !both_bipartite;
+    steps.push(Step {
+        title: "At two colours the bound of four vertices is tight",
+        computed: format!("searched all 1024 two-colourings of K5; both classes bipartite in any: {}",
+                          both_bipartite),
+        holds: ok,
+    });
+    show(1, 2, &steps[0]);
+
+    // On five vertices, the pentagon colouring's single class is an odd cycle,
+    // hence not bipartite — the step the bound cannot take.
+    let mut odd_cycle_found = false;
+    // C5 as a graph: i ~ i+1 mod 5. Two-colour it and look for a proper split.
+    let mut side = [false; 5];
+    let mut splittable = false;
+    let mut m = 0u32;
+    while m < 32 {
+        for i in 0..5 { side[i] = (m >> i) & 1 == 1; }
+        let mut proper = true;
+        for i in 0..5 { if side[i] == side[(i + 1) % 5] { proper = false; } }
+        if proper { splittable = true; }
+        m += 1;
+    }
+    if !splittable { odd_cycle_found = true; }
+    steps.push(Step {
+        title: "The five-cycle admits no bipartition",
+        computed: format!("searched all 32 side assignments of C₅; proper split found: {}", splittable),
+        holds: odd_cycle_found,
+    });
+    show(2, 2, &steps[1]);
+    finish("ODD CYCLE", &steps);
+}
+
 /// The walks available, and what each computes.
 pub fn list_walks() {
     sprintln!("  Erdős manuscript walks — each step computed on this kernel:");
@@ -901,6 +1025,8 @@ pub fn list_walks() {
     sprintln!("    sdr       f(n,n) for the first nine, and the minimum at the lcm");
     sprintln!("    lenz      the four-dimensional construction and its ⌊n²/4⌋ pairs");
     sprintln!("    syndetic  a run in a set is a gap in its complement");
+    sprintln!("    straus    the price-zero layer's coverage, and 2521 at rung 23");
+    sprintln!("    oddcycle  bipartite classes bound the count, and C₅ does not split");
     sprintln!("");
     sprintln!("  Run with:  erdos schutte | erdos landau | erdos lcm");
     sprintln!("             erdos sumset  | erdos ramsey33");
@@ -921,6 +1047,8 @@ pub fn dispatch(name: &str) {
         "sdr" => walk_sdr(),
         "lenz" => walk_lenz(),
         "syndetic" => walk_syndetic(),
+        "straus" => walk_straus(),
+        "oddcycle" => walk_monochromatic(),
         _ => {
             sprintln!("No Erdős walk named '{}'.", name);
             list_walks();

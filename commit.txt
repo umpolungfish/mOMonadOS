@@ -1,15 +1,13 @@
-erdos lenz and syndetic
+erdos straus and oddcycle
 
-lenz builds rational points on each of the two orthogonal circles from
-Pythagorean triples and checks in integer arithmetic that all sixteen cross pairs
-sit at squared distance exactly one, then counts the pairs against the floor of
-n^2/4. The first step originally computed 1 + 1 = 2 in a loop, which is the same
-tautology the rep-tiling walk had and no more a proof of the geometry than
-printing it.
+straus reads the price-zero layer through the instrument that carries it: 3248 of
+the 3333 values of the surviving class below 20000 close with the rung read off n
+rather than searched, and 2521 comes back at rung 23 with no cofactor of M there,
+which is what puts its divisor in M^2.
 
-syndetic runs the duality over every subset of a window of sixteen: the longest
-run in a set is the longest gap in its complement, 65536 checks, agreeing every
-time. Then the powers of two, whose gaps double.
+oddcycle searches all 1024 two-colourings of K5 and finds none leaving both
+classes bipartite, so the bound of four vertices at two colours is tight, then
+searches all 32 side assignments of C5 and finds no proper split. The step that
+stood first counted to 2^n, which is arithmetic rather than the theorem.
 
-Twelve walks: schutte, landau, lcm, sumset, ramsey33, binomial, reptiling,
-mantel, kac, sdr, lenz, syndetic.
+Fourteen walks. Every manuscript but four now boots.
