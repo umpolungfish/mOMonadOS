@@ -1,8 +1,7 @@
-straus budget: which of the two actually fails
+straus cof: the height at which a cofactor of M appears
 
-The group criterion says -1 must lie in the subgroup the primes of M generate;
-the real criterion says a divisor of M^2 must reach it. straus budget separates
-them. Below 50000 the gap appears at 19 of 379 rungs walked, and 2521 owns all
-but one of those — it fails that way at r = 11, 19, 43, 47, 59, 63, 67, 75, 95
-and beyond, while every other value fails because its subgroup lacks -1 outright.
-The other case is 1201 at r = 11.
+The square stratum is the set of n whose divisor lives in M^2 and not in M, so
+the quantity that defines it is the rung height searched without a cofactor
+arriving. straus cof <n> <maxrung> reads it. 2521 has none to rung 4000, which
+settles it as a stratum member rather than a value beyond a small budget; 196561
+gets one at rung 75 and 1201 at rung 23.

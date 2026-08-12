@@ -490,6 +490,7 @@ impl Straus {
         s.push_str("  straus kceiling <lo> <hi>  the least k each value needs\n");
         s.push_str("  straus ceiling <lo> <hi>   rung records against n^(1/4)\n");
         s.push_str("  straus budget <lo> <hi>    group against exponent budget\n");
+        s.push_str("  straus cof <n> <maxrung>   first rung with a cofactor of M\n");
         s.push_str("\n");
         s.push_str("A rung is r ≡ 3 (mod 4): the first term is 1/((n+r)/4) and the\n");
         s.push_str("remainder has numerator exactly r. r = 3 is the greedy step.\n");
@@ -708,6 +709,24 @@ impl Straus {
             for v in cur.iter().take(10) { s.push_str(&format!(" {}", v)); }
             s.push('\n');
         }
+        s
+    }
+
+    /// The first rung at which `M` itself carries a cofactor at `−1`, searched as
+    /// far as asked. The square stratum is the set of `n` for which this does not
+    /// arrive while `M²` closes, so the height at which it does arrive — or the
+    /// height searched without it — is the quantity that stratum is about.
+    pub fn cofactor_height(n: u64, max_rung: u64) -> String {
+        let mut s = format!("4/{} — first rung with a cofactor of M at −1\n", n);
+        let mut r = 3u64;
+        while r <= max_rung {
+            if cofactor_closes(n, r, 8192) {
+                s.push_str(&format!("  rung {}\n", r));
+                return s;
+            }
+            r += 4;
+        }
+        s.push_str(&format!("  none at any rung ≤ {} — the divisor lives in M², not M\n", max_rung));
         s
     }
 
