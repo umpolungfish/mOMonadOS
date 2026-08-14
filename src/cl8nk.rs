@@ -53,8 +53,8 @@ pub use crate::canonical_ig::PRIMITIVE_ORDER as PRIMITIVE_KEYS;
 /// Get a primitive value from a tuple by key name.
 pub fn get_prim(t: &IgTuple, key: &str) -> Option<IgPrim> {
     match key {
-        "⊢" => Some(t.d), "⊣" => Some(t.t), ">" => Some(t.r),
-        "<" => Some(t.p), "⋈" => Some(t.f), "⊤" => Some(t.k),
+        "⊢" => Some(t.d), "⊣" => Some(t.t), "≻" => Some(t.r),
+        "≺" => Some(t.p), "⋈" => Some(t.f), "⊤" => Some(t.k),
         "∈" => Some(t.g), "∋" => Some(t.c), "⊙" => Some(t.phi),
         "⊥" => Some(t.h), "⊞" => Some(t.s), "◻" => Some(t.omega),
         _ => None,
@@ -65,7 +65,7 @@ pub fn get_prim(t: &IgTuple, key: &str) -> Option<IgPrim> {
 pub fn ord_table_for(key: &str) -> &'static [IgPrim] {
     match key {
         "⊢" => &catalog::D_ORD, "⊣" => &catalog::T_ORD,
-        ">" => &catalog::R_ORD, "<" => &catalog::P_ORD,
+        "≻" => &catalog::R_ORD, "≺" => &catalog::P_ORD,
         "⋈" => &catalog::F_ORD, "⊤" => &catalog::K_ORD,
         "∈" => &catalog::G_ORD, "∋" => &catalog::C_ORD,
         "⊙" => &catalog::PHI_ORD, "⊥" => &catalog::H_ORD,
@@ -84,18 +84,18 @@ pub struct DistSpec { pub weight: f32, pub max_delta: f32 }
 // Keyed by GLYPH, matching `get_prim` and `ord_table_for`.
 //
 // These were keyed by letter ("D","T","R",...) while `get_prim` keys by glyph
-// ("\u{22a2}","\u{22a3}",">",...). Only "<" and "\u{25fb}" existed in both key spaces, so ten of
+// ("\u{22a2}","\u{22a3}","≻",...). Only "≺" and "\u{25fb}" existed in both key spaces, so ten of
 // the twelve axes silently resolved to None -> IgPrim::dead on BOTH sides,
 // compared equal, and contributed nothing: every cl8nk distance in the kernel
 // was computed from two axes. The `cl8nk chain` ladder showed it plainly —
 // conflicts=2 for every layer, including layers differing in eight primitives.
-// Worse, "<" is Phi's slot in this table but get_prim("<") returns Parity, so
+// Worse, "≺" is Phi's slot in this table but get_prim("≺") returns Parity, so
 // the one categorical axis that did count was scored with the wrong weight.
 pub static DIST_SPECS: [(&str, DistSpec); 12] = [
     ("\u{22a2}", DistSpec { weight: 0.8, max_delta: 3.0 }),  // D
     ("\u{22a3}", DistSpec { weight: 0.9, max_delta: 4.0 }),  // T
-    (">",        DistSpec { weight: 0.7, max_delta: 3.0 }),  // R
-    ("<",        DistSpec { weight: 0.9, max_delta: 4.0 }),  // P
+    ("≻",        DistSpec { weight: 0.7, max_delta: 3.0 }),  // R
+    ("≺",        DistSpec { weight: 0.9, max_delta: 4.0 }),  // P
     ("\u{22c8}", DistSpec { weight: 0.6, max_delta: 2.0 }),  // F
     ("\u{22a4}", DistSpec { weight: 0.7, max_delta: 3.5 }),  // K
     ("\u{2208}", DistSpec { weight: 0.6, max_delta: 2.0 }),  // G
@@ -420,7 +420,7 @@ pub fn compute_tensor_op(sys: &IgTuple) -> TensorResult {
                 &"D" => result.d = v, &"T" => result.t = v,
                 &"R" => result.r = v, &"K" => result.k = v,
                 &"G" => result.g = v, &"C" => result.c = v,
-                &"<" => result.phi = v, &"H" => result.h = v,
+                &"≺" => result.phi = v, &"H" => result.h = v,
                 &"S" => result.s = v, &"◻" => result.omega = v,
                 _ => {}
             }
@@ -459,7 +459,7 @@ pub fn compute_meet_op(sys: &IgTuple) -> MeetJoinResult {
             &"R" => result.r = v, &"P" => result.p = v,
             &"F" => result.f = v, &"K" => result.k = v,
             &"G" => result.g = v, &"C" => result.c = v,
-            &"<" => result.phi = v, &"H" => result.h = v,
+            &"≺" => result.phi = v, &"H" => result.h = v,
             &"S" => result.s = v, &"◻" => result.omega = v,
             _ => {}
         }
@@ -484,7 +484,7 @@ pub fn compute_join_op(sys: &IgTuple) -> MeetJoinResult {
             &"R" => result.r = v, &"P" => result.p = v,
             &"F" => result.f = v, &"K" => result.k = v,
             &"G" => result.g = v, &"C" => result.c = v,
-            &"<" => result.phi = v, &"H" => result.h = v,
+            &"≺" => result.phi = v, &"H" => result.h = v,
             &"S" => result.s = v, &"◻" => result.omega = v,
             _ => {}
         }

@@ -52,8 +52,8 @@ impl PrimKey {
         match name {
             "D" | "⊢" => Some(PrimKey::D),
             "T" | "⊣" => Some(PrimKey::T),
-            "R" | ">" => Some(PrimKey::R),
-            "P" | "<" => Some(PrimKey::P),
+            "R" | "≻" => Some(PrimKey::R),
+            "P" | "≺" => Some(PrimKey::P),
             "F" | "⋈" => Some(PrimKey::F),
             "K" | "⊤" => Some(PrimKey::K),
             "G" | "∈" => Some(PrimKey::G),

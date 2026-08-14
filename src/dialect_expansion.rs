@@ -32,7 +32,7 @@ pub const DIALECT_COUNT: usize = 88;
 /// A single gate condition: primitive must have ordinal ≥ min_ord.
 #[derive(Debug, Clone, Copy)]
 pub struct GateSpec {
-    /// Shavian primitive glyph (e.g. '<', '⊙', '◻')
+    /// Shavian primitive glyph (e.g. '≺', '⊙', '◻')
     pub prim: &'static str,
     /// Minimum ordinal value (float, e.g. 5.0 for 𐑹)
     pub min_ord: f32,
@@ -83,7 +83,7 @@ pub struct Dialect {
 
 /// Canonical T: time = lim(<, ⋈, ⊤, ⊥, ◻) — dynamic primitives
 pub static T_CANONICAL: &[TEntry] = &[
-    TEntry { prim: "<", crit_val: "𐑹", ceiling: false },
+    TEntry { prim: "≺", crit_val: "𐑹", ceiling: false },
     TEntry { prim: "⋈", crit_val: "𐑐", ceiling: false },
     TEntry { prim: "⊤", crit_val: "𐑧", ceiling: true },
     TEntry { prim: "⊥", crit_val: "𐑫", ceiling: false },
@@ -94,28 +94,28 @@ pub static T_CANONICAL: &[TEntry] = &[
 pub static T_STRUCTURAL: &[TEntry] = &[
     TEntry { prim: "⊢", crit_val: "𐑦", ceiling: false },
     TEntry { prim: "⊣", crit_val: "𐑸", ceiling: false },
-    TEntry { prim: ">", crit_val: "𐑾", ceiling: false },
+    TEntry { prim: "≻", crit_val: "𐑾", ceiling: false },
     TEntry { prim: "∋", crit_val: "𐑵", ceiling: false },
     TEntry { prim: "⊙", crit_val: "⊙", ceiling: false },
 ];
 
 /// Hybrid T: all 8 dynamic + primitives
 pub static T_HYBRID: &[TEntry] = &[
-    TEntry { prim: "<", crit_val: "𐑹", ceiling: false },
+    TEntry { prim: "≺", crit_val: "𐑹", ceiling: false },
     TEntry { prim: "⋈", crit_val: "𐑐", ceiling: false },
     TEntry { prim: "⊤", crit_val: "𐑧", ceiling: true },
     TEntry { prim: "⊥", crit_val: "𐑫", ceiling: false },
     TEntry { prim: "◻", crit_val: "𐑭", ceiling: false },
     TEntry { prim: "⊢", crit_val: "𐑦", ceiling: false },
     TEntry { prim: "⊣", crit_val: "𐑸", ceiling: false },
-    TEntry { prim: ">", crit_val: "𐑾", ceiling: false },
+    TEntry { prim: "≻", crit_val: "𐑾", ceiling: false },
 ];
 
 /// Inverted T: primitives (non-dynamic)
 pub static T_INVERTED: &[TEntry] = &[
     TEntry { prim: "⊢", crit_val: "𐑼", ceiling: false },
     TEntry { prim: "⊣", crit_val: "𐑶", ceiling: false },
-    TEntry { prim: ">", crit_val: "𐑽", ceiling: false },
+    TEntry { prim: "≻", crit_val: "𐑽", ceiling: false },
     TEntry { prim: "∈", crit_val: "𐑚", ceiling: false },
     TEntry { prim: "⊞", crit_val: "𐑕", ceiling: false },
 ];
@@ -137,7 +137,7 @@ pub static ABS_NONE: &[AbsorptionRule] = &[];
 pub static ABS_MONARCHY: &[AbsorptionRule] = &[
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 7, direction: 0 },
-    AbsorptionRule { prim: "<", value: "𐑹", ops_mask: 7, direction: 0 },
+    AbsorptionRule { prim: "≺", value: "𐑹", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "◻", value: "𐑭", ops_mask: 7, direction: 0 },
 ];
 
@@ -159,7 +159,7 @@ pub static ABS_TENSOR_ONLY: &[AbsorptionRule] = &[
 // ═══════════════════════════════════════════════════════════════
 
 pub static T_PARITY_ONLY: &[TEntry] = &[
-    TEntry { prim: "<", crit_val: "𐑹", ceiling: false },
+    TEntry { prim: "≺", crit_val: "𐑹", ceiling: false },
 ];
 pub static T_CRITICALITY_ONLY: &[TEntry] = &[
     TEntry { prim: "⊙", crit_val: "⊙", ceiling: false },
@@ -182,7 +182,7 @@ pub static T_KINETICS_CEILING: &[TEntry] = &[
 
 // Dual-primitive T's
 pub static T_PARITY_FIDELITY: &[TEntry] = &[
-    TEntry { prim: "<", crit_val: "𐑹", ceiling: false },
+    TEntry { prim: "≺", crit_val: "𐑹", ceiling: false },
     TEntry { prim: "⋈", crit_val: "𐑐", ceiling: false },
 ];
 pub static T_CRITICALITY_WINDING: &[TEntry] = &[
@@ -191,14 +191,14 @@ pub static T_CRITICALITY_WINDING: &[TEntry] = &[
 ];
 pub static T_CHIRALITY_COUPLING: &[TEntry] = &[
     TEntry { prim: "⊥", crit_val: "𐑫", ceiling: false },
-    TEntry { prim: ">", crit_val: "𐑾", ceiling: false },
+    TEntry { prim: "≻", crit_val: "𐑾", ceiling: false },
 ];
 pub static T_TOPOLOGY_SCOPE: &[TEntry] = &[
     TEntry { prim: "⊣", crit_val: "𐑸", ceiling: false },
     TEntry { prim: "∈", crit_val: "𐑲", ceiling: false },
 ];
 pub static T_STRUCTURAL_DYNAMIC: &[TEntry] = &[
-    TEntry { prim: "<", crit_val: "𐑹", ceiling: false },
+    TEntry { prim: "≺", crit_val: "𐑹", ceiling: false },
     TEntry { prim: "⋈", crit_val: "𐑐", ceiling: false },
     TEntry { prim: "⊤", crit_val: "𐑧", ceiling: true },
     TEntry { prim: "⊢", crit_val: "𐑦", ceiling: false },
@@ -229,13 +229,13 @@ pub static ABS_TOPOLOGY_SEAL: &[AbsorptionRule] = &[
 ];
 // Predator: <=𐑹 absorbs left only under tensor
 pub static ABS_PREDATOR: &[AbsorptionRule] = &[
-    AbsorptionRule { prim: "<", value: "𐑹", ops_mask: 4, direction: 1 },
+    AbsorptionRule { prim: "≺", value: "𐑹", ops_mask: 4, direction: 1 },
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 },
 ];
 // Prey: <=𐑹 absorbs right only under tensor
 pub static ABS_PREY: &[AbsorptionRule] = &[
-    AbsorptionRule { prim: "<", value: "𐑹", ops_mask: 4, direction: 2 },
+    AbsorptionRule { prim: "≺", value: "𐑹", ops_mask: 4, direction: 2 },
     AbsorptionRule { prim: "⊙", value: "⊙", ops_mask: 7, direction: 0 },
     AbsorptionRule { prim: "⊞", value: "𐑳", ops_mask: 4, direction: 0 },
 ];
@@ -290,9 +290,9 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     let mut unis: [Dialect; DIALECT_COUNT] = [BLANK_DIALECT; DIALECT_COUNT];
 
     // Helper constants
-    let g_phi_5 = GateSpec { prim: "<", min_ord: 5.0 };
-    let g_phi_4 = GateSpec { prim: "<", min_ord: 4.0 };
-    let g_phi_3 = GateSpec { prim: "<", min_ord: 3.0 };
+    let g_phi_5 = GateSpec { prim: "≺", min_ord: 5.0 };
+    let g_phi_4 = GateSpec { prim: "≺", min_ord: 4.0 };
+    let g_phi_3 = GateSpec { prim: "≺", min_ord: 3.0 };
     let g_odot_2 = GateSpec { prim: "⊙", min_ord: 2.0 };
     let g_odot_1 = GateSpec { prim: "⊙", min_ord: 1.0 };
     let g_odot_233 = GateSpec { prim: "⊙", min_ord: 2.33 };
@@ -306,8 +306,8 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     let g_th_5 = GateSpec { prim: "⊣", min_ord: 5.0 };
     let g_th_3 = GateSpec { prim: "⊣", min_ord: 3.0 };
     let g_th_4 = GateSpec { prim: "⊣", min_ord: 4.0 };
-    let g_r_4 = GateSpec { prim: ">", min_ord: 4.0 };
-    let g_r_3 = GateSpec { prim: ">", min_ord: 3.0 };
+    let g_r_4 = GateSpec { prim: "≻", min_ord: 4.0 };
+    let g_r_3 = GateSpec { prim: "≻", min_ord: 3.0 };
     let g_gamma_3 = GateSpec { prim: "∈", min_ord: 3.0 };
     let _g_gamma_2 = GateSpec { prim: "∈", min_ord: 2.0 };
     let g_d_3 = GateSpec { prim: "⊢", min_ord: 3.0 };
@@ -1099,8 +1099,8 @@ pub static T_BROADCAST: &[TEntry] = &[
 pub static T_ALL: &[TEntry] = &[
     TEntry { prim: "⊢", crit_val: "𐑦", ceiling: false },
     TEntry { prim: "⊣", crit_val: "𐑸", ceiling: false },
-    TEntry { prim: ">", crit_val: "𐑾", ceiling: false },
-    TEntry { prim: "<", crit_val: "𐑹", ceiling: false },
+    TEntry { prim: "≻", crit_val: "𐑾", ceiling: false },
+    TEntry { prim: "≺", crit_val: "𐑹", ceiling: false },
     TEntry { prim: "⋈", crit_val: "𐑐", ceiling: false },
     TEntry { prim: "⊤", crit_val: "𐑧", ceiling: true },
     TEntry { prim: "∈", crit_val: "𐑲", ceiling: false },
@@ -1217,7 +1217,7 @@ pub fn dialect_counts() -> (usize, usize) {
 
 /// Compound: <≥𐑹 (parity first in compound pair)
 #[allow(non_upper_case_globals)]
-    pub const g_phi_omega: GateSpec = GateSpec { prim: "<", min_ord: 5.0 };
+    pub const g_phi_omega: GateSpec = GateSpec { prim: "≺", min_ord: 5.0 };
 
 /// Compound: ⊙≥⊙ + ⊤≥𐑧 (criticality first in compound pair)
 #[allow(non_upper_case_globals)]

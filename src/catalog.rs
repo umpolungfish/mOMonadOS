@@ -1246,8 +1246,8 @@ pub fn primitive_family(prim: IgPrim) -> &'static str {
     match prim {
         IgPrim::if_ | IgPrim::dead | IgPrim::ash | IgPrim::array => "⊢",
         IgPrim::are | IgPrim::judge | IgPrim::eat | IgPrim::mime | IgPrim::oil => "⊣",
-        IgPrim::ian | IgPrim::ear | IgPrim::tot | IgPrim::ado => ">",
-        IgPrim::or_ | IgPrim::nun | IgPrim::out | IgPrim::yew | IgPrim::church => "<",
+        IgPrim::ian | IgPrim::ear | IgPrim::tot | IgPrim::ado => "≻",
+        IgPrim::or_ | IgPrim::nun | IgPrim::out | IgPrim::yew | IgPrim::church => "≺",
         IgPrim::peep | IgPrim::age | IgPrim::they => "⋈",
         IgPrim::on | IgPrim::egg | IgPrim::loll | IgPrim::yea | IgPrim::air => "⊤",
         IgPrim::ice | IgPrim::bib | IgPrim::thigh => "∈",
@@ -1262,8 +1262,8 @@ pub fn primitive_family(prim: IgPrim) -> &'static str {
 /// Return the ordinal table for a primitive family.
 pub fn ordinal_table(family: &str) -> &'static [IgPrim] {
     match family {
-        "⊢" => &D_ORD, "⊣" => &T_ORD, ">" => &R_ORD,
-        "<" => &P_ORD, "⋈" => &F_ORD, "⊤" => &K_ORD,
+        "⊢" => &D_ORD, "⊣" => &T_ORD, "≻" => &R_ORD,
+        "≺" => &P_ORD, "⋈" => &F_ORD, "⊤" => &K_ORD,
         "∈" => &G_ORD, "∋" => &C_ORD, "⊙" => &PHI_ORD,
         "⊥" => &H_ORD, "⊞" => &S_ORD, "◻" => &OMEGA_ORD,
         _ => &D_ORD,

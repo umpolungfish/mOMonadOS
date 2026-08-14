@@ -30,7 +30,7 @@ ENUM = ROOT / "src" / "imas_ig.rs"
 OUT = ROOT / "src" / "catalog_ask_subset.rs"
 
 # The twelve slots, in canonical order, keyed as they appear in IG_catalog.json.
-SLOTS = ["⊢", "⊣", ">", "<", "⋈", "⊤", "∈", "∋", "⊙", "⊥", "⊞", "◻"]
+SLOTS = ["⊢", "⊣", "≻", "≺", "⋈", "⊤", "∈", "∋", "⊙", "⊥", "⊞", "◻"]
 
 # The variant names are the Core.lean constructors now, so there is no prefix
 # to disambiguate by. There does not need to be: all 49 value glyphs are

@@ -5,14 +5,14 @@
 #![allow(dead_code)]
 
 /// The twelve axis marks, in canonical order.
-pub static PRIMITIVE_ORDER: [&str; 12] = ["⊢", "⊣", ">", "<", "⋈", "⊤", "∈", "∋", "⊙", "⊥", "⊞", "◻"];
+pub static PRIMITIVE_ORDER: [&str; 12] = ["⊢", "⊣", "≻", "≺", "⋈", "⊤", "∈", "∋", "⊙", "⊥", "⊞", "◻"];
 
 /// Axis mark to the axis's name.
 pub static PRIMITIVE_NAMES: [(&str, &str); 12] = [
     ("⊢", "Dimensionality"),
     ("⊣", "Topology"),
-    (">", "Relational"),
-    ("<", "Polarity"),
+    ("≻", "Relational"),
+    ("≺", "Polarity"),
     ("⋈", "Fidelity"),
     ("⊤", "Kinetics"),
     ("∈", "Scope"),
@@ -27,8 +27,8 @@ pub static PRIMITIVE_NAMES: [(&str, &str); 12] = [
 pub static CANONICAL_VALUES: [(&str, &[&str]); 12] = [
     ("⊢", &["𐑛", "𐑨", "𐑼", "𐑦"]),
     ("⊣", &["𐑡", "𐑰", "𐑥", "𐑶", "𐑸"]),
-    (">", &["𐑩", "𐑑", "𐑽", "𐑾"]),
-    ("<", &["𐑗", "𐑿", "𐑬", "𐑯", "𐑹"]),
+    ("≻", &["𐑩", "𐑑", "𐑽", "𐑾"]),
+    ("≺", &["𐑗", "𐑿", "𐑬", "𐑯", "𐑹"]),
     ("⋈", &["𐑱", "𐑞", "𐑐"]),
     ("⊤", &["𐑘", "𐑤", "𐑧", "𐑪", "𐑺"]),
     ("∈", &["𐑚", "𐑔", "𐑲"]),
@@ -44,8 +44,8 @@ pub static CANONICAL_VALUES: [(&str, &[&str]); 12] = [
 pub static ORDINALS: [(&str, &[(&str, f32)]); 12] = [
     ("⊢", &[("𐑛", 1.0), ("𐑨", 2.0), ("𐑼", 3.0), ("𐑦", 4.0)]),
     ("⊣", &[("𐑡", 1.0), ("𐑰", 2.0), ("𐑥", 3.0), ("𐑶", 4.0), ("𐑸", 5.0)]),
-    (">", &[("𐑩", 1.0), ("𐑑", 2.0), ("𐑽", 3.0), ("𐑾", 4.0)]),
-    ("<", &[("𐑗", 1.0), ("𐑿", 2.0), ("𐑬", 3.0), ("𐑯", 4.0), ("𐑹", 5.0)]),
+    ("≻", &[("𐑩", 1.0), ("𐑑", 2.0), ("𐑽", 3.0), ("𐑾", 4.0)]),
+    ("≺", &[("𐑗", 1.0), ("𐑿", 2.0), ("𐑬", 3.0), ("𐑯", 4.0), ("𐑹", 5.0)]),
     ("⋈", &[("𐑱", 1.0), ("𐑞", 2.0), ("𐑐", 3.0)]),
     ("⊤", &[("𐑘", 1.0), ("𐑤", 2.0), ("𐑧", 3.0), ("𐑪", 4.0), ("𐑺", 4.5)]),
     ("∈", &[("𐑚", 1.0), ("𐑔", 2.0), ("𐑲", 3.0)]),
@@ -60,8 +60,8 @@ pub static ORDINALS: [(&str, &[(&str, f32)]); 12] = [
 pub static WEIGHTS: [(&str, f32); 12] = [
     ("⊢", 1.0),
     ("⊣", 1.0),
-    (">", 1.0),
-    ("<", 1.0),
+    ("≻", 1.0),
+    ("≺", 1.0),
     ("⋈", 1.0),
     ("⊤", 1.0),
     ("∈", 1.0),
@@ -77,8 +77,8 @@ pub static WEIGHTS: [(&str, f32); 12] = [
 pub static CL8NK_FORMULAE: [(&str, &[(&str, &str, &str, &str)]); 12] = [
     ("⊢", &[("𐑦", "V = L(x) ∧ selfmodel(x) ∧ x ∈ V", "HOLOGRAPHIC_STATE", "match"), ("𐑼", "∀n∃y( y ∈ x ∧ rank(y) > n )", "", "close"), ("𐑨", "dim(x) = 2 ∧ sur(x)", "", "distant"), ("𐑛", "dim(x) = 0 ∧ fin(x)", "", "distant")]),
     ("⊣", &[("𐑸", "bound_⊙(a, f) ∧ Refl(a, f) ∧ holo(x, a)", "HOLOBOUND", "match"), ("𐑥", "cross(x, y) ∧ ¬ meet(x, y)", "", "close"), ("𐑶", "x ⊠ y ∧ irreducible(x, y)", "", "distant"), ("𐑡", "graph(x) ∧ branch(x)", "", "distant"), ("𐑰", "x ⊆ y ∧ cont(y)", "", "distant")]),
-    (">", &[("𐑾", "lr⇔(x, y) ∧ Θ(x, y) ∧ ¬ Θ(y, x)", "LR_DUAL", "match"), ("𐑽", "f ⊣ g ∧ L Adj(f, g)", "", "close"), ("𐑑", "Fun(x, y) ∧ Nat(y, z) → Fun(x, z)", "", "distant"), ("𐑩", "x ↑ y ∧ ¬(y ↑ x)", "", "distant")]),
-    ("<", &[("𐑹", "ℤ₂(x) ∧ ∀g∈G( gx = x ) ∧ μ∘δ = id", "PM_Z2", "match"), ("𐑿", "|ψ⟩ = Σ c_i |e_i⟩", "", "close"), ("𐑬", "ℤ₂(x) ∧ ¬(x = -x)", "", "close"), ("𐑯", "∀g∈G( gx = x )", "", "distant"), ("𐑗", "¬∃sym(x)", "", "distant")]),
+    ("≻", &[("𐑾", "lr⇔(x, y) ∧ Θ(x, y) ∧ ¬ Θ(y, x)", "LR_DUAL", "match"), ("𐑽", "f ⊣ g ∧ L Adj(f, g)", "", "close"), ("𐑑", "Fun(x, y) ∧ Nat(y, z) → Fun(x, z)", "", "distant"), ("𐑩", "x ↑ y ∧ ¬(y ↑ x)", "", "distant")]),
+    ("≺", &[("𐑹", "ℤ₂(x) ∧ ∀g∈G( gx = x ) ∧ μ∘δ = id", "PM_Z2", "match"), ("𐑿", "|ψ⟩ = Σ c_i |e_i⟩", "", "close"), ("𐑬", "ℤ₂(x) ∧ ¬(x = -x)", "", "close"), ("𐑯", "∀g∈G( gx = x )", "", "distant"), ("𐑗", "¬∃sym(x)", "", "distant")]),
     ("⋈", &[("𐑐", "ℏ(x) ∧ [x, p] = iℏ", "", "match"), ("𐑞", "Tr(ρ²) < 1 ∧ ρ = Σ p_i |i⟩⟨i|", "", "close"), ("𐑱", "P(x) ∈ {0,1} ∧ det(x)", "", "distant")]),
     ("⊤", &[("𐑧", "τ ≫ T ∧ eq(x) ∧ gate_open(x)", "", "match"), ("𐑤", "τ ∼ T ∧ noisy(x)", "", "close"), ("𐑘", "τ ≪ T ∧ ∂_t x = f(x)", "", "distant"), ("𐑪", "τ = ∞ ∧ ord(x)", "", "distant"), ("𐑺", "τ = ∞ ∧ dis(x) ∧ MBL", "", "distant")]),
     ("∈", &[("𐑲", "∀y( y ⊂ x → |y| < |x| )", "", "match"), ("𐑔", "∃y∈x( |y| ∼ |x| )", "", "close"), ("𐑚", "∀y∈x( |y| < |x| )", "", "distant")]),

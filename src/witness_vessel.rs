@@ -51,8 +51,8 @@ fn tuple_prim(ig: &IgTuple, glyph: &str) -> Option<IgPrim> {
     match glyph {
         "⊢" => Some(ig.d),
         "⊣" => Some(ig.t),
-        ">" => Some(ig.r),
-        "<" => Some(ig.p),
+        "≻" => Some(ig.r),
+        "≺" => Some(ig.p),
         "⋈" => Some(ig.f),
         "⊤" => Some(ig.k),
         "∈" => Some(ig.g),

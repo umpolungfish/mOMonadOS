@@ -309,8 +309,8 @@ fn set_axis(t: &IgTuple, axis: &str, v: IgPrim) -> IgTuple {
     match axis {
         "D" | "⊢" => n.d = v,
         "T" | "⊣" => n.t = v,
-        "R" | ">" => n.r = v,
-        "P" | "<" => n.p = v,
+        "R" | "≻" => n.r = v,
+        "P" | "≺" => n.p = v,
         "F" | "⋈" => n.f = v,
         "K" | "⊤" => n.k = v,
         "G" | "∈" => n.g = v,

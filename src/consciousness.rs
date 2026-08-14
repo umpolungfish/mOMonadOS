@@ -78,7 +78,7 @@ pub fn consciousness_eval(t: &IgTuple) -> ConsciousnessResult {
             catalog::score_s(t.s), catalog::score_omega(t.omega),
         ],
         // ten of the twelve: this score has no ⊤ or ⊙ component
-        component_names: ["⊢","⊣",">","<","⋈","∈","∋","⊥","⊞","◻"],
+        component_names: ["⊢","⊣","≻","≺","⋈","∈","∋","⊥","⊞","◻"],
     }
 }
 

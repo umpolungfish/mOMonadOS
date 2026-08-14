@@ -48,8 +48,8 @@ const B4_ORDER: [B4; 4] = [B4::N, B4::T, B4::F, B4::B];
 pub const PROMOTED_BY_AXIS: [(char, AminoAcid); 12] = [
     ('⊢', AminoAcid::Met),  // Dimensionality
     ('⊣', AminoAcid::Trp),  // Topology
-    ('>', AminoAcid::Cys),  // Relational
-    ('<', AminoAcid::Tyr),  // Polarity
+    ('≻', AminoAcid::Cys),  // Relational
+    ('≺', AminoAcid::Tyr),  // Polarity
     ('⋈', AminoAcid::Phe),  // Fidelity
     ('⊤', AminoAcid::Ile),  // Kinetics
     ('∈', AminoAcid::His),  // Scope
@@ -195,8 +195,8 @@ pub fn codon_rna(c: &Codon) -> String {
 pub fn glyph_to_x86(g: Glyph) -> Option<(&'static str, &'static str)> {
     match g.to_char() {
         '⊣' => Some(("ret", "")),
-        '>' => Some(("call", "0x401000")),
-        '<' => Some(("jmp", "0x401000")),
+        '≻' => Some(("call", "0x401000")),
+        '≺' => Some(("jmp", "0x401000")),
         '∈' => Some(("jne", "0x401000")),
         '⊙' => Some(("syscall", "")),
         '◻' => Some(("add", "qword ptr [rax], rbx")),
@@ -230,8 +230,8 @@ pub fn glyph_to_wasm(g: Glyph) -> &'static str {
     match g.to_char() {
         '⊢' => "block",
         '⊣' => "return",
-        '>' => "call",
-        '<' => "br",
+        '≻' => "call",
+        '≺' => "br",
         '∈' => "if",
         '∋' => "end",
         '⊙' => "call_indirect",
@@ -248,8 +248,8 @@ pub fn wasm_to_glyph(op: &str) -> Option<Glyph> {
     let c = match op {
         "block" | "loop" => '⊢',
         "return" => '⊣',
-        "call" => '>',
-        "br" | "br_if" | "br_table" => '<',
+        "call" => '≻',
+        "br" | "br_if" | "br_table" => '≺',
         "if" => '∈',
         "end" | "else" => '∋',
         "call_indirect" => '⊙',

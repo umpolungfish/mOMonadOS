@@ -86,7 +86,7 @@ fn classify(pop: &[Carrier], threshold: f32) -> Vec<usize> {
 /// a slot that never varies cannot separate anything, and a slot that varies is
 /// where the family's own structure lives.
 fn varying_slots(pop: &[Carrier]) -> Vec<(&'static str, usize)> {
-    let names = ["⊢", "⊣", ">", "<", "⋈", "⊤", "∈", "∋", "⊙", "⊥", "⊞", "◻"];
+    let names = ["⊢", "⊣", "≻", "≺", "⋈", "⊤", "∈", "∋", "⊙", "⊥", "⊞", "◻"];
     let mut counts = [0usize; 12];
     if pop.len() < 2 { return Vec::new(); }
     let first = &pop[0].entry.tuple;

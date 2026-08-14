@@ -23,11 +23,11 @@ fn frac(x: f64) -> f64 { x - floor(x) }
 pub fn expand_axis(slot: &str) -> Vec<&'static str> {
     match slot {
         "⊙" => vec!["woe (sub)", "⊙ (critical)", "roar (c_complex)", "𐑻 (EP)", "𐑣 (super)"],
-        "<" => vec!["𐑗 (asym)", "𐑿 (psi)", "𐑬 (pm)", "𐑯 (sym)", "𐑹 (pm_sym/Frobenius)"],
+        "≺" => vec!["𐑗 (asym)", "𐑿 (psi)", "𐑬 (pm)", "𐑯 (sym)", "𐑹 (pm_sym/Frobenius)"],
         "◻" => vec!["𐑷 (0)", "𐑴 (Z2)", "𐑭 (Z)", "𐑟 (NA)"],
         "⊢" => vec!["𐑛 (wedge/0D)", "𐑨 (ash/2D)", "𐑼 (array/∞D)", "𐑦 (if'/imscriptive)"],
         "⊣" => vec!["𐑡 (network)", "𐑰 (inclusion)", "𐑥 (bowtie)", "𐑶 (box)", "𐑸 (imscriptive)"],
-        ">" => vec!["𐑩 (supervenience)", "𐑑 (functorial)", "𐑽 (adjoint)", "𐑾 (bidirectional)"],
+        "≻" => vec!["𐑩 (supervenience)", "𐑑 (functorial)", "𐑽 (adjoint)", "𐑾 (bidirectional)"],
         "⋈" => vec!["𐑱 (classical)", "𐑞 (thermal)", "𐑐 (quantum)"],
         "⊤" => vec!["𐑘 (driven)", "𐑤 (trapped)", "𐑧 (slow)", "𐑪 (moderate)", "𐑺 (fast-MBL)"],
         "∈" => vec!["𐑲 (local)", "𐑚 (mesoscale)", "𐑔 (aleph/maximal)"],
@@ -94,7 +94,7 @@ pub fn full_report() -> String {
     s.push_str(&format!("Triple-ramification norm:     {:.6} {}\n", rd, if rd < 0.05 { "✓" } else { "✗" }));
     s.push_str("──────────────────────────────────────\n");
     s.push_str("Axis expansions:\n");
-    for ax in &["⊙", "<", "◻"] {
+    for ax in &["⊙", "≺", "◻"] {
         let exps = expand_axis(ax);
         s.push_str(&format!("  {}: ", ax));
         for (i, e) in exps.iter().enumerate() {

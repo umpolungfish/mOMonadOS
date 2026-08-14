@@ -214,13 +214,13 @@ use crate::imas_ig::{IgPrim, IgTuple};
 /// Returns None for unrecognized primitive names.
 pub fn prim_from_name(name: &str, ig: &IgTuple) -> Option<IgPrim> {
     match name {
-        "<" => Some(ig.p),
+        "≺" => Some(ig.p),
         "⊙" => Some(ig.phi),
         "◻" => Some(ig.omega),
         "⊥" => Some(ig.h),
         "∈" => Some(ig.g),
         "⊣" => Some(ig.t),
-        ">" => Some(ig.r),
+        "≻" => Some(ig.r),
         "⋈" => Some(ig.f),
         "⊤" => Some(ig.k),
         "⊢" => Some(ig.d),

@@ -53,7 +53,7 @@ impl RepairEngine {
     pub fn new() -> Self {
         Self {
             glyphs: vec![
-                '⊢', '⊣', '>', '<', '⋈', '⊤', 
+                '⊢', '⊣', '≻', '≺', '⋈', '⊤', 
                 '∈', '∋', '⊙', '⊥', '⊞', '◻'
             ],
             alpha: 1.0,

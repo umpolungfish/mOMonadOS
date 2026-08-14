@@ -54,8 +54,8 @@ impl Glyph {
 
     pub fn to_char(&self) -> char {
         match self {
-            Glyph::Dim => '⊢',  Glyph::Top => '⊣',  Glyph::Rel => '>',
-            Glyph::Pol => '<',  Glyph::Fid => '⋈',  Glyph::Kin => '⊤',
+            Glyph::Dim => '⊢',  Glyph::Top => '⊣',  Glyph::Rel => '≻',
+            Glyph::Pol => '≺',  Glyph::Fid => '⋈',  Glyph::Kin => '⊤',
             Glyph::Car => '∈',  Glyph::Com => '∋',  Glyph::Cri => '⊙',
             Glyph::Chi => '⊥',  Glyph::Stoi => '⊞', Glyph::Win => '◻',
         }
@@ -63,8 +63,8 @@ impl Glyph {
 
     pub fn from_char(c: char) -> Option<Glyph> {
         match c {
-            '⊢' => Some(Glyph::Dim), '⊣' => Some(Glyph::Top), '>' => Some(Glyph::Rel),
-            '<' => Some(Glyph::Pol), '⋈' => Some(Glyph::Fid), '⊤' => Some(Glyph::Kin),
+            '⊢' => Some(Glyph::Dim), '⊣' => Some(Glyph::Top), '≻' => Some(Glyph::Rel),
+            '≺' => Some(Glyph::Pol), '⋈' => Some(Glyph::Fid), '⊤' => Some(Glyph::Kin),
             '∈' => Some(Glyph::Car), '∋' => Some(Glyph::Com), '⊙' => Some(Glyph::Cri),
             '⊥' => Some(Glyph::Chi), '⊞' => Some(Glyph::Stoi), '◻' => Some(Glyph::Win),
             _ => None,

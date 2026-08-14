@@ -22,7 +22,7 @@ use imasm_core::imasm16_3::{parse_glyph_word, run_word_register, tri_ancestral_v
 use crate::lattice_flow::{banked_walk, normalize};
 
 /// The twelve marks, in canonical order.
-pub const MARKS: [char; 12] = ['⊢', '⊣', '>', '<', '⋈', '⊙', '∈', '∋', '⊤', '⊥', '⊞', '◻'];
+pub const MARKS: [char; 12] = ['⊢', '⊣', '≻', '≺', '⋈', '⊙', '∈', '∋', '⊤', '⊥', '⊞', '◻'];
 
 /// Everything one walk knows about a word. Compared field-by-field against
 /// the perturbed walk to produce the held/broken split.

@@ -20,8 +20,8 @@ pub fn complementary_primitive(prim: &str) -> Option<&'static str> {
     match prim {
         "D" | "⊢" => Some("O"),
         "T" | "⊣" => Some("H"),
-        "R" | ">" => Some("S"),
-        "P" | "<" => Some("F"),
+        "R" | "≻" => Some("S"),
+        "P" | "≺" => Some("F"),
         "F" | "⋈" => Some("P"),
         "K" | "⊤" => Some("G"),
         "G" | "∈" => Some("K"),
@@ -39,8 +39,8 @@ pub fn primitive_to_aa(prim: &str) -> Option<char> {
     match prim {
         "D" | "⊢" => Some('M'),  // Met
         "T" | "⊣" => Some('W'),  // Trp
-        "R" | ">" => Some('C'),  // Cys
-        "P" | "<" => Some('Y'),  // Tyr
+        "R" | "≻" => Some('C'),  // Cys
+        "P" | "≺" => Some('Y'),  // Tyr
         "F" | "⋈" => Some('F'),  // Phe
         "K" | "⊤" => Some('I'),  // Ile
         "G" | "∈" => Some('H'),  // His

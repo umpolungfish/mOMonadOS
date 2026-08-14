@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 from modot.agent import agent_loop
 
 GLYPH = {
-    "VINIT": "⊢", "TANCH": "⊣", "AFWD": ">", "AREV": "<", "CLINK": "=",
+    "VINIT": "⊢", "TANCH": "⊣", "AFWD": "≻", "AREV": "≺", "CLINK": "=",
     "IMSCRIB": "⊙", "FSPLIT": "◇", "FFUSE": "●", "EVALT": "+", "EVALF": "×",
     "ENGAGR": "⊞", "IFIX": "¬",
 }
