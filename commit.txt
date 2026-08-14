@@ -1,11 +1,19 @@
-erdos: the last three manuscripts boot
+Ground sk_forge to the real kernel API
 
-alternate checks the rise criterion for n/p_n against the terms themselves over
-the first two hundred indices — 78 rises, 122 falls, criterion and comparison
-identical, and neither direction eventual. fuchs runs the fibring identity on
-three sets and the square-root density bound to N = 40. ratio keeps the base
-2/3.199 in integers, 2000 against 3199, and counts the colours each case needs to
-fall below one: three, six, nine.
+The local model wrote sk_forge against a wholesale-guessed surface: IgPrim
+variant names and all_*/from_ordinal/from_char constructors that don't exist,
+(Carrier, f32) treated as a struct with .name/.entry, Scope::compute,
+provenance_check, IgTuple.primitives[]. Roughly sixty errors, all one root
+cause — the API was imagined, not read.
 
-Nineteen walks for nineteen manuscripts. Every one computes its claim on this
-kernel; three of them caught errors of mine before they held.
+I rewrote the file once against the real surface: IgPrim's lowercase-word
+variants and .glyph()/.ordinal(), IgTuple::from_glyphs and crystal_address,
+carriers::population returning Carrier{name,domain,entry}, crystal_scope::scope
+with its AxisMove list and Option<Tier> fields, provenance_of(name).root.
+
+Kept the command surface (forge/tuple/word/carriers) and the six-stage
+pipeline. The repair chain now walks the scope's real driver moves one axis at
+a time, and the bounded search is labelled HEURISTIC over crystal addresses —
+it recovers no real secret, and says so. Builds green; verified live in QEMU
+(sk_forge word and carriers both run, repair chain reduces distance
+monotonically with real tier transitions).

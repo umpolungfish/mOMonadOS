@@ -32,6 +32,9 @@ use alloc::vec::Vec;
 /// Get the CLINK L8 reference tuple from catalog.
 pub fn cl8nk_ref() -> IgTuple { catalog::clink_l8_tuple() }
 
+/// The CL9NK reference tuple — CLINK L9, the replicative lateral.
+pub fn cl9nk_ref() -> IgTuple { catalog::clink_l9_tuple() }
+
 /// Get the ZFC_fe reference tuple from catalog.
 pub fn zfc_fe_ref() -> IgTuple { catalog::zfc_fe_tuple() }
 
@@ -78,19 +81,29 @@ pub fn ord_table_for(key: &str) -> &'static [IgPrim] {
 /// Per-primitive weight + max delta for normalized distance.
 pub struct DistSpec { pub weight: f32, pub max_delta: f32 }
 
+// Keyed by GLYPH, matching `get_prim` and `ord_table_for`.
+//
+// These were keyed by letter ("D","T","R",...) while `get_prim` keys by glyph
+// ("\u{22a2}","\u{22a3}",">",...). Only "<" and "\u{25fb}" existed in both key spaces, so ten of
+// the twelve axes silently resolved to None -> IgPrim::dead on BOTH sides,
+// compared equal, and contributed nothing: every cl8nk distance in the kernel
+// was computed from two axes. The `cl8nk chain` ladder showed it plainly —
+// conflicts=2 for every layer, including layers differing in eight primitives.
+// Worse, "<" is Phi's slot in this table but get_prim("<") returns Parity, so
+// the one categorical axis that did count was scored with the wrong weight.
 pub static DIST_SPECS: [(&str, DistSpec); 12] = [
-    ("D", DistSpec { weight: 0.8, max_delta: 3.0 }),
-    ("T", DistSpec { weight: 0.9, max_delta: 4.0 }),
-    ("R", DistSpec { weight: 0.7, max_delta: 3.0 }),
-    ("P", DistSpec { weight: 0.9, max_delta: 4.0 }),
-    ("F", DistSpec { weight: 0.6, max_delta: 2.0 }),
-    ("K", DistSpec { weight: 0.7, max_delta: 3.5 }),
-    ("G", DistSpec { weight: 0.6, max_delta: 2.0 }),
-    ("C", DistSpec { weight: 0.8, max_delta: 3.0 }),
-    ("<", DistSpec { weight: 1.0, max_delta: 2.0 }),
-    ("H", DistSpec { weight: 0.9, max_delta: 3.0 }),
-    ("S", DistSpec { weight: 0.5, max_delta: 2.0 }),
-    ("◻", DistSpec { weight: 0.7, max_delta: 3.0 }),
+    ("\u{22a2}", DistSpec { weight: 0.8, max_delta: 3.0 }),  // D
+    ("\u{22a3}", DistSpec { weight: 0.9, max_delta: 4.0 }),  // T
+    (">",        DistSpec { weight: 0.7, max_delta: 3.0 }),  // R
+    ("<",        DistSpec { weight: 0.9, max_delta: 4.0 }),  // P
+    ("\u{22c8}", DistSpec { weight: 0.6, max_delta: 2.0 }),  // F
+    ("\u{22a4}", DistSpec { weight: 0.7, max_delta: 3.5 }),  // K
+    ("\u{2208}", DistSpec { weight: 0.6, max_delta: 2.0 }),  // G
+    ("\u{220b}", DistSpec { weight: 0.8, max_delta: 3.0 }),  // C
+    ("\u{2299}", DistSpec { weight: 1.0, max_delta: 2.0 }),  // Phi
+    ("\u{22a5}", DistSpec { weight: 0.9, max_delta: 3.0 }),  // H
+    ("\u{229e}", DistSpec { weight: 0.5, max_delta: 2.0 }),  // S
+    ("\u{25fb}", DistSpec { weight: 0.7, max_delta: 3.0 }),  // Omega
 ];
 
 /// Normalized ordinal distance between two primitive values.
@@ -657,6 +670,11 @@ pub fn chain_analysis() -> Vec<ChainLayer> {
             "clink_layer6_meiosis",
             "clink_layer7_tissue",
             "clink_l8",
+            // L9 is lateral to L8, not above it; it belongs on the ladder so
+            // its distance from the terminal layer can be read rather than
+            // assumed. Discovery is by explicit name here, so a layer that is
+            // never listed is never measured — L9 was missing for that reason.
+            "clink_l9",
         ];
         for rn in &ref_names {
             if let Some(entry) = catalog::lookup(rn) {
@@ -717,4 +735,95 @@ pub fn catalog_stats() -> (usize, bool, bool) {
     let cl8_found = catalog::lookup("clink_l8").is_some();
     let zfcfe_found = catalog::lookup("zfc_fe").is_some();
     (count, cl8_found, zfcfe_found)
+}
+// ═══════════════════════════════════════════════════════════════
+// CL9NK — the ladder read from CLINK L9, the replicative lateral
+// ═══════════════════════════════════════════════════════════════
+//
+// Not a second navigator. The CL8NK machinery above is referenced to L8; this
+// re-reads the same chain from L9 using the same metric, because L9 is LATERAL
+// to L8 and a ladder measured only from the terminal layer cannot show that.
+// One metric, one chain, two vantage points.
+
+/// Every CLINK layer's distance from L9, nearest first.
+pub fn cl9nk_chain() -> Vec<(alloc::string::String, f32, usize, &'static str)> {
+    let l9 = cl9nk_ref();
+    let names = [
+        "clink_layer0_frustrated_belnap5",
+        "clink_layer1_electron_orbital",
+        "clink_layer2_atom",
+        "clink_layer3_molecule",
+        "clink_layer4_cell",
+        "clink_layer5_mitosis",
+        "clink_layer6_meiosis",
+        "clink_layer7_tissue",
+        "clink_l8",
+        "clink_l9",
+    ];
+    let mut out = Vec::new();
+    for n in &names {
+        if let Some(e) = catalog::lookup(n) {
+            let (d, conflicts) = tuple_distance_cl8nk(&l9, &e.tuple);
+            out.push((
+                alloc::string::String::from(*n),
+                d,
+                conflicts.len(),
+                assess_tier(&e.tuple),
+            ));
+        }
+    }
+    out.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(core::cmp::Ordering::Equal));
+    out
+}
+
+pub fn cl9nk_main(args: &[&str]) -> alloc::string::String {
+    use alloc::format;
+    let l9 = cl9nk_ref();
+    let l8 = cl8nk_ref();
+
+    let sub = args.first().copied().unwrap_or("report");
+    match sub {
+        "chain" => {
+            let mut s = alloc::string::String::from(
+                "CL9NK Chain — distance ladder from CLINK L9 (the replicative lateral)\n\n",
+            );
+            for (name, d, c, tier) in cl9nk_chain() {
+                s.push_str(&format!(
+                    "  {:<38} d={:.4}  tier={:<5} conflicts={}\n",
+                    name, d, tier, c
+                ));
+            }
+            s
+        }
+        _ => {
+            let (d, conflicts) = tuple_distance_cl8nk(&l8, &l9);
+            let mut s = alloc::string::String::from("CL9NK — CLINK Layer 9, the replicative lateral\n");
+            s.push_str("==============================================\n\n");
+            s.push_str(&format!("L9 tuple:   {}\n", l9.display()));
+            s.push_str(&format!("L8 tuple:   {}\n\n", l8.display()));
+            s.push_str(&format!(
+                "d(L8, L9):  {:.4}   over {} differing primitives\n",
+                d,
+                conflicts.len()
+            ));
+            s.push_str(&format!(
+                "tier:       {} by structural assessment\n\n",
+                assess_tier(&l9)
+            ));
+            s.push_str(
+                "L9 is LATERAL to L8, not above it: a self-replicating configuration\n\
+                 rather than a higher tier. `cl9nk chain` reads the whole ladder from\n\
+                 L9 instead of from the terminal layer.\n\n",
+            );
+            s.push_str(&format!(
+                "Note: CL9NK_ASCENT.md records d(L8,L9) = 5.63. This metric is\n\
+                 sqrt(sum w*d^2) with normalized d <= 1 and weights summing to 9.1,\n\
+                 so its ceiling is {:.4} — 5.63 is not reachable by it, and the\n\
+                 Python navigator's variant tops out near 3.46. The two numbers come\n\
+                 from different metrics; this one is not tuned to match the document.\n",
+                sqrt_f32(9.1)
+            ));
+            s
+        }
+    }
 }

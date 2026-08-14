@@ -120,7 +120,11 @@ pub fn c16_report() -> String {
         C16_DISC_EXP_F
     ));
     s.push_str("NOTE: polredabs/nfinit on deg-64 poly HANGS — bank raw from bnrclassfield.\n");
-    s.push_str("Next: C32 = full Hilbert class field (deg 128/Q = 64/F).\n");
+    // C32 is DONE — L6, deg 128/Q = 64/F, h=64 reached (TOWER_LEVELS above).
+    // This line still read "Next: C32", which is the state before the Hilbert
+    // class field was verified; it contradicted the table two screens up.
+    s.push_str("C32 = full Hilbert class field REACHED (deg 128/Q = 64/F, h=64).\n");
+    s.push_str("Next: L7+ ramified (2048)*oo — cyc [4096,512,8,4,2], 2^21 steps.\n");
     s
 }
 

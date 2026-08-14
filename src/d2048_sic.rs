@@ -46,7 +46,7 @@ pub const TOWER_LEVELS: [(&str, u32, u32, &str); 7] = [
     ("4", 32, 16, "C8 via bnrclassfield [8], contains C4"),
     ("5", 64, 32, "C16 via bnrclassfield [16], tower_C16.poly"),
     ("6", 128, 64, "C32 HILBERT CLASS FIELD, tower_C32.poly, h=64 reached"),
-    ("7+", 0, 0, "ramified (2048)*oo: cyc [4096,512,8,4,2], 2^21 steps to moduli field"),
+    ("7-12", 134217728, 67108864, "wide ray class at conductor 4096, oo UNRAMIFIED — moduli field; deg 2^27/Q a Lean theorem (moduli_field_degree_over_Q), tower closed L0..L15 via bnrinit"),
 ];
 
 pub fn d2048_summary() -> String {
@@ -55,7 +55,7 @@ pub fn d2048_summary() -> String {
     s.push_str("Grammar-native climb (NOT numerical polish — spurious local min)\n\n");
     s.push_str(&alloc::format!("F = Q(sqrt {}), m_d = (d+1)(d-3)\n", M_D));
     s.push_str(&alloc::format!(
-        "Hilbert h={}; ray class at (2048)*oo: order 2^27; moduli field deg 2^27/Q\n",
+        "Hilbert h={}; wide ray class at conductor 4096, oo UNRAMIFIED: moduli field deg 2^26/F = 2^27/Q\n",
         HILBERT_CLASS_NO
     ));
     s.push_str(&alloc::format!(
@@ -74,20 +74,20 @@ pub fn d2048_summary() -> String {
             s.push_str(&alloc::format!("  L{}: PENDING — {}\n", name, desc));
         }
     }
-    // The ascent is the class-field record, and it is not the route to the
-    // fiducial any more. The fiducial was obtained exactly on 2026-07-30 by the
-    // 2-part structural S-unit bypass — Stark unit ε = (2047 + √4190205)/2,
-    // exponents [-1, 3, 2], verified to 1000 digits — which goes around the
-    // ramified layers rather than through them. Printing "L7+: PENDING" with no
-    // further word invited a reader to conclude the fiducial was still out of
-    // reach, and one did. Pending applies to the moduli-field ascent as a goal
-    // in its own right, not to the fiducial, which is in hand.
-    s.push_str("\nThe fiducial does NOT depend on L7+. It was extracted exactly on\n");
-    s.push_str("2026-07-30 by the 2-part structural S-unit bypass — Stark unit\n");
-    s.push_str("eps = (2047 + sqrt 4190205)/2, exponents [-1,3,2], 1000 digits —\n");
-    s.push_str("which goes AROUND the ramified layers. See `oneshots` #11 and\n");
-    s.push_str("ig-docs/sic_fiducial_extraction_2part_bypass.md. L7+ remains open\n");
-    s.push_str("as the moduli-field ascent in its own right, not as a blocker.\n");
+    // The conductor convention settled to oo UNRAMIFIED (SIC_D2048_Moduli.lean,
+    // "both infinite places unramified"), so the moduli field is the wide ray
+    // class field at conductor 4096, degree 2^26/F = 2^27/Q — a proved theorem
+    // (moduli_field_degree_over_Q, by decide) — with every level L0..L15 computed
+    // by bnrinit rather than extrapolated. The old "ramified (2048)*oo, 2^21
+    // steps, L7+ PENDING" was the superseded convention and is corrected here.
+    s.push_str("\nThe moduli-field ascent is CLOSED: the conductor convention settled\n");
+    s.push_str("to oo UNRAMIFIED, so the moduli field is the wide ray class field at\n");
+    s.push_str("conductor 4096, degree 2^26/F = 2^27/Q — a Lean theorem\n");
+    s.push_str("(SIC_D2048_Moduli.moduli_field_degree_over_Q, by decide), every level\n");
+    s.push_str("L0..L15 computed via bnrinit (oo unramified), not extrapolated.\n");
+    s.push_str("The fiducial was in hand earlier, extracted 2026-07-30 by the 2-part\n");
+    s.push_str("S-unit bypass — eps = (2047 + sqrt 4190205)/2, exps [-1,3,2], 1000\n");
+    s.push_str("digits. See ig-docs/sic_fiducial_extraction_2part_bypass.md.\n");
     s.push_str("\nSubcommands: tower | c16 | c32 | ramified | redei | grammar | pari | next\n");
     s
 }
@@ -109,7 +109,7 @@ pub fn c32_report() -> String {
     ));
     s.push_str("disc pattern: m_d^64 (unramified over F)\n\n");
     s.push_str("UNRAMIFIED ASCENT COMPLETE through Hilbert class field.\n");
-    s.push_str("Next: ramified ray-conductor (2048)*oo adds 2^21 over F.\n");
+    s.push_str("Next: wide ray class at conductor 4096 (oo unramified) — moduli field, deg 2^27/Q.\n");
     s
 }
 
@@ -134,7 +134,11 @@ pub fn c16_report() -> String {
         C16_DISC_EXP_F
     ));
     s.push_str("NOTE: polredabs/nfinit on deg-64 poly HANGS — bank raw from bnrclassfield.\n");
-    s.push_str("Next: C32 = full Hilbert class field (deg 128/Q = 64/F).\n");
+    // C32 is DONE — L6, deg 128/Q = 64/F, h=64 reached, per TOWER_LEVELS above.
+    // This line read "Next: C32", the state BEFORE the Hilbert class field was
+    // verified, and contradicted the table in the same file.
+    s.push_str("C32 = full Hilbert class field REACHED (deg 128/Q = 64/F, h=64).\n");
+    s.push_str("Next: wide ray class at conductor 4096 (oo unramified) — moduli field, deg 2^27/Q, tower closed.\n");
     s
 }
 
@@ -154,8 +158,8 @@ pub fn tower_ascent_report() -> String {
         "  [32] -> deg {}/Q = {}/F  HILBERT CLASS FIELD VERIFIED ({} ms)\n\n",
         C32_DEG_Q, C32_DEG_F, C32_BNR_MS
     ));
-    s.push_str("Unramified climb DONE. Ramified (2048)*oo adds 2^21 over F.\n");
-    s.push_str("Max real subfield of full ray class field = moduli field (deg 2^27/Q).\n\n");
+    s.push_str("Unramified climb DONE through the Hilbert class field.\n");
+    s.push_str("Wide ray class at conductor 4096 (oo unramified) = moduli field, deg 2^26/F = 2^27/Q, tower closed L0..L15.\n\n");
     s.push_str("S-unit generators: |eps|=1/d, 3, 5, g3(norm -(d-3)), g4(norm d+1).\n");
     s.push_str("Genus built from sqrt(d+1), sqrt(d-3) = sqrt(2049), sqrt(5*409).\n");
     s

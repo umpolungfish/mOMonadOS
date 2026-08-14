@@ -40,7 +40,7 @@ use crate::sprintln;
 /// out of an older report, and the tensor forms turn up where a fork and a fuse
 /// were written as ⊗ and ⊕. Translating is what lets those load; dropping them
 /// would read the word as shorter than it is and change its verdict.
-fn normalize(word: &str) -> String {
+pub fn normalize(word: &str) -> String {
     let mut out = String::new();
     for c in word.chars() {
         match c {

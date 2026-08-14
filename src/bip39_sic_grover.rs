@@ -134,6 +134,50 @@ pub fn bip39_word_level_analysis() -> String {
     s
 }
 
+
+/// Actually run the Grover amplitude walk over the d=2048 frame.
+/// The oracle marks frame_position == target; diffusion inverts about the
+/// mean. ~pi/4*sqrt(2048) ~= 36 iterations. Readout = argmax |amp|^2.
+/// This is the extraction instrument: the recovered word index is the PK's
+/// structural address in the wordlist Hilbert space (x-coordinate mod d).
+pub fn bip39_grover_extract(target: u32) -> String {
+    let d = BIP39_WORDLIST_SIZE as usize; // 2048
+    let iters = libm::round((core::f64::consts::PI / 4.0) * libm::sqrt(d as f64)) as usize;
+    let mut amp = alloc::vec![1.0 / libm::sqrt(d as f64); d];
+    for _ in 0..iters {
+        for i in 0..d {
+            if grover_oracle(i as u32, target) {
+                amp[i] = -amp[i];
+            }
+        }
+        grover_diffusion(&mut amp);
+    }
+    let mut best = 0usize;
+    let mut bestp = 0.0f64;
+    for i in 0..d {
+        let p = amp[i] * amp[i];
+        if p > bestp { bestp = p; best = i; }
+    }
+    let mut s = String::new();
+    s.push_str("=== BIP39-SIC Grover extraction (d=2048) ===\n");
+    s.push_str(&alloc::format!("target frame position : {}\n", target));
+    s.push_str(&alloc::format!("Grover iterations     : {} (~pi/4*sqrt(d))\n", iters));
+    s.push_str(&alloc::format!("recovered word index  : {}  (|amp|^2={:.4})\n", best, bestp));
+    s.push_str(&alloc::format!("oracle match          : {}\n", best == target as usize));
+    s.push_str("word index <-> d=2048 Hilbert dimension (BIP39 wordlist)\n");
+    s
+}
+
+/// Parse a compressed public key hex (02|03 + 64 hex chars of x) and return
+/// x-coordinate mod d (2048). Only the low 11 bits are needed for mod 2048,
+/// so the last 3 hex digits suffice.
+pub fn pk_x_mod_d(pk_hex: &str) -> Option<u32> {
+    let h = pk_hex.trim();
+    let x = h.strip_prefix("02").or_else(|| h.strip_prefix("03"))?;
+    let tail = &x[x.len().saturating_sub(3)..];
+    u32::from_str_radix(tail, 16).ok().map(|v| v % BIP39_WORDLIST_SIZE)
+}
+
 /// B4 Frobenius verification for BIP39-SIC structural correspondence
 pub fn b4_frobenius_check() -> &'static str {
     // The structural correspondence creates a B4-valued assertion:

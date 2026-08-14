@@ -11,7 +11,7 @@ check the manuscript, at 888 KB.
 |---|---|---|
 | the degree-1024 ramified polynomial at conductor 16 | §Dimension 2048 | `tower_ramified_4.poly` |
 | its Newton polygon: vertices (0,56), (128,16), (256,0), (1024,0) | §Dimension 2048 | `np_vals.txt` |
-| the unramified ascent C4 → C16 → C32 | §The rule | `tower_C4.poly`, `tower_C16.poly`, `tower_C32.poly` |
+| the unramified ascent C4 → C8 → C16 → C32 | §The rule | `tower_C4.poly`, `tower_C16.poly`, `tower_C32.poly` |
 | the ascent, step by step, as run | §How each field was identified | `tower_step1_genus.gp` … `tower_step9_ramified_L1.gp` |
 | the d=12 S-unit exponent vector, 13 entries | §Dimension 2048 | `pin_sunit.txt`, `pin_sunit.gp` |
 | ray class group order and structure at 2048 | §The class group | `ray_class_2048.txt` |

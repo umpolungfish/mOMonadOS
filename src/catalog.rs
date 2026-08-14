@@ -672,6 +672,21 @@ use alloc::vec::Vec;
 /// New entries can be registered dynamically via register_entry().
 static mut DYNAMIC_CATALOG: Option<Vec<CatalogEntry>> = None;
 
+/// Entries the merge dropped because their name was already taken, with a flag
+/// for whether the dropped copy actually DISAGREED with the one kept.
+/// A repeat carrying identical data is harmless; a repeat carrying a different
+/// tuple, tier or domain is one name disagreeing with itself.
+static mut NAME_COLLISIONS: Vec<(&'static str, bool)> = Vec::new();
+
+/// What `catalog_init` dropped, in the order it dropped it.
+pub fn name_collisions() -> &'static [(&'static str, bool)] {
+    unsafe {
+        let _ = ensure_catalog();
+        #[allow(static_mut_refs)]
+        NAME_COLLISIONS.as_slice()
+    }
+}
+
 /// Initialize (or reinitialize) the dynamic catalog from static entries.
 pub fn catalog_init() {
     unsafe {
@@ -682,8 +697,25 @@ pub fn catalog_init() {
         // Full MoDoT-parity `ask` needs search over math/query witnesses, not
         // only the foundational ladder. Dedup by name.
         for e in ASK_CATALOG_SUBSET {
-            if !v.iter().any(|x| x.name == e.name) {
-                v.push(*e);
+            match v.iter().find(|x| x.name == e.name) {
+                None => v.push(*e),
+                Some(kept) => {
+                    // AREV, in the ob3ect's reading of this routine: the reverse
+                    // descent that "collapses multiple entries sharing a name into
+                    // a single instance, potentially losing tuple information".
+                    //
+                    // Dropping the second copy silently is what hid `photon`
+                    // occurring twice with two declared tiers, and `yhwh`, and
+                    // `clink_layer5_mitosis`. The entropy verdict on the repair
+                    // was dS ~ 0: conserve the information by HOLDING the
+                    // contradiction, not by discarding it. So the drop is
+                    // recorded rather than prevented — the merge still keeps one
+                    // entry, but the collision stops being invisible.
+                    let differs = kept.tuple != e.tuple
+                        || kept.tier != e.tier
+                        || kept.domain != e.domain;
+                    NAME_COLLISIONS.push((e.name, differs));
+                }
             }
         }
         DYNAMIC_CATALOG = Some(v);
@@ -909,6 +941,18 @@ pub fn zfc_t_tuple() -> IgTuple { ZFC_T.tuple }
 pub fn zfc_fe_tuple() -> IgTuple { ZFC_FE.tuple }
 /// Get the CLINK L8 tuple.
 pub fn clink_l8_tuple() -> IgTuple { CLINK_L8.tuple }
+
+/// The CLINK L9 reference tuple — the replicative lateral.
+///
+/// L9 was already in the catalog as `clink_l9` (in ASK_CATALOG_SUBSET) with
+/// exactly this tuple; it was simply absent from the CL8NK chain ladder, which
+/// discovers layers by an explicit name list. So this reads the existing entry
+/// rather than declaring a second copy of it. The fallback is L8: if the entry
+/// ever disappears, the ladder degrades to the terminal layer instead of
+/// silently inventing a tuple.
+pub fn clink_l9_tuple() -> IgTuple {
+    lookup("clink_l9").map(|e| e.tuple).unwrap_or(CLINK_L8.tuple)
+}
 
 // ═══════════════════════════════════════════════════════════════
 // FORMULA FRAGMENTS — ZFC set-theoretic encodings per primitive

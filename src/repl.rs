@@ -15,10 +15,10 @@ use crate::{
     para_category, algebra, catalog, cl8nk, consciousness, rebis, dialect, menu,
     sequence, cr3echrz, canonical_ordinal, clay_status, sic_povm,
     frobenius_unify, clay_witness, belnap_sic_bridge, belnap_c4, sic_compute,
-    dialect_expansion, divisor_ring, mersenne_parallel, bifurcation_test, entropy, d12_sic, d2048_sic, d2048_sieve, stark,
+    dialect_expansion, divisor_ring, mersenne_parallel, bifurcation_test, entropy, invariant, d12_sic, d2048_sic, d2048_sieve, stark,
     sic_moduli,
     riemann_sic,
-    riemann_hilbert, bip39_sic_grover,
+    riemann_hilbert, bip39_sic_grover, redteam,
     witness_vessel, ask, ovm,
 };
 use crate::tokens::{canonical_name, canonical_count, continuous_name, continuous_count, novel_name, novel_count, shunted_name, shunted_count, compound_name, compound_index, compound_program, compound_count};
@@ -1381,6 +1381,91 @@ pub fn repl(k: &mut Kernel) {
                     "" => sprintln!("{}", crate::entropy::entropy_report()),
                     _ => sprintln!("entropy [tier | transition] — Phase V entropy experiment"),
                 }
+            }
+            "invariant" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::invariant::invariant_main(&args));
+            }
+            "redteam" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::redteam::redteam_main(&args));
+            }
+            "witness" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::witness::witness_main(&args));
+            }
+            "counterfactual" | "cf" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::counterfactual::counterfactual_main(&args));
+            }
+            "basin" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::basin::basin_main(&args));
+            }
+            "ouroboros-inverse" | "oinv" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::ouroboros::ouroboros_main(&args));
+            }
+            "frobenius-fuzzer" | "fuzz" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::frobenius_fuzzer::fuzzer_main(&args));
+            }
+            "oracle" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::oracle::oracle_main(&args));
+            }
+            "blackbox" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::blackbox::blackbox_main(&args));
+            }
+            "museum" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::museum::museum_main(&args));
+            }
+            "phase" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::phase::phase_main(&args));
+            }
+            "demonstrate" | "demo" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::demonstrator::demonstrate_main(&args));
+            }
+            "loss" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::loss::loss_main(&args));
+            }
+            "shadow" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::shadow::shadow_main(&args));
+            }
+            "provenance" | "prov" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::provenance::provenance_main(&args));
+            }
+            "ctc-loom" | "loom" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::ctc_loom::ctc_loom_main(&args));
+            }
+            "cl9nk" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::cl8nk::cl9nk_main(&args));
+            }
+            "crystal-scope" | "cscope" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::crystal_scope::crystal_scope_main(&args));
+            }
+            "minimal" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::minimal::minimal_main(&args));
+            }
+            "repair" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::repair::repair_main(&args));
+            }
+            "sk_forge" | "sk-forge" => {
+                // sk_forge_main takes &str; join the remaining fields back.
+                let rest: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::sk_forge::sk_forge_main(&rest.join(" ")));
             }
             "sigma" => {
                 let arg = parts.next().unwrap_or("");

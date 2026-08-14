@@ -201,7 +201,33 @@ pub static GRAMMAR_MENU: &[MenuItem] = &[
     MenuItem { name: "clay", cmd: "clay", desc: "Clay Millennium structural status (machine-checked)", example: "clay", submenu: None },
     MenuItem { name: "psm", cmd: "psm", desc: "dialetheic alignment + measurement tests", example: "psm test", submenu: None },
     MenuItem { name: "entropy", cmd: "entropy", desc: "entropy experiment: dS vs tier promotion", example: "entropy tier", submenu: None },
+    MenuItem { name: "invariant", cmd: "invariant", desc: "Discover invariants under transformations: ROTAT, IMSCRIB, FSPLIT/FFUSE", example: "invariant catalog under ROTAT", submenu: None },
+    MenuItem { name: "redteam", cmd: "redteam", desc: "Adversarial testing: analyze|stress|mutate, and audit <theory> for hidden assumptions", example: "redteam audit RH", submenu: None },
+    MenuItem { name: "witness", cmd: "witness", desc: "Smallest executable object standing behind a claim", example: "witness bsd", submenu: None },
+    MenuItem { name: "counterfactual", cmd: "counterfactual", desc: "Perturb one glyph: invariants held/broken, reversibility, smallest repair (alias cf)", example: "counterfactual \u{22a2}\u{2208}\u{22a4}\u{220b}\u{22a3} rotate 1", submenu: None },
+    MenuItem { name: "basin", cmd: "basin", desc: "Fixed-point archaeology: orbit, attractor, transient depth, exact basin size", example: "basin \u{22a2}\u{2208}\u{22a4}\u{220b} --action REPAIR", submenu: None },
+    MenuItem { name: "ouroboros-inverse", cmd: "ouroboros-inverse", desc: "Inverse grammar: shortest IMASM word imscribing a tuple, plus its braid (alias oinv)", example: "oinv", submenu: None },
+    MenuItem { name: "frobenius-fuzzer", cmd: "frobenius-fuzzer", desc: "Mine the word space for programs the braid reproduces exactly (alias fuzz)", example: "fuzz --len 3", submenu: None },
+    MenuItem { name: "oracle", cmd: "oracle", desc: "Adversarial: hunt the cheapest structural counterexample; surviving is not proof", example: "oracle rotat-register", submenu: None },
+    MenuItem { name: "blackbox", cmd: "blackbox", desc: "Infer a law from integer observations, ranked by fit minus complexity", example: "blackbox 1 1 2 3 5 8 13", submenu: None },
+    MenuItem { name: "museum", cmd: "museum", desc: "The permanent collection of failed constructions — append-only negative knowledge", example: "museum open", submenu: None },
+    MenuItem { name: "phase", cmd: "phase", desc: "Phase as an object: orbit spectrum, phase period, and two-word interference", example: "phase interference \u{22a2}\u{2208}\u{22a4}\u{220b} \u{22a2}\u{22a4}\u{2208}\u{220b}", submenu: None },
+    MenuItem { name: "demonstrate", cmd: "demonstrate", desc: "Run a claim as an experiment: INPUT/OPERATION/OUTPUT/CHECK, computed live (alias demo)", example: "demonstrate mu-delta 1 2 -1", submenu: None },
+    MenuItem { name: "loss", cmd: "loss", desc: "What a transformation destroys: entropy in/out, bits destroyed, irreversible transitions", example: "loss collapse", submenu: None },
+    MenuItem { name: "shadow", cmd: "shadow", desc: "Ontological nearest-neighbour: shared structure and the measured critical difference", example: "shadow hsoa", submenu: None },
+    MenuItem { name: "provenance", cmd: "provenance", desc: "Epistemic type check: dependency DAG graded by lattice MEET, not by best sibling (alias prov)", example: "prov RH", submenu: None },
+    MenuItem { name: "ctc-loom", cmd: "ctc-loom", desc: "Sweep the six Belnap actions over the whole word space; rank closures by price (alias loom)", example: "ctc-loom --len 3", submenu: None },
+    MenuItem { name: "cl9nk", cmd: "cl9nk", desc: "CLINK L9, the replicative lateral: d(L8,L9) and the ladder read from L9", example: "cl9nk chain", submenu: None },
+    MenuItem { name: "crystal-scope", cmd: "crystal-scope", desc: "Substitution microscope: distance, tier, dS, gate jump, and the measured driver (alias cscope)", example: "cscope", submenu: None },
+    MenuItem { name: "minimal", cmd: "minimal", desc: "Shortest word achieving a target property", example: "minimal reach O_inf", submenu: None },
+    MenuItem { name: "repair", cmd: "repair", desc: "Ranked program/proof surgery with a proof-diff", example: "repair \u{22a2}\u{2208}", submenu: None },
     MenuItem { name: "mersearch", cmd: "mersearch", desc: "Mersenne search: run|ll. Composite exponents answer at once (alias msearch)", example: "msearch ll 2213", submenu: None },
+    MenuItem { name: "pk2sk", cmd: "pk2sk", desc: "PK→SK recovery: bounded-range ECDLP on secp256k1 — recover the scalar in [lo, hi) from its compressed public key, curve-gated, imscribed", example: "pk2sk selftest", submenu: Some(PK2SK_MENU) },
+];
+
+pub static PK2SK_MENU: &[MenuItem] = &[
+    MenuItem { name: "search", cmd: "pk2sk search", desc: "recover the private scalar from a compressed public key when the scalar lies in [lo, hi): BSGS meet-in-the-middle, gated by the curve itself", example: "pk2sk search 03f01d6b9018ab421dd410404cb869072065522bf85734008f105cf385a023a80f 12000 13000", submenu: None },
+    MenuItem { name: "selftest", cmd: "pk2sk selftest", desc: "recover the fixed selftest key (SK = 0x1000000b8ef) from its public key alone", example: "pk2sk selftest", submenu: None },
 ];
 
 pub static REBIS_MENU: &[MenuItem] = &[
