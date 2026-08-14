@@ -2515,80 +2515,40 @@ Stopped after {} ticks.", ran);
                             }
 
                             match u {
-                                0 => { // canonical: G1:<≥𐑹  G2:⊙≥⊙  G3:◻≥𐑭
-                                    let g1 = (ig.p as u8) <= (IgPrim::or_ as u8);
-                                    let g2 = (ig.phi as u8) <= (IgPrim::monad as u8);
-                                    let g3 = (ig.omega as u8) <= (IgPrim::ah as u8);
-                                    sprintln!("  G1 (<≥𐑹): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
-                                    sprintln!("  G2 (⊙≥⊙): {}  ⊙={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                // Dialects 0–7 evaluate from the SAME GateSpec data as every
+                                // other dialect. They used to carry hand-written gates using
+                                // `(x as u8) <= (thresh as u8)`, which is the discriminant trick
+                                // `IgPrim::ordinal`'s own docstring warns is invalid for ⊙
+                                // Criticality and ◻ Winding — the two families these very gates
+                                // test at G2 and G3. It rejected roar/err/haha at ⊙≥⊙ and zoo at
+                                // ◻≥𐑭, and dialect 5's ◻≥𐑟 admitted every winding value, a gate
+                                // that always passed. Arms 8–11 had already been moved to
+                                // `.ordinal()`; this finishes that move and removes the second
+                                // copy of the gate table at the same time.
+                                0..=7 => {
+                                    let unis = crate::dialect_expansion::all_dialects();
+                                    let uni = &unis[u as usize];
+                                    let (g1, g1_ord, g1_glyph) = crate::dialect::eval_gate_spec(&uni.g1, &ig);
+                                    let (g2, g2_ord, g2_glyph) = crate::dialect::eval_gate_spec(&uni.g2, &ig);
+                                    let (g3, g3_ord, g3_glyph) = crate::dialect::eval_gate_spec(&uni.g3, &ig);
+                                    sprintln!("  G1 ({}≥{}): {}  {}={} (ord {})",
+                                        uni.g1.prim, uni.g1.min_ord, if g1 {"PASS"} else {"FAIL"},
+                                        uni.g1.prim, g1_glyph, g1_ord);
+                                    sprintln!("  G2 ({}≥{}): {}  {}={} (ord {})",
+                                        uni.g2.prim, uni.g2.min_ord, if g2 {"PASS"} else {"FAIL"},
+                                        uni.g2.prim, g2_glyph, g2_ord);
+                                    sprintln!("  G3 ({}≥{}): {}  {}={} (ord {})",
+                                        uni.g3.prim, uni.g3.min_ord, if g3 {"PASS"} else {"FAIL"},
+                                        uni.g3.prim, g3_glyph, g3_ord);
+                                    sprintln!("  Ordering: {}",
+                                        if uni.gate_ordering {"SEQUENTIAL"} else {"PARALLEL"});
                                     if !g1 || !g2 || !g3 { all_pass = false; }
-                                }
-                                1 => { // low_gate: G1:<≥𐑬  G2:⊙≥𐑢  G3:◻≥𐑭
-                                    let g1 = (ig.p as u8) <= (IgPrim::out as u8);
-                                    let g2 = (ig.phi as u8) <= (IgPrim::woe as u8);
-                                    let g3 = (ig.omega as u8) <= (IgPrim::ah as u8);
-                                    sprintln!("  G1 (<≥𐑬): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
-                                    sprintln!("  G2 (⊙≥woe): {}  ⊙={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
-                                    if !g1 || !g2 || !g3 { all_pass = false; }
-                                }
-                                2 => { // strict_frobenius: G1:⋈≥𐑐  G2:<≥𐑹  G3:◻≥𐑭
-                                    let g1 = (ig.f as u8) <= (IgPrim::peep as u8);
-                                    let g2 = (ig.p as u8) <= (IgPrim::or_ as u8);
-                                    let g3 = (ig.omega as u8) <= (IgPrim::ah as u8);
-                                    sprintln!("  G1 (⋈≥𐑐): {}  ⋈={}", if g1 {"PASS"} else {"FAIL"}, ig.f.glyph());
-                                    sprintln!("  G2 (<≥𐑹): {}  <={}", if g2 {"PASS"} else {"FAIL"}, ig.p.glyph());
-                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
-                                    if !g1 || !g2 || !g3 { all_pass = false; }
-                                }
-                                3 => { // inverted_gates: G1:⊙≥⊙  G2:<≥𐑹  G3:◻≥𐑭
-                                    let g1 = (ig.phi as u8) <= (IgPrim::monad as u8);
-                                    let g2 = (ig.p as u8) <= (IgPrim::or_ as u8);
-                                    let g3 = (ig.omega as u8) <= (IgPrim::ah as u8);
-                                    sprintln!("  G1 (⊙≥⊙): {}  ⊙={}", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G2 (<≥𐑹): {}  <={}", if g2 {"PASS"} else {"FAIL"}, ig.p.glyph());
-                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
-                                    if !g1 || !g2 || !g3 { all_pass = false; }
-                                }
-                                4 => { // no_ordering: G1+G2+G3 parallel — same as canonical but independence asserted
-                                    let g1 = (ig.p as u8) <= (IgPrim::or_ as u8);
-                                    let g2 = (ig.phi as u8) <= (IgPrim::monad as u8);
-                                    let g3 = (ig.omega as u8) <= (IgPrim::ah as u8);
-                                    sprintln!("  G1 (<≥𐑹): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
-                                    sprintln!("  G2 (⊙≥⊙): {}  ⊙={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
-                                    sprintln!("  Mode: PARALLEL — gates evaluated independently.");
-                                    if !g1 || !g2 || !g3 { all_pass = false; }
-                                }
-                                5 => { // high_gate: G1:<≥𐑹  G2:⊙≥𐑮  G3:◻≥𐑟
-                                    let g1 = (ig.p as u8) <= (IgPrim::or_ as u8);
-                                    let g2 = (ig.phi as u8) <= (IgPrim::roar as u8);
-                                    let g3 = (ig.omega as u8) <= (IgPrim::zoo as u8);
-                                    sprintln!("  G1 (<≥𐑹): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
-                                    sprintln!("  G2 (⊙≥roar): {}  ⊙={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G3 (◻≥𐑟): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
-                                    if !g1 || !g2 || !g3 { all_pass = false; }
-                                }
-                                6 => { // winding_first: G1:◻≥𐑭  G2:⊙≥⊙  G3:<≥𐑹
-                                    let g1 = (ig.omega as u8) <= (IgPrim::ah as u8);
-                                    let g2 = (ig.phi as u8) <= (IgPrim::monad as u8);
-                                    let g3 = (ig.p as u8) <= (IgPrim::or_ as u8);
-                                    sprintln!("  G1 (◻≥𐑭): {}  ◻={}", if g1 {"PASS"} else {"FAIL"}, ig.omega.glyph());
-                                    sprintln!("  G2 (⊙≥⊙): {}  ⊙={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G3 (<≥𐑹): {}  <={}", if g3 {"PASS"} else {"FAIL"}, ig.p.glyph());
-                                    if !g1 || !g2 || !g3 { all_pass = false; }
-                                }
-                                7 => { // t_structural: G1:<≥𐑹  G2:⊙≥⊙  G3:◻≥𐑭  T:∋=𐑠
-                                    let g1 = (ig.p as u8) <= (IgPrim::or_ as u8);
-                                    let g2 = (ig.phi as u8) <= (IgPrim::monad as u8);
-                                    let g3 = (ig.omega as u8) <= (IgPrim::ah as u8);
-                                    let t_ok = ig.c == IgPrim::measure;
-                                    sprintln!("  G1 (<≥𐑹): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
-                                    sprintln!("  G2 (⊙≥⊙): {}  ⊙={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
-                                    sprintln!("  T  (∋=𐑠): {}  ∋={}", if t_ok {"PASS"} else {"FAIL"}, ig.c.glyph());
-                                    if !g1 || !g2 || !g3 || !t_ok { all_pass = false; }
+                                    // t_structural additionally constrains the coupling primitive.
+                                    if u == 7 {
+                                        let t_ok = ig.c == IgPrim::measure;
+                                        sprintln!("  T  (∋=𐑠): {}  ∋={}", if t_ok {"PASS"} else {"FAIL"}, ig.c.glyph());
+                                        if !t_ok { all_pass = false; }
+                                    }
                                 }
                                 8 => { // chirality_first: G1:⊥≥𐑖  G2:⊙≥⊙  G3:◻≥𐑭
                                        // T: T_CEILING — see manuscripts/clay_cross_dialect_closure.md.
@@ -2646,9 +2606,14 @@ Stopped after {} ticks.", ran);
                                         let (g1_ok, g1_ord, g1_glyph) = crate::dialect::eval_gate_spec(&uni.g1, &ig);
                                         let (g2_ok, g2_ord, g2_glyph) = crate::dialect::eval_gate_spec(&uni.g2, &ig);
                                         let (g3_ok, g3_ord, g3_glyph) = crate::dialect::eval_gate_spec(&uni.g3, &ig);
-                                        let g1_label = crate::dialect::gate_prim_label(uni.g1.prim);
-                                        let g2_label = crate::dialect::gate_prim_label(uni.g2.prim);
-                                        let g3_label = crate::dialect::gate_prim_label(uni.g3.prim);
+                                        // GateSpec::prim is already the mark, and already
+                                        // 'static. `gate_prim_label` was a twelve-arm match
+                                        // returning each mark as itself — a thirteenth hand copy
+                                        // of the alphabet whose only possible behaviour was to
+                                        // start answering "?" if a mark ever changed.
+                                        let g1_label = uni.g1.prim;
+                                        let g2_label = uni.g2.prim;
+                                        let g3_label = uni.g3.prim;
                                         sprintln!("  G1 ({}≥{}): {}  {}={} (ord {})",
                                             g1_label, uni.g1.min_ord, if g1_ok {"PASS"} else {"FAIL"},
                                             g1_label, g1_glyph, g1_ord);

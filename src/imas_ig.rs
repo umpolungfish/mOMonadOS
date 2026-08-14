@@ -489,3 +489,70 @@ impl IgTuple {
         (sum + 0.5) as usize
     }
 }
+
+#[cfg(test)]
+mod discriminant_gate_tests {
+    use super::IgPrim;
+    use IgPrim::*;
+
+    /// Every value of the family that `thresh` belongs to, in declaration order.
+    fn family_of(thresh: IgPrim) -> &'static [IgPrim] {
+        const D: &[IgPrim] = &[if_, dead, ash, array];
+        const T: &[IgPrim] = &[are, judge, eat, mime, oil];
+        const R: &[IgPrim] = &[ian, ear, tot, ado];
+        const P: &[IgPrim] = &[or_, nun, out, yew, church];
+        const F: &[IgPrim] = &[peep, age, they];
+        const K: &[IgPrim] = &[on, egg, loll, yea, air];
+        const G: &[IgPrim] = &[ice, bib, thigh];
+        const C: &[IgPrim] = &[measure, vow, gag, ooze];
+        const PHI: &[IgPrim] = &[monad, roar, err, woe, haha];
+        const H: &[IgPrim] = &[wool, sure, kick, fee];
+        const S: &[IgPrim] = &[up, so, hung];
+        const OM: &[IgPrim] = &[ah, oak, awe, zoo];
+        for fam in [D, T, R, P, F, K, G, C, PHI, H, S, OM] {
+            if fam.contains(&thresh) { return fam; }
+        }
+        unreachable!()
+    }
+
+    /// The two ways this kernel writes "primitive is at least `thresh`":
+    /// the discriminant trick `(x as u8) <= (thresh as u8)` used by the
+    /// hand-crafted dialects 0–7 in `repl.rs`, and `x.ordinal() >=
+    /// thresh.ordinal()` used by dialects 8–11 and by `eval_gate_spec` for
+    /// every data-driven dialect. Returns the values on which they disagree.
+    fn disagreements(thresh: IgPrim) -> alloc::vec::Vec<IgPrim> {
+        family_of(thresh).iter().copied().filter(|&x| {
+            let by_discriminant = (x as u8) <= (thresh as u8);
+            let by_ordinal = x.ordinal() >= thresh.ordinal();
+            by_discriminant != by_ordinal
+        }).collect()
+    }
+
+    /// Parity and Fidelity are declared in strictly descending ordinal order,
+    /// so the discriminant trick is sound there — which is why it survived.
+    #[test]
+    fn discriminant_trick_holds_on_monotonic_families() {
+        assert!(disagreements(or_).is_empty(), "< or_: {:?}", disagreements(or_));
+        assert!(disagreements(out).is_empty(), "< out: {:?}", disagreements(out));
+        assert!(disagreements(peep).is_empty(), "⋈ peep: {:?}", disagreements(peep));
+    }
+
+    /// Criticality and Winding carry a value out of declaration order, so the
+    /// trick is wrong there — on exactly the thresholds the hand-crafted
+    /// dialects gate G2 and G3 with.
+    #[test]
+    fn discriminant_trick_fails_on_phi_and_omega() {
+        // ⊙ ≥ ⊙ (monad): dialects 0,3,4,6,7 reject roar/err/haha, which pass.
+        assert_eq!(disagreements(monad), alloc::vec![roar, err, haha]);
+        // ⊙ ≥ 𐑢 (woe): dialect 1 rejects haha, which passes.
+        assert_eq!(disagreements(woe), alloc::vec![haha]);
+        // ⊙ ≥ 𐑮 (roar): dialect 5 wrong BOTH ways — admits monad (2.0 < 2.33)
+        // and rejects err and haha, which clear the threshold. woe fails under
+        // both readings, so it is not a disagreement.
+        assert_eq!(disagreements(roar), alloc::vec![monad, err, haha]);
+        // ◻ ≥ 𐑭 (ah): dialects 0–4,6,7 reject zoo, which passes.
+        assert_eq!(disagreements(ah), alloc::vec![zoo]);
+        // ◻ ≥ 𐑟 (zoo): dialect 5's G3 admits every value — a vacuous gate.
+        assert_eq!(disagreements(zoo), alloc::vec![ah, oak, awe]);
+    }
+}

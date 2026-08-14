@@ -3,6 +3,11 @@
 // in Latin would be a different notation, so the lint is answered rather than
 // obeyed.
 #![allow(uncommon_codepoints)]
+// N is the modulus, B a bound, and in `a^x mod N` the capital is the name the
+// mathematics uses. Renaming them to satisfy the lint would make the code
+// disagree with every statement of the algorithm it implements, so this lint is
+// answered on the same grounds as the one above rather than obeyed.
+#![allow(non_snake_case)]
 #![cfg_attr(not(feature = "hosted"), no_main)]
 #![cfg_attr(not(feature = "hosted"), feature(abi_x86_interrupt))]
 #![cfg_attr(not(feature = "hosted"), feature(alloc_error_handler))]

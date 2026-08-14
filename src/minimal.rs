@@ -163,13 +163,12 @@ impl MinimalEngine {
         let mut essential = Vec::new();
         let chars: Vec<char> = word.chars().collect();
         
-        for (i, &c) in chars.iter().enumerate() {
-            let mut reduced = chars.clone();
-            reduced.remove(i);
-            let reduced_word: String = reduced.iter().collect();
-            
-            // If reduced doesn't achieve target, this opcode was essential
-            // (simplified: just collect unique opcodes)
+        // UNIMPLEMENTED as a minimality test: this removes nothing and checks
+        // nothing against the target. It builds the reduced word and threw it
+        // away unread, so every opcode present came back "essential". What it
+        // actually returns is the word's distinct opcodes, in order of first
+        // appearance, and it is written as that rather than as a search.
+        for &c in chars.iter() {
             if !essential.contains(&c.to_string()) {
                 essential.push(self.opcode_name(c));
             }

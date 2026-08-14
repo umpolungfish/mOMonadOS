@@ -11,7 +11,6 @@
 // Author: written by the local model against a guessed API; grounded to the
 // real kernel surface (imas_ig / crystal_scope / carriers / provenance).
 #![allow(dead_code)]
-#![allow(uncommon_codepoints)]
 
 extern crate alloc;
 use alloc::format;
@@ -24,26 +23,11 @@ use crate::basin::{orbit, Action};
 use crate::carriers::{population, Carrier};
 use crate::crystal_scope::scope;
 use crate::entropy::Tier;
+use crate::axis_values::{hex_to_tuple, word_to_tuple};
 use crate::imas_ig::{IgPrim, IgTuple};
 use crate::ouroboros::invert;
 use crate::provenance::{provenance_of, Provenance};
 use crate::witness::witness;
-
-// Canonical per-axis value lists, low ordinal → high, sourced from the IgPrim
-// ordinal() table in imas_ig.rs. A count or byte is reduced modulo the family
-// size and indexes into its own axis, so every derived value is a real member.
-const D_VALS: [IgPrim; 4] = [IgPrim::dead, IgPrim::ash, IgPrim::array, IgPrim::if_];
-const T_VALS: [IgPrim; 5] = [IgPrim::judge, IgPrim::eat, IgPrim::mime, IgPrim::oil, IgPrim::are];
-const R_VALS: [IgPrim; 4] = [IgPrim::ado, IgPrim::tot, IgPrim::ear, IgPrim::ian];
-const P_VALS: [IgPrim; 5] = [IgPrim::church, IgPrim::yew, IgPrim::out, IgPrim::nun, IgPrim::or_];
-const F_VALS: [IgPrim; 3] = [IgPrim::age, IgPrim::they, IgPrim::peep];
-const K_VALS: [IgPrim; 5] = [IgPrim::yea, IgPrim::loll, IgPrim::egg, IgPrim::on, IgPrim::air];
-const G_VALS: [IgPrim; 3] = [IgPrim::bib, IgPrim::thigh, IgPrim::ice];
-const C_VALS: [IgPrim; 4] = [IgPrim::vow, IgPrim::gag, IgPrim::measure, IgPrim::ooze];
-const PHI_VALS: [IgPrim; 5] = [IgPrim::woe, IgPrim::monad, IgPrim::roar, IgPrim::err, IgPrim::haha];
-const H_VALS: [IgPrim; 4] = [IgPrim::fee, IgPrim::kick, IgPrim::sure, IgPrim::wool];
-const S_VALS: [IgPrim; 3] = [IgPrim::hung, IgPrim::so, IgPrim::up];
-const OM_VALS: [IgPrim; 4] = [IgPrim::awe, IgPrim::oak, IgPrim::ah, IgPrim::zoo];
 
 /// Public key: hex string, IMASM tuple, or opcode word — one of the three.
 #[derive(Debug, Clone)]
@@ -341,56 +325,12 @@ fn set_axis(t: &IgTuple, axis: &str, v: IgPrim) -> IgTuple {
 }
 
 /// Count the twelve opcode marks in a word; reduce each count into its axis.
-fn word_to_tuple(word: &str) -> IgTuple {
-    let mut c = [0usize; 12];
-    for ch in word.chars() {
-        match ch {
-            '⊢' => c[0] += 1,
-            '⊣' => c[1] += 1,
-            '>' => c[2] += 1,
-            '<' => c[3] += 1,
-            '⋈' => c[4] += 1,
-            '⊤' => c[5] += 1,
-            '∈' => c[6] += 1,
-            '∋' => c[7] += 1,
-            '⊙' => c[8] += 1,
-            '⊥' => c[9] += 1,
-            '⊞' => c[10] += 1,
-            '◻' => c[11] += 1,
-            _ => {}
-        }
-    }
-    tuple_from_indices(&c)
-}
+
 
 /// FNV-1a over the hex string → 12 bytes → one value per axis.
-fn hex_to_tuple(hex: &str) -> IgTuple {
-    let mut h: u64 = 0xcbf29ce484222325;
-    let mut bytes = [0usize; 12];
-    for (i, b) in hex.bytes().enumerate() {
-        h ^= b as u64;
-        h = h.wrapping_mul(0x100000001b3);
-        bytes[i % 12] ^= (h & 0xff) as usize;
-    }
-    tuple_from_indices(&bytes)
-}
 
-fn tuple_from_indices(idx: &[usize; 12]) -> IgTuple {
-    IgTuple {
-        d: D_VALS[idx[0] % D_VALS.len()],
-        t: T_VALS[idx[1] % T_VALS.len()],
-        r: R_VALS[idx[2] % R_VALS.len()],
-        p: P_VALS[idx[3] % P_VALS.len()],
-        f: F_VALS[idx[4] % F_VALS.len()],
-        k: K_VALS[idx[5] % K_VALS.len()],
-        g: G_VALS[idx[6] % G_VALS.len()],
-        c: C_VALS[idx[7] % C_VALS.len()],
-        phi: PHI_VALS[idx[8] % PHI_VALS.len()],
-        h: H_VALS[idx[9] % H_VALS.len()],
-        s: S_VALS[idx[10] % S_VALS.len()],
-        omega: OM_VALS[idx[11] % OM_VALS.len()],
-    }
-}
+
+
 
 fn nearest_carriers(tuple: &IgTuple) -> Vec<(Carrier, f32)> {
     let mut ds: Vec<(Carrier, f32)> = population()
@@ -406,15 +346,12 @@ fn nearest_carriers(tuple: &IgTuple) -> Vec<(Carrier, f32)> {
 }
 
 fn search_window(tier: Option<Tier>) -> u64 {
-    let base: u64 = 1 << 63;
-    let factor: u64 = match tier {
-        Some(Tier::OInf) => 1 << 20,
-        Some(Tier::O2Dagger) => 1 << 15,
-        Some(Tier::O2) => 1 << 10,
-        Some(Tier::O1) => 1 << 5,
-        _ => 1,
-    };
-    (base / factor).max(1)
+    // The residual search space is the tier's own type count — a real crystal
+    // quantity, not a hand-picked factor. A higher tier holds fewer types, so
+    // the window is smaller; with no tier it is the whole crystal.
+    tier.map(|t| t.n_types() as u64)
+        .unwrap_or(crate::crystal::TOTAL as u64)
+        .max(1)
 }
 
 fn window_bits(w: u64) -> u32 {

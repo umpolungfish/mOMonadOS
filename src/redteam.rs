@@ -320,10 +320,13 @@ impl RedteamEngine {
         mutations
     }
 
-    /// Check if an invariant holds (simplified)
-    fn check_invariant_holds(&self, word: &str, invariant: &str) -> bool {
-        // Placeholder - real implementation would parse and verify the invariant
-        // For now, assume it holds unless we find evidence otherwise
+    /// UNIMPLEMENTED: returns true for every word and every invariant.
+    ///
+    /// It parses nothing and verifies nothing, so a caller that treats a `true`
+    /// here as evidence is reading its own default back. Named as what it is
+    /// rather than as a "simplified" check, because a stub that reports PASS is
+    /// indistinguishable from a passing check at the call site.
+    fn check_invariant_holds(&self, _word: &str, _invariant: &str) -> bool {
         true
     }
 
@@ -333,7 +336,6 @@ impl RedteamEngine {
             return 1.0;
         }
         
-        let failure_count = failures.len();
         let weighted_failures: f64 = failures.iter().map(|f| {
             match f.severity {
                 Severity::Low => 1.0,
@@ -558,7 +560,7 @@ pub fn redteam_main(args: &[&str]) -> String {
                 return "Usage: redteam mutate <word>".to_string();
             }
             let word = args[1];
-            let mut engine = RedteamEngine::default();
+            let engine = RedteamEngine::default();
             let mutations = engine.generate_mutations(word);
             let mut output = String::new();
             output.push_str("Mutations:\n");

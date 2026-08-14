@@ -15,7 +15,8 @@ use alloc::format;
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 use crate::algebra::tuple_distance;
-use crate::axis_values::{glyphs, C, D, OM, PH};
+use crate::axis_values::glyphs;
+use crate::catalog::ordinal_table;
 use crate::catalog::catalog_entries;
 use crate::cl8nk::assess_tier;
 use crate::imas_ig::{IgPrim, IgTuple};
@@ -52,10 +53,10 @@ pub fn catalogue_main(args: &[&str]) -> String {
     };
 
     let mut cands: Vec<(IgTuple, &'static str, f32)> = Vec::new();
-    for &dv in &D {
-        for &pv in &PH {
-            for &ov in &OM {
-                for &cv in &C {
+    for &dv in ordinal_table("⊢") {
+        for &pv in ordinal_table("⊙") {
+            for &ov in ordinal_table("◻") {
+                for &cv in ordinal_table("∋") {
                     let mut t = spine;
                     t.d = dv; t.phi = pv; t.omega = ov; t.c = cv;
                     let (near, d) = nearest(&t);

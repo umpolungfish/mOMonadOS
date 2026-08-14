@@ -657,8 +657,12 @@ mod tests {
         assert_eq!(eps.b, 1);
         assert_eq!(eps.c, 2);
         assert_eq!(eps.sqrt_d, 4_190_205);
-        // Norm = 1
-        assert_eq!(eps.norm().norm(), 1);
+        // Norm = 1. `norm()` returns a QuadElem, so the second `.norm()` here
+        // compared a QuadElem against the integer 1 and the test never
+        // compiled — the whole test binary failed with it. N(eps) =
+        // (2047² − 4190205)/2² = 4/4 = 1, checked in lowest terms.
+        let n = eps.norm().reduced();
+        assert_eq!((n.a, n.b, n.c), (1, 0, 1));
     }
 
     #[test]
@@ -675,19 +679,26 @@ mod tests {
         let eps = stark_unit_d2048();
         let eps_large = Embedding::Plus.apply(eps);
         let eps_small = Embedding::Minus.apply(eps);
-        assert!(libm::fabs(eps_large * eps_small - 1.0) < 1e-15);
+        // 1e-15 is below the f64 floor for this product and the test could not
+        // pass at any precision: ε₊ ≈ 2047 and ε₋ ≈ 4.885e-4 are each formed
+        // from √4190205, so the product carries ~5.1e-13 of cancellation error.
+        // The identity itself is exact and is checked algebraically in
+        // `test_stark_unit_algebraic`; this one only witnesses that the two
+        // embeddings are numerically reciprocal.
+        assert!(libm::fabs(eps_large * eps_small - 1.0) < 1e-12);
     }
 
     #[test]
     fn test_galois_pair() {
         let extract = TwoPartExtraction::compute();
         let (psi_plus, psi_minus) = extract.psi_pair();
-        // psi_plus * psi_minus = norm = 1
-        assert!(libm::fabs(psi_plus * psi_minus - 1.0) < 1e-15);
+        // psi_plus * psi_minus = norm = 1, to the f64 floor for a product of
+        // 2047 and 4.885e-4 built from √4190205 — see test_norm_identity.
+        assert!(libm::fabs(psi_plus * psi_minus - 1.0) < 1e-12);
         // psi_plus ≈ 2046.9995
         assert!(libm::fabs(psi_plus - 2046.9995114801) < 1e-6);
         // psi_minus ≈ 1/psi_plus
-        assert!(libm::fabs(psi_minus - 1.0 / psi_plus) < 1e-15);
+        assert!(libm::fabs(psi_minus - 1.0 / psi_plus) < 1e-12);
     }
 }
 /// Public API for the REPL: `d2048 exact`

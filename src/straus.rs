@@ -25,7 +25,7 @@
 //! whether that height is bounded on the range looked at.
 
 use alloc::format;
-use alloc::string::{String, ToString};
+use alloc::string::{String};
 use alloc::vec::Vec;
 
 /// The rung that closes `n`, if one is found within `max_rung`.

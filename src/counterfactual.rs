@@ -17,7 +17,7 @@ use alloc::format;
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 
-use imasm_core::imasm16_3::{parse_glyph_word, run_word_register, tri_ancestral_verdict, Token16_3};
+use imasm_core::imasm16_3::{parse_glyph_word, run_word_register, tri_ancestral_verdict};
 
 use crate::lattice_flow::{banked_walk, normalize};
 
@@ -90,7 +90,7 @@ impl Perturbation {
     pub fn reversible(&self, original: &str) -> (bool, &'static str) {
         match self {
             Perturbation::Rotate(_) => (true, "rotate by -k restores the word"),
-            Perturbation::Replace(a, b) => {
+            Perturbation::Replace(_a, b) => {
                 let count_b = original.chars().filter(|c| c == b).count();
                 if count_b == 0 {
                     (true, "the target mark was absent, so replacing back is unambiguous")

@@ -10,7 +10,7 @@ extern crate alloc;
 use alloc::format;
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
-use crate::axis_values::{glyphs, word_to_tuple, C, D, F, G, H, K, OM, P, PH, R, S, T};
+use crate::axis_values::{axis_values, glyphs, word_to_tuple};
 use crate::consciousness::consciousness_eval;
 use crate::imas_ig::{IgPrim, IgTuple};
 
@@ -25,10 +25,7 @@ fn set_axis(t: &IgTuple, axis: usize, v: IgPrim) -> IgTuple {
 }
 
 fn axis_vals(axis: usize) -> &'static [IgPrim] {
-    match axis {
-        0 => &D, 1 => &T, 2 => &R, 3 => &P, 4 => &F, 5 => &K,
-        6 => &G, 7 => &C, 8 => &PH, 9 => &H, 10 => &S, _ => &OM,
-    }
+    axis_values(axis)
 }
 const AXES: [&str; 12] = ["D", "T", "R", "P", "F", "K", "G", "C", "⊙", "H", "S", "Ω"];
 

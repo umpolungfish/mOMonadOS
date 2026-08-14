@@ -2420,7 +2420,6 @@ pub fn repl_alkahest(a_str: &str, n_str: &str) {
         
         // Compute a mod N (reduction, cheap)
         let a_mod_n = a_big.rem(&n_big);
-        let one = BigUint::from_u64(1);
         
         // Check: is a ≡ 1 mod N? (trivial order 0)
         // Check: is gcd condition satisfied? For prime N, any a ≠ 0 has order dividing N-1.

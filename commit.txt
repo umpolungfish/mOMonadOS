@@ -1,4 +1,76 @@
-Add sk_forge to the menu
+NO HARDCODE audit: gates read the catalog, not a second copy
 
-sk_forge was wired in the REPL but never listed in the menu. Added it next
-to the other harvester tools.
+The rule holds at the data layer — catalog.rs includes the generated
+catalog_ask_subset.rs, emitted from the canonical IG_catalog.json, and iuft_qc
+resolves every gate through catalog::lookup. Where it did not hold was the
+dialect gates, and the hardcoded copy had drifted into error.
+
+Dialects 0–7 gated with (x as u8) <= (thresh as u8). IgPrim::ordinal's own
+docstring names that trick invalid for ⊙ Criticality and ◻ Winding, which are
+exactly the families those gates test at G2 and G3. Concretely: ⊙≥⊙ rejected
+roar, err and haha; ⊙≥𐑢 rejected haha; dialect 5's ⊙≥𐑮 admitted monad below
+its own threshold while rejecting err and haha; ◻≥𐑭 rejected zoo; and dialect
+5's ◻≥𐑟 admitted every winding value, a gate that always passed. Arms 8–11 had
+already been moved to .ordinal() with a comment saying 0–7 were wrong; this
+finishes that move and deletes the second copy of the gate table with it.
+
+discriminant_gate_tests in imas_ig.rs computes the disagreement sets. Parity
+and Fidelity are declared in descending ordinal order, so the trick was sound
+there — which is why it survived where it was first written.
+
+gate_prim_label is gone: twelve match arms returning each mark as itself, a
+thirteenth hand copy of the alphabet that could only ever start answering "?".
+GateSpec::prim is already the mark and already 'static.
+
+Two pre-existing faults surfaced on the way and are fixed. d2048_exact_sic's
+test_stark_unit_algebraic compared a QuadElem against the integer 1 and never
+compiled, taking all 218 tests down with it; it now checks N(ε) = 1 in lowest
+terms. test_norm_identity and test_galois_pair demanded 1e-15 on a product of
+2047 and 4.885e-4 built from √4190205, which carries ~5.1e-13 of cancellation
+and could not pass at any precision; the exact identity is checked
+algebraically, so the float witnesses now carry an f64-realistic tolerance.
+
+The three bifurcation tests were asserting a superseded observable. 73537e4
+replaced `build_program_from_scores` — one argmax recomputed at all twelve
+positions, which made every tuple compose to >>>>>>>>>>>> — with per-slot
+ranking by each axis's own row. The old findings (zero-weight program is pure
+self-imscription, cycle length flat at 1, w_c exists only where the family
+matrix leads with IMSCRIB) were phenomenology OF the single-argmax builder and
+none survives it. Re-derived by measurement against the builder that exists:
+the loop closes in one or two steps at every weight and never longer; the
+zero-weight word carries six distinct marks, which is the property the commit
+was for; the weight reorders the word at 0, 1, 2, 3 and saturates from 7; and
+the substrate vote now reaches every tuple tried, with the topology axis alone
+selecting five different second marks. `program_at` takes self_ref explicitly,
+because deriving it from the tuple while varying T measured the flag and the
+axis at once.
+
+229 tests pass, no warnings on bare, hosted, release or test builds.
+`make ordinals` reports all 44 values match Lean canonical.
+
+Warnings cleared, and three were hiding something. Vox's imasm_module wrote
+"⊢" as a literal beside the ENTRY constant that names it, leaving ENTRY dead —
+now it uses it. Vox's x86 decoder recorded the REPNE prefix in a flag nothing
+read, so F2-prefixed SSE forms were never distinguished anyway; 0xF2 joins the
+skipped prefixes and says so. minimal.rs's identify_essential built the reduced
+word and threw it away unread, so every opcode present came back "essential" —
+it is now written as what it returns, the distinct opcodes in order of first
+appearance, and named unimplemented as a minimality test. redteam's
+check_invariant_holds parses nothing and returns true for every input; it is
+named UNIMPLEMENTED rather than "simplified", because a stub reporting PASS is
+indistinguishable from a passing check at the call site. The rest were unused
+imports, a redundant module-level attribute, and N/B in the number-theory code,
+where the lint is answered at crate level on the same grounds as
+uncommon_codepoints rather than obeyed.
+
+OPEN, needs a decision, not a guess: dialect.rs::dialect_name and repl.rs
+disagree with dialect_expansion.rs about which dialect is which from index 9 on
+— scope_dialect/triple_criticality/triple_criticality_gapped against
+topology_universe/scope_universe/dimensional_gate. UniverseRulesets.lean sides
+with the data (RULESET 10 topology_universe, 11 scope_universe, 12
+dimensional_gate, 13 kinetics_trap, 14 triple_criticality), and
+triple_criticality_gapped and scope_dialect appear nowhere in Lean. Renumbering
+would move which dialects carry T_CEILING and T_CEILING(gapped), which the Clay
+23-universe counts depend on, so it is left standing rather than silently
+changed.
+

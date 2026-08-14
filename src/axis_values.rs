@@ -1,59 +1,77 @@
 // ─── axis_values.rs ────────────────────────────────────────────────────
-// One canonical per-axis value table, low ordinal → high, sourced from the
-// IgPrim ordinal() table. Shared so the several harvester/derivation tools do
-// not each hand-copy it and drift.
+// Kernel-sourced tuple derivation for the harvester tools. No value table is
+// hand-written here: a glyph word is imscribed through the kernel's own
+// structural witness (program_from_glyphs → self_imscribe → from_snapshot), and
+// per-axis value lists come from catalog::ordinal_table, the single source of
+// truth. Arbitrary bytes (a hex key, a text fragment) become an ORDERED IMASM
+// program via the canonical mark→glyph→token route and are imscribed the same
+// way — so order matters and the value assignment is entirely the kernel's.
 #![allow(dead_code)]
 extern crate alloc;
+use alloc::string::String;
+use crate::belnap_ring_shor::{glyph_to_token, program_from_glyphs, Glyph};
+use crate::catalog::ordinal_table;
+use crate::counterfactual::MARKS;
 use crate::imas_ig::{IgPrim, IgTuple};
+use crate::kernel::self_imscribe;
+use crate::tokens::Program;
 
-pub const D: [IgPrim; 4] = [IgPrim::dead, IgPrim::ash, IgPrim::array, IgPrim::if_];
-pub const T: [IgPrim; 5] = [IgPrim::judge, IgPrim::eat, IgPrim::mime, IgPrim::oil, IgPrim::are];
-pub const R: [IgPrim; 4] = [IgPrim::ado, IgPrim::tot, IgPrim::ear, IgPrim::ian];
-pub const P: [IgPrim; 5] = [IgPrim::church, IgPrim::yew, IgPrim::out, IgPrim::nun, IgPrim::or_];
-pub const F: [IgPrim; 3] = [IgPrim::age, IgPrim::they, IgPrim::peep];
-pub const K: [IgPrim; 5] = [IgPrim::yea, IgPrim::loll, IgPrim::egg, IgPrim::on, IgPrim::air];
-pub const G: [IgPrim; 3] = [IgPrim::bib, IgPrim::thigh, IgPrim::ice];
-pub const C: [IgPrim; 4] = [IgPrim::vow, IgPrim::gag, IgPrim::measure, IgPrim::ooze];
-pub const PH: [IgPrim; 5] = [IgPrim::woe, IgPrim::monad, IgPrim::roar, IgPrim::err, IgPrim::haha];
-pub const H: [IgPrim; 4] = [IgPrim::fee, IgPrim::kick, IgPrim::sure, IgPrim::wool];
-pub const S: [IgPrim; 3] = [IgPrim::hung, IgPrim::so, IgPrim::up];
-pub const OM: [IgPrim; 4] = [IgPrim::awe, IgPrim::oak, IgPrim::ah, IgPrim::zoo];
+/// The canonical value list of axis `i` (0..11 in MARKS order), from the kernel.
+pub fn axis_values(i: usize) -> &'static [IgPrim] {
+    let mut buf = [0u8; 4];
+    ordinal_table(MARKS[i % 12].encode_utf8(&mut buf))
+}
 
-pub fn from_indices(b: &[usize; 12]) -> IgTuple {
-    IgTuple {
-        d: D[b[0] % 4], t: T[b[1] % 5], r: R[b[2] % 4], p: P[b[3] % 5],
-        f: F[b[4] % 3], k: K[b[5] % 5], g: G[b[6] % 3], c: C[b[7] % 4],
-        phi: PH[b[8] % 5], h: H[b[9] % 4], s: S[b[10] % 3], omega: OM[b[11] % 4],
+/// Imscribe an ordered IMASM program through the kernel's structural witness.
+fn imscribe_program(p: &Program) -> IgTuple {
+    IgTuple::from_snapshot(&self_imscribe(p))
+}
+
+/// A glyph word → its tuple. Order-sensitive: this runs the program. Falls back
+/// to the byte route only when the word is not a clean mark sequence.
+pub fn word_to_tuple(word: &str) -> IgTuple {
+    match program_from_glyphs(word) {
+        Ok(prog) => imscribe_program(&prog),
+        Err(_) => bytes_to_tuple(word.as_bytes()),
     }
 }
 
-/// Count the twelve opcode marks in an IMASM word; reduce each count into its
-/// own axis. Uses the counterfactual MARKS order.
-pub fn word_to_tuple(word: &str) -> IgTuple {
-    let mut c = [0usize; 12];
-    for ch in word.chars() {
-        match ch {
-            '⊢' => c[0] += 1, '⊣' => c[1] += 1, '>' => c[2] += 1, '<' => c[3] += 1,
-            '⋈' => c[4] += 1, '⊙' => c[5] += 1, '∈' => c[6] += 1, '∋' => c[7] += 1,
-            '⊤' => c[8] += 1, '⊥' => c[9] += 1, '⊞' => c[10] += 1, '◻' => c[11] += 1,
-            _ => {}
+/// Arbitrary bytes → an ordered program via the canonical mark set → its tuple.
+pub fn bytes_to_tuple(bytes: &[u8]) -> IgTuple {
+    let mut p = Program::empty();
+    for &b in bytes {
+        let mark = MARKS[(b as usize) % MARKS.len()];
+        if let Some(g) = Glyph::from_char(mark) {
+            p.push(glyph_to_token(g));
         }
     }
-    from_indices(&c)
+    imscribe_program(&p)
 }
 
 pub fn text_to_tuple(text: &str) -> IgTuple {
-    let mut h: u64 = 0xcbf29ce484222325;
-    let mut b = [0usize; 12];
-    for (i, byte) in text.bytes().enumerate() {
-        h ^= byte as u64;
-        h = h.wrapping_mul(0x100000001b3);
-        b[i % 12] = b[i % 12].wrapping_add((h & 0xff) as usize);
-    }
-    from_indices(&b)
+    bytes_to_tuple(text.as_bytes())
 }
 
-pub fn glyphs(t: &IgTuple) -> alloc::string::String {
+/// Decode a hex string to bytes, then imscribe them as a program.
+pub fn hex_to_tuple(hex: &str) -> IgTuple {
+    let nibbles: alloc::vec::Vec<u8> = hex
+        .trim_start_matches("0x")
+        .bytes()
+        .filter_map(|b| match b {
+            b'0'..=b'9' => Some(b - b'0'),
+            b'a'..=b'f' => Some(b - b'a' + 10),
+            b'A'..=b'F' => Some(b - b'A' + 10),
+            _ => None,
+        })
+        .collect();
+    let bytes: alloc::vec::Vec<u8> = nibbles
+        .chunks(2)
+        .map(|c| c[0] * 16 + c.get(1).copied().unwrap_or(0))
+        .collect();
+    bytes_to_tuple(&bytes)
+}
+
+pub fn glyphs(t: &IgTuple) -> String {
     alloc::format!("⟨{}{}{}{}{}{}{}{}{}{}{}{}⟩",
         t.d.glyph(), t.t.glyph(), t.r.glyph(), t.p.glyph(), t.f.glyph(), t.k.glyph(),
         t.g.glyph(), t.c.glyph(), t.phi.glyph(), t.h.glyph(), t.s.glyph(), t.omega.glyph())

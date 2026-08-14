@@ -11,41 +11,8 @@ use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 use crate::algebra::tuple_distance;
 use crate::catalog::catalog_entries;
-use crate::imas_ig::{IgPrim, IgTuple};
-
-const D: [IgPrim; 4] = [IgPrim::dead, IgPrim::ash, IgPrim::array, IgPrim::if_];
-const T: [IgPrim; 5] = [IgPrim::judge, IgPrim::eat, IgPrim::mime, IgPrim::oil, IgPrim::are];
-const R: [IgPrim; 4] = [IgPrim::ado, IgPrim::tot, IgPrim::ear, IgPrim::ian];
-const P: [IgPrim; 5] = [IgPrim::church, IgPrim::yew, IgPrim::out, IgPrim::nun, IgPrim::or_];
-const F: [IgPrim; 3] = [IgPrim::age, IgPrim::they, IgPrim::peep];
-const K: [IgPrim; 5] = [IgPrim::yea, IgPrim::loll, IgPrim::egg, IgPrim::on, IgPrim::air];
-const G: [IgPrim; 3] = [IgPrim::bib, IgPrim::thigh, IgPrim::ice];
-const C: [IgPrim; 4] = [IgPrim::vow, IgPrim::gag, IgPrim::measure, IgPrim::ooze];
-const PH: [IgPrim; 5] = [IgPrim::woe, IgPrim::monad, IgPrim::roar, IgPrim::err, IgPrim::haha];
-const H: [IgPrim; 4] = [IgPrim::fee, IgPrim::kick, IgPrim::sure, IgPrim::wool];
-const S: [IgPrim; 3] = [IgPrim::hung, IgPrim::so, IgPrim::up];
-const OM: [IgPrim; 4] = [IgPrim::awe, IgPrim::oak, IgPrim::ah, IgPrim::zoo];
-
-fn text_to_tuple(text: &str) -> IgTuple {
-    let mut h: u64 = 0xcbf29ce484222325;
-    let mut b = [0usize; 12];
-    for (i, byte) in text.bytes().enumerate() {
-        h ^= byte as u64;
-        h = h.wrapping_mul(0x100000001b3);
-        b[i % 12] = b[i % 12].wrapping_add((h & 0xff) as usize);
-    }
-    IgTuple {
-        d: D[b[0] % 4], t: T[b[1] % 5], r: R[b[2] % 4], p: P[b[3] % 5],
-        f: F[b[4] % 3], k: K[b[5] % 5], g: G[b[6] % 3], c: C[b[7] % 4],
-        phi: PH[b[8] % 5], h: H[b[9] % 4], s: S[b[10] % 3], omega: OM[b[11] % 4],
-    }
-}
-
-fn glyphs(t: &IgTuple) -> String {
-    format!("⟨{}{}{}{}{}{}{}{}{}{}{}{}⟩",
-        t.d.glyph(), t.t.glyph(), t.r.glyph(), t.p.glyph(), t.f.glyph(), t.k.glyph(),
-        t.g.glyph(), t.c.glyph(), t.phi.glyph(), t.h.glyph(), t.s.glyph(), t.omega.glyph())
-}
+use crate::axis_values::{glyphs, text_to_tuple};
+use crate::imas_ig::IgTuple;
 
 pub fn dialect_necromancer_main(args: &[&str]) -> String {
     let flat: Vec<&str> = args.iter().flat_map(|s| s.split_whitespace()).collect();

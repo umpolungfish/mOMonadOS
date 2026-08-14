@@ -95,7 +95,7 @@ impl InvariantEngine {
         true
     }
 
-    pub fn search_catalog(&self, catalog: &str, transformation: &str) -> Vec<InvariantResult> {
+    pub fn search_catalog(&self, _catalog: &str, transformation: &str) -> Vec<InvariantResult> {
         // Search catalog for invariants under transformation
         // Returns list of discovered invariants
         

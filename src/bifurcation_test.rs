@@ -1,23 +1,24 @@
-// bifurcation_test.rs — Experimental determination of w_c
-// This module varies substrate_weight and measures convergence behavior.
-// Run with: cargo test --target x86_64-unknown-linux-gnu (host test)
+// bifurcation_test.rs — what the substrate weight does to a composed word.
 //
-// Result as it stands: cycle length is the wrong observable. It sits at 1 for
-// every weight from 0 to 10 — each weight self-closes in a single step — so a
-// scan of cycle lengths locates no w_c and would report the substrate as
-// inert.
+// This module varies `sequence::SUBSTRATE_WEIGHT` and measures what changes.
 //
-// The program's content does bifurcate, and sharply, at w_c = 1. At w=0 the
-// substrate vote is annihilated and the ranking is the family matrix alone,
-// which puts IMSCRIB one point above AFWD; the program is then pure
-// self-imscription carrying no advance. From w=1 up the substrate vote is
-// present, AFWD leads it, and the program advances. The margin being a single
-// point is why the transition is a step and not a slope.
+// The findings here were re-derived after 73537e4 ("imasm write composed every
+// tuple to the same word") replaced the builder these tests were first written
+// against. That commit removed `build_program_from_scores`, which recomputed a
+// single argmax at all twelve positions, in favour of `slot_votes` +
+// `build_program_from_slots`, which ranks each slot by its own axis's row. The
+// earlier findings — that the zero-weight program is pure self-imscription,
+// that cycle length is flat at 1 across the sweep, and that a w_c exists only
+// where the family matrix leads with IMSCRIB — were all phenomenology OF the
+// single-argmax builder, and none of them survives it. They are not restated
+// as history in the assertions; what is asserted below is measured against the
+// builder that exists.
 
 #[cfg(test)]
 mod bifurcation_tests {
     use crate::sequence;
     use crate::imas_ig::{IgTuple, IgPrim};
+    use crate::tokens::Token;
     use alloc::vec::Vec;
 
     /// `sequence::SUBSTRATE_WEIGHT` is a process-wide `static mut`, so these
@@ -25,159 +26,152 @@ mod bifurcation_tests {
     /// had just overwritten. The lock serializes them.
     static WEIGHT_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
 
-    // Helper: build a test tuple at O_∞ tier
+    /// A tuple at O_∞ tier: self-referential topology, universal range.
     fn test_tuple_oinf() -> IgTuple {
         IgTuple {
-            d: IgPrim::if_,       // D=𐑦
-            t: IgPrim::are,      // T=𐑸
-            r: IgPrim::ian,         // R=𐑾
-            p: IgPrim::or_,      // P=𐑹
-            f: IgPrim::peep,       // F=𐑐
-            k: IgPrim::egg,       // K=𐑧
-            g: IgPrim::ice,      // G=𐑲
-            c: IgPrim::measure,        // C=𐑠
-            phi: IgPrim::monad,    // Phi=⊙
-            h: IgPrim::wool,       // H=𐑫
-            s: IgPrim::up,         // S=𐑳
-            omega: IgPrim::ah,     // Omega=𐑭
+            d: IgPrim::if_,     t: IgPrim::are,   r: IgPrim::ian,   p: IgPrim::or_,
+            f: IgPrim::peep,    k: IgPrim::egg,   g: IgPrim::ice,   c: IgPrim::measure,
+            phi: IgPrim::monad, h: IgPrim::wool,  s: IgPrim::up,    omega: IgPrim::ah,
         }
     }
 
-    /// Measure how many distinct programs are generated before cycling.
-    /// Returns the cycle length detected.
+    /// `self_ref` is passed explicitly rather than derived from the tuple:
+    /// the tests that vary T need the self-reference flag HELD while the
+    /// topology value changes, or they would be measuring the flag and the
+    /// axis at once and could not tell which moved the word.
+    fn program_at(tuple: &IgTuple, weight: i32, self_ref: bool) -> Vec<Token> {
+        sequence::set_substrate_weight(weight);
+        sequence::build_via_substrate(tuple, 12, self_ref, 3).as_slice().to_vec()
+    }
+
+    /// How many distinct programs the self-imscription loop passes through
+    /// before repeating one.
     fn measure_cycle(tuple: &IgTuple, weight: i32, max_iter: usize) -> usize {
         sequence::set_substrate_weight(weight);
-        let mut seen: Vec<Vec<crate::tokens::Token>> = Vec::new();
-        let mut current_tuple = *tuple;
-        let mut prog = sequence::build_via_substrate(&current_tuple, 12, current_tuple.t == IgPrim::are, 3);
+        let mut seen: Vec<Vec<Token>> = Vec::new();
+        let mut current = *tuple;
+        let mut prog = sequence::build_via_substrate(&current, 12, current.t == IgPrim::are, 3);
         seen.push(prog.as_slice().to_vec());
         for i in 1..max_iter {
             let snap = crate::kernel::self_imscribe(&prog);
-            current_tuple = crate::imas_ig::IgTuple::from_snapshot(&snap);
-            let next = sequence::build_via_substrate(&current_tuple, 12, current_tuple.t == IgPrim::are, 3);
-            let tokens: Vec<crate::tokens::Token> = next.as_slice().to_vec();
-            for (j, prev) in seen.iter().enumerate() {
-                if prev == &tokens {
-                    return i - j; // cycle length
-                }
+            current = IgTuple::from_snapshot(&snap);
+            let next = sequence::build_via_substrate(&current, 12, current.t == IgPrim::are, 3);
+            let tokens: Vec<Token> = next.as_slice().to_vec();
+            if let Some(j) = seen.iter().position(|prev| prev == &tokens) {
+                return i - j;
             }
             seen.push(tokens);
             prog = next;
         }
-        max_iter // no cycle found
+        max_iter
     }
 
-    #[test]
-    fn test_bifurcation_scan() {
-        let _guard = WEIGHT_LOCK.lock().unwrap_or_else(|e| e.into_inner());
-        let mut table = [0usize; 11];
-        for w in 0..=10usize {
-            table[w] = measure_cycle(&test_tuple_oinf(), w as i32, 20);
-        }
-        std::println!("Weight | Cycle Length");
-        std::println!("-------|-------------");
-        for (w, &c) in table.iter().enumerate() {
-            std::println!("{:>6} | {:>11}", w, c);
-        }
-        // Measured, not hypothesised: every weight self-closes in one step, so
-        // cycle length is flat across the sweep and cannot locate w_c. The
-        // transition it misses is in the program's content — see
-        // test_program_bifurcates_at_w1.
-        for (w, &c) in table.iter().enumerate() {
-            assert_eq!(c, 1, "weight {} left the fixed point (cycle {})", w, c);
-        }
-    }
-
-    /// The transition the cycle-length scan cannot see.
+    /// The loop closes at every weight, in one step or two — never longer.
     ///
-    /// `build_program_from_scores` reads the score vector only as a ranking:
-    /// at each position it takes the first admissible token in preference
-    /// order. So what the substrate weight can do is reorder that ranking, and
-    /// here it reorders exactly once. With the substrate vote annihilated the
-    /// family matrix alone leads with IMSCRIB, one point clear of AFWD, and
-    /// the program is pure self-imscription. One unit of substrate vote is
-    /// enough to overturn a one-point margin, so from w=1 up AFWD leads and
-    /// the program advances, and it does not change again through w=10.
+    /// Cycle length is no longer flat: it is 2 at weights 1, 3, 9 and 10, and 1
+    /// elsewhere. So the observable does move, but not monotonically and not
+    /// with a threshold; a period-2 orbit and a fixed point sit interleaved
+    /// along the sweep. What the sweep does establish is a ceiling — twenty
+    /// iterations never find an orbit longer than two at any weight from 0 to
+    /// 10.
     #[test]
-    fn test_program_bifurcates_at_w1() {
+    fn cycle_length_is_one_or_two_at_every_weight() {
+        let _guard = WEIGHT_LOCK.lock().unwrap_or_else(|e| e.into_inner());
+        let measured: Vec<usize> =
+            (0..=10).map(|w| measure_cycle(&test_tuple_oinf(), w, 20)).collect();
+        assert_eq!(measured, alloc::vec![1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 2]);
+        assert!(measured.iter().all(|&c| c == 1 || c == 2));
+    }
+
+    /// The zero-weight word is a twelve-mark word, not one mark twelve times.
+    ///
+    /// This is the property 73537e4 was for. With the substrate vote
+    /// annihilated the ranking is the family matrix alone, and because each
+    /// slot is now ranked by its own axis's row rather than by one global
+    /// argmax, the twelve axes stay distinguishable: six distinct marks appear
+    /// with no substrate contribution at all.
+    #[test]
+    fn zero_weight_word_is_not_uniform() {
+        let _guard = WEIGHT_LOCK.lock().unwrap_or_else(|e| e.into_inner());
+        let at_0 = program_at(&test_tuple_oinf(), 0, true);
+        assert_eq!(at_0.len(), 12);
+        let mut distinct: Vec<Token> = Vec::new();
+        for t in &at_0 {
+            if !distinct.contains(t) { distinct.push(*t); }
+        }
+        assert_eq!(distinct.len(), 6, "w=0 word: {:?}", at_0);
+        assert_eq!(at_0[0], Token::Imscrib);
+        assert_eq!(*at_0.last().unwrap(), Token::Imscrib);
+    }
+
+    /// The weight reorders the word repeatedly, then saturates.
+    ///
+    /// There is no single w_c. Weights 0, 1, 2 and 3 each give a different
+    /// word, and from 7 up the word stops changing — the substrate vote has
+    /// taken every ranking it can take, and further weight cannot overturn
+    /// anything that is left.
+    #[test]
+    fn weight_moves_the_word_then_saturates() {
         let _guard = WEIGHT_LOCK.lock().unwrap_or_else(|e| e.into_inner());
         let tuple = test_tuple_oinf();
-        let prog_at = |w: i32| -> Vec<crate::tokens::Token> {
-            sequence::set_substrate_weight(w);
-            sequence::build_via_substrate(&tuple, 12, true, 3).as_slice().to_vec()
-        };
+        let progs: Vec<Vec<Token>> = (0..=10).map(|w| program_at(&tuple, w, true)).collect();
 
-        let at_0 = prog_at(0);
-        assert!(at_0.iter().all(|&t| t == crate::tokens::Token::Imscrib),
-            "w=0 should carry no advance, got {:?}", at_0);
-
-        let at_1 = prog_at(1);
-        assert_ne!(at_0, at_1, "w_c is not 1 — the ranking did not flip at w=1");
-        assert!(at_1.contains(&crate::tokens::Token::Afwd),
-            "the advancing regime should carry AFWD, got {:?}", at_1);
-
-        for w in 2..=10 {
-            assert_eq!(prog_at(w), at_1, "w={} left the advancing regime", w);
+        for a in 0..4 {
+            for b in (a + 1)..4 {
+                assert_ne!(progs[a], progs[b], "w={} and w={} gave the same word", a, b);
+            }
         }
+        for w in 8..=10 {
+            assert_eq!(progs[w], progs[7], "w={} left the saturated word", w);
+        }
+        assert_ne!(progs[7], progs[6], "saturation should begin at 7, not earlier");
     }
 
-    /// Where a w_c exists at all, and why it exists so rarely.
+    /// The substrate vote moves every tuple tested, and the topology axis alone
+    /// selects five different second marks.
     ///
-    /// The substrate weight can only move the program by overturning whichever
-    /// token the family matrix leads with, so a w_c exists exactly where that
-    /// leader is not already AFWD. Sweeping T and G shows that is a narrow
-    /// place. Only the self-referential topology and the universal range leave
-    /// IMSCRIB in front, and those are precisely the tuples the family matrix
-    /// alone would leave spinning on themselves carrying no advance. Every
-    /// other T or G already advances with the substrate vote annihilated, and
-    /// no weight up to 64 changes anything about them. So what the substrate
-    /// vote does is carry a self-referential tuple out of pure
-    /// self-imscription, and on this evidence it does nothing else.
+    /// Under the single-argmax builder a w_c existed only where the family
+    /// matrix led with IMSCRIB, which was a narrow place. Under per-slot
+    /// ranking the vote reaches every tuple here: w_c = 1 for every T and every
+    /// G value tried. The leader — the mark the family matrix alone puts after
+    /// the opening IMSCRIB — now depends on the topology value, which is the
+    /// axes being distinguishable rather than the substrate shouting louder.
     #[test]
-    fn test_wc_exists_only_where_family_leads_with_imscrib() {
+    fn substrate_vote_reaches_every_tuple() {
         let _guard = WEIGHT_LOCK.lock().unwrap_or_else(|e| e.into_inner());
 
-        // The token the family matrix alone puts after the opening IMSCRIB.
-        let leader = |t: &IgTuple| -> crate::tokens::Token {
-            sequence::set_substrate_weight(0);
-            sequence::build_via_substrate(t, 12, true, 3).as_slice()[1]
-        };
-        // Lowest weight whose program differs from the zero-weight program,
-        // or None if no weight up to 64 does.
+        let leader = |t: &IgTuple| -> Token { program_at(t, 0, true)[1] };
         let wc = |t: &IgTuple| -> Option<i32> {
-            sequence::set_substrate_weight(0);
-            let base: Vec<crate::tokens::Token> =
-                sequence::build_via_substrate(t, 12, true, 3).as_slice().to_vec();
-            (1..=64).find(|&w| {
-                sequence::set_substrate_weight(w);
-                sequence::build_via_substrate(t, 12, true, 3).as_slice().to_vec() != base
-            })
+            let base = program_at(t, 0, true);
+            (1..=64).find(|&w| program_at(t, w, true) != base)
         };
 
         let seed = test_tuple_oinf();
-        assert_eq!(leader(&seed), crate::tokens::Token::Imscrib);
         assert_eq!(wc(&seed), Some(1));
 
-        // F never reaches the contested top of the ranking, so it moves nothing.
-        for f in [IgPrim::age, IgPrim::they, IgPrim::peep] {
-            let mut t = seed; t.f = f;
-            assert_eq!(leader(&t), crate::tokens::Token::Imscrib, "F={:?}", f);
-            assert_eq!(wc(&t), Some(1), "F={:?}", f);
-        }
-
-        // Step off the self-referential topology and the family matrix already
-        // leads with the advance, leaving the substrate nothing to overturn.
-        for tv in [IgPrim::oil, IgPrim::judge, IgPrim::mime, IgPrim::eat] {
+        // Five topology values, five different second marks.
+        let by_topology = [
+            (IgPrim::are,   Token::Clink),
+            (IgPrim::oil,   Token::Ifix),
+            (IgPrim::judge, Token::Afwd),
+            (IgPrim::mime,  Token::Engagr),
+            (IgPrim::eat,   Token::Arev),
+        ];
+        let mut seen: Vec<Token> = Vec::new();
+        for (tv, expected) in by_topology {
             let mut t = seed; t.t = tv;
-            assert_eq!(leader(&t), crate::tokens::Token::Afwd, "T={:?}", tv);
-            assert_eq!(wc(&t), None, "T={:?} moved under some weight", tv);
+            assert_eq!(leader(&t), expected, "T={:?}", tv);
+            assert_eq!(wc(&t), Some(1), "T={:?} did not move under any weight", tv);
+            assert!(!seen.contains(&expected), "T={:?} repeated a leader", tv);
+            seen.push(expected);
         }
+        assert_eq!(seen.len(), 5);
 
-        // Narrowing the interaction range does the same.
-        for gv in [IgPrim::bib, IgPrim::thigh] {
+        // Granularity leaves the leader alone but the word still moves at w=1.
+        for gv in [IgPrim::ice, IgPrim::bib, IgPrim::thigh] {
             let mut t = seed; t.g = gv;
-            assert_eq!(leader(&t), crate::tokens::Token::Afwd, "G={:?}", gv);
-            assert_eq!(wc(&t), None, "G={:?} moved under some weight", gv);
+            assert_eq!(leader(&t), Token::Clink, "G={:?}", gv);
+            assert_eq!(wc(&t), Some(1), "G={:?} did not move under any weight", gv);
         }
     }
 }

@@ -246,26 +246,6 @@ pub fn eval_gate_spec(
     }
 }
 
-/// Return the display name for a primitive family from a GateSpec prim string.
-/// Used for verify output labels.
-pub fn gate_prim_label(prim: &str) -> &'static str {
-    match prim {
-        "<" => "<",
-        "⊙" => "⊙",
-        "◻" => "◻",
-        "⊥" => "⊥",
-        "∈" => "∈",
-        "⊣" => "⊣",
-        ">" => ">",
-        "⋈" => "⋈",
-        "⊤" => "⊤",
-        "⊢" => "⊢",
-        "⊞" => "⊞",
-        "∋" => "∋",
-        _ => "?",
-    }
-}
-
 /// Whether a dialect is hand-crafted and uses hardcoded gate logic in main.rs.
 pub fn is_hand_crafted(u: u8) -> bool {
     u < HAND_CRAFTED_COUNT
