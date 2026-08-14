@@ -256,7 +256,7 @@ pub fn run_sic_verify() -> String {
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// The IMASM word for this protocol — the glued program as 11 glyphs.
-pub const IMASM_WORD: &[&str] = &["⊢", "∈", ">", "<", "⊤", "⋈", "⊙", "⊞", "∋", "◻", "⊣"];
+pub const IMASM_WORD: &[&str] = &["⊢", "∈", "≻", "≺", "⊤", "⋈", "⊙", "⊞", "∋", "◻", "⊣"];
 
 /// Opcode names in order
 pub const OPCODES: &[&str] = &[
@@ -470,8 +470,8 @@ pub fn sixteen3_breakdown() -> String {
     let rows: &[(&str, &str, &str, &str, &str)] = &[
         ("1", "⊢", "VINIT",   "VINIT",    "N  →  N"),
         ("2", "∈", "FSPLIT",  "FSPLIT3",  "N  →  N"),
-        ("3", ">", "AFWD",    "AFWD",     "N  →  T"),
-        ("4", "<", "AREV",    "AREV",     "T  →  N"),
+        ("3", "≻", "AFWD",    "AFWD",     "N  →  T"),
+        ("4", "≺", "AREV",    "AREV",     "T  →  N"),
         ("5", "+", "EVALT",   "EVALT",    "N  →  T"),
         ("6", "=", "CLINK",   "CLINK",    "T  →  T"),
         ("7", "⊙", "IMSCRIB", "IMSCRIB",  "T  →  T"),

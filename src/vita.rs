@@ -49,7 +49,7 @@ fn vocab() -> Vec<String> {
     // so the exact length and position of every entry is load-bearing and the
     // probe is bit-exact against the metal implementation. ⊙ is deliberately
     // absent here because the token loop above already emitted it.
-    for p in ["⊢", "⊣", ">", "<", "⋈", "⊤", "∈", "∋", "⊥", "⊞", "◻"] {
+    for p in ["⊢", "⊣", "≻", "≺", "⋈", "⊤", "∈", "∋", "⊥", "⊞", "◻"] {
         v.push(p.to_string());
     }
     for c in 0x10450..=0x1047F_u32 {

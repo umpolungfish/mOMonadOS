@@ -58,8 +58,8 @@ impl Opcode {
             Opcode::ENGAGR  => "⊞",
             Opcode::FFUSE   => "∋",
             Opcode::CLINK   => "⋈",
-            Opcode::AFWD    => ">",
-            Opcode::AREV    => "<",
+            Opcode::AFWD    => "≻",
+            Opcode::AREV    => "≺",
             Opcode::IFIX    => "◻",
             Opcode::TANCH   => "⊣",
         }
@@ -92,8 +92,8 @@ impl Opcode {
             '⊞' => Some(Opcode::ENGAGR),
             '∋' | '●' => Some(Opcode::FFUSE),
             '=' => Some(Opcode::CLINK),
-            '>' => Some(Opcode::AFWD),
-            '<' => Some(Opcode::AREV),
+            '≻' => Some(Opcode::AFWD),
+            '≺' => Some(Opcode::AREV),
             '¬' => Some(Opcode::IFIX),
             '⊣' => Some(Opcode::TANCH),
             _ => None,
@@ -149,21 +149,21 @@ static TYPE_PROGRAMS: &[TypeProgram] = &[
         domain_reading: "Imscriptive topology: boundary↔bulk closure",
     },
     TypeProgram {
-        shavian: "ear", primitive_axis: ">", value_glyph: "𐑽",
+        shavian: "ear", primitive_axis: "≻", value_glyph: "𐑽",
         opcodes: &[VINIT, IMSCRIB, FSPLIT, AFWD, EVALT, AREV,
                     EVALF, FFUSE, CLINK, ENGAGR, IFIX, TANCH],
         rho: 2.2581,
         domain_reading: "Dagger-adjoint coupling: A→A†→bidirectional",
     },
     TypeProgram {
-        shavian: "tot", primitive_axis: ">", value_glyph: "𐑽",
+        shavian: "tot", primitive_axis: "≻", value_glyph: "𐑽",
         opcodes: &[VINIT, IMSCRIB, FSPLIT, AFWD, EVALT, AREV,
                     EVALF, FFUSE, CLINK, ENGAGR, IFIX, TANCH],
         rho: 2.2581,
         domain_reading: "Functor adjunction: composed functor pair",
     },
     TypeProgram {
-        shavian: "out", primitive_axis: "<", value_glyph: "𐑬",
+        shavian: "out", primitive_axis: "≺", value_glyph: "𐑬",
         opcodes: &[VINIT, IMSCRIB,
                     IFIX, IFIX, IFIX, IFIX, IFIX, IFIX,
                     IFIX, IFIX, IFIX, IFIX, IFIX, IFIX,
@@ -258,8 +258,8 @@ pub const ROOT_WORD_RHO: f32 = 2.2526;
 // Primitive → Shavian type name mapping
 pub fn primitive_to_type(prim: &str) -> Option<&'static str> {
     match prim {
-        "⊢" => Some("if"),  "⊣" => Some("are"), ">" => Some("ear"),
-        "<" => Some("out"), "⋈" => Some("peep"), "⊤" => Some("egg"),
+        "⊢" => Some("if"),  "⊣" => Some("are"), "≻" => Some("ear"),
+        "≺" => Some("out"), "⋈" => Some("peep"), "⊤" => Some("egg"),
         "∈" => Some("thigh"), "∋" => Some("vow"), "⊙" => Some("monad"),
         "⊥" => Some("sure"), "⊞" => Some("so"), "◻" => Some("ah"),
         _ => None,

@@ -13,7 +13,7 @@ PN = ["Canonical", "Hand-crafted", "Expansion"]
 # The legal twelve. These are the primitive glyphs of the Grammar itself, one
 # per axis, not a notation standing beside them. Authority is
 # MoDoT/ask_native/src/imasm.rs; the retired forms ◇ ● + × ¬ = do not appear.
-GLYPH = {"VINIT":"⊢","TANCH":"⊣","AFWD":">","AREV":"<",
+GLYPH = {"VINIT":"⊢","TANCH":"⊣","AFWD":"≻","AREV":"≺",
          "CLINK":"⋈","IMSCRIB":"⊙","FSPLIT":"∈","FFUSE":"∋",
          "EVALT":"⊤","EVALF":"⊥","ENGAGR":"⊞","IFIX":"◻"}
 FAM = {"VINIT":0,"TANCH":0,"AFWD":0,"AREV":0,"CLINK":0,"IMSCRIB":0,
@@ -125,7 +125,7 @@ H.append('</div></div>')
 # ===== JAVASCRIPT =====
 H.append("""<script>
 const DATA = """ + json.dumps(DATA) + """;
-const GLYPH = {"VINIT":"⊢","TANCH":"⊣","AFWD":">","AREV":"<","CLINK":"⋈",
+const GLYPH = {"VINIT":"⊢","TANCH":"⊣","AFWD":"≻","AREV":"≺","CLINK":"⋈",
   "IMSCRIB":"⊙","FSPLIT":"∈","FFUSE":"∋","EVALT":"⊤","EVALF":"⊥",
   "ENGAGR":"⊞","IFIX":"◻"};
 const FAM = {"VINIT":0,"TANCH":0,"AFWD":0,"AREV":0,"CLINK":0,"IMSCRIB":0,

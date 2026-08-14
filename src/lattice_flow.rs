@@ -287,7 +287,7 @@ pub fn insert_report(word: &str) {
         None => return,
     }
 
-    let glyphs = ['⊢', '⊙', '∈', '∋', '⊤', '⊥', '>', '<', '⋈', '⊞', '◻', '⊣'];
+    let glyphs = ['⊢', '⊙', '∈', '∋', '⊤', '⊥', '≻', '≺', '⋈', '⊞', '◻', '⊣'];
     let chars: Vec<char> = base.chars().collect();
 
     // Distinct words, not distinct sites. Inserting a glyph beside an identical
@@ -325,7 +325,7 @@ pub fn insert_report(word: &str) {
 
 /// How many distinct one-glyph insertions make `base` hold, without printing.
 fn repair_count(base: &str) -> usize {
-    let glyphs = ['⊢', '⊙', '∈', '∋', '⊤', '⊥', '>', '<', '⋈', '⊞', '◻', '⊣'];
+    let glyphs = ['⊢', '⊙', '∈', '∋', '⊤', '⊥', '≻', '≺', '⋈', '⊞', '◻', '⊣'];
     let chars: Vec<char> = base.chars().collect();
     let n = chars.len();
     let mut seen: Vec<String> = Vec::new();

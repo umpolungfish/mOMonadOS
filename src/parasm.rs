@@ -907,9 +907,9 @@ mod tests {
             seq.iter().map(|op| match *op {
                 "ENTRY"                 => "⊢", // function entry (VINIT)
                 "JUMPI"                 => "∈", // conditional branch = fork (FSPLIT)
-                "THEN_BB"               => ">", // taken basic block, work (AFWD)
+                "THEN_BB"               => "≻", // taken basic block, work (AFWD)
                 "THEN_TAG"              => "⊤", // the taken arm (EVALT)
-                "ELSE_BB"               => "<", // fall-through block, work (AREV)
+                "ELSE_BB"               => "≺", // fall-through block, work (AREV)
                 "ELSE_TAG"              => "⊥", // the else arm (EVALF)
                 "JUMPDEST"              => "∋", // the merge point (FFUSE)
                 "SSTORE"                => "◻", // state commit, irreversible (IFIX)
@@ -1121,7 +1121,7 @@ mod tests {
             let vals: Vec<u8> = vm.emit_buffer.iter().map(|s| {
                 match s.rsplit(' ').next().unwrap_or("") { "T" => 1, "F" => 2, "B" => 3, _ => 0 }
             }).collect();
-            let alphabet = ["⊢", "⊣", ">", "<", "⋈", "⊤", "∈", "∋", "⊙", "⊥", "⊞", "◻"];
+            let alphabet = ["⊢", "⊣", "≻", "≺", "⋈", "⊤", "∈", "∋", "⊙", "⊥", "⊞", "◻"];
             let word: String = vals.chunks(2)
                 .map(|p| alphabet[(p[0] * 4 + p.get(1).copied().unwrap_or(0)) as usize])
                 .collect();
