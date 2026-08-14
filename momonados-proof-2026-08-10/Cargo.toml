@@ -1,0 +1,38 @@
+[package]
+name = "momonados"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+libm = "0.2"
+imasm_core = { path = "imasm_core", default-features = false }
+vox_core = { path = "../Vox", package = "vox", default-features = false }
+
+[[bin]]
+name = "momonados"
+path = "src/main.rs"
+
+# The kernel is a bare-metal binary and had no host target at all, so the
+# braid_protocol dual pair could never be run, let alone closed. This lib
+# carries only the portable modules; main.rs declares its own tree and does not
+# see it, so the kernel build is unaffected.
+[lib]
+name = "momonados"
+path = "src/lib.rs"
+
+[features]
+vita = []
+# Run on any host that has Rust, without QEMU and without bare metal. The
+# kernel's own code is unchanged: 67 of its 71 modules are already portable
+# no_std Rust, and only serial, interrupts, the entry point and one halt in the
+# REPL touch the machine.
+hosted = []
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+lto = true
+codegen-units = 1
+opt-level = "s"

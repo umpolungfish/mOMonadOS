@@ -1,0 +1,1 @@
+../../../ob3ect/digital/.vault/g_del_s_second_incompleteness_theorem/g_del_s_second_incompleteness_theorem_scaffold.lean

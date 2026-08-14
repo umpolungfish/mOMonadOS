@@ -1,0 +1,223 @@
+{
+  "is_valid_ob3ect": true,
+  "lean_scaffold": "-- IGProtocol scaffold: VINIT → FSPLIT → EVALT → AREV → CLINK → FFUSE → ENGAGR → IFIX\n-- (native ob3ect designer; elaborate against the kernel to verify)",
+  "name": "the descent sending a mixed-parity perfect cuboid to a",
+  "notes": "Auto-designed from: <domain-context>\n\n========== CONTEXT: file:/home/mrnob0dy666/imsgct/math/perfect_cuboid/descent_ctx.md (1500 chars) ====",
+  "phases": {
+    "phase_0": {
+      "boundary_condition": "perfect_cuboid",
+      "domain_name": "the descent sending a mixed-parity perfect cuboid to a",
+      "domain_type": "alchemical",
+      "justification": "Auto-designed by the native Ob3ect Auto-Designer (in-process candle, no Python)",
+      "scope": "local",
+      "surface_tokens": [
+        "alembic",
+        "distillation",
+        "crystallization"
+      ]
+    },
+    "phase_1": {
+      "AFWD": {
+        "chosen_element": "reduction algorithm",
+        "glyph": ">",
+        "justification": "forward morphism to apply transformation",
+        "opcode": "AFWD",
+        "rejected_candidates": []
+      },
+      "AREV": {
+        "chosen_element": "diagonal factorization",
+        "glyph": "<",
+        "justification": "reverse descent to analyze structure",
+        "opcode": "AREV",
+        "rejected_candidates": []
+      },
+      "CLINK": {
+        "chosen_element": "factorial decomposition",
+        "glyph": "⋈",
+        "justification": "composition of reduction steps",
+        "opcode": "CLINK",
+        "rejected_candidates": []
+      },
+      "ENGAGR": {
+        "chosen_element": "both states simultaneously",
+        "glyph": "⊞",
+        "justification": "hold both possible reductions in parallel",
+        "opcode": "ENGAGR",
+        "rejected_candidates": []
+      },
+      "EVALF": {
+        "chosen_element": "invalid reduction",
+        "glyph": "⊥",
+        "justification": "negative state if no valid transformation",
+        "opcode": "EVALF",
+        "rejected_candidates": []
+      },
+      "EVALT": {
+        "chosen_element": "valid reduction",
+        "glyph": "⊤",
+        "justification": "affirmative state when smaller cuboid exists",
+        "opcode": "EVALT",
+        "rejected_candidates": []
+      },
+      "FFUSE": {
+        "chosen_element": "reduced dimensions",
+        "glyph": "∋",
+        "justification": "reconstitute original cuboid from reduced values",
+        "opcode": "FFUSE",
+        "rejected_candidates": []
+      },
+      "FSPLIT": {
+        "chosen_element": "parity and factor analysis",
+        "glyph": "∈",
+        "justification": "split into branches based on even/odd edge pairs",
+        "opcode": "FSPLIT",
+        "rejected_candidates": []
+      },
+      "IFIX": {
+        "chosen_element": "descent log",
+        "glyph": "◻",
+        "justification": "permanent record of reduction steps",
+        "opcode": "IFIX",
+        "rejected_candidates": []
+      },
+      "IMSCRIB": {
+        "chosen_element": "identity map",
+        "glyph": "⊙",
+        "justification": "self-reference for maintaining cuboid integrity",
+        "opcode": "IMSCRIB",
+        "rejected_candidates": []
+      },
+      "TANCH": {
+        "chosen_element": "space diagonal g",
+        "glyph": "⊣",
+        "justification": "terminal anchor for the descent process",
+        "opcode": "TANCH",
+        "rejected_candidates": []
+      },
+      "VINIT": {
+        "chosen_element": "case-C perfect cuboid",
+        "glyph": "⊢",
+        "justification": "initial state before any transformations",
+        "opcode": "VINIT",
+        "rejected_candidates": []
+      }
+    },
+    "phase_2": {
+      "failure_reason": "no open fork; all branches lead to smaller cuboids via factorization",
+      "frobenius_verdict": "PASS",
+      "fuse_element": "original cuboid",
+      "fuse_result": "reduced dimensions with same Diophantine constraints",
+      "split_element": "case-C perfect cuboid",
+      "split_input": "a, b, c (even, even, odd)",
+      "split_outputs": [
+        "branch A: a', b', c'",
+        "branch B: a'', b'', c'"
+      ],
+      "test_instance": ""
+    },
+    "phase_3": {
+      "both_description": "parallel evaluation of both possible reductions",
+      "entropy_assertion": "ΔS ≈ 0",
+      "false_description": "negative reduction path without valid transformation",
+      "transitions": [],
+      "true_description": "affirmative reduction path leading to smaller cuboid",
+      "void_description": "initial state with no transformations applied"
+    },
+    "phase_4": {
+      "closure_verified": true,
+      "failure_modes": [],
+      "steps": [
+        {
+          "domain_action": "create a case-C perfect cuboid",
+          "glyph": "⊢",
+          "opcode": "VINIT",
+          "step_num": 1
+        },
+        {
+          "domain_action": "split based on parity and factors (a, b even, c odd)",
+          "glyph": "∈",
+          "opcode": "FSPLIT",
+          "step_num": 2
+        },
+        {
+          "domain_action": "affirm if reduction exists (g is odd and factors exist)",
+          "glyph": "⊤",
+          "opcode": "EVALT",
+          "step_num": 3
+        },
+        {
+          "domain_action": "reverse descent to analyze diagonal structure",
+          "glyph": "<",
+          "opcode": "AREV",
+          "step_num": 4
+        },
+        {
+          "domain_action": "compose factorization steps for reduced dimensions",
+          "glyph": "⋈",
+          "opcode": "CLINK",
+          "step_num": 5
+        },
+        {
+          "domain_action": "reconstitute original cuboid from reduced values",
+          "glyph": "∋",
+          "opcode": "FFUSE",
+          "step_num": 6
+        },
+        {
+          "domain_action": "hold both states in parallel during analysis",
+          "glyph": "⊞",
+          "opcode": "ENGAGR",
+          "step_num": 7
+        },
+        {
+          "domain_action": "append reduction log to audit",
+          "glyph": "◻",
+          "opcode": "IFIX",
+          "step_num": 8
+        }
+      ]
+    },
+    "phase_5": {
+      "alfs_bootstrap_program": "",
+      "alfs_store": "canonical reference for case-C cuboid transformations",
+      "compiler_frontend": "algebraic parser for Diophantine constraints",
+      "ipc_mechanism": "shared memory for tracking reductions across branches",
+      "memory_mechanism": "persistent storage of transformed cuboids",
+      "scheduler_mechanism": "sequential execution of reduction steps"
+    },
+    "phase_6": {
+      "cycle_cost": "1 unit per factorization step",
+      "delta_s_verdict": "ΔS ≈ 0 due to consistent transformation rules",
+      "failure_mode": "",
+      "post_cycle_state": "reduced dimensions maintaining all four Diophantine equations",
+      "pre_cycle_state": "case-C cuboid with g odd and factors present"
+    }
+  },
+  "topology_report": {
+    "branch_ratio": 3.0,
+    "cross_branches": 0,
+    "empty_branches": 0,
+    "f_branch_ops": 0,
+    "fork_positions": [
+      1
+    ],
+    "fuse_positions": [
+      5
+    ],
+    "nesting_depth": 0,
+    "open_forks": 0,
+    "sequence_length": 8,
+    "t_branch_ops": 3,
+    "topology_class": "flat_chain",
+    "total_pairs": 1
+  },
+  "validations": {
+    "phase_0": [],
+    "phase_1": [],
+    "phase_2": [],
+    "phase_3": [],
+    "phase_4": [],
+    "phase_5": [],
+    "phase_6": []
+  }
+}

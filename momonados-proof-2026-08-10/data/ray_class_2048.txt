@@ -1,0 +1,6 @@
+[0;31m  ***   Warning: new stack size = 2147483648 (2048.000 Mbytes).[0m
+F = Q(sqrt(4190205)): h = 64  cyc = [32, 2]  reg = 7.6241303470096237106509722934010853694
+Cl_f(6144*inf1*inf2): order = 402653184
+cyclic structure = [12288, 512, 8, 4, 2]
+[K2048:F] = 402653184   [K2048:Q] = 805306368
+3-part (Zauner order-3 needs 3 | exponent): exponent = 12288

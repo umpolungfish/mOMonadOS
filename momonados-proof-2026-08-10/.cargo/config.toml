@@ -1,0 +1,14 @@
+[build]
+target = "x86_64-unknown-none"
+
+[target.x86_64-unknown-none]
+rustflags = [
+    "-C", "relocation-model=static",
+    "-C", "code-model=kernel",
+    "-C", "link-arg=-Tmomonados.ld",
+]
+
+# build-std is NOT set here. It applies to every target, so leaving it global
+# made the hosted build rebuild `alloc` alongside the std-provided one and
+# collide on its lang items. build_bootimage.sh passes it for the bare-metal
+# target, which is the only target that needs it.
