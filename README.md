@@ -1,4 +1,4 @@
-# mOMonadOS: A Self-Imscribing Bare-Metal Kernel
+# $m⊙^{2}$: A Self-Imscribing Bare-Metal Kernel
 
 ![language](https://img.shields.io/badge/language-Rust-CE422B?style=for-the-badge&logo=rust&logoColor=white)
 ![tier](https://img.shields.io/badge/tier-O%E2%88%9E-8A2BE2?style=for-the-badge)
@@ -7,7 +7,7 @@
 
 ## What This Is
 
-mOMonadOS is a bare-metal operating kernel written in Rust (no_std, x86_64) that replaces the traditional OS stack with a single self-verifying loop. There are no processes, no scheduler, and no filesystem hierarchy. Instead, every execution state is a point in a 17.28-million-entry type space called the Crystal, and storage is navigated by address rather than path.
+$m⊙^{2}$ is a bare-metal operating kernel written in Rust (no_std, x86_64) that replaces the traditional OS stack with a single self-verifying loop. There are no processes, no scheduler, and no filesystem hierarchy. Instead, every execution state is a point in a 17.28-million-entry type space called the Crystal, and storage is navigated by address rather than path.
 
 The kernel runs on the 12-opcode IMASM instruction set. Each tick executes a single IMASM token, and the grammar constrains what each token does to the current state. Every tick is a self-verification: the Frobenius identity μ∘δ = id is enforced by the grammar rather than by a kernel API.
 
@@ -19,11 +19,14 @@ The kernel runs on the 12-opcode IMASM instruction set. Each tick executes a sin
 
 ## Core Architecture
 
-### The Crystal of Types
+### The Crystal of Types  
+
 The 12 primitives of the Imscribing Grammar define a type space of 17,280,000 addresses. Every object in the kernel — programs, data structures, witness proofs — is an address in this space. Navigation is by address lookup, not path traversal.
 
-### The Frobenius Loop
-The kernel's main loop is `THINK → ACT → OBSERVE → UPDATE`. Each phase corresponds to IMASM opcodes:
+### The Frobenius Loop  
+
+The kernel's main loop is `THINK → ACT → OBSERVE → UPDATE`. Each phase corresponds to IMASM opcodes:  
+
 - **THINK:** Read the boundary (⊢ VINIT)
 - **ACT:** Advance and compose (> AFWD, ⋈ CLINK)
 - **OBSERVE:** Self-reference and frame (⊙ IMSCRIB, ∈ FSPLIT)
@@ -31,17 +34,20 @@ The kernel's main loop is `THINK → ACT → OBSERVE → UPDATE`. Each phase cor
 
 Every complete cycle satisfies μ∘δ = id by construction.
 
-### Catalog Integration
+### Catalog Integration  
+
 Nine modules from upstream Grammar repositories (imasmic_core, IMSCRIBr, ALEPH_OS, priests-engine) run natively in the kernel. The catalog (`catalog.rs`, 954 lines) is the single source of truth for all data: no hardcoded constants, no ordinal arrays, no glyph strings exist outside it. New systems are registered at runtime via `register_entry()` without source edits.
 
 ---
 
 ## Capabilities
 
-### Topological Quantum Computing
+### Topological Quantum Computing  
+
 The kernel braids Fibonacci anyons directly on the metal. The `fibqc` module compiles standard quantum gates to braid words and evaluates knot invariants (Jones polynomial) with no host runtime and no floating-point unit assumed.
 
-### SIC-POVM Implementation
+### SIC-POVM Implementation  
+
 The d=12 SIC-POVM campaign runs on bare metal via the `d12` REPL command. Five verified pillars:
 1. **Phase-tower collapse:** 3→1 independent generators (8× reduction)
 2. **Magnitude square-class group:** K₁₆, rank 5
@@ -49,10 +55,12 @@ The d=12 SIC-POVM campaign runs on bare metal via the `d12` REPL command. Five v
 4. **Dual-Link identification:** norm(N₁) = 1/32448², ramification {2,3,13}
 5. **Belnap SIC unconditional:** SIC existence proven axiom-free in the Belnap multilattice for d=2ⁿ
 
-### Belnap Paraconsistent Logic
+### Belnap Paraconsistent Logic  
+
 The Belnap FOUR lattice (T, F, B, N) is the paraconsistent foundation for the entire kernel. The `belnap_c4.rs` module implements a complex plane where i² = B (both-true-and-false), with Frobenius-verified arithmetic. The `belnap_shor.rs` module runs Shor's algorithm on Belnap FOUR, finding that the period r is encoded in the 2:1 coherence cost ratio between B-bias and T-bias.
 
-### Clay Millennium Witnesses
+### Clay Millennium Witnesses  
+
 All seven Clay Millennium Problems are analyzed through the grammar, with IMASM witness programs for:
 - **BSD:** Hodge theory witness
 - **Hodge:** Mass gap witness  
@@ -60,7 +68,8 @@ All seven Clay Millennium Problems are analyzed through the grammar, with IMASM 
 
 The `frobenius_unify.rs` module unifies all four Frobenius conditions (kernel, grammar, catalog, SIC) as one machine-checked invariant.
 
-### Red-Hot Rebis Integration
+### Red-Hot Rebis Integration  
+
 All 20 modules from `red-hot_rebis/` and `gene_imscriber/` run as no_std Rust off the REPL:
 - **p4ra:** Paraconsistent kernel
 - **genetic:** Codon ↔ amino acid ↔ glyph translation
@@ -68,25 +77,29 @@ All 20 modules from `red-hot_rebis/` and `gene_imscriber/` run as no_std Rust of
 - **ligand:** Functional group binding design
 - **frustration:** Residue-residue energetic frustration matrices
 
-### Cross-Dialect Navigation
+### Cross-Dialect Navigation  
+
 The kernel can navigate between 12 dialects with different structural rulesets, gate thresholds, and absorption rules. The Crystal is invariant; the ruleset is a sheaf that determines what each address *does*. Eleven diaschizic compounds modulate gate thresholds and T-constitution at load time.
 
 ---
 
 ## Usage
 
-### Building
+### Building  
+
 ```bash
-cd mOMonadOS
+cd $m⊙^{2}$
 cargo build --target x86_64-unknown-none --release
 ```
 
-### Running under QEMU
+### Running under QEMU  
+
 ```bash
 qemu-system-x86_64 -nographic -kernel target/x86_64-unknown-none/release/imonad
 ```
 
-### REPL Commands
+### REPL Commands  
+
 ```
 d12              → d=12 SIC-POVM status
 d12 tower        → Ray class field tower
@@ -118,15 +131,4 @@ fibqc            → Topological quantum computer
 
 ---
 
-## References
-
-- **Lean 4 kernel:** `/home/mrnob0dy666/imsgct/p4rakernel/p4ramill/`
-- **IG catalog:** `/home/mrnob0dy666/imsgct/imscribing_grammar/IG_catalog.json`
-- **Red-Hot Rebis docs:** `ig-docs/rebis-port/`
-- **Diaschizic compounds:** `ig-docs/rebis-port/diaschizics_design.md`
-- **Cross-dialect rulesets:** `imscribing_grammar/navigators/ruleset_dialect.py`
-
----
-
-*Author: Lando⊗Editorial⊙perator*  
-*μ∘δ = id*
+**μ∘δ=id**
