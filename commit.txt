@@ -1,24 +1,8 @@
-prooflift on the metal: the verdicts can be booted, not just trusted
+The nest reproduces on the metal
 
-The closure-reads-a-proof verdicts were obtained on a host — a lifter walked Lean
-proof terms into the twelve, a binary returned the verdict. That is a transcript,
-and a transcript has to be taken on faith. This carries the words and asks the
-ON-BOARD kernel, the same check::word_verdict that already gates the vita trunk's
-speech, so the result is reproducible by booting rather than by believing.
+With adjacency built once in imasm_core, `prooflift nest` returns: the closure
+law's own proof, tens of thousands of tokens, verdict T, in about eleven seconds
+wall-clock including the boot. It previously did not return inside ten minutes,
+and the substrate was the wrong suspect — the lookup was.
 
-    identity  p -> p         N     no fork: nothing was weighed
-    case split, discharged   T     fork, work, fuse
-    one branch undischarged  B     a fork left open
-    nothing but a claim      B     the claim, never rejoined
-
-Same four verdicts the host auditor gives. No rule was added for proofs: an
-undischarged claim reads B because it lifts to a fork with nothing to pair it, and
-this kernel already returned B for a branch that never reconverges.
-
-The self-nest — the closure law's own proof, tens of thousands of tokens — is
-behind `prooflift nest` rather than in the default report, and the reason is a
-finding rather than a convenience. The host auditor returns on that word promptly.
-This kernel's ancestry pairing does not scale the same way and did not return
-inside ten minutes. Two implementations of one condition, disagreeing in cost by
-orders of magnitude on the same input. Recorded here rather than hidden behind a
-verb that appears to hang.
+So the manuscript's headline verdict is now bootable rather than only trusted.

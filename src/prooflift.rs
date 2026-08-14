@@ -57,9 +57,7 @@ pub fn report() -> String {
     }
     s.push_str("\nExpected: N T B B.\n");
     s.push_str("`prooflift nest` runs the self-nest word — the proof of mu.delta = id\n");
-    s.push_str("itself. It is tens of thousands of tokens and this kernel's pairing is\n");
-    s.push_str("not linear in that, so it is kept behind its own verb rather than made\n");
-    s.push_str("the cost of every `prooflift`.\n");
+    s.push_str("itself, tens of thousands of tokens. It returns T, in seconds.\n");
     s.push_str("An undischarged claim and an unrejoined fork are one object, and this\n");
     s.push_str("kernel was not told about proofs in order to see it.\n");
     s
@@ -67,10 +65,10 @@ pub fn report() -> String {
 
 /// The nest: the closure law's own proof, judged by this kernel.
 ///
-/// Kept separate because the word is tens of thousands of tokens. The host
-/// auditor returns on it promptly; this kernel's ancestry pairing does not scale
-/// the same way, which is a fact about the two implementations of one condition
-/// and is recorded rather than hidden.
+/// Kept separate because the word is tens of thousands of tokens and the walk is
+/// still the expensive one. It used not to return at all: `successors` scanned
+/// the whole edge list and allocated on every call, inside the inner loop of a
+/// DFS run once per fork. With adjacency built once it returns in seconds.
 pub fn nest() -> String {
     let n = SELF_NEST.chars().count();
     let v = verdict_of(SELF_NEST);
