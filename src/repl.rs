@@ -298,6 +298,14 @@ pub fn repl(k: &mut Kernel) {
                     crate::lattice_flow::banked_report(w);
                 }
             }
+            "prooflift" | "proof" => {
+                let tail: Vec<&str> = parts.collect();
+                if tail.first().map(|a| *a == "nest").unwrap_or(false) {
+                    sprintln!("{}", crate::prooflift::nest());
+                } else {
+                    sprintln!("{}", crate::prooflift::report());
+                }
+            }
             "weight" => {
                 let tail: Vec<&str> = parts.collect();
                 let word = tail.join(" ");

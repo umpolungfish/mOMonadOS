@@ -34,6 +34,7 @@ mod basin;
 mod belnap;
 mod tokens;
 mod counterfactual;
+mod prooflift;
 mod crystal;
 mod kernel;
 mod vita;
