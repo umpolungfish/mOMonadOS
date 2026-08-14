@@ -23,9 +23,10 @@ pub fn proof_braider_main(args: &[&str]) -> String {
     }
     let claim = flat.get(1).copied().unwrap_or("Imscribing.Frobenius");
 
-    // The canonical closing braid word (a 3-strand Markov word); δ compiles it
-    // to IMASM, μ reads it back. This is the same machinery `demonstrate` uses.
-    let gens: [i32; 3] = [1, 2, 1];
+    // The canonical Frobenius braid word; δ compiles it to IMASM, μ reads it
+    // back. Closure survives iff μ recovers the same generators — the same
+    // roundtrip criterion `demonstrate mu-delta` uses.
+    let gens: [i32; 3] = [1, 2, -1];
     let prog = braid_to_imasm(&gens, 1, false);
     let mut imasm = String::new();
     for t in &prog {
@@ -42,17 +43,21 @@ pub fn proof_braider_main(args: &[&str]) -> String {
 
     match read_tangle(&prog, gens.len() + 2, 1) {
         Ok(tr) => {
+            let recovered = tr.generators == gens;
             out.push_str(&format!("crossings: {}   writhe: {:+}\n", tr.crossings, tr.writhe));
             out.push_str(&format!(
-                "roundtrip: {}   (tangle {} closes)\n",
-                if tr.closes { "PASS" } else { "FAIL" },
-                if tr.closes { "" } else { "does not" }
+                "roundtrip: {}   (μ {} the braid)\n",
+                if recovered { "PASS" } else { "FAIL" },
+                if recovered { "recovers" } else { "does not recover" }
             ));
-            if tr.closes {
+            if recovered {
                 out.push_str("\nFrobenius closure survived the trip through the braid: the\n\
                               proof-object and its topological shadow are one object.\n");
             } else {
-                out.push_str("\nthe tangle did not close — μ∘δ did not survive the representation.\n");
+                out.push_str(&format!(
+                    "\nμ read back {:?}, not {:?} — closure did not survive the representation.\n",
+                    tr.generators, gens
+                ));
             }
         }
         Err(e) => out.push_str(&format!("roundtrip: FAIL   ({})\n", e)),

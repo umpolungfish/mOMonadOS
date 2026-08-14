@@ -48,7 +48,7 @@ pub fn braid_apocrypha_main(args: &[&str]) -> String {
                     Search braid words by increasing length for one whose Jones\n\
                     magnitude matches the target. The first hit is the shortest\n\
                     braid realizing it.\n\n\
-                    Try:  braid-apocrypha --target 0.4816 --strands 3\n".to_string();
+                    Try:  braid-apocrypha --target 0.618034 --strands 3\n".to_string();
         }
     };
     // Generators for n strands: ±1 .. ±(n-1).

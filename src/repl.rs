@@ -1414,6 +1414,54 @@ pub fn repl(k: &mut Kernel) {
                 let args: Vec<&str> = parts.collect();
                 sprintln!("{}", crate::oracle::oracle_main(&args));
             }
+            "dialetheic-compiler" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::dialetheic_compiler::dialetheic_compiler_main(&args));
+            }
+            "stark-geometer" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::stark_geometer::stark_geometer_main(&args));
+            }
+            "dialect-necromancer" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::dialect_necromancer::dialect_necromancer_main(&args));
+            }
+            "braid-apocrypha" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::braid_apocrypha::braid_apocrypha_main(&args));
+            }
+            "proof-braider" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::proof_braider::proof_braider_main(&args));
+            }
+            "universe-wormhole" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::universe_wormhole::universe_wormhole_main(&args));
+            }
+            "vox-ce" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::vox_ce::vox_ce_main(&args));
+            }
+            "consciousness-lath" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::consciousness_lath::consciousness_lath_main(&args));
+            }
+            "paradox-engine" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::paradox_engine::paradox_engine_main(&args));
+            }
+            "key-dissolver" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::key_dissolver::key_dissolver_main(&args));
+            }
+            "compiler" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::compiler::compiler_main(&args));
+            }
+            "catalogue" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::catalogue::catalogue_main(&args));
+            }
             "blackbox" => {
                 let args: Vec<&str> = parts.collect();
                 sprintln!("{}", crate::blackbox::blackbox_main(&args));
