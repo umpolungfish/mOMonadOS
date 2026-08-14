@@ -593,14 +593,27 @@ pub fn search_commands(keyword: &str) {
     let kw = keyword.to_lowercase();
     crate::sprintln!("Searching for '{}'...\n", keyword);
 
-    // Search top-level menu
-    for item in MAIN_MENU.iter() {
-        if item.name.to_lowercase().contains(&kw) || item.desc.to_lowercase().contains(&kw) {
-            crate::sprintln!("  {:12} — {}", item.name, item.desc);
+    // Walk the whole menu tree — top level AND every submenu — so a tool listed
+    // under a category (e.g. sk_forge under Grammar) is findable, not just the
+    // category names. Matches on name, cmd, or description.
+    let mut found = false;
+    fn walk(items: &[MenuItem], kw: &str, found: &mut bool) {
+        for item in items.iter() {
+            if item.name.to_lowercase().contains(kw)
+                || item.cmd.to_lowercase().contains(kw)
+                || item.desc.to_lowercase().contains(kw)
+            {
+                crate::sprintln!("  {:18} — {}", item.cmd, item.desc);
+                *found = true;
+            }
+            if let Some(sub) = item.submenu {
+                walk(sub, kw, found);
+            }
         }
     }
+    walk(MAIN_MENU, &kw, &mut found);
 
-    // Also match known sub-commands
+    // Also match known sub-commands not carried as menu items
     let known: &[(&str, &str)] = &[
         ("ovm", "OVM Computation Tools (eigen, frame, overlap, belnap, help)"),
         ("hqe", "Hadron-Quark-Electron formal homology"),
@@ -627,16 +640,17 @@ pub fn search_commands(keyword: &str) {
         ("meet", "Meet under absorption"),
     ];
 
-    let mut found = false;
+    let mut extra = false;
     for (name, desc) in known {
         if name.contains(&kw) || desc.to_lowercase().contains(&kw) {
-            if !found {
+            if !extra {
                 crate::sprintln!("\nADDITIONAL COMMANDS:");
-                found = true;
+                extra = true;
             }
-            crate::sprintln!("  {:12} — {}", name, desc);
+            crate::sprintln!("  {:18} — {}", name, desc);
         }
     }
+    found |= extra;
 
     if !found {
         crate::sprintln!("No commands found matching '{}'.", keyword);
