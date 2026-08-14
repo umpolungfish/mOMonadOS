@@ -20,11 +20,14 @@ use alloc::vec::Vec;
 
 use crate::sprintln;
 use crate::algebra::tuple_distance;
+use crate::basin::{orbit, Action};
 use crate::carriers::{population, Carrier};
-use crate::crystal_scope::{scope, Scope};
+use crate::crystal_scope::scope;
 use crate::entropy::Tier;
 use crate::imas_ig::{IgPrim, IgTuple};
+use crate::ouroboros::invert;
 use crate::provenance::{provenance_of, Provenance};
+use crate::witness::witness;
 
 // Canonical per-axis value lists, low ordinal → high, sourced from the IgPrim
 // ordinal() table in imas_ig.rs. A count or byte is reduced modulo the family
@@ -57,6 +60,11 @@ pub struct SecretKeyResult {
     pub method: String,
     pub provenance: Option<Provenance>,
     pub repair_chain: Vec<RepairTrace>,
+    /// The shortest word imscribing the repaired tuple (ouroboros-inverse).
+    pub shortest_word: Option<String>,
+    /// The carrier's standing in the kernel (witness): the Lean/executable
+    /// certificate behind the bridge, or its absence.
+    pub witness_standing: Option<&'static str>,
     pub certainty: CertaintyLevel,
 }
 
@@ -156,9 +164,33 @@ impl SkForge {
             .unwrap_or(tuple);
         sprintln!("  [4/6] repairs applied: {}", repair_chain.len());
 
-        // 5. Provenance of the carrier the repair aimed at.
+        // 4b. Shortest word imscribing the repaired tuple (ouroboros-inverse),
+        // and whether it settles into an attractor (basin). A repair that lands
+        // on a tuple no short word imscribes, or one that runs away under
+        // REPAIR, is not a usable bridge.
+        let inv = invert(&final_tuple);
+        let shortest = inv.shortest.clone();
+        match &shortest {
+            Some(w) => {
+                sprintln!("        shortest word: {} ({} siblings)", w, inv.siblings);
+                let orb = orbit(w, Action::Repair);
+                sprintln!(
+                    "        basin: attractor {} (transient {}, cycle {})",
+                    orb.attractor, orb.transient_depth, orb.cycle_length
+                );
+            }
+            None => sprintln!(
+                "        no short word imscribes the repaired tuple (searched {})",
+                inv.searched
+            ),
+        }
+
+        // 5. Provenance of the carrier + its witness — the Lean/executable
+        // certificate behind the bridge, not a heuristic.
         let prov = provenance_of(best.name).root;
+        let wit = witness(best.name);
         sprintln!("  [5/6] carrier provenance: {}", prov.name());
+        sprintln!("        witness: {}", wit.standing.name());
 
         // 6. Bounded structural derivation. Deterministic, honest, HEURISTIC.
         let (scalar, window, method) = self.bounded_search(&final_tuple, best);
@@ -170,6 +202,8 @@ impl SkForge {
             method,
             provenance: Some(prov),
             repair_chain,
+            shortest_word: shortest,
+            witness_standing: Some(wit.standing.name()),
             certainty: CertaintyLevel::Heuristic,
         }
     }
@@ -234,15 +268,29 @@ impl SkForge {
         carriers: &[(Carrier, f32)],
     ) -> SecretKeyResult {
         let d = carriers.first().map(|(_, d)| *d).unwrap_or(f32::INFINITY);
-        sprintln!("  [certificate] key not in any O_∞ carrier's basin");
+        sprintln!("  [certificate] key not in any bounded-shortcut basin");
         sprintln!("                nearest carrier distance: {:.4}", d);
+        // The certificate is a chain, not a bare distance: the nearest carrier,
+        // its provenance, and its witness standing. The key is full-strength
+        // relative to every carrier that admits a shortcut — reported as the
+        // structure it is, not asserted.
+        let prov = carriers.first().map(|(c, _)| provenance_of(c.name).root);
+        let wstanding = carriers.first().map(|(c, _)| witness(c.name).standing.name());
+        if let Some(p) = prov {
+            sprintln!("                nearest carrier provenance: {}", p.name());
+        }
+        if let Some(w) = wstanding {
+            sprintln!("                nearest carrier witness: {}", w);
+        }
         let _ = tuple;
         SecretKeyResult {
             scalar: None,
             scalar_hex: None,
             method: "IMPOSSIBILITY_CERTIFICATE".to_string(),
-            provenance: None,
+            provenance: prov,
             repair_chain: Vec::new(),
+            shortest_word: None,
+            witness_standing: wstanding,
             certainty: CertaintyLevel::Impossible,
         }
     }
@@ -256,6 +304,8 @@ fn impossible(reason: &str) -> SecretKeyResult {
         method: "ERROR".to_string(),
         provenance: None,
         repair_chain: Vec::new(),
+        shortest_word: None,
+        witness_standing: None,
         certainty: CertaintyLevel::Impossible,
     }
 }
@@ -471,8 +521,14 @@ fn format_result(r: &SecretKeyResult) -> String {
         }
     }
     out.push_str(&format!("├─ method: {}\n", r.method));
+    if let Some(w) = &r.shortest_word {
+        out.push_str(&format!("├─ shortest word: {}\n", w));
+    }
     if let Some(p) = &r.provenance {
         out.push_str(&format!("├─ carrier provenance: {}\n", p.name()));
+    }
+    if let Some(w) = r.witness_standing {
+        out.push_str(&format!("├─ carrier witness: {}\n", w));
     }
     if !r.repair_chain.is_empty() {
         out.push_str(&format!("├─ repair chain ({} steps):\n", r.repair_chain.len()));
