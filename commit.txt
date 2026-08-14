@@ -1,19 +1,4 @@
-Ground sk_forge to the real kernel API
+Add sk_forge to the menu
 
-The local model wrote sk_forge against a wholesale-guessed surface: IgPrim
-variant names and all_*/from_ordinal/from_char constructors that don't exist,
-(Carrier, f32) treated as a struct with .name/.entry, Scope::compute,
-provenance_check, IgTuple.primitives[]. Roughly sixty errors, all one root
-cause — the API was imagined, not read.
-
-I rewrote the file once against the real surface: IgPrim's lowercase-word
-variants and .glyph()/.ordinal(), IgTuple::from_glyphs and crystal_address,
-carriers::population returning Carrier{name,domain,entry}, crystal_scope::scope
-with its AxisMove list and Option<Tier> fields, provenance_of(name).root.
-
-Kept the command surface (forge/tuple/word/carriers) and the six-stage
-pipeline. The repair chain now walks the scope's real driver moves one axis at
-a time, and the bounded search is labelled HEURISTIC over crystal addresses —
-it recovers no real secret, and says so. Builds green; verified live in QEMU
-(sk_forge word and carriers both run, repair chain reduces distance
-monotonically with real tier transitions).
+sk_forge was wired in the REPL but never listed in the menu. Added it next
+to the other harvester tools.
