@@ -348,6 +348,116 @@ pub fn walk_sumset() {
     finish("SUMSET AP-FREE", &steps);
 }
 
+// ── Erdős 41: distinct triple sums, and what counting alone gives ──────────
+
+/// The LARGEST subset of [1,N] whose three-element subsets all have distinct
+/// sums, by exhaustive descent.
+///
+/// Greedy does not work here and the failure is immediate: from {1,2,3,4} every
+/// next integer collides, because 1+2+5 = 1+3+4. A greedy witness would sit at
+/// four elements for every N and make the bound below vacuous, which is worse
+/// than no witness at all — it would look like agreement.
+fn max_b3(limit: u64) -> Vec<u64> {
+    let mut best: Vec<u64> = Vec::new();
+    let mut cur: Vec<u64> = Vec::new();
+    descend(1, limit, &mut cur, &mut best);
+    best
+}
+
+fn descend(next: u64, limit: u64, cur: &mut Vec<u64>, best: &mut Vec<u64>) {
+    if cur.len() > best.len() { *best = cur.clone(); }
+    let mut n = next;
+    while n <= limit {
+        // Nothing left to gain: even taking every remaining integer cannot beat
+        // the best already found.
+        if cur.len() + ((limit - n + 1) as usize) <= best.len() { return; }
+        cur.push(n);
+        if triple_sums_distinct(cur) { descend(n + 1, limit, cur, best); }
+        cur.pop();
+        n += 1;
+    }
+}
+
+/// Every three-element subset has a sum no other three-element subset shares.
+fn triple_sums_distinct(set: &[u64]) -> bool {
+    let mut sums: Vec<u64> = Vec::new();
+    let k = set.len();
+    let mut i = 0;
+    while i < k {
+        let mut j = i + 1;
+        while j < k {
+            let mut m = j + 1;
+            while m < k {
+                let t = set[i] + set[j] + set[m];
+                if sums.contains(&t) { return false; }
+                sums.push(t);
+                m += 1;
+            }
+            j += 1;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn choose3(k: u64) -> u64 {
+    if k < 3 { 0 } else { k * (k - 1) * (k - 2) / 6 }
+}
+
+pub fn walk_tripsum() {
+    sprintln!("");
+    rule();
+    sprintln!("  ERDŐS 41 — distinct triple sums, and the bound counting gives");
+    rule();
+
+    let mut steps: Vec<Step> = Vec::new();
+    let limits: [u64; 5] = [10, 15, 20, 25, 30];
+
+    // 1. The witnesses, built here.
+    let sets: Vec<Vec<u64>> = limits.iter().map(|n| max_b3(*n)).collect();
+    let mut line = String::new();
+    for (n, set) in limits.iter().zip(sets.iter()) {
+        line.push_str(&format!("N={}: k={} ", n, set.len()));
+    }
+    steps.push(Step {
+        title: "The largest such subset of [1,N], by exhaustive descent",
+        computed: line,
+        holds: sets.iter().all(|s| !s.is_empty()),
+    });
+    show(1, 3, &steps[0]);
+
+    // 2. Each really has distinct triple sums.
+    let all_distinct = sets.iter().all(|s| triple_sums_distinct(s));
+    steps.push(Step {
+        title: "Every three-element subset has its own sum",
+        computed: format!("all {} witnesses: {}", sets.len(), all_distinct),
+        holds: all_distinct,
+    });
+    show(2, 3, &steps[1]);
+
+    // 3. C(k,3) ≤ 3N — the Lean bound `card_le_of_distinct_sums`, computed.
+    //    The sums are distinct and each lies in [3,3N], so there is room for at
+    //    most 3N of them. This is the whole of what counting gives, and it is
+    //    O(N^(1/3)); Erdős asks whether the ratio vanishes, which it does not
+    //    answer and this walk does not claim.
+    let mut bound_ok = true;
+    let mut bound_line = String::new();
+    for (n, set) in limits.iter().zip(sets.iter()) {
+        let k = set.len() as u64;
+        let lhs = choose3(k);
+        let rhs = 3 * n;
+        if lhs > rhs { bound_ok = false; }
+        bound_line.push_str(&format!("C({},3) = {} ≤ {} ", k, lhs, rhs));
+    }
+    steps.push(Step {
+        title: "The counting bound C(k,3) ≤ 3N",
+        computed: bound_line,
+        holds: bound_ok,
+    });
+    show(3, 3, &steps[2]);
+    finish("ERDŐS 41 COUNTING", &steps);
+}
+
 // ── R(3,3) = 6, and the colouring that shows five is not enough ─────────────
 
 /// The pentagon colouring: on five vertices, colour an edge by whether the
@@ -1316,6 +1426,7 @@ pub fn list_walks() {
     sprintln!("    oddcycle  bipartite classes bound the count, and C₅ does not split");
     sprintln!("    chordless a chord of an odd cycle gives a shorter odd cycle");
     sprintln!("    roth      the largest AP-free subset of [0,9), and Behrend's sphere");
+    sprintln!("    tripsum   distinct triple sums, and the C(k,3) ≤ 3N bound they force");
     sprintln!("");
     sprintln!("  Run with:  erdos <name>");
 }
@@ -1339,6 +1450,7 @@ pub fn dispatch(name: &str) {
         "oddcycle" => walk_monochromatic(),
         "chordless" => walk_chordless(),
         "roth" => walk_roth(),
+        "tripsum" => walk_tripsum(),
         "alternate" => walk_alternating(),
         "fuchs" => walk_fuchs(),
         "ratio" => walk_ramsey_ratio(),
