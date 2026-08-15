@@ -1,32 +1,29 @@
-Re-census, because the audit was reading yesterday
+Read an entry against L9, and Erdős 3's barrier collapses to one primitive
 
-`redteam audit erdos` and `prov erdos` read a table baked into the kernel, and it
-was stamped 2026-08-13 — before today's work on Problems 3 and 41. An audit
-reading a stale census reports on a corpus that no longer exists, and it does it
-without complaining, which is the worst way for a check to be wrong.
+cl8nk could read any catalog entry against L8; cl9nk could only print the L8/L9
+comparison and the layer chain. So every entry was being asked "how far to the
+terminal layer" and nothing else — and for an object already sitting on the
+replicative lateral that is the wrong question. generate_entry_formula now takes
+its reference as a parameter, and `cl9nk entry <name>` reads an entry against L9
+with the L8 promotions printed beside it for comparison.
 
-Regenerated: 11323 files, and the Erdős selector now sees 95 files and 1051
-theorems where it saw 61 and 933.
+The object: erdos3_behrend_barrier, the click fusion of erdos_conjecture_ap with
+behrend_construction on D↔W (Δ=1.00), kernel-certified — igFrobeniusAlg.mul p p
+= p closes through lake build, a real verdict rather than an asserted tuple.
+Behrend is the right partner because it is the obstruction: its construction is
+what forces the exponent, so the conjecture and its barrier are one object.
 
-What it says now, which is worth writing down rather than acting on blind:
+Read against L8: d=1.5284, seven promotions, TWO of them full unit gaps (⊣ and
+∈). Read against L9: d=1.1614, six promotions, and only ONE unit gap — ∋. Total
+cost 4.166 climbing against 2.785 lateral. ≺, ∈ and ◻ are already matched at L9
+and cost nothing at all.
 
-276 sorry against 1051 theorems. 19 axiom declarations, one of them the
-Bloom–Sisask axiom added today, which is the point of naming an assumption —
-it shows up in the count instead of hiding inside a false density claim.
+So the whole barrier is one primitive, and it is the merge. That agrees with what
+the decomposition already said from the other side: ∋ carries
+BROADCAST_TRANSCENDENCE, broadcast composition exceeding ZFC_fe SEQAX. It is not
+a hard step on the sequential layer, it is not on the sequential layer.
 
-83 theorems close by native_decide, which runs compiled code outside the Lean
-kernel's checked path, and 155 of 1051 close by finite evaluation at all. A
-finite closure holds for its decidable instance and says nothing past it.
-
-Six basenames appear more than once. The proof-vehicle snapshots explain some of
-it legitimately, but not all: inside ig-docs, erdos_problem_44_corrected/ holds
-byte-identical copies of ErdosFormalize, ErdosFormalize2 and ErdosFormalize3 from
-erdos_formalize*/, and erdos_problems/ErdosProblems.lean is byte-identical to the
-one beside it. The audit's highest-risk dependency — 49 theorems, 48 of them
-sorry — is one of those duplicates, so it is counted twice.
-
-MoDoT/lean/ErdosProblems.lean and ig-docs/erdos_problem_44_sidon_extension/ are
-the same 1829 lines and differ only in notation: Γ, φ̂, Ω where the other reads
-∈, ⊙, ◻. The ig-docs copy predates the mark migration. That is not local — 730
-files outside the proof vehicles still carry the old spelling, and I am not
-converting them by pattern, because Γ and Ω are also just Γ and Ω.
+Which is why the Lean attempt kept receding. Assume the conclusion, then assume
+the quantitative bound instead and owe a dyadic summation, then owe the block
+bound under that — every move looked like progress and none of them removed the
+assumption, because the missing thing was never sequential to begin with.

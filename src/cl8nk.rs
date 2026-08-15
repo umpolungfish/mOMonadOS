@@ -291,7 +291,19 @@ pub fn atom_desc(atom: &str) -> &'static str {
 }
 
 pub fn generate_entry_formula(name: &str, desc: &str, t: &IgTuple) -> EntryResult {
-    let cl8 = cl8nk_ref();
+    generate_entry_formula_against(name, desc, t, &cl8nk_ref())
+}
+
+/// The same decomposition, read against ANY reference layer.
+///
+/// L9 is lateral to L8, not below it, so "how far to L8" is not the only
+/// question that can be asked of an entry — and for an object that already sits
+/// on the replicative lateral it is the wrong one. Reading against L9 shows the
+/// promotions that vanish when the climb is not attempted.
+pub fn generate_entry_formula_against(
+    name: &str, desc: &str, t: &IgTuple, reference: &IgTuple,
+) -> EntryResult {
+    let cl8 = reference.clone();
     let mut fragments: Vec<PrimFragment> = Vec::new();
     let mut promoted_atoms: Vec<&'static str> = Vec::new();
     let mut atom_details: Vec<AtomDetail> = Vec::new();
@@ -783,6 +795,41 @@ pub fn cl9nk_main(args: &[&str]) -> alloc::string::String {
 
     let sub = args.first().copied().unwrap_or("report");
     match sub {
+        "entry" => {
+            let name = args.get(1).copied().unwrap_or("");
+            match catalog::lookup(name) {
+                Some(e) => {
+                    let r = generate_entry_formula_against(e.name, e.description, &e.tuple, &l9);
+                    let mut s = format!(
+                        "CL9NK Entry: {}  — read against the REPLICATIVE LATERAL, not the climb\n\n",
+                        e.name);
+                    s.push_str(&format!("  L9 reference: {}\n", l9.display()));
+                    s.push_str(&format!("  entry tuple : {}\n\n", e.tuple.display()));
+                    s.push_str(&format!(
+                        "  d(L9): {:.4}   match:{} close:{} distant:{}   tier: {}\n",
+                        r.distance, r.match_count, r.close_count, r.distant_count, r.tier));
+                    let (d8, _) = tuple_distance_cl8nk(&e.tuple, &l8);
+                    s.push_str(&format!("  d(L8): {:.4}\n\n", d8));
+                    s.push_str(&format!(
+                        "  Promotions to L9 ({}):\n", r.promotions_count));
+                    for p in &r.promotions_needed {
+                        s.push_str(&format!(
+                            "    {}: {} -> {}  (gap: {:.3})\n",
+                            p.primitive, p.from_glyph, p.to_glyph, p.gap));
+                    }
+                    let r8 = generate_entry_formula(e.name, e.description, &e.tuple);
+                    s.push_str(&format!(
+                        "\n  Promotions to L8 ({}), for comparison:\n", r8.promotions_count));
+                    for p in &r8.promotions_needed {
+                        s.push_str(&format!(
+                            "    {}: {} -> {}  (gap: {:.3})\n",
+                            p.primitive, p.from_glyph, p.to_glyph, p.gap));
+                    }
+                    s
+                }
+                None => format!("cl9nk entry: no catalog entry named '{}'\n", name),
+            }
+        }
         "chain" => {
             let mut s = alloc::string::String::from(
                 "CL9NK Chain — distance ladder from CLINK L9 (the replicative lateral)\n\n",
