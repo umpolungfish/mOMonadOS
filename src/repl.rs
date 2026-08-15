@@ -298,7 +298,10 @@ pub fn repl(k: &mut Kernel) {
                     crate::lattice_flow::banked_report(w);
                 }
             }
-            "prooflift" | "proof" => {
+            // `proof` is the guided proof walker and is dispatched above; naming it
+            // here too made this arm unreachable for it, so `proof` never once
+            // reached prooflift and the alias only looked like it worked.
+            "prooflift" => {
                 let tail: Vec<&str> = parts.collect();
                 if tail.first().map(|a| *a == "nest").unwrap_or(false) {
                     sprintln!("{}", crate::prooflift::nest());

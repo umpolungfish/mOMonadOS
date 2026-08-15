@@ -1,24 +1,28 @@
-Finish the mark migration, where a dropped glyph was passing as a proof
+BIP39 indices were wrong wherever they did not start on a byte
 
-The twelve marks are ⊢ ⊣ ≻ ≺ ⋈ ⊤ ∈ ∋ ⊙ ⊥ ⊞ ◻, and imasm_core emits them. Six
-places in the kernel still spelled AFWD and AREV as ASCII > and <, and two of
-them were load-bearing rather than commentary.
+Both warnings the build printed were real, and one of them was a silent wrong
+answer rather than untidiness.
 
-parse_glyph_word is a filter_map over the twelve. It does not reject a retired
-mark, it DROPS it, deliberately and by design — a word containing one reads it as
-nothing. So the self-application check in parasm, whose word was ⊢∈>⊤<⊥∋◻⊣,
-parsed to seven tokens where it names nine: both work opcodes silently vanished,
-and the closure it demonstrates was being demonstrated on a shorter word than the
-one written down. Its alphabet string carried the same spelling, which is the
-only reason the ordinal lookup did not panic — two stale copies agreeing with
-each other and with nothing else.
+hex_to_indices extracts twelve eleven-bit indices from seventeen bytes. It split
+on whether the index began on a byte boundary, and only that branch was right —
+i = 0 and i = 8. For the other ten it shifted the first byte left without masking
+off the bits belonging to the PREVIOUS index, and folded the third byte in with a
+shift that did not account for having done so. Checked against a bit-string
+reference over two thousand random vectors: every vector wrong, ten of twelve
+indices wrong in each. Silent, because a wrong index is still a valid index and
+still names a word.
 
-sk_forge's BIP39_DERIVATION_WORD was the same defect. That is the one the last
-operator session spent nearly two hundred windings circling, and it was going to
-fix it the wrong way round: imasm's printed help still showed > and <, so the
-agent read the print as authority over catalog.rs and set out to convert the
-word to ASCII. The print was the stale thing.
+Now one 24-bit window and one shift, with the missing trailing byte read as zero,
+which the final shift discards anyway. Five thousand random vectors agree on
+every index, as do all-zero and all-ones.
 
-Fixed at all six: parasm (word and alphabet, plus the comment above them),
-sk_forge, imas_ig, circuit, triple_frame, bip39_sic_grover. The word now resolves
-to nine ordinals against the alphabet. Release build green.
+The `val` warning was the tell: a variable initialised and never read is the
+shape of a branch that assigns before it reads, which is where the masking
+should have been and was not.
+
+Second warning: `"prooflift" | "proof"` was unreachable for `proof`, since the
+guided proof walker claims that verb eighty lines earlier. So `proof` never once
+reached prooflift, and the alias only looked like it worked. The verbs are
+distinct things and keep distinct names.
+
+Release build green, no warnings.
