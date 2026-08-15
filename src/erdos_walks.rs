@@ -307,7 +307,7 @@ pub fn walk_sumset() {
         computed: report,
         holds: all_apfree,
     });
-    show(1, 3, &steps[0]);
+    show(1, 4, &steps[0]);
 
     // Distinct subset sums on each witness.
     let mut all_distinct = true;
@@ -327,7 +327,7 @@ pub fn walk_sumset() {
         computed: format!("every subset of each witness has its own sum: {}", all_distinct),
         holds: all_distinct,
     });
-    show(2, 3, &steps[1]);
+    show(2, 4, &steps[1]);
 
     // The counting bound 2^n <= n·N + 1 on each witness.
     let mut bound_ok = true;
@@ -454,7 +454,34 @@ pub fn walk_tripsum() {
         computed: bound_line,
         holds: bound_ok,
     });
-    show(3, 3, &steps[2]);
+    show(3, 4, &steps[2]);
+
+    // 4. How much slack is in it. The bound says N ≥ k³/18 roughly; the least N
+    //    that actually admits a size-k set is found here and compared. If the
+    //    ratio drifts upward with k the conjecture is visible in the data; if it
+    //    sits near a constant, counting is within a constant of the truth and
+    //    this range says nothing about whether the ratio vanishes.
+    let mut thr: Vec<(u64, u64)> = Vec::new();
+    let mut k_seen = 0usize;
+    let mut n = 1u64;
+    while n <= 40 {
+        let sz = max_b3(n).len();
+        if sz > k_seen { k_seen = sz; thr.push((sz as u64, n)); }
+        n += 1;
+    }
+    let mut thr_line = String::new();
+    for (k, n) in thr.iter() {
+        if *k >= 5 {
+            // k³ / N, against the 18 that counting allows
+            thr_line.push_str(&format!("k={} N={} k³/N={} ", k, n, (k * k * k) / n));
+        }
+    }
+    steps.push(Step {
+        title: "Least N admitting size k, against the bound's k³/18",
+        computed: thr_line,
+        holds: true,
+    });
+    show(4, 4, &steps[3]);
     finish("ERDŐS 41 COUNTING", &steps);
 }
 

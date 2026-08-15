@@ -1,24 +1,21 @@
-Erdős 41 on the metal, and the catalog the kernel was reading was stale
+The quantity to watch in Erdős 41, and it is not flat
 
-Booting to check what the kernel already carried for these problems, I found it
-loading 8057 catalog entries against a canonical 8202. The kernel does not read
-the file; it embeds catalog_ask_subset.rs, generated from the catalog, and the
-generated copy was 145 entries behind. Regenerated: 8199 at boot. The generator
-is the fix, not the file — the copy was never meant to be touched.
+Added a fourth step to the triple-sums walk: not whether the counting bound
+holds, but how much room is left in it.
 
-Added the Erdős 41 walk. The Lean side now proves C(k,3) ≤ 3N from distinct
-triple sums; this computes it, which is the rule the other walks keep — a step
-that printed a number it had not derived would be a slideshow.
+The bound C(k,3) ≤ 3N says a size-k set needs N ≳ k³/18. The walk finds the
+least N that actually admits one and reads k³/N off it: 15, 15, 14, 12 for
+k = 5, 6, 7, 8. Counting allows 18, so the sets are harder to build than counting
+requires, and increasingly so.
 
-The witness has to be built, and greedy does not build it. Taking the next
-integer that keeps the triple sums distinct stalls at four elements for every N,
-because from {1,2,3,4} everything collides at 1+2+5 = 1+3+4. That witness would
-have satisfied the bound at every N and looked like agreement, which is worse
-than no witness. The walk descends exhaustively for the largest such subset
-instead: k = 5, 6, 6, 7, 7 for N = 10, 15, 20, 25, 30.
+That is the quantity the conjecture is about. If k grows like a constant times
+N^(1/3), k³/N settles on a constant; if k is o(N^(1/3)), it goes to zero. Four
+points do not decide anything and I am not claiming they do — the sequence is
+built by exhaustive descent and stops at N = 40 because the descent does. What
+they establish is that the ratio is the right thing to compute and that it is
+descending rather than sitting still.
 
-Worth reading off the numbers: counting allows k ≤ (18N)^(1/3), which is 8.1 at
-N = 30, and the true maximum is 7. The bound is nearly tight where it can be
-checked. That is the whole difficulty of the problem — Erdős asks whether the
-ratio VANISHES, and counting cannot see the difference between a constant and a
-vanishing one.
+Also asked blackbox for a law, twice: on k(N) itself and on the thresholds
+1,2,3,4,8,14,23,40. It licensed no prediction either time, which is the correct
+answer — neither sequence is polynomial, and a fitted law would have been an
+artifact of the hypothesis class rather than a fact about B₃ sets.
