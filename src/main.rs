@@ -161,6 +161,7 @@ mod lean_census;
 mod redteam;
 mod minimal;
 mod repair;
+mod ringspec;
 mod sk_forge;
 
 use tokens::{canonical_count, continuous_count, novel_count, shunted_count};

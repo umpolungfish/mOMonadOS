@@ -1518,6 +1518,10 @@ pub fn repl(k: &mut Kernel) {
                 let args: Vec<&str> = parts.collect();
                 sprintln!("{}", crate::repair::repair_main(&args));
             }
+            "ringspec" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::ringspec::ringspec_main(&args));
+            }
             "sk_forge" | "sk-forge" => {
                 // sk_forge_main takes &str; join the remaining fields back.
                 let rest: Vec<&str> = parts.collect();

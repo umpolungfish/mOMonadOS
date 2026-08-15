@@ -1,26 +1,31 @@
-Boot the Erdős 3 ring instead of trusting its decimal
+ringspec: a ring's spectrum in integers, and what its gap does and does not say
 
-The settled ring came out of the host tools: click, certify, the L9 lateral, a
-catalog sweep, forge, anneal. That is a transcript, and a transcript has to be
-trusted — `witness erdos` said it plainly, "smallest executable object: none in
-the kernel". So the ring is computed here now, and it computes rather than
-prints.
+A forged ring's material sheet arrives from the host as decimals — ρ=3.1623,
+gap=0.0000 — and a decimal has to be believed. For an integer-weighted ring it
+does not: the adjacency is an integer matrix, its characteristic polynomial has
+integer coefficients, and every question the sheet answers with a rounding is
+answered here by one of those coefficients. Faddeev–LeVerrier, every division
+exact, the whole computation in i64.
 
-The ring is erdos_conjecture_ap · gowers_u3_norm · behrend_construction ·
-gowers_u3_norm, closing head to tail on R↔S at O∞. The U³ unit appears twice
-because two units cannot cyclize and three cyclize but store strain; doubling it
-flattens the spectrum and the anneal takes the strain to zero.
+On the Erdős 3 settled ring, weights 1 2 2 1: det(λI−A) = λ⁴ − 10λ². Symmetric,
+so the top eigenvalue is paired with its negative and the gap is 0 exactly. Two
+zero eigenvalues, so the spectrum is {0,0,±ρ}, and tr(A²)=20=2Σwᵢ² pins ρ²=10.
+Checked against the bare cycles: C₄ gives λ⁴−4λ², C₆ gives (λ²−4)(λ²−1)², C₅ is
+asymmetric — all three agree with a numerical diagonalization.
 
-Its adjacency weighs a clean bond 1 and a cross-link by its reaction centres, so
-bonds 2–3 and 3–4 weigh 2. That matrix satisfies A⁴ = 10·A² in integers, which is
-λ⁴ = 10λ² in matrix form, so the whole spectrum is settled without a float: λ is
-0 or ±√10. tr(A²) = 20 = 2ρ² gives ρ² = 10 exactly. And the gap is zero because
-the nonzero spectrum is ±ρ — |λ₂| = ρ by the pairing, not by rounding.
+The part worth writing down is what the gap does NOT say. A symmetric spectrum is
+exactly bipartiteness, and a cycle is bipartite exactly when it is even, so the
+gap is settled by the unit count before a single weight is read. I first wrote
+that up as a warning — that a zero gap was "only parity" and the doubling of the
+mediating unit had settled nothing. That was wrong in a way worth naming: it set
+the count against the structure as rival causes. The ring is even BECAUSE
+something mediates on both sides of what it mediates; bipartite means the units
+fall into two classes with every bond running between them, and that alternation
+is the doubling. One fact, two readings.
 
-That last one matters for how the result reads. A zero gap is the settled state,
-not a missing one: no mode is privileged, the ring leans on no single strut. It
-is the reason the verdict is SETTLED rather than SHAKY, and the three-unit ring
-was SHAKY — gap 0.732, strain 0.250, which is the state proofs come out shaky in.
+So the tool says both: gap 0 exactly, and gap 0 for any weights at this parity.
+Compare gap within a parity, strain across.
 
-A spectral claim carried as 3.1623 would have to be believed. Carried as
-A⁴ = 10·A² it can be checked, and now it is, on boot.
+Also carries the parse the REPL forces on it — splitn(4,' ') delivers "1 2 2 1"
+as ["1","2","2 1"], so the tool splits again rather than widening a cap other
+commands rely on to keep a trailing phrase whole.
