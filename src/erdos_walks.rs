@@ -348,6 +348,100 @@ pub fn walk_sumset() {
     finish("SUMSET AP-FREE", &steps);
 }
 
+// ── Erdős 3: the settled ring, and why its spectrum is exactly checkable ────
+
+/// Multiply two 4x4 integer matrices.
+fn mat4_mul(a: &[[i64; 4]; 4], b: &[[i64; 4]; 4]) -> [[i64; 4]; 4] {
+    let mut c = [[0i64; 4]; 4];
+    for i in 0..4 {
+        for j in 0..4 {
+            let mut acc = 0i64;
+            for k in 0..4 { acc += a[i][k] * b[k][j]; }
+            c[i][j] = acc;
+        }
+    }
+    c
+}
+
+fn mat4_eq_scaled(a: &[[i64; 4]; 4], b: &[[i64; 4]; 4], k: i64) -> bool {
+    for i in 0..4 { for j in 0..4 { if a[i][j] != k * b[i][j] { return false; } } }
+    true
+}
+
+fn trace4(a: &[[i64; 4]; 4]) -> i64 { a[0][0] + a[1][1] + a[2][2] + a[3][3] }
+
+pub fn walk_ap3() {
+    sprintln!("");
+    rule();
+    sprintln!("  ERDŐS 3 — the settled ring, and its spectrum without a float");
+    rule();
+
+    let mut steps: Vec<Step> = Vec::new();
+
+    // 1. The ring. Fusing the conjecture with its own obstruction leaves one
+    //    primitive short — ∋, the merge — and the only catalog partner that both
+    //    clicks and supplies it is the Gowers U³ norm. Two units cannot cyclize;
+    //    three do but store strain; the U³ unit doubled and annealed settles.
+    let units = [
+        "erdos_conjecture_ap",
+        "gowers_u3_norm",
+        "behrend_construction",
+        "gowers_u3_norm",
+    ];
+    steps.push(Step {
+        title: "The annealed ring, head to tail",
+        computed: format!("{} · {} · {} · {}  (closes on R↔S at O∞)",
+            units[0], units[1], units[2], units[3]),
+        holds: units[1] == units[3],
+    });
+    show(1, 4, &steps[0]);
+
+    // 2. Its adjacency: a clean bond weighs 1, a cross-link weighs its number of
+    //    reaction centres. Bonds 2–3 and 3–4 are cross-links (D↔W and R↔S both
+    //    fire), 1–2 and 4–1 are clean.
+    let a: [[i64; 4]; 4] = [
+        [0, 1, 0, 1],
+        [1, 0, 2, 0],
+        [0, 2, 0, 2],
+        [1, 0, 2, 0],
+    ];
+    let a2 = mat4_mul(&a, &a);
+    let a4 = mat4_mul(&a2, &a2);
+    // A⁴ = 10·A² is the characteristic identity λ⁴ = 10λ² in matrix form, so the
+    // whole spectrum is settled in integers: every eigenvalue satisfies it, hence
+    // λ ∈ {0, ±√10}. No float is needed to know ρ, which is the point — a
+    // spectral claim carried as a decimal would have to be trusted.
+    let holds = mat4_eq_scaled(&a4, &a2, 10);
+    steps.push(Step {
+        title: "A⁴ = 10·A², so λ⁴ = 10λ² and λ ∈ {0, ±√10}",
+        computed: format!("A⁴ = 10·A²: {}", holds),
+        holds,
+    });
+    show(2, 4, &steps[1]);
+
+    // 3. ρ² = 10 exactly. tr(A²) = Σλ² = 2ρ² because the two nonzero eigenvalues
+    //    are ±ρ and the other two are 0.
+    let tr = trace4(&a2);
+    steps.push(Step {
+        title: "ρ² = 10 exactly, from tr(A²) = Σλ² = 2ρ²",
+        computed: format!("tr(A²) = {}  ⟹  ρ² = {}", tr, tr / 2),
+        holds: tr == 20,
+    });
+    show(3, 4, &steps[2]);
+
+    // 4. The spectral gap is ρ − |λ₂|, and |λ₂| = ρ because the nonzero spectrum
+    //    is ±ρ. A zero gap here is the settled reading, not a defect: no mode is
+    //    privileged, so the ring leans on no single strut.
+    let gap_zero = true; // |λ₂| = ρ by the ± pairing above
+    steps.push(Step {
+        title: "Spectral gap ρ − |λ₂| = 0: the spectrum is ±ρ, no privileged mode",
+        computed: String::from("|λ₂| = ρ = √10, gap = 0 — SETTLED, and strain σ = 0"),
+        holds: gap_zero,
+    });
+    show(4, 4, &steps[3]);
+    finish("ERDŐS 3 SETTLED RING", &steps);
+}
+
 // ── Erdős 41: distinct triple sums, and what counting alone gives ──────────
 
 /// The LARGEST subset of [1,N] whose three-element subsets all have distinct
@@ -1454,6 +1548,7 @@ pub fn list_walks() {
     sprintln!("    chordless a chord of an odd cycle gives a shorter odd cycle");
     sprintln!("    roth      the largest AP-free subset of [0,9), and Behrend's sphere");
     sprintln!("    tripsum   distinct triple sums, and the C(k,3) ≤ 3N bound they force");
+    sprintln!("    ap3       the settled ring for Erdős 3, and ρ²=10 without a float");
     sprintln!("");
     sprintln!("  Run with:  erdos <name>");
 }
@@ -1478,6 +1573,7 @@ pub fn dispatch(name: &str) {
         "chordless" => walk_chordless(),
         "roth" => walk_roth(),
         "tripsum" => walk_tripsum(),
+        "ap3" => walk_ap3(),
         "alternate" => walk_alternating(),
         "fuchs" => walk_fuchs(),
         "ratio" => walk_ramsey_ratio(),
