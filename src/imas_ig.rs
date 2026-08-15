@@ -179,7 +179,7 @@ impl IgTuple {
     /// This is the structural bridge — same rules as imas_ig_bridge.py.
     /// Parse a 12-glyph tuple, with or without ⟨⟩ brackets and any separators.
     ///
-    /// Slot order is the canonical ⊢ ⊣ > < ⋈ ⊤ ∈ ∋ ⊙ ⊥ ⊞ ◻. Returns the index
+    /// Slot order is the canonical ⊢ ⊣ ≻ ≺ ⋈ ⊤ ∈ ∋ ⊙ ⊥ ⊞ ◻. Returns the index
     /// of the first glyph that is not a primitive, so a bad tuple names its own
     /// fault rather than failing wholesale.
     pub fn from_glyphs(src: &str) -> Result<IgTuple, (usize, alloc::string::String)> {

@@ -1023,11 +1023,11 @@ mod tests {
     fn test_imasm_self_hosting_quine() {
         // CLOSING THE REPLICATING CODE. The tool is disassemble (δ: a fork that
         // lifts bytes to structure) composed with recompile (μ: the fuse back). As
-        // one IMASM word the tool IS ⊢∈>⊤<⊥∋◻⊣ — open the fork, work both arms, fuse,
+        // one IMASM word the tool IS ⊢∈≻⊤≺⊥∋◻⊣ — open the fork, work both arms, fuse,
         // commit, close — and the kernel verdicts it T: the tool is not merely a
         // program, it is a well-formed CLOSING grammar object. That is why μ∘δ=id
         // holds on it: δ opens, μ closes, and the pair is the identity.
-        let tool_word = "⊢∈>⊤<⊥∋◻⊣";
+        let tool_word = "⊢∈≻⊤≺⊥∋◻⊣";
         let steps = imasm_core::imasm16_3::parse_glyph_word(tool_word);
         assert_eq!(imasm_core::imasm16_3::tri_ancestral_verdict(&steps).0, 'T',
             "the tool's own word must close under the kernel");
@@ -1039,7 +1039,7 @@ mod tests {
         let inv_perm = |c: usize| (0..16).find(|&w| (7 * w + 3) % 16 == c).unwrap();
         let disasm = gen_code_trie(&perm);
         let recomp = gen_code_trie(&inv_perm);
-        let alphabet = "⊢⊣><⋈⊤∈∋⊙⊥⊞◻";
+        let alphabet = "⊢⊣≻≺⋈⊤∈∋⊙⊥⊞◻";
         for g in tool_word.chars() {
             let o = alphabet.chars().position(|c| c == g).unwrap(); // opcode ordinal
             let wire = inv_perm(o);                                 // its wire byte

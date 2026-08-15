@@ -2,7 +2,7 @@
 //
 // Structural correspondence:
 //   BIP39 wordlist (2048 words) <-> d=2048 SIC-POVM Hilbert space dimension
-//   12 seed words               <-> 12 IMASM glyphs (⊢ ⊣ > < ⋈ ⊤ ∈ ∋ ⊙ ⊥ ⊞ ◻)
+//   12 seed words               <-> 12 IMASM glyphs (⊢ ⊣ ≻ ≺ ⋈ ⊤ ∈ ∋ ⊙ ⊥ ⊞ ◻)
 //   11 bits per word             <-> log2(2048) = 11 bits per Hilbert index
 //
 // BIP39 correction: gap reduced from 2^234 (raw 256-bit scalar) to 2^106 (128-bit entropy)

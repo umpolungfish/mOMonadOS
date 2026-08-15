@@ -44,7 +44,7 @@ const B4_ORDER: [B4; 4] = [B4::N, B4::T, B4::F, B4::B];
 /// The twelve-to-twelve correspondence, in the canonical axis order of
 /// `canonical_ig::PRIMITIVE_ORDER`. This mirrors `GeneticCode.lean`'s
 /// `primitiveToAA`, which is the statement of record; the axis order is
-/// `⊢⊣><⋈⊤∈∋⊙⊥⊞◻` and the amino acids are its promoted layer.
+/// `⊢⊣≻≺⋈⊤∈∋⊙⊥⊞◻` and the amino acids are its promoted layer.
 pub const PROMOTED_BY_AXIS: [(char, AminoAcid); 12] = [
     ('⊢', AminoAcid::Met),  // Dimensionality
     ('⊣', AminoAcid::Trp),  // Topology

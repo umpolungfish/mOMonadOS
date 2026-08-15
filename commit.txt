@@ -1,31 +1,24 @@
-ringspec: a ring's spectrum in integers, and what its gap does and does not say
+Finish the mark migration, where a dropped glyph was passing as a proof
 
-A forged ring's material sheet arrives from the host as decimals — ρ=3.1623,
-gap=0.0000 — and a decimal has to be believed. For an integer-weighted ring it
-does not: the adjacency is an integer matrix, its characteristic polynomial has
-integer coefficients, and every question the sheet answers with a rounding is
-answered here by one of those coefficients. Faddeev–LeVerrier, every division
-exact, the whole computation in i64.
+The twelve marks are ⊢ ⊣ ≻ ≺ ⋈ ⊤ ∈ ∋ ⊙ ⊥ ⊞ ◻, and imasm_core emits them. Six
+places in the kernel still spelled AFWD and AREV as ASCII > and <, and two of
+them were load-bearing rather than commentary.
 
-On the Erdős 3 settled ring, weights 1 2 2 1: det(λI−A) = λ⁴ − 10λ². Symmetric,
-so the top eigenvalue is paired with its negative and the gap is 0 exactly. Two
-zero eigenvalues, so the spectrum is {0,0,±ρ}, and tr(A²)=20=2Σwᵢ² pins ρ²=10.
-Checked against the bare cycles: C₄ gives λ⁴−4λ², C₆ gives (λ²−4)(λ²−1)², C₅ is
-asymmetric — all three agree with a numerical diagonalization.
+parse_glyph_word is a filter_map over the twelve. It does not reject a retired
+mark, it DROPS it, deliberately and by design — a word containing one reads it as
+nothing. So the self-application check in parasm, whose word was ⊢∈>⊤<⊥∋◻⊣,
+parsed to seven tokens where it names nine: both work opcodes silently vanished,
+and the closure it demonstrates was being demonstrated on a shorter word than the
+one written down. Its alphabet string carried the same spelling, which is the
+only reason the ordinal lookup did not panic — two stale copies agreeing with
+each other and with nothing else.
 
-The part worth writing down is what the gap does NOT say. A symmetric spectrum is
-exactly bipartiteness, and a cycle is bipartite exactly when it is even, so the
-gap is settled by the unit count before a single weight is read. I first wrote
-that up as a warning — that a zero gap was "only parity" and the doubling of the
-mediating unit had settled nothing. That was wrong in a way worth naming: it set
-the count against the structure as rival causes. The ring is even BECAUSE
-something mediates on both sides of what it mediates; bipartite means the units
-fall into two classes with every bond running between them, and that alternation
-is the doubling. One fact, two readings.
+sk_forge's BIP39_DERIVATION_WORD was the same defect. That is the one the last
+operator session spent nearly two hundred windings circling, and it was going to
+fix it the wrong way round: imasm's printed help still showed > and <, so the
+agent read the print as authority over catalog.rs and set out to convert the
+word to ASCII. The print was the stale thing.
 
-So the tool says both: gap 0 exactly, and gap 0 for any weights at this parity.
-Compare gap within a parity, strain across.
-
-Also carries the parse the REPL forces on it — splitn(4,' ') delivers "1 2 2 1"
-as ["1","2","2 1"], so the tool splits again rather than widening a cap other
-commands rely on to keep a trailing phrase whole.
+Fixed at all six: parasm (word and alphabet, plus the comment above them),
+sk_forge, imas_ig, circuit, triple_frame, bip39_sic_grover. The word now resolves
+to nine ordinals against the alphabet. Release build green.
