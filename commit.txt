@@ -1,21 +1,32 @@
-The quantity to watch in Erdős 41, and it is not flat
+Re-census, because the audit was reading yesterday
 
-Added a fourth step to the triple-sums walk: not whether the counting bound
-holds, but how much room is left in it.
+`redteam audit erdos` and `prov erdos` read a table baked into the kernel, and it
+was stamped 2026-08-13 — before today's work on Problems 3 and 41. An audit
+reading a stale census reports on a corpus that no longer exists, and it does it
+without complaining, which is the worst way for a check to be wrong.
 
-The bound C(k,3) ≤ 3N says a size-k set needs N ≳ k³/18. The walk finds the
-least N that actually admits one and reads k³/N off it: 15, 15, 14, 12 for
-k = 5, 6, 7, 8. Counting allows 18, so the sets are harder to build than counting
-requires, and increasingly so.
+Regenerated: 11323 files, and the Erdős selector now sees 95 files and 1051
+theorems where it saw 61 and 933.
 
-That is the quantity the conjecture is about. If k grows like a constant times
-N^(1/3), k³/N settles on a constant; if k is o(N^(1/3)), it goes to zero. Four
-points do not decide anything and I am not claiming they do — the sequence is
-built by exhaustive descent and stops at N = 40 because the descent does. What
-they establish is that the ratio is the right thing to compute and that it is
-descending rather than sitting still.
+What it says now, which is worth writing down rather than acting on blind:
 
-Also asked blackbox for a law, twice: on k(N) itself and on the thresholds
-1,2,3,4,8,14,23,40. It licensed no prediction either time, which is the correct
-answer — neither sequence is polynomial, and a fitted law would have been an
-artifact of the hypothesis class rather than a fact about B₃ sets.
+276 sorry against 1051 theorems. 19 axiom declarations, one of them the
+Bloom–Sisask axiom added today, which is the point of naming an assumption —
+it shows up in the count instead of hiding inside a false density claim.
+
+83 theorems close by native_decide, which runs compiled code outside the Lean
+kernel's checked path, and 155 of 1051 close by finite evaluation at all. A
+finite closure holds for its decidable instance and says nothing past it.
+
+Six basenames appear more than once. The proof-vehicle snapshots explain some of
+it legitimately, but not all: inside ig-docs, erdos_problem_44_corrected/ holds
+byte-identical copies of ErdosFormalize, ErdosFormalize2 and ErdosFormalize3 from
+erdos_formalize*/, and erdos_problems/ErdosProblems.lean is byte-identical to the
+one beside it. The audit's highest-risk dependency — 49 theorems, 48 of them
+sorry — is one of those duplicates, so it is counted twice.
+
+MoDoT/lean/ErdosProblems.lean and ig-docs/erdos_problem_44_sidon_extension/ are
+the same 1829 lines and differ only in notation: Γ, φ̂, Ω where the other reads
+∈, ⊙, ◻. The ig-docs copy predates the mark migration. That is not local — 730
+files outside the proof vehicles still carry the old spelling, and I am not
+converting them by pattern, because Γ and Ω are also just Γ and Ω.
