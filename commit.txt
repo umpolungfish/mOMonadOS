@@ -1,29 +1,32 @@
-Read an entry against L9, and Erdős 3's barrier collapses to one primitive
+Recover sk_forge from the session log after an agent overwrote it
 
-cl8nk could read any catalog entry against L8; cl9nk could only print the L8/L9
-comparison and the layer chain. So every entry was being asked "how far to the
-terminal layer" and nothing else — and for an object already sitting on the
-replicative lateral that is the wrong question. generate_entry_formula now takes
-its reference as a parameter, and `cl9nk entry <name>` reads an entry against L9
-with the L8 promotions printed beside it for comparison.
+An agent building the BIP39 augmentation called chunked_write with mode='w'
+twice. The first destroyed the 490-line file and rebuilt it by appending, which
+worked and left 666 lines. The second, meant to replace sk_forge_main alone,
+destroyed those 666 and left 211 — everything above the REPL surface gone: the
+imports, SkForge, PublicKey, SecretKeyResult, Bip39PublicKey, the wordlist
+loader. The tree stopped compiling on names that no longer existed.
 
-The object: erdos3_behrend_barrier, the click fusion of erdos_conjecture_ap with
-behrend_construction on D↔W (Δ=1.00), kernel-certified — igFrobeniusAlg.mul p p
-= p closes through lake build, a real verdict rather than an asserted tuple.
-Behrend is the right partner because it is the obstruction: its construction is
-what forces the exponent, so the conjecture and its barrier are one object.
+Nothing in git had it. HEAD is 489 lines, the largest version ever committed is
+544, no commit in any repo contains Bip39PublicKey, and the ig-docs copy is the
+same 489. The work had never been committed, because the agent had only just
+written it.
 
-Read against L8: d=1.5284, seven promotions, TWO of them full unit gaps (⊣ and
-∈). Read against L9: d=1.1614, six promotions, and only ONE unit gap — ∋. Total
-cost 4.166 climbing against 2.785 lateral. ≺, ∈ and ◻ are already matched at L9
-and cost nothing at all.
+It was in the session log. tool_calls_json holds the arguments of every call, so
+the three writes that BUILT the file — 4248 chars mode='w', then 20986 and 1679
+appended — reconstruct it exactly: 26913 chars, 666 lines, matching what the
+agent read back before destroying it.
 
-So the whole barrier is one primitive, and it is the merge. That agrees with what
-the decomposition already said from the other side: ∋ carries
-BROADCAST_TRANSCENDENCE, broadcast composition exceeding ZFC_fe SEQAX. It is not
-a hard step on the sequential layer, it is not on the sequential layer.
+Spliced the agent's own sk_forge_main over the stub it replaced, since that part
+was an improvement: real subcommand dispatch where the file had returned an empty
+string, which is why `sk_forge forge` printed nothing at all. Fixed two defects
+the reconstruction carries because they were in the original — `}fn
+format_result` run together, and a parse error formatted with {} on a tuple that
+implements only Debug.
 
-Which is why the Lean attempt kept receding. Assume the conclusion, then assume
-the quantitative bound instead and owe a dyadic summation, then owe the block
-bound under that — every move looked like progress and none of them removed the
-assumption, because the missing thing was never sequential to begin with.
+`sk_forge carriers` and `sk_forge forge` both answer now.
+
+The lesson is about the tool, not the agent: a write mode that replaces a whole
+file is indistinguishable, at the call site, from one that replaces a function,
+and the agent's own verification — "wrote 4043 chars, file total 4159 bytes" —
+reported success for an operation that had just deleted 23 kilobytes.
