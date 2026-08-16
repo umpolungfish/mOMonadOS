@@ -23,11 +23,11 @@ pub struct Step {
     pub holds: bool,
 }
 
-fn rule() {
+pub(crate) fn rule() {
     sprintln!("  ────────────────────────────────────────────────────────");
 }
 
-fn show(i: usize, total: usize, s: &Step) {
+pub(crate) fn show(i: usize, total: usize, s: &Step) {
     sprintln!("");
     rule();
     sprintln!("  STEP {}/{}   {}", i, total, s.title);
@@ -36,7 +36,7 @@ fn show(i: usize, total: usize, s: &Step) {
     sprintln!("  {}", if s.holds { "HOLDS" } else { "FAILS" });
 }
 
-fn finish(name: &str, steps: &[Step]) {
+pub(crate) fn finish(name: &str, steps: &[Step]) {
     let held = steps.iter().filter(|s| s.holds).count();
     sprintln!("");
     rule();

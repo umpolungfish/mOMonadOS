@@ -230,6 +230,7 @@ pub fn repl(k: &mut Kernel) {
                     }
                 }
             },
+            "fold" => crate::fold_walk::walk_fold(),
             "erdos" => {
                 match parts.next().unwrap_or("") {
                     "" | "list" => crate::erdos_walks::list_walks(),

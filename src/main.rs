@@ -155,6 +155,7 @@ mod nesting;
 mod carriers;
 mod straus;
 mod erdos_walks;
+mod fold_walk;
 mod substrate;
 mod invariant;
 mod lean_census;

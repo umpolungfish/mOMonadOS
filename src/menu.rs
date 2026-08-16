@@ -49,6 +49,7 @@ pub static SEALS_MENU: &[MenuItem] = &[
     MenuItem { name: "winding",        cmd: "seals winding",        desc: "ω = 2π — all angles in windings (1 step)", example: "seals winding", submenu: None },
     MenuItem { name: "residuals",      cmd: "seals residuals",      desc: "Where every remainders comes from (1 step)", example: "seals residuals", submenu: None },
     MenuItem { name: "all",            cmd: "seals all",            desc: "GRAND SEAL — walk through all 10", example: "seals all", submenu: None },
+    MenuItem { name: "fold",           cmd: "fold",                 desc: "The fold verdict of a word — closed form, surplus, the enclosure witness, the codon lane", example: "fold", submenu: None },
     MenuItem { name: "erdos",          cmd: "erdos",                desc: "Guided walks through the Erdős manuscripts — list | schutte | landau | lcm", example: "erdos schutte", submenu: None },
 ];
 
