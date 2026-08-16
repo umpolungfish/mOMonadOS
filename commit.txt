@@ -1,28 +1,12 @@
-BIP39 indices were wrong wherever they did not start on a byte
+lattice_flow and ringspec live in imasm_core now; the kernel keeps its doorway
 
-Both warnings the build printed were real, and one of them was a silent wrong
-answer rather than untidiness.
+The word instruments were reachable only by booting this kernel, so the host ask
+binary could not use them. They move into imasm_core — the crate both repos
+already depend on — and what remains here is a re-export plus one-line wrappers
+that print what the shared functions return.
 
-hex_to_indices extracts twelve eleven-bit indices from seventeen bytes. It split
-on whether the index began on a byte boundary, and only that branch was right —
-i = 0 and i = 8. For the other ten it shifted the first byte left without masking
-off the bits belonging to the PREVIOUS index, and folded the third byte in with a
-shift that did not account for having done so. Checked against a bit-string
-reference over two thousand random vectors: every vector wrong, ten of twelve
-indices wrong in each. Silent, because a wrong index is still a valid index and
-still names a word.
+insert_sweep_all stays, because it walks this kernel's own program table and the
+shared crate has no notion of one. repair_count became pub so it still reaches it.
 
-Now one 24-bit window and one shift, with the missing trailing byte read as zero,
-which the final shift discards anyway. Five thousand random vectors agree on
-every index, as do all-zero and all-ones.
-
-The `val` warning was the tell: a variable initialised and never read is the
-shape of a branch that assigns before it reads, which is where the masking
-should have been and was not.
-
-Second warning: `"prooflift" | "proof"` was unreachable for `proof`, since the
-guided proof walker claims that verb eighty lines earlier. So `proof` never once
-reached prooflift, and the alias only looked like it worked. The verbs are
-distinct things and keep distinct names.
-
-Release build green, no warnings.
+No behaviour change: cycle, weight, banked, trans and insert print exactly what
+they printed before.
