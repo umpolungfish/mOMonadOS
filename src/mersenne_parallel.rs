@@ -259,6 +259,86 @@ impl BigUint {
         }
         result
     }
+
+    /// Construct a BigUint from big-endian bytes
+    pub fn from_bytes_be(bytes: &[u8]) -> Self {
+        let mut result = BigUint::zero();
+        for &b in bytes {
+            // result = result * 256 + b
+            result = result.mul(&BigUint::from_u64(256));
+            result.limbs[0] = result.limbs[0].wrapping_add(b as u64);
+            // Handle carry
+            let mut carry = 0u64;
+            let mut idx = 0;
+            while idx < result.limbs.len() {
+                let val = result.limbs[idx].wrapping_add(carry);
+                if val < result.limbs[idx] || carry > 0 && val <= result.limbs[idx] {
+                    // overflow - carry
+                }
+                result.limbs[idx] = val;
+                if val < result.limbs[idx] {
+                    carry = 1;
+                } else {
+                    carry = 0;
+                }
+                idx += 1;
+            }
+            if carry > 0 {
+                result.limbs.push(carry);
+            }
+        }
+        result
+    }
+
+    /// Divide self by divisor, returning (quotient, remainder)
+    pub fn divmod(&self, divisor: &BigUint) -> (BigUint, BigUint) {
+        if divisor.is_zero() {
+            panic!("Division by zero");
+        }
+        let mut quotient = BigUint::zero();
+        let mut remainder = BigUint::zero();
+        for i in (0..self.limbs.len()).rev() {
+            // Bring down the next limb
+            remainder.limbs.insert(0, self.limbs[i]);
+            // Trim leading zeros in remainder
+            while remainder.limbs.len() > 1 && remainder.limbs.last() == Some(&0) {
+                remainder.limbs.pop();
+            }
+            // Now find how many times divisor goes into remainder
+            let mut q_digit = 0u64;
+            while !remainder.lt(divisor) {
+                remainder.sub_assign(divisor);
+                q_digit += 1;
+            }
+            quotient.limbs.insert(0, q_digit);
+        }
+        // Trim leading zeros
+        while quotient.limbs.len() > 1 && quotient.limbs.last() == Some(&0) {
+            quotient.limbs.pop();
+        }
+        if quotient.limbs.is_empty() {
+            quotient.limbs.push(0);
+        }
+        (quotient, remainder)
+    }
+
+    /// Convert to decimal string representation
+    pub fn to_decimal_str(&self) -> String {
+        if self.is_zero() {
+            return String::from("0");
+        }
+        // Clone self and repeatedly divide by 10
+        let mut value = self.clone();
+        let ten = BigUint::from_u64(10);
+        let mut digits = alloc::vec::Vec::new();
+        while !value.is_zero() {
+            let (quotient, remainder) = value.divmod(&ten);
+            digits.push((b'0' + remainder.to_u64().unwrap_or(0) as u8) as char);
+            value = quotient;
+        }
+        digits.reverse();
+        digits.iter().collect()
+    }
 }
 
 // ─── Lucas-Lehmer Test ─────────────────────────────────────────────────

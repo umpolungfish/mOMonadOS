@@ -56,10 +56,10 @@ cp ../p4rakernel/p4ramill/*.lean "$OUT/lean/"
 # 161 MB; this is the subset a reader needs to check the claims, and it is the
 # same set published under ig-docs-public/data/d2048_moduli.
 #
-# The .npz/.json fiducials are deliberately absent. `d2048 next` records the
-# numerical seeds as dead at residual 3.87e-3 -- "do not polish fiducial" -- so
-# they are not part of what is being proved and shipping them would invite the
-# reader to treat them as evidence.
+# The fiducial travels as the exact extraction, not as numerical seeds: the
+# transcripts below are emitted from the kernel itself at build time, and the
+# derivation they follow is carried beside them. The .npz/.json optimisation
+# output stays out, being a different object from what the extraction produces.
 mkdir -p "$OUT/data"
 D=../d12_sic_build
 cp $D/tower_ramified_4.poly $D/tower_C4.poly $D/tower_C16.poly $D/tower_C32.poly \
@@ -69,10 +69,27 @@ cp $D/tower_ramified_4.poly $D/tower_C4.poly $D/tower_C16.poly $D/tower_C32.poly
    $D/tower_step*.gp $D/d2048_raytower.gp "$OUT/data/" 2>/dev/null
 cp ../ig-docs-public/data/d2048_moduli/README.md "$OUT/data/" 2>/dev/null
 
+# The fiducial, exactly: the unit, its two reciprocal embeddings, the monomial
+# by two independent routes, and each radical recovered from its own Gauss sum.
+# Emitted by the kernel here so the file and the `d2048 exact` a reader types
+# cannot disagree.
+cp ../ig-docs/sic_fiducial_extraction_2part_bypass.md "$OUT/data/" 2>/dev/null
+echo "  ↳ emitting kernel transcripts"
+# The transcript starts at the prompt: forty lines of boot log ahead of the
+# answer makes the file look like a log rather than the datum it carries.
+transcript() { ./run_hosted_cmds.sh "$1" | sed -n '/^⊙> /,$p' | sed '/^⊙> quit/,$d'; }
+transcript "d2048 exact" > "$OUT/data/d2048_exact_extraction.txt"
+transcript "d2048 welch" > "$OUT/data/d2048_welch_overlaps.txt"
+transcript "d2048 verify" > "$OUT/data/d2048_verify.txt"
 # The manuscript the data backs.
 mkdir -p "$OUT/paper"
-cp ../ig-docs/manuscripts3/sic_moduli_conductor.tex \
-   ../ig-docs/manuscripts3/sic_moduli_conductor.pdf "$OUT/paper/" 2>/dev/null
+mkdir -p "$OUT/paper/figs"
+cp ../ig-docs/manuscripts3/alt_sic_moduli_conductor.tex \
+   ../ig-docs/manuscripts3/alt_sic_moduli_conductor.pdf "$OUT/paper/" 2>/dev/null
+cp ../ig-docs/manuscripts3/figs/filtration_2048.pdf \
+   ../ig-docs/manuscripts3/figs/horn_side.pdf \
+   ../ig-docs/manuscripts3/figs/horn_equator.pdf \
+   ../ig-docs/manuscripts3/figs/horn_axial.pdf "$OUT/paper/figs/" 2>/dev/null
 
 cat > "$OUT/run.sh" <<'RUNNER'
 #!/usr/bin/env bash
@@ -136,10 +153,20 @@ Nothing here asks to be taken on trust. The kernel compiles from `src/`, the
 Lean elaborates from `lean/`, and every field computation in the paper is
 checkable against `data/`.
 
-The numerical fiducials from the working repository are deliberately absent.
-`d2048 next` records the numerical seeds as dead at residual 3.87e-3 and says
-plainly not to polish the fiducial; they are not part of what is proved, and
-including them would invite a reader to treat them as evidence.
+The fiducial is here as the exact extraction. `data/d2048_exact_extraction.txt`
+is the kernel's own output for `d2048 exact`: the Stark unit
+(2047+sqrt(4190205))/2 with its minimal polynomial, its two reciprocal real
+embeddings, which are the two Galois parts, the monomial with exponents
+[-1,3,2] computed by two independent routes, and each radical of the
+discriminant recovered from its own Gauss sum, so the unit comes back from the
+sums rather than from a seed. `data/sic_fiducial_extraction_2part_bypass.md` is
+the derivation, and `data/d2048_welch_overlaps.txt` carries the equiangularity
+check. Type `d2048 exact` in the booted kernel and the transcript reproduces.
+
+The .npz and .json output of the numerical optimisation is not included. That
+route reaches one attractor from every seed and caps near a fifth of the frame
+potential, which is why the extraction goes around it; the files are a different
+object from what is being shown here.
 
 ## What to type
 
