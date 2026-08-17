@@ -2595,7 +2595,7 @@ Stopped after {} ticks.", ran);
                                     let g1 = ig.phi.ordinal() >= IgPrim::woe.ordinal();
                                     let g2 = ig.phi.ordinal() >= IgPrim::monad.ordinal();
                                     let g3 = ig.phi.ordinal() >= IgPrim::haha.ordinal();
-                                    sprintln!("  G1 (⊙≥woe): {}  ⊙={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
+                                    sprintln!("  G1 (⊙≥𐑢): {}  ⊙={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     sprintln!("  G3 (⊙≥𐑣): {}  ⊙={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
@@ -2605,7 +2605,7 @@ Stopped after {} ticks.", ran);
                                     let g1 = ig.phi.ordinal() >= IgPrim::woe.ordinal();
                                     let g2 = ig.phi.ordinal() >= IgPrim::monad.ordinal();
                                     let g3 = ig.phi.ordinal() >= IgPrim::haha.ordinal();
-                                    sprintln!("  G1 (⊙≥woe): {}  ⊙={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
+                                    sprintln!("  G1 (⊙≥𐑢): {}  ⊙={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     sprintln!("  G3 (⊙≥𐑣): {}  ⊙={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     if !g1 || !g2 || !g3 { all_pass = false; }

@@ -119,7 +119,7 @@ pub fn ym_report() -> ClayReport {
 
 /// RIEMANN HYPOTHESIS: UNCLOSED under all 23 dialects.
 /// Blocker: ◻=𐑴 (ord=2) < 3. All closure-bearing dialects require ◻≥3.
-/// Additionally: ⊙=roar (roar, ord=7/3≈2.33) < 3 — fails triple_criticality's
+/// Additionally: ⊙=𐑮 (roar, ord=7/3≈2.33) < 3 — fails triple_criticality's
 /// < gate which selects only haha (ord=3).
 /// Canonical tuple: ⟨𐑛𐑥𐑾𐑬𐑱𐑧𐑲𐑝roar𐑖𐑳𐑴⟩
 /// Lean: `rh_closes_nowhere` — proven by native_decide.
@@ -128,7 +128,7 @@ pub fn rh_report() -> ClayReport {
         name: "Riemann Hypothesis",
         verdict: ClayVerdict::Unclosed,
         closer_dialects: vec![],
-        blocker: Some("◻=𐑴 (ord=2) < terminal anchor 3; ⊙=roar (ord=7/3) < triple_criticality < gate (requires ord=3)"),
+        blocker: Some("◻=𐑴 (ord=2) < terminal anchor 3; ⊙=𐑮 (ord=7/3) < triple_criticality < gate (requires ord=3)"),
         winding: "𐑴",
         winding_ordinal: 2.0,
         low_winding: true,
@@ -152,7 +152,7 @@ pub fn ns_report() -> ClayReport {
 }
 
 /// P-vs-NP: UNCLOSED under all 23 dialects.
-/// Blocker: ◻=𐑷 (ord=1) < 3. Also <=woe (ord=1) — sub-critical, no gate clearance possible.
+/// Blocker: ◻=𐑷 (ord=1) < 3. Also <=𐑢 (ord=1) — sub-critical, no gate clearance possible.
 /// Canonical tuple: ⟨𐑛𐑡𐑩𐑗𐑱𐑤𐑲𐑝woe𐑓𐑙𐑷⟩
 /// Lean: `pnp_closes_nowhere` — proven by native_decide.
 pub fn pnp_report() -> ClayReport {
@@ -160,7 +160,7 @@ pub fn pnp_report() -> ClayReport {
         name: "P vs NP",
         verdict: ClayVerdict::Unclosed,
         closer_dialects: vec![],
-        blocker: Some("◻=𐑷 (ord=1) < terminal anchor 3; ⊙=woe (ord=1) — sub-critical"),
+        blocker: Some("◻=𐑷 (ord=1) < terminal anchor 3; ⊙=𐑢 (ord=1) — sub-critical"),
         winding: "𐑷",
         winding_ordinal: 1.0,
         low_winding: true,

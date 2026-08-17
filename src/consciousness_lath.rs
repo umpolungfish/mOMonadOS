@@ -2,7 +2,7 @@
 // Gate optimizer for C-score (spec: consciousness-lath).
 //
 // Read an IMASM word as a tuple, then search every single-axis mutation for the
-// one that most raises the consciousness score while opening Gate 1 (⊙=monad)
+// one that most raises the consciousness score while opening Gate 1 (⊙=⊙)
 // and passing Gate 2 (K=egg). The kernel's own consciousness_eval is the judge;
 // this only proposes the smallest mutation that lifts it.
 #![allow(dead_code)]

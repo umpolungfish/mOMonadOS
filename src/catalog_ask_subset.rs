@@ -28604,7 +28604,7 @@ pub static ASK_CATALOG_SUBSET: &[CatalogEntry] = &[
         0, Domain::General,
     ),
     entry(
-        "optimal_betting_system", "The structurally optimal betting system — Dialetheic Bootstrap with Frobenius-closed cycle. K=slow, Phi=monad, P=Frobenius-special. This is fin3r after the K...",
+        "optimal_betting_system", "The structurally optimal betting system — Dialetheic Bootstrap with Frobenius-closed cycle. K=slow, Phi=⊙, P=Frobenius-special. This is fin3r after the K...",
         IgPrim::ash, IgPrim::are, IgPrim::ian,
         IgPrim::or_, IgPrim::peep, IgPrim::egg,
         IgPrim::thigh, IgPrim::measure,
