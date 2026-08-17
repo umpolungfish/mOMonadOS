@@ -1,16 +1,12 @@
-One notation in the dialect table
+The gate constants are named for the axes they gate
 
-The first twelve dialects printed their gates from hand-written strings carrying a
-second notation: Phi, Phc, Omega, f and Gm standing in for the marks, and the
-English names of Shavian letters standing where the letters belong. Every dialect
-already carries its gates as specifications in the marks, so the strings were
-display only and are deleted. Every dialect prints from its own specification.
+Every gate held a specification in the marks and was reached through an identifier
+in the retired vocabulary: phi for parity, odot for criticality, omega for
+protection, and single letters for dimensionality, topology, recognition, fidelity,
+kinetics, granularity, grammar, chirality and stoichiometry. Thirty-three constants
+renamed to the axis each one gates, so the source reads in the same vocabulary as
+the output.
 
-A threshold is a value on a mark's axis, so it prints as the letter that value is,
-the first value on the axis meeting the bar, rather than as the ordinal number
-standing behind it.
-
-The letter names woe, monad, roar, err and haha appeared as words in dialect
-descriptions and in the register readouts across four more modules, and the parity
-mark had been mangled to an ASCII less-than throughout the descriptions. Both
-corrected.
+Two criticality gates were named for what they are rather than for an ordinal that
+collided with a local binding: the exceptional-point threshold and the subcritical
+one that always passes.
