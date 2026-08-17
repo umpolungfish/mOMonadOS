@@ -1,20 +1,3 @@
-The proof vehicle carries the fiducial
+Vehicle carries sic_moduli_conductor
 
-The vehicle shipped the field data and left the fiducial out, on the grounds
-that the numerical seeds are dead. That reasoning was about the route we went
-around, not about the object. The fiducial travels now as the exact extraction:
-data/d2048_exact_extraction.txt is the kernel's own `d2048 exact`, carrying the
-Stark unit with its minimal polynomial, the two reciprocal embeddings that are
-the Galois parts, the monomial by two independent routes, and each radical of
-the discriminant recovered from its own Gauss sum. The derivation rides beside
-it, along with the Welch overlaps and the verification transcript. The .npz
-optimisation output stays out, being a different object.
-
-Transcripts are emitted from the hosted binary at build time and start at the
-prompt, so the file and the command a reader types cannot disagree.
-
-The paper carried is alt_sic_moduli_conductor with its four figures, replacing
-the older copy. And `d2048 welch` no longer says no vector is recovered at 2048:
-it reports what it measures at twelve and names the verb that computes the
-moduli at 2048, the phase assignment across the orbit being the object it does
-not have.
+The paper took the canonical name; the vehicle follows it.

@@ -84,8 +84,8 @@ transcript "d2048 verify" > "$OUT/data/d2048_verify.txt"
 # The manuscript the data backs.
 mkdir -p "$OUT/paper"
 mkdir -p "$OUT/paper/figs"
-cp ../ig-docs/manuscripts3/alt_sic_moduli_conductor.tex \
-   ../ig-docs/manuscripts3/alt_sic_moduli_conductor.pdf "$OUT/paper/" 2>/dev/null
+cp ../ig-docs/manuscripts3/sic_moduli_conductor.tex \
+   ../ig-docs/manuscripts3/sic_moduli_conductor.pdf "$OUT/paper/" 2>/dev/null
 cp ../ig-docs/manuscripts3/figs/filtration_2048.pdf \
    ../ig-docs/manuscripts3/figs/horn_side.pdf \
    ../ig-docs/manuscripts3/figs/horn_equator.pdf \
