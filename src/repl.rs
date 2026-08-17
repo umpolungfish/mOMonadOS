@@ -335,6 +335,9 @@ pub fn repl(k: &mut Kernel) {
                     sprintln!("vox evm <hex>        — lift EVM bytecode, verdict its closure");
                     sprintln!("vox wasm <hex>       — lift a WASM body, verdict its closure");
                     sprintln!("vox classify <mn>    — which glyph an instruction lifts to");
+                    sprintln!("vox rna <seq> [code] — lift a coding sequence; code is");
+                    sprintln!("                       standard or mitochondrial");
+                    sprintln!("vox peptide <seq>    — lift a residue sequence");
                     sprintln!("A word closes at T, carries an open fork at B, and runs clean");
                     sprintln!("and linear at N. The fork is what the verdict is looking for.");
                 } else {
@@ -354,6 +357,25 @@ pub fn repl(k: &mut Kernel) {
                             } else {
                                 vox_lift_file(&rest[1]);
                             }
+                        }
+                        "rna" => {
+                            if rest.len() > 1 {
+                                let dialect = rest.get(2).map(|s| s.as_str()).unwrap_or("standard");
+                                let t = vox_core::genetic::lift_rna_dialect(&rest[1], dialect);
+                                sprintln!("code    {}", dialect);
+                                sprintln!("word    {}", crate::vox::glyphs(&t.word));
+                                if let Some(stop) = t.stopped {
+                                    sprintln!("stop    {}", stop);
+                                }
+                                sprintln!("verdict {}", crate::vox::verdict(&t.word));
+                            } else { sprintln!("vox rna <sequence> [standard|mitochondrial]"); }
+                        }
+                        "peptide" | "aa" => {
+                            if rest.len() > 1 {
+                                let t = vox_core::genetic::lift_peptide(&rest[1]);
+                                sprintln!("word    {}", crate::vox::glyphs(&t.word));
+                                sprintln!("verdict {}", crate::vox::verdict(&t.word));
+                            } else { sprintln!("vox peptide <residues>"); }
                         }
                         "evm" => {
                             if rest.len() > 1 {
