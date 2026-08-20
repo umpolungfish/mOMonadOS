@@ -1088,7 +1088,11 @@ impl Collatz {
         s.push_str("  two folds over the same rungs: the max, which keeps the larger and\n");
         s.push_str("  discards the rest, and the sum, which keeps both. The ob3ect's banked\n");
         s.push_str("  check reads one unit lost to the max fold, so the sum is the honest one.\n\n");
-        s.push_str("  level      nodes   rungs      max-fold    ratio      sum-fold    ratio    sum x N\n");
+        s.push_str("  In the sum fold the recursion adds exactly:\n");
+        s.push_str("     ||e|| <= (9/16)||e|| + (3/16)||e|| + C  =  (3/4)||e|| + C,\n");
+        s.push_str("  so the only free quantity is c = C / ||e||, and the contraction holds\n");
+        s.push_str("  when c stays under a quarter. That column is the one that decides.\n\n");
+        s.push_str("  level      nodes   rungs      sum-fold    ratio    (3/4)prev           c   c < 1/4\n");
         let excess_of = |lvl: &Vec<u64>, m: u64| -> f64 {
             let n = lvl.len() as f64;
             let mut h = alloc::vec![0u64; m as usize];
@@ -1100,6 +1104,15 @@ impl Collatz {
         let mut level: Vec<u64> = alloc::vec![1];
         let mut prev = 0.0f64;
         let mut prev_sum = 0.0f64;
+        let mut c_sum = 0.0f64;
+        let mut c_n = 0u64;
+        let mut c_ok = 0u64;
+        let mut c_max = -9.0f64;
+        let mut prev2_sum = 0.0f64;
+        let mut pair_sum = 0.0f64;
+        let mut pair_n = 0u64;
+        let mut pair_ok = 0u64;
+        let mut pair_max = 0.0f64;
         for d in 1..=depth {
             let mut next: Vec<u64> = Vec::new();
             for &m in level.iter() {
@@ -1124,20 +1137,39 @@ impl Collatz {
                 r += 1;
                 if r > 20 { break; }
             }
-            if d > 8 {
-                s.push_str(&format!("  {:>5}  {:>9}  {:>6}  {:>11.7}  {:>7.3}  {:>12.7}  {:>7.3}  {:>9.4}\n",
-                    d, n, rungs, best,
-                    if prev > 0.0 { best / prev } else { 0.0 },
-                    total,
-                    if prev_sum > 0.0 { total / prev_sum } else { 0.0 },
-                    total * n as f64));
+            if d > 8 && prev_sum > 0.0 {
+                let three_quarter = 0.75 * prev_sum;
+                let c = (total - three_quarter) / prev_sum;
+                c_sum += c;
+                c_n += 1;
+                if c < 0.25 { c_ok += 1; }
+                if c > c_max { c_max = c; }
+                s.push_str(&format!("  {:>5}  {:>9}  {:>6}  {:>11.7}  {:>7.3}  {:>11.7}  {:>+10.4}  {:>8}\n",
+                    d, n, rungs, total, total / prev_sum, three_quarter, c,
+                    if c < 0.25 { "yes" } else { "NO" }));
             }
+            let _ = best;
+            if d > 8 && prev2_sum > 0.0 {
+                let pr = total / prev2_sum;
+                pair_sum += pr;
+                pair_n += 1;
+                if pr < 0.5625 { pair_ok += 1; }
+                if pr > pair_max { pair_max = pr; }
+            }
+            prev2_sum = prev_sum;
             prev = best;
             prev_sum = total;
         }
-        s.push_str("\n  a ratio holding near 0.75 is the contraction; the sum-fold column is the\n");
-        s.push_str("  one that discards nothing, and sum x N holding near a constant is the\n");
-        s.push_str("  square-root law read off a fold that kept every rung.\n");
+        s.push_str(&format!("\n  c under a quarter in {} of {} level(s); mean c {:+.4}, worst {:+.4}\n",
+            c_ok, c_n, c_sum / c_n.max(1) as f64, c_max));
+        // The involution has period two, so the two-step map is where an
+        // excursion and its partner meet. A pair ratio under (3/4)^2 = 0.5625
+        // is the contraction holding across the swap even where one level alone
+        // expands.
+        s.push_str(&format!("  two-step ratio: under 0.5625 in {} of {}; mean {:.4}, worst {:.4}\n",
+            pair_ok, pair_n, pair_sum / pair_n.max(1) as f64, pair_max));
+        s.push_str("  0.5625 is (3/4) squared, what two clean levels would give.\n");
+        s.push_str("  3/4 + c is the contraction constant, and the fold discards nothing.\n");
         s
     }
 
