@@ -1083,8 +1083,9 @@ impl Collatz {
     ///
     /// This verb measures the norm, its per-level ratio against 3/4, and which
     /// conductor attains it.
-    pub fn norm(depth: u32) -> String {
-        let mut s = String::from("collatz norm — the weighted excess norm and its contraction\n");
+    pub fn norm(depth: u32, fixed_rungs: u32) -> String {
+        let mut s = format!("collatz norm — the weighted excess norm and its contraction\n  rungs {}\n",
+            if fixed_rungs > 0 { alloc::format!("held at {}", fixed_rungs) } else { alloc::string::String::from("as the tower allows") });
         s.push_str("  two folds over the same rungs: the max, which keeps the larger and\n");
         s.push_str("  discards the rest, and the sum, which keeps both. The ob3ect's banked\n");
         s.push_str("  check reads one unit lost to the max fold, so the sum is the honest one.\n\n");
@@ -1129,7 +1130,12 @@ impl Collatz {
             let mut total = 0.0f64;
             let mut rungs = 0u32;
             let mut r = 1u32;
-            while 3u64.pow(r) <= n {
+            // A rung opening is the NORM's truncation moving, not the dynamics:
+            // the sum gains a term the level below never had, so the ratio jumps
+            // once and settles. Holding the rung count fixed takes that artefact
+            // out and leaves what the level map actually does.
+            let rung_cap = if fixed_rungs > 0 { fixed_rungs } else { 20 };
+            while 3u64.pow(r) <= n && r <= rung_cap {
                 let w = excess_of(&level, 3u64.pow(r)) / (3.0f64).powi(r as i32);
                 if w > best { best = w; }
                 total += w;
