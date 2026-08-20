@@ -74,6 +74,8 @@ impl Collatz {
         s.push_str("  collatz balance <v> <depth>  the two subtrees feeding one junction\n");
         s.push_str("  collatz balanced <lo> <hi> <depth>  the junctions whose arms match\n");
         s.push_str("  collatz classes <mod> <n> <depth>   is the share fixed by the residue\n");
+        s.push_str("  collatz adic <digits> <n> <depth>   the 3-adic map of the share\n");
+        s.push_str("  collatz growth <v> <dmax>           the amplitude under a value\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -380,6 +382,94 @@ impl Collatz {
         s.push_str(&format!("\n  widest spread inside a class: {:.4}\n", worst));
         s.push_str("  a share the residue fixes shows a spread at zero; a share it only\n");
         s.push_str("  biases keeps a spread while the means separate.\n");
+        s
+    }
+
+
+    /// The odd share of one residue class, sampled.
+    fn class_share(c: u64, modulus: u64, samples: u64, depth: u32) -> (f64, f64, f64) {
+        let mut n = 0u64;
+        let mut sum = 0.0f64;
+        let mut lo = 2.0f64;
+        let mut hi = -1.0f64;
+        let mut v = c;
+        // A junction smaller than the depth being counted has its arms cut short
+        // by the root, not by its own branching, so it reports the window rather
+        // than the class. Start above that.
+        let floor = 4 * depth as u64;
+        while v < floor.max(2) { v += modulus; }
+        while n < samples {
+            if v % 3 == 2 {
+                let e = Self::subtree(2 * v, depth);
+                let o = Self::subtree((2 * v - 1) / 3, depth);
+                let sh = o as f64 / (e + o) as f64;
+                sum += sh;
+                if sh < lo { lo = sh; }
+                if sh > hi { hi = sh; }
+                n += 1;
+            } else {
+                return (-1.0, 0.0, 0.0);      // the class holds no junctions
+            }
+            v += modulus;
+        }
+        (sum / n as f64, lo, hi)
+    }
+
+    /// The 3-adic map of the share. Each digit of a junction's base-3 address
+    /// pins its odd share further, so the object that sets the whole spectrum is
+    /// a function on the 3-adics. This walks the digit tree, refining every
+    /// class into its three children and reporting what each digit buys: the
+    /// mean it moves to, and the spread it has not yet resolved.
+    pub fn adic(digits: u32, samples: u64, depth: u32) -> String {
+        let mut s = format!("collatz adic — {} digit(s), {} sample(s) per class, subtree depth {}\n",
+            digits, samples, depth);
+        s.push_str("  a junction is 2 (mod 3); each further digit splits a class in three\n\n");
+        s.push_str("  class (mod)          mean      spread   resolved\n");
+        // breadth-first over the digit tree, keeping only classes that hold junctions
+        let mut frontier: Vec<(u64, u64)> = alloc::vec![(2, 3)];
+        for k in 1..=digits {
+            let mut next: Vec<(u64, u64)> = Vec::new();
+            for &(c, m) in frontier.iter() {
+                let (mean, lo, hi) = Self::class_share(c, m, samples, depth);
+                if mean < 0.0 { continue; }
+                let spread = hi - lo;
+                let bar = if spread < 0.02 { "pinned" }
+                          else if spread < 0.08 { "close" }
+                          else { "open" };
+                let indent = (k as usize - 1) * 2;
+                for _ in 0..indent { s.push(' '); }
+                s.push_str(&format!("  {:>8} (mod {:<6})  {:>7.4}  {:>10.4}   {}\n",
+                    c, m, mean, spread, bar));
+                if k < digits {
+                    for j in 0..3u64 { next.push((c + j * m, m * 3)); }
+                }
+            }
+            frontier = next;
+            if frontier.is_empty() { break; }
+        }
+        s.push_str("\n  a digit that pins a class has done its work; one that leaves it open\n");
+        s.push_str("  hands the rest to the digit below.\n");
+        s
+    }
+
+
+    /// The amplitude under a value. Every subtree grows like (4/3)^d, so what
+    /// separates one arm from another is the constant in front. This reports the
+    /// per-level ratio and the amplitude S(v,d) / (4/3)^d, which is the object
+    /// the share is a ratio of.
+    pub fn growth(v: u64, dmax: u32) -> String {
+        let mut s = format!("collatz growth {} to depth {}\n", v, dmax);
+        s.push_str("     depth      subtree    ratio    amplitude\n");
+        let mut prev = 0u64;
+        for d in 1..=dmax {
+            let n = Self::subtree(v, d);
+            let ratio = if prev > 0 { n as f64 / prev as f64 } else { 0.0 };
+            let mut scale = 1.0f64;
+            for _ in 0..d { scale *= 4.0 / 3.0; }
+            s.push_str(&format!("  {:>8}  {:>11}  {:>7.4}  {:>11.4}\n",
+                d, n, ratio, n as f64 / scale));
+            prev = n;
+        }
         s
     }
 
