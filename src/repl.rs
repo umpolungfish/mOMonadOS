@@ -1926,12 +1926,30 @@ pub fn repl(k: &mut Kernel) {
                 }
             }
             "collatz" => {
-                let rest: Vec<&str> = parts.collect();
+                // `parts` is splitn(4), so a fourth argument arrives glued to the
+                // third. Re-split the tail before reading it, or `balanced lo hi d`
+                // loses its depth and reports a usage line instead of an answer.
+                let tail: Vec<&str> = parts.collect();
+                let joined = tail.join(" ");
+                let rest: Vec<&str> = joined.split_whitespace().collect();
                 match rest.first().copied() {
                     None | Some("help") => sprintln!("{}", crate::collatz::Collatz::help()),
                     Some("trace") => match rest.get(1).map(|v| v.parse::<u64>()) {
                         Some(Ok(v)) => sprintln!("{}", crate::collatz::Collatz::trace(v)),
                         _ => sprintln!("collatz trace <n> — n must be a number"),
+                    },
+                    Some("balance") => match (rest.get(1).map(|v| v.parse::<u64>()),
+                                              rest.get(2).map(|v| v.parse::<u32>())) {
+                        (Some(Ok(v)), Some(Ok(d))) =>
+                            sprintln!("{}", crate::collatz::Collatz::balance(v, d)),
+                        _ => sprintln!("collatz balance <v> <depth>"),
+                    },
+                    Some("balanced") => match (rest.get(1).map(|v| v.parse::<u64>()),
+                                               rest.get(2).map(|v| v.parse::<u64>()),
+                                               rest.get(3).map(|v| v.parse::<u32>())) {
+                        (Some(Ok(l)), Some(Ok(h)), Some(Ok(d))) =>
+                            sprintln!("{}", crate::collatz::Collatz::balanced(l, h, d)),
+                        _ => sprintln!("collatz balanced <lo> <hi> <depth>"),
                     },
                     Some("junctions") => match (rest.get(1).map(|v| v.parse::<u64>()),
                                                 rest.get(2).map(|v| v.parse::<u64>())) {

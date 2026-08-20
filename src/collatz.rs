@@ -71,6 +71,8 @@ impl Collatz {
         s.push_str("  collatz merge <a> <b>    where two trajectories first coincide\n");
         s.push_str("  collatz chain <n>        the record chain n -> (4n-1)/3\n");
         s.push_str("  collatz junctions <lo> <hi>  where trajectories merge, by arm\n");
+        s.push_str("  collatz balance <v> <depth>  the two subtrees feeding one junction\n");
+        s.push_str("  collatz balanced <lo> <hi> <depth>  the junctions whose arms match\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -246,6 +248,92 @@ impl Collatz {
             tot_e, tot_o, tot_o as f64 / (tot_e + tot_o) as f64));
         s.push_str("  the odd share is the fraction of arrivals that used the arm only\n");
         s.push_str("  a 2 (mod 3) value has; the even arm is always available.\n");
+        s
+    }
+
+
+    /// How many predecessors sit under a value, out to a given depth. The
+    /// backward step is `2m` always, and `(2m-1)/3` when `m = 2 (mod 3)`; the
+    /// edge back into the root cycle is cut so the count is of the tree rather
+    /// than of the loop.
+    pub fn subtree(start: u64, depth: u32) -> u64 {
+        let mut level: Vec<u64> = alloc::vec![start];
+        let mut total: u64 = 1;
+        for _ in 0..depth {
+            let mut next: Vec<u64> = Vec::new();
+            for &m in level.iter() {
+                if m <= u64::MAX / 2 { next.push(2 * m); }
+                if m % 3 == 2 {
+                    let u = (2 * m - 1) / 3;
+                    if u != 1 && u % 2 == 1 { next.push(u); }
+                }
+            }
+            total += next.len() as u64;
+            level = next;
+            if level.is_empty() { break; }
+        }
+        total
+    }
+
+    /// What makes a junction balanced. Traffic measured from a window of seeds
+    /// is a fact about the window; the intrinsic quantity is how much tree feeds
+    /// each arm. This counts both subtrees to a common depth and reports the
+    /// share the odd arm holds.
+    pub fn balance(v: u64, depth: u32) -> String {
+        let mut s = format!("collatz balance {} at depth {}\n", v, depth);
+        if v % 3 != 2 {
+            s.push_str(&format!("  {} is {} (mod 3) — one arm only, so it is no junction\n",
+                v, v % 3));
+            return s;
+        }
+        let even_arm = 2 * v;
+        let odd_arm = (2 * v - 1) / 3;
+        let e = Self::subtree(even_arm, depth);
+        let o = Self::subtree(odd_arm, depth);
+        s.push_str(&format!("  even arm  {:>12}   subtree {:>10}\n", even_arm, e));
+        s.push_str(&format!("  odd arm   {:>12}   subtree {:>10}\n", odd_arm, o));
+        s.push_str(&format!("  odd share {:.4}\n", o as f64 / (e + o) as f64));
+        s
+    }
+
+    /// Scan the junctions for the balanced ones. Balance is intrinsic here, read
+    /// off the two subtrees rather than off a seed window, so the answer does
+    /// not move when the window does.
+    pub fn balanced(lo: u64, hi: u64, depth: u32) -> String {
+        let mut s = format!("collatz balanced {}..{} at depth {}\n", lo, hi, depth);
+        s.push_str("  junctions whose two arms feed within a tenth of each other\n\n");
+        s.push_str("       junction     even arm      odd arm   odd share\n");
+        let mut seen = 0u64;
+        let mut hits = 0u64;
+        let mut share_sum = 0.0f64;
+        let mut spread = [0u64; 10];
+        for v in lo..=hi {
+            if v % 3 != 2 { continue; }
+            seen += 1;
+            let e = Self::subtree(2 * v, depth);
+            let o = Self::subtree((2 * v - 1) / 3, depth);
+            let sh = o as f64 / (e + o) as f64;
+            share_sum += sh;
+            let mut b = (sh * 10.0) as usize;
+            if b > 9 { b = 9; }
+            spread[b] += 1;
+            if sh > 0.4 && sh < 0.6 {
+                hits += 1;
+                if hits <= 30 {
+                    s.push_str(&format!("  {:>13}  {:>11}  {:>11}  {:>10.4}\n",
+                        v, e, o, sh));
+                }
+            }
+        }
+        s.push_str(&format!("\n  junctions scanned: {}\n", seen));
+        s.push_str(&format!("  balanced:          {}   ({:.4} of them)\n",
+            hits, hits as f64 / seen.max(1) as f64));
+        s.push_str(&format!("  mean odd share:    {:.4}\n", share_sum / seen.max(1) as f64));
+        s.push_str("  share spread:");
+        for b in 0..10 {
+            s.push_str(&format!("  {:.1}:{}", b as f64 / 10.0, spread[b]));
+        }
+        s.push('\n');
         s
     }
 
