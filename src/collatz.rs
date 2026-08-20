@@ -133,10 +133,12 @@ impl Collatz {
         s.push_str("  collatz collisions <depth> <r>      equidistribution as a collision count\n");
         s.push_str("  collatz excess <depth> <r>          the excess recursion and its prediction\n");
         s.push_str("  collatz perturb <depth>             the involution and its odd-arm perturbation\n");
+        s.push_str("  collatz perturb9 <depth>            the conductor-9 identity, exact\n");
         s.push_str("  collatz norm <depth> [rungs]        the weighted excess norm and its contraction\n");
         s.push_str("  collatz disjunct <depth>            is the weighted cross sum carried by one rung\n");
         s.push_str("  collatz attack <depth> <rungs> <minN>  hunt a counterexample to the contraction\n");
         s.push_str("  collatz jratio <depth> <rungs>      the junction excess ratio the CS route turns on\n");
+        s.push_str("  collatz lag <depth> <r>             the cross term against the lag average\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -1410,6 +1412,128 @@ impl Collatz {
         }
         s.push_str(&format!("\n  the bound lands under a quarter in {} of {} level(s); worst {:.3}\n",
             n_ok, n_tot, worst));
+        s
+    }
+
+
+    /// The cross term as an autocorrelation at a lag.
+    ///
+    /// Both deviations are the SAME level's, read under two affine maps, so the
+    /// cross term is the level's autocorrelation at a nonzero lag. Since the
+    /// deviation sums to zero, the autocorrelations over ALL lags sum to zero:
+    ///     R(0) = ||d||^2,   sum over nonzero lags of R = -||d||^2,
+    /// so a typical nonzero lag sits at -||d||^2 / (3^r - 1). That is negative,
+    /// and smaller than the Cauchy-Schwarz bound ||d||^2 by exactly the factor
+    /// 3^r - 1. This verb reads the actual lag value against both.
+    pub fn lag(depth: u32, r: u32) -> String {
+        let mut s = format!("collatz lag — the cross term against the lag average, conductor 3^{}\n", r);
+        s.push_str("  CS allows ||d||^2; the lag average is -||d||^2/(3^r - 1)\n\n");
+        s.push_str("  level      nodes       actual    lag avg     CS bnd   act/avg   act/CS\n");
+        let modulus = 3u64.pow(r);
+        let mut level: Vec<u64> = alloc::vec![1];
+        let mut ratio_sum = 0.0f64;
+        let mut ratio_n = 0u64;
+        for d in 1..=depth {
+            let mut evens: Vec<u64> = Vec::new();
+            let mut odds: Vec<u64> = Vec::new();
+            for &m in level.iter() {
+                evens.push(2 * m);
+                if m % 3 == 2 {
+                    let u = (2 * m - 1) / 3;
+                    if u != 1 { odds.push(u); }
+                }
+            }
+            let mut next: Vec<u64> = Vec::new();
+            next.extend_from_slice(&evens);
+            next.extend_from_slice(&odds);
+            if next.is_empty() { break; }
+            let ne = evens.len() as f64;
+            let no = odds.len() as f64;
+            if no < 9.0 { level = next; continue; }
+            let mut he = alloc::vec![0f64; modulus as usize];
+            let mut ho = alloc::vec![0f64; modulus as usize];
+            for &v in evens.iter() { he[(v % modulus) as usize] += 1.0; }
+            for &v in odds.iter() { ho[(v % modulus) as usize] += 1.0; }
+            let mut cross = 0.0f64;
+            let mut norm_e = 0.0f64;
+            let mut norm_o = 0.0f64;
+            for i in 0..modulus as usize {
+                let a = he[i] - ne / modulus as f64;
+                let b = ho[i] - no / modulus as f64;
+                cross += a * b;
+                norm_e += a * a;
+                norm_o += b * b;
+            }
+            let cs = crate::constant_closure::f64_sqrt(norm_e * norm_o);
+            let lag_avg = -cs / (modulus as f64 - 1.0);
+            if d > 14 && cs > 1e-9 {
+                let r1 = cross / lag_avg;
+                let r2 = cross / cs;
+                ratio_sum += r2.abs();
+                ratio_n += 1;
+                s.push_str(&format!("  {:>5}  {:>9}  {:>+11.3}  {:>+9.3}  {:>9.3}  {:>8.3}  {:>+7.3}\n",
+                    d, next.len(), cross, lag_avg, cs, r1, r2));
+            }
+            level = next;
+        }
+        s.push_str(&format!("\n  mean |actual| / CS bound: {:.4} over {} level(s)\n",
+            ratio_sum / ratio_n.max(1) as f64, ratio_n));
+        s.push_str(&format!("  1/(3^r - 1) = {:.4} — what a typical lag would give\n",
+            1.0 / (modulus as f64 - 1.0)));
+        s
+    }
+
+
+    /// The conductor-nine identity, checked in exact integers.
+    ///
+    /// Each class c mod 9 of the next level is fed by exactly one class mod 9 of
+    /// this one through the doubling arm — the class 5c, since 2*5 = 1 mod 9 —
+    /// and by exactly one class mod 27 through the odd arm, namely
+    /// 3*((5(c-1)) mod 9) + 2. So
+    ///     n'(c) = n(5c mod 9) + m27(oddSource c)
+    /// with n the level's mod-9 counts and m27 its mod-27 counts. No sign here:
+    /// at conductor nine the doubling permutation is a six-cycle, not an
+    /// involution, so the recursion is exact without being alternating.
+    pub fn perturb9(depth: u32) -> String {
+        let mut s = String::from("collatz perturb9 — the conductor-9 identity, exact integers\n");
+        s.push_str("  n'(c) = n(5c mod 9) + m27(3*((5(c-1)) mod 9) + 2)\n\n");
+        s.push_str("  level      nodes   classes checked   mismatches\n");
+        let mut level: Vec<u64> = alloc::vec![1];
+        let mut bad_total = 0u64;
+        for d in 1..=depth {
+            let mut n9 = [0i64; 9];
+            let mut m27 = [0i64; 27];
+            for &v in level.iter() {
+                n9[(v % 9) as usize] += 1;
+                m27[(v % 27) as usize] += 1;
+            }
+            let mut next: Vec<u64> = Vec::new();
+            for &v in level.iter() {
+                next.push(2 * v);
+                if v % 3 == 2 {
+                    let u = (2 * v - 1) / 3;
+                    if u != 1 { next.push(u); }
+                }
+            }
+            if next.is_empty() { break; }
+            let mut nn9 = [0i64; 9];
+            for &v in next.iter() { nn9[(v % 9) as usize] += 1; }
+            let mut bad = 0u64;
+            for c in 0..9usize {
+                let doubling_src = (5 * c) % 9;
+                let t_class = (5 * (c + 8)) % 9;
+                let odd_src = (3 * t_class + 2) % 27;
+                let pred = n9[doubling_src] + m27[odd_src];
+                if pred != nn9[c] { bad += 1; }
+            }
+            bad_total += bad;
+            if d > depth.saturating_sub(10) {
+                s.push_str(&format!("  {:>5}  {:>9}  {:>16}  {:>11}\n", d, next.len(), 9, bad));
+            }
+            level = next;
+        }
+        s.push_str(&format!("\n  mismatches over the whole walk: {}\n", bad_total));
+        s.push_str("  a zero here is the identity holding class by class, level by level.\n");
         s
     }
 

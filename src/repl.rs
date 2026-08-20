@@ -1938,6 +1938,11 @@ pub fn repl(k: &mut Kernel) {
                         Some(Ok(v)) => sprintln!("{}", crate::collatz::Collatz::trace(v)),
                         _ => sprintln!("collatz trace <n> — n must be a number"),
                     },
+                    Some("lag") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
+                                          rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
+                        (Some(d), Some(r)) => sprintln!("{}", crate::collatz::Collatz::lag(d, r)),
+                        _ => sprintln!("collatz lag <depth> <r>"),
+                    },
                     Some("jratio") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
                                              rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
                         (Some(d), Some(r)) => sprintln!("{}", crate::collatz::Collatz::jratio(d, r)),
@@ -1958,6 +1963,10 @@ pub fn repl(k: &mut Kernel) {
                         Some(Ok(d)) => sprintln!("{}", crate::collatz::Collatz::norm(d,
                             rest.get(2).and_then(|v| v.parse::<u32>().ok()).unwrap_or(0))),
                         _ => sprintln!("collatz norm <depth>"),
+                    },
+                    Some("perturb9") => match rest.get(1).map(|v| v.parse::<u32>()) {
+                        Some(Ok(d)) => sprintln!("{}", crate::collatz::Collatz::perturb9(d)),
+                        _ => sprintln!("collatz perturb9 <depth>"),
                     },
                     Some("perturb") => match rest.get(1).map(|v| v.parse::<u32>()) {
                         Some(Ok(d)) => sprintln!("{}", crate::collatz::Collatz::perturb(d)),
