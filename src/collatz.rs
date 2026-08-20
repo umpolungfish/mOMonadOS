@@ -141,6 +141,7 @@ impl Collatz {
         s.push_str("  collatz lag <depth> <r>             the cross term against the lag average\n");
         s.push_str("  collatz lambda <depth>              the proportionality of the two arms at conductor 3\n");
         s.push_str("  collatz concentrate <depth> <rungs>  the running average the contraction needs\n");
+        s.push_str("  collatz participation <depth> <rungs>  effective components of the cross sum\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -1698,6 +1699,88 @@ impl Collatz {
             crate::constant_closure::f64_exp(logsum / k.max(1) as f64)));
         s.push_str("  a running mean under a quarter, and a geometric ratio under one, are\n");
         s.push_str("  what the contraction needs. Neither is a per-level claim.\n");
+        s
+    }
+
+
+    /// The participation ratio of the weighted cross sum.
+    ///
+    /// The ob3ect grounds the paradox slot at 𐑳 and names it: the participation
+    /// ratio, the effective number of distinct components carrying a quantity.
+    /// Asked of the cross sum across rungs, PR = (sum w)^2 / sum w^2 says how
+    /// many rungs actually carry it — one, if a single rung dominates, and the
+    /// rung count if they share evenly. That is the right form of the question
+    /// "does one rung carry it", which fails as a yes/no.
+    ///
+    /// Asked across LEVELS it says something else: how many levels carry the
+    /// running total, which is what decides whether the average self-averages or
+    /// is hostage to a few excursions.
+    pub fn participation(depth: u32, rungs: u32) -> String {
+        let mut s = format!("collatz participation — effective components of the cross sum, {} rungs\n\n", rungs);
+        s.push_str("  level      nodes    PR rungs   of    frac      w total\n");
+        let mut level: Vec<u64> = alloc::vec![1];
+        let mut level_terms: Vec<f64> = Vec::new();
+        let mut pr_sum = 0.0f64;
+        let mut pr_n = 0u64;
+        let mut frac_sum = 0.0f64;
+        for d in 1..=depth {
+            let mut evens: Vec<u64> = Vec::new();
+            let mut odds: Vec<u64> = Vec::new();
+            for &m in level.iter() {
+                evens.push(2 * m);
+                if m % 3 == 2 { let u = (2 * m - 1) / 3; if u != 1 { odds.push(u); } }
+            }
+            let mut next: Vec<u64> = Vec::new();
+            next.extend_from_slice(&evens);
+            next.extend_from_slice(&odds);
+            if next.is_empty() { break; }
+            let n = next.len() as u64;
+            let ne = evens.len() as f64;
+            let no = odds.len() as f64;
+            if no < 9.0 { level = next; continue; }
+            let mut ws: Vec<f64> = Vec::new();
+            let mut r = 1u32;
+            while 3u64.pow(r) <= n && r <= rungs {
+                let m = 3u64.pow(r);
+                let mut he = alloc::vec![0f64; m as usize];
+                let mut ho = alloc::vec![0f64; m as usize];
+                for &v in evens.iter() { he[(v % m) as usize] += 1.0; }
+                for &v in odds.iter() { ho[(v % m) as usize] += 1.0; }
+                let mut cx = 0.0f64;
+                for i in 0..m as usize {
+                    cx += (he[i] - ne / m as f64) * (ho[i] - no / m as f64);
+                }
+                ws.push(2.0 * cx * (m as f64) / ((n * n) as f64) / (3.0f64).powi(r as i32));
+                r += 1;
+            }
+            if ws.len() >= 2 {
+                let sum: f64 = ws.iter().sum();
+                let sumsq: f64 = ws.iter().map(|x| x * x).sum();
+                if sumsq > 1e-24 {
+                    let pr = sum * sum / sumsq;
+                    pr_sum += pr;
+                    pr_n += 1;
+                    frac_sum += pr / ws.len() as f64;
+                    if d > depth.saturating_sub(10) {
+                        s.push_str(&format!("  {:>5}  {:>9}  {:>9.3}  {:>3}  {:>6.3}  {:>+11.6}\n",
+                            d, n, pr, ws.len(), pr / ws.len() as f64, sum));
+                    }
+                    level_terms.push(sum);
+                }
+            }
+            level = next;
+        }
+        s.push_str(&format!("\n  mean PR across rungs: {:.3}, mean fraction of rungs: {:.3}\n",
+            pr_sum / pr_n.max(1) as f64, frac_sum / pr_n.max(1) as f64));
+        // and across levels: how many levels carry the running total
+        let tot: f64 = level_terms.iter().sum();
+        let totsq: f64 = level_terms.iter().map(|x| x * x).sum();
+        if totsq > 1e-24 {
+            s.push_str(&format!("  PR across levels: {:.3} of {} — the effective number of levels\n",
+                tot * tot / totsq, level_terms.len()));
+            s.push_str("  carrying the running total. Near the level count is self-averaging;\n");
+            s.push_str("  near one is a total hostage to a single excursion.\n");
+        }
         s
     }
 

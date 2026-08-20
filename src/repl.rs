@@ -1938,6 +1938,11 @@ pub fn repl(k: &mut Kernel) {
                         Some(Ok(v)) => sprintln!("{}", crate::collatz::Collatz::trace(v)),
                         _ => sprintln!("collatz trace <n> — n must be a number"),
                     },
+                    Some("participation") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
+                                                    rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
+                        (Some(d), Some(r)) => sprintln!("{}", crate::collatz::Collatz::participation(d, r)),
+                        _ => sprintln!("collatz participation <depth> <rungs>"),
+                    },
                     Some("concentrate") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
                                                   rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
                         (Some(d), Some(r)) => sprintln!("{}", crate::collatz::Collatz::concentrate(d, r)),
