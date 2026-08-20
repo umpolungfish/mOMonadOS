@@ -140,6 +140,7 @@ impl Collatz {
         s.push_str("  collatz jratio <depth> <rungs>      the junction excess ratio the CS route turns on\n");
         s.push_str("  collatz lag <depth> <r>             the cross term against the lag average\n");
         s.push_str("  collatz lambda <depth>              the proportionality of the two arms at conductor 3\n");
+        s.push_str("  collatz concentrate <depth> <rungs>  the running average the contraction needs\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -1621,6 +1622,82 @@ impl Collatz {
         s.push_str(&format!("  part-whole term positive in {} of {}, mean {:+.1}\n", pw_pos, tot, pw_sum / tot.max(1) as f64));
         s.push_str("  two disjoint pairs pulling one way against one part-whole pair pulling\n");
         s.push_str("  the other is the sign, and it is an expectation, not a rule.\n");
+        s
+    }
+
+
+    /// The concentration statement the contraction actually needs.
+    ///
+    /// The norm decays iff the PRODUCT of the per-level ratios decays, which is
+    /// the mean of log(3/4 + c) being negative — not the supremum of c being
+    /// under a quarter. A level may expand as long as the running average does
+    /// not. So the quantity to watch is the running mean of c against 1/4, and
+    /// the running geometric mean of the ratio against 1, with the margin
+    /// between them the thing a proof has to secure.
+    pub fn concentrate(depth: u32, rungs: u32) -> String {
+        let mut s = format!("collatz concentrate — the running average, {} rungs held live at both levels\n", rungs);
+        s.push_str("  contraction needs mean log(3/4 + c) < 0, not sup c < 1/4\n\n");
+        s.push_str("  level      nodes        c    mean c   var c    geo ratio   margin to 1/4\n");
+        let excess_of = |lvl: &Vec<u64>, m: u64| -> f64 {
+            let n = lvl.len() as f64;
+            let mut h = alloc::vec![0u64; m as usize];
+            for &v in lvl.iter() { h[(v % m) as usize] += 1; }
+            let mut c = 0u64;
+            for i in 0..m as usize { c += h[i] * h[i]; }
+            (m as f64) * (c as f64) / (n * n) - 1.0
+        };
+        let norm_of = |lvl: &Vec<u64>| -> f64 {
+            let n = lvl.len() as u64;
+            let mut t = 0.0f64;
+            let mut r = 1u32;
+            while 3u64.pow(r) <= n && r <= rungs { t += excess_of(lvl, 3u64.pow(r)) / (3.0f64).powi(r as i32); r += 1; }
+            t
+        };
+        let mut level: Vec<u64> = alloc::vec![1];
+        let mut prev_norm = 0.0f64;
+        let mut prev_n = 0u64;
+        let mut csum = 0.0f64;
+        let mut csq = 0.0f64;
+        let mut logsum = 0.0f64;
+        let mut k = 0u64;
+        let mut worst_mean = -9.0f64;
+        for d in 1..=depth {
+            let mut next: Vec<u64> = Vec::new();
+            for &m in level.iter() {
+                next.push(2 * m);
+                if m % 3 == 2 { let u = (2 * m - 1) / 3; if u != 1 { next.push(u); } }
+            }
+            if next.is_empty() { break; }
+            level = next;
+            let n = level.len() as u64;
+            let cur = norm_of(&level);
+            let live = prev_n >= 3u64.pow(rungs) && n >= 3u64.pow(rungs);
+            if prev_norm > 0.0 && cur > 0.0 && live {
+                let ratio = cur / prev_norm;
+                let c = ratio - 0.75;
+                k += 1;
+                csum += c;
+                csq += c * c;
+                logsum += f64_ln(ratio);
+                let mean_c = csum / k as f64;
+                if mean_c > worst_mean { worst_mean = mean_c; }
+                let var = csq / k as f64 - mean_c * mean_c;
+                let geo = crate::constant_closure::f64_exp(logsum / k as f64);
+                if d > depth.saturating_sub(12) {
+                    s.push_str(&format!("  {:>5}  {:>9}  {:>+7.3}  {:>+7.4}  {:>6.4}  {:>10.5}  {:>+13.4}\n",
+                        d, n, c, mean_c, var, geo, 0.25 - mean_c));
+                }
+            }
+            prev_norm = cur;
+            prev_n = n;
+        }
+        s.push_str(&format!("\n  levels averaged: {}\n", k));
+        s.push_str(&format!("  final mean c: {:+.4}   worst running mean: {:+.4}\n",
+            csum / k.max(1) as f64, worst_mean));
+        s.push_str(&format!("  geometric mean of the ratio: {:.5}\n",
+            crate::constant_closure::f64_exp(logsum / k.max(1) as f64)));
+        s.push_str("  a running mean under a quarter, and a geometric ratio under one, are\n");
+        s.push_str("  what the contraction needs. Neither is a per-level claim.\n");
         s
     }
 
