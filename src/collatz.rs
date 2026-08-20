@@ -1553,11 +1553,15 @@ impl Collatz {
     pub fn lambda(depth: u32) -> String {
         let mut s = String::from("collatz lambda — b = lambda a at conductor three\n");
         s.push_str("  a = (n0, n2, n1) - N/3 (even arm), b = (m5, m2, m8) - No/3 (odd arm)\n\n");
-        s.push_str("  level      nodes      lambda      cos     |a|      |b|   sign\n");
+        s.push_str("  level      nodes      lambda   sign    disjoint   part-whole\n");
         let mut level: Vec<u64> = alloc::vec![1];
         let mut neg = 0u64;
         let mut tot = 0u64;
         let mut lsum = 0.0f64;
+        let mut dis_sum = 0.0f64;
+        let mut pw_sum = 0.0f64;
+        let mut dis_neg = 0u64;
+        let mut pw_pos = 0u64;
         for d in 1..=depth {
             let mut n3 = [0f64; 3];
             let mut m9 = [0f64; 9];
@@ -1587,16 +1591,36 @@ impl Collatz {
                 tot += 1;
                 lsum += lam;
                 if lam < 0.0 { neg += 1; }
-                s.push_str(&format!("  {:>5}  {:>9}  {:>+10.4}  {:>+7.3}  {:>6.1}  {:>7.1}  {:>5}\n",
-                    d, level.len(), lam, cos, na, nb,
-                    if lam < 0.0 { "neg" } else { "POS" }));
+                // the six integers the sign is a function of, so an exceptional
+                // level can be read rather than just counted
+                let x = n3[0] - nn / 3.0;
+                let y = n3[1] - nn / 3.0;
+                let z = n3[2] - nn / 3.0;
+                let pp = m9[2] - no / 3.0;
+                let qq = m9[5] - no / 3.0;
+                let rr = m9[8] - no / 3.0;
+                // The three terms are not alike. n0 and n1 are DISJOINT from the
+                // junction parts m5, m8, so at fixed total those pairs
+                // anti-correlate; n2 is the WHOLE of which m2 is a part, so that
+                // pair correlates positively. Two against one is the sign.
+                let t_disjoint = x * qq + y * rr;
+                let t_partwhole = z * pp;
+                dis_sum += t_disjoint;
+                pw_sum += t_partwhole;
+                if t_disjoint < 0.0 { dis_neg += 1; }
+                if t_partwhole > 0.0 { pw_pos += 1; }
+                s.push_str(&format!("  {:>5}  {:>9}  {:>+10.4}  {:>5}  {:>+10.1}  {:>+11.1}\n",
+                    d, level.len(), lam,
+                    if lam < 0.0 { "neg" } else { "POS" }, t_disjoint, t_partwhole));
             }
             level = next;
         }
         s.push_str(&format!("\n  lambda negative in {} of {} level(s); mean {:+.4}\n",
             neg, tot, lsum / tot.max(1) as f64));
-        s.push_str("  a negative lambda is the odd arm opposing the even one, which is what\n");
-        s.push_str("  makes the largest term of the weighted sum subtract rather than add.\n");
+        s.push_str(&format!("  disjoint terms negative in {} of {}, mean {:+.1}\n", dis_neg, tot, dis_sum / tot.max(1) as f64));
+        s.push_str(&format!("  part-whole term positive in {} of {}, mean {:+.1}\n", pw_pos, tot, pw_sum / tot.max(1) as f64));
+        s.push_str("  two disjoint pairs pulling one way against one part-whole pair pulling\n");
+        s.push_str("  the other is the sign, and it is an expectation, not a rule.\n");
         s
     }
 
