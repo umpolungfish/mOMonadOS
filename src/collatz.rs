@@ -76,6 +76,7 @@ impl Collatz {
         s.push_str("  collatz classes <mod> <n> <depth>   is the share fixed by the residue\n");
         s.push_str("  collatz adic <digits> <n> <depth>   the 3-adic map of the share\n");
         s.push_str("  collatz growth <v> <dmax>           the amplitude under a value\n");
+        s.push_str("  collatz amplitudes <lo> <hi> <d>    the amplitude over a range, with its recursion\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -469,6 +470,39 @@ impl Collatz {
             s.push_str(&format!("  {:>8}  {:>11}  {:>7.4}  {:>11.4}\n",
                 d, n, ratio, n as f64 / scale));
             prev = n;
+        }
+        s
+    }
+
+
+    /// The amplitude itself, over a range. A(v) is the constant in front of
+    /// (4/3)^d in the subtree count, so it is what the share is a ratio of, and
+    /// it is the unknown in
+    ///     A(v) = (3/4) ( A(2v) + [v = 2 mod 3] A((2v-1)/3) ).
+    /// Multiples of three carry amplitude zero — their arm is a bare chain — and
+    /// the verb marks them rather than printing a vanishing number as if it were
+    /// a measurement.
+    pub fn amplitudes(lo: u64, hi: u64, depth: u32) -> String {
+        let mut s = format!("collatz amplitudes {}..{} at depth {}\n", lo, hi, depth);
+        s.push_str("            v   v%3   v%9      subtree     amplitude   check (3/4)(sum of arms)\n");
+        let mut scale = 1.0f64;
+        for _ in 0..depth { scale *= 4.0 / 3.0; }
+        for v in lo..=hi {
+            if v % 3 == 0 {
+                s.push_str(&format!("  {:>11}  {:>4}  {:>4}   {:>10}     {:>9}   barren chain\n",
+                    v, 0, v % 9, Self::subtree(v, depth), "0"));
+                continue;
+            }
+            let a = Self::subtree(v, depth) as f64 / scale;
+            // the recursion, read one level down and compared
+            let a2 = Self::subtree(2 * v, depth) as f64 / scale;
+            let arm = if v % 3 == 2 {
+                Self::subtree(2 * (v / 3) + 1, depth) as f64 / scale
+            } else { 0.0 };
+            let check = 0.75 * (a2 + arm);
+            s.push_str(&format!("  {:>11}  {:>4}  {:>4}   {:>10}     {:>9.4}   {:>9.4}  ({:+.2}%)\n",
+                v, v % 3, v % 9, Self::subtree(v, depth), a, check,
+                100.0 * (check - a) / a));
         }
         s
     }

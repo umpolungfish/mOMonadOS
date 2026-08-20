@@ -1938,6 +1938,13 @@ pub fn repl(k: &mut Kernel) {
                         Some(Ok(v)) => sprintln!("{}", crate::collatz::Collatz::trace(v)),
                         _ => sprintln!("collatz trace <n> — n must be a number"),
                     },
+                    Some("amplitudes") => match (rest.get(1).map(|v| v.parse::<u64>()),
+                                                 rest.get(2).map(|v| v.parse::<u64>()),
+                                                 rest.get(3).map(|v| v.parse::<u32>())) {
+                        (Some(Ok(l)), Some(Ok(h)), Some(Ok(d))) =>
+                            sprintln!("{}", crate::collatz::Collatz::amplitudes(l, h, d)),
+                        _ => sprintln!("collatz amplitudes <lo> <hi> <depth>"),
+                    },
                     Some("growth") => match (rest.get(1).map(|v| v.parse::<u64>()),
                                              rest.get(2).map(|v| v.parse::<u32>())) {
                         (Some(Ok(v)), Some(Ok(d))) =>
