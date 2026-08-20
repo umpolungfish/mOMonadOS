@@ -5629,12 +5629,15 @@ fn vox_lift_file(path: &str) {
 
     let mut tally = [0usize; 4];   // T, B, N, F
     let mut illtyped = alloc::vec::Vec::new();
+    // B locates the arm left open, so the address is the useful part — a tally
+    // says how many and nothing about which.
+    let mut open_arms = alloc::vec::Vec::new();
     for (start, f) in funcs {
         let word = crate::vox::recompile_function(f);
         let v = crate::vox::verdict(&word);
         match v {
             'T' => tally[0] += 1,
-            'B' => tally[1] += 1,
+            'B' => { tally[1] += 1; open_arms.push((*start, f.len())); }
             'N' => tally[2] += 1,
             _ => {
                 tally[3] += 1;
@@ -5646,6 +5649,26 @@ fn vox_lift_file(path: &str) {
     }
     sprintln!("");
     sprintln!("  verdicts  T {}   B {}   N {}   F {}", tally[0], tally[1], tally[2], tally[3]);
+    if !open_arms.is_empty() {
+        sprintln!("  B is an arm left OPEN. The addresses carrying one:");
+        for (a, len) in open_arms.iter() {
+            sprintln!("    0x{:x}   {} instruction(s)", a, len);
+        }
+        // The word itself is what `insert` and `weight` can act on, so print the
+        // shortest open function's word: a repair is found on a word, not on a
+        // tally.
+        if let Some((addr, _)) = open_arms.iter().min_by_key(|(_, l)| *l) {
+            for (start, f) in funcs {
+                if start == addr {
+                    let word = crate::vox::recompile_function(f);
+                    let g = crate::vox::glyphs(&word);
+                    sprintln!("");
+                    sprintln!("  shortest open arm, 0x{:x}:", addr);
+                    sprintln!("  {}", g);
+                }
+            }
+        }
+    }
     if tally[3] > 0 {
         sprintln!("  F is not a truth value: the word is ill-typed, a ∋ with no ∈ to");
         sprintln!("  pair. It marks a function cut in the wrong place, not a program.");
