@@ -81,6 +81,30 @@ pub fn f64_ln(x: f64) -> f64 {
     2.0 * sum + k as f64 * LN2
 }
 
+
+/// Sine and cosine by Taylor with range reduction, since the kernel's float
+/// shims carry sqrt and exp and this is no_std. Only needed to a few ulp: the
+/// character sums below are read at three or four digits.
+const TAU: f64 = 6.283185307179586476925286766559;
+
+pub fn f64_sin(x: f64) -> f64 {
+    let mut t = x;
+    while t > TAU / 2.0 { t -= TAU; }
+    while t < -TAU / 2.0 { t += TAU; }
+    let t2 = t * t;
+    let mut term = t;
+    let mut sum = t;
+    let mut n = 1.0f64;
+    for _ in 0..24 {
+        n += 2.0;
+        term *= -t2 / (n * (n - 1.0));
+        sum += term;
+    }
+    sum
+}
+
+pub fn f64_cos(x: f64) -> f64 { f64_sin(x + TAU / 4.0) }
+
 pub struct Collatz;
 
 impl Collatz {
@@ -104,6 +128,7 @@ impl Collatz {
         s.push_str("  collatz amplitudes <lo> <hi> <d>    the amplitude over a range, with its recursion\n");
         s.push_str("  collatz birkhoff <lo> <hi> <d>      the cocycle weight averaged along trajectories\n");
         s.push_str("  collatz amax <lo> <hi> <d>          the largest amplitude in a window\n");
+        s.push_str("  collatz fourier <depth> <rmax>      the character sums of the tree measure\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -634,6 +659,69 @@ impl Collatz {
         s.push_str(&format!("  max against phi^d:  {:.3e}  at v = {}\n", worst_ratio, worst_arg));
         s.push_str("  a max that holds as the window widens is the cocycle staying bounded;\n");
         s.push_str("  one that climbs with the window is the thing that would break it.\n");
+        s
+    }
+
+
+    /// The character sums of the tree measure, level by level.
+    ///
+    /// Equidistribution mod 3^r is exactly the vanishing of every nonprincipal
+    /// character sum, so this measures them directly rather than through a
+    /// maximum deviation, which throws the signs away. Doubling permutes the
+    /// characters of a fixed conductor while the odd arm sends a conductor 3^r
+    /// character to one of conductor 3^(r+1), so the coefficient at each level is
+    /// fed from the level above and never from below: what the numbers show is
+    /// whether that flow decays.
+    pub fn fourier(depth: u32, rmax: u32) -> String {
+        let mut s = format!("collatz fourier to depth {} for conductors up to 3^{}\n", depth, rmax);
+        s.push_str("  |mu-hat(chi)| for the first nonprincipal character of each conductor\n\n");
+        s.push_str("  level      nodes");
+        for r in 1..=rmax { s.push_str(&format!("     3^{}", r)); }
+        s.push_str("\n");
+        let mut level: Vec<u64> = alloc::vec![1];
+        let mut prev: Vec<f64> = alloc::vec![0.0; rmax as usize];
+        for d in 1..=depth {
+            let mut next: Vec<u64> = Vec::new();
+            for &m in level.iter() {
+                next.push(2 * m);
+                if m % 3 == 2 {
+                    let u = (2 * m - 1) / 3;
+                    if u != 1 { next.push(u); }
+                }
+            }
+            level = next;
+            if level.is_empty() { break; }
+            let n = level.len() as f64;
+            s.push_str(&format!("  {:>5}  {:>9}", d, level.len()));
+            let mut cur: Vec<f64> = Vec::new();
+            for r in 1..=rmax {
+                let modulus = 3u64.pow(r);
+                let mut re = 0.0f64;
+                let mut im = 0.0f64;
+                for &m in level.iter() {
+                    let ang = TAU * ((m % modulus) as f64) / (modulus as f64);
+                    re += f64_cos(ang);
+                    im += f64_sin(ang);
+                }
+                let mag = crate::constant_closure::f64_sqrt(re * re + im * im) / n;
+                cur.push(mag);
+                s.push_str(&format!("  {:>7.4}", mag));
+            }
+            // The size that matters is not the coefficient but the coefficient
+            // times root N. A sample drawn uniformly has character sums of order
+            // one over root N, so this column reading order one IS the
+            // equidistribution, at the strongest rate there is.
+            let root_n = crate::constant_closure::f64_sqrt(n);
+            s.push_str("   x sqrt(N)");
+            for r in 0..rmax as usize {
+                s.push_str(&format!(" {:>6.3}", cur[r] * root_n));
+            }
+            let _ = &prev;
+            s.push_str("\n");
+            prev = cur;
+        }
+        s.push_str("\n  a coefficient falling geometrically is the equidistribution happening;\n");
+        s.push_str("  one that holds is the flow between conductors sustaining itself.\n");
         s
     }
 

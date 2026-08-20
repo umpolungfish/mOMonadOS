@@ -1938,6 +1938,12 @@ pub fn repl(k: &mut Kernel) {
                         Some(Ok(v)) => sprintln!("{}", crate::collatz::Collatz::trace(v)),
                         _ => sprintln!("collatz trace <n> — n must be a number"),
                     },
+                    Some("fourier") => match (rest.get(1).map(|v| v.parse::<u32>()),
+                                              rest.get(2).map(|v| v.parse::<u32>())) {
+                        (Some(Ok(d)), Some(Ok(r))) =>
+                            sprintln!("{}", crate::collatz::Collatz::fourier(d, r)),
+                        _ => sprintln!("collatz fourier <depth> <rmax>"),
+                    },
                     Some("amax") => match (rest.get(1).map(|v| v.parse::<u64>()),
                                            rest.get(2).map(|v| v.parse::<u64>()),
                                            rest.get(3).map(|v| v.parse::<u32>())) {
