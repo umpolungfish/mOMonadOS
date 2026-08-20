@@ -7,10 +7,9 @@
 //! returns.
 
 use alloc::string::String;
-use alloc::format;
 use crate::sprintln;
 
-pub use imasm_core::lattice_flow::{normalize, banked_walk, Banked};
+pub use imasm_core::lattice_flow::{normalize, banked_walk};
 
 macro_rules! wrap {
     ($name:ident) => {

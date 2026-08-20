@@ -190,6 +190,7 @@ pub static GRAMMAR_MENU: &[MenuItem] = &[
     MenuItem { name: "ovm", cmd: "ovm", desc: "OVM Computation Tools", example: "ovm list", submenu: None },
     MenuItem { name: "oneshots", cmd: "oneshots", desc: "the 10 exotic fixed-point nestings: inner already at outer's fixed point", example: "oneshots", submenu: None },
     MenuItem { name: "ctc",      cmd: "ctc",      desc: "nest a value in an action; closure imposed where the action has none, priced by the width it smears", example: "ctc cycle T", submenu: Some(CTC_MENU) },
+    MenuItem { name: "collatz",   cmd: "collatz",   desc: "the Collatz block nesting: blocks to one, the budget spectrum, and the records", example: "collatz 27", submenu: None },
     MenuItem { name: "straus",   cmd: "straus",   desc: "the Erdős–Straus ladder: which rung r closes 4/n, and the spectrum across a range", example: "straus 49", submenu: None },
     MenuItem { name: "nesting",  cmd: "nesting",  desc: "read a point against a map: q=r2/r1 splits attracted from never-arrives where one gap cannot", example: "nesting halve 203", submenu: Some(NESTING_MENU) },
     MenuItem { name: "carriers", cmd: "carriers", desc: "census of the mu-delta=id carriers by class: one fixed point seen many ways, or a family", example: "carriers", submenu: Some(CARRIERS_MENU) },

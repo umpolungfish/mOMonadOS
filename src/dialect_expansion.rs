@@ -294,7 +294,7 @@ pub fn all_dialects() -> [Dialect; DIALECT_COUNT] {
     let g_parity_4 = GateSpec { prim: "≺", min_ord: 4.0 };
     let g_parity_3 = GateSpec { prim: "≺", min_ord: 3.0 };
     let g_criticality_2 = GateSpec { prim: "⊙", min_ord: 2.0 };
-    let g_criticality_1 = GateSpec { prim: "⊙", min_ord: 1.0 };
+    let _g_criticality_1 = GateSpec { prim: "⊙", min_ord: 1.0 };
     let g_criticality_233 = GateSpec { prim: "⊙", min_ord: 2.33 };
     let g_criticality_3 = GateSpec { prim: "⊙", min_ord: 3.0 };
     let g_protection_3 = GateSpec { prim: "◻", min_ord: 3.0 };

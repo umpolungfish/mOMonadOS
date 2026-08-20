@@ -1925,6 +1925,30 @@ pub fn repl(k: &mut Kernel) {
                     }
                 }
             }
+            "collatz" => {
+                let rest: Vec<&str> = parts.collect();
+                match rest.first().copied() {
+                    None | Some("help") => sprintln!("{}", crate::collatz::Collatz::help()),
+                    Some("trace") => match rest.get(1).map(|v| v.parse::<u64>()) {
+                        Some(Ok(v)) => sprintln!("{}", crate::collatz::Collatz::trace(v)),
+                        _ => sprintln!("collatz trace <n> — n must be a number"),
+                    },
+                    Some("sweep") => match (rest.get(1).map(|v| v.parse::<u64>()),
+                                           rest.get(2).map(|v| v.parse::<u64>())) {
+                        (Some(Ok(l)), Some(Ok(h))) => sprintln!("{}", crate::collatz::Collatz::sweep(l, h)),
+                        _ => sprintln!("collatz sweep <lo> <hi> — both must be numbers"),
+                    },
+                    Some("ceiling") => match (rest.get(1).map(|v| v.parse::<u64>()),
+                                              rest.get(2).map(|v| v.parse::<u64>())) {
+                        (Some(Ok(l)), Some(Ok(h))) => sprintln!("{}", crate::collatz::Collatz::ceiling(l, h)),
+                        _ => sprintln!("collatz ceiling <lo> <hi> — both must be numbers"),
+                    },
+                    Some(x) => match x.parse::<u64>() {
+                        Ok(v) => sprintln!("{}", crate::collatz::Collatz::one(v)),
+                        Err(_) => sprintln!("collatz <n> | trace <n> | sweep <lo> <hi> | ceiling <lo> <hi>"),
+                    },
+                }
+            }
             "straus" => {
                 let a: alloc::vec::Vec<&str> = parts.collect();
                 match a.as_slice() {

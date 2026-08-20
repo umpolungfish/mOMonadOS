@@ -153,6 +153,7 @@ mod ctc;
 mod ctc_loom;
 mod nesting;
 mod carriers;
+mod collatz;
 mod straus;
 mod erdos_walks;
 mod fold_walk;
