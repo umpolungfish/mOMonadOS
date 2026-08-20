@@ -73,6 +73,7 @@ impl Collatz {
         s.push_str("  collatz junctions <lo> <hi>  where trajectories merge, by arm\n");
         s.push_str("  collatz balance <v> <depth>  the two subtrees feeding one junction\n");
         s.push_str("  collatz balanced <lo> <hi> <depth>  the junctions whose arms match\n");
+        s.push_str("  collatz classes <mod> <n> <depth>   is the share fixed by the residue\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -334,6 +335,51 @@ impl Collatz {
             s.push_str(&format!("  {:.1}:{}", b as f64 / 10.0, spread[b]));
         }
         s.push('\n');
+        s
+    }
+
+
+    /// What fixes the share. The spectrum of odd shares is discrete, with a
+    /// third of junctions starved and nothing at all in whole intervals, so the
+    /// share is not a continuum being sampled — something finite is setting it.
+    /// This groups junctions by residue and reports the spread inside each
+    /// class: a share that is constant on a class is a share the residue fixes.
+    pub fn classes(modulus: u64, count: u64, depth: u32) -> String {
+        let mut s = format!("collatz classes mod {} over {} junctions at depth {}\n",
+            modulus, count, depth);
+        let m = modulus as usize;
+        let mut n_in = alloc::vec![0u64; m];
+        let mut sum = alloc::vec![0.0f64; m];
+        let mut lo = alloc::vec![2.0f64; m];
+        let mut hi = alloc::vec![-1.0f64; m];
+        let mut v = 2u64;
+        let mut seen = 0u64;
+        while seen < count {
+            if v % 3 == 2 {
+                let e = Self::subtree(2 * v, depth);
+                let o = Self::subtree((2 * v - 1) / 3, depth);
+                let sh = o as f64 / (e + o) as f64;
+                let c = (v % modulus) as usize;
+                n_in[c] += 1;
+                sum[c] += sh;
+                if sh < lo[c] { lo[c] = sh; }
+                if sh > hi[c] { hi[c] = sh; }
+                seen += 1;
+            }
+            v += 1;
+        }
+        s.push_str("      class      n     mean       min       max      spread\n");
+        let mut worst = 0.0f64;
+        for c in 0..m {
+            if n_in[c] == 0 { continue; }
+            let sp = hi[c] - lo[c];
+            if sp > worst { worst = sp; }
+            s.push_str(&format!("  {:>9}  {:>5}  {:>7.4}  {:>8.4}  {:>8.4}  {:>10.4}\n",
+                c, n_in[c], sum[c] / n_in[c] as f64, lo[c], hi[c], sp));
+        }
+        s.push_str(&format!("\n  widest spread inside a class: {:.4}\n", worst));
+        s.push_str("  a share the residue fixes shows a spread at zero; a share it only\n");
+        s.push_str("  biases keeps a spread while the means separate.\n");
         s
     }
 
