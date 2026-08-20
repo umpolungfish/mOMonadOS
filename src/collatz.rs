@@ -133,7 +133,8 @@ impl Collatz {
         s.push_str("  collatz collisions <depth> <r>      equidistribution as a collision count\n");
         s.push_str("  collatz excess <depth> <r>          the excess recursion and its prediction\n");
         s.push_str("  collatz perturb <depth>             the involution and its odd-arm perturbation\n");
-        s.push_str("  collatz norm <depth>                the weighted excess norm and its contraction\n");
+        s.push_str("  collatz norm <depth> [rungs]        the weighted excess norm and its contraction\n");
+        s.push_str("  collatz disjunct <depth>            is the weighted cross sum carried by one rung\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -1176,6 +1177,74 @@ impl Collatz {
             pair_ok, pair_n, pair_sum / pair_n.max(1) as f64, pair_max));
         s.push_str("  0.5625 is (3/4) squared, what two clean levels would give.\n");
         s.push_str("  3/4 + c is the contraction constant, and the fold discards nothing.\n");
+        s
+    }
+
+
+    /// Is the weighted cross sum carried by ONE rung?
+    ///
+    /// The ob3ect grounds the fuse at 𐑜, disjunction: one sufficient residue
+    /// satisfies the bound rather than all of them simultaneously. If that reads
+    /// true here, the weighted cross sum C = sum_r 3^-r cross(r) is dominated by
+    /// a single rung, and bounding C reduces to bounding that one term rather
+    /// than every term at once. This measures the share the largest rung takes,
+    /// and which rung it is.
+    pub fn disjunct(depth: u32) -> String {
+        let mut s = String::from("collatz disjunct — the share of the weighted cross sum in its largest rung\n\n");
+        s.push_str("  level      nodes   rungs      |C|     top rung    share   at r\n");
+        let mut level: Vec<u64> = alloc::vec![1];
+        let mut share_sum = 0.0f64;
+        let mut share_n = 0u64;
+        for d in 1..=depth {
+            let mut evens: Vec<u64> = Vec::new();
+            let mut odds: Vec<u64> = Vec::new();
+            for &m in level.iter() {
+                evens.push(2 * m);
+                if m % 3 == 2 {
+                    let u = (2 * m - 1) / 3;
+                    if u != 1 { odds.push(u); }
+                }
+            }
+            let mut next: Vec<u64> = Vec::new();
+            next.extend_from_slice(&evens);
+            next.extend_from_slice(&odds);
+            if next.is_empty() { break; }
+            let n = next.len() as u64;
+            let ne = evens.len() as f64;
+            let no = odds.len() as f64;
+            let mut total = 0.0f64;
+            let mut top = 0.0f64;
+            let mut arg = 0u32;
+            let mut rungs = 0u32;
+            let mut r = 1u32;
+            while 3u64.pow(r) <= n && r <= 12 {
+                let m = 3u64.pow(r);
+                let mut he = alloc::vec![0u64; m as usize];
+                let mut ho = alloc::vec![0u64; m as usize];
+                for &v in evens.iter() { he[(v % m) as usize] += 1; }
+                for &v in odds.iter() { ho[(v % m) as usize] += 1; }
+                let mut cx = 0.0f64;
+                for i in 0..m as usize { cx += 2.0 * he[i] as f64 * ho[i] as f64; }
+                let flat = 2.0 * ne * no / m as f64;
+                let term = (cx - flat) * (m as f64) / ((n * n) as f64) / (3.0f64).powi(r as i32);
+                total += term;
+                if term.abs() > top.abs() { top = term; arg = r; }
+                rungs = r;
+                r += 1;
+            }
+            if d > 10 && total.abs() > 1e-12 {
+                let sh = top.abs() / total.abs();
+                share_sum += sh;
+                share_n += 1;
+                s.push_str(&format!("  {:>5}  {:>9}  {:>6}  {:>+9.6}  {:>+10.6}  {:>7.3}  {:>5}\n",
+                    d, n, rungs, total, top, sh, arg));
+            }
+            level = next;
+        }
+        s.push_str(&format!("\n  mean share of the largest rung: {:.4} over {} level(s)\n",
+            share_sum / share_n.max(1) as f64, share_n));
+        s.push_str("  a share near one is the disjunctive reading: one rung carries the sum,\n");
+        s.push_str("  so the bound needs that rung and not every rung at once.\n");
         s
     }
 

@@ -1938,6 +1938,10 @@ pub fn repl(k: &mut Kernel) {
                         Some(Ok(v)) => sprintln!("{}", crate::collatz::Collatz::trace(v)),
                         _ => sprintln!("collatz trace <n> — n must be a number"),
                     },
+                    Some("disjunct") => match rest.get(1).map(|v| v.parse::<u32>()) {
+                        Some(Ok(d)) => sprintln!("{}", crate::collatz::Collatz::disjunct(d)),
+                        _ => sprintln!("collatz disjunct <depth>"),
+                    },
                     Some("norm") => match rest.get(1).map(|v| v.parse::<u32>()) {
                         Some(Ok(d)) => sprintln!("{}", crate::collatz::Collatz::norm(d,
                             rest.get(2).and_then(|v| v.parse::<u32>().ok()).unwrap_or(0))),
