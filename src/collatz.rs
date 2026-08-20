@@ -129,6 +129,7 @@ impl Collatz {
         s.push_str("  collatz birkhoff <lo> <hi> <d>      the cocycle weight averaged along trajectories\n");
         s.push_str("  collatz amax <lo> <hi> <d>          the largest amplitude in a window\n");
         s.push_str("  collatz fourier <depth> <rmax>      the character sums of the tree measure\n");
+        s.push_str("  collatz flow <depth> <r>            the two terms of the level map on coefficients\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -722,6 +723,89 @@ impl Collatz {
         }
         s.push_str("\n  a coefficient falling geometrically is the equidistribution happening;\n");
         s.push_str("  one that holds is the flow between conductors sustaining itself.\n");
+        s
+    }
+
+
+    /// The two terms of the level map on Fourier coefficients, measured.
+    ///
+    /// One level sends
+    ///     mu(j, r)  ->  (3/4) [ mu(2j, r) + e(-j/3^(r+1)) (1/3) sum_s w^(-2s)
+    ///                            mu(2j + s 3^r, r+1) ]
+    /// with w a cube root of unity. The first term is the doubling permutation,
+    /// a contraction by exactly 3/4. The second is the odd arm, and because
+    /// sum_s w^(-2s) = 0 it sees only the DIFFERENCE of the three lifts, never
+    /// their size — a constant across the lifts cancels exactly.
+    ///
+    /// So the contraction is 3/4 plus whatever the spread at the conductor above
+    /// contributes. This verb reports both terms and their sum against the
+    /// coefficient the next level actually has, which checks the identity and
+    /// says which term carries the level.
+    pub fn flow(depth: u32, r: u32) -> String {
+        let mut s = format!("collatz flow at conductor 3^{} to depth {}\n", r, depth);
+        s.push_str("  |same| is the doubling term, |feed| the odd arm's difference term\n\n");
+        s.push_str("  level      nodes     |same|     |feed|    |sum|    |next|   feed/same\n");
+        let modulus = 3u64.pow(r);
+        let fine = 3u64.pow(r + 1);
+        let mut level: Vec<u64> = alloc::vec![1];
+        let mut canc_sum = 0.0f64;
+        let mut canc_n = 0u64;
+        // coefficient of the level set at (j, modulus)
+        let coeff = |lvl: &Vec<u64>, j: u64, m: u64| -> (f64, f64) {
+            let n = lvl.len() as f64;
+            let mut re = 0.0;
+            let mut im = 0.0;
+            for &v in lvl.iter() {
+                let ang = TAU * ((j * (v % m)) % m) as f64 / m as f64;
+                re += f64_cos(ang);
+                im += f64_sin(ang);
+            }
+            (re / n, im / n)
+        };
+        for d in 1..=depth {
+            let mut next: Vec<u64> = Vec::new();
+            for &m in level.iter() {
+                next.push(2 * m);
+                if m % 3 == 2 {
+                    let u = (2 * m - 1) / 3;
+                    if u != 1 { next.push(u); }
+                }
+            }
+            if next.is_empty() { break; }
+            let ratio = level.len() as f64 / next.len() as f64;   // = 3/4 in the limit
+            // same-conductor term
+            let (sr, si) = coeff(&level, 2 % modulus.max(1), modulus);
+            let same = (ratio * sr, ratio * si);
+            // feed term: (1/3) sum_s w^(-2s) mu(2 + s 3^r, r+1), rotated by e(-1/3^(r+1))
+            let mut fr = 0.0;
+            let mut fi = 0.0;
+            for st in 0..3u64 {
+                let j = (2 + st * modulus) % fine;
+                let (cr, ci) = coeff(&level, j, fine);
+                let ang = -TAU * (2.0 * st as f64) / 3.0;
+                let (wr, wi) = (f64_cos(ang), f64_sin(ang));
+                fr += cr * wr - ci * wi;
+                fi += cr * wi + ci * wr;
+            }
+            fr /= 3.0; fi /= 3.0;
+            let rot = -TAU / (fine as f64);
+            let (rr, ri) = (f64_cos(rot), f64_sin(rot));
+            let feed = (ratio * (fr * rr - fi * ri), ratio * (fr * ri + fi * rr));
+            let sum = (same.0 + feed.0, same.1 + feed.1);
+            let (nr, ni) = coeff(&next, 1, modulus);
+            let mag = |p: (f64, f64)| crate::constant_closure::f64_sqrt(p.0 * p.0 + p.1 * p.1);
+            let tri = mag(same) + mag(feed);
+            if tri > 1e-9 && d > 6 { canc_sum += mag(sum) / tri; canc_n += 1; }
+            s.push_str(&format!("  {:>5}  {:>9}  {:>9.5}  {:>9.5}  {:>8.5}  {:>8.5}  {:>10.3}\n",
+                d, next.len(), mag(same), mag(feed), mag(sum), mag((nr, ni)),
+                if mag(same) > 1e-12 { mag(feed) / mag(same) } else { 0.0 }));
+            level = next;
+        }
+        s.push_str(&format!("\n  mean |sum| / (|same| + |feed|): {:.4}   over {} level(s)\n",
+            canc_sum / canc_n.max(1) as f64, canc_n));
+        s.push_str("  one would be the triangle bound saturated, so a number well under it\n");
+        s.push_str("  is the two terms cancelling in phase — which is where the decay is.\n");
+        s.push_str("  |sum| tracking |next| is the identity itself holding.\n");
         s
     }
 
