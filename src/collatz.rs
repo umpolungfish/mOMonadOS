@@ -698,6 +698,7 @@ impl Collatz {
             let n = level.len() as f64;
             s.push_str(&format!("  {:>5}  {:>9}", d, level.len()));
             let mut cur: Vec<f64> = Vec::new();
+            let mut phase1 = 0.0f64;
             for r in 1..=rmax {
                 let modulus = 3u64.pow(r);
                 let mut re = 0.0f64;
@@ -708,6 +709,11 @@ impl Collatz {
                     im += f64_sin(ang);
                 }
                 let mag = crate::constant_closure::f64_sqrt(re * re + im * im) / n;
+                if r == 1 {
+                    // signed imbalance read on the real axis, the cleanest form of
+                    // the alternation at conductor three
+                    phase1 = re / n;
+                }
                 cur.push(mag);
                 s.push_str(&format!("  {:>7.4}", mag));
             }
@@ -720,6 +726,11 @@ impl Collatz {
             for r in 0..rmax as usize {
                 s.push_str(&format!(" {:>6.3}", cur[r] * root_n));
             }
+            // Doubling has order two on the live classes mod 3, so it is an
+            // involution there and the coefficient's phase conjugates each level.
+            // An imbalance therefore alternates in sign, which is the source of
+            // the negative correlation between a level and its own image.
+            s.push_str(&format!("   arg1 {:>+7.3}", phase1));
             let _ = &prev;
             s.push_str("\n");
             prev = cur;
@@ -917,6 +928,10 @@ impl Collatz {
             (m as f64) * (c as f64) / (n * n) - 1.0
         };
         let mut level: Vec<u64> = alloc::vec![1];
+        let mut cross_tot = 0.0f64;
+        let mut cross_neg = 0u64;
+        let mut cross_n = 0u64;
+        let mut cs_ok = 0u64;
         for d in 1..=depth {
             let mut next: Vec<u64> = Vec::new();
             for &m in level.iter() {
@@ -964,6 +979,11 @@ impl Collatz {
             let pred = 0.75 * er + (1.0 / 12.0) * ef;
             let act = excess_of(&next, modulus) * nnext;
             if d > 8 {
+                let dev = (cx - flat) / nnext;
+                cross_tot += dev;
+                if dev < 0.0 { cross_neg += 1; }
+                if (cx - flat).abs() <= cs { cs_ok += 1; }
+                cross_n += 1;
                 s.push_str(&format!("  {:>5}  {:>9}  {:>9.5}  {:>9.5}  {:>6.2}  {:>11.5}  {:>9.5}  {:>9.3}  {:>+10.4}  {:>9.4}\n",
                     d, next.len(), er, ef, if er.abs() > 1e-12 { ef / er } else { 0.0 },
                     pred, act, if act.abs() > 1e-12 { pred / act } else { 0.0 },
@@ -971,8 +991,11 @@ impl Collatz {
             }
             level = next;
         }
-        s.push_str("\n  pred/act near one is the linear recursion carrying the level; the\n");
-        s.push_str("  ratio column is how much the finer modulus costs.\n");
+        s.push_str(&format!("\n  cross deviation: {} of {} level(s) negative, mean {:+.5} per unit N\n",
+            cross_neg, cross_n, cross_tot / cross_n.max(1) as f64));
+        s.push_str(&format!("  inside the Cauchy-Schwarz bound in {} of {} — the bound is structural,\n",
+            cs_ok, cross_n));
+        s.push_str("  the sign is not. A sign that holds is what pins E at its fixed point.\n");
         s
     }
 
