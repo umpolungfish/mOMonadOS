@@ -1929,6 +1929,201 @@ impl Collatz {
         s
     }
 
+
+    /// The level map as a linear operator on coefficients, and its growth.
+    ///
+    /// The map is exact and linear:
+    ///   mu(j,r) -> rho [ mu(2j,r) + e(-j/3^(r+1)) (1/3) sum_s w^(-2s) mu(2j+s3^r, r+1) ]
+    /// and it is block-triangular in the conductor — level r is fed by r and r+1
+    /// and never by anything below. A block-triangular operator's spectrum is the
+    /// union of its diagonal blocks', and each diagonal block is rho times a
+    /// permutation, so every eigenvalue has modulus rho. The spectral radius
+    /// should therefore be rho regardless of the feed.
+    ///
+    /// That is a claim about the operator, so it is checked by running the
+    /// operator: power iteration from a random-ish start, reporting the growth
+    /// per application. A transient above rho is expected for a non-normal
+    /// operator; what matters is where the iterate settles.
+    pub fn operator(rmax: u32, iters: u32) -> String {
+        let mut s = format!("collatz operator — power iteration on the coefficient map, r <= {}\n", rmax);
+        s.push_str("  rho = 3/4 is the predicted spectral radius from block-triangularity\n\n");
+        s.push_str("   iter        norm      ratio\n");
+        let rho = 0.75f64;
+        // index: (r, j) with j in 0..3^r ; store re/im
+        let mut idx: Vec<(u32, u64)> = Vec::new();
+        for r in 1..=rmax {
+            for j in 0..3u64.pow(r) { idx.push((r, j)); }
+        }
+        let n = idx.len();
+        let pos = |r: u32, j: u64| -> Option<usize> {
+            if r < 1 || r > rmax { return None; }
+            let mut base = 0usize;
+            for q in 1..r { base += 3usize.pow(q); }
+            Some(base + (j % 3u64.pow(r)) as usize)
+        };
+        let mut re = alloc::vec![0.0f64; n];
+        let mut im = alloc::vec![0.0f64; n];
+        // a start that is not an eigenvector, NORMALISED — an unnormalised start
+        // makes the first ratio read as transient growth when it is only ||v0||.
+        // iters odd = structured start; iters even = a SPIKE at the lowest
+        // conductor, which is the start that maximally exercises the feed from
+        // above. A start living in the top block never touches it at all.
+        if iters % 2 == 0 {
+            // The feed runs DOWNWARD, from r+1 into r, so the start that
+            // exercises it is a spike at the HIGHEST conductor, not the lowest.
+            re[n - 1] = 1.0;
+        } else {
+            for i in 0..n { re[i] = if i % 3 == 0 { 1.0 } else if i % 3 == 1 { -0.5 } else { 0.25 }; }
+        }
+        {
+            let mut z = 0.0f64;
+            for i in 0..n { z += re[i] * re[i] + im[i] * im[i]; }
+            z = crate::constant_closure::f64_sqrt(z);
+            for i in 0..n { re[i] /= z; im[i] /= z; }
+        }
+        let mut prev_norm = 0.0f64;
+        let mut peak = 0.0f64;
+        let mut peak_at = 0u32;
+        for it in 1..=iters {
+            let mut nre = alloc::vec![0.0f64; n];
+            let mut nim = alloc::vec![0.0f64; n];
+            for (i, &(r, j)) in idx.iter().enumerate() {
+                let _ = i;
+                let m = 3u64.pow(r);
+                let out = pos(r, j).unwrap();
+                // same-conductor term: from (2j, r)
+                if let Some(src) = pos(r, (2 * j) % m) {
+                    nre[out] += rho * re[src];
+                    nim[out] += rho * im[src];
+                }
+                // feed from r+1
+                if r + 1 <= rmax {
+                    let fine = 3u64.pow(r + 1);
+                    let rot = -TAU * (j as f64) / (fine as f64);
+                    let (cr, ci) = (f64_cos(rot), f64_sin(rot));
+                    for st in 0..3u64 {
+                        let jj = (2 * j + st * m) % fine;
+                        if let Some(src) = pos(r + 1, jj) {
+                            let ang = -TAU * (2.0 * st as f64) / 3.0;
+                            let (wr, wi) = (f64_cos(ang), f64_sin(ang));
+                            // (w * rot) * mu
+                            let ar = wr * cr - wi * ci;
+                            let ai = wr * ci + wi * cr;
+                            nre[out] += rho / 3.0 * (ar * re[src] - ai * im[src]);
+                            nim[out] += rho / 3.0 * (ar * im[src] + ai * re[src]);
+                        }
+                    }
+                }
+            }
+            let mut nn = 0.0f64;
+            for i in 0..n { nn += nre[i] * nre[i] + nim[i] * nim[i]; }
+            nn = crate::constant_closure::f64_sqrt(nn);
+            if nn < 1e-300 { break; }
+            for i in 0..n { re[i] = nre[i] / nn; im[i] = nim[i] / nn; }
+            if nn > peak { peak = nn; peak_at = it; }
+            if it <= 6 || it > iters.saturating_sub(4) {
+                s.push_str(&format!("  {:>5}  {:>10.6}  {:>9.6}\n", it, nn,
+                    if prev_norm > 0.0 { nn } else { 0.0 }));
+            }
+            prev_norm = nn;
+        }
+        s.push_str(&format!("\n  settled growth per application: {:.6}  (rho = 0.750000)\n", prev_norm));
+        s.push_str(&format!("  largest single-step growth seen: {:.6} at iteration {}\n", peak, peak_at));
+        s.push_str("  the settled value is the spectral radius; the peak is what a finite-time\n");
+        s.push_str("  bound has to survive, and for a non-normal operator they differ.\n");
+        s
+    }
+
+
+    /// The operator NORM, by power iteration on L*L. The spectral radius is rho
+    /// by block-triangularity, but a non-normal operator can grow above it, so a
+    /// deterministic contraction needs the largest singular value.
+    pub fn opnorm(rmax: u32, iters: u32) -> String { Self::opnorm_w(rmax, iters, 1.0) }
+
+    /// The same, in the norm with weight `w^r` on conductor `3^r`. The spectral
+    /// radius is 3/4 by block-triangularity, so for a finite matrix SOME weighted
+    /// norm has ||L|| under one; this scans for it. Damping the high conductors
+    /// is what the triangularity says to do.
+    pub fn opnorm_w(rmax: u32, iters: u32, w: f64) -> String {
+        let mut s = format!("collatz opnorm — largest singular value, r <= {}, weight {:.3}^r\n\n", rmax, w);
+        let mut idx: Vec<(u32, u64)> = Vec::new();
+        for r in 1..=rmax { for j in 0..3u64.pow(r) { idx.push((r, j)); } }
+        let n = idx.len();
+        let pos = |r: u32, j: u64| -> Option<usize> {
+            if r < 1 || r > rmax { return None; }
+            let mut base = 0usize;
+            for q in 1..r { base += 3usize.pow(q); }
+            Some(base + (j % 3u64.pow(r)) as usize)
+        };
+        let rho = 0.75f64;
+        let step = |re: &Vec<f64>, im: &Vec<f64>, fwd: bool| -> (Vec<f64>, Vec<f64>) {
+            let mut nre = alloc::vec![0.0f64; n];
+            let mut nim = alloc::vec![0.0f64; n];
+            for &(r, j) in idx.iter() {
+                let m = 3u64.pow(r);
+                let out = pos(r, j).unwrap();
+                if let Some(src) = pos(r, (2 * j) % m) {
+                    // same conductor: the weight cancels
+                    if fwd { nre[out] += rho * re[src]; nim[out] += rho * im[src]; }
+                    else   { nre[src] += rho * re[out]; nim[src] += rho * im[out]; }
+                }
+                if r + 1 <= rmax {
+                    let fine = 3u64.pow(r + 1);
+                    let rot = -TAU * (j as f64) / (fine as f64);
+                    let (cr, ci) = (f64_cos(rot), f64_sin(rot));
+                    for st in 0..3u64 {
+                        let jj = (2 * j + st * m) % fine;
+                        if let Some(src) = pos(r + 1, jj) {
+                            let ang = -TAU * (2.0 * st as f64) / 3.0;
+                            let (wr, wi) = (f64_cos(ang), f64_sin(ang));
+                            let ar = wr * cr - wi * ci;
+                            let ai0 = wr * ci + wi * cr;
+                            // the feed crosses one conductor, so it carries one
+                            // factor of the weight
+                            let k = rho / 3.0 * w;
+                            if fwd {
+                                nre[out] += k * (ar * re[src] - ai0 * im[src]);
+                                nim[out] += k * (ar * im[src] + ai0 * re[src]);
+                            } else {
+                                let ai = -ai0;
+                                nre[src] += k * (ar * re[out] - ai * im[out]);
+                                nim[src] += k * (ar * im[out] + ai * re[out]);
+                            }
+                        }
+                    }
+                }
+            }
+            (nre, nim)
+        };
+        let mut re = alloc::vec![0.0f64; n];
+        let mut im = alloc::vec![0.0f64; n];
+        for i in 0..n { re[i] = 1.0 / ((i + 1) as f64); }
+        let mut z = 0.0f64;
+        for i in 0..n { z += re[i] * re[i]; }
+        z = crate::constant_closure::f64_sqrt(z);
+        for i in 0..n { re[i] /= z; }
+        let mut lam = 0.0f64;
+        for it in 1..=iters {
+            let (ar, ai) = step(&re, &im, true);
+            let (br, bi) = step(&ar, &ai, false);
+            let mut nn = 0.0f64;
+            for i in 0..n { nn += br[i] * br[i] + bi[i] * bi[i]; }
+            nn = crate::constant_closure::f64_sqrt(nn);
+            if nn < 1e-300 { break; }
+            for i in 0..n { re[i] = br[i] / nn; im[i] = bi[i] / nn; }
+            lam = nn;
+            let _ = it;
+        }
+        let norm = crate::constant_closure::f64_sqrt(lam);
+        s.push_str(&format!("  ||L||^2 = {:.6}\n  ||L||   = {:.6}   (rho = 0.750000)\n", lam, norm));
+        s.push_str(if norm < 1.0 {
+            "  UNDER ONE — the level map contracts every vector, with no averaging.\n"
+        } else {
+            "  at or above one — no deterministic contraction from the norm alone.\n"
+        });
+        s
+    }
+
     pub fn sweep(lo: u64, hi: u64) -> String {
         let mut s = format!("collatz sweep {}..{}\n", lo, hi);
         let (mut maxb, mut argb) = (0u32, lo);

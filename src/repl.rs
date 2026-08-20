@@ -1938,6 +1938,17 @@ pub fn repl(k: &mut Kernel) {
                         Some(Ok(v)) => sprintln!("{}", crate::collatz::Collatz::trace(v)),
                         _ => sprintln!("collatz trace <n> — n must be a number"),
                     },
+                    Some("opnorm") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
+                                             rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
+                        (Some(r), Some(i)) => sprintln!("{}", crate::collatz::Collatz::opnorm_w(r, i,
+                            rest.get(3).and_then(|v| v.parse::<f64>().ok()).unwrap_or(1.0))),
+                        _ => sprintln!("collatz opnorm <rmax> <iters>"),
+                    },
+                    Some("operator") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
+                                               rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
+                        (Some(r), Some(i)) => sprintln!("{}", crate::collatz::Collatz::operator(r, i)),
+                        _ => sprintln!("collatz operator <rmax> <iters>"),
+                    },
                     Some("prbound") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
                                               rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
                         (Some(d), Some(r)) => sprintln!("{}", crate::collatz::Collatz::prbound(d, r)),
