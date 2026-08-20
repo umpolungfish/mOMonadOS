@@ -535,8 +535,8 @@ pub fn compute_transcendence() -> TranscendenceResult {
 
     let omega_zfcfe_frag = cl8nk_formula("◻", omega_zfcfe).map(|f| f.fragment).unwrap_or("?");
     let omega_cl8nk_frag = cl8nk_formula("◻", omega_cl8nk).map(|f| f.fragment).unwrap_or("?");
-    let grammar_zfcfe_frag = cl8nk_formula("C", grammar_zfcfe).map(|f| f.fragment).unwrap_or("?");
-    let grammar_cl8nk_frag = cl8nk_formula("C", grammar_cl8nk).map(|f| f.fragment).unwrap_or("?");
+    let grammar_zfcfe_frag = cl8nk_formula("∋", grammar_zfcfe).map(|f| f.fragment).unwrap_or("?");
+    let grammar_cl8nk_frag = cl8nk_formula("∋", grammar_cl8nk).map(|f| f.fragment).unwrap_or("?");
 
     let tensor = compute_tensor_op(&zfc_fe);
 
