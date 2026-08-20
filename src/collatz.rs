@@ -1804,6 +1804,8 @@ impl Collatz {
         let mut level: Vec<u64> = alloc::vec![1];
         let mut acc = 0.0f64;
         let mut n_acc = 0u64;
+        let mut worst = 0.0f64;
+        let mut over = 0u64;
         for d in 1..=depth {
             let mut evens: Vec<u64> = Vec::new();
             let mut odds: Vec<u64> = Vec::new();
@@ -1838,6 +1840,8 @@ impl Collatz {
             if d > 16 && cs > 1e-9 && pred > 0.0 {
                 let act = if cross < 0.0 { -cross / cs } else { cross / cs };
                 acc += act / pred;
+                if act / pred > worst { worst = act / pred; }
+                if act / pred > 1.0 { over += 1; }
                 n_acc += 1;
                 s.push_str(&format!("  {:>5}  {:>9}  {:>10.3}  {:>8.3}  {:>12.4}  {:>11.4}  {:>7.3}\n",
                     d, next.len(), pre, pro, pred, act, act / pred));
@@ -1846,6 +1850,10 @@ impl Collatz {
         }
         s.push_str(&format!("\n  mean of (|cross|/CS) / (1/sqrt(PR)): {:.4} over {} level(s)\n",
             acc / n_acc.max(1) as f64, n_acc));
+        s.push_str(&format!("  WORST: {:.4}   over one in {} of {} level(s)\n",
+            worst, over, n_acc));
+        s.push_str("  the mean is not the claim. As a vector inequality |<a,b>| <= ||a|| ||b|| /\n");
+        s.push_str("  sqrt(PR) is false — take a = b — so only a per-level reading decides.\n");
         s.push_str("  a mean near one is the participation ratio explaining both regimes with\n");
         s.push_str("  a single quantity, which the modulus alone does not.\n");
         s
