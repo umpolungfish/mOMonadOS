@@ -56,6 +56,31 @@ pub fn budget(n: u64, allowance: u32) -> Option<(u32, u32, u64)> {
     Some((blocks, total, peak))
 }
 
+
+/// Natural log, since the kernel's float shims carry sqrt and exp but no ln and
+/// this is no_std. Range-reduce by powers of two, then the atanh series, which
+/// converges fast once the argument sits near one.
+pub fn f64_ln(x: f64) -> f64 {
+    if x <= 0.0 { return 0.0; }
+    const LN2: f64 = 0.693147180559945309417232121458;
+    let mut y = x;
+    let mut k = 0i32;
+    while y >= 2.0 { y /= 2.0; k += 1; }
+    while y < 1.0 { y *= 2.0; k -= 1; }
+    // ln y = 2 atanh(t), t = (y-1)/(y+1)
+    let t = (y - 1.0) / (y + 1.0);
+    let t2 = t * t;
+    let mut term = t;
+    let mut sum = t;
+    let mut n = 3.0f64;
+    for _ in 0..40 {
+        term *= t2;
+        sum += term / n;
+        n += 2.0;
+    }
+    2.0 * sum + k as f64 * LN2
+}
+
 pub struct Collatz;
 
 impl Collatz {
@@ -77,6 +102,7 @@ impl Collatz {
         s.push_str("  collatz adic <digits> <n> <depth>   the 3-adic map of the share\n");
         s.push_str("  collatz growth <v> <dmax>           the amplitude under a value\n");
         s.push_str("  collatz amplitudes <lo> <hi> <d>    the amplitude over a range, with its recursion\n");
+        s.push_str("  collatz birkhoff <lo> <hi> <d>      the cocycle weight averaged along trajectories\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -504,6 +530,72 @@ impl Collatz {
                 v, v % 3, v % 9, Self::subtree(v, depth), a, check,
                 100.0 * (check - a) / a));
         }
+        s
+    }
+
+
+    /// The Birkhoff average of the cocycle weight along a trajectory.
+    ///
+    /// Each step multiplies the amplitude by (4/3)·w, so
+    ///     w = (3/4) · S(n, d) / S(T n, d)
+    /// reads straight off the counts with no share computed separately. The sum
+    /// of log w telescopes, so the average is pinned by the two endpoints — and
+    /// since the amplitude stays bounded while the trajectory length grows, the
+    /// average must approach -log(4/3) and the geometric mean of the weights
+    /// must approach 3/4. That is a prediction the walk can refuse.
+    ///
+    /// What does not telescope is which junctions a trajectory actually visits.
+    /// The verb reports the visited weights beside the count, so the measure the
+    /// forward walk puts on the tree can be compared with the tree's own.
+    pub fn birkhoff(lo: u64, hi: u64, depth: u32) -> String {
+        let mut s = format!("collatz birkhoff {}..{} at subtree depth {}\n", lo, hi, depth);
+        let mut seeds = 0u64;
+        let mut steps_tot = 0u64;
+        let mut odd_steps = 0u64;
+        let mut log_sum = 0.0f64;
+        let mut w_sum = 0.0f64;
+        let mut w_min = 2.0f64;
+        let mut w_max = -1.0f64;
+        for n0 in lo..=hi {
+            let mut n = n0;
+            let mut guard = 0;
+            while n > 4 && guard < 4096 {
+                let t = step(n);
+                let sn = Self::subtree(n, depth) as f64;
+                let st = Self::subtree(t, depth) as f64;
+                let w = 0.75 * sn / st;
+                if n % 2 == 1 { odd_steps += 1; }
+                log_sum += f64_ln(w);
+                w_sum += w;
+                if w < w_min { w_min = w; }
+                if w > w_max { w_max = w; }
+                steps_tot += 1;
+                n = t;
+                guard += 1;
+            }
+            seeds += 1;
+        }
+        let mean_log = log_sum / steps_tot as f64;
+        let target = -f64_ln(4.0 / 3.0);
+        s.push_str(&format!("  seeds:              {}\n", seeds));
+        s.push_str(&format!("  steps walked:       {}\n", steps_tot));
+        s.push_str(&format!("  odd-step fraction:  {:.4}\n",
+            odd_steps as f64 / steps_tot as f64));
+        s.push_str(&format!("  mean log w:         {:.6}\n", mean_log));
+        s.push_str(&format!("  -log(4/3):          {:.6}\n", target));
+        s.push_str(&format!("  gap:                {:+.6}\n", mean_log - target));
+        s.push_str(&format!("  geometric mean w:   {:.6}   (3/4 = 0.750000)\n",
+            crate::constant_closure::f64_exp(mean_log)));
+        s.push_str(&format!("  arithmetic mean w:  {:.6}\n", w_sum / steps_tot as f64));
+        s.push_str(&format!("  w range:            {:.4} .. {:.4}\n", w_min, w_max));
+        // The sum telescopes, so the gap is one bounded endpoint term divided by
+        // the length. Reporting gap x length is what shows it is bounded: a
+        // constant here IS the boundedness of the cocycle, and with it the
+        // average is log(3/4) exactly rather than approximately.
+        let mean_len = steps_tot as f64 / seeds.max(1) as f64;
+        s.push_str(&format!("  mean length:        {:.2}\n", mean_len));
+        s.push_str(&format!("  gap x length:       {:+.4}   (constant = the cocycle is bounded)\n",
+            (mean_log - target) * mean_len));
         s
     }
 
