@@ -135,6 +135,7 @@ impl Collatz {
         s.push_str("  collatz perturb <depth>             the involution and its odd-arm perturbation\n");
         s.push_str("  collatz norm <depth> [rungs]        the weighted excess norm and its contraction\n");
         s.push_str("  collatz disjunct <depth>            is the weighted cross sum carried by one rung\n");
+        s.push_str("  collatz attack <depth> <rungs> <minN>  hunt a counterexample to the contraction\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -1245,6 +1246,88 @@ impl Collatz {
             share_sum / share_n.max(1) as f64, share_n));
         s.push_str("  a share near one is the disjunctive reading: one rung carries the sum,\n");
         s.push_str("  so the bound needs that rung and not every rung at once.\n");
+        s
+    }
+
+
+    /// Hunt the cheapest counterexample to the contraction, oracle-style.
+    ///
+    /// The claim under attack: past a stated level size, the weighted cross term
+    /// c = C/||e|| stays under a quarter, so 3/4 + c is a contraction. This walks
+    /// every level to the given depth with the rung count held, computes c, and
+    /// stops at the first level past the threshold that breaks it. Surviving the
+    /// hunt is not a proof; what the verb reports is what was exhausted.
+    pub fn attack(depth: u32, fixed_rungs: u32, min_nodes: u64) -> String {
+        let mut s = format!("collatz attack — claim: c < 1/4 for every level with N >= {}\n", min_nodes);
+        s.push_str(&format!("  rungs held at {} and required live at both levels, to depth {}\n\n",
+            fixed_rungs, depth));
+        let excess_of = |lvl: &Vec<u64>, m: u64| -> f64 {
+            let n = lvl.len() as f64;
+            let mut h = alloc::vec![0u64; m as usize];
+            for &v in lvl.iter() { h[(v % m) as usize] += 1; }
+            let mut c = 0u64;
+            for i in 0..m as usize { c += h[i] * h[i]; }
+            (m as f64) * (c as f64) / (n * n) - 1.0
+        };
+        let norm_of = |lvl: &Vec<u64>| -> f64 {
+            let n = lvl.len() as u64;
+            let mut t = 0.0f64;
+            let mut r = 1u32;
+            while 3u64.pow(r) <= n && r <= fixed_rungs {
+                t += excess_of(lvl, 3u64.pow(r)) / (3.0f64).powi(r as i32);
+                r += 1;
+            }
+            t
+        };
+        let mut level: Vec<u64> = alloc::vec![1];
+        let mut prev_norm = 0.0f64;
+        let mut prev_n = 0u64;
+        let mut tested = 0u64;
+        let mut worst = -9.0f64;
+        let mut worst_d = 0u32;
+        let mut broke: Option<(u32, u64, f64)> = None;
+        for d in 1..=depth {
+            let mut next: Vec<u64> = Vec::new();
+            for &m in level.iter() {
+                next.push(2 * m);
+                if m % 3 == 2 {
+                    let u = (2 * m - 1) / 3;
+                    if u != 1 { next.push(u); }
+                }
+            }
+            if next.is_empty() { break; }
+            level = next;
+            let n = level.len() as u64;
+            let cur = norm_of(&level);
+            // A rung that opens between the two levels adds a term the level
+            // below never had, so the pair is not comparable. Capping does not
+            // prevent that — it only delays it — so the test requires the full
+            // rung count live at BOTH levels.
+            let both_rungs_live = prev_n >= 3u64.pow(fixed_rungs) && n >= 3u64.pow(fixed_rungs);
+            if prev_norm > 0.0 && n >= min_nodes && both_rungs_live {
+                let c = (cur - 0.75 * prev_norm) / prev_norm;
+                tested += 1;
+                if c > worst { worst = c; worst_d = d; }
+                if c >= 0.25 && broke.is_none() {
+                    broke = Some((d, n, c));
+                }
+            }
+            prev_norm = cur;
+            prev_n = n;
+        }
+        match broke {
+            Some((d, n, c)) => {
+                s.push_str(&format!("  BROKEN at level {} (N = {}): c = {:+.4}\n", d, n, c));
+                s.push_str("  the cheapest counterexample past the threshold; the claim is false\n");
+                s.push_str("  as stated and the threshold or the constant has to move.\n");
+            }
+            None => {
+                s.push_str(&format!("  survived: {} level(s) tested, none reached c = 1/4\n", tested));
+                s.push_str(&format!("  worst c = {:+.4} at level {}\n", worst, worst_d));
+                s.push_str("  surviving is not proof. This is what was exhausted, and the claim\n");
+                s.push_str("  stands unrefuted over exactly that range.\n");
+            }
+        }
         s
     }
 
