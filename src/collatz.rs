@@ -130,6 +130,7 @@ impl Collatz {
         s.push_str("  collatz amax <lo> <hi> <d>          the largest amplitude in a window\n");
         s.push_str("  collatz fourier <depth> <rmax>      the character sums of the tree measure\n");
         s.push_str("  collatz flow <depth> <r>            the two terms of the level map on coefficients\n");
+        s.push_str("  collatz collisions <depth> <r>      equidistribution as a collision count\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -806,6 +807,73 @@ impl Collatz {
         s.push_str("  one would be the triangle bound saturated, so a number well under it\n");
         s.push_str("  is the two terms cancelling in phase — which is where the decay is.\n");
         s.push_str("  |sum| tracking |next| is the identity itself holding.\n");
+        s
+    }
+
+
+    /// Equidistribution as a collision count.
+    ///
+    /// Summing the squared coefficients over a conductor gives
+    ///     sum_j |mu(j,r)|^2 = 3^r C(r) / N^2,
+    /// where C(r) counts the pairs of level nodes sharing a residue mod 3^r. So
+    /// equidistribution is exactly C(r) = N^2 / 3^r up to lower order, and the
+    /// excess over that IS the nonprincipal mass. That turns the analytic
+    /// question into a counting one, and the count splits by which arms the two
+    /// nodes came down:
+    ///
+    ///   doubling-doubling: 2a = 2b mod 3^r iff a = b mod 3^r        -> C(r)
+    ///   odd-odd:           u(a) = u(b) mod 3^r iff a = b mod 3^(r+1) -> finer C
+    ///   mixed:             2a = u(b) mod 3^r                         -> the cross term
+    ///
+    /// The first two are forced by the bijections already proved. The cross term
+    /// is the only free quantity, so this verb measures it.
+    pub fn collisions(depth: u32, r: u32) -> String {
+        let mut s = format!("collatz collisions at conductor 3^{} to depth {}\n", r, depth);
+        s.push_str("  excess = 3^r C / N^2 - 1, the nonprincipal mass; cross is the mixed pairs\n\n");
+        s.push_str("  level      nodes      excess   x N      dd share   oo share   cross share\n");
+        let modulus = 3u64.pow(r);
+        let mut level: Vec<u64> = alloc::vec![1];
+        for d in 1..=depth {
+            let mut evens: Vec<u64> = Vec::new();
+            let mut odds: Vec<u64> = Vec::new();
+            for &m in level.iter() {
+                evens.push(2 * m);
+                if m % 3 == 2 {
+                    let u = (2 * m - 1) / 3;
+                    if u != 1 { odds.push(u); }
+                }
+            }
+            let mut next: Vec<u64> = Vec::new();
+            next.extend_from_slice(&evens);
+            next.extend_from_slice(&odds);
+            if next.is_empty() { break; }
+            let n = next.len() as u64;
+            // histogram of the next level, and of each arm separately
+            let mut hist = alloc::vec![0u64; modulus as usize];
+            let mut he = alloc::vec![0u64; modulus as usize];
+            let mut ho = alloc::vec![0u64; modulus as usize];
+            for &v in next.iter() { hist[(v % modulus) as usize] += 1; }
+            for &v in evens.iter() { he[(v % modulus) as usize] += 1; }
+            for &v in odds.iter() { ho[(v % modulus) as usize] += 1; }
+            let mut c: u64 = 0;
+            let mut cdd: u64 = 0;
+            let mut coo: u64 = 0;
+            let mut cx: u64 = 0;
+            for i in 0..modulus as usize {
+                c += hist[i] * hist[i];
+                cdd += he[i] * he[i];
+                coo += ho[i] * ho[i];
+                cx += 2 * he[i] * ho[i];
+            }
+            let nf = n as f64;
+            let excess = (modulus as f64) * (c as f64) / (nf * nf) - 1.0;
+            s.push_str(&format!("  {:>5}  {:>9}  {:>10.5}  {:>7.3}  {:>9.4}  {:>9.4}  {:>12.4}\n",
+                d, n, excess, excess * nf,
+                cdd as f64 / c as f64, coo as f64 / c as f64, cx as f64 / c as f64));
+            level = next;
+        }
+        s.push_str("\n  excess x N holding steady is the square-root law in counting form:\n");
+        s.push_str("  the collisions exceed the uniform count by a bounded multiple of N.\n");
         s
     }
 
