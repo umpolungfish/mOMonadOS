@@ -1,18 +1,18 @@
+#![allow(dead_code)]
+
 // src/collatz.rs — the Collatz object as a nesting, read the way straus reads
 // the Erdős–Straus ladder.
 //
-// The action is one BLOCK: from n, apply the shortcut map n/2 | (3n+1)/2 until
-// the value first falls below n. Every block strictly decreases, so the nest is
-// monotone in the value and one is the fixed point, held outright. Collatz is
-// therefore a claim about the BUDGET on this nesting — how many blocks — and not
-// about whether it arrives, exactly as Erdős–Straus is a budget on greedy
-// removal. What is open sits inside the action rather than around it: a block
-// closes when the first drop exists, and the depth split is the measurement of
-// that.
-//
+/// The action is one BLOCK: from n, apply the shortcut map n/2 | (3n+1)/2 until
+/// the value first falls below n. Every block strictly decreases, so the nest is
+/// monotone in the value and one is the fixed point, held outright. Collatz is
+/// therefore a claim about the BUDGET on this nesting — how many blocks — and not
+/// about whether it arrives, exactly as Erdős–Straus is a budget on greedy
+/// removal. What is open sits inside the action rather than around it: a block
+/// closes when the first drop exists, and the depth split is the measurement of
+/// that.
+///
 // Author: Quantum⊙perator (Lando⊗⊙perator team)
-
-#![allow(dead_code)]
 extern crate alloc;
 use alloc::format;
 use alloc::string::String;
@@ -131,6 +131,7 @@ impl Collatz {
         s.push_str("  collatz fourier <depth> <rmax>      the character sums of the tree measure\n");
         s.push_str("  collatz flow <depth> <r>            the two terms of the level map on coefficients\n");
         s.push_str("  collatz collisions <depth> <r>      equidistribution as a collision count\n");
+        s.push_str("  collatz excess <depth> <r>          the excess recursion and its prediction\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -469,6 +470,7 @@ impl Collatz {
         }
         (sum / n as f64, lo, hi)
     }
+
 
     /// The 3-adic map of the share. Each digit of a junction's base-3 address
     /// pins its odd share further, so the object that sets the whole spectrum is
@@ -874,6 +876,103 @@ impl Collatz {
         }
         s.push_str("\n  excess x N holding steady is the square-root law in counting form:\n");
         s.push_str("  the collisions exceed the uniform count by a bounded multiple of N.\n");
+        s
+    }
+
+
+    /// The excess recursion, tested.
+    ///
+    /// Write e_d(r) for the collision excess, 3^r C / N^2 - 1. The three legs of
+    /// the next level's count are forced: the doubling leg is exactly the
+    /// previous C(r), the odd leg is the junction population's collisions over
+    /// the 3^r junction classes mod 3^(r+1), and the cross leg is
+    ///     C_cross = 2 sum_c n_r(c) m(phi(c)),   phi(a) = 3(a - 2^-1) + 2,
+    /// with phi a bijection from classes mod 3^r onto junction classes mod
+    /// 3^(r+1). By Cauchy-Schwarz the cross leg's deviation from its flat value
+    /// is at most the PRODUCT of the two deviations, so it is second order and
+    /// the recursion is linear to first order:
+    ///
+    ///     e_{d+1}(r)  <=  (9/16) e_d(r) + (1/16) e_d(r+1) + O(e^(3/2))
+    ///
+    /// The linear part sums to 10/16 when the two excesses are equal, and to
+    /// 12/16 when the finer one is three times the coarser, which is what the
+    /// modulus ratio suggests. Either is a contraction, and 3/4 per level in the
+    /// excess is 0.866 per level in the coefficients — the square-root rate
+    /// already measured. This verb checks the prediction against the walk.
+    pub fn excess(depth: u32, r: u32) -> String {
+        let mut s = format!("collatz excess at conductor 3^{} to depth {}\n", r, depth);
+        s.push_str("  read in E = e * N, the scale a square-root law lives at:\n");
+        s.push_str("     E_(d+1)(r) = (3/4) E_d(r) + (1/12) E_d(r+1)\n");
+        s.push_str("  which is multiplier ONE when E(r+1) = 3 E(r) — the square-root law is a\n");
+        s.push_str("  marginal fixed point of the level map, neither growing nor decaying.\n\n");
+        s.push_str("  level      nodes       E(r)     E(r+1)   ratio    predicted     actual   pred/act   cross/N   CS bnd/N\n");
+        let modulus = 3u64.pow(r);
+        let fine = 3u64.pow(r + 1);
+        let excess_of = |lvl: &Vec<u64>, m: u64| -> f64 {
+            let n = lvl.len() as f64;
+            let mut h = alloc::vec![0u64; m as usize];
+            for &v in lvl.iter() { h[(v % m) as usize] += 1; }
+            let mut c = 0u64;
+            for i in 0..m as usize { c += h[i] * h[i]; }
+            (m as f64) * (c as f64) / (n * n) - 1.0
+        };
+        let mut level: Vec<u64> = alloc::vec![1];
+        for d in 1..=depth {
+            let mut next: Vec<u64> = Vec::new();
+            for &m in level.iter() {
+                next.push(2 * m);
+                if m % 3 == 2 {
+                    let u = (2 * m - 1) / 3;
+                    if u != 1 { next.push(u); }
+                }
+            }
+            if next.is_empty() { break; }
+            // the cross leg measured against its flat value, and against the
+            // Cauchy-Schwarz bound on it: if the deviation sits inside the bound
+            // and carries a sign, the cross term is not a negligible remainder.
+            let mut evens: Vec<u64> = Vec::new();
+            let mut odds: Vec<u64> = Vec::new();
+            for &m in level.iter() {
+                evens.push(2 * m);
+                if m % 3 == 2 {
+                    let u = (2 * m - 1) / 3;
+                    if u != 1 { odds.push(u); }
+                }
+            }
+            let mut he = alloc::vec![0u64; modulus as usize];
+            let mut ho = alloc::vec![0u64; modulus as usize];
+            for &v in evens.iter() { he[(v % modulus) as usize] += 1; }
+            for &v in odds.iter() { ho[(v % modulus) as usize] += 1; }
+            let mut cx = 0.0f64;
+            let mut de = 0.0f64;
+            let mut dobar = 0.0f64;
+            let ne = evens.len() as f64;
+            let no = odds.len() as f64;
+            for i in 0..modulus as usize {
+                cx += 2.0 * he[i] as f64 * ho[i] as f64;
+                let a = he[i] as f64 - ne / modulus as f64;
+                let b = ho[i] as f64 - no / modulus as f64;
+                de += a * a;
+                dobar += b * b;
+            }
+            let flat = 2.0 * ne * no / modulus as f64;
+            let cs = 2.0 * crate::constant_closure::f64_sqrt(de * dobar);
+            let nprev = level.len() as f64;
+            let nnext = next.len() as f64;
+            let er = excess_of(&level, modulus) * nprev;
+            let ef = excess_of(&level, fine) * nprev;
+            let pred = 0.75 * er + (1.0 / 12.0) * ef;
+            let act = excess_of(&next, modulus) * nnext;
+            if d > 8 {
+                s.push_str(&format!("  {:>5}  {:>9}  {:>9.5}  {:>9.5}  {:>6.2}  {:>11.5}  {:>9.5}  {:>9.3}  {:>+10.4}  {:>9.4}\n",
+                    d, next.len(), er, ef, if er.abs() > 1e-12 { ef / er } else { 0.0 },
+                    pred, act, if act.abs() > 1e-12 { pred / act } else { 0.0 },
+                    (cx - flat) / nnext, cs / nnext));
+            }
+            level = next;
+        }
+        s.push_str("\n  pred/act near one is the linear recursion carrying the level; the\n");
+        s.push_str("  ratio column is how much the finer modulus costs.\n");
         s
     }
 
