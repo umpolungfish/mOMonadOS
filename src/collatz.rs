@@ -139,6 +139,7 @@ impl Collatz {
         s.push_str("  collatz attack <depth> <rungs> <minN>  hunt a counterexample to the contraction\n");
         s.push_str("  collatz jratio <depth> <rungs>      the junction excess ratio the CS route turns on\n");
         s.push_str("  collatz lag <depth> <r>             the cross term against the lag average\n");
+        s.push_str("  collatz lambda <depth>              the proportionality of the two arms at conductor 3\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -1534,6 +1535,68 @@ impl Collatz {
         }
         s.push_str(&format!("\n  mismatches over the whole walk: {}\n", bad_total));
         s.push_str("  a zero here is the identity holding class by class, level by level.\n");
+        s
+    }
+
+
+    /// The proportionality at conductor three.
+    ///
+    /// The even arm's deviation is the level's own with classes 1 and 2
+    /// transposed, a = (n0, n2, n1) - N/3, and the odd arm's is the junctions'
+    /// mod-9 split b = (m5, m2, m8) - No/3. Both are zero-sum three-vectors, so
+    /// they live in a plane, and the measurement says they are nearly parallel:
+    /// |cos| runs to 0.99 and above. Then b is close to lambda times a and the
+    /// whole sign question is the sign of lambda.
+    ///
+    /// This reports lambda = (a.b)/||a||^2 per level, with the cosine beside it
+    /// so a near-parallel reading can be told from a chance one.
+    pub fn lambda(depth: u32) -> String {
+        let mut s = String::from("collatz lambda — b = lambda a at conductor three\n");
+        s.push_str("  a = (n0, n2, n1) - N/3 (even arm), b = (m5, m2, m8) - No/3 (odd arm)\n\n");
+        s.push_str("  level      nodes      lambda      cos     |a|      |b|   sign\n");
+        let mut level: Vec<u64> = alloc::vec![1];
+        let mut neg = 0u64;
+        let mut tot = 0u64;
+        let mut lsum = 0.0f64;
+        for d in 1..=depth {
+            let mut n3 = [0f64; 3];
+            let mut m9 = [0f64; 9];
+            for &v in level.iter() {
+                n3[(v % 3) as usize] += 1.0;
+                m9[(v % 9) as usize] += 1.0;
+            }
+            let nn = level.len() as f64;
+            let no = n3[2];
+            let a = [n3[0] - nn / 3.0, n3[2] - nn / 3.0, n3[1] - nn / 3.0];
+            let b = [m9[5] - no / 3.0, m9[2] - no / 3.0, m9[8] - no / 3.0];
+            let dot = a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+            let na = crate::constant_closure::f64_sqrt(a[0]*a[0] + a[1]*a[1] + a[2]*a[2]);
+            let nb = crate::constant_closure::f64_sqrt(b[0]*b[0] + b[1]*b[1] + b[2]*b[2]);
+            let mut next: Vec<u64> = Vec::new();
+            for &v in level.iter() {
+                next.push(2 * v);
+                if v % 3 == 2 {
+                    let u = (2 * v - 1) / 3;
+                    if u != 1 { next.push(u); }
+                }
+            }
+            if next.is_empty() { break; }
+            if d > 12 && na > 1e-9 {
+                let lam = dot / (na * na);
+                let cos = if nb > 1e-9 { dot / (na * nb) } else { 0.0 };
+                tot += 1;
+                lsum += lam;
+                if lam < 0.0 { neg += 1; }
+                s.push_str(&format!("  {:>5}  {:>9}  {:>+10.4}  {:>+7.3}  {:>6.1}  {:>7.1}  {:>5}\n",
+                    d, level.len(), lam, cos, na, nb,
+                    if lam < 0.0 { "neg" } else { "POS" }));
+            }
+            level = next;
+        }
+        s.push_str(&format!("\n  lambda negative in {} of {} level(s); mean {:+.4}\n",
+            neg, tot, lsum / tot.max(1) as f64));
+        s.push_str("  a negative lambda is the odd arm opposing the even one, which is what\n");
+        s.push_str("  makes the largest term of the weighted sum subtract rather than add.\n");
         s
     }
 
