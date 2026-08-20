@@ -70,6 +70,7 @@ impl Collatz {
         s.push_str("  collatz trace <n>        every block, with the gap ratio it closes\n");
         s.push_str("  collatz merge <a> <b>    where two trajectories first coincide\n");
         s.push_str("  collatz chain <n>        the record chain n -> (4n-1)/3\n");
+        s.push_str("  collatz junctions <lo> <hi>  where trajectories merge, by arm\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -174,6 +175,77 @@ impl Collatz {
         }
         s.push_str(&format!("  chain ends at {} — it is {} (mod 3), so the odd lift has no arm here\n",
             v, v % 3));
+        s
+    }
+
+
+    /// The junction census. A value takes two predecessors exactly when it is
+    /// 2 (mod 3) — `2v` on the even arm and `(2v-1)/3` on the odd one — so every
+    /// merge in the tree happens there and nowhere else. What is not settled by
+    /// that is which junctions carry the traffic, and how the two arms share it.
+    /// This walks every seed in the range and counts arrivals at each junction
+    /// by the arm they came in on.
+    pub fn junctions(lo: u64, hi: u64, top: usize) -> String {
+        let mut s = format!("collatz junctions {}..{}\n", lo, hi);
+        // sparse counts: (value, even arrivals, odd arrivals)
+        let mut keys: Vec<u64> = Vec::new();
+        let mut even: Vec<u64> = Vec::new();
+        let mut odd: Vec<u64> = Vec::new();
+        let mut seeds = 0u64;
+        for n in lo..=hi {
+            seeds += 1;
+            let mut w = n;
+            let mut guard = 0;
+            while w != 1 && guard < 100_000 {
+                let v = step(w);
+                if v % 3 == 2 {
+                    let from_even = w % 2 == 0 && w == 2 * v;
+                    let idx = match keys.binary_search(&v) {
+                        Ok(i) => i,
+                        Err(i) => { keys.insert(i, v); even.insert(i, 0); odd.insert(i, 0); i }
+                    };
+                    if from_even { even[idx] += 1; } else { odd[idx] += 1; }
+                }
+                w = v;
+                guard += 1;
+            }
+        }
+        let mut order: Vec<usize> = (0..keys.len()).collect();
+        order.sort_by_key(|&i| core::cmp::Reverse(even[i] + odd[i]));
+        s.push_str(&format!("  seeds walked:    {}\n", seeds));
+        s.push_str(&format!("  junctions used:  {}\n\n", keys.len()));
+        s.push_str("       junction     traffic     even arm      odd arm   odd share\n");
+        let mut tot_e: u64 = 0;
+        let mut tot_o: u64 = 0;
+        for &i in order.iter() { tot_e += even[i]; tot_o += odd[i]; }
+        for &i in order.iter().take(top) {
+            let t = even[i] + odd[i];
+            s.push_str(&format!("  {:>13}  {:>10}  {:>11}  {:>11}  {:>10.4}\n",
+                keys[i], t, even[i], odd[i], odd[i] as f64 / t as f64));
+        }
+        // the shape of the split across junctions, not just its total: a
+        // junction that carries traffic on one arm only is doing no mixing,
+        // whatever the global share says.
+        let mut bins = [0u64; 10];
+        let mut weight = [0u64; 10];
+        for i in 0..keys.len() {
+            let t = even[i] + odd[i];
+            if t == 0 { continue; }
+            let sh = odd[i] as f64 / t as f64;
+            let mut b = (sh * 10.0) as usize;
+            if b > 9 { b = 9; }
+            bins[b] += 1;
+            weight[b] += t;
+        }
+        s.push_str("\n  odd share    junctions      traffic\n");
+        for b in 0..10 {
+            s.push_str(&format!("  {:.1}-{:.1}  {:>12}  {:>11}\n",
+                b as f64 / 10.0, (b + 1) as f64 / 10.0, bins[b], weight[b]));
+        }
+        s.push_str(&format!("\n  all junctions:   even {}   odd {}   odd share {:.4}\n",
+            tot_e, tot_o, tot_o as f64 / (tot_e + tot_o) as f64));
+        s.push_str("  the odd share is the fraction of arrivals that used the arm only\n");
+        s.push_str("  a 2 (mod 3) value has; the even arm is always available.\n");
         s
     }
 
