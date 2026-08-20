@@ -133,6 +133,7 @@ impl Collatz {
         s.push_str("  collatz collisions <depth> <r>      equidistribution as a collision count\n");
         s.push_str("  collatz excess <depth> <r>          the excess recursion and its prediction\n");
         s.push_str("  collatz perturb <depth>             the involution and its odd-arm perturbation\n");
+        s.push_str("  collatz norm <depth>                the weighted excess norm and its contraction\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -1063,6 +1064,71 @@ impl Collatz {
             ratio_sum / ratio_n.max(1) as f64));
         s.push_str("  under one, the involution dominates and the sign alternates; over one,\n");
         s.push_str("  the odd arm carries the level and the alternation breaks.\n");
+        s
+    }
+
+
+    /// The weighted norm the tower closes in.
+    ///
+    /// The excess tower is finite: a level of N nodes has empty classes once
+    /// 3^r > N, so it has about 0.262 d rungs and not infinitely many. In the
+    /// weighted norm
+    ///     ||e|| = sup over r of 3^(-r) e(r)
+    /// the level map obeys
+    ///     3^(-r) e_(d+1)(r) <= (9/16) 3^(-r) e_d(r) + (3/16) 3^(-(r+1)) e_d(r+1)
+    ///                       <= (12/16) ||e_d||,
+    /// because the finer term carries coefficient 1/16 and the weight pays 3 for
+    /// the digit. That is a contraction at 3/4 per level, and (3/4)^d is exactly
+    /// 1/N_d — the square-root law, derived rather than fitted.
+    ///
+    /// This verb measures the norm, its per-level ratio against 3/4, and which
+    /// conductor attains it.
+    pub fn norm(depth: u32) -> String {
+        let mut s = String::from("collatz norm — the weighted excess norm and its contraction\n");
+        s.push_str("  ||e|| = max over r of 3^-r e(r), rungs taken while 3^r <= N\n\n");
+        s.push_str("  level      nodes   rungs       ||e||    ratio   at r    ||e|| x N\n");
+        let excess_of = |lvl: &Vec<u64>, m: u64| -> f64 {
+            let n = lvl.len() as f64;
+            let mut h = alloc::vec![0u64; m as usize];
+            for &v in lvl.iter() { h[(v % m) as usize] += 1; }
+            let mut c = 0u64;
+            for i in 0..m as usize { c += h[i] * h[i]; }
+            (m as f64) * (c as f64) / (n * n) - 1.0
+        };
+        let mut level: Vec<u64> = alloc::vec![1];
+        let mut prev = 0.0f64;
+        for d in 1..=depth {
+            let mut next: Vec<u64> = Vec::new();
+            for &m in level.iter() {
+                next.push(2 * m);
+                if m % 3 == 2 {
+                    let u = (2 * m - 1) / 3;
+                    if u != 1 { next.push(u); }
+                }
+            }
+            if next.is_empty() { break; }
+            level = next;
+            let n = level.len() as u64;
+            let mut best = 0.0f64;
+            let mut arg = 0u32;
+            let mut rungs = 0u32;
+            let mut r = 1u32;
+            while 3u64.pow(r) <= n {
+                let w = excess_of(&level, 3u64.pow(r)) / (3.0f64).powi(r as i32);
+                if w > best { best = w; arg = r; }
+                rungs = r;
+                r += 1;
+                if r > 20 { break; }
+            }
+            if d > 8 {
+                s.push_str(&format!("  {:>5}  {:>9}  {:>6}  {:>10.7}  {:>7.3}  {:>5}  {:>10.4}\n",
+                    d, n, rungs, best,
+                    if prev > 0.0 { best / prev } else { 0.0 }, arg, best * n as f64));
+            }
+            prev = best;
+        }
+        s.push_str("\n  a ratio holding near 0.75 is the contraction; ||e|| x N holding near a\n");
+        s.push_str("  constant is the same statement read as the square-root law.\n");
         s
     }
 
