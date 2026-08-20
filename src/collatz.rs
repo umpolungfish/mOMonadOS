@@ -132,6 +132,7 @@ impl Collatz {
         s.push_str("  collatz flow <depth> <r>            the two terms of the level map on coefficients\n");
         s.push_str("  collatz collisions <depth> <r>      equidistribution as a collision count\n");
         s.push_str("  collatz excess <depth> <r>          the excess recursion and its prediction\n");
+        s.push_str("  collatz perturb <depth>             the involution and its odd-arm perturbation\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -996,6 +997,72 @@ impl Collatz {
         s.push_str(&format!("  inside the Cauchy-Schwarz bound in {} of {} — the bound is structural,\n",
             cs_ok, cross_n));
         s.push_str("  the sign is not. A sign that holds is what pins E at its fixed point.\n");
+        s
+    }
+
+
+    /// The involution and its perturbation, exactly.
+    ///
+    /// At conductor three the even children swap the two live classes, so their
+    /// contribution to the imbalance n1 - n2 is exactly its negation. The odd
+    /// children come only from the junctions and land by their mod-9 class:
+    /// b = 2, 5, 8 (mod 9) sends u = 1, 0, 2 (mod 3). So the imbalance obeys
+    ///
+    ///     I_(d+1) = -I_d + (m2 - m8)
+    ///
+    /// with m_c the level's mod-9 counts and I the unnormalized imbalance. The
+    /// involution is the minus sign; the perturbation is one difference of two
+    /// mod-9 classes, and nothing else. This verb checks the identity and reports
+    /// the size of the perturbation against the imbalance it perturbs.
+    pub fn perturb(depth: u32) -> String {
+        let mut s = String::from("collatz perturb — the involution at conductor 3 and its odd-arm term\n");
+        s.push_str("  I(d+1) = -I(d) + (m2 - m8),  m over residues mod 9\n\n");
+        s.push_str("  level      nodes       I(d)    m2 - m8   predicted     I(d+1)  ok   |pert|/|I|\n");
+        let mut level: Vec<u64> = alloc::vec![1];
+        let mut ratio_sum = 0.0f64;
+        let mut ratio_n = 0u64;
+        let mut bad = 0u64;
+        for d in 1..=depth {
+            let mut n = [0i64; 3];
+            let mut m = [0i64; 9];
+            for &v in level.iter() {
+                n[(v % 3) as usize] += 1;
+                m[(v % 9) as usize] += 1;
+            }
+            let imbalance = n[1] - n[2];
+            let pert = m[2] - m[8];
+            let pred = -imbalance + pert;
+            let mut next: Vec<u64> = Vec::new();
+            for &v in level.iter() {
+                next.push(2 * v);
+                if v % 3 == 2 {
+                    let u = (2 * v - 1) / 3;
+                    if u != 1 { next.push(u); }
+                }
+            }
+            if next.is_empty() { break; }
+            let mut nn = [0i64; 3];
+            for &v in next.iter() { nn[(v % 3) as usize] += 1; }
+            let actual = nn[1] - nn[2];
+            let ok = pred == actual;
+            if !ok { bad += 1; }
+            if imbalance != 0 && d > 4 {
+                ratio_sum += (pert as f64).abs() / (imbalance as f64).abs();
+                ratio_n += 1;
+            }
+            if d > 6 || !ok {
+                s.push_str(&format!("  {:>5}  {:>9}  {:>9}  {:>9}  {:>10}  {:>9}  {:>3}  {:>11.3}\n",
+                    d, next.len(), imbalance, pert, pred, actual,
+                    if ok { "yes" } else { "NO" },
+                    if imbalance != 0 { (pert as f64).abs() / (imbalance as f64).abs() } else { 0.0 }));
+            }
+            level = next;
+        }
+        s.push_str(&format!("\n  identity failed on {} level(s)\n", bad));
+        s.push_str(&format!("  mean |perturbation| / |imbalance|: {:.4}\n",
+            ratio_sum / ratio_n.max(1) as f64));
+        s.push_str("  under one, the involution dominates and the sign alternates; over one,\n");
+        s.push_str("  the odd arm carries the level and the alternation breaks.\n");
         s
     }
 
