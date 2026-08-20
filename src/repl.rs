@@ -1938,10 +1938,20 @@ pub fn repl(k: &mut Kernel) {
                         Some(Ok(v)) => sprintln!("{}", crate::collatz::Collatz::trace(v)),
                         _ => sprintln!("collatz trace <n> — n must be a number"),
                     },
+                    Some("prbound") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
+                                              rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
+                        (Some(d), Some(r)) => sprintln!("{}", crate::collatz::Collatz::prbound(d, r)),
+                        _ => sprintln!("collatz prbound <depth> <rungs>"),
+                    },
                     Some("participation") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
                                                     rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
                         (Some(d), Some(r)) => sprintln!("{}", crate::collatz::Collatz::participation(d, r)),
                         _ => sprintln!("collatz participation <depth> <rungs>"),
+                    },
+                    Some("participation") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
+                                                    rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
+                        (Some(d), Some(r)) => sprintln!("{}", crate::collatz::Collatz::participation(d, r)),
+                        _ => sprintln!("collatz participation <depth> <r>"),
                     },
                     Some("concentrate") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
                                                   rest.get(2).and_then(|v| v.parse::<u32>().ok())) {

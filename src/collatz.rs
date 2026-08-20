@@ -141,6 +141,7 @@ impl Collatz {
         s.push_str("  collatz lag <depth> <r>             the cross term against the lag average\n");
         s.push_str("  collatz lambda <depth>              the proportionality of the two arms at conductor 3\n");
         s.push_str("  collatz concentrate <depth> <rungs>  the running average the contraction needs\n");
+        s.push_str("  collatz participation <depth> <r>   the participation ratio against cross/CS\n");
         s.push_str("  collatz participation <depth> <rungs>  effective components of the cross sum\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
@@ -1715,7 +1716,7 @@ impl Collatz {
     /// Asked across LEVELS it says something else: how many levels carry the
     /// running total, which is what decides whether the average self-averages or
     /// is hostage to a few excursions.
-    pub fn participation(depth: u32, rungs: u32) -> String {
+    pub fn participation_rungs(depth: u32, rungs: u32) -> String {
         let mut s = format!("collatz participation — effective components of the cross sum, {} rungs\n\n", rungs);
         s.push_str("  level      nodes    PR rungs   of    frac      w total\n");
         let mut level: Vec<u64> = alloc::vec![1];
@@ -1781,6 +1782,142 @@ impl Collatz {
             s.push_str("  carrying the running total. Near the level count is self-averaging;\n");
             s.push_str("  near one is a total hostage to a single excursion.\n");
         }
+        s
+    }
+
+
+    /// The participation ratio, and whether it explains the two regimes.
+    ///
+    /// Cauchy-Schwarz is tight when a vector is carried by few components and
+    /// loose when it is spread. The participation ratio
+    ///     PR = (sum a_i^2)^2 / sum a_i^4
+    /// is the effective number of components carrying it, and it is NOT a
+    /// consequence of the residue bijections — it is a property of how the
+    /// deviation is distributed. If |cross| / CS tracks 1 / sqrt(PR), then one
+    /// quantity covers both regimes: tight at conductor 3 where PR is at most 3,
+    /// loose at 27 where PR can reach 27.
+    pub fn participation(depth: u32, r: u32) -> String {
+        let mut s = format!("collatz participation — PR and the cross/CS ratio, conductor 3^{}\n", r);
+        s.push_str("  PR = (sum a^2)^2 / sum a^4, the effective count of carrying classes\n\n");
+        s.push_str("  level      nodes     PR(even)   PR(odd)    1/sqrt(PR)   |cross|/CS    ratio\n");
+        let modulus = 3u64.pow(r);
+        let mut level: Vec<u64> = alloc::vec![1];
+        let mut acc = 0.0f64;
+        let mut n_acc = 0u64;
+        for d in 1..=depth {
+            let mut evens: Vec<u64> = Vec::new();
+            let mut odds: Vec<u64> = Vec::new();
+            for &m in level.iter() {
+                evens.push(2 * m);
+                if m % 3 == 2 { let u = (2 * m - 1) / 3; if u != 1 { odds.push(u); } }
+            }
+            let mut next: Vec<u64> = Vec::new();
+            next.extend_from_slice(&evens);
+            next.extend_from_slice(&odds);
+            if next.is_empty() { break; }
+            let ne = evens.len() as f64;
+            let no = odds.len() as f64;
+            if no < 9.0 { level = next; continue; }
+            let mut he = alloc::vec![0f64; modulus as usize];
+            let mut ho = alloc::vec![0f64; modulus as usize];
+            for &v in evens.iter() { he[(v % modulus) as usize] += 1.0; }
+            for &v in odds.iter() { ho[(v % modulus) as usize] += 1.0; }
+            let (mut s2e, mut s4e, mut s2o, mut s4o, mut cross) = (0.0, 0.0, 0.0, 0.0, 0.0);
+            for i in 0..modulus as usize {
+                let a = he[i] - ne / modulus as f64;
+                let b = ho[i] - no / modulus as f64;
+                s2e += a * a; s4e += a * a * a * a;
+                s2o += b * b; s4o += b * b * b * b;
+                cross += a * b;
+            }
+            let pre = if s4e > 0.0 { s2e * s2e / s4e } else { 0.0 };
+            let pro = if s4o > 0.0 { s2o * s2o / s4o } else { 0.0 };
+            let cs = crate::constant_closure::f64_sqrt(s2e * s2o);
+            let geo_pr = crate::constant_closure::f64_sqrt(pre * pro);
+            let pred = if geo_pr > 0.0 { 1.0 / crate::constant_closure::f64_sqrt(geo_pr) } else { 0.0 };
+            if d > 16 && cs > 1e-9 && pred > 0.0 {
+                let act = if cross < 0.0 { -cross / cs } else { cross / cs };
+                acc += act / pred;
+                n_acc += 1;
+                s.push_str(&format!("  {:>5}  {:>9}  {:>10.3}  {:>8.3}  {:>12.4}  {:>11.4}  {:>7.3}\n",
+                    d, next.len(), pre, pro, pred, act, act / pred));
+            }
+            level = next;
+        }
+        s.push_str(&format!("\n  mean of (|cross|/CS) / (1/sqrt(PR)): {:.4} over {} level(s)\n",
+            acc / n_acc.max(1) as f64, n_acc));
+        s.push_str("  a mean near one is the participation ratio explaining both regimes with\n");
+        s.push_str("  a single quantity, which the modulus alone does not.\n");
+        s
+    }
+
+
+    /// What the participation-corrected bound gives for c.
+    pub fn prbound(depth: u32, rungs: u32) -> String {
+        let mut s = format!("collatz prbound — the participation-corrected bound on c, {} rungs\n\n", rungs);
+        s.push_str("  level      nodes      plain CS    with PR    verdict\n");
+        let excess_of = |lvl: &Vec<u64>, m: u64| -> f64 {
+            let n = lvl.len() as f64;
+            let mut h = alloc::vec![0u64; m as usize];
+            for &v in lvl.iter() { h[(v % m) as usize] += 1; }
+            let mut c = 0u64;
+            for i in 0..m as usize { c += h[i] * h[i]; }
+            (m as f64) * (c as f64) / (n * n) - 1.0
+        };
+        let mut level: Vec<u64> = alloc::vec![1];
+        let mut ok = 0u64; let mut tot = 0u64;
+        let mut sum_pr = 0.0f64; let mut sum_cs = 0.0f64;
+        for d in 1..=depth {
+            let mut evens: Vec<u64> = Vec::new();
+            let mut odds: Vec<u64> = Vec::new();
+            for &m in level.iter() {
+                evens.push(2 * m);
+                if m % 3 == 2 { let u = (2 * m - 1) / 3; if u != 1 { odds.push(u); } }
+            }
+            let mut next: Vec<u64> = Vec::new();
+            next.extend_from_slice(&evens);
+            next.extend_from_slice(&odds);
+            if next.is_empty() { break; }
+            let nn = next.len() as u64;
+            if nn < 3u64.pow(rungs) || odds.len() < 9 { level = next; continue; }
+            let ne = evens.len() as f64; let no = odds.len() as f64;
+            let mut norm = 0.0f64;
+            let mut b_cs = 0.0f64; let mut b_pr = 0.0f64;
+            for r in 1..=rungs {
+                let m = 3u64.pow(r);
+                norm += excess_of(&level, m) / (3.0f64).powi(r as i32);
+                let mut he = alloc::vec![0f64; m as usize];
+                let mut ho = alloc::vec![0f64; m as usize];
+                for &v in evens.iter() { he[(v % m) as usize] += 1.0; }
+                for &v in odds.iter() { ho[(v % m) as usize] += 1.0; }
+                let (mut s2e, mut s4e, mut s2o, mut s4o) = (0.0, 0.0, 0.0, 0.0);
+                for i in 0..m as usize {
+                    let a = he[i] - ne / m as f64;
+                    let b = ho[i] - no / m as f64;
+                    s2e += a*a; s4e += a*a*a*a; s2o += b*b; s4o += b*b*b*b;
+                }
+                let cs = crate::constant_closure::f64_sqrt(s2e * s2o);
+                let pre = if s4e > 0.0 { s2e*s2e/s4e } else { 1.0 };
+                let pro = if s4o > 0.0 { s2o*s2o/s4o } else { 1.0 };
+                let pr = crate::constant_closure::f64_sqrt(pre * pro);
+                let scale = 2.0 * (m as f64) / ((nn * nn) as f64) / (3.0f64).powi(r as i32);
+                b_cs += scale * cs;
+                b_pr += scale * cs / crate::constant_closure::f64_sqrt(if pr > 1.0 { pr } else { 1.0 });
+            }
+            if norm > 0.0 && d > 16 {
+                let c_cs = b_cs / norm;
+                let c_pr = b_pr / norm;
+                tot += 1;
+                if c_pr < 0.25 { ok += 1; }
+                sum_cs += c_cs; sum_pr += c_pr;
+                s.push_str(&format!("  {:>5}  {:>9}  {:>10.4}  {:>9.4}  {:>9}\n",
+                    d, nn, c_cs, c_pr, if c_pr < 0.25 { "under" } else { "over" }));
+            }
+            level = next;
+        }
+        s.push_str(&format!("\n  mean plain CS bound {:.4}; mean with PR {:.4}\n",
+            sum_cs / tot.max(1) as f64, sum_pr / tot.max(1) as f64));
+        s.push_str(&format!("  under a quarter in {} of {} level(s)\n", ok, tot));
         s
     }
 
