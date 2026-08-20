@@ -68,6 +68,8 @@ impl Collatz {
         s.push_str("assigns Erdős–Straus through `greedy`.\n\n");
         s.push_str("  collatz <n>              blocks, steps and peak for one n\n");
         s.push_str("  collatz trace <n>        every block, with the gap ratio it closes\n");
+        s.push_str("  collatz merge <a> <b>    where two trajectories first coincide\n");
+        s.push_str("  collatz chain <n>        the record chain n -> (4n-1)/3\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -112,6 +114,66 @@ impl Collatz {
             }
         }
         s.push_str(&format!("  arrived at one in {} block(s)\n", i));
+        s
+    }
+
+
+    /// Where two trajectories first land on the same value. Two numbers with
+    /// nothing to do with each other merge only in the tail every trajectory
+    /// shares; two sitting on one branch of the predecessor tree merge at the
+    /// branch point, high up and reached fast. The verb answers which.
+    pub fn merge(a: u64, b: u64) -> String {
+        let mut s = format!("collatz merge {} {}\n", a, b);
+        let mut path_a: Vec<u64> = Vec::new();
+        let mut v = a;
+        let mut guard = 0;
+        while v != 1 && guard < 100_000 { path_a.push(v); v = step(v); guard += 1; }
+        path_a.push(1);
+        let mut v = b;
+        let mut steps_b = 0u32;
+        guard = 0;
+        while guard < 100_000 {
+            if let Some(i) = path_a.iter().position(|&x| x == v) {
+                s.push_str(&format!("  meet value:      {}\n", v));
+                s.push_str(&format!("  steps from {}:   {}\n", a, i));
+                s.push_str(&format!("  steps from {}:   {}\n", b, steps_b));
+                s.push_str(&format!("  shared tail:     {} of {} steps on the first path\n",
+                    path_a.len() - i, path_a.len()));
+                s.push_str(&format!("  the meet sits:   {}\n",
+                    if v > a.max(b) { "ABOVE both seeds — they join on the way up" }
+                    else if v > a.min(b) { "above the smaller seed only" }
+                    else { "below both — they join only in the common tail" }));
+                return s;
+            }
+            v = step(v);
+            steps_b += 1;
+        }
+        s.push_str("  no meeting inside the allowance\n");
+        s
+    }
+
+
+    /// The chain the budget records climb. Two backward steps — one doubling and
+    /// one odd lift, the two arms of the split composed once each — send n to
+    /// (4n-1)/3, defined exactly when n = 1 (mod 3). Consecutive records follow
+    /// that rule wherever it stays defined, which is why their ratio sits at
+    /// four thirds; where it fails the record switches chains instead.
+    pub fn chain(n: u64) -> String {
+        let mut s = format!("collatz chain {}\n", n);
+        s.push_str("  n -> (4n-1)/3, one doubling and one odd lift\n\n");
+        let mut v = n;
+        let mut i = 0;
+        while v % 3 == 1 && i < 64 {
+            let next = (4 * v - 1) / 3;
+            let b = budget(v, 100_000).map(|t| t.0).unwrap_or(0);
+            let bn = budget(next, 100_000).map(|t| t.0).unwrap_or(0);
+            s.push_str(&format!("  {:>12} (budget {:>3})  ->  {:>12} (budget {:>3})   ratio {:.6}\n",
+                v, b, next, bn, next as f64 / v as f64));
+            v = next;
+            i += 1;
+        }
+        s.push_str(&format!("  chain ends at {} — it is {} (mod 3), so the odd lift has no arm here\n",
+            v, v % 3));
         s
     }
 
