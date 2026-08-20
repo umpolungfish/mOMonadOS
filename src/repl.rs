@@ -1969,6 +1969,10 @@ pub fn repl(k: &mut Kernel) {
                         (Some(d), Some(r)) => sprintln!("{}", crate::collatz::Collatz::concentrate(d, r)),
                         _ => sprintln!("collatz concentrate <depth> <rungs>"),
                     },
+                    Some("winding") => match rest.get(1).and_then(|v| v.parse::<u32>().ok()) {
+                        Some(d) => sprintln!("{}", crate::collatz::Collatz::winding(d)),
+                        _ => sprintln!("collatz winding <depth>"),
+                    },
                     Some("lambda") => match rest.get(1).and_then(|v| v.parse::<u32>().ok()) {
                         Some(d) => sprintln!("{}", crate::collatz::Collatz::lambda(d)),
                         _ => sprintln!("collatz lambda <depth>"),

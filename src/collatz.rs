@@ -2124,6 +2124,72 @@ impl Collatz {
         s
     }
 
+
+    /// The deviation as an angle, and its winding.
+    ///
+    /// The mod-3 deviation is a zero-sum three-vector, so it lives in a plane.
+    /// Doubling transposes two coordinates and fixes the third, which on that
+    /// plane is a REFLECTION — determinant minus one, the Z2 that the fixation
+    /// slot carries and that has resisted every bound. The transport says to read
+    /// the same object as a winding instead: track the vector's angle and the
+    /// rotation the level map applies to it.
+    ///
+    /// A rigid rotation per level would make the sign of any inner product
+    /// periodic and its average forced. This reports the per-level rotation
+    /// through its cosine and sine, computed from dot and wedge so no arctangent
+    /// is needed, and the wedge's sign is the orientation — the integer the
+    /// promotion is after.
+    pub fn winding(depth: u32) -> String {
+        let mut s = String::from("collatz winding — the mod-3 deviation as a rotating vector\n");
+        s.push_str("  u = (x-y)/sqrt2, v = (x+y-2z)/sqrt6 ; the plane the zero-sum lives in\n\n");
+        s.push_str("  level      nodes        u         v      cos d     sin d   orient\n");
+        let mut level: Vec<u64> = alloc::vec![1];
+        let mut prev: Option<(f64, f64)> = None;
+        let mut pos_orient = 0u64;
+        let mut tot = 0u64;
+        let mut cos_sum = 0.0f64;
+        let mut sin_sum = 0.0f64;
+        for d in 1..=depth {
+            let mut n3 = [0f64; 3];
+            for &v in level.iter() { n3[(v % 3) as usize] += 1.0; }
+            let nn = level.len() as f64;
+            let (x, y, z) = (n3[0] - nn/3.0, n3[1] - nn/3.0, n3[2] - nn/3.0);
+            let u = (x - y) / crate::constant_closure::f64_sqrt(2.0);
+            let w = (x + y - 2.0 * z) / crate::constant_closure::f64_sqrt(6.0);
+            let mut next: Vec<u64> = Vec::new();
+            for &v in level.iter() {
+                next.push(2 * v);
+                if v % 3 == 2 { let q = (2 * v - 1) / 3; if q != 1 { next.push(q); } }
+            }
+            if next.is_empty() { break; }
+            if let Some((pu, pw)) = prev {
+                let na = crate::constant_closure::f64_sqrt(pu*pu + pw*pw);
+                let nb = crate::constant_closure::f64_sqrt(u*u + w*w);
+                if na > 1e-9 && nb > 1e-9 {
+                    let cosd = (pu*u + pw*w) / (na*nb);
+                    let sind = (pu*w - pw*u) / (na*nb);
+                    tot += 1;
+                    cos_sum += cosd;
+                    sin_sum += sind;
+                    if sind > 0.0 { pos_orient += 1; }
+                    if d > depth.saturating_sub(14) {
+                        s.push_str(&format!("  {:>5}  {:>9}  {:>8.2}  {:>8.2}  {:>+8.4}  {:>+8.4}  {:>6}\n",
+                            d, level.len(), u, w, cosd, sind,
+                            if sind > 0.0 { "+" } else { "-" }));
+                    }
+                }
+            }
+            prev = Some((u, w));
+            level = next;
+        }
+        s.push_str(&format!("\n  mean cos of the per-level rotation: {:+.4}\n", cos_sum / tot.max(1) as f64));
+        s.push_str(&format!("  mean sin: {:+.4}   orientation positive in {} of {}\n",
+            sin_sum / tot.max(1) as f64, pos_orient, tot));
+        s.push_str("  a rotation that is rigid shows a steady cos and a steady orientation; one\n");
+        s.push_str("  that is a reflection shows cos near minus one and no orientation at all.\n");
+        s
+    }
+
     pub fn sweep(lo: u64, hi: u64) -> String {
         let mut s = format!("collatz sweep {}..{}\n", lo, hi);
         let (mut maxb, mut argb) = (0u32, lo);
