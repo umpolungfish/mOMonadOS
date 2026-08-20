@@ -69,7 +69,7 @@ impl History {
 
 pub fn repl(k: &mut Kernel) {
     let mut cfs = CrystalStore::new();
-    let mut line_buf = [0u8; 262144];
+    let mut line_buf = [0u8; 2097152];
     let mut history = History::new();
     let mut ctx_stack = ContextStack::new();
     let mut ask_paste = crate::ask::AskPaste::new();
