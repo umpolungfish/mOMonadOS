@@ -136,6 +136,7 @@ impl Collatz {
         s.push_str("  collatz norm <depth> [rungs]        the weighted excess norm and its contraction\n");
         s.push_str("  collatz disjunct <depth>            is the weighted cross sum carried by one rung\n");
         s.push_str("  collatz attack <depth> <rungs> <minN>  hunt a counterexample to the contraction\n");
+        s.push_str("  collatz jratio <depth> <rungs>      the junction excess ratio the CS route turns on\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -1328,6 +1329,87 @@ impl Collatz {
                 s.push_str("  stands unrefuted over exactly that range.\n");
             }
         }
+        s
+    }
+
+
+    /// The one number the Cauchy-Schwarz route turns on.
+    ///
+    /// Writing each histogram as flat plus deviation, the flat parts cancel
+    /// because both deviations sum to zero, so
+    ///     cross(r) = 2 sum_c a(c) b(phi(c)) 3^r / N'^2
+    /// and Cauchy-Schwarz with the arm proportions 3/4 and 1/4 gives
+    ///     |cross(r)| <= (3/8) sqrt( e_even(r) e_odd(r) )
+    /// where e_even(r) is the level's own excess exactly, by the doubling
+    /// bijection. Summing with the weight,
+    ///     c <= (3/8) sqrt(3) sqrt( ||e_J|| / ||e|| )
+    /// with e_J the junction subpopulation's excess. So the route closes exactly
+    /// when that ratio sits under 0.1482, and this verb measures it.
+    pub fn jratio(depth: u32, rungs: u32) -> String {
+        let mut s = format!("collatz jratio — the junction excess against the level's, {} rungs\n", rungs);
+        s.push_str("  c <= 0.6495 sqrt(ratio); the route closes when ratio < 0.1482\n\n");
+        s.push_str("  level      nodes    arm image      ||e||      ||e_J||    ratio    c bound\n");
+        let excess_of = |lvl: &Vec<u64>, m: u64| -> f64 {
+            let n = lvl.len() as f64;
+            if n < 1.0 { return 0.0; }
+            let mut h = alloc::vec![0u64; m as usize];
+            for &v in lvl.iter() { h[(v % m) as usize] += 1; }
+            let mut c = 0u64;
+            for i in 0..m as usize { c += h[i] * h[i]; }
+            (m as f64) * (c as f64) / (n * n) - 1.0
+        };
+        let norm_of = |lvl: &Vec<u64>| -> f64 {
+            let n = lvl.len() as u64;
+            let mut t = 0.0f64;
+            let mut r = 1u32;
+            while 3u64.pow(r) <= n && r <= rungs {
+                t += excess_of(lvl, 3u64.pow(r)) / (3.0f64).powi(r as i32);
+                r += 1;
+            }
+            t
+        };
+        let mut level: Vec<u64> = alloc::vec![1];
+        let mut worst = 0.0f64;
+        let mut n_ok = 0u64;
+        let mut n_tot = 0u64;
+        for d in 1..=depth {
+            let mut next: Vec<u64> = Vec::new();
+            for &m in level.iter() {
+                next.push(2 * m);
+                if m % 3 == 2 {
+                    let u = (2 * m - 1) / 3;
+                    if u != 1 { next.push(u); }
+                }
+            }
+            if next.is_empty() { break; }
+            level = next;
+            let n = level.len() as u64;
+            if n < 3u64.pow(rungs) { continue; }
+            // b in the derivation is the odd ARM IMAGE, the u = 2t+1 values,
+            // which the arm bijection spreads over every residue. The junction
+            // parents are all 2 (mod 3) by definition and so are maximally
+            // concentrated at the first rung — measuring those measures the
+            // definition, not the mixing.
+            let junctions: Vec<u64> = level.iter().copied()
+                .filter(|v| v % 3 == 2)
+                .map(|v| 2 * (v / 3) + 1)
+                .collect();
+            if junctions.len() < 9 { continue; }
+            let e = norm_of(&level);
+            let ej = norm_of(&junctions);
+            if e <= 0.0 { continue; }
+            let ratio = ej / e;
+            let bound = 0.6495 * crate::constant_closure::f64_sqrt(ratio.max(0.0));
+            n_tot += 1;
+            if bound < 0.25 { n_ok += 1; }
+            if bound > worst { worst = bound; }
+            if d > 20 {
+                s.push_str(&format!("  {:>5}  {:>9}  {:>10}  {:>9.6}  {:>11.6}  {:>7.3}  {:>9.3}\n",
+                    d, n, junctions.len(), e, ej, ratio, bound));
+            }
+        }
+        s.push_str(&format!("\n  the bound lands under a quarter in {} of {} level(s); worst {:.3}\n",
+            n_ok, n_tot, worst));
         s
     }
 
