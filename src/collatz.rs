@@ -103,6 +103,7 @@ impl Collatz {
         s.push_str("  collatz growth <v> <dmax>           the amplitude under a value\n");
         s.push_str("  collatz amplitudes <lo> <hi> <d>    the amplitude over a range, with its recursion\n");
         s.push_str("  collatz birkhoff <lo> <hi> <d>      the cocycle weight averaged along trajectories\n");
+        s.push_str("  collatz amax <lo> <hi> <d>          the largest amplitude in a window\n");
         s.push_str("  collatz sweep <lo> <hi>  the budget spectrum across a range\n");
         s.push_str("  collatz ceiling <lo> <hi>  the record budgets and where they fall\n");
         s.push_str("  collatz help             this\n\n");
@@ -596,6 +597,43 @@ impl Collatz {
         s.push_str(&format!("  mean length:        {:.2}\n", mean_len));
         s.push_str(&format!("  gap x length:       {:+.4}   (constant = the cocycle is bounded)\n",
             (mean_log - target) * mean_len));
+        s
+    }
+
+
+    /// The largest amplitude in a window. Boundedness of the cocycle is exactly
+    /// the claim that this does not drift upward as the window widens, so the
+    /// verb reports the maximum and where it sits rather than an average that
+    /// would hide it. The Fibonacci ceiling proved in the Lean module allows
+    /// phi^d; what is measured here is whether anything approaches it.
+    pub fn amax(lo: u64, hi: u64, depth: u32) -> String {
+        let mut s = format!("collatz amax {}..{} at depth {}\n", lo, hi, depth);
+        let mut scale = 1.0f64;
+        let mut fib_scale = 1.0f64;
+        let phi = 1.6180339887498949;
+        for _ in 0..depth { scale *= 4.0 / 3.0; fib_scale *= phi; }
+        let mut best = 0.0f64;
+        let mut arg = lo;
+        let mut worst_ratio = 0.0f64;
+        let mut worst_arg = lo;
+        let mut sum = 0.0f64;
+        let mut n = 0u64;
+        for v in lo..=hi {
+            if v % 3 == 0 { continue; }
+            let c = Self::subtree(v, depth) as f64;
+            let a = c / scale;
+            sum += a;
+            n += 1;
+            if a > best { best = a; arg = v; }
+            let phi_share = c / fib_scale;
+            if phi_share > worst_ratio { worst_ratio = phi_share; worst_arg = v; }
+        }
+        s.push_str(&format!("  values read:        {}\n", n));
+        s.push_str(&format!("  mean amplitude:     {:.4}\n", sum / n.max(1) as f64));
+        s.push_str(&format!("  max amplitude:      {:.4}  at v = {}\n", best, arg));
+        s.push_str(&format!("  max against phi^d:  {:.3e}  at v = {}\n", worst_ratio, worst_arg));
+        s.push_str("  a max that holds as the window widens is the cocycle staying bounded;\n");
+        s.push_str("  one that climbs with the window is the thing that would break it.\n");
         s
     }
 
