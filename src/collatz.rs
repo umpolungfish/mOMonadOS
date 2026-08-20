@@ -1085,8 +1085,10 @@ impl Collatz {
     /// conductor attains it.
     pub fn norm(depth: u32) -> String {
         let mut s = String::from("collatz norm — the weighted excess norm and its contraction\n");
-        s.push_str("  ||e|| = max over r of 3^-r e(r), rungs taken while 3^r <= N\n\n");
-        s.push_str("  level      nodes   rungs       ||e||    ratio   at r    ||e|| x N\n");
+        s.push_str("  two folds over the same rungs: the max, which keeps the larger and\n");
+        s.push_str("  discards the rest, and the sum, which keeps both. The ob3ect's banked\n");
+        s.push_str("  check reads one unit lost to the max fold, so the sum is the honest one.\n\n");
+        s.push_str("  level      nodes   rungs      max-fold    ratio      sum-fold    ratio    sum x N\n");
         let excess_of = |lvl: &Vec<u64>, m: u64| -> f64 {
             let n = lvl.len() as f64;
             let mut h = alloc::vec![0u64; m as usize];
@@ -1097,6 +1099,7 @@ impl Collatz {
         };
         let mut level: Vec<u64> = alloc::vec![1];
         let mut prev = 0.0f64;
+        let mut prev_sum = 0.0f64;
         for d in 1..=depth {
             let mut next: Vec<u64> = Vec::new();
             for &m in level.iter() {
@@ -1110,25 +1113,31 @@ impl Collatz {
             level = next;
             let n = level.len() as u64;
             let mut best = 0.0f64;
-            let mut arg = 0u32;
+            let mut total = 0.0f64;
             let mut rungs = 0u32;
             let mut r = 1u32;
             while 3u64.pow(r) <= n {
                 let w = excess_of(&level, 3u64.pow(r)) / (3.0f64).powi(r as i32);
-                if w > best { best = w; arg = r; }
+                if w > best { best = w; }
+                total += w;
                 rungs = r;
                 r += 1;
                 if r > 20 { break; }
             }
             if d > 8 {
-                s.push_str(&format!("  {:>5}  {:>9}  {:>6}  {:>10.7}  {:>7.3}  {:>5}  {:>10.4}\n",
+                s.push_str(&format!("  {:>5}  {:>9}  {:>6}  {:>11.7}  {:>7.3}  {:>12.7}  {:>7.3}  {:>9.4}\n",
                     d, n, rungs, best,
-                    if prev > 0.0 { best / prev } else { 0.0 }, arg, best * n as f64));
+                    if prev > 0.0 { best / prev } else { 0.0 },
+                    total,
+                    if prev_sum > 0.0 { total / prev_sum } else { 0.0 },
+                    total * n as f64));
             }
             prev = best;
+            prev_sum = total;
         }
-        s.push_str("\n  a ratio holding near 0.75 is the contraction; ||e|| x N holding near a\n");
-        s.push_str("  constant is the same statement read as the square-root law.\n");
+        s.push_str("\n  a ratio holding near 0.75 is the contraction; the sum-fold column is the\n");
+        s.push_str("  one that discards nothing, and sum x N holding near a constant is the\n");
+        s.push_str("  square-root law read off a fold that kept every rung.\n");
         s
     }
 
