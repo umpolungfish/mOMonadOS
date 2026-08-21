@@ -214,15 +214,27 @@ impl IgTuple {
         let sr = snap.self_ref;
         let dc = snap.dialetheia_complete || snap.b_live_ticks > 0;
         let sx = snap.sig.3; // IFIX count
+        // R2 (O_inf_dag) structural conditions. kernel.rs names these for the exact
+        // primitive values they carry — atomic_reentry is "dim=dead", a point-like
+        // fork of one FSPLIT/FFUSE pair; bifurcation_revisited is "top=mime", that
+        // single fork recurring every wrap. Both are computed at kernel.rs:677 and
+        // were never read here, so dead and mime had a second definition in
+        // token_diversity and period, and the kernel's own replicative-opening
+        // program ⊙∈∋⊙ derived to 𐑨 𐑸 instead of the 𐑛 𐑥 it targets.
+        let ar = snap.atomic_reentry;
+        let br = snap.bifurcation_revisited;
 
-        // D — Dimensionality from token diversity
-        let d_val = if d <= 2 { IgPrim::dead }
+        // D — Dimensionality: a point-like fork is 0d, otherwise token diversity
+        let d_val = if ar { IgPrim::dead }
+            else if d <= 2 { IgPrim::dead }
             else if d <= 5 { IgPrim::ash }
             else if d <= 9 { IgPrim::array }
             else { IgPrim::if_ };
 
-        // T — Topology from self_ref + period + frobenius_order
-        let t_val = if sr { IgPrim::are }
+        // T — Topology: the recurring single fork is the bowtie, and it is more
+        // specific than self-reference alone, which it implies
+        let t_val = if br { IgPrim::mime }
+            else if sr { IgPrim::are }
             else if p == 1 { IgPrim::judge }
             else if p == 2 { IgPrim::mime }
             else if fo > 0 { IgPrim::oil }
