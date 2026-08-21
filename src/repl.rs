@@ -2242,9 +2242,53 @@ pub fn repl(k: &mut Kernel) {
                         (Some(Ok(l)), Some(Ok(h))) => sprintln!("{}", crate::collatz::Collatz::ceiling(l, h)),
                         _ => sprintln!("collatz ceiling <lo> <hi> — both must be numbers"),
                     },
+                    Some("descent3") => {
+                        use crate::tokens::{Program, Token};
+                        // The Collatz descent ∀n>1 ∃k col^[k] n < n is item 1', and it sits
+                        // at CLINK L9's ≻ 𐑑 (tot) and ≺ 𐑬 (out) — the two frobenius_order=3
+                        // slots no twelve-mark word can write. The affine identity
+                        // col^[k](2^k t + r) = 3^j t + col^[k] r composes three levels
+                        // (root, class rep, image): a functorial, three-arity fork. So write
+                        // the closing-form protocol with the three-arity Frobenius opcodes.
+                        //   ⊢ ⊙ ∈₃ ≻ ⊤ ≺ ⊥ ∋₃ ⋈ ⊞ ◻×8 ⊢   (self-referential: first = last)
+                        let build = |splits3: bool| -> Program {
+                            let mut p = Program::empty();
+                            let (fs, ff) = if splits3 {
+                                (Token::Fsplit3, Token::Ffuse3)
+                            } else {
+                                (Token::Fsplit, Token::Ffuse)
+                            };
+                            for t in [Token::Vinit, Token::Imscrib, fs, Token::Afwd,
+                                      Token::Evalt, Token::Arev, Token::Evalf, ff,
+                                      Token::Clink, Token::Engagr] { p.push(t); }
+                            for _ in 0..8 { p.push(Token::Ifix); }
+                            p.push(Token::Vinit); // close on ⊢ — self-referential
+                            p
+                        };
+                        let l9 = "𐑛𐑥𐑑𐑬𐑐𐑪𐑔𐑝⊙𐑫𐑳𐑭";
+                        for (label, splits3) in [("two-arity (word-reachable)", false),
+                                                 ("three-arity (Fsplit3/Ffuse3)", true)] {
+                            let prog = build(splits3);
+                            let snap = crate::kernel::self_imscribe(&prog);
+                            let tup = crate::imas_ig::IgTuple::from_snapshot(&snap);
+                            let glyphs: alloc::string::String = tup.display().to_string();
+                            let bare: alloc::string::String =
+                                glyphs.chars().filter(|c| !"⟨⟩ ·".contains(*c)).collect();
+                            let agree = bare.chars().zip(l9.chars())
+                                .filter(|(a, b)| a == b).count();
+                            sprintln!("  {}", label);
+                            sprintln!("    fo={}  tuple {}  crystal {}",
+                                snap.frobenius_order, glyphs, tup.crystal_address());
+                            sprintln!("    tier {}  self_ref {}  dialetheia {}",
+                                snap.tier_name(), snap.self_ref, snap.dialetheia_complete);
+                            sprintln!("    vs CLINK L9 {} — {}/12 slots agree", l9, agree);
+                        }
+                        sprintln!("  CLINK L9 ≻ 𐑑 and ≺ 𐑬 are frobenius_order=3; the two-arity");
+                        sprintln!("  row cannot reach them, the three-arity row does.");
+                    }
                     Some(x) => match x.parse::<u64>() {
                         Ok(v) => sprintln!("{}", crate::collatz::Collatz::one(v)),
-                        Err(_) => sprintln!("collatz <n> | trace <n> | sweep <lo> <hi> | ceiling <lo> <hi>"),
+                        Err(_) => sprintln!("collatz <n> | trace <n> | descent3 | sweep <lo> <hi> | ceiling <lo> <hi>"),
                     },
                 }
             }

@@ -284,7 +284,12 @@ impl IgTuple {
             else { IgPrim::bib };
 
         // C — Composition from frobenius_order + period
-        let c_val = if fo > 0 { IgPrim::measure }
+        //   A three-arity fuse (FFUSE3) joins its arms all at once, which is `vow`
+        //   ("all-simultaneous", STITCH_3 f∧g∧h) — the same reading `measure`
+        //   ("ordered steps") gets wrong for a functorial fork that a two-arity
+        //   sequential fuse gets right. So fo == 3 composes simultaneously.
+        let c_val = if fo == 3 { IgPrim::vow }
+            else if fo > 0 { IgPrim::measure }
             else if p == 1 { IgPrim::vow }
             else if p == 2 { IgPrim::gag }
             else { IgPrim::ooze };

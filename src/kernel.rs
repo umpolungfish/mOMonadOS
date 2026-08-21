@@ -608,7 +608,11 @@ pub fn self_imscribe(prog: &Program) -> Snapshot {
     let n = prog.len();
 
     let diversity = {
-        let mut seen = [false; 12];
+        // Sixteen Token variants: the twelve classical opcodes (0..12) plus the
+        // extension opcodes Fsplit3, Ffuse3, Evali, Rotat (12..16). A two-arity word
+        // only ever indexes 0..12, so its diversity is unchanged; a three-arity
+        // Program reaches the higher slots and must not index out of bounds.
+        let mut seen = [false; 16];
         for t in prog.as_slice() { seen[*t as usize] = true; }
         seen.iter().filter(|&&b| b).count()
     };
@@ -617,14 +621,26 @@ pub fn self_imscribe(prog: &Program) -> Snapshot {
 
     let fsplit = prog.as_slice().iter().any(|t| *t == Token::Fsplit);
     let ffuse  = prog.as_slice().iter().any(|t| *t == Token::Ffuse);
-    let frob_order = match (fsplit, ffuse) {
-        (false, false) => 0,
-        (true,  false) => 1,
-        (false, true)  => 2,
-        (true,  true)  => {
-            let first_split = prog.as_slice().iter().position(|t| *t == Token::Fsplit).unwrap();
-            let first_fuse  = prog.as_slice().iter().position(|t| *t == Token::Ffuse).unwrap();
-            if first_split < first_fuse { 1 } else { 2 }
+    // A genuine three-arity Frobenius opcode makes the coupling functorial (order 3):
+    // FSPLIT3/FFUSE3 fork and fuse a third (Information) arm. The twelve-mark word
+    // alphabet cannot emit these — no glyph maps to them (belnap_ring_shor::glyph_to_token)
+    // — so every word derives here with fo ∈ {0,1,2} exactly as before; only a Program
+    // carrying the extension opcode directly reaches order 3, which is what ≻ 𐑑 (tot) and
+    // ≺ 𐑬 (out) read, the two CLINK L9 slots outside the word→tuple image.
+    let fsplit3 = prog.as_slice().iter().any(|t| *t == Token::Fsplit3);
+    let ffuse3  = prog.as_slice().iter().any(|t| *t == Token::Ffuse3);
+    let frob_order = if fsplit3 || ffuse3 {
+        3
+    } else {
+        match (fsplit, ffuse) {
+            (false, false) => 0,
+            (true,  false) => 1,
+            (false, true)  => 2,
+            (true,  true)  => {
+                let first_split = prog.as_slice().iter().position(|t| *t == Token::Fsplit).unwrap();
+                let first_fuse  = prog.as_slice().iter().position(|t| *t == Token::Ffuse).unwrap();
+                if first_split < first_fuse { 1 } else { 2 }
+            }
         }
     };
 
@@ -672,8 +688,11 @@ pub fn self_imscribe(prog: &Program) -> Snapshot {
 
     // ── R2 structural conditions (atomicity, bifurcation) — static, mirrors
     // frob_order/self_ref above. winding_count is dynamic-only (see dynamic_imscribe). ──
-    let fsplit_count = prog.as_slice().iter().filter(|t| **t == Token::Fsplit).count();
-    let ffuse_count  = prog.as_slice().iter().filter(|t| **t == Token::Ffuse).count();
+    // is_fsplit/is_ffuse match both arities, so a single three-arity fork pair also reads
+    // as the point-like re-entry (one fork, one fuse). A two-arity word is counted exactly
+    // as before, since it carries no three-arity opcode.
+    let fsplit_count = prog.as_slice().iter().filter(|t| t.is_brancher()).count();
+    let ffuse_count  = prog.as_slice().iter().filter(|t| t.is_merger()).count();
     let atomic_reentry = fsplit_count == 1 && ffuse_count == 1;
     let bifurcation_revisited = atomic_reentry && self_ref;
 
