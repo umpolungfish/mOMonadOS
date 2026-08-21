@@ -281,7 +281,7 @@ impl U256 {
 type Point = Option<(U256, U256)>;
 
 /// Affine point add, ported line-for-line from pk2sk.py. None = identity.
-fn pt_add(p: Point, q: Point) -> Point {
+pub fn pt_add(p: Point, q: Point) -> Point {
     match (p, q) {
         (None, q) => q,
         (p, None) => p,
@@ -307,7 +307,7 @@ fn pt_add(p: Point, q: Point) -> Point {
 
 /// Double-and-add scalar multiply. k is a u64 (< 2^64 < N, the group order,
 /// so no reduction of k mod N is ever needed for kernel command ranges).
-fn pt_mul(k: u64, x: U256, y: U256) -> Point {
+pub fn pt_mul(k: u64, x: U256, y: U256) -> Point {
     let mut rx: Point = None;
     let (mut cx, mut cy) = (x, y);
     let mut kk = k;

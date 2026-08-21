@@ -1130,7 +1130,7 @@ impl Collatz {
             (m as f64) * (c as f64) / (n * n) - 1.0
         };
         let mut level: Vec<u64> = alloc::vec![1];
-        let mut prev = 0.0f64;
+        let mut _prev = 0.0f64;
         let mut prev_sum = 0.0f64;
         let mut c_sum = 0.0f64;
         let mut c_n = 0u64;
@@ -1190,7 +1190,7 @@ impl Collatz {
                 if pr > pair_max { pair_max = pr; }
             }
             prev2_sum = prev_sum;
-            prev = best;
+            _prev = best;
             prev_sum = total;
         }
         s.push_str(&format!("\n  c under a quarter in {} of {} level(s); mean c {:+.4}, worst {:+.4}\n",
@@ -1613,7 +1613,7 @@ impl Collatz {
             if next.is_empty() { break; }
             if d > 12 && na > 1e-9 {
                 let lam = dot / (na * na);
-                let cos = if nb > 1e-9 { dot / (na * nb) } else { 0.0 };
+                let _cos = if nb > 1e-9 { dot / (na * nb) } else { 0.0 };
                 tot += 1;
                 lsum += lam;
                 if lam < 0.0 { neg += 1; }

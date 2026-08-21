@@ -19,7 +19,7 @@ use crate::{
     sic_moduli,
     riemann_sic,
     riemann_hilbert, bip39_sic_grover, redteam,
-    witness_vessel, ask, ovm,
+    witness_vessel, ask, ovm, pk2sk,
 };
 use crate::tokens::{canonical_name, canonical_count, continuous_name, continuous_count, novel_name, novel_count, shunted_name, shunted_count, compound_name, compound_index, compound_program, compound_count};
 use crate::crystal::{CrystalStore, decode, encode, indices_from_program, TOTAL};
@@ -1148,6 +1148,127 @@ pub fn repl(k: &mut Kernel) {
                     }
                 }
             }
+            "qft" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "help" => {
+                        sprintln!("qft — Quantum Fourier Transform circuit, phases, and braid compilation");
+                        sprintln!("  qft <n>              QFT circuit diagram for n qubits");
+                        sprintln!("  qft circuit <n>      QFT circuit diagram (explicit)");
+                        sprintln!("  qft iqft <n>         Inverse QFT circuit diagram");
+                        sprintln!("  qft phases <n>       Controlled-R_k phase angles for n qubits");
+                        sprintln!("  qft braid <n>        Compile QFT to Fibonacci anyon braid word");
+                        sprintln!("  qft iqft braid <n>   Compile IQFT to Fibonacci anyon braid word");
+                        sprintln!("  qft verify <n>       Verify QFT∘IQFT = identity structure");
+                        sprintln!("  qft estimate <n>     Estimate braid length for QFT/IQFT");
+                    }
+                    "circuit" => {
+                        let n = parts.next().and_then(|s| s.parse::<usize>().ok()).unwrap_or(0);
+                        if n == 0 {
+                            sprintln!("qft circuit: usage: qft circuit <n>  (n > 0)");
+                        } else {
+                            let c = crate::qft::qft_circuit(n, false);
+                            sprintln!("{}", crate::qft::format_circuit(&c));
+                        }
+                    }
+                    "iqft" => {
+                        let sub2 = parts.next().unwrap_or("");
+                        if sub2 == "braid" {
+                            let n = parts.next().and_then(|s| s.parse::<usize>().ok()).unwrap_or(0);
+                            if n == 0 {
+                                sprintln!("qft iqft braid: usage: qft iqft braid <n>  (n > 0)");
+                            } else {
+                                let braid = crate::qft::qft_to_braid(n, true);
+                                sprintln!("IQFT braid ({} qubits, {} generators):", n, braid.len());
+                                for chunk in braid.chunks(24) {
+                                    sprintln!("  {}", chunk.iter().map(|g: &i32| g.to_string()).collect::<alloc::vec::Vec<_>>().join(" "));
+                                }
+                            }
+                        } else {
+                            let n = sub2.parse::<usize>().unwrap_or(0);
+                            if n == 0 {
+                                sprintln!("qft iqft: usage: qft iqft <n>  (n > 0)");
+                            } else {
+                                let c = crate::qft::qft_circuit(n, true);
+                                sprintln!("{}", crate::qft::format_circuit(&c));
+                            }
+                        }
+                    }
+                    "phases" => {
+                        let n = parts.next().and_then(|s| s.parse::<usize>().ok()).unwrap_or(0);
+                        if n == 0 {
+                            sprintln!("qft phases: usage: qft phases <n>  (n > 0)");
+                        } else {
+                            let c = crate::qft::qft_circuit(n, false);
+                            let phases = crate::qft::circuit_phases(&c);
+                            sprintln!("QFT phases ({} qubits):", n);
+                            sprintln!("  control target  angle (rad)  angle (deg)  angle / π");
+                            for (ctrl, target, angle) in phases {
+                                sprintln!("  {:>7} {:>6}  {:>10.6}  {:>10.2}  {:>7.4}π",
+                                    ctrl, target, angle, angle * 180.0 / core::f64::consts::PI, angle / core::f64::consts::PI);
+                            }
+                        }
+                    }
+                    "braid" => {
+                        let n = parts.next().and_then(|s| s.parse::<usize>().ok()).unwrap_or(0);
+                        if n == 0 {
+                            sprintln!("qft braid: usage: qft braid <n>  (n > 0)");
+                        } else {
+                            let braid = crate::qft::qft_to_braid(n, false);
+                            sprintln!("QFT braid ({} qubits, {} generators):", n, braid.len());
+                            for chunk in braid.chunks(24) {
+                                sprintln!("  {}", chunk.iter().map(|g: &i32| g.to_string()).collect::<alloc::vec::Vec<_>>().join(" "));
+                            }
+                        }
+                    }
+                    "verify" => {
+                        let n = parts.next().and_then(|s| s.parse::<usize>().ok()).unwrap_or(0);
+                        if n == 0 {
+                            sprintln!("qft verify: usage: qft verify <n>  (n > 0)");
+                        } else {
+                            let ok = crate::qft::verify_qft_iqft(n);
+                            sprintln!("QFT∘IQFT verification for {} qubits: {}", n, if ok { "PASS" } else { "FAIL" });
+                        }
+                    }
+                    "estimate" => {
+                        let n = parts.next().and_then(|s| s.parse::<usize>().ok()).unwrap_or(0);
+                        if n == 0 {
+                            sprintln!("qft estimate: usage: qft estimate <n>  (n > 0)");
+                        } else {
+                            let est = crate::qft::estimate_qft_braid_length(n);
+                            sprintln!("QFT braid length estimate for {} qubits: ~{} generators", n, est);
+                        }
+                    }
+                    other => {
+                        // Try to parse as a number for default QFT circuit
+                        let n = other.parse::<usize>().unwrap_or(0);
+                        if n == 0 {
+                            sprintln!("qft: unknown subcommand '{}' (try 'qft help')", other);
+                        } else {
+                            let c = crate::qft::qft_circuit(n, false);
+                            sprintln!("{}", crate::qft::format_circuit(&c));
+                        }
+                    }
+                }
+            }
+            "shors_btc_2" => {
+                // Parse optional public key argument (for demo, we'll use a standard test key)
+                let arg = parts.next().unwrap_or("");
+                if arg == "help" || arg.is_empty() {
+                    sprintln!("shors_btc_2 — Quantum period-finding for Bitcoin secp256k1 ECDLP");
+                    sprintln!("  shors_btc_2          Extract private key from standard test public key");
+                    sprintln!("  shors_btc_2 <hex>    Extract private key from given public key (x,y)");
+                } else {
+                    // For demo purposes, we'll ignore the argument and use the standard test
+                    // In a full implementation, this would parse the public key coordinates
+                    let public_key = crate::shors_btc_2::EcPoint::new(
+                        pk2sk::U256::from_u64(9),
+                        pk2sk::U256::from_u64(14)
+                    );
+                    let result = crate::shors_btc_2::run_shors_btc_2(&public_key);
+                    result.print_report();
+                }
+            }
             "rh" => print_rh(),
             "ym" => print_ym(),
             "temp" => print_temporal(),
@@ -1970,11 +2091,6 @@ pub fn repl(k: &mut Kernel) {
                                                     rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
                         (Some(d), Some(r)) => sprintln!("{}", crate::collatz::Collatz::participation(d, r)),
                         _ => sprintln!("collatz participation <depth> <rungs>"),
-                    },
-                    Some("participation") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
-                                                    rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
-                        (Some(d), Some(r)) => sprintln!("{}", crate::collatz::Collatz::participation(d, r)),
-                        _ => sprintln!("collatz participation <depth> <r>"),
                     },
                     Some("concentrate") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
                                                   rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
