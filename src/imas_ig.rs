@@ -250,16 +250,26 @@ impl IgTuple {
             else { IgPrim::they };
 
         // K — Kinetics from period + IFIX count
+        //   on (𐑪) is trapped by ORDER: the fixation count sits exactly on eight.
+        //   air (𐑺) is trapped by DISORDER: fixed past that count, with no ordered
+        //   count to sit on. Without this branch `air` was never emitted at all, and
+        //   184 catalog entries carry it.
         let k_val = if sx == 8 { IgPrim::on }
+            else if sx > 8 { IgPrim::air }
             else if p == 1 { IgPrim::egg }
             else if p <= 4 { IgPrim::loll }
             else { IgPrim::yea };
 
         // G — Cardinality from IFIX + diversity
-        let g_val = if sx >= 3 { IgPrim::ice }
-            else if sx >= 1 { IgPrim::thigh }
-            else if d <= 3 { IgPrim::bib }
-            else { IgPrim::thigh };
+        // This axis is ℵ / ℶ / ℷ — it counts DISTINCT MARKS, not fixations. Branching
+        // on sx welded it to k_val's `sx == 8`, so eight fixations forced ℵ and the
+        // pairs (⊤𐑪,∈𐑔), (⊤𐑪,∈𐑚) and every (⊤𐑺,·) became unwritable: 998 catalog
+        // entries, ten_sefirot and CLINK L9 among them. `--recalibrate` walks ⊤ and ∈
+        // through every value with the other held, so the Grammar keeps them conjugate
+        // and free; the code had them collapsed.
+        let g_val = if d >= 10 { IgPrim::ice }
+            else if d >= 4 { IgPrim::thigh }
+            else { IgPrim::bib };
 
         // C — Composition from frobenius_order + period
         let c_val = if fo > 0 { IgPrim::measure }
