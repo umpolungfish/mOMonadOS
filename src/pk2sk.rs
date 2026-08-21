@@ -151,7 +151,7 @@ impl U256 {
     }
 
     /// self − b (mod P). Assumes self, b < P; result < P.
-    fn sub_mod(&self, b: &U256) -> U256 {
+    pub fn sub_mod(&self, b: &U256) -> U256 {
         let (d, bor) = self.sub_plain(b);
         if bor {
             // self < b: answer = P − (b − self), NOT P − (self − b mod 2^256).
@@ -165,7 +165,7 @@ impl U256 {
     }
 
     /// self + b (mod P). Assumes self, b < P; result < P.
-    fn add_mod(&self, b: &U256) -> U256 {
+    pub fn add_mod(&self, b: &U256) -> U256 {
         let (s, c) = self.add_overflow(b);
         if c {
             // s + 2^256 ≡ s + C (mod P); s < 2^256 so s + C < 2^257.
@@ -190,7 +190,7 @@ impl U256 {
 
     /// self · b (mod P). 8-limb schoolbook product, then fold the top half
     /// with 2^256 ≡ C (mod P) until it fits in 4 limbs.
-    fn mul_mod(&self, b: &U256) -> U256 {
+    pub fn mul_mod(&self, b: &U256) -> U256 {
         let mut v = [0u64; 8];
         for i in 0..4 {
             let mut carry = 0u128;
@@ -244,7 +244,7 @@ impl U256 {
     /// b (b = b² per bit) without ever squaring r — for e = 3 it returned a⁶
     /// instead of a³, so every modinv (Fermat a^(P−2)) was garbage and every
     /// point addition with a division landed off-curve.
-    fn powmod(&self, e: &U256) -> U256 {
+    pub fn powmod(&self, e: &U256) -> U256 {
         let mut r = U256::from_u64(1);
         let a = *self;
         for i in (0..4).rev() {
@@ -260,7 +260,7 @@ impl U256 {
 
     /// Multiplicative inverse mod P by Fermat: a^(P−2). den ≠ 0 mod P for
     /// every live secp256k1 affine coordinate, so this is never called on 0.
-    fn modinv(&self) -> U256 {
+    pub fn modinv(&self) -> U256 {
         let pm2 = U256([0xfffffffefffffc2d, 0xffffffffffffffff, 0xffffffffffffffff, 0xffffffffffffffff]);
         self.powmod(&pm2)
     }
@@ -462,7 +462,7 @@ fn imscribe_slots(sk: u64) -> String {
 /// Parse a compressed public key hex (02|03 + 64 hex chars of x) into the
 /// x-coordinate and the y-parity the prefix asserts. Same shape as the
 /// python's coincurve parse: 02 = y even, 03 = y odd.
-fn parse_pk(pk_hex: &str) -> Option<(U256, bool)> {
+pub fn parse_pk(pk_hex: &str) -> Option<(U256, bool)> {
     let h = pk_hex.trim();
     let x = h.strip_prefix("02").or_else(|| h.strip_prefix("03"))?;
     if x.len() != 64 { return None; }

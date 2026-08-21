@@ -1252,20 +1252,15 @@ pub fn repl(k: &mut Kernel) {
                 }
             }
             "shors_btc_2" => {
-                // Parse optional public key argument (for demo, we'll use a standard test key)
                 let arg = parts.next().unwrap_or("");
-                if arg == "help" {
+                if arg.is_empty() || arg == "help" {
                     sprintln!("shors_btc_2 — Quantum period-finding for Bitcoin secp256k1 ECDLP");
                     sprintln!("  shors_btc_2          Extract private key from standard test public key");
-                    sprintln!("  shors_btc_2 <hex>    Extract private key from given public key (x,y)");
+                    sprintln!("  shors_btc_2 <hex>    Extract private key from given compressed public key (02|03 + 64 hex x)");
+                    sprintln!("example:");
+                    sprintln!("  shors_btc_2 03f01d6b9018ab421dd410404cb869072065522bf85734008f105cf385a023a80f");
                 } else {
-                    // For demo purposes, we'll ignore the argument and use the standard test
-                    // In a full implementation, this would parse the public key coordinates
-                    let public_key = crate::shors_btc_2::EcPoint::new(
-                        pk2sk::U256::from_u64(9),
-                        pk2sk::U256::from_u64(14)
-                    );
-                    let result = crate::shors_btc_2::run_shors_btc_2(&public_key);
+                    let result = crate::shors_btc_2::run_shors_btc_2_from_hex(arg);
                     result.print_report();
                 }
             }
