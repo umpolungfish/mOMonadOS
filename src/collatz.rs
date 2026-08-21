@@ -18,6 +18,19 @@ use alloc::format;
 use alloc::string::String;
 use alloc::vec::Vec;
 
+// f64_powi replacement for .powi() which is not stable on f64 in this toolchain
+fn f64_powi(x: f64, n: i32) -> f64 {
+    let mut r = 1.0_f64;
+    let mut b = x;
+    let mut e = n;
+    while e > 0 {
+        if e & 1 == 1 { r *= b; }
+        b *= b;
+        e >>= 1;
+    }
+    r
+}
+
 /// The shortcut map itself.
 pub fn step(n: u64) -> u64 {
     if n % 2 == 0 { n / 2 } else { (3 * n + 1) / 2 }
@@ -1145,7 +1158,7 @@ impl Collatz {
             // out and leaves what the level map actually does.
             let rung_cap = if fixed_rungs > 0 { fixed_rungs } else { 20 };
             while 3u64.pow(r) <= n && r <= rung_cap {
-                let w = excess_of(&level, 3u64.pow(r)) / (3.0f64).powi(r as i32);
+                let w = excess_of(&level, 3u64.pow(r)) / f64_powi(3.0f64, r as i32);
                 if w > best { best = w; }
                 total += w;
                 rungs = r;
@@ -1234,7 +1247,7 @@ impl Collatz {
                 let mut cx = 0.0f64;
                 for i in 0..m as usize { cx += 2.0 * he[i] as f64 * ho[i] as f64; }
                 let flat = 2.0 * ne * no / m as f64;
-                let term = (cx - flat) * (m as f64) / ((n * n) as f64) / (3.0f64).powi(r as i32);
+                let term = (cx - flat) * (m as f64) / ((n * n) as f64) / f64_powi(3.0f64, r as i32);
                 total += term;
                 if term.abs() > top.abs() { top = term; arg = r; }
                 rungs = r;
@@ -1281,7 +1294,7 @@ impl Collatz {
             let mut t = 0.0f64;
             let mut r = 1u32;
             while 3u64.pow(r) <= n && r <= fixed_rungs {
-                t += excess_of(lvl, 3u64.pow(r)) / (3.0f64).powi(r as i32);
+                t += excess_of(lvl, 3u64.pow(r)) / f64_powi(3.0f64, r as i32);
                 r += 1;
             }
             t
@@ -1369,7 +1382,7 @@ impl Collatz {
             let mut t = 0.0f64;
             let mut r = 1u32;
             while 3u64.pow(r) <= n && r <= rungs {
-                t += excess_of(lvl, 3u64.pow(r)) / (3.0f64).powi(r as i32);
+                t += excess_of(lvl, 3u64.pow(r)) / f64_powi(3.0f64, r as i32);
                 r += 1;
             }
             t
@@ -1652,7 +1665,7 @@ impl Collatz {
             let n = lvl.len() as u64;
             let mut t = 0.0f64;
             let mut r = 1u32;
-            while 3u64.pow(r) <= n && r <= rungs { t += excess_of(lvl, 3u64.pow(r)) / (3.0f64).powi(r as i32); r += 1; }
+            while 3u64.pow(r) <= n && r <= rungs { t += excess_of(lvl, 3u64.pow(r)) / f64_powi(3.0f64, r as i32); r += 1; }
             t
         };
         let mut level: Vec<u64> = alloc::vec![1];
@@ -1751,7 +1764,7 @@ impl Collatz {
                 for i in 0..m as usize {
                     cx += (he[i] - ne / m as f64) * (ho[i] - no / m as f64);
                 }
-                ws.push(2.0 * cx * (m as f64) / ((n * n) as f64) / (3.0f64).powi(r as i32));
+                ws.push(2.0 * cx * (m as f64) / ((n * n) as f64) / f64_powi(3.0f64, r as i32));
                 r += 1;
             }
             if ws.len() >= 2 {
@@ -1893,7 +1906,7 @@ impl Collatz {
             let mut b_cs = 0.0f64; let mut b_pr = 0.0f64;
             for r in 1..=rungs {
                 let m = 3u64.pow(r);
-                norm += excess_of(&level, m) / (3.0f64).powi(r as i32);
+                norm += excess_of(&level, m) / f64_powi(3.0f64, r as i32);
                 let mut he = alloc::vec![0f64; m as usize];
                 let mut ho = alloc::vec![0f64; m as usize];
                 for &v in evens.iter() { he[(v % m) as usize] += 1.0; }
@@ -1908,7 +1921,7 @@ impl Collatz {
                 let pre = if s4e > 0.0 { s2e*s2e/s4e } else { 1.0 };
                 let pro = if s4o > 0.0 { s2o*s2o/s4o } else { 1.0 };
                 let pr = crate::constant_closure::f64_sqrt(pre * pro);
-                let scale = 2.0 * (m as f64) / ((nn * nn) as f64) / (3.0f64).powi(r as i32);
+                let scale = 2.0 * (m as f64) / ((nn * nn) as f64) / f64_powi(3.0f64, r as i32);
                 b_cs += scale * cs;
                 b_pr += scale * cs / crate::constant_closure::f64_sqrt(if pr > 1.0 { pr } else { 1.0 });
             }
