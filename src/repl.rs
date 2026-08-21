@@ -1254,7 +1254,7 @@ pub fn repl(k: &mut Kernel) {
             "shors_btc_2" => {
                 // Parse optional public key argument (for demo, we'll use a standard test key)
                 let arg = parts.next().unwrap_or("");
-                if arg == "help" || arg.is_empty() {
+                if arg == "help" {
                     sprintln!("shors_btc_2 — Quantum period-finding for Bitcoin secp256k1 ECDLP");
                     sprintln!("  shors_btc_2          Extract private key from standard test public key");
                     sprintln!("  shors_btc_2 <hex>    Extract private key from given public key (x,y)");
