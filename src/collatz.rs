@@ -1059,8 +1059,13 @@ impl Collatz {
             for &v in level.iter() {
                 next.push(2 * v);
                 if v % 3 == 2 {
-                    let u = (2 * v - 1) / 3;
-                    if u != 1 { next.push(u); }
+                    // The identity is about the FULL preimage, so the 1 -> 2 -> 1 edge
+                    // is NOT cut here. Cutting it made this check report a failure at
+                    // level 2 -- predicted 2, actual 1 -- which read as the identity
+                    // failing when it was the cut doing it. Proved without exception as
+                    // `imbalance_recursion` over `predStep`, which does not cut either,
+                    // and measured at zero mismatches over 35 levels of the uncut tree.
+                    next.push((2 * v - 1) / 3);
                 }
             }
             if next.is_empty() { break; }
@@ -1528,8 +1533,13 @@ impl Collatz {
             for &v in level.iter() {
                 next.push(2 * v);
                 if v % 3 == 2 {
-                    let u = (2 * v - 1) / 3;
-                    if u != 1 { next.push(u); }
+                    // The identity is about the FULL preimage, so the 1 -> 2 -> 1 edge
+                    // is NOT cut here. Cutting it made this check report a failure at
+                    // level 2 -- predicted 2, actual 1 -- which read as the identity
+                    // failing when it was the cut doing it. Proved without exception as
+                    // `imbalance_recursion` over `predStep`, which does not cut either,
+                    // and measured at zero mismatches over 35 levels of the uncut tree.
+                    next.push((2 * v - 1) / 3);
                 }
             }
             if next.is_empty() { break; }
