@@ -205,7 +205,7 @@ impl U256 {
         // hi shrinks to one limb < 2^34; after the second to ≤ 1; the last
         // two iterations hold it there, so 4 passes terminate with v[4] ∈ {0,1}.
         for _ in 0..4 {
-            if v[4] | v[5] | v[6] | v[7] == 0 { break; }
+            if (v[4] | v[5] | v[6] | v[7]) == 0 { break; }
             let mut t = [0u64; 5];
             let mut carry = 0u128;
             for k in 0..4 {
