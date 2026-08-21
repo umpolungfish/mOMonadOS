@@ -389,8 +389,14 @@ pub struct Classification {
 impl Classification {
     /// Classify a kernel snapshot against the 12 canonical IG types.
     pub fn classify(snap: &Snapshot) -> Self {
+        Self::classify_tuple(&IgTuple::from_snapshot(snap))
+    }
+
+    /// Classify a tuple given directly, rather than read off the live kernel.
+    /// `classify <t>` is documented to take its argument; this is what it calls.
+    pub fn classify_tuple(current: &IgTuple) -> Self {
         use crate::tokens::canonical_name;
-        let current = IgTuple::from_snapshot(snap);
+        let current = *current;
         let canonicals = all_canonical_ig();
 
         let mut nearest_idx = 0;

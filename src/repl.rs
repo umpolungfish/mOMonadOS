@@ -1077,7 +1077,11 @@ pub fn repl(k: &mut Kernel) {
                     _other => sprintln!("teich: unknown subcommand. Try `teich help`.",),
                 }
             }
-            "classify" => print_classify(k),
+            "classify" => {
+                let arg: alloc::string::String =
+                    parts.collect::<alloc::vec::Vec<&str>>().join(" ");
+                print_classify(k, &arg)
+            }
             "arev" => {
                 match parts.next().unwrap_or("") {
                     ""     => print_arev_hop(k),
@@ -3616,8 +3620,22 @@ fn print_ig(k: &Kernel) {
     }
 }
 
-fn print_classify(k: &Kernel) {
-    use crate::imas_ig::Classification;
+fn print_classify(k: &Kernel, arg: &str) {
+    use crate::imas_ig::{Classification, IgTuple};
+    let arg = arg.trim();
+    if !arg.is_empty() {
+        // `classify <t>` classifies the tuple it is HANDED. Reading the live
+        // kernel instead makes the command report its own state whatever it is
+        // given, which is not a classification of anything the caller asked about.
+        match IgTuple::from_glyphs(arg) {
+            Ok(t) => sprintln!("{}", Classification::classify_tuple(&t).display()),
+            // from_glyphs reuses its error pair for a length fault, where the
+            // second field is a message rather than a glyph. Say which it is.
+            Err((i, g)) if g.starts_with("expected") => sprintln!("classify: {}", g),
+            Err((i, g)) => sprintln!("classify: slot {} is not a primitive: `{}`", i, g),
+        }
+        return;
+    }
     if let Some(snap) = k.snapshot {
         let c = Classification::classify(&snap);
         sprintln!("{}", c.display());
