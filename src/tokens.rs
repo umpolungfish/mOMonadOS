@@ -30,6 +30,10 @@ pub struct Program {
 }
 
 impl Program {
+    /// The fixed token capacity. Exposed so callers can refuse an over-long word
+    /// instead of silently receiving a truncated program.
+    pub const CAPACITY: usize = 64;
+
     pub const fn empty() -> Self {
         Self { buf: [Token::Vinit; 64], len: 0 }
     }

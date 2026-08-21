@@ -1915,7 +1915,15 @@ pub fn repl(k: &mut Kernel) {
                                 sprintln!("tuple: {}", t.display());
                                 sprintln!("crystal: {}", t.crystal_address());
                             }
-                            Err((i, c)) => sprintln!("imasm derive: '{}' at position {} is not a mark", c, i),
+                            Err((i, c)) => {
+                                if crate::belnap_ring_shor::Glyph::from_char(c).is_some() {
+                                    sprintln!("imasm derive: word exceeds the {}-token program capacity at position {}",
+                                        crate::tokens::Program::CAPACITY, i);
+                                    sprintln!("  the word instruments — weight, banked, cycle, insert, trans — have no such bound");
+                                } else {
+                                    sprintln!("imasm derive: '{}' at position {} is not a mark", c, i);
+                                }
+                            }
                         }
                     }
                     _ => {
