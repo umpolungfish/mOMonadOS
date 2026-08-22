@@ -37,6 +37,25 @@ for k in $ORDER; do
   printf '%-16s %-10s %-10s %-6s %-6s %-4s %s\n' "$k" "${EXPECT[$k]}" "$got" "$bank" "$vox" "$cls" "$res"
 done
 
+echo
+echo "--- proved controls (Mills, Lee-Yang): crystal 3442270, vox T, classify ⊞ ---"
+declare -A CTL=(
+ [mills_affirm]="⊢∈≻⊤⋈◻≺⊥⊞∋⊙⋈≻⊤◻⊣" [mills_negate]="⊢⊙≻⋈∈⊤⊥⊞≺∋◻⊣⊙"
+ [leeyang_affirm]="⊢∈≻⊤≺⊥⊞⋈∋⊙◻⊣" [leeyang_negate]="⊢⊣∈≻⊤⋈≺⊥⊙⊞∋◻⊣"
+)
+printf '%-16s %-10s %-10s %-6s %-4s %s\n' NAME EXPECT GOT VOX CLS RESULT
+for k in mills_affirm mills_negate leeyang_affirm leeyang_negate; do
+  w="${CTL[$k]}"
+  out=$($RUN "imasm derive $w" "vox verdict $w" "vox classify $w" 2>/dev/null)
+  got=$(echo "$out" | grep -o 'crystal: [0-9]*' | head -1 | grep -o '[0-9]*')
+  vox=$(echo "$out" | grep -oE 'verdict [TBNF]' | awk '{print $2}' | head -1)
+  cls=$(echo "$out" | grep -F "$w " | awk '{print $NF}' | tail -1)
+  got=${got//[$'\r\n ']/}; vox=${vox//[$'\r\n ']/}; cls=${cls//[$'\r\n ']/}
+  res=PASS
+  [ "$got" = 3442270 ] && [ "$vox" = T ] && [ "$cls" = "⊞" ] || { res=FAIL; fail=1; }
+  printf '%-16s %-10s %-10s %-6s %-4s %s\n' "$k" 3442270 "$got" "$vox" "$cls" "$res"
+done
+echo
 echo "--- crystal decodes: descent 3442270 vs fork 16402270 differ only at ⊢ ---"
 $RUN "crystal 3442270" "crystal 16402270" 2>/dev/null | grep -E '⊢:' | sed 's/^ */  /'
 
