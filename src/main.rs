@@ -68,6 +68,7 @@ mod phase;
 mod pk2sk;
 mod qft;
 mod shors_btc_2;
+mod moDOT_alchemy;
 mod parasm;
 mod belnap_shor;
 mod belnap_shor_factors;
