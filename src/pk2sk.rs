@@ -429,6 +429,16 @@ fn bsgs(px: U256, py: U256, lo: u64, hi: u64, target_x: &U256, target_even: bool
     None
 }
 
+/// Bounded-range ECDLP recovery from an already-decompressed point, exposing
+/// the same BSGS walk the `run` instrument uses. Returns the scalar in [lo, hi)
+/// whose curve point is (px, py), or None. The gate resolves against the
+/// point's own x-coordinate and y-parity, so no compressed-hex round-trip is
+/// needed by callers that already hold the decompressed point.
+pub fn recover_in_window(px: &U256, py: &U256, lo: u64, hi: u64) -> Option<u64> {
+    let even = py.0[0] & 1 == 0;
+    bsgs(*px, *py, lo, hi, px, even).map(|h| h.cand)
+}
+
 // ── Grammar verification layer: the 12-slot mapping, ported ────
 
 const DIM: [&str; 4] = ["𐑛", "𐑨", "𐑼", "𐑦"];   // bitlen: ≤250 ≤252 ≤254 else

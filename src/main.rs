@@ -70,6 +70,7 @@ mod qft;
 mod shors_btc_2;
 mod moDOT_alchemy;
 mod pari_integration;
+mod tower_polynomials;
 mod parasm;
 mod belnap_shor;
 mod belnap_shor_factors;

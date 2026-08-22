@@ -1136,7 +1136,7 @@ mod tests {
         let (vuln, _) = run("600160075755005b00");   // commit inside the branch
         let (safe, _) = run("6001600657545b5500");   // guard before the commit
         assert_eq!(vuln, "⊢∈◻⊣∋⊣", "in-grammar lift of the unguarded ordering");
-        assert_eq!(safe, "⊢∈>∋◻⊣", "in-grammar lift of the guarded ordering");
+        assert_eq!(safe, "⊢∈≻∋◻⊣", "in-grammar lift of the guarded ordering");
 
         // What it does NOT yet prove, stated rather than asserted away: both
         // words carry a ∋, so both close, and the two orderings do not separate
