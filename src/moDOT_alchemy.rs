@@ -16,6 +16,7 @@ use crate::kernel_torus::{agent_loop_program};
 use crate::tokens::Token;
 use crate::catalog::{D_ORD, T_ORD, R_ORD, P_ORD, F_ORD, K_ORD, G_ORD, C_ORD, H_ORD, S_ORD, OMEGA_ORD, ord_index};
 use crate::imas_ig::{IgPrim, IgTuple};
+use crate::pari_integration::{extract_moduli_polynomial_data, ModuliPolynomialData, sic_povm_d2048_fiducial_step};
 
 // ─────────────────────────────────────────────────────────────
 // secp256k1 Constants (256-bit)
@@ -319,6 +320,7 @@ impl HornTorusWindingKernel {
 pub struct MoDoTAlchemyPipeline {
     pub sic: SUnitGenerators,
     pub winding_kernel: HornTorusWindingKernel,
+    pub moduli_data: ModuliPolynomialData, // PARI tower polynomial data
 }
 
 impl MoDoTAlchemyPipeline {
@@ -326,12 +328,13 @@ impl MoDoTAlchemyPipeline {
         Self {
             sic: SUnitGenerators::new(),
             winding_kernel: HornTorusWindingKernel::new(),
+            moduli_data: extract_moduli_polynomial_data(), // Load PARI tower polynomials
         }
     }
     
     /// Run the full pipeline: PK → winding coordinates → private key (256-bit)
     pub fn extract_private_key(&self, pk: &EcPoint) -> Option<U256> {
-        // Step 1: sic_povm_d2048_fiducial — map PK to SIC moduli space
+        // Step 1: sic_povm_d2048_fiducial — map PK to SIC moduli space using PARI polynomials
         let winding_coords = self.pk_to_winding_coords(pk);
         
         // Step 2: Horn torus winding kernel — compute winding
@@ -349,22 +352,23 @@ impl MoDoTAlchemyPipeline {
     
     /// Map PK to winding coordinates using the 1/16 winding bridge
     /// The winding bridge maps (x,y) on secp256k1 → starting winding on horn torus
+    /// Uses PARI tower polynomial (C16) for sic_povm_d2048_fiducial
     fn pk_to_winding_coords(&self, pk: &EcPoint) -> U256 {
         // The 1/16 winding bridge: PK → horn torus coordinate
         // Using the grammar gap from IMSCRIB at PINCH
         
         // x and y are 256-bit secp256k1 coordinates
         let x_val = pk.x.clone();
-        let y_val = pk.y.clone();
         
         // The winding coordinate is derived from the PK using the MoDoT alchemy
-        // n = (x * φ + y) mod n (group order)
-        // This maps the ECDLP to the toroidal winding on the horn torus
+        // sic_povm_d2048_fiducial: use PARI C16 polynomial to anchor the map
+        // The polynomial IS the portal: PK → moduli field → winding
+        let winding = sic_povm_d2048_fiducial_step(&self.moduli_data, pk.x.0[0] as i64, pk.y.0[0] as i64);
         
+        // Combine with the golden ratio phi for the toroidal winding
         let phi = self.sic.phi;
-        let n_val = x_val.mul_mod(&phi).add_mod(&y_val);
-        // Note: we don't have div_mod, so we use the fact that the winding IS the private key
-        // and the verification step will check k*G == PK
+        let n_val = winding.mul_mod(&phi);
+        
         n_val
     }
     
