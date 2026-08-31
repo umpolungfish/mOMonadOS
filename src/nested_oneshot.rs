@@ -188,8 +188,21 @@ fn brent_factor_big(n: &BigUint) -> Option<BigUint> {
     None
 }
 
-fn factor_recursive_big(mut n: BigUint) -> Vec<BigUint> {
+/// Returns (confirmed prime factors, unfactored composite cofactors).
+///
+/// FIXED 2026-08-31: on a Brent failure this used to push the cofactor `m`
+/// straight into the factor list with a "conservative: treat as prime"
+/// comment -- but `m` had already failed `is_prime_big` (real Miller-Rabin)
+/// one line above, so this was never conservative, it was wrong: a known
+/// composite got reported as though it were a prime factor. Brent's rho has
+/// no guaranteed success bound, and an RSA-scale semiprime (each factor far
+/// past what ~4e6 Brent steps can reach) reliably triggers it -- verified
+/// live: `nested_oneshot factor` on the real RSA-100-scale modulus this
+/// session's other tests used printed "N = N", claiming the whole composite
+/// modulus as its own sole factor. Now the two cases are kept apart.
+fn factor_recursive_big(mut n: BigUint) -> (Vec<BigUint>, Vec<BigUint>) {
     let mut factors: Vec<BigUint> = Vec::new();
+    let mut unfactored: Vec<BigUint> = Vec::new();
     let two = BigUint::from(2u32);
     while &n % &two == BigUint::zero() {
         factors.push(two.clone());
@@ -210,19 +223,20 @@ fn factor_recursive_big(mut n: BigUint) -> Vec<BigUint> {
                 stack.push(f);
             }
         } else {
-            factors.push(m); // conservative: treat as prime
+            unfactored.push(m); // confirmed composite, Brent could not split it
         }
     }
     factors.sort_unstable();
-    factors
+    unfactored.sort_unstable();
+    (factors, unfactored)
 }
 
-fn collect_factors_big(n_str: &str) -> Vec<BigUint> {
+fn collect_factors_big(n_str: &str) -> (Vec<BigUint>, Vec<BigUint>) {
     let t = trim(n_str);
-    if t.is_empty() || t == "0" { return Vec::new(); }
+    if t.is_empty() || t == "0" { return (Vec::new(), Vec::new()); }
     match parse_big(&t) {
         Some(ref n) if n > &BigUint::one() => factor_recursive_big(n.clone()),
-        _ => Vec::new(),
+        _ => (Vec::new(), Vec::new()),
     }
 }
 
@@ -300,25 +314,33 @@ pub fn repl_nested_oneshot(args: &[&str]) {
                     sprintln!("nested_oneshot factor {}: B — paradice (1 is the unit)", n);
                 }
                 B4Verdict::F => {
-                    let factors = collect_factors_big(n);
-                    if factors.is_empty() {
+                    let (factors, unfactored) = collect_factors_big(n);
+                    if factors.is_empty() && unfactored.is_empty() {
                         sprintln!("nested_oneshot factor {}: F — could not factor (non-numeric input?)", n);
                     } else {
                         // group with multiplicity
-                        let mut reps: Vec<String> = Vec::new();
-                        let mut i = 0usize;
-                        while i < factors.len() {
-                            let p = &factors[i];
-                            let mut cnt = 1usize;
-                            while (i + cnt) < factors.len() && &factors[i + cnt] == p {
-                                cnt += 1;
+                        let group = |xs: &[BigUint]| -> Vec<String> {
+                            let mut reps: Vec<String> = Vec::new();
+                            let mut i = 0usize;
+                            while i < xs.len() {
+                                let p = &xs[i];
+                                let mut cnt = 1usize;
+                                while (i + cnt) < xs.len() && &xs[i + cnt] == p {
+                                    cnt += 1;
+                                }
+                                if cnt == 1 { reps.push(big_to_string(p)); }
+                                else { reps.push(alloc::format!("{}^{}", big_to_string(p), cnt)); }
+                                i += cnt;
                             }
-                            if cnt == 1 { reps.push(big_to_string(p)); }
-                            else { reps.push(alloc::format!("{}^{}", big_to_string(p), cnt)); }
-                            i += cnt;
-                        }
+                            reps
+                        };
                         sprintln!("nested_oneshot factor {}: F — composite (arbitrary-length Brent)", n);
-                        sprintln!("  └─ {} = {}", n, reps.join(" × "));
+                        if !factors.is_empty() {
+                            sprintln!("  └─ confirmed prime factors: {}", group(&factors).join(" × "));
+                        }
+                        if !unfactored.is_empty() {
+                            sprintln!("  └─ unfactored composite cofactor(s), Brent could not split (confirmed NOT prime by Miller-Rabin): {}", group(&unfactored).join(" × "));
+                        }
                     }
                 }
                 B4Verdict::T => {
