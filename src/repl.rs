@@ -2032,6 +2032,14 @@ pub fn repl(k: &mut Kernel) {
                     _ => sprintln!("vessel [run] — witness-vessel transport protocol"),
                 }
             }
+            "dqi" => {
+                // Same splitn(4) gluing collatz already hit: re-split the tail
+                // so `dqi syndrome 10101010` doesn't drop its own argument.
+                let tail: Vec<&str> = parts.collect();
+                let joined = tail.join(" ");
+                let rest: Vec<&str> = joined.split_whitespace().collect();
+                crate::dqi::repl_dqi(&rest);
+            }
             // Manuscript spine: PROVE→UNIFY→PORT ledger + vessel runtime half.
             // No Python. Formal pack in p4ramill VAE_Vita_ManuscriptSpine.
             "spine" => {
