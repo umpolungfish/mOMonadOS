@@ -109,6 +109,7 @@ mod bip39_sic_grover;
 mod d2048_sieve;
 mod provenance;
 mod quadratic;
+mod dqi;
 mod sic_moduli;
 mod riemann_sic;
 mod riemann_hilbert;
