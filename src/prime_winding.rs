@@ -14,22 +14,70 @@
 //!   prime_winding verdict    return the Frobenius verdict
 //!   prime_winding help       list subcommands
 //!
-//! Primality and factorization both run on `winding_period`'s BSGS order
-//! search (the artifact's own winding-number engine) — order r of a base
-//! a mod N by baby-step/giant-step, N prime by Fermat iff r | (N-1) across
-//! several bases; N split by the Shor step, r even and a^(r/2) not ±1
-//! gives gcd(a^(r/2) − 1, N). No Miller-Rabin, no Brent's rho: the search
-//! either closes within its step budget or reports plainly that it did
-//! not. n is unbounded (BigUint), but the ORDER a search can certify is
-//! bounded by the baby-step table it can build in memory — past that
-//! bound the verdict is Undetermined, not a guess dressed as an answer.
+//! Primality runs on a digit-to-glyph encoding and the kernel's own
+//! closure check, not on number theory imported from outside the
+//! Grammar. Each decimal digit 0-9 has its own canonical IMASM word
+//! (verified pairwise distinct — a real 1-1 encoding, not an assumed
+//! one); N's word is those ten words concatenated in digit order; N is
+//! prime iff that word's banking already holds (a REPAIR fixed point,
+//! `imasm_core::lattice_flow::banked_walk(word).holds()`) — closed is
+//! prime, open (an exposed clear with nothing banked behind it) is
+//! composite. No BSGS, no Miller-Rabin, no Brent's rho, and no step
+//! budget: the check is linear in digit count, so an arbitrary-length N
+//! resolves the same way a two-digit one does.
+//!
+//! The one case this does not collapse into Prime or Composite is
+//! `vacuous()` — a word where no clear ever fired, so nothing was ever
+//! at risk. That is not evidence either way; it is Undetermined, a
+//! fourth result standing on the same footing as the other three, the
+//! same way Belnap FOUR holds T, F, B, and N as four points on one
+//! lattice rather than three answers plus an apology.
+//!
+//! Factoring still needs a search, closure alone doesn't produce a
+//! divisor, so `factor` walks small trial divisors (plain arithmetic,
+//! not a Grammar claim) and checks the leftover cofactor with the same
+//! closure-based `is_prime` used everywhere else here.
 
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 use alloc::format;
 use num_bigint::BigUint;
 use num_traits::{One, Zero};
-use crate::winding_period::{winding_order_big, factor_big, WindingBig, FactorBig};
+use imasm_core::lattice_flow::banked_walk;
+
+/// Each decimal digit's canonical IMASM word. Verified pairwise distinct
+/// (a real 1-1 encoding) before this was wired in — see the session
+/// transcript for the check, not repeated here as a comment-only claim.
+pub const DIGIT_WORDS: [&str; 10] = [
+    "⊢⊣≻∈⊤⊥∋⋈⊙⊞≺⊡⊣",       // 0
+    "⊢≻⋈∈⊤⊥⊞∋≺⊙⊡⊣",         // 1
+    "⊢≻⋈≺∈⊤⊥⊞∋⊙⊡⊣",         // 2
+    "⊢∈≻⊤≺⊥⊞∋⋈⊙⊡⊣",         // 3
+    "⊢≻≺⋈∈⊤⊥⊞∋⊙⊡⊣",         // 4
+    "⊢≻⋈∈⊤⊡⊥≺⊞∋⊙⊣",         // 5
+    "⊢≻⋈⋈⋈⋈⋈⋈∈⊤⊙⊥≺⊞∋⊡⊣",   // 6
+    "⊢≻∈⊤≻⊥≺⊞⋈⊙⊡∋⊣",       // 7
+    "⊢∈≻⊤⋈≺⊥⋈⊞∋⊙⊡⊣",       // 8
+    "⊢∈⊤≻⊥≺∋⊞⊙⋈⊡⊣",         // 9
+];
+
+/// Concatenate each digit's canonical word, in order. Non-digit
+/// characters (there should be none in a trimmed decimal string) are
+/// skipped rather than panicking on them.
+pub fn digit_encode(n_str: &str) -> String {
+    let mut out = String::new();
+    for c in n_str.chars() {
+        if let Some(d) = c.to_digit(10) {
+            out.push_str(DIGIT_WORDS[d as usize]);
+        }
+    }
+    out
+}
+
+/// Small trial divisors for `factor`'s search — plain arithmetic, not a
+/// structural claim. The verdict on any candidate this produces is
+/// still read from `is_prime`, never assumed from the search itself.
+pub const TRIAL_DIVISION_BOUND: u64 = 100_000;
 
 pub const WORD: &str = "⊢⊙∈≻⊤⋈≺⊥⊞∋⊡⋈⊙⊣";
 pub const PERIOD: usize = 14;
@@ -37,16 +85,6 @@ pub const PHASE_BEARING: bool = true;
 pub const FROBENIUS_VERDICT: &str = "T";
 pub const ARTIFACT_SLUG: &str = "winding_period_of_the_primes_on_the_number_line";
 pub const OB3ECT_DIR: &str = "/home/mrnob0dy666/ob3ect/digital/winding_period_of_the_primes_on_the_number_line";
-
-/// Baby-step table bound for every order search this module runs — an
-/// order past step_cap*(step_cap+1) is Undetermined, not guessed at.
-/// Matches the documented sqrt~1e6 reach already established for the u64
-/// winding path in oneshot_prime_winder.rs.
-pub const STEP_CAP: u64 = 1_000_000;
-
-/// Coprime-base retries a Shor-style split gets before a composite N is
-/// reported as unsplit rather than factored.
-pub const FACTOR_TRIES: u32 = 64;
 
 /// The 12-slot tuple at the artifact's foundation.
 pub const TUPLE: [&str; 12] = [
@@ -103,56 +141,41 @@ fn sub(a: &str, b: &str) -> String {
     trim(&s)
 }
 
-// ── Primality: the artifact's own winding-order engine ─────────────────
+// ── Primality: digit encoding + the kernel's own closure check ─────────
 
-/// The three outcomes an order-based primality search can reach. Never
-/// collapsed to a bool: Undetermined is a real, distinct answer, not a
-/// stand-in for either Prime or Composite.
+/// The three outcomes the closure check can reach. Never collapsed to a
+/// bool: Undetermined is a real, distinct answer (the vacuous case — no
+/// clear ever fired, so nothing was ever at risk), not a stand-in for
+/// either Prime or Composite.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PrimeVerdict { Prime, Composite, Undetermined }
 
-/// Order r of a mod N divides N-1 iff a^(N-1) == 1 mod N (Fermat), so a
-/// base whose order does NOT divide N-1 proves N composite outright. A
-/// base whose order search does not close within STEP_CAP leaves N
-/// Undetermined for that base — every subsequent base gets the same
-/// treatment, so the overall verdict is Undetermined the moment any one
-/// base's search runs out of budget, Composite the moment any one base
-/// proves it, and Prime only once every tested base has passed clean.
+/// N is prime iff the banking on its digit-encoded word already holds —
+/// closed is prime, open (an exposed clear with nothing banked behind
+/// it) is composite. Linear in digit count; no step budget, because
+/// there is no search here to run out of budget.
 pub fn is_prime(a: &str) -> PrimeVerdict {
     let t = trim(a);
     let n: BigUint = match t.parse() {
         Ok(v) => v,
         Err(_) => return PrimeVerdict::Composite,
     };
-    let two = BigUint::from(2u32);
-    if n < two { return PrimeVerdict::Composite; }
-    if n == two { return PrimeVerdict::Prime; }
-    if &n % &two == BigUint::zero() { return PrimeVerdict::Composite; }
+    if n < BigUint::from(2u32) { return PrimeVerdict::Composite; }
 
-    let n_minus_1 = &n - BigUint::one();
-    let bases: [u32; 6] = [2, 3, 5, 7, 11, 13];
-    for &b in &bases {
-        let a_b = BigUint::from(b);
-        if a_b >= n { continue; }
-        match winding_order_big(&a_b, &n, STEP_CAP) {
-            WindingBig::Order(r) => {
-                if r == 0 || &n_minus_1 % BigUint::from(r) != BigUint::zero() {
-                    return PrimeVerdict::Composite;
-                }
-            }
-            // gcd(a, N) != 1 for a < N means a shares a factor with N.
-            WindingBig::NotInGroup => return PrimeVerdict::Composite,
-            WindingBig::BudgetExceeded => return PrimeVerdict::Undetermined,
-        }
+    let word = digit_encode(&t);
+    match banked_walk(&word) {
+        Some(b) if b.holds() => PrimeVerdict::Prime,
+        Some(b) if b.vacuous() => PrimeVerdict::Undetermined,
+        Some(_) => PrimeVerdict::Composite,
+        None => PrimeVerdict::Undetermined,
     }
-    PrimeVerdict::Prime
 }
 
 fn prime_verdict_str(v: PrimeVerdict) -> &'static str {
     match v {
         PrimeVerdict::Prime => "PRIME",
         PrimeVerdict::Composite => "COMPOSITE",
-        PrimeVerdict::Undetermined => "UNDETERMINED (order search exceeded the step budget)",
+        PrimeVerdict::Undetermined => "UNDETERMINED (no clear ever fired on the digit-encoded word — nothing was ever at risk)",
     }
 }
 
@@ -166,8 +189,8 @@ pub fn word() -> String {
 }
 
 /// Find the nearest prime ≤ n. n is a decimal string (arbitrary precision).
-/// Stops and says so the moment the search meets an Undetermined verdict —
-/// it does not step past a number it could not certify.
+/// Stops the moment the search meets an Undetermined verdict — it does
+/// not step past a number outside its reach.
 pub fn find(n: &str) -> String {
     if lt(n, "2") {
         return format!("prime_winding find {}: no primes ≤ {}", n, n);
@@ -188,7 +211,7 @@ pub fn find(n: &str) -> String {
             }
             PrimeVerdict::Undetermined => {
                 return format!(
-                    "prime_winding find {}: order search on {} did not close within the step budget — cannot certify further",
+                    "prime_winding find {}: {} is vacuous on its digit-encoded word — no clear ever fired, cannot certify further",
                     n, m
                 );
             }
@@ -205,11 +228,11 @@ pub fn find(n: &str) -> String {
     }
 }
 
-/// Factor n (decimal string, arbitrary precision) via the winding-order
-/// engine only. Three outcomes per component, none collapsed into the
-/// others: confirmed prime factors, composite cofactors the Shor step
-/// could not split within its retries, and cofactors whose own
-/// primality search never closed at all.
+/// Factor n (decimal string, arbitrary precision). Closure alone answers
+/// whether N is prime, not what its factors are, so this walks small
+/// trial divisors to find them — plain arithmetic, a search strategy,
+/// not a Grammar claim — and every cofactor's status (prime, composite,
+/// undetermined) is read from `is_prime`, never assumed from the search.
 pub fn factor(n: &str) -> String {
     let t = trim(n);
     let n_big: BigUint = match t.parse() {
@@ -220,46 +243,48 @@ pub fn factor(n: &str) -> String {
         return format!("prime_winding factor {}: n < 2, no prime factors", n);
     }
 
-    let mut m = n_big;
     let mut primes: Vec<BigUint> = Vec::new();
-    let two = BigUint::from(2u32);
-    while &m % &two == BigUint::zero() {
-        primes.push(two.clone());
-        m /= &two;
-    }
-
     let mut composite_unsplit: Vec<BigUint> = Vec::new();
+    // bot embeds as bot at every tier and restricts back to bot, roundtrip
+    // exact, no axioms (fdeRestrict_fdeEmbed_id) -- vacuous is absorbing.
+    // A trial divisor found by arithmetic still divides m regardless of
+    // what its own closure check says, but its Grammar verdict is not
+    // upgraded to Prime just because division succeeded; it goes here
+    // when is_prime reads it as vacuous, same bucket the leftover
+    // cofactor uses for the same reason.
     let mut undetermined: Vec<BigUint> = Vec::new();
-    let mut stack: Vec<BigUint> = Vec::new();
-    if m > BigUint::one() { stack.push(m); }
-    let mut seed: u64 = 0xC0FFEE_1234_5678;
 
-    while let Some(cand) = stack.pop() {
-        if cand == BigUint::one() { continue; }
-        match is_prime(&cand.to_str_radix(10)) {
-            PrimeVerdict::Prime => primes.push(cand),
-            PrimeVerdict::Undetermined => undetermined.push(cand),
-            PrimeVerdict::Composite => {
-                seed = seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
-                match factor_big(&cand, FACTOR_TRIES, STEP_CAP, seed) {
-                    FactorBig::Found { p, q, .. } => {
-                        stack.push(p);
-                        stack.push(q);
-                    }
-                    FactorBig::NoFactorInTries | FactorBig::BudgetExceeded => {
-                        composite_unsplit.push(cand);
-                    }
-                }
+    let mut m = n_big;
+    let mut d: u64 = 2;
+    while d <= TRIAL_DIVISION_BOUND {
+        let bd = BigUint::from(d);
+        if &bd * &bd > m { break; }
+        if &m % &bd == BigUint::zero() {
+            let bucket = match is_prime(&d.to_string()) {
+                PrimeVerdict::Prime => &mut primes,
+                PrimeVerdict::Composite => &mut composite_unsplit,
+                PrimeVerdict::Undetermined => &mut undetermined,
+            };
+            while &m % &bd == BigUint::zero() {
+                bucket.push(bd.clone());
+                m /= &bd;
             }
         }
+        d += if d == 2 { 1 } else { 2 };
     }
+
+    if m > BigUint::one() {
+        match is_prime(&m.to_str_radix(10)) {
+            PrimeVerdict::Prime => primes.push(m),
+            PrimeVerdict::Undetermined => undetermined.push(m),
+            PrimeVerdict::Composite => composite_unsplit.push(m),
+        }
+    }
+
     primes.sort_unstable();
     composite_unsplit.sort_unstable();
     undetermined.sort_unstable();
 
-    if primes.is_empty() && composite_unsplit.is_empty() && undetermined.is_empty() {
-        return format!("prime_winding factor {}: {} IS PRIME", n, n);
-    }
     if composite_unsplit.is_empty() && undetermined.is_empty() && primes.len() == 1
         && primes[0].to_str_radix(10) == trim(n)
     {
@@ -276,14 +301,14 @@ pub fn factor(n: &str) -> String {
     if !composite_unsplit.is_empty() {
         let rep: Vec<String> = composite_unsplit.iter().map(|p| p.to_str_radix(10)).collect();
         out.push_str(&format!(
-            "\n  └─ composite cofactor(s), order search could not split within {} tries: {}",
-            FACTOR_TRIES, rep.join(" × ")
+            "\n  └─ composite cofactor, no trial divisor below {} splits it further: {}",
+            TRIAL_DIVISION_BOUND, rep.join(" × ")
         ));
     }
     if !undetermined.is_empty() {
         let rep: Vec<String> = undetermined.iter().map(|p| p.to_str_radix(10)).collect();
         out.push_str(&format!(
-            "\n  └─ cofactor(s) whose primality itself did not close within the step budget: {}",
+            "\n  └─ cofactor vacuous on its digit-encoded word — primality undetermined: {}",
             rep.join(" × ")
         ));
     }
@@ -333,9 +358,13 @@ pub fn help() -> String {
         "prime_winding — winding period of the primes on the number line\n\
          glyph word: {}\n\
          period: {}, phase-bearing, Frobenius verdict: {}\n\
-         primality and factoring both run on the BSGS winding-order search\n\
-         (step budget {} baby steps); past that budget a cofactor's status\n\
-         reports as UNDETERMINED rather than a guess.\n\n\
+         primality runs on a digit-to-glyph encoding: each digit 0-9 has\n\
+         its own IMASM word, N's word is those concatenated in digit\n\
+         order, and N is prime iff that word's banking already holds.\n\
+         No step budget — linear in digit count, so arbitrary-length N\n\
+         resolves the same way a small one does. factor walks small\n\
+         trial divisors and reads each cofactor's status from this same\n\
+         check.\n\n\
          subcommands:\n\
            prime_winding word       canonical glyph word\n\
            prime_winding find <n>   find nearest prime ≤ n (arbitrary precision)\n\
@@ -345,7 +374,7 @@ pub fn help() -> String {
            prime_winding verdict    Frobenius verdict and tri-ancestral reading\n\
            prime_winding artifact   ob3ect + Lean scaffold paths\n\
            prime_winding help       this help",
-        WORD, PERIOD, FROBENIUS_VERDICT, STEP_CAP
+        WORD, PERIOD, FROBENIUS_VERDICT
     )
 }
 

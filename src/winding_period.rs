@@ -301,9 +301,14 @@ pub fn repl_factorgen(bits: u32, tries: u32, seed: u64) {
 // cannot be, because the baby-step table it walks has to fit in memory.
 // r is bounded by step_cap*(step_cap+1), which is why it always comes
 // back as a plain u64 even when N does not: the table is what limits
-// reach, not N's size. Past that reach the search reports plainly that
-// it did not close within the cap -- never a silent switch to a
-// different, non-winding method.
+// reach, not N's size.
+//
+// Past that reach the answer is OutOfReach, a fourth result standing
+// next to Order and NotInGroup -- not a degraded Order, not a stand-in
+// for "probably composite." T, F, B, N (Belnap FOUR) are four points on
+// the same lattice, none subordinate to another; OutOfReach is the N
+// here, reported at the same strength as a found order, never dressed
+// up with a different, non-winding method to avoid saying it.
 
 /// a mod N, N mod a, gcd -- same Euclid as the u64 `gcd` above, BigUint.
 fn gcd_big(mut a: BigUint, mut b: BigUint) -> BigUint {
@@ -347,12 +352,12 @@ fn modinv_big(a: &BigUint, m: &BigUint) -> Option<BigUint> {
 
 /// Three outcomes for a BigUint order search: found (always u64, per the
 /// reach argument above), a not coprime to N (or N<=1, degenerate), or
-/// the table the step cap allows was not big enough to see the closure.
+/// the order lies outside the range this table can see.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum WindingBig {
     Order(u64),
     NotInGroup,
-    BudgetExceeded,
+    OutOfReach,
 }
 
 /// Denominator reduction on a u64 order, BigUint modpow underneath --
@@ -384,9 +389,9 @@ fn minimal_winding_big(a: &BigUint, n: &BigUint, mut r: u64) -> u64 {
     r
 }
 
-/// BSGS order of a mod N, BigUint. `step_cap` bounds the baby-step table
-/// (and so the order this can certify, to step_cap*(step_cap+1)) --
-/// exceeding it is BudgetExceeded, not a guess and not a fallback.
+/// BSGS order of a mod N, BigUint. `step_cap` sets the baby-step table
+/// size, and so the range of orders this can see: step_cap*(step_cap+1).
+/// An order past that range is OutOfReach, reported plainly as itself.
 pub fn winding_order_big(a: &BigUint, n: &BigUint, step_cap: u64) -> WindingBig {
     let one = BigUint::one();
     if *n <= one { return WindingBig::NotInGroup; }
@@ -395,8 +400,8 @@ pub fn winding_order_big(a: &BigUint, n: &BigUint, step_cap: u64) -> WindingBig 
     if a_mod == one { return WindingBig::Order(1); }
 
     let m_big = isqrt_big(n) + &one;
-    if m_big > BigUint::from(step_cap) { return WindingBig::BudgetExceeded; }
-    let m = match m_big.to_u64() { Some(v) => v, None => return WindingBig::BudgetExceeded };
+    if m_big > BigUint::from(step_cap) { return WindingBig::OutOfReach; }
+    let m = match m_big.to_u64() { Some(v) => v, None => return WindingBig::OutOfReach };
 
     let mut baby: Vec<(BigUint, u64)> = Vec::with_capacity(m as usize);
     let mut cur = one.clone();
@@ -420,19 +425,19 @@ pub fn winding_order_big(a: &BigUint, n: &BigUint, step_cap: u64) -> WindingBig 
             }
         }
     }
-    WindingBig::BudgetExceeded
+    WindingBig::OutOfReach
 }
 
 /// Three outcomes for a BigUint factorization attempt: a non-trivial
 /// split, the tries exhausted with no split found (N may still be
-/// prime, or the bases tried just did not work), or the order search
-/// itself did not reach far enough to try -- BudgetExceeded takes
-/// priority in the report because it means the attempt stopped short,
-/// not that N resisted a complete one.
+/// prime, or the bases tried just did not work), or an order search
+/// that landed OutOfReach -- reported ahead of NoFactorInTries because
+/// it names a different fact: not that N resisted a complete attempt,
+/// but that this base's order sits outside what the search can see.
 pub enum FactorBig {
     Found { a: BigUint, r: u64, p: BigUint, q: BigUint },
     NoFactorInTries,
-    BudgetExceeded,
+    OutOfReach,
 }
 
 /// Shor's winding step, BigUint: order r of a random base a, r even and
@@ -444,7 +449,7 @@ pub fn factor_big(n: &BigUint, max_tries: u32, step_cap: u64, mut seed: u64) -> 
     if *n <= three { return FactorBig::NoFactorInTries; }
     let n_minus_1 = n - &one;
     let range = n - &three;
-    let mut budget_hit = false;
+    let mut saw_out_of_reach = false;
     for _ in 0..max_tries {
         seed = xorshift64(seed);
         let a = &BigUint::from(seed) % &range + &three;
@@ -464,9 +469,9 @@ pub fn factor_big(n: &BigUint, max_tries: u32, step_cap: u64, mut seed: u64) -> 
                     return FactorBig::Found { a, r, p: g, q };
                 }
             }
-            WindingBig::BudgetExceeded => budget_hit = true,
+            WindingBig::OutOfReach => saw_out_of_reach = true,
             WindingBig::NotInGroup => {}
         }
     }
-    if budget_hit { FactorBig::BudgetExceeded } else { FactorBig::NoFactorInTries }
+    if saw_out_of_reach { FactorBig::OutOfReach } else { FactorBig::NoFactorInTries }
 }
