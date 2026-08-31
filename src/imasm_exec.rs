@@ -3,7 +3,11 @@
 // proven end to end in vox_core (`vox run <symbol> --args a,b <file>`). This
 // file only re-exports them, matching the pattern `vox.rs` and `vox_decode.rs`
 // already use for the rest of the crate.
+// Re-exported for whatever wires this up next, not consumed inside the
+// crate yet -- same forward-looking shape as the rest of this file.
+#[allow(unused_imports)]
 pub use vox_core::imasm_module::{emit, words};
+#[allow(unused_imports)]
 pub use vox_core::imasm_vm::{Host, Machine, Stop};
 
 /// Real file and console I/O for `Machine::run_process`, backed by actual

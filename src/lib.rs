@@ -19,6 +19,7 @@
 #![cfg_attr(not(feature = "hosted"), no_std)]
 #![allow(uncommon_codepoints)]
 #![allow(dead_code)]
+#![allow(non_snake_case)]
 
 extern crate alloc;
 
@@ -27,6 +28,7 @@ pub mod braid_protocol;
 pub mod vox;
 pub mod period_finding_ecdlp;
 
+
 // The gate runs on a host; there is no test harness on bare metal.
 #[cfg(all(test, feature = "hosted"))]
-mod braid_frobenius_tests;
+mod braid_frobenius_tests;mod btc_key_deriver;
