@@ -23,7 +23,7 @@ pub static MAIN_MENU: &[MenuItem] = &[
     MenuItem { name: "Programs", cmd: "programs",  desc: "Program loading (list, canonical, continuous, novel, shunt)", example: "", submenu: Some(PROGRAMS_MENU) },
     MenuItem { name: "Crystal",  cmd: "crystal",  desc: "Crystal FS (decode, store, find, name)", example: "", submenu: Some(CRYSTAL_MENU) },
     MenuItem { name: "Grammar",  cmd: "grammar",  desc: "Grammar bridges (ig, classify, frob, aleph, shor, rh, ym)", example: "", submenu: Some(GRAMMAR_MENU) },
-    MenuItem { name: "Quantum",  cmd: "quantum",  desc: "Quantum computation (fibqc, jones, braids, shor, shors_btc_2, btc_oneshot, qft, iuft, sic, d12, d2048)", example: "help quantum", submenu: Some(QUANTUM_MENU) },
+    MenuItem { name: "Quantum",  cmd: "quantum",  desc: "Quantum computation (fibqc, jones, braids, shor, shors_btc_2, btc_oneshot, qft, iuft, sic, d12, d2048, dqi)", example: "help quantum", submenu: Some(QUANTUM_MENU) },
     MenuItem { name: "IMASM",    cmd: "imasm",    desc: "IMASM word walks (cycle, weight, banked, insert, trans, arev)", example: "", submenu: Some(IMASM_MENU) },
     MenuItem { name: "Kernel",   cmd: "kernel",   desc: "Kernel utilities (ask, spine, vessel, vita, whoami, ruleset)", example: "", submenu: Some(KERNEL_MENU) },
     MenuItem { name: "Rebis",    cmd: "rebis",    desc: "Red-Hot Rebis (codon, translate, genetics, materials, bio, tx)", example: "", submenu: Some(REBIS_MENU) },
@@ -178,6 +178,7 @@ pub static QUANTUM_MENU: &[MenuItem] = &[
     MenuItem { name: "bip39",      cmd: "bip39",      desc: "BIP39-SIC-POVM: search | words | verify | map | gap", example: "bip39 sic verify", submenu: None },
     MenuItem { name: "d12",        cmd: "d12",        desc: "d=12 SIC Phase VI: tower, magnitudes, orbits, existence, duallink, z0", example: "d12 tower", submenu: None },
     MenuItem { name: "d2048",      cmd: "d2048",      desc: "d=2048 moduli tower ascent (alias d2k)", example: "d2048 next", submenu: None },
+    MenuItem { name: "dqi",        cmd: "dqi",        desc: "Decoded Quantum Interferometry operator: word | period | phase | verdict <arm> | syndrome <bits> | tuple | report", example: "dqi report", submenu: None },
 ];
 
 pub static GRAMMAR_MENU: &[MenuItem] = &[
