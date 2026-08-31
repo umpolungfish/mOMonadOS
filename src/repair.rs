@@ -8,6 +8,18 @@ use alloc::format;
 use alloc::string::{String, ToString};
 use alloc::vec;
 use alloc::vec::Vec;
+use alloc::collections::BTreeMap;
+
+/// word -> tuple -> crystal address, the same kernel-backed pipeline
+/// `imasm derive` prints (program_from_glyphs -> self_imscribe ->
+/// IgTuple::from_snapshot -> crystal_address). Called directly on the
+/// underlying functions, not through the CLI path law 17 flags.
+fn crystal_address_of(word: &str) -> Option<u32> {
+    let prog = crate::belnap_ring_shor::program_from_glyphs(word).ok()?;
+    let snap = crate::kernel::self_imscribe(&prog);
+    let t = crate::imas_ig::IgTuple::from_snapshot(&snap);
+    Some(t.crystal_address())
+}
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum RepairType {
@@ -377,7 +389,7 @@ pub fn repair_main(args: &[&str]) -> String {
     
     let result = engine.repair(artifact, artifact_type);
     
-    format!(
+    let header = format!(
         "REPAIR ANALYSIS\n\
          =============\n\
          Original artifact: {}\n\
@@ -390,23 +402,48 @@ pub fn repair_main(args: &[&str]) -> String {
         artifact_type,
         result.error_type,
         result.repairs.len()
-    ) + 
+    );
+
     if result.repairs.is_empty() {
-        "No valid repairs found in search space.\n"
-    } else {
-        "TOP REPAIRS (ranked by cost):\n\n"
-    } + &result.repairs.iter()
-        .take(5)
-        .enumerate()
-        .map(|(i, r)| format!(
-            "{}. Cost: {:.2}\n\
-             Repair: {:?}\n\
-             Result: {}\n\
-             Edit distance: {}\n\
-             Entropy delta: {:.4}\n\
-             \n",
-            i + 1, r.cost, r.repair, r.repaired_word, r.edit_distance, r.entropy_delta
-        ))
-        .collect::<String>() +
-    "\n" + &result.proof_diff
+        return header + "No valid repairs found in search space.\n" + &result.proof_diff;
+    }
+
+    // Every candidate, grouped by the crystal address its repaired word
+    // derives to -- not a ranked-and-truncated top N. A cost ranking was
+    // dropping 808 of 813 candidates silently; grouping by address prints
+    // every one while keeping the listing to one line per distinct address.
+    let mut by_address: BTreeMap<Option<u32>, Vec<&RepairCandidate>> = BTreeMap::new();
+    for r in &result.repairs {
+        by_address.entry(crystal_address_of(&r.repaired_word)).or_default().push(r);
+    }
+
+    let mut out = header;
+    out.push_str(&format!(
+        "ALL REPAIRS BY CRYSTAL ADDRESS ({} candidates, {} distinct addresses):\n\n",
+        result.repairs.len(), by_address.len()
+    ));
+    for (addr, group) in &by_address {
+        let mut sorted = group.clone();
+        sorted.sort_by(|a, b| a.cost.partial_cmp(&b.cost).unwrap_or(core::cmp::Ordering::Equal));
+        let cheapest = sorted[0];
+        let addr_str = match addr {
+            Some(a) => format!("crystal {}", a),
+            None => "crystal <unaddressable: word exceeds program capacity>".to_string(),
+        };
+        out.push_str(&format!(
+            "  {}  ({} repair(s), cheapest cost {:.2})\n    {:?} -> {} (edit distance {}, ΔS {:.4})\n",
+            addr_str, group.len(), cheapest.cost,
+            cheapest.repair, cheapest.repaired_word, cheapest.edit_distance, cheapest.entropy_delta
+        ));
+        if sorted.len() > 1 {
+            for r in &sorted[1..] {
+                out.push_str(&format!(
+                    "    {:?} -> {} (cost {:.2}, edit distance {})\n",
+                    r.repair, r.repaired_word, r.cost, r.edit_distance
+                ));
+            }
+        }
+    }
+    out.push('\n');
+    out + &result.proof_diff
 }
