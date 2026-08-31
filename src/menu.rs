@@ -249,6 +249,7 @@ pub static GRAMMAR_MENU: &[MenuItem] = &[
     MenuItem { name: "pk2sk", cmd: "pk2sk", desc: "PK→SK recovery: bounded-range ECDLP on secp256k1 — recover the scalar in [lo, hi) from its compressed public key, curve-gated, imscribed", example: "pk2sk selftest", submenu: Some(PK2SK_MENU) },
     MenuItem { name: "fde", cmd: "fde", desc: "FDE(n) tower navigation: embed | restrict | walk | roundtrip | trans | report — ascend/descend the truth-value lattice at any depth", example: "fde walk 2 3 4 3 2 1", submenu: None },
     MenuItem { name: "rsa", cmd: "rsa", desc: "RSA decrypter via BSGS period-finding on ord_N(C): word | period | verify | <C> <N> <e> — only closes when that order is small, not for real RSA moduli", example: "rsa word", submenu: None },
+    MenuItem { name: "combo", cmd: "combo", desc: "cycle a word, then run weight | banked | insert | repair on every distinct rotation it produces, formatted as one report", example: "combo ⊢∈≻⊤≺⊥⋈⊞⊙⋈∈≻⊤≺⊥⋈⊞⋈∋⊡⊣⊙", submenu: None },
 ];
 
 pub static PK2SK_MENU: &[MenuItem] = &[
