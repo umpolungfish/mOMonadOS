@@ -163,7 +163,7 @@ if helper_idx >= 0:
 use crate::imas_ig::IgTuple;
 
 /// Compute B4 status from tuple properties.
-/// ⊙=critical + ◻=non-Abelian → B4::B (dialetheic barrier)
+/// ⊙=critical + ⊡=non-Abelian → B4::B (dialetheic barrier)
 /// <=Frobenius-special → B4::T (closed)
 /// ⊙=sub-critical → B4::T (determined)
 /// Default → B4::B (open)
@@ -211,7 +211,7 @@ pub fn verify_tuple_frobenius(v: &mut FrobeniusVerifier, tuple: &IgTuple) {
         let ok = tuple.t == IgPrim::T_odot || tuple.t == IgPrim::T_bowtie;
         v.verify_usize(if ok { 1 } else { 0 }, 1);
     }
-    // Verify Frobenius-special: <=𐑹 implies ◻ ≥ Z
+    // Verify Frobenius-special: <=𐑹 implies ⊡ ≥ Z
     if tuple.p == IgPrim::P_pmsym {
         let ok = tuple.omega.ordinal() >= IgPrim::Omega_z.ordinal();
         v.verify_usize(if ok { 1 } else { 0 }, 1);

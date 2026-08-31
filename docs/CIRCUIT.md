@@ -32,7 +32,7 @@ the axis is the glyph.
 
 ```
 ⊢ Met   ⊣ Trp   > Cys   < Tyr   ⋈ Phe   ⊤ Ile
-∈ His   ∋ Asn   ⊙ Gln   ⊥ Asp   ⊞ Lys   ◻ Glu
+∈ His   ∋ Asn   ⊙ Gln   ⊥ Asp   ⊞ Lys   ⊡ Glu
 ```
 
 This is the correspondence `GeneticCode.lean` states as `aaToPrimitive` and
@@ -61,9 +61,9 @@ drift` checks the two derivations against each other and reports agreement.
 ## The two machine substrates differ, and the difference is structural
 
 ```
-RNA   μ∘δ=id on ⊢⊣><⋈⊤∈∋⊙⊥⊞◻
-x86   μ∘δ=id on ⊣><⋈⊤∈⊙⊥⊞◻      not expressible ⊢∋
-wasm  μ∘δ=id on ⊢⊣><⋈⊤∈∋⊙⊥⊞◻
+RNA   μ∘δ=id on ⊢⊣><⋈⊤∈∋⊙⊥⊞⊡
+x86   μ∘δ=id on ⊣><⋈⊤∈⊙⊥⊞⊡      not expressible ⊢∋
+wasm  μ∘δ=id on ⊢⊣><⋈⊤∈∋⊙⊥⊞⊡
 ```
 
 wasm carries structured control flow, so `block` and `end` are real opcodes and
@@ -79,9 +79,9 @@ still closes, because re-derivation puts them back where they were.
 ## Both circuits close on the section
 
 ```
-in   ⊢⊣><⋈⊤∈∋⊙⊥⊞◻
+in   ⊢⊣><⋈⊤∈∋⊙⊥⊞⊡
 rna  AUGUGGUGUUAUUUUAUUCAUAAUCAAGAUAAAGAA
-out  ⊢⊣><⋈⊤∈∋⊙⊥⊞◻
+out  ⊢⊣><⋈⊤∈∋⊙⊥⊞⊡
 ```
 
 ```
@@ -146,7 +146,7 @@ complement is a constant ⋈.
 **The palindromic restriction site is a fixed point of the strand involution.**
 
 ```
-GAAUUC…  sense ◻⋈◻⋈   antisense ◻⋈◻⋈
+GAAUUC…  sense ⊡⋈⊡⋈   antisense ⊡⋈⊡⋈
 ```
 
 A reverse-complement palindrome is its own antisense, so the words coincide.

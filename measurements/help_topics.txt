@@ -1,0 +1,173 @@
+⊙> help classify
+═══ Grammar Bridges ═══
+
+ig               — active IG tuple + distance to ZFC baseline
+classify <t>     — classify a 12-glyph tuple
+frob <t>         — Frobenius check
+aleph <t>        — Aleph-encode a tuple
+shor             — Shor 1994 → IG
+ym               — Yang-Mills mass gap → IG
+rh               — Riemann Hypothesis bridge
+⊙> help distance
+═══ distance ═══
+
+Hamming + weighted distance vs the ZFC baseline tuple (alias dist)
+
+  e.g.  distance
+
+(in the Grammar category — `help grammar` for the rest)
+⊙> help phase
+═══ phase ═══
+
+Phase as an object: orbit spectrum, phase period, and two-word interference
+
+  e.g.  phase interference ⊢∈⊤∋ ⊢⊤∈∋
+
+(in the Grammar category — `help grammar` for the rest)
+⊙> help entropy
+═══ Entropy Experiment ═══
+
+entropy tier     — dS vs tier promotion
+⊙> help invariant
+═══ invariant ═══
+
+Discover invariants under transformations: ROTAT, IMSCRIB, FSPLIT/FFUSE
+
+  e.g.  invariant catalog under ROTAT
+
+(in the Grammar category — `help grammar` for the rest)
+⊙> help witness
+═══ witness ═══
+
+Smallest executable object standing behind a claim
+
+  e.g.  witness bsd
+
+(in the Grammar category — `help grammar` for the rest)
+⊙> help basin
+═══ basin ═══
+
+Fixed-point archaeology: orbit, attractor, transient depth, exact basin size
+
+  e.g.  basin ⊢∈⊤∋ --action REPAIR
+
+(in the Grammar category — `help grammar` for the rest)
+⊙> help oracle
+═══ oracle ═══
+
+Adversarial: hunt the cheapest structural counterexample; surviving is not proof
+
+  e.g.  oracle rotat-register
+
+(in the Grammar category — `help grammar` for the rest)
+⊙> help crystal-scope
+═══ crystal-scope ═══
+
+Substitution microscope: distance, tier, dS, gate jump, and the measured driver (alias cscope)
+
+  e.g.  cscope
+
+(in the Grammar category — `help grammar` for the rest)
+⊙> help minimal
+═══ minimal ═══
+
+Shortest word achieving a target property
+
+  e.g.  minimal reach O_inf
+
+(in the Grammar category — `help grammar` for the rest)
+⊙> help repair
+═══ repair ═══
+
+Ranked program/proof surgery with a proof-diff
+
+  e.g.  repair ⊢∈
+
+(in the Grammar category — `help grammar` for the rest)
+⊙> help counterfactual
+═══ counterfactual ═══
+
+Perturb one glyph: invariants held/broken, reversibility, smallest repair (alias cf)
+
+  e.g.  counterfactual ⊢∈⊤∋⊣ rotate 1
+
+(in the Grammar category — `help grammar` for the rest)
+⊙> help frobenius-fuzzer
+═══ frobenius-fuzzer ═══
+
+Mine the word space for programs the braid reproduces exactly (alias fuzz)
+
+  e.g.  fuzz --len 3
+
+(in the Grammar category — `help grammar` for the rest)
+⊙> help ouroboros-inverse
+═══ ouroboros-inverse ═══
+
+Inverse grammar: shortest IMASM word imscribing a tuple, plus its braid (alias oinv)
+
+  e.g.  oinv
+
+(in the Grammar category — `help grammar` for the rest)
+⊙> help blackbox
+═══ blackbox ═══
+
+Infer a law from integer observations, ranked by fit minus complexity
+
+  e.g.  blackbox 1 1 2 3 5 8 13
+
+(in the Grammar category — `help grammar` for the rest)
+⊙> help sigma
+═══ Sigma(n) Divisor Ring ═══
+
+sigma <n>        — analyze Sigma(n) divisor ring
+⊙> help join
+═══ join ═══
+
+join of the active IG tuple with the ZFC baseline
+
+  e.g.  join
+
+(in the Grammar category — `help grammar` for the rest)
+⊙> help demonstrate
+═══ demonstrate ═══
+
+Run a claim as an experiment: INPUT/OPERATION/OUTPUT/CHECK, computed live (alias demo)
+
+  e.g.  demonstrate mu-delta 1 2 -1
+
+(in the Grammar category — `help grammar` for the rest)
+⊙> help provenance
+═══ provenance ═══
+
+Epistemic type check: dependency DAG graded by lattice MEET, not by best sibling (alias prov)
+
+  e.g.  prov RH
+
+(in the Grammar category — `help grammar` for the rest)
+⊙> help shadow
+═══ shadow ═══
+
+Ontological nearest-neighbour: shared structure and the measured critical difference
+
+  e.g.  shadow hsoa
+
+(in the Grammar category — `help grammar` for the rest)
+⊙> help loss
+═══ loss ═══
+
+What a transformation destroys: entropy in/out, bits destroyed, irreversible transitions
+
+  e.g.  loss collapse
+
+(in the Grammar category — `help grammar` for the rest)
+⊙> help ctc
+═══ ctc ═══
+
+nest a value in an action; closure imposed where the action has none, priced by the width it smears
+
+  e.g.  ctc cycle T
+
+(in the Grammar category — `help grammar` for the rest)
+⊙> quit
+Halting. μ∘δ=id.
+[SHUTDOWN] μ∘δ=id. Goodbye.

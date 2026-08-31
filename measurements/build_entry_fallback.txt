@@ -1,0 +1,2 @@
+   Compiling momonados v0.1.0 (/home/mrnob0dy666/imsgct/mOMonadOS)
+    Finished `release` profile [optimized] target(s) in 44.51s

@@ -66,21 +66,22 @@ mod bifurcation_tests {
         max_iter
     }
 
-    /// The loop closes at every weight, in one step or two — never longer.
+    /// The loop closes at every weight, in one, two or three steps — never
+    /// longer.
     ///
-    /// Cycle length is no longer flat: it is 2 at weights 1, 3, 9 and 10, and 1
+    /// Cycle length is no longer flat: it is 3 at weights 3, 6 and 7, and 1
     /// elsewhere. So the observable does move, but not monotonically and not
-    /// with a threshold; a period-2 orbit and a fixed point sit interleaved
+    /// with a threshold; a period-3 orbit and fixed points sit interleaved
     /// along the sweep. What the sweep does establish is a ceiling — twenty
-    /// iterations never find an orbit longer than two at any weight from 0 to
-    /// 10.
+    /// iterations never find an orbit longer than three at any weight from 0
+    /// to 10.
     #[test]
-    fn cycle_length_is_one_or_two_at_every_weight() {
+    fn cycle_length_is_at_most_three_at_every_weight() {
         let _guard = WEIGHT_LOCK.lock().unwrap_or_else(|e| e.into_inner());
         let measured: Vec<usize> =
             (0..=10).map(|w| measure_cycle(&test_tuple_oinf(), w, 20)).collect();
-        assert_eq!(measured, alloc::vec![1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 2]);
-        assert!(measured.iter().all(|&c| c == 1 || c == 2));
+        assert_eq!(measured, alloc::vec![1, 1, 1, 3, 1, 1, 3, 3, 1, 1, 1]);
+        assert!(measured.iter().all(|&c| c == 1 || c == 2 || c == 3));
     }
 
     /// The zero-weight word is a twelve-mark word, not one mark twelve times.

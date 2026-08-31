@@ -194,6 +194,108 @@ fn greedy_unit(x: &[f64], out: &mut [f64]) {
     out[0] = if r < 1e-15 { 0.0 } else { r };
 }
 
+
+/// The Collatz action, as a nesting.
+///
+/// The raw shortcut map `n/2 | (3n+1)/2` is not a contraction: an odd step
+/// raises the value, so the two-gap reading would call almost every point
+/// "never arrives" and the confirm loop would stop at the first widening. That
+/// is the documented edge of this module, and it is a fact about which action
+/// was nested, not about the map.
+///
+/// The action that nests is the BLOCK: from `n`, apply the shortcut map until
+/// the value first falls below `n`. Every block strictly decreases by
+/// construction, so the gap shrinks monotonically and the reading is licensed.
+/// One is the fixed point, held outright — `T(1) = 2`, `T(2) = 1`, so the orbit
+/// through one never drops below it and the block returns one unchanged.
+///
+/// Shaped like `greedy_unit`: the outer action is one block, arriving is
+/// reaching one, and the conjecture is the BUDGET on blocks rather than a
+/// question of whether the nest arrives. What the depth split measures is
+/// whether the first block terminates at all, which is where the open arm sits.
+/// A block that does not close within its step allowance returns the value
+/// unchanged, so the reading reports a preserved gap rather than inventing an
+/// arrival.
+fn collatz_block(x: &[f64], out: &mut [f64]) {
+    let n0 = x[0];
+    if !(n0 > 1.0) {
+        out[0] = 1.0;
+        return;
+    }
+    let start = n0 as u64;
+    let mut n = start;
+    // The allowance is a spend, not a truth: a block that exceeds it is
+    // reported as a held gap and the caller sees the budget it cost.
+    let mut steps = 0u32;
+    while steps < 4096 {
+        n = if n % 2 == 0 { n / 2 } else { (3 * n + 1) / 2 };
+        steps += 1;
+        if n < start {
+            out[0] = n as f64;
+            return;
+        }
+    }
+    out[0] = n0;
+}
+
+
+/// Some actions arrive at a named point rather than at a vanishing step. The
+/// Collatz block is one: it decreases its VALUE monotonically by construction,
+/// while the size of the step it takes does not decrease at all. Reading such an
+/// action by step size stops it at the first widening and calls it open, which
+/// measures the observable rather than the action. Naming the target lets the
+/// gap be read where the action actually closes.
+pub fn target_by_name(name: &str) -> Option<f64> {
+    match name {
+        "collatz" => Some(1.0),
+        _ => None,
+    }
+}
+
+/// Read a pairing whose gap is the distance to a named target. Two gaps still
+/// do the work; only what a gap MEANS changes.
+pub fn read_to_target(f: fn(&[f64], &mut [f64]), a: &[f64], target: f64) -> Reading {
+    let n = a.len();
+    let mut b1 = alloc::vec![0.0; n];
+    let mut b2 = alloc::vec![0.0; n];
+    let t = [target];
+    let r0 = dist(a, &t);
+    if r0 < TOL {
+        return Reading { r1: 0.0, r2: 0.0, q: None, class: Class::OneShot, one_step: "one-shot" };
+    }
+    f(a, &mut b1);
+    let r1 = dist(&b1, &t);
+    if r1 < TOL {
+        return Reading { r1, r2: 0.0, q: None, class: Class::Attracted, one_step: "attracted-or-open" };
+    }
+    f(&b1, &mut b2);
+    let r2 = dist(&b2, &t);
+    let q = r2 / r1;
+    let class = if q < 1.0 - FLAT_BAND { Class::Attracted } else { Class::NeverArrives };
+    Reading { r1, r2, q: Some(q), class, one_step: "attracted-or-open" }
+}
+
+/// Run the nest against a named target. The loop ends on arrival or on a step
+/// that fails to close the gap, and the step count IS the budget the action
+/// spends — the quantity a conjecture about this action is about.
+pub fn confirm_to_target(f: fn(&[f64], &mut [f64]), a: &[f64], target: f64) -> (bool, u32) {
+    let n = a.len();
+    let t = [target];
+    let mut cur = a.to_vec();
+    let mut nxt = alloc::vec![0.0; n];
+    let mut prev = dist(&cur, &t);
+    let mut steps = 0u32;
+    loop {
+        if prev < TOL { return (true, steps); }
+        f(&cur, &mut nxt);
+        let d = dist(&nxt, &t);
+        if d >= prev { return (false, steps); }
+        for i in 0..n { cur[i] = nxt[i]; }
+        prev = d;
+        steps += 1;
+    }
+}
+
 pub struct Nesting;
 
 /// Resolve a map by name, with the dimension it acts on. Naming the map is what
@@ -206,15 +308,34 @@ pub fn map_by_name(name: &str) -> Option<(fn(&[f64], &mut [f64]), usize)> {
         "rotate"  => Some((rotate3, 2)),
         "project" => Some((project, 2)),
         "greedy"  => Some((greedy_unit, 1)),
+        "collatz" => Some((collatz_block, 1)),
         _ => None,
     }
 }
 
-pub const MAPS: [&str; 6] = ["halve", "newton", "shift", "rotate", "project", "greedy"];
+pub const MAPS: [&str; 7] = ["halve", "newton", "shift", "rotate", "project", "greedy", "collatz"];
 
 fn describe(label: &str, f: fn(&[f64], &mut [f64]), a: &[f64]) -> String {
-    let rd = read(f, a);
-    let (closed, steps) = confirm(f, a);
+    describe_to(label, f, a, None)
+}
+
+/// `target` names the point the action arrives AT, when it has one. Without it
+/// the gap is the size of the step, which is the right reading for every map
+/// that closes by standing still and the wrong one for an action that walks a
+/// value down while its stride varies.
+fn describe_to(label: &str, f: fn(&[f64], &mut [f64]), a: &[f64], target: Option<f64>) -> String {
+    let (rd, closed, steps) = match target {
+        Some(t) => {
+            let r = read_to_target(f, a, t);
+            let (c, n) = confirm_to_target(f, a, t);
+            (r, c, n)
+        }
+        None => {
+            let r = read(f, a);
+            let (c, n) = confirm(f, a);
+            (r, c, n)
+        }
+    };
     let mut s = format!("{}\n", label);
     s.push_str(&format!("  first gap  r1 = {:.6e}\n", rd.r1));
     match rd.q {
@@ -223,6 +344,9 @@ fn describe(label: &str, f: fn(&[f64], &mut [f64]), a: &[f64]) -> String {
     }
     s.push_str(&format!("  from one gap:  {}\n", rd.one_step));
     s.push_str(&format!("  from two gaps: {}\n", rd.class.name()));
+    if let Some(t) = target {
+        s.push_str(&format!("  gap read to:   the target {}\n", t));
+    }
     s.push_str(&format!("  running it:    {}\n",
         if closed { format!("settled in {} step(s)", steps) }
         else { format!("stopped shrinking at step {} — it never arrives", steps) }));
@@ -250,6 +374,7 @@ impl Nesting {
         s.push_str("maps:\n");
         for (name, dim, what) in [
             ("greedy",  1, "greedy unit-fraction removal — Erdős–Straus is its BUDGET, not its arrival"),
+            ("collatz", 1, "one Collatz block, down to the first value below n — Collatz is its BUDGET too"),
             ("halve",   1, "halve the distance to 3 — arrives from anywhere, q = 0.5"),
             ("newton",  1, "Newton on x³−2x−5 — arrives fast in range, q well under 1"),
             ("shift",   1, "add one forever — never arrives, and its gap never changes"),
@@ -283,7 +408,7 @@ impl Nesting {
         }
         let label = if dim == 1 { format!("'{}' at {}", map, pt[0]) }
                     else { format!("'{}' at ({}, {})", map, pt[0], pt[1]) };
-        describe(&label, f, &pt[..dim])
+        describe_to(&label, f, &pt[..dim], target_by_name(map))
     }
 
     /// The reference sweep, when no point is named.

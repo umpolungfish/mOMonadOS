@@ -572,7 +572,7 @@ pub fn lean_reference() -> String {
     s.push_str("All arithmetic claims are machine-verified in:\n");
     s.push_str("  p4rakernel/p4ramill/Imscribing/Millennium/\n\n");
 
-    s.push_str("SIC_D16_Moduli.lean (487 lines, 30 theorems, 0 sorries):\n");
+    s.push_str("SIC_D16_Moduli.lean (487 lines, 30 theorems, *sans* sorry):\n");
     s.push_str("  m16_formula:             m_d = 221 = 13·17\n");
     s.push_str("  m16_mod_eight:           221 ≡ 5 mod 8 → 2 inert\n");
     s.push_str("  class_number_val:        h(F) = 2\n");
@@ -582,7 +582,7 @@ pub fn lean_reference() -> String {
     s.push_str("  statement_A_falsified_by_abelian_group\n");
     s.push_str("  statement_B_confirmed_by_coinvariant_count\n\n");
 
-    s.push_str("SIC_D20_Moduli.lean (698 lines, 39 theorems, 0 sorries):\n");
+    s.push_str("SIC_D20_Moduli.lean (698 lines, 39 theorems, *sans* sorry):\n");
     s.push_str("  coinvariant_anomaly_theorem:  8/2 = 4 ≠ 10 = d/2\n");
     s.push_str("  five_torsion_absent_from_conductor: (5,4)=(5,24)=1\n");
     s.push_str("  d20_cannot_discriminate:  both A and B fail\n");

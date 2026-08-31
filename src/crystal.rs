@@ -3,7 +3,7 @@ use crate::tokens::{period as tok_period, signature, Program, Token};
 /// Crystal of Types — 17,280,000-address type space.
 ///
 /// Address = Σᵢ (primitive_index[i] × STRIDE[i])
-/// Strides: [5184000, 1728000, 576000, 144000, 48000, 12000, 4000, 800, 200, 50, 10, 1]
+/// Strides: [4320000, 864000, 216000, 43200, 14400, 2880, 960, 240, 48, 12, 4, 1]
 /// Cardinalities (D,T,R,P,F,K,G,C,Phi,H,S,Omega): [4,5,4,5,3,5,3,4,5,4,3,4]
 /// Total number of distinct types in the crystal.
 /// Computed from the product of all primitive family cardinalities.
@@ -63,7 +63,7 @@ pub fn decode(mut addr: u32) -> [u8; 12] {
 ///   <  Criticality    [woe<monad<roar<err<haha] ← self_ref ⇒ monad (⊙ fixed point)
 ///   H  Chirality      [fee<kick<sure<wool]  ← EXACT: ROTAT period (chirality under shift)
 ///   S  Stoichiometry  [hung<so<up]          ← EXACT: FSPLIT/FFUSE (δ/μ) balance
-///   ◻  Protection     [awe<oak<ah<zoo]      ← winding: rotational period + fork order
+///   ⊡  Protection     [awe<oak<ah<zoo]      ← winding: rotational period + fork order
 pub fn indices_from_program(
     p: &Program,
     frobenius_order: u8,
@@ -160,7 +160,7 @@ pub fn indices_from_program(
     // S — EXACT: stoichiometry is the δ/μ (FSPLIT/FFUSE) conservation balance.
     let stoi = if !forked { 0 } else if balanced { 1 } else { 2 };
 
-    // ◻ — protection = winding, dual to H: H is the period class, ◻ the multiplicity m.
+    // ⊡ — protection = winding, dual to H: H is the period class, ⊡ the multiplicity m.
     // zoo = non-Abelian (nested forks); ah = ℤ winding (m≥3); oak = ℤ₂ (m=2); awe = none.
     let prot = if frobenius_order >= 2 { 3 }
                else if m >= 3 { 2 }

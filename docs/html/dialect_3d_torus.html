@@ -1231,7 +1231,7 @@
                 '/' + kn.q + ' toroidal/poloidal';
             document.getElementById('gate-ordering').textContent = d.seq ? 'sequential: G1 → G2 → G3' :
                 'parallel: all independent';
-            const pNames = { odot: "⊙", Omega: "◻", Phi: "<", T: "⊣" };
+            const pNames = { odot: "⊙", Omega: "⊡", Phi: "<", T: "⊣" };
             const g = evalTokenGates("IMSCRIB", currentDialect);
             let html = '';
             html += '<div class="gr ' + (g.g1 ? 'pass' : 'fail') + '"><span class="gl">G1: ' + (pNames[g.g1p] || g

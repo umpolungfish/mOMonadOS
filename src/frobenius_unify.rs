@@ -34,7 +34,7 @@ use crate::catalog;
 // Tuple: ⟨𐑦𐑸𐑾𐑹𐑐𐑧𐑔𐑠⊙𐑖𐑙𐑭⟩
 // D=𐑦 (imscriptive)  T=𐑸 (self-ref)  R=𐑾 (bidirectional)  P=𐑹 (±ˢ)
 // F=𐑐 (quantum)     K=𐑧 (slow)      G=𐑔 (mesoscale)      Gm=𐑠 (sequential)
-// Ph=⊙ (critical)    H=𐑖 (2-step)    S=𐑙 (1:1)           ◻=𐑭 (integer)
+// Ph=⊙ (critical)    H=𐑖 (2-step)    S=𐑙 (1:1)           ⊡=𐑭 (integer)
 
 pub fn frobenius_fixed_tuple() -> IgTuple {
     IgTuple {
@@ -113,7 +113,7 @@ pub fn frobenius_identity_check() -> (u8, f32, String) {
         ("⊙ ", kernel.phi, fixed.phi),
         ("⊥ ", kernel.h, fixed.h),
         ("Σ ", kernel.s, fixed.s),
-        ("◻ ", kernel.omega, fixed.omega),
+        ("⊡ ", kernel.omega, fixed.omega),
     ];
 
     let mut mismatches: u8 = 0;
@@ -231,9 +231,13 @@ mod tests {
         assert_eq!(conflicting, 1);
         // F and G differ too, but they are ordered, so they take the min
         // instead of conflicting: classical hardware under quantum coherence
-        // is classical, and G_ORD runs aleph→gimel so universal is the floor.
+        // is classical, and G runs bib < thigh < ice, so the meet of mesoscale
+        // and universal range is the narrower one — mesoscale. This expected
+        // ice until 2026-08-22, when G_ORD was corrected to Core.lean's
+        // constructor order; E8G2_Vessel_Witnesses.lean already computed
+        // min(thigh, ice) = thigh, so Lean and the kernel now agree.
         assert_eq!(meet_result.tuple.f, IgPrim::age);
-        assert_eq!(meet_result.tuple.g, IgPrim::ice);
+        assert_eq!(meet_result.tuple.g, IgPrim::thigh);
     }
 
     #[test]

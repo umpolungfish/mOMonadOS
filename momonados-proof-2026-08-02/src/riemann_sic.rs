@@ -625,7 +625,7 @@ pub fn lean_reference() -> String {
     s.push_str("    Primitives.Imscription.lean    — Imscription struct\n");
     s.push_str("    Primitives.TierCrossing.lean   — OuroboricityTier (O₀..O_inf_dag)\n\n");
     s.push_str("  Build status:       ✓ ELABORATED (lake build)\n");
-    s.push_str("  Kernel verdict:     ✓ 0 errors, 0 sorries\n");
+    s.push_str("  Kernel verdict:     ✓ 0 errors, *sans* sorry\n");
     s.push_str("  Tier verdicts:      O₀ (ground) → O₂dag (terminal)\n");
     s.push_str("  Frobenius closure:  μ∘δ = id (proved via igFrobAlg_self_fusion)\n");
     s
@@ -713,7 +713,7 @@ pub fn full_report() -> String {
     s.push_str("  Period:      11 (ROTAT-invariant: tri_ancestral_verdict, closed_walk, topology_class)\n");
     s.push_str("  Tier:        O₀ → O₂dag\n");
     s.push_str("  Lean:        Imscribing.Ob3ects.the_zeros_of_s_correspond_to_the_eigenvalues_of_abe3fc55_scaffold\n");
-    s.push_str("  Build:       ✓ ELABORATED (0 errors, 0 sorries)\n");
+    s.push_str("  Build:       ✓ ELABORATED (0 errors, *sans* sorry)\n");
     s.push_str("\n  ─── Ob3ect ───\n");
     s.push_str("  Name:        the_zeros_of_s_correspond_to_the_eigenvalues_of_abe3fc55\n");
     s.push_str("  Path:        ob3ect/digital/the_zeros_of_s_correspond_to_the_eigenvalues_of_abe3fc55/\n");

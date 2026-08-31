@@ -11,7 +11,7 @@ of its own compile loop.
 The substrate is already here. `parasm` (src/parasm.rs) is a register machine
 whose native value is B4 {N, T, F, B} and whose operations realize the twelve:
 
-- FSPLIT ∈, FFUSE ∋, ENGAGR ⊞, IFIX ◻ are the Frobenius core, verbatim.
+- FSPLIT ∈, FFUSE ∋, ENGAGR ⊞, IFIX ⊡ are the Frobenius core, verbatim.
 - A data-dependent branch (JT/JF/JB/JN) is FSPLIT opening arms with EVALT/EVALF
   selecting one. The condition is read off a register's Belnap value.
 - A loop is ROTAT: the program counter wraps the word ring (`step` resets pc to
@@ -84,7 +84,7 @@ A byte is four cells: two are the OPCODE field, two are the OPERAND.
      reserved stop-opcode.
    - `test_evm_lift_reentrancy_verdict`: real EVM control lifted to IMASM and
      verdicted. A withdraw whose branch paths MERGE (JUMPDEST = ∋) before the
-     state commit (SSTORE = ◻) closes (T); the vulnerable ordering, committing
+     state commit (SSTORE = ⊡) closes (T); the vulnerable ordering, committing
      while the fork is still open, opens (B). Reentrancy caught structurally, no
      Solidity knowledge in the engine.
    - `ob3ect/test_cpython_lift.py`: the same on real CPython bytecode through the
@@ -104,7 +104,7 @@ A byte is four cells: two are the OPCODE field, two are the OPERAND.
    whole opcode space, it is identity on the tool's own word. The tool is written
    in the twelve, so the twelve fed through disassemble-then-recompile come back
    unchanged: the tool reproduces its own alphabet.
-6. DONE: `test_imasm_self_hosting_quine`. The tool's own word ⊢∈>⊤<⊥∋◻⊣ (open the
+6. DONE: `test_imasm_self_hosting_quine`. The tool's own word ⊢∈>⊤<⊥∋⊡⊣ (open the
    fork, work both arms, fuse, commit, close) is verdicted T by the kernel — the
    tool is a well-formed CLOSING grammar object — and each of its tokens runs
    through the tool (disassemble then recompile) back to itself. This closes the
@@ -142,7 +142,7 @@ The parasm program `test_evm_lane_in_parasm` does the following:
   |------------|----------|-------------|
   | STOP (0x00)| 0,0,0,0  | ⊢ (VINIT)    |
   | SLOAD (0x54)| 1,1,1,0 | > (AFWD)     |
-  | SSTORE (0x55)| 1,1,1,1| ◻ (IFIX)     |
+  | SSTORE (0x55)| 1,1,1,1| ⊡ (IFIX)     |
   | JUMPI (0x57)| 1,1,1,3| ⋈ (CLINK)    |
   | JUMPDEST (0x5b)| 1,1,2,3| ∋ (FFUSE)  |
   | PUSH1 (0x60)| 1,2,0,0 | skip operand | 

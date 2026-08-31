@@ -22,20 +22,27 @@
 pub use imasm_core::classic::{Family, Token};
 
 
-/// Fixed-capacity program: up to 64 tokens.
+/// Fixed-capacity program. The capacity was 64 while a word was a codon-sized
+/// ring; lifting a real artifact produces words far longer than that, so it is
+/// now `CAPACITY` and the buffer is sized from it. Raise the constant, not the
+/// literals: nothing else in this file knows the number.
 #[derive(Copy, Clone)]
 pub struct Program {
-    buf: [Token; 64],
+    buf: [Token; Program::CAPACITY],
     len: usize,
 }
 
 impl Program {
+    /// The fixed token capacity. Exposed so callers can refuse an over-long word
+    /// instead of silently receiving a truncated program.
+    pub const CAPACITY: usize = 4096;
+
     pub const fn empty() -> Self {
-        Self { buf: [Token::Vinit; 64], len: 0 }
+        Self { buf: [Token::Vinit; Program::CAPACITY], len: 0 }
     }
 
     pub fn push(&mut self, t: Token) {
-        if self.len < 64 { self.buf[self.len] = t; self.len += 1; }
+        if self.len < Program::CAPACITY { self.buf[self.len] = t; self.len += 1; }
     }
 
     pub fn get(&self, i: usize) -> Option<Token> {
@@ -47,7 +54,7 @@ impl Program {
     pub fn as_slice(&self) -> &[Token] { &self.buf[..self.len] }
 
     pub fn inject(&mut self, pos: usize, t: Token) {
-        if self.len >= 64 { return; }
+        if self.len >= Program::CAPACITY { return; }
         let pos = pos.min(self.len);
         let mut i = self.len;
         while i > pos { self.buf[i] = self.buf[i - 1]; i -= 1; }

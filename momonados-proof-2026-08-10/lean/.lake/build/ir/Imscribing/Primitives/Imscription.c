@@ -1,0 +1,5257 @@
+// Lean compiler output
+// Module: Imscribing.Primitives.Imscription
+// Imports: public import Init public import Imscribing.Primitives.Core
+#include <lean/lean.h>
+#if defined(__clang__)
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wunused-label"
+#elif defined(__GNUC__) && !defined(__CLANG__)
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-label"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#endif
+#ifdef __cplusplus
+extern "C" {
+#endif
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__quantum__target;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___boxed(lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__29;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__1;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_dimShavian___boxed(lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__6;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__11;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription___closed__0;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_polShavian___boxed(lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_imscriptionShavian(lean_object*);
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instOrdCriticality_ord(uint8_t, uint8_t);
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprCriticality_repr(uint8_t, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__31;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian(uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__9;
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprTopology_repr(uint8_t, lean_object*);
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprFidelity_repr(uint8_t, lean_object*);
+uint8_t l_instDecidableEqOrdering(uint8_t, uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__0;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__1;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__34;
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instOrdGrammar_ord(uint8_t, uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__0;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__17;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__10;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___boxed(lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_granShavian(uint8_t);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___boxed(lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__2;
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqGrammar(uint8_t, uint8_t);
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprGrammar_repr(uint8_t, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__3;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_polShavian(uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__7;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_asymptotic__safety;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__3;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___boxed(lean_object*);
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprPolarity_repr(uint8_t, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__13;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__27;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__8;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__12;
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqGranularity(uint8_t, uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__1;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__24;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__7;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_relShavian___boxed(lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_chirShavian(uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__classical___closed__0;
+lean_object* l_Lean_replaceRef(lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__3;
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprProtection_repr(uint8_t, lean_object*);
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqStoichiometry(uint8_t, uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__0;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_scalarField__Kslow;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__2;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__0;
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instOrdGranularity_ord(uint8_t, uint8_t);
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqChirality(uint8_t, uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__10;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__0;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___boxed(lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__5;
+uint8_t l_Lean_Syntax_isOfKind(lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__10;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_gramShavian___boxed(lean_object*);
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instOrdChirality_ord(uint8_t, uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__2;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__12;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__0;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_general__relativity;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_kinShavian(uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__0;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__6;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__36;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive(lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__2;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__4;
+lean_object* lean_string_length(lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__2;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_critShavian___boxed(lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__25;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__4;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__4;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__28;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__11;
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instOrdFidelity_ord___boxed(lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__1;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_imscriptionTier___boxed(lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__1;
+lean_object* l_Lean_Name_mkStr3(lean_object*, lean_object*, lean_object*);
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqFidelity(uint8_t, uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_quantum__gravity___closed__0;
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instOrdGrammar_ord___boxed(lean_object*, lean_object*);
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instOrdCriticality_ord___boxed(lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__3;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_stoneShavian;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_fidShavian___boxed(lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_stoiShavian(uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_scalarField__Kslow___closed__0;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__6;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__1;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_stone__shavian___closed__1;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_standard__model___closed__0;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______unexpand__Imscribing__Primitives__tensorProduct__1___closed__1;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg(lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__7;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__11;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__12;
+lean_object* l_Lean_SourceInfo_fromRef(lean_object*, uint8_t);
+lean_object* lean_nat_to_int(lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_quantum__gravity;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__12;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__9;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_general__relativity___closed__0;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian(uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__0;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_granShavian___boxed(lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__9;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__2;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__20;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_primitiveMismatches(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian(uint8_t);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_fidShavian(uint8_t);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_stone__shavian;
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqKineticChar(uint8_t, uint8_t);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_higgs;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__3;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__3;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__5;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_kinShavian___boxed(lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__3;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__quantum__target___closed__0;
+lean_object* l_Lean_Syntax_node3(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__1;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__5;
+static lean_object* lp_imscribing_x2dlean_ShavianNotation_stoneShavian___closed__0;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(lean_object*, lean_object*, lean_object*);
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instOrdKineticChar_ord___boxed(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian(uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__2;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__4;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_topShavian(uint8_t);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_axion;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__2;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian(uint8_t);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_tensorPrimitive___redArg(lean_object*, lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__0;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_gramShavian(uint8_t);
+lean_object* l_Lean_addMacroScope(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian(uint8_t);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___boxed(lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_standard__model;
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqCriticality(uint8_t, uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__4;
+lean_object* l_Lean_Syntax_node2(lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__0;
+lean_object* l_Lean_Syntax_getArg(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription;
+uint8_t l_Lean_Syntax_matchesNull(lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__3;
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprChirality_repr(uint8_t, lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_tensorProduct___boxed(lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__2;
+LEAN_EXPORT uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqImscription_decEq(lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__3;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__16;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___boxed(lean_object*);
+LEAN_EXPORT uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqImscription(lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__2;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__8;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__1;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___boxed(lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__9;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__5;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__2;
+lean_object* l_String_toRawSubstring_x27(lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___boxed(lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__23;
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instOrdPolarity_ord___boxed(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______unexpand__Imscribing__Primitives__tensorProduct__1___boxed(lean_object*, lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__1;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_critShavian(uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__35;
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instOrdStoichiometry_ord(uint8_t, uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__8;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___lam__0___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_topShavian___boxed(lean_object*);
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instOrdTopology_ord___boxed(lean_object*, lean_object*);
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqDimensionality(uint8_t, uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______unexpand__Imscribing__Primitives__tensorProduct__1___closed__0;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___boxed(lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__4;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian(uint8_t);
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqProtection(uint8_t, uint8_t);
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqPolarity(uint8_t, uint8_t);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___boxed(lean_object*);
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprStoichiometry_repr(uint8_t, lean_object*);
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instOrdProtection_ord___boxed(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqImscription_decEq___boxed(lean_object*, lean_object*);
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instOrdTopology_ord(uint8_t, uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__0;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__1;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297__;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___lam__0(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__3;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__26;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__4;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian(lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__15;
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instOrdRelational_ord(uint8_t, uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_stone__shavian___closed__0;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__4;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__32;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__0;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__1;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__1;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__2;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__8;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_protShavian___boxed(lean_object*);
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqTopology(uint8_t, uint8_t);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_imscriptionShavian___boxed(lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__0;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian(uint8_t);
+LEAN_EXPORT uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_imscriptionTier(lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_protShavian(uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__18;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqImscription___boxed(lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__11;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMaxImscription___closed__0;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_asymptotic__safety___closed__0;
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqRelational(uint8_t, uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__19;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__10;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMaxImscription___lam__0___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__2;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__classical;
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprKineticChar_repr(uint8_t, lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_tensorProduct(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian(uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__0;
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instOrdRelational_ord___boxed(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_relShavian(uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__30;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__0;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__3;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__7;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___boxed(lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__1;
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instOrdDimensionality_ord(uint8_t, uint8_t);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___boxed(lean_object*);
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instOrdGranularity_ord___boxed(lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__22;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__0;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___boxed(lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__0;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__3;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian(uint8_t);
+lean_object* l_Lean_Name_mkStr1(lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__37;
+lean_object* l_Lean_Name_mkStr4(lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__21;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______unexpand__Imscribing__Primitives__tensorProduct__1(lean_object*, lean_object*, lean_object*);
+lean_object* lean_string_append(lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__2;
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprRelational_repr(uint8_t, lean_object*);
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instOrdKineticChar_ord(uint8_t, uint8_t);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_chirShavian___boxed(lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__2;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__2;
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprGranularity_repr(uint8_t, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__1;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_inflaton;
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instOrdPolarity_ord(uint8_t, uint8_t);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_dimShavian(uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__1;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_tensorPrimitive(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMaxImscription;
+lean_object* lean_nat_add(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___boxed(lean_object*);
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instOrdProtection_ord(uint8_t, uint8_t);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian(uint8_t);
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instOrdStoichiometry_ord___boxed(lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__3;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__1;
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instOrdFidelity_ord(uint8_t, uint8_t);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMaxImscription___lam__0(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(lean_object*, lean_object*, lean_object*);
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instOrdDimensionality_ord___boxed(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_stoiShavian___boxed(lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__2;
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_primitiveMismatches___boxed(lean_object*, lean_object*);
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instOrdChirality_ord___boxed(lean_object*, lean_object*);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__1;
+lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprDimensionality_repr(uint8_t, lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian(uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__6;
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__14;
+uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_ouroboricityTier(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t);
+static lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__33;
+LEAN_EXPORT uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqImscription_decEq(lean_object* x_1, lean_object* x_2) {
+_start:
+{
+uint8_t x_3; uint8_t x_4; uint8_t x_5; uint8_t x_6; uint8_t x_7; uint8_t x_8; uint8_t x_9; uint8_t x_10; uint8_t x_11; uint8_t x_12; uint8_t x_13; uint8_t x_14; uint8_t x_15; uint8_t x_16; uint8_t x_17; uint8_t x_18; uint8_t x_19; uint8_t x_20; uint8_t x_21; uint8_t x_22; uint8_t x_23; uint8_t x_24; uint8_t x_25; uint8_t x_26; uint8_t x_27; 
+x_3 = lean_ctor_get_uint8(x_1, 0);
+x_4 = lean_ctor_get_uint8(x_1, 1);
+x_5 = lean_ctor_get_uint8(x_1, 2);
+x_6 = lean_ctor_get_uint8(x_1, 3);
+x_7 = lean_ctor_get_uint8(x_1, 4);
+x_8 = lean_ctor_get_uint8(x_1, 5);
+x_9 = lean_ctor_get_uint8(x_1, 6);
+x_10 = lean_ctor_get_uint8(x_1, 7);
+x_11 = lean_ctor_get_uint8(x_1, 8);
+x_12 = lean_ctor_get_uint8(x_1, 9);
+x_13 = lean_ctor_get_uint8(x_1, 10);
+x_14 = lean_ctor_get_uint8(x_1, 11);
+x_15 = lean_ctor_get_uint8(x_2, 0);
+x_16 = lean_ctor_get_uint8(x_2, 1);
+x_17 = lean_ctor_get_uint8(x_2, 2);
+x_18 = lean_ctor_get_uint8(x_2, 3);
+x_19 = lean_ctor_get_uint8(x_2, 4);
+x_20 = lean_ctor_get_uint8(x_2, 5);
+x_21 = lean_ctor_get_uint8(x_2, 6);
+x_22 = lean_ctor_get_uint8(x_2, 7);
+x_23 = lean_ctor_get_uint8(x_2, 8);
+x_24 = lean_ctor_get_uint8(x_2, 9);
+x_25 = lean_ctor_get_uint8(x_2, 10);
+x_26 = lean_ctor_get_uint8(x_2, 11);
+x_27 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqDimensionality(x_3, x_15);
+if (x_27 == 0)
+{
+return x_27;
+}
+else
+{
+uint8_t x_28; 
+x_28 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqTopology(x_4, x_16);
+if (x_28 == 0)
+{
+return x_28;
+}
+else
+{
+uint8_t x_29; 
+x_29 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqRelational(x_5, x_17);
+if (x_29 == 0)
+{
+return x_29;
+}
+else
+{
+uint8_t x_30; 
+x_30 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqPolarity(x_6, x_18);
+if (x_30 == 0)
+{
+return x_30;
+}
+else
+{
+uint8_t x_31; 
+x_31 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqFidelity(x_7, x_19);
+if (x_31 == 0)
+{
+return x_31;
+}
+else
+{
+uint8_t x_32; 
+x_32 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqKineticChar(x_8, x_20);
+if (x_32 == 0)
+{
+return x_32;
+}
+else
+{
+uint8_t x_33; 
+x_33 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqGranularity(x_9, x_21);
+if (x_33 == 0)
+{
+return x_33;
+}
+else
+{
+uint8_t x_34; 
+x_34 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqGrammar(x_10, x_22);
+if (x_34 == 0)
+{
+return x_34;
+}
+else
+{
+uint8_t x_35; 
+x_35 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqCriticality(x_11, x_23);
+if (x_35 == 0)
+{
+return x_35;
+}
+else
+{
+uint8_t x_36; 
+x_36 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqChirality(x_12, x_24);
+if (x_36 == 0)
+{
+return x_36;
+}
+else
+{
+uint8_t x_37; 
+x_37 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqStoichiometry(x_13, x_25);
+if (x_37 == 0)
+{
+return x_37;
+}
+else
+{
+uint8_t x_38; 
+x_38 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqProtection(x_14, x_26);
+return x_38;
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqImscription_decEq___boxed(lean_object* x_1, lean_object* x_2) {
+_start:
+{
+uint8_t x_3; lean_object* x_4; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqImscription_decEq(x_1, x_2);
+lean_dec_ref(x_2);
+lean_dec_ref(x_1);
+x_4 = lean_box(x_3);
+return x_4;
+}
+}
+LEAN_EXPORT uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqImscription(lean_object* x_1, lean_object* x_2) {
+_start:
+{
+uint8_t x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqImscription_decEq(x_1, x_2);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqImscription___boxed(lean_object* x_1, lean_object* x_2) {
+_start:
+{
+uint8_t x_3; lean_object* x_4; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqImscription(x_1, x_2);
+lean_dec_ref(x_2);
+lean_dec_ref(x_1);
+x_4 = lean_box(x_3);
+return x_4;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__0() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("{ ", 2, 2);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("dim", 3, 3);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__2() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__1;
+x_2 = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__3() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__2;
+x_2 = lean_box(0);
+x_3 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_3, 0, x_2);
+lean_ctor_set(x_3, 1, x_1);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__4() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked(" := ", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__5() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__4;
+x_2 = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__6() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__5;
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__3;
+x_3 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_3, 0, x_2);
+lean_ctor_set(x_3, 1, x_1);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__7() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lean_unsigned_to_nat(7u);
+x_2 = lean_nat_to_int(x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__8() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked(",", 1, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__9() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__8;
+x_2 = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__10() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("top", 3, 3);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__11() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__10;
+x_2 = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__12() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("rel", 3, 3);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__13() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__12;
+x_2 = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__14() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("pol", 3, 3);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__15() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__14;
+x_2 = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__16() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("fid", 3, 3);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__17() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__16;
+x_2 = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__18() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("kin", 3, 3);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__19() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__18;
+x_2 = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__20() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("gran", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__21() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__20;
+x_2 = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__22() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lean_unsigned_to_nat(8u);
+x_2 = lean_nat_to_int(x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__23() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("gram", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__24() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__23;
+x_2 = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__25() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("crit", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__26() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__25;
+x_2 = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__27() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("chir", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__28() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__27;
+x_2 = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__29() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("stoi", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__30() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__29;
+x_2 = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__31() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("prot", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__32() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__31;
+x_2 = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__33() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked(" }", 2, 2);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__34() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__0;
+x_2 = lean_string_length(x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__35() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__34;
+x_2 = lean_nat_to_int(x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__36() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__0;
+x_2 = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__37() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__33;
+x_2 = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; uint8_t x_3; uint8_t x_4; uint8_t x_5; uint8_t x_6; uint8_t x_7; uint8_t x_8; uint8_t x_9; uint8_t x_10; uint8_t x_11; uint8_t x_12; uint8_t x_13; lean_object* x_14; lean_object* x_15; lean_object* x_16; lean_object* x_17; lean_object* x_18; lean_object* x_19; uint8_t x_20; lean_object* x_21; lean_object* x_22; lean_object* x_23; lean_object* x_24; lean_object* x_25; lean_object* x_26; lean_object* x_27; lean_object* x_28; lean_object* x_29; lean_object* x_30; lean_object* x_31; lean_object* x_32; lean_object* x_33; lean_object* x_34; lean_object* x_35; lean_object* x_36; lean_object* x_37; lean_object* x_38; lean_object* x_39; lean_object* x_40; lean_object* x_41; lean_object* x_42; lean_object* x_43; lean_object* x_44; lean_object* x_45; lean_object* x_46; lean_object* x_47; lean_object* x_48; lean_object* x_49; lean_object* x_50; lean_object* x_51; lean_object* x_52; lean_object* x_53; lean_object* x_54; lean_object* x_55; lean_object* x_56; lean_object* x_57; lean_object* x_58; lean_object* x_59; lean_object* x_60; lean_object* x_61; lean_object* x_62; lean_object* x_63; lean_object* x_64; lean_object* x_65; lean_object* x_66; lean_object* x_67; lean_object* x_68; lean_object* x_69; lean_object* x_70; lean_object* x_71; lean_object* x_72; lean_object* x_73; lean_object* x_74; lean_object* x_75; lean_object* x_76; lean_object* x_77; lean_object* x_78; lean_object* x_79; lean_object* x_80; lean_object* x_81; lean_object* x_82; lean_object* x_83; lean_object* x_84; lean_object* x_85; lean_object* x_86; lean_object* x_87; lean_object* x_88; lean_object* x_89; lean_object* x_90; lean_object* x_91; lean_object* x_92; lean_object* x_93; lean_object* x_94; lean_object* x_95; lean_object* x_96; lean_object* x_97; lean_object* x_98; lean_object* x_99; lean_object* x_100; lean_object* x_101; lean_object* x_102; lean_object* x_103; lean_object* x_104; lean_object* x_105; lean_object* x_106; lean_object* x_107; lean_object* x_108; lean_object* x_109; lean_object* x_110; lean_object* x_111; lean_object* x_112; lean_object* x_113; lean_object* x_114; lean_object* x_115; lean_object* x_116; lean_object* x_117; lean_object* x_118; lean_object* x_119; lean_object* x_120; lean_object* x_121; lean_object* x_122; lean_object* x_123; lean_object* x_124; lean_object* x_125; lean_object* x_126; lean_object* x_127; lean_object* x_128; lean_object* x_129; lean_object* x_130; lean_object* x_131; 
+x_2 = lean_ctor_get_uint8(x_1, 0);
+x_3 = lean_ctor_get_uint8(x_1, 1);
+x_4 = lean_ctor_get_uint8(x_1, 2);
+x_5 = lean_ctor_get_uint8(x_1, 3);
+x_6 = lean_ctor_get_uint8(x_1, 4);
+x_7 = lean_ctor_get_uint8(x_1, 5);
+x_8 = lean_ctor_get_uint8(x_1, 6);
+x_9 = lean_ctor_get_uint8(x_1, 7);
+x_10 = lean_ctor_get_uint8(x_1, 8);
+x_11 = lean_ctor_get_uint8(x_1, 9);
+x_12 = lean_ctor_get_uint8(x_1, 10);
+x_13 = lean_ctor_get_uint8(x_1, 11);
+x_14 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__5;
+x_15 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__6;
+x_16 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__7;
+x_17 = lean_unsigned_to_nat(0u);
+x_18 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprDimensionality_repr(x_2, x_17);
+x_19 = lean_alloc_ctor(4, 2, 0);
+lean_ctor_set(x_19, 0, x_16);
+lean_ctor_set(x_19, 1, x_18);
+x_20 = 0;
+x_21 = lean_alloc_ctor(6, 1, 1);
+lean_ctor_set(x_21, 0, x_19);
+lean_ctor_set_uint8(x_21, sizeof(void*)*1, x_20);
+x_22 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_22, 0, x_15);
+lean_ctor_set(x_22, 1, x_21);
+x_23 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__9;
+x_24 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_24, 0, x_22);
+lean_ctor_set(x_24, 1, x_23);
+x_25 = lean_box(1);
+x_26 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_26, 0, x_24);
+lean_ctor_set(x_26, 1, x_25);
+x_27 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__11;
+x_28 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_28, 0, x_26);
+lean_ctor_set(x_28, 1, x_27);
+x_29 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_29, 0, x_28);
+lean_ctor_set(x_29, 1, x_14);
+x_30 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprTopology_repr(x_3, x_17);
+x_31 = lean_alloc_ctor(4, 2, 0);
+lean_ctor_set(x_31, 0, x_16);
+lean_ctor_set(x_31, 1, x_30);
+x_32 = lean_alloc_ctor(6, 1, 1);
+lean_ctor_set(x_32, 0, x_31);
+lean_ctor_set_uint8(x_32, sizeof(void*)*1, x_20);
+x_33 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_33, 0, x_29);
+lean_ctor_set(x_33, 1, x_32);
+x_34 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_34, 0, x_33);
+lean_ctor_set(x_34, 1, x_23);
+x_35 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_35, 0, x_34);
+lean_ctor_set(x_35, 1, x_25);
+x_36 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__13;
+x_37 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_37, 0, x_35);
+lean_ctor_set(x_37, 1, x_36);
+x_38 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_38, 0, x_37);
+lean_ctor_set(x_38, 1, x_14);
+x_39 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprRelational_repr(x_4, x_17);
+x_40 = lean_alloc_ctor(4, 2, 0);
+lean_ctor_set(x_40, 0, x_16);
+lean_ctor_set(x_40, 1, x_39);
+x_41 = lean_alloc_ctor(6, 1, 1);
+lean_ctor_set(x_41, 0, x_40);
+lean_ctor_set_uint8(x_41, sizeof(void*)*1, x_20);
+x_42 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_42, 0, x_38);
+lean_ctor_set(x_42, 1, x_41);
+x_43 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_43, 0, x_42);
+lean_ctor_set(x_43, 1, x_23);
+x_44 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_44, 0, x_43);
+lean_ctor_set(x_44, 1, x_25);
+x_45 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__15;
+x_46 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_46, 0, x_44);
+lean_ctor_set(x_46, 1, x_45);
+x_47 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_47, 0, x_46);
+lean_ctor_set(x_47, 1, x_14);
+x_48 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprPolarity_repr(x_5, x_17);
+x_49 = lean_alloc_ctor(4, 2, 0);
+lean_ctor_set(x_49, 0, x_16);
+lean_ctor_set(x_49, 1, x_48);
+x_50 = lean_alloc_ctor(6, 1, 1);
+lean_ctor_set(x_50, 0, x_49);
+lean_ctor_set_uint8(x_50, sizeof(void*)*1, x_20);
+x_51 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_51, 0, x_47);
+lean_ctor_set(x_51, 1, x_50);
+x_52 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_52, 0, x_51);
+lean_ctor_set(x_52, 1, x_23);
+x_53 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_53, 0, x_52);
+lean_ctor_set(x_53, 1, x_25);
+x_54 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__17;
+x_55 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_55, 0, x_53);
+lean_ctor_set(x_55, 1, x_54);
+x_56 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_56, 0, x_55);
+lean_ctor_set(x_56, 1, x_14);
+x_57 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprFidelity_repr(x_6, x_17);
+x_58 = lean_alloc_ctor(4, 2, 0);
+lean_ctor_set(x_58, 0, x_16);
+lean_ctor_set(x_58, 1, x_57);
+x_59 = lean_alloc_ctor(6, 1, 1);
+lean_ctor_set(x_59, 0, x_58);
+lean_ctor_set_uint8(x_59, sizeof(void*)*1, x_20);
+x_60 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_60, 0, x_56);
+lean_ctor_set(x_60, 1, x_59);
+x_61 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_61, 0, x_60);
+lean_ctor_set(x_61, 1, x_23);
+x_62 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_62, 0, x_61);
+lean_ctor_set(x_62, 1, x_25);
+x_63 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__19;
+x_64 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_64, 0, x_62);
+lean_ctor_set(x_64, 1, x_63);
+x_65 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_65, 0, x_64);
+lean_ctor_set(x_65, 1, x_14);
+x_66 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprKineticChar_repr(x_7, x_17);
+x_67 = lean_alloc_ctor(4, 2, 0);
+lean_ctor_set(x_67, 0, x_16);
+lean_ctor_set(x_67, 1, x_66);
+x_68 = lean_alloc_ctor(6, 1, 1);
+lean_ctor_set(x_68, 0, x_67);
+lean_ctor_set_uint8(x_68, sizeof(void*)*1, x_20);
+x_69 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_69, 0, x_65);
+lean_ctor_set(x_69, 1, x_68);
+x_70 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_70, 0, x_69);
+lean_ctor_set(x_70, 1, x_23);
+x_71 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_71, 0, x_70);
+lean_ctor_set(x_71, 1, x_25);
+x_72 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__21;
+x_73 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_73, 0, x_71);
+lean_ctor_set(x_73, 1, x_72);
+x_74 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_74, 0, x_73);
+lean_ctor_set(x_74, 1, x_14);
+x_75 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__22;
+x_76 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprGranularity_repr(x_8, x_17);
+x_77 = lean_alloc_ctor(4, 2, 0);
+lean_ctor_set(x_77, 0, x_75);
+lean_ctor_set(x_77, 1, x_76);
+x_78 = lean_alloc_ctor(6, 1, 1);
+lean_ctor_set(x_78, 0, x_77);
+lean_ctor_set_uint8(x_78, sizeof(void*)*1, x_20);
+x_79 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_79, 0, x_74);
+lean_ctor_set(x_79, 1, x_78);
+x_80 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_80, 0, x_79);
+lean_ctor_set(x_80, 1, x_23);
+x_81 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_81, 0, x_80);
+lean_ctor_set(x_81, 1, x_25);
+x_82 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__24;
+x_83 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_83, 0, x_81);
+lean_ctor_set(x_83, 1, x_82);
+x_84 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_84, 0, x_83);
+lean_ctor_set(x_84, 1, x_14);
+x_85 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprGrammar_repr(x_9, x_17);
+x_86 = lean_alloc_ctor(4, 2, 0);
+lean_ctor_set(x_86, 0, x_75);
+lean_ctor_set(x_86, 1, x_85);
+x_87 = lean_alloc_ctor(6, 1, 1);
+lean_ctor_set(x_87, 0, x_86);
+lean_ctor_set_uint8(x_87, sizeof(void*)*1, x_20);
+x_88 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_88, 0, x_84);
+lean_ctor_set(x_88, 1, x_87);
+x_89 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_89, 0, x_88);
+lean_ctor_set(x_89, 1, x_23);
+x_90 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_90, 0, x_89);
+lean_ctor_set(x_90, 1, x_25);
+x_91 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__26;
+x_92 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_92, 0, x_90);
+lean_ctor_set(x_92, 1, x_91);
+x_93 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_93, 0, x_92);
+lean_ctor_set(x_93, 1, x_14);
+x_94 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprCriticality_repr(x_10, x_17);
+x_95 = lean_alloc_ctor(4, 2, 0);
+lean_ctor_set(x_95, 0, x_75);
+lean_ctor_set(x_95, 1, x_94);
+x_96 = lean_alloc_ctor(6, 1, 1);
+lean_ctor_set(x_96, 0, x_95);
+lean_ctor_set_uint8(x_96, sizeof(void*)*1, x_20);
+x_97 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_97, 0, x_93);
+lean_ctor_set(x_97, 1, x_96);
+x_98 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_98, 0, x_97);
+lean_ctor_set(x_98, 1, x_23);
+x_99 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_99, 0, x_98);
+lean_ctor_set(x_99, 1, x_25);
+x_100 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__28;
+x_101 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_101, 0, x_99);
+lean_ctor_set(x_101, 1, x_100);
+x_102 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_102, 0, x_101);
+lean_ctor_set(x_102, 1, x_14);
+x_103 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprChirality_repr(x_11, x_17);
+x_104 = lean_alloc_ctor(4, 2, 0);
+lean_ctor_set(x_104, 0, x_75);
+lean_ctor_set(x_104, 1, x_103);
+x_105 = lean_alloc_ctor(6, 1, 1);
+lean_ctor_set(x_105, 0, x_104);
+lean_ctor_set_uint8(x_105, sizeof(void*)*1, x_20);
+x_106 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_106, 0, x_102);
+lean_ctor_set(x_106, 1, x_105);
+x_107 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_107, 0, x_106);
+lean_ctor_set(x_107, 1, x_23);
+x_108 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_108, 0, x_107);
+lean_ctor_set(x_108, 1, x_25);
+x_109 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__30;
+x_110 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_110, 0, x_108);
+lean_ctor_set(x_110, 1, x_109);
+x_111 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_111, 0, x_110);
+lean_ctor_set(x_111, 1, x_14);
+x_112 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprStoichiometry_repr(x_12, x_17);
+x_113 = lean_alloc_ctor(4, 2, 0);
+lean_ctor_set(x_113, 0, x_75);
+lean_ctor_set(x_113, 1, x_112);
+x_114 = lean_alloc_ctor(6, 1, 1);
+lean_ctor_set(x_114, 0, x_113);
+lean_ctor_set_uint8(x_114, sizeof(void*)*1, x_20);
+x_115 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_115, 0, x_111);
+lean_ctor_set(x_115, 1, x_114);
+x_116 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_116, 0, x_115);
+lean_ctor_set(x_116, 1, x_23);
+x_117 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_117, 0, x_116);
+lean_ctor_set(x_117, 1, x_25);
+x_118 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__32;
+x_119 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_119, 0, x_117);
+lean_ctor_set(x_119, 1, x_118);
+x_120 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_120, 0, x_119);
+lean_ctor_set(x_120, 1, x_14);
+x_121 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprProtection_repr(x_13, x_17);
+x_122 = lean_alloc_ctor(4, 2, 0);
+lean_ctor_set(x_122, 0, x_75);
+lean_ctor_set(x_122, 1, x_121);
+x_123 = lean_alloc_ctor(6, 1, 1);
+lean_ctor_set(x_123, 0, x_122);
+lean_ctor_set_uint8(x_123, sizeof(void*)*1, x_20);
+x_124 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_124, 0, x_120);
+lean_ctor_set(x_124, 1, x_123);
+x_125 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__35;
+x_126 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__36;
+x_127 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_127, 0, x_126);
+lean_ctor_set(x_127, 1, x_124);
+x_128 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__37;
+x_129 = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(x_129, 0, x_127);
+lean_ctor_set(x_129, 1, x_128);
+x_130 = lean_alloc_ctor(4, 2, 0);
+lean_ctor_set(x_130, 0, x_125);
+lean_ctor_set(x_130, 1, x_129);
+x_131 = lean_alloc_ctor(6, 1, 1);
+lean_ctor_set(x_131, 0, x_130);
+lean_ctor_set_uint8(x_131, sizeof(void*)*1, x_20);
+return x_131;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___boxed(lean_object* x_1) {
+_start:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg(x_1);
+lean_dec_ref(x_1);
+return x_2;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr(lean_object* x_1, lean_object* x_2) {
+_start:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg(x_1);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___boxed(lean_object* x_1, lean_object* x_2) {
+_start:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr(x_1, x_2);
+lean_dec(x_2);
+lean_dec_ref(x_1);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription___closed__0() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___boxed), 2, 0);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription___closed__0;
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_primitiveMismatches(lean_object* x_1, lean_object* x_2) {
+_start:
+{
+uint8_t x_3; uint8_t x_4; uint8_t x_5; uint8_t x_6; uint8_t x_7; uint8_t x_8; uint8_t x_9; uint8_t x_10; uint8_t x_11; uint8_t x_12; uint8_t x_13; uint8_t x_14; uint8_t x_15; uint8_t x_16; uint8_t x_17; uint8_t x_18; uint8_t x_19; uint8_t x_20; uint8_t x_21; uint8_t x_22; uint8_t x_23; uint8_t x_24; uint8_t x_25; uint8_t x_26; lean_object* x_27; lean_object* x_28; lean_object* x_34; lean_object* x_35; lean_object* x_41; lean_object* x_42; lean_object* x_48; lean_object* x_49; lean_object* x_55; lean_object* x_56; lean_object* x_62; lean_object* x_63; lean_object* x_69; lean_object* x_70; lean_object* x_76; lean_object* x_77; lean_object* x_83; lean_object* x_84; lean_object* x_90; lean_object* x_91; lean_object* x_97; uint8_t x_102; 
+x_3 = lean_ctor_get_uint8(x_1, 0);
+x_4 = lean_ctor_get_uint8(x_1, 1);
+x_5 = lean_ctor_get_uint8(x_1, 2);
+x_6 = lean_ctor_get_uint8(x_1, 3);
+x_7 = lean_ctor_get_uint8(x_1, 4);
+x_8 = lean_ctor_get_uint8(x_1, 5);
+x_9 = lean_ctor_get_uint8(x_1, 6);
+x_10 = lean_ctor_get_uint8(x_1, 7);
+x_11 = lean_ctor_get_uint8(x_1, 8);
+x_12 = lean_ctor_get_uint8(x_1, 9);
+x_13 = lean_ctor_get_uint8(x_1, 10);
+x_14 = lean_ctor_get_uint8(x_1, 11);
+x_15 = lean_ctor_get_uint8(x_2, 0);
+x_16 = lean_ctor_get_uint8(x_2, 1);
+x_17 = lean_ctor_get_uint8(x_2, 2);
+x_18 = lean_ctor_get_uint8(x_2, 3);
+x_19 = lean_ctor_get_uint8(x_2, 4);
+x_20 = lean_ctor_get_uint8(x_2, 5);
+x_21 = lean_ctor_get_uint8(x_2, 6);
+x_22 = lean_ctor_get_uint8(x_2, 7);
+x_23 = lean_ctor_get_uint8(x_2, 8);
+x_24 = lean_ctor_get_uint8(x_2, 9);
+x_25 = lean_ctor_get_uint8(x_2, 10);
+x_26 = lean_ctor_get_uint8(x_2, 11);
+x_102 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqDimensionality(x_3, x_15);
+if (x_102 == 0)
+{
+lean_object* x_103; 
+x_103 = lean_unsigned_to_nat(1u);
+x_97 = x_103;
+goto block_101;
+}
+else
+{
+lean_object* x_104; 
+x_104 = lean_unsigned_to_nat(0u);
+x_97 = x_104;
+goto block_101;
+}
+block_33:
+{
+lean_object* x_29; uint8_t x_30; 
+x_29 = lean_nat_add(x_27, x_28);
+lean_dec(x_27);
+x_30 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqProtection(x_14, x_26);
+if (x_30 == 0)
+{
+lean_object* x_31; lean_object* x_32; 
+x_31 = lean_unsigned_to_nat(1u);
+x_32 = lean_nat_add(x_29, x_31);
+lean_dec(x_29);
+return x_32;
+}
+else
+{
+return x_29;
+}
+}
+block_40:
+{
+lean_object* x_36; uint8_t x_37; 
+x_36 = lean_nat_add(x_34, x_35);
+lean_dec(x_34);
+x_37 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqStoichiometry(x_13, x_25);
+if (x_37 == 0)
+{
+lean_object* x_38; 
+x_38 = lean_unsigned_to_nat(1u);
+x_27 = x_36;
+x_28 = x_38;
+goto block_33;
+}
+else
+{
+lean_object* x_39; 
+x_39 = lean_unsigned_to_nat(0u);
+x_27 = x_36;
+x_28 = x_39;
+goto block_33;
+}
+}
+block_47:
+{
+lean_object* x_43; uint8_t x_44; 
+x_43 = lean_nat_add(x_41, x_42);
+lean_dec(x_41);
+x_44 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqChirality(x_12, x_24);
+if (x_44 == 0)
+{
+lean_object* x_45; 
+x_45 = lean_unsigned_to_nat(1u);
+x_34 = x_43;
+x_35 = x_45;
+goto block_40;
+}
+else
+{
+lean_object* x_46; 
+x_46 = lean_unsigned_to_nat(0u);
+x_34 = x_43;
+x_35 = x_46;
+goto block_40;
+}
+}
+block_54:
+{
+lean_object* x_50; uint8_t x_51; 
+x_50 = lean_nat_add(x_48, x_49);
+lean_dec(x_48);
+x_51 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqCriticality(x_11, x_23);
+if (x_51 == 0)
+{
+lean_object* x_52; 
+x_52 = lean_unsigned_to_nat(1u);
+x_41 = x_50;
+x_42 = x_52;
+goto block_47;
+}
+else
+{
+lean_object* x_53; 
+x_53 = lean_unsigned_to_nat(0u);
+x_41 = x_50;
+x_42 = x_53;
+goto block_47;
+}
+}
+block_61:
+{
+lean_object* x_57; uint8_t x_58; 
+x_57 = lean_nat_add(x_55, x_56);
+lean_dec(x_55);
+x_58 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqGrammar(x_10, x_22);
+if (x_58 == 0)
+{
+lean_object* x_59; 
+x_59 = lean_unsigned_to_nat(1u);
+x_48 = x_57;
+x_49 = x_59;
+goto block_54;
+}
+else
+{
+lean_object* x_60; 
+x_60 = lean_unsigned_to_nat(0u);
+x_48 = x_57;
+x_49 = x_60;
+goto block_54;
+}
+}
+block_68:
+{
+lean_object* x_64; uint8_t x_65; 
+x_64 = lean_nat_add(x_62, x_63);
+lean_dec(x_62);
+x_65 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqGranularity(x_9, x_21);
+if (x_65 == 0)
+{
+lean_object* x_66; 
+x_66 = lean_unsigned_to_nat(1u);
+x_55 = x_64;
+x_56 = x_66;
+goto block_61;
+}
+else
+{
+lean_object* x_67; 
+x_67 = lean_unsigned_to_nat(0u);
+x_55 = x_64;
+x_56 = x_67;
+goto block_61;
+}
+}
+block_75:
+{
+lean_object* x_71; uint8_t x_72; 
+x_71 = lean_nat_add(x_69, x_70);
+lean_dec(x_69);
+x_72 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqKineticChar(x_8, x_20);
+if (x_72 == 0)
+{
+lean_object* x_73; 
+x_73 = lean_unsigned_to_nat(1u);
+x_62 = x_71;
+x_63 = x_73;
+goto block_68;
+}
+else
+{
+lean_object* x_74; 
+x_74 = lean_unsigned_to_nat(0u);
+x_62 = x_71;
+x_63 = x_74;
+goto block_68;
+}
+}
+block_82:
+{
+lean_object* x_78; uint8_t x_79; 
+x_78 = lean_nat_add(x_76, x_77);
+lean_dec(x_76);
+x_79 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqFidelity(x_7, x_19);
+if (x_79 == 0)
+{
+lean_object* x_80; 
+x_80 = lean_unsigned_to_nat(1u);
+x_69 = x_78;
+x_70 = x_80;
+goto block_75;
+}
+else
+{
+lean_object* x_81; 
+x_81 = lean_unsigned_to_nat(0u);
+x_69 = x_78;
+x_70 = x_81;
+goto block_75;
+}
+}
+block_89:
+{
+lean_object* x_85; uint8_t x_86; 
+x_85 = lean_nat_add(x_83, x_84);
+lean_dec(x_83);
+x_86 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqPolarity(x_6, x_18);
+if (x_86 == 0)
+{
+lean_object* x_87; 
+x_87 = lean_unsigned_to_nat(1u);
+x_76 = x_85;
+x_77 = x_87;
+goto block_82;
+}
+else
+{
+lean_object* x_88; 
+x_88 = lean_unsigned_to_nat(0u);
+x_76 = x_85;
+x_77 = x_88;
+goto block_82;
+}
+}
+block_96:
+{
+lean_object* x_92; uint8_t x_93; 
+x_92 = lean_nat_add(x_90, x_91);
+x_93 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqRelational(x_5, x_17);
+if (x_93 == 0)
+{
+lean_object* x_94; 
+x_94 = lean_unsigned_to_nat(1u);
+x_83 = x_92;
+x_84 = x_94;
+goto block_89;
+}
+else
+{
+lean_object* x_95; 
+x_95 = lean_unsigned_to_nat(0u);
+x_83 = x_92;
+x_84 = x_95;
+goto block_89;
+}
+}
+block_101:
+{
+uint8_t x_98; 
+x_98 = lp_imscribing_x2dlean_Imscribing_Primitives_instDecidableEqTopology(x_4, x_16);
+if (x_98 == 0)
+{
+lean_object* x_99; 
+x_99 = lean_unsigned_to_nat(1u);
+x_90 = x_97;
+x_91 = x_99;
+goto block_96;
+}
+else
+{
+lean_object* x_100; 
+x_100 = lean_unsigned_to_nat(0u);
+x_90 = x_97;
+x_91 = x_100;
+goto block_96;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_primitiveMismatches___boxed(lean_object* x_1, lean_object* x_2) {
+_start:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_primitiveMismatches(x_1, x_2);
+lean_dec_ref(x_2);
+lean_dec_ref(x_1);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_tensorProduct(lean_object* x_1, lean_object* x_2) {
+_start:
+{
+uint8_t x_3; uint8_t x_4; uint8_t x_5; uint8_t x_6; uint8_t x_7; uint8_t x_8; uint8_t x_9; uint8_t x_10; uint8_t x_11; uint8_t x_12; uint8_t x_13; uint8_t x_14; uint8_t x_15; uint8_t x_16; uint8_t x_17; uint8_t x_18; uint8_t x_19; uint8_t x_20; uint8_t x_21; uint8_t x_22; uint8_t x_23; uint8_t x_24; uint8_t x_25; uint8_t x_26; lean_object* x_27; uint8_t x_28; uint8_t x_29; uint8_t x_30; uint8_t x_31; uint8_t x_32; uint8_t x_33; uint8_t x_34; uint8_t x_35; uint8_t x_36; uint8_t x_37; uint8_t x_38; uint8_t x_39; uint8_t x_40; uint8_t x_46; uint8_t x_47; uint8_t x_48; uint8_t x_49; uint8_t x_50; uint8_t x_51; uint8_t x_52; uint8_t x_53; uint8_t x_54; uint8_t x_55; uint8_t x_59; uint8_t x_60; uint8_t x_61; uint8_t x_62; uint8_t x_63; uint8_t x_64; uint8_t x_65; uint8_t x_66; uint8_t x_67; uint8_t x_71; uint8_t x_72; uint8_t x_73; uint8_t x_74; uint8_t x_75; uint8_t x_76; uint8_t x_77; uint8_t x_78; uint8_t x_82; uint8_t x_83; uint8_t x_84; uint8_t x_85; uint8_t x_86; uint8_t x_87; uint8_t x_88; uint8_t x_92; uint8_t x_93; uint8_t x_94; uint8_t x_95; uint8_t x_96; uint8_t x_97; uint8_t x_101; uint8_t x_102; uint8_t x_103; uint8_t x_104; uint8_t x_105; uint8_t x_109; uint8_t x_110; uint8_t x_111; uint8_t x_112; uint8_t x_116; uint8_t x_117; uint8_t x_118; uint8_t x_122; uint8_t x_123; uint8_t x_127; uint8_t x_131; 
+x_3 = lean_ctor_get_uint8(x_1, 0);
+x_4 = lean_ctor_get_uint8(x_1, 1);
+x_5 = lean_ctor_get_uint8(x_1, 2);
+x_6 = lean_ctor_get_uint8(x_1, 3);
+x_7 = lean_ctor_get_uint8(x_1, 4);
+x_8 = lean_ctor_get_uint8(x_1, 5);
+x_9 = lean_ctor_get_uint8(x_1, 6);
+x_10 = lean_ctor_get_uint8(x_1, 7);
+x_11 = lean_ctor_get_uint8(x_1, 8);
+x_12 = lean_ctor_get_uint8(x_1, 9);
+x_13 = lean_ctor_get_uint8(x_1, 10);
+x_14 = lean_ctor_get_uint8(x_1, 11);
+x_15 = lean_ctor_get_uint8(x_2, 0);
+x_16 = lean_ctor_get_uint8(x_2, 1);
+x_17 = lean_ctor_get_uint8(x_2, 2);
+x_18 = lean_ctor_get_uint8(x_2, 3);
+x_19 = lean_ctor_get_uint8(x_2, 4);
+x_20 = lean_ctor_get_uint8(x_2, 5);
+x_21 = lean_ctor_get_uint8(x_2, 6);
+x_22 = lean_ctor_get_uint8(x_2, 7);
+x_23 = lean_ctor_get_uint8(x_2, 8);
+x_24 = lean_ctor_get_uint8(x_2, 9);
+x_25 = lean_ctor_get_uint8(x_2, 10);
+x_26 = lean_ctor_get_uint8(x_2, 11);
+if (lean_is_exclusive(x_2)) {
+ x_27 = x_2;
+} else {
+ lean_dec_ref(x_2);
+ x_27 = lean_box(0);
+}
+x_28 = lp_imscribing_x2dlean_Imscribing_Primitives_instOrdDimensionality_ord(x_3, x_15);
+x_29 = 0;
+x_131 = l_instDecidableEqOrdering(x_28, x_29);
+if (x_131 == 0)
+{
+x_127 = x_3;
+goto block_130;
+}
+else
+{
+x_127 = x_15;
+goto block_130;
+}
+block_45:
+{
+uint8_t x_41; uint8_t x_42; 
+x_41 = lp_imscribing_x2dlean_Imscribing_Primitives_instOrdProtection_ord(x_14, x_26);
+x_42 = l_instDecidableEqOrdering(x_41, x_29);
+if (x_42 == 0)
+{
+lean_object* x_43; 
+if (lean_is_scalar(x_27)) {
+ x_43 = lean_alloc_ctor(0, 0, 12);
+} else {
+ x_43 = x_27;
+}
+lean_ctor_set_uint8(x_43, 0, x_35);
+lean_ctor_set_uint8(x_43, 1, x_31);
+lean_ctor_set_uint8(x_43, 2, x_33);
+lean_ctor_set_uint8(x_43, 3, x_34);
+lean_ctor_set_uint8(x_43, 4, x_30);
+lean_ctor_set_uint8(x_43, 5, x_38);
+lean_ctor_set_uint8(x_43, 6, x_32);
+lean_ctor_set_uint8(x_43, 7, x_39);
+lean_ctor_set_uint8(x_43, 8, x_36);
+lean_ctor_set_uint8(x_43, 9, x_37);
+lean_ctor_set_uint8(x_43, 10, x_40);
+lean_ctor_set_uint8(x_43, 11, x_14);
+return x_43;
+}
+else
+{
+lean_object* x_44; 
+if (lean_is_scalar(x_27)) {
+ x_44 = lean_alloc_ctor(0, 0, 12);
+} else {
+ x_44 = x_27;
+}
+lean_ctor_set_uint8(x_44, 0, x_35);
+lean_ctor_set_uint8(x_44, 1, x_31);
+lean_ctor_set_uint8(x_44, 2, x_33);
+lean_ctor_set_uint8(x_44, 3, x_34);
+lean_ctor_set_uint8(x_44, 4, x_30);
+lean_ctor_set_uint8(x_44, 5, x_38);
+lean_ctor_set_uint8(x_44, 6, x_32);
+lean_ctor_set_uint8(x_44, 7, x_39);
+lean_ctor_set_uint8(x_44, 8, x_36);
+lean_ctor_set_uint8(x_44, 9, x_37);
+lean_ctor_set_uint8(x_44, 10, x_40);
+lean_ctor_set_uint8(x_44, 11, x_26);
+return x_44;
+}
+}
+block_58:
+{
+uint8_t x_56; uint8_t x_57; 
+x_56 = lp_imscribing_x2dlean_Imscribing_Primitives_instOrdStoichiometry_ord(x_13, x_25);
+x_57 = l_instDecidableEqOrdering(x_56, x_29);
+if (x_57 == 0)
+{
+x_30 = x_47;
+x_31 = x_46;
+x_32 = x_48;
+x_33 = x_49;
+x_34 = x_51;
+x_35 = x_50;
+x_36 = x_52;
+x_37 = x_55;
+x_38 = x_53;
+x_39 = x_54;
+x_40 = x_13;
+goto block_45;
+}
+else
+{
+x_30 = x_47;
+x_31 = x_46;
+x_32 = x_48;
+x_33 = x_49;
+x_34 = x_51;
+x_35 = x_50;
+x_36 = x_52;
+x_37 = x_55;
+x_38 = x_53;
+x_39 = x_54;
+x_40 = x_25;
+goto block_45;
+}
+}
+block_70:
+{
+uint8_t x_68; uint8_t x_69; 
+x_68 = lp_imscribing_x2dlean_Imscribing_Primitives_instOrdChirality_ord(x_12, x_24);
+x_69 = l_instDecidableEqOrdering(x_68, x_29);
+if (x_69 == 0)
+{
+x_46 = x_60;
+x_47 = x_59;
+x_48 = x_61;
+x_49 = x_62;
+x_50 = x_64;
+x_51 = x_63;
+x_52 = x_67;
+x_53 = x_65;
+x_54 = x_66;
+x_55 = x_12;
+goto block_58;
+}
+else
+{
+x_46 = x_60;
+x_47 = x_59;
+x_48 = x_61;
+x_49 = x_62;
+x_50 = x_64;
+x_51 = x_63;
+x_52 = x_67;
+x_53 = x_65;
+x_54 = x_66;
+x_55 = x_24;
+goto block_58;
+}
+}
+block_81:
+{
+uint8_t x_79; uint8_t x_80; 
+x_79 = lp_imscribing_x2dlean_Imscribing_Primitives_instOrdCriticality_ord(x_11, x_23);
+x_80 = l_instDecidableEqOrdering(x_79, x_29);
+if (x_80 == 0)
+{
+x_59 = x_72;
+x_60 = x_71;
+x_61 = x_73;
+x_62 = x_74;
+x_63 = x_76;
+x_64 = x_75;
+x_65 = x_77;
+x_66 = x_78;
+x_67 = x_11;
+goto block_70;
+}
+else
+{
+x_59 = x_72;
+x_60 = x_71;
+x_61 = x_73;
+x_62 = x_74;
+x_63 = x_76;
+x_64 = x_75;
+x_65 = x_77;
+x_66 = x_78;
+x_67 = x_23;
+goto block_70;
+}
+}
+block_91:
+{
+uint8_t x_89; uint8_t x_90; 
+x_89 = lp_imscribing_x2dlean_Imscribing_Primitives_instOrdGrammar_ord(x_10, x_22);
+x_90 = l_instDecidableEqOrdering(x_89, x_29);
+if (x_90 == 0)
+{
+x_71 = x_83;
+x_72 = x_82;
+x_73 = x_88;
+x_74 = x_84;
+x_75 = x_86;
+x_76 = x_85;
+x_77 = x_87;
+x_78 = x_10;
+goto block_81;
+}
+else
+{
+x_71 = x_83;
+x_72 = x_82;
+x_73 = x_88;
+x_74 = x_84;
+x_75 = x_86;
+x_76 = x_85;
+x_77 = x_87;
+x_78 = x_22;
+goto block_81;
+}
+}
+block_100:
+{
+uint8_t x_98; uint8_t x_99; 
+x_98 = lp_imscribing_x2dlean_Imscribing_Primitives_instOrdGranularity_ord(x_9, x_21);
+x_99 = l_instDecidableEqOrdering(x_98, x_29);
+if (x_99 == 0)
+{
+x_82 = x_93;
+x_83 = x_92;
+x_84 = x_94;
+x_85 = x_96;
+x_86 = x_95;
+x_87 = x_97;
+x_88 = x_9;
+goto block_91;
+}
+else
+{
+x_82 = x_93;
+x_83 = x_92;
+x_84 = x_94;
+x_85 = x_96;
+x_86 = x_95;
+x_87 = x_97;
+x_88 = x_21;
+goto block_91;
+}
+}
+block_108:
+{
+uint8_t x_106; uint8_t x_107; 
+x_106 = lp_imscribing_x2dlean_Imscribing_Primitives_instOrdKineticChar_ord(x_8, x_20);
+x_107 = l_instDecidableEqOrdering(x_106, x_29);
+if (x_107 == 0)
+{
+x_92 = x_101;
+x_93 = x_105;
+x_94 = x_102;
+x_95 = x_104;
+x_96 = x_103;
+x_97 = x_8;
+goto block_100;
+}
+else
+{
+x_92 = x_101;
+x_93 = x_105;
+x_94 = x_102;
+x_95 = x_104;
+x_96 = x_103;
+x_97 = x_20;
+goto block_100;
+}
+}
+block_115:
+{
+uint8_t x_113; uint8_t x_114; 
+x_113 = lp_imscribing_x2dlean_Imscribing_Primitives_instOrdFidelity_ord(x_7, x_19);
+x_114 = l_instDecidableEqOrdering(x_113, x_29);
+if (x_114 == 0)
+{
+x_101 = x_109;
+x_102 = x_110;
+x_103 = x_112;
+x_104 = x_111;
+x_105 = x_19;
+goto block_108;
+}
+else
+{
+x_101 = x_109;
+x_102 = x_110;
+x_103 = x_112;
+x_104 = x_111;
+x_105 = x_7;
+goto block_108;
+}
+}
+block_121:
+{
+uint8_t x_119; uint8_t x_120; 
+x_119 = lp_imscribing_x2dlean_Imscribing_Primitives_instOrdPolarity_ord(x_6, x_18);
+x_120 = l_instDecidableEqOrdering(x_119, x_29);
+if (x_120 == 0)
+{
+x_109 = x_116;
+x_110 = x_118;
+x_111 = x_117;
+x_112 = x_18;
+goto block_115;
+}
+else
+{
+x_109 = x_116;
+x_110 = x_118;
+x_111 = x_117;
+x_112 = x_6;
+goto block_115;
+}
+}
+block_126:
+{
+uint8_t x_124; uint8_t x_125; 
+x_124 = lp_imscribing_x2dlean_Imscribing_Primitives_instOrdRelational_ord(x_5, x_17);
+x_125 = l_instDecidableEqOrdering(x_124, x_29);
+if (x_125 == 0)
+{
+x_116 = x_123;
+x_117 = x_122;
+x_118 = x_5;
+goto block_121;
+}
+else
+{
+x_116 = x_123;
+x_117 = x_122;
+x_118 = x_17;
+goto block_121;
+}
+}
+block_130:
+{
+uint8_t x_128; uint8_t x_129; 
+x_128 = lp_imscribing_x2dlean_Imscribing_Primitives_instOrdTopology_ord(x_4, x_16);
+x_129 = l_instDecidableEqOrdering(x_128, x_29);
+if (x_129 == 0)
+{
+x_122 = x_127;
+x_123 = x_4;
+goto block_126;
+}
+else
+{
+x_122 = x_127;
+x_123 = x_16;
+goto block_126;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_tensorProduct___boxed(lean_object* x_1, lean_object* x_2) {
+_start:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_tensorProduct(x_1, x_2);
+lean_dec_ref(x_1);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__0() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("Imscribing", 10, 10);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("Primitives", 10, 10);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("term_⊗_", 9, 7);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__3() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__2;
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__1;
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__0;
+x_4 = l_Lean_Name_mkStr3(x_3, x_2, x_1);
+return x_4;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__4() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("andthen", 7, 7);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__5() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__4;
+x_2 = l_Lean_Name_mkStr1(x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__6() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked(" ⊗ ", 5, 3);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__7() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__6;
+x_2 = lean_alloc_ctor(5, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__8() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("term", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__9() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__8;
+x_2 = l_Lean_Name_mkStr1(x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__10() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_unsigned_to_nat(71u);
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__9;
+x_3 = lean_alloc_ctor(7, 2, 0);
+lean_ctor_set(x_3, 0, x_2);
+lean_ctor_set(x_3, 1, x_1);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__11() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__10;
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__7;
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__5;
+x_4 = lean_alloc_ctor(2, 3, 0);
+lean_ctor_set(x_4, 0, x_3);
+lean_ctor_set(x_4, 1, x_2);
+lean_ctor_set(x_4, 2, x_1);
+return x_4;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__12() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__11;
+x_2 = lean_unsigned_to_nat(70u);
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__3;
+x_4 = lean_alloc_ctor(4, 4, 0);
+lean_ctor_set(x_4, 0, x_3);
+lean_ctor_set(x_4, 1, x_2);
+lean_ctor_set(x_4, 2, x_2);
+lean_ctor_set(x_4, 3, x_1);
+return x_4;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297__() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__12;
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__0() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("Lean", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("Parser", 6, 6);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("Term", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__3() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("app", 3, 3);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__4() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; lean_object* x_5; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__3;
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__2;
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__1;
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__0;
+x_5 = l_Lean_Name_mkStr4(x_4, x_3, x_2, x_1);
+return x_5;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__5() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("tensorProduct", 13, 13);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__6() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__5;
+x_2 = l_String_toRawSubstring_x27(x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__7() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__5;
+x_2 = l_Lean_Name_mkStr1(x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__8() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__5;
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__1;
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__0;
+x_4 = l_Lean_Name_mkStr3(x_3, x_2, x_1);
+return x_4;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__9() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__8;
+x_3 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_3, 0, x_2);
+lean_ctor_set(x_3, 1, x_1);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__10() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__9;
+x_3 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_3, 0, x_2);
+lean_ctor_set(x_3, 1, x_1);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__11() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("null", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__12() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__11;
+x_2 = l_Lean_Name_mkStr1(x_1);
+return x_2;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
+_start:
+{
+lean_object* x_4; uint8_t x_5; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__3;
+lean_inc(x_1);
+x_5 = l_Lean_Syntax_isOfKind(x_1, x_4);
+if (x_5 == 0)
+{
+lean_object* x_6; lean_object* x_7; 
+lean_dec_ref(x_2);
+lean_dec(x_1);
+x_6 = lean_box(1);
+x_7 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_7, 0, x_6);
+lean_ctor_set(x_7, 1, x_3);
+return x_7;
+}
+else
+{
+lean_object* x_8; lean_object* x_9; lean_object* x_10; lean_object* x_11; lean_object* x_12; lean_object* x_13; lean_object* x_14; uint8_t x_15; lean_object* x_16; lean_object* x_17; lean_object* x_18; lean_object* x_19; lean_object* x_20; lean_object* x_21; lean_object* x_22; lean_object* x_23; lean_object* x_24; lean_object* x_25; lean_object* x_26; 
+x_8 = lean_ctor_get(x_2, 1);
+lean_inc(x_8);
+x_9 = lean_ctor_get(x_2, 2);
+lean_inc(x_9);
+x_10 = lean_ctor_get(x_2, 5);
+lean_inc(x_10);
+lean_dec_ref(x_2);
+x_11 = lean_unsigned_to_nat(0u);
+x_12 = l_Lean_Syntax_getArg(x_1, x_11);
+x_13 = lean_unsigned_to_nat(2u);
+x_14 = l_Lean_Syntax_getArg(x_1, x_13);
+lean_dec(x_1);
+x_15 = 0;
+x_16 = l_Lean_SourceInfo_fromRef(x_10, x_15);
+lean_dec(x_10);
+x_17 = lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__4;
+x_18 = lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__6;
+x_19 = lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__7;
+x_20 = l_Lean_addMacroScope(x_8, x_19, x_9);
+x_21 = lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__10;
+lean_inc(x_16);
+x_22 = lean_alloc_ctor(3, 4, 0);
+lean_ctor_set(x_22, 0, x_16);
+lean_ctor_set(x_22, 1, x_18);
+lean_ctor_set(x_22, 2, x_20);
+lean_ctor_set(x_22, 3, x_21);
+x_23 = lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__12;
+lean_inc(x_16);
+x_24 = l_Lean_Syntax_node2(x_16, x_23, x_12, x_14);
+x_25 = l_Lean_Syntax_node2(x_16, x_17, x_22, x_24);
+x_26 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_26, 0, x_25);
+lean_ctor_set(x_26, 1, x_3);
+return x_26;
+}
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______unexpand__Imscribing__Primitives__tensorProduct__1___closed__0() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("ident", 5, 5);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______unexpand__Imscribing__Primitives__tensorProduct__1___closed__1() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______unexpand__Imscribing__Primitives__tensorProduct__1___closed__0;
+x_2 = l_Lean_Name_mkStr1(x_1);
+return x_2;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______unexpand__Imscribing__Primitives__tensorProduct__1(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
+_start:
+{
+lean_object* x_4; uint8_t x_5; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__4;
+lean_inc(x_1);
+x_5 = l_Lean_Syntax_isOfKind(x_1, x_4);
+if (x_5 == 0)
+{
+lean_object* x_6; lean_object* x_7; 
+lean_dec(x_1);
+x_6 = lean_box(0);
+x_7 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_7, 0, x_6);
+lean_ctor_set(x_7, 1, x_3);
+return x_7;
+}
+else
+{
+lean_object* x_8; lean_object* x_9; lean_object* x_10; uint8_t x_11; 
+x_8 = lean_unsigned_to_nat(0u);
+x_9 = l_Lean_Syntax_getArg(x_1, x_8);
+x_10 = lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______unexpand__Imscribing__Primitives__tensorProduct__1___closed__1;
+lean_inc(x_9);
+x_11 = l_Lean_Syntax_isOfKind(x_9, x_10);
+if (x_11 == 0)
+{
+lean_object* x_12; lean_object* x_13; 
+lean_dec(x_9);
+lean_dec(x_1);
+x_12 = lean_box(0);
+x_13 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_13, 0, x_12);
+lean_ctor_set(x_13, 1, x_3);
+return x_13;
+}
+else
+{
+lean_object* x_14; lean_object* x_15; lean_object* x_16; uint8_t x_17; 
+x_14 = lean_unsigned_to_nat(1u);
+x_15 = l_Lean_Syntax_getArg(x_1, x_14);
+lean_dec(x_1);
+x_16 = lean_unsigned_to_nat(2u);
+lean_inc(x_15);
+x_17 = l_Lean_Syntax_matchesNull(x_15, x_16);
+if (x_17 == 0)
+{
+lean_object* x_18; lean_object* x_19; 
+lean_dec(x_15);
+lean_dec(x_9);
+x_18 = lean_box(0);
+x_19 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_19, 0, x_18);
+lean_ctor_set(x_19, 1, x_3);
+return x_19;
+}
+else
+{
+lean_object* x_20; lean_object* x_21; lean_object* x_22; uint8_t x_23; lean_object* x_24; lean_object* x_25; lean_object* x_26; lean_object* x_27; lean_object* x_28; lean_object* x_29; 
+x_20 = l_Lean_Syntax_getArg(x_15, x_8);
+x_21 = l_Lean_Syntax_getArg(x_15, x_14);
+lean_dec(x_15);
+x_22 = l_Lean_replaceRef(x_9, x_2);
+lean_dec(x_9);
+x_23 = 0;
+x_24 = l_Lean_SourceInfo_fromRef(x_22, x_23);
+lean_dec(x_22);
+x_25 = lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__3;
+x_26 = lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__6;
+lean_inc(x_24);
+x_27 = lean_alloc_ctor(2, 2, 0);
+lean_ctor_set(x_27, 0, x_24);
+lean_ctor_set(x_27, 1, x_26);
+x_28 = l_Lean_Syntax_node3(x_24, x_25, x_20, x_27, x_21);
+x_29 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_29, 0, x_28);
+lean_ctor_set(x_29, 1, x_3);
+return x_29;
+}
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______unexpand__Imscribing__Primitives__tensorProduct__1___boxed(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
+_start:
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______unexpand__Imscribing__Primitives__tensorProduct__1(x_1, x_2, x_3);
+lean_dec(x_2);
+return x_4;
+}
+}
+LEAN_EXPORT uint8_t lp_imscribing_x2dlean_Imscribing_Primitives_imscriptionTier(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; uint8_t x_3; uint8_t x_4; uint8_t x_5; uint8_t x_6; uint8_t x_7; 
+x_2 = lean_ctor_get_uint8(x_1, 0);
+x_3 = lean_ctor_get_uint8(x_1, 1);
+x_4 = lean_ctor_get_uint8(x_1, 3);
+x_5 = lean_ctor_get_uint8(x_1, 8);
+x_6 = lean_ctor_get_uint8(x_1, 11);
+x_7 = lp_imscribing_x2dlean_Imscribing_Primitives_ouroboricityTier(x_5, x_4, x_6, x_2, x_3);
+return x_7;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_imscriptionTier___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_imscriptionTier(x_1);
+lean_dec_ref(x_1);
+x_3 = lean_box(x_2);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_scalarField__Kslow___closed__0() {
+_start:
+{
+uint8_t x_1; uint8_t x_2; uint8_t x_3; uint8_t x_4; uint8_t x_5; uint8_t x_6; uint8_t x_7; uint8_t x_8; uint8_t x_9; uint8_t x_10; uint8_t x_11; uint8_t x_12; lean_object* x_13; 
+x_1 = 0;
+x_2 = 1;
+x_3 = 1;
+x_4 = 1;
+x_5 = 0;
+x_6 = 0;
+x_7 = 2;
+x_8 = 2;
+x_9 = 4;
+x_10 = 2;
+x_11 = 2;
+x_12 = 1;
+x_13 = lean_alloc_ctor(0, 0, 12);
+lean_ctor_set_uint8(x_13, 0, x_12);
+lean_ctor_set_uint8(x_13, 1, x_11);
+lean_ctor_set_uint8(x_13, 2, x_10);
+lean_ctor_set_uint8(x_13, 3, x_9);
+lean_ctor_set_uint8(x_13, 4, x_8);
+lean_ctor_set_uint8(x_13, 5, x_7);
+lean_ctor_set_uint8(x_13, 6, x_6);
+lean_ctor_set_uint8(x_13, 7, x_5);
+lean_ctor_set_uint8(x_13, 8, x_4);
+lean_ctor_set_uint8(x_13, 9, x_3);
+lean_ctor_set_uint8(x_13, 10, x_2);
+lean_ctor_set_uint8(x_13, 11, x_1);
+return x_13;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_scalarField__Kslow() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_scalarField__Kslow___closed__0;
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_higgs() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_scalarField__Kslow;
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_axion() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_scalarField__Kslow;
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_inflaton() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_scalarField__Kslow;
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_standard__model___closed__0() {
+_start:
+{
+uint8_t x_1; uint8_t x_2; uint8_t x_3; uint8_t x_4; uint8_t x_5; uint8_t x_6; uint8_t x_7; uint8_t x_8; uint8_t x_9; uint8_t x_10; uint8_t x_11; uint8_t x_12; lean_object* x_13; 
+x_1 = 2;
+x_2 = 2;
+x_3 = 2;
+x_4 = 1;
+x_5 = 0;
+x_6 = 2;
+x_7 = 1;
+x_8 = 1;
+x_9 = 2;
+x_10 = 1;
+x_11 = 0;
+x_12 = 2;
+x_13 = lean_alloc_ctor(0, 0, 12);
+lean_ctor_set_uint8(x_13, 0, x_12);
+lean_ctor_set_uint8(x_13, 1, x_11);
+lean_ctor_set_uint8(x_13, 2, x_10);
+lean_ctor_set_uint8(x_13, 3, x_9);
+lean_ctor_set_uint8(x_13, 4, x_8);
+lean_ctor_set_uint8(x_13, 5, x_7);
+lean_ctor_set_uint8(x_13, 6, x_6);
+lean_ctor_set_uint8(x_13, 7, x_5);
+lean_ctor_set_uint8(x_13, 8, x_4);
+lean_ctor_set_uint8(x_13, 9, x_3);
+lean_ctor_set_uint8(x_13, 10, x_2);
+lean_ctor_set_uint8(x_13, 11, x_1);
+return x_13;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_standard__model() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_standard__model___closed__0;
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_quantum__gravity___closed__0() {
+_start:
+{
+uint8_t x_1; uint8_t x_2; uint8_t x_3; uint8_t x_4; uint8_t x_5; uint8_t x_6; uint8_t x_7; uint8_t x_8; uint8_t x_9; uint8_t x_10; uint8_t x_11; uint8_t x_12; lean_object* x_13; 
+x_1 = 3;
+x_2 = 2;
+x_3 = 3;
+x_4 = 1;
+x_5 = 3;
+x_6 = 2;
+x_7 = 3;
+x_8 = 2;
+x_9 = 4;
+x_10 = 2;
+x_11 = 4;
+x_12 = 3;
+x_13 = lean_alloc_ctor(0, 0, 12);
+lean_ctor_set_uint8(x_13, 0, x_12);
+lean_ctor_set_uint8(x_13, 1, x_11);
+lean_ctor_set_uint8(x_13, 2, x_10);
+lean_ctor_set_uint8(x_13, 3, x_9);
+lean_ctor_set_uint8(x_13, 4, x_8);
+lean_ctor_set_uint8(x_13, 5, x_7);
+lean_ctor_set_uint8(x_13, 6, x_6);
+lean_ctor_set_uint8(x_13, 7, x_5);
+lean_ctor_set_uint8(x_13, 8, x_4);
+lean_ctor_set_uint8(x_13, 9, x_3);
+lean_ctor_set_uint8(x_13, 10, x_2);
+lean_ctor_set_uint8(x_13, 11, x_1);
+return x_13;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_quantum__gravity() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_quantum__gravity___closed__0;
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_general__relativity___closed__0() {
+_start:
+{
+uint8_t x_1; uint8_t x_2; uint8_t x_3; uint8_t x_4; uint8_t x_5; uint8_t x_6; uint8_t x_7; uint8_t x_8; uint8_t x_9; uint8_t x_10; uint8_t x_11; uint8_t x_12; lean_object* x_13; 
+x_1 = 0;
+x_2 = 1;
+x_3 = 1;
+x_4 = 0;
+x_5 = 0;
+x_6 = 1;
+x_7 = 2;
+x_8 = 2;
+x_9 = 3;
+x_10 = 2;
+x_11 = 0;
+x_12 = 2;
+x_13 = lean_alloc_ctor(0, 0, 12);
+lean_ctor_set_uint8(x_13, 0, x_12);
+lean_ctor_set_uint8(x_13, 1, x_11);
+lean_ctor_set_uint8(x_13, 2, x_10);
+lean_ctor_set_uint8(x_13, 3, x_9);
+lean_ctor_set_uint8(x_13, 4, x_8);
+lean_ctor_set_uint8(x_13, 5, x_7);
+lean_ctor_set_uint8(x_13, 6, x_6);
+lean_ctor_set_uint8(x_13, 7, x_5);
+lean_ctor_set_uint8(x_13, 8, x_4);
+lean_ctor_set_uint8(x_13, 9, x_3);
+lean_ctor_set_uint8(x_13, 10, x_2);
+lean_ctor_set_uint8(x_13, 11, x_1);
+return x_13;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_general__relativity() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_general__relativity___closed__0;
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__classical___closed__0() {
+_start:
+{
+uint8_t x_1; uint8_t x_2; uint8_t x_3; uint8_t x_4; uint8_t x_5; uint8_t x_6; uint8_t x_7; uint8_t x_8; uint8_t x_9; uint8_t x_10; uint8_t x_11; uint8_t x_12; lean_object* x_13; 
+x_1 = 2;
+x_2 = 1;
+x_3 = 1;
+x_4 = 0;
+x_5 = 0;
+x_6 = 0;
+x_7 = 1;
+x_8 = 1;
+x_9 = 2;
+x_10 = 1;
+x_11 = 0;
+x_12 = 2;
+x_13 = lean_alloc_ctor(0, 0, 12);
+lean_ctor_set_uint8(x_13, 0, x_12);
+lean_ctor_set_uint8(x_13, 1, x_11);
+lean_ctor_set_uint8(x_13, 2, x_10);
+lean_ctor_set_uint8(x_13, 3, x_9);
+lean_ctor_set_uint8(x_13, 4, x_8);
+lean_ctor_set_uint8(x_13, 5, x_7);
+lean_ctor_set_uint8(x_13, 6, x_6);
+lean_ctor_set_uint8(x_13, 7, x_5);
+lean_ctor_set_uint8(x_13, 8, x_4);
+lean_ctor_set_uint8(x_13, 9, x_3);
+lean_ctor_set_uint8(x_13, 10, x_2);
+lean_ctor_set_uint8(x_13, 11, x_1);
+return x_13;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__classical() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__classical___closed__0;
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__quantum__target___closed__0() {
+_start:
+{
+uint8_t x_1; uint8_t x_2; uint8_t x_3; uint8_t x_4; uint8_t x_5; uint8_t x_6; uint8_t x_7; uint8_t x_8; uint8_t x_9; uint8_t x_10; uint8_t x_11; uint8_t x_12; lean_object* x_13; 
+x_1 = 2;
+x_2 = 1;
+x_3 = 1;
+x_4 = 1;
+x_5 = 0;
+x_6 = 2;
+x_7 = 3;
+x_8 = 2;
+x_9 = 2;
+x_10 = 1;
+x_11 = 0;
+x_12 = 2;
+x_13 = lean_alloc_ctor(0, 0, 12);
+lean_ctor_set_uint8(x_13, 0, x_12);
+lean_ctor_set_uint8(x_13, 1, x_11);
+lean_ctor_set_uint8(x_13, 2, x_10);
+lean_ctor_set_uint8(x_13, 3, x_9);
+lean_ctor_set_uint8(x_13, 4, x_8);
+lean_ctor_set_uint8(x_13, 5, x_7);
+lean_ctor_set_uint8(x_13, 6, x_6);
+lean_ctor_set_uint8(x_13, 7, x_5);
+lean_ctor_set_uint8(x_13, 8, x_4);
+lean_ctor_set_uint8(x_13, 9, x_3);
+lean_ctor_set_uint8(x_13, 10, x_2);
+lean_ctor_set_uint8(x_13, 11, x_1);
+return x_13;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__quantum__target() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__quantum__target___closed__0;
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_asymptotic__safety___closed__0() {
+_start:
+{
+uint8_t x_1; uint8_t x_2; uint8_t x_3; uint8_t x_4; uint8_t x_5; uint8_t x_6; uint8_t x_7; uint8_t x_8; uint8_t x_9; uint8_t x_10; uint8_t x_11; uint8_t x_12; lean_object* x_13; 
+x_1 = 0;
+x_2 = 1;
+x_3 = 1;
+x_4 = 1;
+x_5 = 0;
+x_6 = 2;
+x_7 = 1;
+x_8 = 2;
+x_9 = 3;
+x_10 = 2;
+x_11 = 0;
+x_12 = 2;
+x_13 = lean_alloc_ctor(0, 0, 12);
+lean_ctor_set_uint8(x_13, 0, x_12);
+lean_ctor_set_uint8(x_13, 1, x_11);
+lean_ctor_set_uint8(x_13, 2, x_10);
+lean_ctor_set_uint8(x_13, 3, x_9);
+lean_ctor_set_uint8(x_13, 4, x_8);
+lean_ctor_set_uint8(x_13, 5, x_7);
+lean_ctor_set_uint8(x_13, 6, x_6);
+lean_ctor_set_uint8(x_13, 7, x_5);
+lean_ctor_set_uint8(x_13, 8, x_4);
+lean_ctor_set_uint8(x_13, 9, x_3);
+lean_ctor_set_uint8(x_13, 10, x_2);
+lean_ctor_set_uint8(x_13, 11, x_1);
+return x_13;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_asymptotic__safety() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_asymptotic__safety___closed__0;
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__0() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑛", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑨", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑼", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__3() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑦", 4, 1);
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__1;
+return x_3;
+}
+case 2:
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__2;
+return x_4;
+}
+default: 
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__3;
+return x_5;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian(x_2);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__0() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑡", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑰", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑥", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__3() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑶", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__4() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑸", 4, 1);
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__1;
+return x_3;
+}
+case 2:
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__2;
+return x_4;
+}
+case 3:
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__3;
+return x_5;
+}
+default: 
+{
+lean_object* x_6; 
+x_6 = lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__4;
+return x_6;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian(x_2);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__0() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑩", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑑", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑽", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__3() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑾", 4, 1);
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__1;
+return x_3;
+}
+case 2:
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__2;
+return x_4;
+}
+default: 
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__3;
+return x_5;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian(x_2);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__0() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑗", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑿", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑬", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__3() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑯", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__4() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑹", 4, 1);
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__1;
+return x_3;
+}
+case 2:
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__2;
+return x_4;
+}
+case 3:
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__3;
+return x_5;
+}
+default: 
+{
+lean_object* x_6; 
+x_6 = lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__4;
+return x_6;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian(x_2);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__0() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑱", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑞", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑐", 4, 1);
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__1;
+return x_3;
+}
+default: 
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__2;
+return x_4;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian(x_2);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__0() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑘", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑤", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑧", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__3() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑪", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__4() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑺", 4, 1);
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__1;
+return x_3;
+}
+case 2:
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__2;
+return x_4;
+}
+case 3:
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__3;
+return x_5;
+}
+default: 
+{
+lean_object* x_6; 
+x_6 = lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__4;
+return x_6;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian(x_2);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__0() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑚", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑔", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑲", 4, 1);
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__1;
+return x_3;
+}
+default: 
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__2;
+return x_4;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian(x_2);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__0() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑝", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑜", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑠", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__3() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑵", 4, 1);
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__1;
+return x_3;
+}
+case 2:
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__2;
+return x_4;
+}
+default: 
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__3;
+return x_5;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian(x_2);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__0() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑢", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("⊙", 3, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑮", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__3() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑻", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__4() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑣", 4, 1);
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__1;
+return x_3;
+}
+case 2:
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__2;
+return x_4;
+}
+case 3:
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__3;
+return x_5;
+}
+default: 
+{
+lean_object* x_6; 
+x_6 = lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__4;
+return x_6;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian(x_2);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__0() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑓", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑒", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑖", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__3() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑫", 4, 1);
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__1;
+return x_3;
+}
+case 2:
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__2;
+return x_4;
+}
+default: 
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__3;
+return x_5;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian(x_2);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__0() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑙", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑕", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑳", 4, 1);
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__1;
+return x_3;
+}
+default: 
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__2;
+return x_4;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian(x_2);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__0() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑷", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑴", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑭", 4, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__3() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("𐑟", 4, 1);
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__1;
+return x_3;
+}
+case 2:
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__2;
+return x_4;
+}
+default: 
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__3;
+return x_5;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian(x_2);
+return x_3;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__0() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("⟨", 3, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("·", 2, 1);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("⟩", 3, 1);
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; uint8_t x_3; uint8_t x_4; uint8_t x_5; uint8_t x_6; uint8_t x_7; uint8_t x_8; uint8_t x_9; uint8_t x_10; uint8_t x_11; uint8_t x_12; uint8_t x_13; lean_object* x_14; lean_object* x_15; lean_object* x_16; lean_object* x_17; lean_object* x_18; lean_object* x_19; lean_object* x_20; lean_object* x_21; lean_object* x_22; lean_object* x_23; lean_object* x_24; lean_object* x_25; lean_object* x_26; lean_object* x_27; lean_object* x_28; lean_object* x_29; lean_object* x_30; lean_object* x_31; lean_object* x_32; lean_object* x_33; lean_object* x_34; lean_object* x_35; lean_object* x_36; lean_object* x_37; lean_object* x_38; lean_object* x_39; lean_object* x_40; lean_object* x_41; lean_object* x_42; lean_object* x_43; lean_object* x_44; lean_object* x_45; lean_object* x_46; lean_object* x_47; lean_object* x_48; lean_object* x_49; lean_object* x_50; lean_object* x_51; lean_object* x_52; 
+x_2 = lean_ctor_get_uint8(x_1, 0);
+x_3 = lean_ctor_get_uint8(x_1, 1);
+x_4 = lean_ctor_get_uint8(x_1, 2);
+x_5 = lean_ctor_get_uint8(x_1, 3);
+x_6 = lean_ctor_get_uint8(x_1, 4);
+x_7 = lean_ctor_get_uint8(x_1, 5);
+x_8 = lean_ctor_get_uint8(x_1, 6);
+x_9 = lean_ctor_get_uint8(x_1, 7);
+x_10 = lean_ctor_get_uint8(x_1, 8);
+x_11 = lean_ctor_get_uint8(x_1, 9);
+x_12 = lean_ctor_get_uint8(x_1, 10);
+x_13 = lean_ctor_get_uint8(x_1, 11);
+x_14 = lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__0;
+x_15 = lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian(x_2);
+x_16 = lean_string_append(x_14, x_15);
+lean_dec_ref(x_15);
+x_17 = lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__1;
+x_18 = lean_string_append(x_16, x_17);
+x_19 = lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian(x_3);
+x_20 = lean_string_append(x_18, x_19);
+lean_dec_ref(x_19);
+x_21 = lean_string_append(x_20, x_17);
+x_22 = lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian(x_4);
+x_23 = lean_string_append(x_21, x_22);
+lean_dec_ref(x_22);
+x_24 = lean_string_append(x_23, x_17);
+x_25 = lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian(x_5);
+x_26 = lean_string_append(x_24, x_25);
+lean_dec_ref(x_25);
+x_27 = lean_string_append(x_26, x_17);
+x_28 = lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian(x_6);
+x_29 = lean_string_append(x_27, x_28);
+lean_dec_ref(x_28);
+x_30 = lean_string_append(x_29, x_17);
+x_31 = lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian(x_7);
+x_32 = lean_string_append(x_30, x_31);
+lean_dec_ref(x_31);
+x_33 = lean_string_append(x_32, x_17);
+x_34 = lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian(x_8);
+x_35 = lean_string_append(x_33, x_34);
+lean_dec_ref(x_34);
+x_36 = lean_string_append(x_35, x_17);
+x_37 = lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian(x_9);
+x_38 = lean_string_append(x_36, x_37);
+lean_dec_ref(x_37);
+x_39 = lean_string_append(x_38, x_17);
+x_40 = lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian(x_10);
+x_41 = lean_string_append(x_39, x_40);
+lean_dec_ref(x_40);
+x_42 = lean_string_append(x_41, x_17);
+x_43 = lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian(x_11);
+x_44 = lean_string_append(x_42, x_43);
+lean_dec_ref(x_43);
+x_45 = lean_string_append(x_44, x_17);
+x_46 = lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian(x_12);
+x_47 = lean_string_append(x_45, x_46);
+lean_dec_ref(x_46);
+x_48 = lean_string_append(x_47, x_17);
+x_49 = lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian(x_13);
+x_50 = lean_string_append(x_48, x_49);
+lean_dec_ref(x_49);
+x_51 = lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__2;
+x_52 = lean_string_append(x_50, x_51);
+return x_52;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___boxed(lean_object* x_1) {
+_start:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian(x_1);
+lean_dec_ref(x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_stone__shavian___closed__0() {
+_start:
+{
+uint8_t x_1; uint8_t x_2; uint8_t x_3; uint8_t x_4; uint8_t x_5; uint8_t x_6; uint8_t x_7; uint8_t x_8; uint8_t x_9; uint8_t x_10; uint8_t x_11; uint8_t x_12; lean_object* x_13; 
+x_1 = 2;
+x_2 = 2;
+x_3 = 3;
+x_4 = 1;
+x_5 = 2;
+x_6 = 2;
+x_7 = 2;
+x_8 = 2;
+x_9 = 4;
+x_10 = 3;
+x_11 = 4;
+x_12 = 3;
+x_13 = lean_alloc_ctor(0, 0, 12);
+lean_ctor_set_uint8(x_13, 0, x_12);
+lean_ctor_set_uint8(x_13, 1, x_11);
+lean_ctor_set_uint8(x_13, 2, x_10);
+lean_ctor_set_uint8(x_13, 3, x_9);
+lean_ctor_set_uint8(x_13, 4, x_8);
+lean_ctor_set_uint8(x_13, 5, x_7);
+lean_ctor_set_uint8(x_13, 6, x_6);
+lean_ctor_set_uint8(x_13, 7, x_5);
+lean_ctor_set_uint8(x_13, 8, x_4);
+lean_ctor_set_uint8(x_13, 9, x_3);
+lean_ctor_set_uint8(x_13, 10, x_2);
+lean_ctor_set_uint8(x_13, 11, x_1);
+return x_13;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_stone__shavian___closed__1() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_stone__shavian___closed__0;
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian(x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_stone__shavian() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_stone__shavian___closed__1;
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
+_start:
+{
+lean_object* x_4; uint8_t x_5; 
+lean_inc(x_3);
+lean_inc(x_2);
+x_4 = lean_apply_2(x_1, x_2, x_3);
+x_5 = lean_unbox(x_4);
+if (x_5 == 2)
+{
+lean_dec(x_2);
+return x_3;
+}
+else
+{
+lean_dec(x_3);
+return x_2;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4) {
+_start:
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_2, x_3, x_4);
+return x_5;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
+_start:
+{
+lean_object* x_4; uint8_t x_5; 
+lean_inc(x_3);
+lean_inc(x_2);
+x_4 = lean_apply_2(x_1, x_2, x_3);
+x_5 = lean_unbox(x_4);
+if (x_5 == 0)
+{
+lean_dec(x_2);
+return x_3;
+}
+else
+{
+lean_dec(x_3);
+return x_2;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4) {
+_start:
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_2, x_3, x_4);
+return x_5;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_tensorPrimitive___redArg(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
+_start:
+{
+lean_object* x_4; uint8_t x_5; uint8_t x_6; uint8_t x_7; 
+lean_inc(x_3);
+lean_inc(x_2);
+x_4 = lean_apply_2(x_1, x_2, x_3);
+x_5 = 0;
+x_6 = lean_unbox(x_4);
+x_7 = l_instDecidableEqOrdering(x_6, x_5);
+if (x_7 == 0)
+{
+lean_dec(x_3);
+return x_2;
+}
+else
+{
+lean_dec(x_2);
+return x_3;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_tensorPrimitive(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4) {
+_start:
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_tensorPrimitive___redArg(x_2, x_3, x_4);
+return x_5;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___lam__0(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4, lean_object* x_5, lean_object* x_6, lean_object* x_7, lean_object* x_8, lean_object* x_9, lean_object* x_10, lean_object* x_11, lean_object* x_12, lean_object* x_13, lean_object* x_14) {
+_start:
+{
+uint8_t x_15; 
+x_15 = !lean_is_exclusive(x_14);
+if (x_15 == 0)
+{
+uint8_t x_16; uint8_t x_17; uint8_t x_18; uint8_t x_19; uint8_t x_20; uint8_t x_21; uint8_t x_22; uint8_t x_23; uint8_t x_24; uint8_t x_25; uint8_t x_26; uint8_t x_27; uint8_t x_28; uint8_t x_29; uint8_t x_30; uint8_t x_31; uint8_t x_32; uint8_t x_33; uint8_t x_34; uint8_t x_35; uint8_t x_36; uint8_t x_37; uint8_t x_38; uint8_t x_39; lean_object* x_40; lean_object* x_41; lean_object* x_42; lean_object* x_43; lean_object* x_44; lean_object* x_45; lean_object* x_46; lean_object* x_47; lean_object* x_48; lean_object* x_49; lean_object* x_50; lean_object* x_51; lean_object* x_52; lean_object* x_53; lean_object* x_54; lean_object* x_55; lean_object* x_56; lean_object* x_57; lean_object* x_58; lean_object* x_59; lean_object* x_60; lean_object* x_61; lean_object* x_62; lean_object* x_63; lean_object* x_64; lean_object* x_65; lean_object* x_66; lean_object* x_67; lean_object* x_68; lean_object* x_69; lean_object* x_70; lean_object* x_71; lean_object* x_72; lean_object* x_73; lean_object* x_74; lean_object* x_75; uint8_t x_76; uint8_t x_77; uint8_t x_78; uint8_t x_79; uint8_t x_80; uint8_t x_81; uint8_t x_82; uint8_t x_83; uint8_t x_84; uint8_t x_85; uint8_t x_86; uint8_t x_87; 
+x_16 = lean_ctor_get_uint8(x_13, 0);
+x_17 = lean_ctor_get_uint8(x_13, 1);
+x_18 = lean_ctor_get_uint8(x_13, 2);
+x_19 = lean_ctor_get_uint8(x_13, 3);
+x_20 = lean_ctor_get_uint8(x_13, 4);
+x_21 = lean_ctor_get_uint8(x_13, 5);
+x_22 = lean_ctor_get_uint8(x_13, 6);
+x_23 = lean_ctor_get_uint8(x_13, 7);
+x_24 = lean_ctor_get_uint8(x_13, 8);
+x_25 = lean_ctor_get_uint8(x_13, 9);
+x_26 = lean_ctor_get_uint8(x_13, 10);
+x_27 = lean_ctor_get_uint8(x_13, 11);
+x_28 = lean_ctor_get_uint8(x_14, 0);
+x_29 = lean_ctor_get_uint8(x_14, 1);
+x_30 = lean_ctor_get_uint8(x_14, 2);
+x_31 = lean_ctor_get_uint8(x_14, 3);
+x_32 = lean_ctor_get_uint8(x_14, 4);
+x_33 = lean_ctor_get_uint8(x_14, 5);
+x_34 = lean_ctor_get_uint8(x_14, 6);
+x_35 = lean_ctor_get_uint8(x_14, 7);
+x_36 = lean_ctor_get_uint8(x_14, 8);
+x_37 = lean_ctor_get_uint8(x_14, 9);
+x_38 = lean_ctor_get_uint8(x_14, 10);
+x_39 = lean_ctor_get_uint8(x_14, 11);
+x_40 = lean_box(x_16);
+x_41 = lean_box(x_28);
+x_42 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_1, x_40, x_41);
+x_43 = lean_box(x_17);
+x_44 = lean_box(x_29);
+x_45 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_2, x_43, x_44);
+x_46 = lean_box(x_18);
+x_47 = lean_box(x_30);
+x_48 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_3, x_46, x_47);
+x_49 = lean_box(x_19);
+x_50 = lean_box(x_31);
+x_51 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_4, x_49, x_50);
+x_52 = lean_box(x_20);
+x_53 = lean_box(x_32);
+x_54 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_5, x_52, x_53);
+x_55 = lean_box(x_21);
+x_56 = lean_box(x_33);
+x_57 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_6, x_55, x_56);
+x_58 = lean_box(x_22);
+x_59 = lean_box(x_34);
+x_60 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_7, x_58, x_59);
+x_61 = lean_box(x_23);
+x_62 = lean_box(x_35);
+x_63 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_8, x_61, x_62);
+x_64 = lean_box(x_24);
+x_65 = lean_box(x_36);
+x_66 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_9, x_64, x_65);
+x_67 = lean_box(x_25);
+x_68 = lean_box(x_37);
+x_69 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_10, x_67, x_68);
+x_70 = lean_box(x_26);
+x_71 = lean_box(x_38);
+x_72 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_11, x_70, x_71);
+x_73 = lean_box(x_27);
+x_74 = lean_box(x_39);
+x_75 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_12, x_73, x_74);
+x_76 = lean_unbox(x_42);
+lean_dec(x_42);
+lean_ctor_set_uint8(x_14, 0, x_76);
+x_77 = lean_unbox(x_45);
+lean_dec(x_45);
+lean_ctor_set_uint8(x_14, 1, x_77);
+x_78 = lean_unbox(x_48);
+lean_dec(x_48);
+lean_ctor_set_uint8(x_14, 2, x_78);
+x_79 = lean_unbox(x_51);
+lean_dec(x_51);
+lean_ctor_set_uint8(x_14, 3, x_79);
+x_80 = lean_unbox(x_54);
+lean_dec(x_54);
+lean_ctor_set_uint8(x_14, 4, x_80);
+x_81 = lean_unbox(x_57);
+lean_dec(x_57);
+lean_ctor_set_uint8(x_14, 5, x_81);
+x_82 = lean_unbox(x_60);
+lean_dec(x_60);
+lean_ctor_set_uint8(x_14, 6, x_82);
+x_83 = lean_unbox(x_63);
+lean_dec(x_63);
+lean_ctor_set_uint8(x_14, 7, x_83);
+x_84 = lean_unbox(x_66);
+lean_dec(x_66);
+lean_ctor_set_uint8(x_14, 8, x_84);
+x_85 = lean_unbox(x_69);
+lean_dec(x_69);
+lean_ctor_set_uint8(x_14, 9, x_85);
+x_86 = lean_unbox(x_72);
+lean_dec(x_72);
+lean_ctor_set_uint8(x_14, 10, x_86);
+x_87 = lean_unbox(x_75);
+lean_dec(x_75);
+lean_ctor_set_uint8(x_14, 11, x_87);
+return x_14;
+}
+else
+{
+uint8_t x_88; uint8_t x_89; uint8_t x_90; uint8_t x_91; uint8_t x_92; uint8_t x_93; uint8_t x_94; uint8_t x_95; uint8_t x_96; uint8_t x_97; uint8_t x_98; uint8_t x_99; uint8_t x_100; uint8_t x_101; uint8_t x_102; uint8_t x_103; uint8_t x_104; uint8_t x_105; uint8_t x_106; uint8_t x_107; uint8_t x_108; uint8_t x_109; uint8_t x_110; uint8_t x_111; lean_object* x_112; lean_object* x_113; lean_object* x_114; lean_object* x_115; lean_object* x_116; lean_object* x_117; lean_object* x_118; lean_object* x_119; lean_object* x_120; lean_object* x_121; lean_object* x_122; lean_object* x_123; lean_object* x_124; lean_object* x_125; lean_object* x_126; lean_object* x_127; lean_object* x_128; lean_object* x_129; lean_object* x_130; lean_object* x_131; lean_object* x_132; lean_object* x_133; lean_object* x_134; lean_object* x_135; lean_object* x_136; lean_object* x_137; lean_object* x_138; lean_object* x_139; lean_object* x_140; lean_object* x_141; lean_object* x_142; lean_object* x_143; lean_object* x_144; lean_object* x_145; lean_object* x_146; lean_object* x_147; lean_object* x_148; uint8_t x_149; uint8_t x_150; uint8_t x_151; uint8_t x_152; uint8_t x_153; uint8_t x_154; uint8_t x_155; uint8_t x_156; uint8_t x_157; uint8_t x_158; uint8_t x_159; uint8_t x_160; 
+x_88 = lean_ctor_get_uint8(x_13, 0);
+x_89 = lean_ctor_get_uint8(x_13, 1);
+x_90 = lean_ctor_get_uint8(x_13, 2);
+x_91 = lean_ctor_get_uint8(x_13, 3);
+x_92 = lean_ctor_get_uint8(x_13, 4);
+x_93 = lean_ctor_get_uint8(x_13, 5);
+x_94 = lean_ctor_get_uint8(x_13, 6);
+x_95 = lean_ctor_get_uint8(x_13, 7);
+x_96 = lean_ctor_get_uint8(x_13, 8);
+x_97 = lean_ctor_get_uint8(x_13, 9);
+x_98 = lean_ctor_get_uint8(x_13, 10);
+x_99 = lean_ctor_get_uint8(x_13, 11);
+x_100 = lean_ctor_get_uint8(x_14, 0);
+x_101 = lean_ctor_get_uint8(x_14, 1);
+x_102 = lean_ctor_get_uint8(x_14, 2);
+x_103 = lean_ctor_get_uint8(x_14, 3);
+x_104 = lean_ctor_get_uint8(x_14, 4);
+x_105 = lean_ctor_get_uint8(x_14, 5);
+x_106 = lean_ctor_get_uint8(x_14, 6);
+x_107 = lean_ctor_get_uint8(x_14, 7);
+x_108 = lean_ctor_get_uint8(x_14, 8);
+x_109 = lean_ctor_get_uint8(x_14, 9);
+x_110 = lean_ctor_get_uint8(x_14, 10);
+x_111 = lean_ctor_get_uint8(x_14, 11);
+lean_dec(x_14);
+x_112 = lean_box(x_88);
+x_113 = lean_box(x_100);
+x_114 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_1, x_112, x_113);
+x_115 = lean_box(x_89);
+x_116 = lean_box(x_101);
+x_117 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_2, x_115, x_116);
+x_118 = lean_box(x_90);
+x_119 = lean_box(x_102);
+x_120 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_3, x_118, x_119);
+x_121 = lean_box(x_91);
+x_122 = lean_box(x_103);
+x_123 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_4, x_121, x_122);
+x_124 = lean_box(x_92);
+x_125 = lean_box(x_104);
+x_126 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_5, x_124, x_125);
+x_127 = lean_box(x_93);
+x_128 = lean_box(x_105);
+x_129 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_6, x_127, x_128);
+x_130 = lean_box(x_94);
+x_131 = lean_box(x_106);
+x_132 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_7, x_130, x_131);
+x_133 = lean_box(x_95);
+x_134 = lean_box(x_107);
+x_135 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_8, x_133, x_134);
+x_136 = lean_box(x_96);
+x_137 = lean_box(x_108);
+x_138 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_9, x_136, x_137);
+x_139 = lean_box(x_97);
+x_140 = lean_box(x_109);
+x_141 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_10, x_139, x_140);
+x_142 = lean_box(x_98);
+x_143 = lean_box(x_110);
+x_144 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_11, x_142, x_143);
+x_145 = lean_box(x_99);
+x_146 = lean_box(x_111);
+x_147 = lp_imscribing_x2dlean_Imscribing_Primitives_meetPrimitive___redArg(x_12, x_145, x_146);
+x_148 = lean_alloc_ctor(0, 0, 12);
+x_149 = lean_unbox(x_114);
+lean_dec(x_114);
+lean_ctor_set_uint8(x_148, 0, x_149);
+x_150 = lean_unbox(x_117);
+lean_dec(x_117);
+lean_ctor_set_uint8(x_148, 1, x_150);
+x_151 = lean_unbox(x_120);
+lean_dec(x_120);
+lean_ctor_set_uint8(x_148, 2, x_151);
+x_152 = lean_unbox(x_123);
+lean_dec(x_123);
+lean_ctor_set_uint8(x_148, 3, x_152);
+x_153 = lean_unbox(x_126);
+lean_dec(x_126);
+lean_ctor_set_uint8(x_148, 4, x_153);
+x_154 = lean_unbox(x_129);
+lean_dec(x_129);
+lean_ctor_set_uint8(x_148, 5, x_154);
+x_155 = lean_unbox(x_132);
+lean_dec(x_132);
+lean_ctor_set_uint8(x_148, 6, x_155);
+x_156 = lean_unbox(x_135);
+lean_dec(x_135);
+lean_ctor_set_uint8(x_148, 7, x_156);
+x_157 = lean_unbox(x_138);
+lean_dec(x_138);
+lean_ctor_set_uint8(x_148, 8, x_157);
+x_158 = lean_unbox(x_141);
+lean_dec(x_141);
+lean_ctor_set_uint8(x_148, 9, x_158);
+x_159 = lean_unbox(x_144);
+lean_dec(x_144);
+lean_ctor_set_uint8(x_148, 10, x_159);
+x_160 = lean_unbox(x_147);
+lean_dec(x_147);
+lean_ctor_set_uint8(x_148, 11, x_160);
+return x_148;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___lam__0___boxed(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4, lean_object* x_5, lean_object* x_6, lean_object* x_7, lean_object* x_8, lean_object* x_9, lean_object* x_10, lean_object* x_11, lean_object* x_12, lean_object* x_13, lean_object* x_14) {
+_start:
+{
+lean_object* x_15; 
+x_15 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___lam__0(x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8, x_9, x_10, x_11, x_12, x_13, x_14);
+lean_dec_ref(x_13);
+return x_15;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__0() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(lp_imscribing_x2dlean_Imscribing_Primitives_instOrdDimensionality_ord___boxed), 2, 0);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(lp_imscribing_x2dlean_Imscribing_Primitives_instOrdTopology_ord___boxed), 2, 0);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(lp_imscribing_x2dlean_Imscribing_Primitives_instOrdRelational_ord___boxed), 2, 0);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__3() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(lp_imscribing_x2dlean_Imscribing_Primitives_instOrdPolarity_ord___boxed), 2, 0);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__4() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(lp_imscribing_x2dlean_Imscribing_Primitives_instOrdFidelity_ord___boxed), 2, 0);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__5() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(lp_imscribing_x2dlean_Imscribing_Primitives_instOrdKineticChar_ord___boxed), 2, 0);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__6() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(lp_imscribing_x2dlean_Imscribing_Primitives_instOrdGranularity_ord___boxed), 2, 0);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__7() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(lp_imscribing_x2dlean_Imscribing_Primitives_instOrdGrammar_ord___boxed), 2, 0);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__8() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(lp_imscribing_x2dlean_Imscribing_Primitives_instOrdCriticality_ord___boxed), 2, 0);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__9() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(lp_imscribing_x2dlean_Imscribing_Primitives_instOrdChirality_ord___boxed), 2, 0);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__10() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(lp_imscribing_x2dlean_Imscribing_Primitives_instOrdStoichiometry_ord___boxed), 2, 0);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__11() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(lp_imscribing_x2dlean_Imscribing_Primitives_instOrdProtection_ord___boxed), 2, 0);
+return x_1;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__12() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; lean_object* x_5; lean_object* x_6; lean_object* x_7; lean_object* x_8; lean_object* x_9; lean_object* x_10; lean_object* x_11; lean_object* x_12; lean_object* x_13; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__11;
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__10;
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__9;
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__8;
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__7;
+x_6 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__6;
+x_7 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__5;
+x_8 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__4;
+x_9 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__3;
+x_10 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__2;
+x_11 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__1;
+x_12 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__0;
+x_13 = lean_alloc_closure((void*)(lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___lam__0___boxed), 14, 12);
+lean_closure_set(x_13, 0, x_12);
+lean_closure_set(x_13, 1, x_11);
+lean_closure_set(x_13, 2, x_10);
+lean_closure_set(x_13, 3, x_9);
+lean_closure_set(x_13, 4, x_8);
+lean_closure_set(x_13, 5, x_7);
+lean_closure_set(x_13, 6, x_6);
+lean_closure_set(x_13, 7, x_5);
+lean_closure_set(x_13, 8, x_4);
+lean_closure_set(x_13, 9, x_3);
+lean_closure_set(x_13, 10, x_2);
+lean_closure_set(x_13, 11, x_1);
+return x_13;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__12;
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMaxImscription___lam__0(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4, lean_object* x_5, lean_object* x_6, lean_object* x_7, lean_object* x_8, lean_object* x_9, lean_object* x_10, lean_object* x_11, lean_object* x_12, lean_object* x_13, lean_object* x_14) {
+_start:
+{
+uint8_t x_15; 
+x_15 = !lean_is_exclusive(x_14);
+if (x_15 == 0)
+{
+uint8_t x_16; uint8_t x_17; uint8_t x_18; uint8_t x_19; uint8_t x_20; uint8_t x_21; uint8_t x_22; uint8_t x_23; uint8_t x_24; uint8_t x_25; uint8_t x_26; uint8_t x_27; uint8_t x_28; uint8_t x_29; uint8_t x_30; uint8_t x_31; uint8_t x_32; uint8_t x_33; uint8_t x_34; uint8_t x_35; uint8_t x_36; uint8_t x_37; uint8_t x_38; uint8_t x_39; lean_object* x_40; lean_object* x_41; lean_object* x_42; lean_object* x_43; lean_object* x_44; lean_object* x_45; lean_object* x_46; lean_object* x_47; lean_object* x_48; lean_object* x_49; lean_object* x_50; lean_object* x_51; lean_object* x_52; lean_object* x_53; lean_object* x_54; lean_object* x_55; lean_object* x_56; lean_object* x_57; lean_object* x_58; lean_object* x_59; lean_object* x_60; lean_object* x_61; lean_object* x_62; lean_object* x_63; lean_object* x_64; lean_object* x_65; lean_object* x_66; lean_object* x_67; lean_object* x_68; lean_object* x_69; lean_object* x_70; lean_object* x_71; lean_object* x_72; lean_object* x_73; lean_object* x_74; lean_object* x_75; uint8_t x_76; uint8_t x_77; uint8_t x_78; uint8_t x_79; uint8_t x_80; uint8_t x_81; uint8_t x_82; uint8_t x_83; uint8_t x_84; uint8_t x_85; uint8_t x_86; uint8_t x_87; 
+x_16 = lean_ctor_get_uint8(x_13, 0);
+x_17 = lean_ctor_get_uint8(x_13, 1);
+x_18 = lean_ctor_get_uint8(x_13, 2);
+x_19 = lean_ctor_get_uint8(x_13, 3);
+x_20 = lean_ctor_get_uint8(x_13, 4);
+x_21 = lean_ctor_get_uint8(x_13, 5);
+x_22 = lean_ctor_get_uint8(x_13, 6);
+x_23 = lean_ctor_get_uint8(x_13, 7);
+x_24 = lean_ctor_get_uint8(x_13, 8);
+x_25 = lean_ctor_get_uint8(x_13, 9);
+x_26 = lean_ctor_get_uint8(x_13, 10);
+x_27 = lean_ctor_get_uint8(x_13, 11);
+x_28 = lean_ctor_get_uint8(x_14, 0);
+x_29 = lean_ctor_get_uint8(x_14, 1);
+x_30 = lean_ctor_get_uint8(x_14, 2);
+x_31 = lean_ctor_get_uint8(x_14, 3);
+x_32 = lean_ctor_get_uint8(x_14, 4);
+x_33 = lean_ctor_get_uint8(x_14, 5);
+x_34 = lean_ctor_get_uint8(x_14, 6);
+x_35 = lean_ctor_get_uint8(x_14, 7);
+x_36 = lean_ctor_get_uint8(x_14, 8);
+x_37 = lean_ctor_get_uint8(x_14, 9);
+x_38 = lean_ctor_get_uint8(x_14, 10);
+x_39 = lean_ctor_get_uint8(x_14, 11);
+x_40 = lean_box(x_16);
+x_41 = lean_box(x_28);
+x_42 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_1, x_40, x_41);
+x_43 = lean_box(x_17);
+x_44 = lean_box(x_29);
+x_45 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_2, x_43, x_44);
+x_46 = lean_box(x_18);
+x_47 = lean_box(x_30);
+x_48 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_3, x_46, x_47);
+x_49 = lean_box(x_19);
+x_50 = lean_box(x_31);
+x_51 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_4, x_49, x_50);
+x_52 = lean_box(x_20);
+x_53 = lean_box(x_32);
+x_54 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_5, x_52, x_53);
+x_55 = lean_box(x_21);
+x_56 = lean_box(x_33);
+x_57 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_6, x_55, x_56);
+x_58 = lean_box(x_22);
+x_59 = lean_box(x_34);
+x_60 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_7, x_58, x_59);
+x_61 = lean_box(x_23);
+x_62 = lean_box(x_35);
+x_63 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_8, x_61, x_62);
+x_64 = lean_box(x_24);
+x_65 = lean_box(x_36);
+x_66 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_9, x_64, x_65);
+x_67 = lean_box(x_25);
+x_68 = lean_box(x_37);
+x_69 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_10, x_67, x_68);
+x_70 = lean_box(x_26);
+x_71 = lean_box(x_38);
+x_72 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_11, x_70, x_71);
+x_73 = lean_box(x_27);
+x_74 = lean_box(x_39);
+x_75 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_12, x_73, x_74);
+x_76 = lean_unbox(x_42);
+lean_dec(x_42);
+lean_ctor_set_uint8(x_14, 0, x_76);
+x_77 = lean_unbox(x_45);
+lean_dec(x_45);
+lean_ctor_set_uint8(x_14, 1, x_77);
+x_78 = lean_unbox(x_48);
+lean_dec(x_48);
+lean_ctor_set_uint8(x_14, 2, x_78);
+x_79 = lean_unbox(x_51);
+lean_dec(x_51);
+lean_ctor_set_uint8(x_14, 3, x_79);
+x_80 = lean_unbox(x_54);
+lean_dec(x_54);
+lean_ctor_set_uint8(x_14, 4, x_80);
+x_81 = lean_unbox(x_57);
+lean_dec(x_57);
+lean_ctor_set_uint8(x_14, 5, x_81);
+x_82 = lean_unbox(x_60);
+lean_dec(x_60);
+lean_ctor_set_uint8(x_14, 6, x_82);
+x_83 = lean_unbox(x_63);
+lean_dec(x_63);
+lean_ctor_set_uint8(x_14, 7, x_83);
+x_84 = lean_unbox(x_66);
+lean_dec(x_66);
+lean_ctor_set_uint8(x_14, 8, x_84);
+x_85 = lean_unbox(x_69);
+lean_dec(x_69);
+lean_ctor_set_uint8(x_14, 9, x_85);
+x_86 = lean_unbox(x_72);
+lean_dec(x_72);
+lean_ctor_set_uint8(x_14, 10, x_86);
+x_87 = lean_unbox(x_75);
+lean_dec(x_75);
+lean_ctor_set_uint8(x_14, 11, x_87);
+return x_14;
+}
+else
+{
+uint8_t x_88; uint8_t x_89; uint8_t x_90; uint8_t x_91; uint8_t x_92; uint8_t x_93; uint8_t x_94; uint8_t x_95; uint8_t x_96; uint8_t x_97; uint8_t x_98; uint8_t x_99; uint8_t x_100; uint8_t x_101; uint8_t x_102; uint8_t x_103; uint8_t x_104; uint8_t x_105; uint8_t x_106; uint8_t x_107; uint8_t x_108; uint8_t x_109; uint8_t x_110; uint8_t x_111; lean_object* x_112; lean_object* x_113; lean_object* x_114; lean_object* x_115; lean_object* x_116; lean_object* x_117; lean_object* x_118; lean_object* x_119; lean_object* x_120; lean_object* x_121; lean_object* x_122; lean_object* x_123; lean_object* x_124; lean_object* x_125; lean_object* x_126; lean_object* x_127; lean_object* x_128; lean_object* x_129; lean_object* x_130; lean_object* x_131; lean_object* x_132; lean_object* x_133; lean_object* x_134; lean_object* x_135; lean_object* x_136; lean_object* x_137; lean_object* x_138; lean_object* x_139; lean_object* x_140; lean_object* x_141; lean_object* x_142; lean_object* x_143; lean_object* x_144; lean_object* x_145; lean_object* x_146; lean_object* x_147; lean_object* x_148; uint8_t x_149; uint8_t x_150; uint8_t x_151; uint8_t x_152; uint8_t x_153; uint8_t x_154; uint8_t x_155; uint8_t x_156; uint8_t x_157; uint8_t x_158; uint8_t x_159; uint8_t x_160; 
+x_88 = lean_ctor_get_uint8(x_13, 0);
+x_89 = lean_ctor_get_uint8(x_13, 1);
+x_90 = lean_ctor_get_uint8(x_13, 2);
+x_91 = lean_ctor_get_uint8(x_13, 3);
+x_92 = lean_ctor_get_uint8(x_13, 4);
+x_93 = lean_ctor_get_uint8(x_13, 5);
+x_94 = lean_ctor_get_uint8(x_13, 6);
+x_95 = lean_ctor_get_uint8(x_13, 7);
+x_96 = lean_ctor_get_uint8(x_13, 8);
+x_97 = lean_ctor_get_uint8(x_13, 9);
+x_98 = lean_ctor_get_uint8(x_13, 10);
+x_99 = lean_ctor_get_uint8(x_13, 11);
+x_100 = lean_ctor_get_uint8(x_14, 0);
+x_101 = lean_ctor_get_uint8(x_14, 1);
+x_102 = lean_ctor_get_uint8(x_14, 2);
+x_103 = lean_ctor_get_uint8(x_14, 3);
+x_104 = lean_ctor_get_uint8(x_14, 4);
+x_105 = lean_ctor_get_uint8(x_14, 5);
+x_106 = lean_ctor_get_uint8(x_14, 6);
+x_107 = lean_ctor_get_uint8(x_14, 7);
+x_108 = lean_ctor_get_uint8(x_14, 8);
+x_109 = lean_ctor_get_uint8(x_14, 9);
+x_110 = lean_ctor_get_uint8(x_14, 10);
+x_111 = lean_ctor_get_uint8(x_14, 11);
+lean_dec(x_14);
+x_112 = lean_box(x_88);
+x_113 = lean_box(x_100);
+x_114 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_1, x_112, x_113);
+x_115 = lean_box(x_89);
+x_116 = lean_box(x_101);
+x_117 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_2, x_115, x_116);
+x_118 = lean_box(x_90);
+x_119 = lean_box(x_102);
+x_120 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_3, x_118, x_119);
+x_121 = lean_box(x_91);
+x_122 = lean_box(x_103);
+x_123 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_4, x_121, x_122);
+x_124 = lean_box(x_92);
+x_125 = lean_box(x_104);
+x_126 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_5, x_124, x_125);
+x_127 = lean_box(x_93);
+x_128 = lean_box(x_105);
+x_129 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_6, x_127, x_128);
+x_130 = lean_box(x_94);
+x_131 = lean_box(x_106);
+x_132 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_7, x_130, x_131);
+x_133 = lean_box(x_95);
+x_134 = lean_box(x_107);
+x_135 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_8, x_133, x_134);
+x_136 = lean_box(x_96);
+x_137 = lean_box(x_108);
+x_138 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_9, x_136, x_137);
+x_139 = lean_box(x_97);
+x_140 = lean_box(x_109);
+x_141 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_10, x_139, x_140);
+x_142 = lean_box(x_98);
+x_143 = lean_box(x_110);
+x_144 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_11, x_142, x_143);
+x_145 = lean_box(x_99);
+x_146 = lean_box(x_111);
+x_147 = lp_imscribing_x2dlean_Imscribing_Primitives_joinPrimitive___redArg(x_12, x_145, x_146);
+x_148 = lean_alloc_ctor(0, 0, 12);
+x_149 = lean_unbox(x_114);
+lean_dec(x_114);
+lean_ctor_set_uint8(x_148, 0, x_149);
+x_150 = lean_unbox(x_117);
+lean_dec(x_117);
+lean_ctor_set_uint8(x_148, 1, x_150);
+x_151 = lean_unbox(x_120);
+lean_dec(x_120);
+lean_ctor_set_uint8(x_148, 2, x_151);
+x_152 = lean_unbox(x_123);
+lean_dec(x_123);
+lean_ctor_set_uint8(x_148, 3, x_152);
+x_153 = lean_unbox(x_126);
+lean_dec(x_126);
+lean_ctor_set_uint8(x_148, 4, x_153);
+x_154 = lean_unbox(x_129);
+lean_dec(x_129);
+lean_ctor_set_uint8(x_148, 5, x_154);
+x_155 = lean_unbox(x_132);
+lean_dec(x_132);
+lean_ctor_set_uint8(x_148, 6, x_155);
+x_156 = lean_unbox(x_135);
+lean_dec(x_135);
+lean_ctor_set_uint8(x_148, 7, x_156);
+x_157 = lean_unbox(x_138);
+lean_dec(x_138);
+lean_ctor_set_uint8(x_148, 8, x_157);
+x_158 = lean_unbox(x_141);
+lean_dec(x_141);
+lean_ctor_set_uint8(x_148, 9, x_158);
+x_159 = lean_unbox(x_144);
+lean_dec(x_144);
+lean_ctor_set_uint8(x_148, 10, x_159);
+x_160 = lean_unbox(x_147);
+lean_dec(x_147);
+lean_ctor_set_uint8(x_148, 11, x_160);
+return x_148;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_Imscribing_Primitives_instMaxImscription___lam__0___boxed(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4, lean_object* x_5, lean_object* x_6, lean_object* x_7, lean_object* x_8, lean_object* x_9, lean_object* x_10, lean_object* x_11, lean_object* x_12, lean_object* x_13, lean_object* x_14) {
+_start:
+{
+lean_object* x_15; 
+x_15 = lp_imscribing_x2dlean_Imscribing_Primitives_instMaxImscription___lam__0(x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8, x_9, x_10, x_11, x_12, x_13, x_14);
+lean_dec_ref(x_13);
+return x_15;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMaxImscription___closed__0() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; lean_object* x_5; lean_object* x_6; lean_object* x_7; lean_object* x_8; lean_object* x_9; lean_object* x_10; lean_object* x_11; lean_object* x_12; lean_object* x_13; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__11;
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__10;
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__9;
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__8;
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__7;
+x_6 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__6;
+x_7 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__5;
+x_8 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__4;
+x_9 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__3;
+x_10 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__2;
+x_11 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__1;
+x_12 = lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__0;
+x_13 = lean_alloc_closure((void*)(lp_imscribing_x2dlean_Imscribing_Primitives_instMaxImscription___lam__0___boxed), 14, 12);
+lean_closure_set(x_13, 0, x_12);
+lean_closure_set(x_13, 1, x_11);
+lean_closure_set(x_13, 2, x_10);
+lean_closure_set(x_13, 3, x_9);
+lean_closure_set(x_13, 4, x_8);
+lean_closure_set(x_13, 5, x_7);
+lean_closure_set(x_13, 6, x_6);
+lean_closure_set(x_13, 7, x_5);
+lean_closure_set(x_13, 8, x_4);
+lean_closure_set(x_13, 9, x_3);
+lean_closure_set(x_13, 10, x_2);
+lean_closure_set(x_13, 11, x_1);
+return x_13;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMaxImscription() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_instMaxImscription___closed__0;
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_dimShavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__1;
+return x_3;
+}
+case 2:
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__2;
+return x_4;
+}
+default: 
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__3;
+return x_5;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_dimShavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_ShavianNotation_dimShavian(x_2);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_topShavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__1;
+return x_3;
+}
+case 2:
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__2;
+return x_4;
+}
+case 3:
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__3;
+return x_5;
+}
+default: 
+{
+lean_object* x_6; 
+x_6 = lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__4;
+return x_6;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_topShavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_ShavianNotation_topShavian(x_2);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_relShavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__1;
+return x_3;
+}
+case 2:
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__2;
+return x_4;
+}
+default: 
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__3;
+return x_5;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_relShavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_ShavianNotation_relShavian(x_2);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_polShavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__1;
+return x_3;
+}
+case 2:
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__2;
+return x_4;
+}
+case 3:
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__3;
+return x_5;
+}
+default: 
+{
+lean_object* x_6; 
+x_6 = lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__4;
+return x_6;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_polShavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_ShavianNotation_polShavian(x_2);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_fidShavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__1;
+return x_3;
+}
+default: 
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__2;
+return x_4;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_fidShavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_ShavianNotation_fidShavian(x_2);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_kinShavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__1;
+return x_3;
+}
+case 2:
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__2;
+return x_4;
+}
+case 3:
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__3;
+return x_5;
+}
+default: 
+{
+lean_object* x_6; 
+x_6 = lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__4;
+return x_6;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_kinShavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_ShavianNotation_kinShavian(x_2);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_granShavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__1;
+return x_3;
+}
+default: 
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__2;
+return x_4;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_granShavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_ShavianNotation_granShavian(x_2);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_gramShavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__1;
+return x_3;
+}
+case 2:
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__2;
+return x_4;
+}
+default: 
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__3;
+return x_5;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_gramShavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_ShavianNotation_gramShavian(x_2);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_critShavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__1;
+return x_3;
+}
+case 2:
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__2;
+return x_4;
+}
+case 3:
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__3;
+return x_5;
+}
+default: 
+{
+lean_object* x_6; 
+x_6 = lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__4;
+return x_6;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_critShavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_ShavianNotation_critShavian(x_2);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_chirShavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__1;
+return x_3;
+}
+case 2:
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__2;
+return x_4;
+}
+default: 
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__3;
+return x_5;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_chirShavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_ShavianNotation_chirShavian(x_2);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_stoiShavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__1;
+return x_3;
+}
+default: 
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__2;
+return x_4;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_stoiShavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_ShavianNotation_stoiShavian(x_2);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_protShavian(uint8_t x_1) {
+_start:
+{
+switch (x_1) {
+case 0:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__0;
+return x_2;
+}
+case 1:
+{
+lean_object* x_3; 
+x_3 = lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__1;
+return x_3;
+}
+case 2:
+{
+lean_object* x_4; 
+x_4 = lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__2;
+return x_4;
+}
+default: 
+{
+lean_object* x_5; 
+x_5 = lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__3;
+return x_5;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_protShavian___boxed(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; lean_object* x_3; 
+x_2 = lean_unbox(x_1);
+x_3 = lp_imscribing_x2dlean_ShavianNotation_protShavian(x_2);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_imscriptionShavian(lean_object* x_1) {
+_start:
+{
+uint8_t x_2; uint8_t x_3; uint8_t x_4; uint8_t x_5; uint8_t x_6; uint8_t x_7; uint8_t x_8; uint8_t x_9; uint8_t x_10; uint8_t x_11; uint8_t x_12; uint8_t x_13; lean_object* x_14; lean_object* x_15; lean_object* x_16; lean_object* x_17; lean_object* x_18; lean_object* x_19; lean_object* x_20; lean_object* x_21; lean_object* x_22; lean_object* x_23; lean_object* x_24; lean_object* x_25; lean_object* x_26; lean_object* x_27; lean_object* x_28; lean_object* x_29; lean_object* x_30; lean_object* x_31; lean_object* x_32; lean_object* x_33; lean_object* x_34; lean_object* x_35; lean_object* x_36; lean_object* x_37; lean_object* x_38; lean_object* x_39; lean_object* x_40; lean_object* x_41; lean_object* x_42; lean_object* x_43; lean_object* x_44; lean_object* x_45; lean_object* x_46; lean_object* x_47; lean_object* x_48; lean_object* x_49; lean_object* x_50; lean_object* x_51; lean_object* x_52; 
+x_2 = lean_ctor_get_uint8(x_1, 0);
+x_3 = lean_ctor_get_uint8(x_1, 1);
+x_4 = lean_ctor_get_uint8(x_1, 2);
+x_5 = lean_ctor_get_uint8(x_1, 3);
+x_6 = lean_ctor_get_uint8(x_1, 4);
+x_7 = lean_ctor_get_uint8(x_1, 5);
+x_8 = lean_ctor_get_uint8(x_1, 6);
+x_9 = lean_ctor_get_uint8(x_1, 7);
+x_10 = lean_ctor_get_uint8(x_1, 8);
+x_11 = lean_ctor_get_uint8(x_1, 9);
+x_12 = lean_ctor_get_uint8(x_1, 10);
+x_13 = lean_ctor_get_uint8(x_1, 11);
+x_14 = lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__0;
+x_15 = lp_imscribing_x2dlean_ShavianNotation_dimShavian(x_2);
+x_16 = lean_string_append(x_14, x_15);
+lean_dec_ref(x_15);
+x_17 = lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__1;
+x_18 = lean_string_append(x_16, x_17);
+x_19 = lp_imscribing_x2dlean_ShavianNotation_topShavian(x_3);
+x_20 = lean_string_append(x_18, x_19);
+lean_dec_ref(x_19);
+x_21 = lean_string_append(x_20, x_17);
+x_22 = lp_imscribing_x2dlean_ShavianNotation_relShavian(x_4);
+x_23 = lean_string_append(x_21, x_22);
+lean_dec_ref(x_22);
+x_24 = lean_string_append(x_23, x_17);
+x_25 = lp_imscribing_x2dlean_ShavianNotation_polShavian(x_5);
+x_26 = lean_string_append(x_24, x_25);
+lean_dec_ref(x_25);
+x_27 = lean_string_append(x_26, x_17);
+x_28 = lp_imscribing_x2dlean_ShavianNotation_fidShavian(x_6);
+x_29 = lean_string_append(x_27, x_28);
+lean_dec_ref(x_28);
+x_30 = lean_string_append(x_29, x_17);
+x_31 = lp_imscribing_x2dlean_ShavianNotation_kinShavian(x_7);
+x_32 = lean_string_append(x_30, x_31);
+lean_dec_ref(x_31);
+x_33 = lean_string_append(x_32, x_17);
+x_34 = lp_imscribing_x2dlean_ShavianNotation_granShavian(x_8);
+x_35 = lean_string_append(x_33, x_34);
+lean_dec_ref(x_34);
+x_36 = lean_string_append(x_35, x_17);
+x_37 = lp_imscribing_x2dlean_ShavianNotation_gramShavian(x_9);
+x_38 = lean_string_append(x_36, x_37);
+lean_dec_ref(x_37);
+x_39 = lean_string_append(x_38, x_17);
+x_40 = lp_imscribing_x2dlean_ShavianNotation_critShavian(x_10);
+x_41 = lean_string_append(x_39, x_40);
+lean_dec_ref(x_40);
+x_42 = lean_string_append(x_41, x_17);
+x_43 = lp_imscribing_x2dlean_ShavianNotation_chirShavian(x_11);
+x_44 = lean_string_append(x_42, x_43);
+lean_dec_ref(x_43);
+x_45 = lean_string_append(x_44, x_17);
+x_46 = lp_imscribing_x2dlean_ShavianNotation_stoiShavian(x_12);
+x_47 = lean_string_append(x_45, x_46);
+lean_dec_ref(x_46);
+x_48 = lean_string_append(x_47, x_17);
+x_49 = lp_imscribing_x2dlean_ShavianNotation_protShavian(x_13);
+x_50 = lean_string_append(x_48, x_49);
+lean_dec_ref(x_49);
+x_51 = lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__2;
+x_52 = lean_string_append(x_50, x_51);
+return x_52;
+}
+}
+LEAN_EXPORT lean_object* lp_imscribing_x2dlean_ShavianNotation_imscriptionShavian___boxed(lean_object* x_1) {
+_start:
+{
+lean_object* x_2; 
+x_2 = lp_imscribing_x2dlean_ShavianNotation_imscriptionShavian(x_1);
+lean_dec_ref(x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_ShavianNotation_stoneShavian___closed__0() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lp_imscribing_x2dlean_Imscribing_Primitives_stone__shavian___closed__0;
+x_2 = lp_imscribing_x2dlean_ShavianNotation_imscriptionShavian(x_1);
+return x_2;
+}
+}
+static lean_object* _init_lp_imscribing_x2dlean_ShavianNotation_stoneShavian() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lp_imscribing_x2dlean_ShavianNotation_stoneShavian___closed__0;
+return x_1;
+}
+}
+lean_object* initialize_Init(uint8_t builtin);
+lean_object* initialize_imscribing_x2dlean_Imscribing_Primitives_Core(uint8_t builtin);
+static bool _G_initialized = false;
+LEAN_EXPORT lean_object* initialize_imscribing_x2dlean_Imscribing_Primitives_Imscription(uint8_t builtin) {
+lean_object * res;
+if (_G_initialized) return lean_io_result_mk_ok(lean_box(0));
+_G_initialized = true;
+res = initialize_Init(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_imscribing_x2dlean_Imscribing_Primitives_Core(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__1 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__1();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__1);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__2 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__2();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__2);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__3 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__3();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__3);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__4 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__4();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__4);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__5 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__5();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__5);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__6 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__6();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__6);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__7 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__7();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__7);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__8 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__8();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__8);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__9 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__9();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__9);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__10 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__10();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__10);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__11 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__11();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__11);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__12 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__12();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__12);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__13 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__13();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__13);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__14 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__14();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__14);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__15 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__15();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__15);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__16 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__16();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__16);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__17 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__17();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__17);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__18 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__18();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__18);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__19 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__19();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__19);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__20 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__20();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__20);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__21 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__21();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__21);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__22 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__22();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__22);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__23 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__23();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__23);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__24 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__24();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__24);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__25 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__25();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__25);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__26 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__26();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__26);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__27 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__27();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__27);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__28 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__28();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__28);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__29 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__29();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__29);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__30 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__30();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__30);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__31 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__31();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__31);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__32 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__32();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__32);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__33 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__33();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__33);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__34 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__34();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__34);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__35 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__35();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__35);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__36 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__36();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__36);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__37 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__37();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription_repr___redArg___closed__37);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instReprImscription);
+lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__1 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__1();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__1);
+lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__2 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__2();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__2);
+lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__3 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__3();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__3);
+lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__4 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__4();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__4);
+lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__5 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__5();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__5);
+lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__6 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__6();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__6);
+lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__7 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__7();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__7);
+lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__8 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__8();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__8);
+lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__9 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__9();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__9);
+lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__10 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__10();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__10);
+lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__11 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__11();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__11);
+lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__12 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__12();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297___00__closed__12);
+lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297__ = _init_lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297__();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_term___u2297__);
+lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__1 = _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__1();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__1);
+lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__2 = _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__2();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__2);
+lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__3 = _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__3();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__3);
+lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__4 = _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__4();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__4);
+lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__5 = _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__5();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__5);
+lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__6 = _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__6();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__6);
+lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__7 = _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__7();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__7);
+lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__8 = _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__8();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__8);
+lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__9 = _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__9();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__9);
+lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__10 = _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__10();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__10);
+lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__11 = _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__11();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__11);
+lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__12 = _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__12();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______macroRules__Imscribing__Primitives__term___u2297____1___closed__12);
+lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______unexpand__Imscribing__Primitives__tensorProduct__1___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______unexpand__Imscribing__Primitives__tensorProduct__1___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______unexpand__Imscribing__Primitives__tensorProduct__1___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______unexpand__Imscribing__Primitives__tensorProduct__1___closed__1 = _init_lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______unexpand__Imscribing__Primitives__tensorProduct__1___closed__1();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives___aux__Imscribing__Primitives__Imscription______unexpand__Imscribing__Primitives__tensorProduct__1___closed__1);
+lp_imscribing_x2dlean_Imscribing_Primitives_scalarField__Kslow___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_scalarField__Kslow___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_scalarField__Kslow___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_scalarField__Kslow = _init_lp_imscribing_x2dlean_Imscribing_Primitives_scalarField__Kslow();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_scalarField__Kslow);
+lp_imscribing_x2dlean_Imscribing_Primitives_higgs = _init_lp_imscribing_x2dlean_Imscribing_Primitives_higgs();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_higgs);
+lp_imscribing_x2dlean_Imscribing_Primitives_axion = _init_lp_imscribing_x2dlean_Imscribing_Primitives_axion();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_axion);
+lp_imscribing_x2dlean_Imscribing_Primitives_inflaton = _init_lp_imscribing_x2dlean_Imscribing_Primitives_inflaton();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_inflaton);
+lp_imscribing_x2dlean_Imscribing_Primitives_standard__model___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_standard__model___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_standard__model___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_standard__model = _init_lp_imscribing_x2dlean_Imscribing_Primitives_standard__model();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_standard__model);
+lp_imscribing_x2dlean_Imscribing_Primitives_quantum__gravity___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_quantum__gravity___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_quantum__gravity___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_quantum__gravity = _init_lp_imscribing_x2dlean_Imscribing_Primitives_quantum__gravity();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_quantum__gravity);
+lp_imscribing_x2dlean_Imscribing_Primitives_general__relativity___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_general__relativity___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_general__relativity___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_general__relativity = _init_lp_imscribing_x2dlean_Imscribing_Primitives_general__relativity();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_general__relativity);
+lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__classical___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__classical___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__classical___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__classical = _init_lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__classical();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__classical);
+lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__quantum__target___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__quantum__target___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__quantum__target___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__quantum__target = _init_lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__quantum__target();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_yang__mills__quantum__target);
+lp_imscribing_x2dlean_Imscribing_Primitives_asymptotic__safety___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_asymptotic__safety___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_asymptotic__safety___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_asymptotic__safety = _init_lp_imscribing_x2dlean_Imscribing_Primitives_asymptotic__safety();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_asymptotic__safety);
+lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__1 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__1();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__1);
+lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__2 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__2();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__2);
+lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__3 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__3();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Dimensionality_shavian___closed__3);
+lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__1 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__1();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__1);
+lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__2 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__2();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__2);
+lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__3 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__3();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__3);
+lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__4 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__4();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Topology_shavian___closed__4);
+lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__1 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__1();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__1);
+lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__2 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__2();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__2);
+lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__3 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__3();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Relational_shavian___closed__3);
+lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__1 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__1();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__1);
+lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__2 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__2();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__2);
+lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__3 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__3();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__3);
+lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__4 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__4();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Polarity_shavian___closed__4);
+lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__1 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__1();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__1);
+lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__2 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__2();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Fidelity_shavian___closed__2);
+lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__1 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__1();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__1);
+lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__2 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__2();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__2);
+lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__3 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__3();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__3);
+lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__4 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__4();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_KineticChar_shavian___closed__4);
+lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__1 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__1();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__1);
+lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__2 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__2();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Granularity_shavian___closed__2);
+lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__1 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__1();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__1);
+lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__2 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__2();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__2);
+lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__3 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__3();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Grammar_shavian___closed__3);
+lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__1 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__1();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__1);
+lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__2 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__2();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__2);
+lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__3 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__3();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__3);
+lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__4 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__4();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Criticality_shavian___closed__4);
+lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__1 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__1();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__1);
+lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__2 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__2();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__2);
+lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__3 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__3();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Chirality_shavian___closed__3);
+lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__1 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__1();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__1);
+lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__2 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__2();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Stoichiometry_shavian___closed__2);
+lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__1 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__1();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__1);
+lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__2 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__2();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__2);
+lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__3 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__3();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Protection_shavian___closed__3);
+lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__1 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__1();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__1);
+lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__2 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__2();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_Imscription_shavian___closed__2);
+lp_imscribing_x2dlean_Imscribing_Primitives_stone__shavian___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_stone__shavian___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_stone__shavian___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_stone__shavian___closed__1 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_stone__shavian___closed__1();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_stone__shavian___closed__1);
+lp_imscribing_x2dlean_Imscribing_Primitives_stone__shavian = _init_lp_imscribing_x2dlean_Imscribing_Primitives_stone__shavian();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_stone__shavian);
+lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__1 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__1();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__1);
+lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__2 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__2();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__2);
+lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__3 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__3();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__3);
+lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__4 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__4();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__4);
+lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__5 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__5();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__5);
+lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__6 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__6();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__6);
+lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__7 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__7();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__7);
+lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__8 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__8();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__8);
+lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__9 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__9();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__9);
+lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__10 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__10();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__10);
+lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__11 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__11();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__11);
+lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__12 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__12();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription___closed__12);
+lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instMinImscription);
+lp_imscribing_x2dlean_Imscribing_Primitives_instMaxImscription___closed__0 = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMaxImscription___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instMaxImscription___closed__0);
+lp_imscribing_x2dlean_Imscribing_Primitives_instMaxImscription = _init_lp_imscribing_x2dlean_Imscribing_Primitives_instMaxImscription();
+lean_mark_persistent(lp_imscribing_x2dlean_Imscribing_Primitives_instMaxImscription);
+lp_imscribing_x2dlean_ShavianNotation_stoneShavian___closed__0 = _init_lp_imscribing_x2dlean_ShavianNotation_stoneShavian___closed__0();
+lean_mark_persistent(lp_imscribing_x2dlean_ShavianNotation_stoneShavian___closed__0);
+lp_imscribing_x2dlean_ShavianNotation_stoneShavian = _init_lp_imscribing_x2dlean_ShavianNotation_stoneShavian();
+lean_mark_persistent(lp_imscribing_x2dlean_ShavianNotation_stoneShavian);
+return lean_io_result_mk_ok(lean_box(0));
+}
+#ifdef __cplusplus
+}
+#endif

@@ -18,6 +18,27 @@
 //   3,  5                        norm 9, 25
 //   g3  = (sqrt m_d - 2045)/2   norm -(d-3) = -2045
 //   g4  = (2049 - sqrt m_d)/2   norm  (d+1) =  2049   <- the SIC denominator itself
+//
+// THE GENERATORS ARE NOT INDEPENDENT. Two identities hold at every even d:
+//
+//     g3^2 = (d-3) * eps          g4^2 = (d+1) * eps
+//
+// since m_d = (d+1)(d-3) makes g3^2 = (m_d + (d-3)^2 - 2(d-3)sqrt m_d)/4 collapse to
+// (d-3)(d-1-sqrt m_d)/2. Verified exactly at d=12 and d=2048. Two consequences, and
+// the sieve is wrong without both:
+//
+//   1. An exponent vector is NOT a unique name for an element. Reduce modulo the
+//      relation lattice before declaring a fork fused, or the same stone is counted
+//      twice and a closed fork reads as open.
+//   2. At d=2048 this list CANNOT generate the S-unit group. g3^2/eps = 2045 = 5*409
+//      and g4^2/eps = 2049 = 3*683, so 409 and 683 are forced into the group and
+//      neither has a generator here. They are two of the four ramified primes. At
+//      d=12 the defect hides, because (d-3) = 9 = 3^2 is expressible and only 13 is
+//      missing.
+//
+// The demonstration below is sound as a demonstration -- it exhibits the magnitude
+// degeneracy and the norm that breaks it -- but a SEARCH over these five generators
+// is not a search over the S-unit group.
 
 use alloc::string::String;
 use alloc::format;

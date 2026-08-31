@@ -60,29 +60,44 @@ impl InvariantEngine {
     }
 
     pub fn test_invariant(&self, object: &str, transformation: &str) -> bool {
-        // Test if object is invariant under transformation
-        // This is a placeholder - actual implementation would:
-        // 1. Apply transformation to object
-        // 2. Compare relevant properties before/after
-        // 3. Return true if invariant
-        
+        // Test whether `object` is invariant under `transformation`. The test
+        // is computed at the word level: ROTAT = cyclic shift, IMSCRIB = the
+        // self-referential fixed point, AREV = reversal, AFWD = advance.
+        // Opcodes with no word-level meaning at this layer fail closed.
         match transformation {
             "ROTAT" => self.test_rotat_invariant(object),
             "IMSCRIB" => self.test_imscrib_invariant(object),
+            "AREV" => self.test_arev_invariant(object),
+            "AFWD" => self.test_afwd_invariant(object),
             "all" => self.test_all_transformations(object),
-            _ => true, // Default: assume invariant for unimplemented
+            _ => false, // fail closed: unverifiable at this layer is not invariant
         }
     }
 
-    fn test_rotat_invariant(&self, _object: &str) -> bool {
-        // ROTAT invariants: topology, tier, some truth states
-        // Phase-dependent register is NOT invariant
-        true // Placeholder
+    fn test_rotat_invariant(&self, object: &str) -> bool {
+        // ROTAT is the cyclic shift. A word is ROTAT-invariant iff its whole
+        // rotation orbit is a single point, i.e. every glyph is identical.
+        let chars: Vec<char> = object.chars().collect();
+        if chars.len() <= 1 { return true; }
+        chars.iter().all(|&c| c == chars[0])
     }
 
-    fn test_imscrib_invariant(&self, _object: &str) -> bool {
-        // IMSCRIB is self-reference - test fixed-point behavior
-        true // Placeholder
+    fn test_imscrib_invariant(&self, object: &str) -> bool {
+        // IMSCRIB (⊙) is self-reference. A word is a fixed point under
+        // imscription iff it is exactly the self-referential atom, or empty.
+        object.is_empty() || object == "⊙"
+    }
+
+    fn test_arev_invariant(&self, object: &str) -> bool {
+        // AREV is the clearing reverse. Invariant iff palindromic.
+        let chars: Vec<char> = object.chars().collect();
+        chars.iter().eq(chars.iter().rev())
+    }
+
+    fn test_afwd_invariant(&self, object: &str) -> bool {
+        // AFWD advances one step. Only the empty word is a fixed point of a
+        // non-trivial advance at this layer.
+        object.is_empty()
     }
 
     fn test_all_transformations(&self, object: &str) -> bool {
@@ -95,40 +110,47 @@ impl InvariantEngine {
         true
     }
 
-    pub fn search_catalog(&self, _catalog: &str, transformation: &str) -> Vec<InvariantResult> {
-        // Search catalog for invariants under transformation
-        // Returns list of discovered invariants
-        
+    pub fn search_catalog(&self, catalog: &str, transformation: &str) -> Vec<InvariantResult> {
+        // Test the catalog word (the only object in scope) under the requested
+        // transformation(s) and record the computed outcome. One result per
+        // transformation actually tested.
+        let transformations: Vec<String> = if transformation == "all" {
+            self.transformations.iter().filter(|t| *t != "all").cloned().collect()
+        } else {
+            vec![transformation.to_string()]
+        };
+
         let mut results = Vec::new();
-        
-        // This would iterate through catalog entries and test each
-        // For now, return a placeholder showing the expected format
-        
-        results.push(InvariantResult {
-            name: "topology".to_string(),
-            r#type: InvariantType::Topology,
-            value: "𐑰".to_string(),
-            transformations_tested: vec![transformation.to_string()],
-            transformations_passed: vec![transformation.to_string()],
-            transformations_failed: vec![],
-            objects_tested: 0,
-            counterexamples: vec![],
-        });
-        
+        for t in &transformations {
+            let passed = self.test_invariant(catalog, t);
+            results.push(InvariantResult {
+                name: t.clone(),
+                r#type: InvariantType::Custom(t.clone()),
+                value: if passed { "invariant".to_string() } else { "variant".to_string() },
+                transformations_tested: vec![t.clone()],
+                transformations_passed: if passed { vec![t.clone()] } else { vec![] },
+                transformations_failed: if passed { vec![] } else { vec![t.clone()] },
+                objects_tested: 1,
+                counterexamples: if passed { vec![] } else { vec![catalog.to_string()] },
+            });
+        }
         results
     }
 
     pub fn census(&self, catalog: &str) -> String {
-        // Full invariant census across all transformations
-        format!(
+        let mut out = format!(
             "INVARIANT CENSUS\n================\n\
              Catalog: {}\n\
-             Transformations: {}\n\
-             \n\
-             [Would list all discovered invariants]\n",
+             Transformations: {}\n\n",
             catalog,
-            self.transformations.len()
-        )
+            self.transformations.iter().filter(|t| *t != "all").count()
+        );
+        for t in &self.transformations {
+            if t == "all" { continue; }
+            let verdict = if self.test_invariant(catalog, t) { "INVARIANT" } else { "variant" };
+            out.push_str(&format!("  {}: {}\n", t, verdict));
+        }
+        out
     }
 }
 

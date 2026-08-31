@@ -31,6 +31,7 @@ pub mod codon;
 pub mod genetics;
 pub mod translate;
 pub mod fold;
+pub mod fold3d;
 pub mod frob_filter;
 pub mod hadron;
 pub mod serpent;
@@ -159,7 +160,7 @@ impl AminoAcid {
             (B4::T, B4::F, true)   => "∈ (Granularity)",      // His
             (B4::T, B4::F, false)  => "⊙ (Criticality)",      // Gln
             (B4::B, B4::F, true)   => "⊥ (Chirality)",        // Asp
-            (B4::B, B4::F, false)  => "◻ (Winding)",          // Glu
+            (B4::B, B4::F, false)  => "⊡ (Winding)",          // Glu
             _                      => return None,
         })
     }
@@ -186,7 +187,7 @@ impl AminoAcid {
             (B4::T, B4::F, true)   => Some(IgPrim::ice),     // His → ∈ (Scope)
             (B4::T, B4::F, false)  => Some(IgPrim::monad),     // Gln → ⊙
             (B4::B, B4::F, true)   => Some(IgPrim::sure),        // Asp → ⊥
-            (B4::B, B4::F, false)  => Some(IgPrim::ah),   // Glu → ◻
+            (B4::B, B4::F, false)  => Some(IgPrim::ah),   // Glu → ⊡
             _                      => None,
         }
     }

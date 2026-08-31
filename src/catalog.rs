@@ -51,9 +51,15 @@ pub static K_ORD: [IgPrim; 5] = [
     IgPrim::yea, IgPrim::loll, IgPrim::egg, IgPrim::on, IgPrim::air,
 ];
 
-/// G ordinal: ice < bib < thigh
+/// G ordinal: bib < thigh < ice
+/// Core.lean `inductive Granularity` declares bib, thigh, ice in that order, and
+/// notes "constructor order determines Ord; bib is first (lowest ordinal)". This
+/// table had the enum declaration order (ice=26, bib=27, thigh=28) instead, which
+/// is not the ordinal — every other family here carries the deliberate ordinal,
+/// not the enum order. Corrected 2026-08-22; moves every crystal address whose
+/// tuple carries a G value, by -1920 (ice) or +960 (bib, thigh).
 pub static G_ORD: [IgPrim; 3] = [
-    IgPrim::ice, IgPrim::bib, IgPrim::thigh,
+    IgPrim::bib, IgPrim::thigh, IgPrim::ice,
 ];
 
 /// C ordinal: vow < gag < measure < ooze
@@ -343,7 +349,7 @@ const ZFC_FE: CatalogEntry = entry(
 
 // ── CLINK L8 (O_∞⁺): ⟨𐑦·𐑸·𐑾·𐑹·𐑐·𐑧·𐑲·𐑵·⊙·𐑫·𐑳·𐑟⟩ ──
 const CLINK_L8: CatalogEntry = entry(
-    "clink_l8", "CLINK Layer 8 Organism — terminal ontological layer, O_∞⁺ with ◻/∋ transcendence",
+    "clink_l8", "CLINK Layer 8 Organism — terminal ontological layer, O_∞⁺ with ⊡/∋ transcendence",
     IgPrim::if_, IgPrim::are, IgPrim::ian,
     IgPrim::or_, IgPrim::peep, IgPrim::egg,
     IgPrim::ice, IgPrim::ooze,
@@ -462,14 +468,23 @@ const HEAT_DIFFUSION: CatalogEntry = entry(
     1, Domain::Physics,
 );
 
-// ── Navier-Stokes (O₁) ──
+// ── Navier-Stokes (O₂†) ──
+// Tuple corrected to the canonical Clay tuple sourced from
+// ClayCanonicalTuples.lean (p4rakernel/p4ramill), which is itself
+// procedurally generated from IG_catalog.json — NOT the generic physics
+// entry this const held before, which agreed with the canonical tuple on
+// only 6 of 12 primitives (top, rel, kin, gran, gram, phi all differed).
+// Same class of drift the BIRCH_SWINNERTON_DYER comment above already
+// warned about; this is where it was found live, in the extended
+// witness-vessel run of 2026-08-24, and fixed at the source rather than
+// worked around downstream.
 const NAVIER_STOKES: CatalogEntry = entry(
-    "navier_stokes", "Fluid dynamics — Navier-Stokes equations",
-    IgPrim::array, IgPrim::mime, IgPrim::ian,
-    IgPrim::church, IgPrim::age, IgPrim::yea,
-    IgPrim::thigh, IgPrim::measure,
-    IgPrim::haha, IgPrim::kick, IgPrim::up, IgPrim::awe,
-    1, Domain::Physics,
+    "navier_stokes", "Clay Millennium Problem — Navier-Stokes global regularity",
+    IgPrim::array, IgPrim::judge, IgPrim::ear,
+    IgPrim::church, IgPrim::age, IgPrim::loll,
+    IgPrim::ice, IgPrim::vow,
+    IgPrim::monad, IgPrim::kick, IgPrim::up, IgPrim::awe,
+    3, Domain::Mathematics,
 );
 
 // ── Birch–Swinnerton-Dyer Conjecture (O₂†) ──
@@ -513,6 +528,40 @@ const YANG_MILLS_MASS_GAP: CatalogEntry = entry(
     IgPrim::church, IgPrim::peep, IgPrim::on,
     IgPrim::ice, IgPrim::vow,
     IgPrim::haha, IgPrim::fee, IgPrim::up, IgPrim::awe,
+    3, Domain::Mathematics,
+);
+
+// ── Collatz Conjecture (O₁) ──
+// Tuple sourced directly from the live Python IG_catalog.json
+// (imscribing_grammar/imscrbgrmr), entry "collatz_conjecture": the
+// twelve glyphs 𐑛𐑡𐑩𐑯𐑱𐑘𐑲𐑠𐑮𐑓𐑙𐑷 in canonical slot order, translated
+// glyph-for-glyph to IgPrim variants. Not previously a curated entry;
+// added here for the first major unsolved problem outside the Clay
+// seven to ride the witness vessel.
+const COLLATZ_CONJECTURE: CatalogEntry = entry(
+    "collatz_conjecture", "The Collatz conjecture — n/2 if even, 3n+1 if odd, always reaches 1",
+    IgPrim::dead, IgPrim::judge, IgPrim::ado,
+    IgPrim::nun, IgPrim::age, IgPrim::yea,
+    IgPrim::ice, IgPrim::measure,
+    IgPrim::roar, IgPrim::fee, IgPrim::hung, IgPrim::awe,
+    1, Domain::Mathematics,
+);
+
+// ── Odd Perfect Number Theorem ──
+// Tuple sourced from ob3ect/digital/odd_perfect_number_theorem, a grounded,
+// lean-verified ob3ect (grounding_status: full). Two other names already
+// live in the ask-subset catalog, odd_perfect_number_conjecture and
+// odd_perfect_conjecture, and both carry phi := monad (critical) — which
+// contradicts the object's own subcriticality ("no known instance exists,
+// no scale-free critical behavior"). This entry's phi := woe is the one
+// that agrees with that description; the other two are drift, not kept
+// here, not to be trusted for this name.
+const ODD_PERFECT_NUMBER_THEOREM: CatalogEntry = entry(
+    "odd_perfect_number_theorem", "No odd integer equals the sum of its proper divisors",
+    IgPrim::if_, IgPrim::eat, IgPrim::ear,
+    IgPrim::or_, IgPrim::age, IgPrim::on,
+    IgPrim::thigh, IgPrim::vow,
+    IgPrim::woe, IgPrim::fee, IgPrim::up, IgPrim::awe,
     3, Domain::Mathematics,
 );
 
@@ -657,6 +706,8 @@ static STATIC_CATALOG: &[CatalogEntry] = &[
     BIRCH_SWINNERTON_DYER,
     HODGE_CONJECTURE,
     YANG_MILLS_MASS_GAP,
+    COLLATZ_CONJECTURE,
+    ODD_PERFECT_NUMBER_THEOREM,
 ];
 
 // Query-relevant IG catalog subset for native `ask` (no Python host catalog).
@@ -1225,8 +1276,8 @@ pub fn primitive_short(prim: IgPrim) -> &'static str {
         IgPrim::on => "⊤_trap", IgPrim::egg => "⊤_↓",
         IgPrim::loll => "⊤_~", IgPrim::yea => "⊤_↑",
         IgPrim::air => "⊤_MBL",
-        IgPrim::ice => "∈_ℵ", IgPrim::bib => "∈_ℶ",
-        IgPrim::thigh => "∈_ℷ",
+        IgPrim::ice => "∈_univ", IgPrim::bib => "∈_loc",
+        IgPrim::thigh => "∈_meso",
         IgPrim::measure => "∋_seq", IgPrim::vow => "∋_∧",
         IgPrim::gag => "∋_∨", IgPrim::ooze => "∋_⊛",
         IgPrim::monad => "⊙_⊙", IgPrim::roar => "⊙_ℂ",
@@ -1236,8 +1287,8 @@ pub fn primitive_short(prim: IgPrim) -> &'static str {
         IgPrim::kick => "⊥_1", IgPrim::fee => "⊥_0",
         IgPrim::up => "⊞_n:m", IgPrim::so => "⊞_n:n",
         IgPrim::hung => "⊞_1:1",
-        IgPrim::ah => "◻_ℤ", IgPrim::oak => "◻_ℤ₂",
-        IgPrim::awe => "◻_0", IgPrim::zoo => "◻_NA",
+        IgPrim::ah => "⊡_ℤ", IgPrim::oak => "⊡_ℤ₂",
+        IgPrim::awe => "⊡_0", IgPrim::zoo => "⊡_NA",
     }
 }
 
@@ -1246,8 +1297,8 @@ pub fn primitive_family(prim: IgPrim) -> &'static str {
     match prim {
         IgPrim::if_ | IgPrim::dead | IgPrim::ash | IgPrim::array => "⊢",
         IgPrim::are | IgPrim::judge | IgPrim::eat | IgPrim::mime | IgPrim::oil => "⊣",
-        IgPrim::ian | IgPrim::ear | IgPrim::tot | IgPrim::ado => ">",
-        IgPrim::or_ | IgPrim::nun | IgPrim::out | IgPrim::yew | IgPrim::church => "<",
+        IgPrim::ian | IgPrim::ear | IgPrim::tot | IgPrim::ado => "≻",
+        IgPrim::or_ | IgPrim::nun | IgPrim::out | IgPrim::yew | IgPrim::church => "≺",
         IgPrim::peep | IgPrim::age | IgPrim::they => "⋈",
         IgPrim::on | IgPrim::egg | IgPrim::loll | IgPrim::yea | IgPrim::air => "⊤",
         IgPrim::ice | IgPrim::bib | IgPrim::thigh => "∈",
@@ -1255,17 +1306,17 @@ pub fn primitive_family(prim: IgPrim) -> &'static str {
         IgPrim::monad | IgPrim::roar | IgPrim::err | IgPrim::woe | IgPrim::haha => "⊙",
         IgPrim::wool | IgPrim::sure | IgPrim::kick | IgPrim::fee => "⊥",
         IgPrim::up | IgPrim::so | IgPrim::hung => "⊞",
-        IgPrim::ah | IgPrim::oak | IgPrim::awe | IgPrim::zoo => "◻",
+        IgPrim::ah | IgPrim::oak | IgPrim::awe | IgPrim::zoo => "⊡",
     }
 }
 
 /// Return the ordinal table for a primitive family.
 pub fn ordinal_table(family: &str) -> &'static [IgPrim] {
     match family {
-        "⊢" => &D_ORD, "⊣" => &T_ORD, ">" => &R_ORD,
-        "<" => &P_ORD, "⋈" => &F_ORD, "⊤" => &K_ORD,
+        "⊢" => &D_ORD, "⊣" => &T_ORD, "≻" => &R_ORD,
+        "≺" => &P_ORD, "⋈" => &F_ORD, "⊤" => &K_ORD,
         "∈" => &G_ORD, "∋" => &C_ORD, "⊙" => &PHI_ORD,
-        "⊥" => &H_ORD, "⊞" => &S_ORD, "◻" => &OMEGA_ORD,
+        "⊥" => &H_ORD, "⊞" => &S_ORD, "⊡" => &OMEGA_ORD,
         _ => &D_ORD,
     }
 }

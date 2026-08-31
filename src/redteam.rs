@@ -236,7 +236,7 @@ impl RedteamEngine {
     fn detect_infinite_loop(&self, word: &str) -> bool {
         // Check for ROTAT without termination conditions
         let has_rotat = word.contains('↻') || word.contains('↺');
-        let has_termination = word.contains('⊣') || word.contains('◻');
+        let has_termination = word.contains('⊣') || word.contains('⊡');
         
         has_rotat && !has_termination
     }

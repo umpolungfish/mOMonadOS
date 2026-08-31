@@ -1,0 +1,147 @@
+name: release
+
+# Builds the hosted REPL natively on each OS's own runner — no cross-compile
+# toolchain, no Apple SDK extraction, no mingw/Wine tricks. Trigger by pushing
+# a tag matching v* (cuts a GitHub release with all three binaries attached)
+# or by running it manually from the Actions tab (workflow_dispatch), which
+# only uploads build artifacts without creating a release.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch: {}
+
+env:
+  # Cargo.toml resolves imasm_core and vox_core by relative path
+  # (../MoDoT/imasm_core, ../Vox), so every runner checks those two repos out
+  # as siblings of mOMonadOS, matching the local ~/imsgct layout exactly.
+  # These are the branches this crate currently builds against locally; move
+  # them to `main` once that work lands there.
+  VOX_REF: notation/prec-succ-marks
+  MODOT_REF: notation/prec-succ-marks
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: imsgct/mOMonadOS
+      - uses: actions/checkout@v4
+        with:
+          repository: umpolungfish/Vox
+          ref: ${{ env.VOX_REF }}
+          path: imsgct/Vox
+      - uses: actions/checkout@v4
+        with:
+          repository: umpolungfish/MoDoT
+          ref: ${{ env.MODOT_REF }}
+          path: imsgct/MoDoT
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build
+        working-directory: imsgct/mOMonadOS
+        run: cargo build --release --features hosted
+      - name: Package
+        working-directory: imsgct/mOMonadOS
+        run: |
+          mkdir -p dist
+          cp target/release/momonados dist/
+          chmod +x dist/momonados
+          cp README.md dist/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: momonados-linux-x86_64
+          path: imsgct/mOMonadOS/dist/*
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: imsgct/mOMonadOS
+      - uses: actions/checkout@v4
+        with:
+          repository: umpolungfish/Vox
+          ref: ${{ env.VOX_REF }}
+          path: imsgct/Vox
+      - uses: actions/checkout@v4
+        with:
+          repository: umpolungfish/MoDoT
+          ref: ${{ env.MODOT_REF }}
+          path: imsgct/MoDoT
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build
+        working-directory: imsgct/mOMonadOS
+        run: cargo build --release --features hosted
+      - name: Package
+        working-directory: imsgct/mOMonadOS
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp target/release/momonados.exe dist/
+          cp README.md dist/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: momonados-windows-x86_64
+          path: imsgct/mOMonadOS/dist/*
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: imsgct/mOMonadOS
+      - uses: actions/checkout@v4
+        with:
+          repository: umpolungfish/Vox
+          ref: ${{ env.VOX_REF }}
+          path: imsgct/Vox
+      - uses: actions/checkout@v4
+        with:
+          repository: umpolungfish/MoDoT
+          ref: ${{ env.MODOT_REF }}
+          path: imsgct/MoDoT
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-apple-darwin,aarch64-apple-darwin
+      # Real Xcode toolchain on the runner cross-compiles both Apple
+      # architectures natively, unlike the Linux-to-macOS direction — no SDK
+      # extraction needed here at all. lipo then merges them into one
+      # universal binary that runs on Intel and Apple Silicon Macs alike.
+      - name: Build both Apple architectures
+        working-directory: imsgct/mOMonadOS
+        run: |
+          cargo build --release --features hosted --target x86_64-apple-darwin
+          cargo build --release --features hosted --target aarch64-apple-darwin
+      - name: Combine into one universal binary
+        working-directory: imsgct/mOMonadOS
+        run: |
+          mkdir -p dist
+          lipo -create -output dist/momonados \
+            target/x86_64-apple-darwin/release/momonados \
+            target/aarch64-apple-darwin/release/momonados
+          chmod +x dist/momonados
+          cp README.md dist/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: momonados-macos-universal
+          path: imsgct/mOMonadOS/dist/*
+
+  release:
+    needs: [linux, windows, macos]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Zip each platform's output
+        run: |
+          cd artifacts
+          for d in */; do
+            name="${d%/}"
+            (cd "$name" && zip -r "../${name}.zip" .)
+          done
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*.zip

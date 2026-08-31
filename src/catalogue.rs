@@ -55,7 +55,7 @@ pub fn catalogue_main(args: &[&str]) -> String {
     let mut cands: Vec<(IgTuple, &'static str, f32)> = Vec::new();
     for &dv in ordinal_table("⊢") {
         for &pv in ordinal_table("⊙") {
-            for &ov in ordinal_table("◻") {
+            for &ov in ordinal_table("⊡") {
                 for &cv in ordinal_table("∋") {
                     let mut t = spine;
                     t.d = dv; t.phi = pv; t.omega = ov; t.c = cv;

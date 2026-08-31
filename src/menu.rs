@@ -23,7 +23,7 @@ pub static MAIN_MENU: &[MenuItem] = &[
     MenuItem { name: "Programs", cmd: "programs",  desc: "Program loading (list, canonical, continuous, novel, shunt)", example: "", submenu: Some(PROGRAMS_MENU) },
     MenuItem { name: "Crystal",  cmd: "crystal",  desc: "Crystal FS (decode, store, find, name)", example: "", submenu: Some(CRYSTAL_MENU) },
     MenuItem { name: "Grammar",  cmd: "grammar",  desc: "Grammar bridges (ig, classify, frob, aleph, shor, rh, ym)", example: "", submenu: Some(GRAMMAR_MENU) },
-    MenuItem { name: "Quantum",  cmd: "quantum",  desc: "Quantum computation (fibqc, jones, braids, shor, iuft, sic, d12, d2048)", example: "help quantum", submenu: Some(QUANTUM_MENU) },
+    MenuItem { name: "Quantum",  cmd: "quantum",  desc: "Quantum computation (fibqc, jones, braids, shor, shors_btc_2, btc_oneshot, qft, iuft, sic, d12, d2048)", example: "help quantum", submenu: Some(QUANTUM_MENU) },
     MenuItem { name: "IMASM",    cmd: "imasm",    desc: "IMASM word walks (cycle, weight, banked, insert, trans, arev)", example: "", submenu: Some(IMASM_MENU) },
     MenuItem { name: "Kernel",   cmd: "kernel",   desc: "Kernel utilities (ask, spine, vessel, vita, whoami, ruleset)", example: "", submenu: Some(KERNEL_MENU) },
     MenuItem { name: "Rebis",    cmd: "rebis",    desc: "Red-Hot Rebis (codon, translate, genetics, materials, bio, tx)", example: "", submenu: Some(REBIS_MENU) },
@@ -49,12 +49,14 @@ pub static SEALS_MENU: &[MenuItem] = &[
     MenuItem { name: "winding",        cmd: "seals winding",        desc: "ω = 2π — all angles in windings (1 step)", example: "seals winding", submenu: None },
     MenuItem { name: "residuals",      cmd: "seals residuals",      desc: "Where every remainders comes from (1 step)", example: "seals residuals", submenu: None },
     MenuItem { name: "all",            cmd: "seals all",            desc: "GRAND SEAL — walk through all 10", example: "seals all", submenu: None },
+    MenuItem { name: "fold",           cmd: "fold",                 desc: "The fold verdict of a word — closed form, surplus, the enclosure witness, the codon lane", example: "fold", submenu: None },
     MenuItem { name: "erdos",          cmd: "erdos",                desc: "Guided walks through the Erdős manuscripts — list | schutte | landau | lcm", example: "erdos schutte", submenu: None },
 ];
 
 pub static PROOF_MENU: &[MenuItem] = &[
     MenuItem { name: "list",      cmd: "proof list",      desc: "List available guided proofs", example: "proof list", submenu: None },
     MenuItem { name: "bootstrap", cmd: "proof bootstrap", desc: "The Grammar verifying itself (7 steps, auto-play)", example: "proof bootstrap", submenu: None },
+    MenuItem { name: "prooflift", cmd: "prooflift", desc: "Proof-lift report: undischarged claims and unrejoined forks as one object; `prooflift nest` runs the self-nest word, the proof of mu.delta=id itself (86065 glyphs, verdict T)", example: "prooflift nest", submenu: None },
 ];
 
 pub static EXEC_MENU: &[MenuItem] = &[
@@ -106,7 +108,7 @@ pub static STATUS_MENU: &[MenuItem] = &[
     MenuItem { name: "graph",    cmd: "graph",    desc: "ASCII-art token graph with nesting", example: "graph", submenu: None },
     MenuItem { name: "heatmap",  cmd: "heatmap",  desc: "B4 memory heatmap", example: "heatmap", submenu: None },
     MenuItem { name: "memory",   cmd: "memory",   desc: "Dump B4 memory", example: "memory", submenu: None },
-    MenuItem { name: "registers",cmd: "registers",desc: "Show R0-R7", example: "registers", submenu: None },
+    MenuItem { name: "registers",cmd: "registers",desc: "Show R0-R7, plus the real SIXTEEN_3 value from the last FSPLIT3/FFUSE3/EVALI", example: "registers", submenu: None },
     MenuItem { name: "color",      cmd: "color",      desc: "Toggle terminal colour (alias colour)", example: "color on", submenu: None },
     MenuItem { name: "stack",    cmd: "stack",    desc: "Stack depth", example: "stack", submenu: None },
 ];
@@ -128,11 +130,11 @@ pub static CRYSTAL_MENU: &[MenuItem] = &[
 ];
 
 pub static IMASM_MENU: &[MenuItem] = &[
-    MenuItem { name: "cycle", cmd: "cycle", desc: "walk an IMASM word around its ROTAT orbit (glyphs only)", example: "cycle ⊢⊙∈⊤⊥∋⋈◻⊣", submenu: None },
-    MenuItem { name: "weight", cmd: "weight", desc: "where the weight moves through an IMASM word", example: "weight ⊢⊙∈⊤⊥∋⋈◻⊣", submenu: None },
-    MenuItem { name: "banked", cmd: "banked", desc: "was a count cleared with nothing banked?", example: "banked ⊢⊙∈⊤⊥∋⋈◻⊣", submenu: None },
-    MenuItem { name: "insert", cmd: "insert", desc: "every one-glyph repair for an exposed word", example: "insert ⊢⊙∈⊤⊥⊞∋><⋈◻⊣", submenu: None },
-    MenuItem { name: "trans", cmd: "trans", desc: "transitions counted on the ring, closing edge included", example: "trans ⊢⊙∈⊤⊥∋⋈◻⊣", submenu: None },
+    MenuItem { name: "cycle", cmd: "cycle", desc: "walk an IMASM word around its ROTAT orbit (glyphs only)", example: "cycle ⊢⊙∈⊤⊥∋⋈⊡⊣", submenu: None },
+    MenuItem { name: "weight", cmd: "weight", desc: "where the weight moves through an IMASM word", example: "weight ⊢⊙∈⊤⊥∋⋈⊡⊣", submenu: None },
+    MenuItem { name: "banked", cmd: "banked", desc: "was a count cleared with nothing banked?", example: "banked ⊢⊙∈⊤⊥∋⋈⊡⊣", submenu: None },
+    MenuItem { name: "insert", cmd: "insert", desc: "every one-glyph repair for an exposed word", example: "insert ⊢⊙∈⊤⊥⊞∋><⋈⊡⊣", submenu: None },
+    MenuItem { name: "trans", cmd: "trans", desc: "transitions counted on the ring, closing edge included", example: "trans ⊢⊙∈⊤⊥∋⋈⊡⊣", submenu: None },
     MenuItem { name: "arev", cmd: "arev", desc: "H hop: read snapshot through the R1<->R2 mirror", example: "arev", submenu: None },
 ];
 
@@ -145,7 +147,7 @@ pub static KERNEL_MENU: &[MenuItem] = &[
     MenuItem { name: "ruleset", cmd: "ruleset", desc: "show the active ruleset", example: "ruleset", submenu: None },
     MenuItem { name: "absorption", cmd: "absorption", desc: "list all absorption rules", example: "absorption", submenu: None },
     MenuItem { name: "replicative", cmd: "replicative", desc: "load the program targeting O_inf_dag (R2) deliberately", example: "replicative", submenu: None },
-    MenuItem { name: "vox",        cmd: "vox",        desc: "Control-flow closure auditor: verdict <word> | evm <hex> | wasm <hex> | classify <mn>", example: "vox verdict ⊢∈⊤><>∋◻", submenu: None },
+    MenuItem { name: "vox",        cmd: "vox",        desc: "Control-flow closure auditor: verdict <word> is the classic FOUR-valued reading (T/F/B/N); sixteen3 check <word> is the real 16-valued machine (t/f included, full step trace) — two different engines, not the same question twice. compile <seq> [--code std|mito] [--pdb <path>] runs the RNA<->protein pipeline both ways from one entry point: RNA/DNA in gives a compiled protein with real fold info (Chou-Fasman secondary structure, heuristic tertiary contacts, a real 3D backbone via B4-Ramachandran-NeRF); protein in gives RNA/DNA back out (Frobenius-preferred codon per residue, full degeneracy) with the same fold computed on the input; direction auto-detects from the input alphabet, --pdb writes a real PDB file readable back by rebis pdb. evm <hex> | wasm <hex> | classify <mn> | run <file> [--argv a,b] — runs the file as a real process from its own entry, real argv/envp/auxv stack, real read/write/open/openat/close/mmap/brk syscalls. run <sym> <file> [--args a,b] calls one function directly instead: scalar int args, one int back, no process. Static binaries on direct syscalls run for real; dynamic linking and glibc's own TLS setup are further rungs, not yet built", example: "vox compile ATGGCCTGTGGCAAGTAA --pdb folded.pdb", submenu: None },
     MenuItem { name: "quit", cmd: "quit", desc: "halt the kernel (aliases exit, halt)", example: "quit", submenu: None },
 ];
 
@@ -155,7 +157,13 @@ pub static QUANTUM_MENU: &[MenuItem] = &[
     MenuItem { name: "bi", cmd: "bi", desc: "Draw a braid word — strand diagram in the terminal, SVG with `svg`, the closed braid as a ring with `loop`; window with start:count, column height with /N (alias braid_image)", example: "bi loop 1 2 -1 -2 1 2", submenu: None },
     MenuItem { name: "jp", cmd: "jp", desc: "Jones polynomial at the 1/5 winding; signed Artin generators (alias jones_polynomial)", example: "jp 1 1 1", submenu: None },
     MenuItem { name: "bg",         cmd: "bg",         desc: "Braid word to grammar tuple (alias braid-grammar); winding is a closed form in the writhe", example: "bg tuple 1,2,1 3", submenu: None },
-    MenuItem { name: "shor",       cmd: "shor",       desc: "Belnap Shor pipeline, N=15 and N=21", example: "shor", submenu: None },
+    MenuItem { name: "shor",       cmd: "shor",       desc: "Belnap Shor pipeline + dialetheic Fibonacci Shor (word ⊢∈≻⋈⊞∈⊤≻⊥≺∋⊙⋈⊡⊣); N=15,21", example: "shor dialetheic 15 7", submenu: None },
+    MenuItem { name: "shors_btc_2", cmd: "shors_btc_2", desc: "Shor over secp256k1 ECDLP: recover a Bitcoin private key from a public key (x,y)", example: "shors_btc_2", submenu: None },
+    MenuItem { name: "prime_winding", cmd: "prime_winding", desc: "Winding period of the primes on the number line - ob3ect-backed: find | factor | cycle | tuple | verdict", example: "prime_winding find 100", submenu: None },
+    MenuItem { name: "oneshot_prime_winder", cmd: "oneshot_prime_winder", desc: "One-shot primality test using IMASM word ⊢∈≻⊤⋈⊙≺⊥⊞∋⊡⊣ winding certificate", example: "oneshot_prime_winder 17", submenu: None },
+    MenuItem { name: "dyn_nest", cmd: "dyn_nest", desc: "Dynamic Nesting Prime Finder - pipes oneshot verdict, searches optimal nesting depth d=1,2,3,...; period P(d)=5d+7, closure-derived seed", example: "dyn_nest 1234567", submenu: None },
+        MenuItem { name: "qft",        cmd: "qft",        desc: "Quantum Fourier Transform: circuit | phases | iqft | iqft braid | braid, on n qubits", example: "qft circuit 3", submenu: None },
+    MenuItem { name: "btc_oneshot",  cmd: "btc_oneshot",  desc: "BTC Secret Key Oneshot Operator — structural verification & phase steps", example: "btc_oneshot verify", submenu: None },
     MenuItem { name: "winding",    cmd: "winding",    desc: "Period as a torus winding: order | factor | closure | factorgen (alias wperiod)", example: "winding order 2 101", submenu: None },
     MenuItem { name: "iuft",       cmd: "iuft",       desc: "IUFT QC gates — the 12->3 Euler-angle SU(2) encoding of an IG tuple", example: "iuft list", submenu: None },
     MenuItem { name: "teich",      cmd: "teich",      desc: "IUFT <-> IUTT bridge: Teichmuller deformation paths as gate trajectories", example: "teich canonical", submenu: None },
@@ -189,6 +197,7 @@ pub static GRAMMAR_MENU: &[MenuItem] = &[
     MenuItem { name: "ovm", cmd: "ovm", desc: "OVM Computation Tools", example: "ovm list", submenu: None },
     MenuItem { name: "oneshots", cmd: "oneshots", desc: "the 10 exotic fixed-point nestings: inner already at outer's fixed point", example: "oneshots", submenu: None },
     MenuItem { name: "ctc",      cmd: "ctc",      desc: "nest a value in an action; closure imposed where the action has none, priced by the width it smears", example: "ctc cycle T", submenu: Some(CTC_MENU) },
+    MenuItem { name: "collatz",   cmd: "collatz",   desc: "the Collatz block nesting: blocks to one, the budget spectrum, and the records", example: "collatz 27", submenu: None },
     MenuItem { name: "straus",   cmd: "straus",   desc: "the Erdős–Straus ladder: which rung r closes 4/n, and the spectrum across a range", example: "straus 49", submenu: None },
     MenuItem { name: "nesting",  cmd: "nesting",  desc: "read a point against a map: q=r2/r1 splits attracted from never-arrives where one gap cannot", example: "nesting halve 203", submenu: Some(NESTING_MENU) },
     MenuItem { name: "carriers", cmd: "carriers", desc: "census of the mu-delta=id carriers by class: one fixed point seen many ways, or a family", example: "carriers", submenu: Some(CARRIERS_MENU) },
@@ -198,6 +207,7 @@ pub static GRAMMAR_MENU: &[MenuItem] = &[
     MenuItem { name: "distance", cmd: "distance", desc: "Hamming + weighted distance vs the ZFC baseline tuple (alias dist)", example: "distance", submenu: None },
     MenuItem { name: "join", cmd: "join", desc: "join of the active IG tuple with the ZFC baseline", example: "join", submenu: None },
     MenuItem { name: "sigma", cmd: "sigma", desc: "sigma <n> — analyze the Sigma(n) divisor ring", example: "sigma 5", submenu: None },
+    MenuItem { name: "ringspec", cmd: "ringspec", desc: "ringspec <w1> <w2> <w3> — the spectrum of a ring, in integers: bond weights around a cycle, clean bond 1, cross-link its reaction centres; three is the minimum", example: "ringspec 1 2 2 1", submenu: None },
     MenuItem { name: "clay", cmd: "clay", desc: "Clay Millennium structural status (machine-checked)", example: "clay", submenu: None },
     MenuItem { name: "psm", cmd: "psm", desc: "dialetheic alignment + measurement tests", example: "psm test", submenu: None },
     MenuItem { name: "entropy", cmd: "entropy", desc: "entropy experiment: dS vs tier promotion", example: "entropy tier", submenu: None },
@@ -217,12 +227,12 @@ pub static GRAMMAR_MENU: &[MenuItem] = &[
     MenuItem { name: "proof-braider", cmd: "proof-braider", desc: "Lift a claim to a braid and back; PASS iff Frobenius closure survives", example: "proof-braider roundtrip Imscribing.Frobenius", submenu: None },
     MenuItem { name: "universe-wormhole", cmd: "universe-wormhole", desc: "Minimum gate-space path between two hop frameworks, as a braid + Jones", example: "universe-wormhole hqe fibonacci", submenu: None },
     MenuItem { name: "vox-ce", cmd: "vox-ce", desc: "Lift EVM/WASM hex into an IMASM word and verdict its control-flow closure", example: "vox-ce evm 0x600160025b00", submenu: None },
-    MenuItem { name: "consciousness-lath", cmd: "consciousness-lath", desc: "Single-axis mutation that most raises the C-score with both gates open", example: "consciousness-lath ⊢∈><⊤⋈⊙⊞∋◻⊣", submenu: None },
+    MenuItem { name: "consciousness-lath", cmd: "consciousness-lath", desc: "Single-axis mutation that most raises the C-score with both gates open", example: "consciousness-lath ⊢∈><⊤⋈⊙⊞∋⊡⊣", submenu: None },
     MenuItem { name: "paradox-engine", cmd: "paradox-engine", desc: "Hunt words that are dialetheias by four readings at once (B, price, gate1, C=0)", example: "paradox-engine --min-price 3", submenu: None },
-    MenuItem { name: "key-dissolver", cmd: "key-dissolver", desc: "SIC-narrowed bounded window before a BSGS split; recovers no real key", example: "key-dissolver 03f01d 40", submenu: None },
+    MenuItem { name: "key-dissolver", cmd: "key-dissolver", desc: "SIC-narrowed bounded window before a BSGS split", example: "key-dissolver 03f01d 40", submenu: None },
     MenuItem { name: "compiler", cmd: "compiler", desc: "Compile a braid to imasm/jones/lean, or a token word back to a braid", example: "compiler braid 1 2 1 --to imasm", submenu: None },
     MenuItem { name: "catalogue", cmd: "catalogue", desc: "Synthesize candidate operators; rank by novelty against the catalog", example: "catalogue synthesize --top 5", submenu: None },
-    MenuItem { name: "sk_forge", cmd: "sk_forge", desc: "Crystal Harvester: read a key as a tuple, gap-analyse against O_∞ carriers; scalar is HEURISTIC, never a key", example: "sk_forge word ⊢∈><⊤⋈⊙⊞∋◻⊣", submenu: None },
+    MenuItem { name: "sk_forge", cmd: "sk_forge", desc: "Crystal Harvester: BIP39-SIC integrated structural gap analysis against O_∞ carriers. Commands: forge, tuple, word, verify, carriers, bip39-sic, bip39-pipeline (alias sk-forge)", example: "sk_forge bip39-sic", submenu: None },
     MenuItem { name: "museum", cmd: "museum", desc: "The permanent collection of failed constructions — append-only negative knowledge", example: "museum open", submenu: None },
     MenuItem { name: "phase", cmd: "phase", desc: "Phase as an object: orbit spectrum, phase period, and two-word interference", example: "phase interference \u{22a2}\u{2208}\u{22a4}\u{220b} \u{22a2}\u{22a4}\u{2208}\u{220b}", submenu: None },
     MenuItem { name: "demonstrate", cmd: "demonstrate", desc: "Run a claim as an experiment: INPUT/OPERATION/OUTPUT/CHECK, computed live (alias demo)", example: "demonstrate mu-delta 1 2 -1", submenu: None },

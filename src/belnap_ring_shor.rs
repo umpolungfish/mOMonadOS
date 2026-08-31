@@ -42,7 +42,7 @@ pub enum Glyph {
     Cri,   // ⊙  Criticality
     Chi,   // ⊥  Chirality
     Stoi,  // ⊞  Stoichiometry
-    Win,   // ◻  Winding
+    Win,   // ⊡  Winding
 }
 
 impl Glyph {
@@ -54,19 +54,19 @@ impl Glyph {
 
     pub fn to_char(&self) -> char {
         match self {
-            Glyph::Dim => '⊢',  Glyph::Top => '⊣',  Glyph::Rel => '>',
-            Glyph::Pol => '<',  Glyph::Fid => '⋈',  Glyph::Kin => '⊤',
+            Glyph::Dim => '⊢',  Glyph::Top => '⊣',  Glyph::Rel => '≻',
+            Glyph::Pol => '≺',  Glyph::Fid => '⋈',  Glyph::Kin => '⊤',
             Glyph::Car => '∈',  Glyph::Com => '∋',  Glyph::Cri => '⊙',
-            Glyph::Chi => '⊥',  Glyph::Stoi => '⊞', Glyph::Win => '◻',
+            Glyph::Chi => '⊥',  Glyph::Stoi => '⊞', Glyph::Win => '⊡',
         }
     }
 
     pub fn from_char(c: char) -> Option<Glyph> {
         match c {
-            '⊢' => Some(Glyph::Dim), '⊣' => Some(Glyph::Top), '>' => Some(Glyph::Rel),
-            '<' => Some(Glyph::Pol), '⋈' => Some(Glyph::Fid), '⊤' => Some(Glyph::Kin),
+            '⊢' => Some(Glyph::Dim), '⊣' => Some(Glyph::Top), '≻' => Some(Glyph::Rel),
+            '≺' => Some(Glyph::Pol), '⋈' => Some(Glyph::Fid), '⊤' => Some(Glyph::Kin),
             '∈' => Some(Glyph::Car), '∋' => Some(Glyph::Com), '⊙' => Some(Glyph::Cri),
-            '⊥' => Some(Glyph::Chi), '⊞' => Some(Glyph::Stoi), '◻' => Some(Glyph::Win),
+            '⊥' => Some(Glyph::Chi), '⊞' => Some(Glyph::Stoi), '⊡' => Some(Glyph::Win),
             _ => None,
         }
     }
@@ -75,7 +75,7 @@ impl Glyph {
     pub fn dual(&self) -> Glyph {
         match self {
             Glyph::Dim => Glyph::Com,   // ⊢ ↔ ∋
-            Glyph::Top => Glyph::Win,   // ⊣ ↔ ◻
+            Glyph::Top => Glyph::Win,   // ⊣ ↔ ⊡
             Glyph::Rel => Glyph::Stoi,  // >  ↔ ⊞
             Glyph::Pol => Glyph::Chi,   // <  ↔ ⊥
             Glyph::Fid => Glyph::Kin,   // ⋈  ↔ ⊤
@@ -85,7 +85,7 @@ impl Glyph {
             Glyph::Cri => Glyph::Car,   // ⊙  ↔ ∈
             Glyph::Chi => Glyph::Pol,   // ⊥  ↔ <
             Glyph::Stoi => Glyph::Rel,  // ⊞  ↔ >
-            Glyph::Win => Glyph::Top,   // ◻  ↔ ⊣
+            Glyph::Win => Glyph::Top,   // ⊡  ↔ ⊣
         }
     }
 }
@@ -154,7 +154,7 @@ impl RingWalkState {
 /// The encoding uses the dual-pair structure:
 ///   - The period register's qubit count determines ⊢ and ⊣
 ///   - The modular exponentiation determines the coupling >
-///   - The period r determines the chirality ⊥ and winding ◻
+///   - The period r determines the chirality ⊥ and winding ⊡
 ///   - The measurement protocol determines the fidelity ⋈
 pub fn period_to_glyph_word(period: u64, _n_qubits: usize, a: u64, n_val: u64) -> Vec<Glyph> {
     // Construct a glyph word whose ring walk cycle length EQUALS the period.
@@ -170,7 +170,7 @@ pub fn period_to_glyph_word(period: u64, _n_qubits: usize, a: u64, n_val: u64) -
     for _i in 0..(period as usize).min(1000) {
         val = (val * a) % n_val;
         let glyph = match val {
-            1 => Glyph::Win,    // ◻ : identity = cycle closed
+            1 => Glyph::Win,    // ⊡ : identity = cycle closed
             v if v == n_val - 1 => Glyph::Chi, // ⊥
             v if v < 10 => Glyph::Cri,  // ⊙ : small values
             _ => Glyph::Rel,    // > : generic group element
@@ -179,7 +179,7 @@ pub fn period_to_glyph_word(period: u64, _n_qubits: usize, a: u64, n_val: u64) -
         if val == 1 { break; }
     }
 
-    word.push(Glyph::Win); // ◻ : winding confirms closure
+    word.push(Glyph::Win); // ⊡ : winding confirms closure
     word
 }
 
@@ -343,7 +343,7 @@ mod tests {
     #[test]
     fn test_period_to_glyph_n15() {
         let word = period_to_glyph_word(4, 4, 7, 15);
-        // Should have: ⊢, >, >, >, ◻, ◻
+        // Should have: ⊢, >, >, >, ⊡, ⊡
         assert_eq!(word[0], Glyph::Dim);
         assert_eq!(word[word.len() - 1], Glyph::Win);
     }
@@ -419,7 +419,16 @@ pub fn program_from_glyphs(word: &str) -> Result<Program, (usize, char)> {
     let mut p = Program::empty();
     for (i, c) in word.chars().filter(|c| !c.is_whitespace()).enumerate() {
         match Glyph::from_char(c) {
-            Some(g) => p.push(glyph_to_token(g)),
+            Some(g) => {
+                // `Program` is a fixed 64-token buffer and `push` drops silently past
+                // it, so a longer word used to come back truncated with no sign that
+                // anything was lost — a 513-mark word derived from its first 64 and
+                // reported a tuple for a prefix. Refuse instead, the way a bad mark is
+                // already refused, so the caller sees the limit rather than a wrong
+                // answer. The word instruments take `&str` and have no such bound.
+                if p.len() == Program::CAPACITY { return Err((i, c)); }
+                p.push(glyph_to_token(g));
+            }
             None => return Err((i, c)),
         }
     }

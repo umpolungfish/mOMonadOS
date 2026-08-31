@@ -1,0 +1,12 @@
+   Compiling vox v0.1.0 (/home/mrnob0dy666/imsgct/Vox)
+   Compiling momonados v0.1.0 (/home/mrnob0dy666/imsgct/mOMonadOS)
+warning: unused import: `symbols`
+ --> src/imasm_exec.rs:6:40
+  |
+6 | pub use vox_core::imasm_module::{emit, symbols, words};
+  |                                        ^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `momonados` (bin "momonados") generated 1 warning (run `cargo fix --bin "momonados" -p momonados` to apply 1 suggestion)
+    Finished `release` profile [optimized] target(s) in 47.24s

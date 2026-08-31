@@ -10,6 +10,7 @@ use alloc::format;
 
 use crate::{sprint, sprintln};
 use crate::{
+    btc_secret_key_oneshot,
     serial, belnap, tokens, crystal, kernel, interrupts, frob_verify, imas_ig,
     aleph, manus, parasm, belnap_shor, para_rh, para_ym, para_temporal,
     para_category, algebra, catalog, cl8nk, consciousness, rebis, dialect, menu,
@@ -19,7 +20,7 @@ use crate::{
     sic_moduli,
     riemann_sic,
     riemann_hilbert, bip39_sic_grover, redteam,
-    witness_vessel, ask, ovm,
+    witness_vessel, ask, ovm, pk2sk,
 };
 use crate::tokens::{canonical_name, canonical_count, continuous_name, continuous_count, novel_name, novel_count, shunted_name, shunted_count, compound_name, compound_index, compound_program, compound_count};
 use crate::crystal::{CrystalStore, decode, encode, indices_from_program, TOTAL};
@@ -69,7 +70,10 @@ impl History {
 
 pub fn repl(k: &mut Kernel) {
     let mut cfs = CrystalStore::new();
-    let mut line_buf = [0u8; 512];
+    // 2 MiB on the stack overflowed under Windows' default ~1 MiB thread
+    // stack the instant `repl()` was entered — Linux's 8 MiB default had
+    // masked this. The buffer itself is unchanged, only where it lives.
+    let mut line_buf = vec![0u8; 2097152].into_boxed_slice();
     let mut history = History::new();
     let mut ctx_stack = ContextStack::new();
     let mut ask_paste = crate::ask::AskPaste::new();
@@ -177,6 +181,8 @@ pub fn repl(k: &mut Kernel) {
         match cmd {
             "quit" | "exit" | "halt" => {
                 sprintln!("Halting. μ∘δ=id.");
+                #[cfg(feature = "hosted")]
+                crate::live_hud::stop_hud();
                 k.halt();
                 break;
             }
@@ -230,6 +236,7 @@ pub fn repl(k: &mut Kernel) {
                     }
                 }
             },
+            "fold" => crate::fold_walk::walk_fold(),
             "erdos" => {
                 match parts.next().unwrap_or("") {
                     "" | "list" => crate::erdos_walks::list_walks(),
@@ -298,6 +305,17 @@ pub fn repl(k: &mut Kernel) {
                     crate::lattice_flow::banked_report(w);
                 }
             }
+            // `proof` is the guided proof walker and is dispatched above; naming it
+            // here too made this arm unreachable for it, so `proof` never once
+            // reached prooflift and the alias only looked like it worked.
+            "prooflift" => {
+                let tail: Vec<&str> = parts.collect();
+                if tail.first().map(|a| *a == "nest").unwrap_or(false) {
+                    sprintln!("{}", crate::prooflift::nest());
+                } else {
+                    sprintln!("{}", crate::prooflift::report());
+                }
+            }
             "weight" => {
                 let tail: Vec<&str> = parts.collect();
                 let word = tail.join(" ");
@@ -319,10 +337,56 @@ pub fn repl(k: &mut Kernel) {
                     tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
                 if rest.is_empty() || rest[0] == "help" {
                     sprintln!("vox <sub>        — control-flow closure auditor");
-                    sprintln!("vox verdict <word>   — SIXTEEN_3 verdict over a glyph word");
+                    sprintln!("vox verdict <word>   — classic FOUR-valued verdict over a glyph word,");
+                    sprintln!("                       the same close-condition rule the SIXTEEN_3");
+                    sprintln!("                       engine reads, but over T/F/B/N only");
+                    sprintln!("vox sixteen3 check <word>");
+                    sprintln!("                     — the real 16-valued machine (imasm_core::imasm16_3):");
+                    sprintln!("                       full step trace, t/f included, real union/parts");
+                    sprintln!("vox sixteen3 algebra <op> A B");
+                    sprintln!("                     — a trilattice lattice op on two named registers");
+                    sprintln!("                       (leq_i|leq_t|leq_c|meet_t|join_t|meet_c|join_c)");
+                    sprintln!("vox sixteen3 ref     — the live 12-opcode SIXTEEN_3 table");
                     sprintln!("vox evm <hex>        — lift EVM bytecode, verdict its closure");
                     sprintln!("vox wasm <hex>       — lift a WASM body, verdict its closure");
                     sprintln!("vox classify <mn>    — which glyph an instruction lifts to");
+                    sprintln!("vox rna <seq> [code] — lift a coding sequence; code is");
+                    sprintln!("                       standard or mitochondrial");
+                    sprintln!("vox peptide <seq>    — lift a residue sequence");
+                    sprintln!("vox compile <seq> [--code standard|mitochondrial] [--pdb <path>]");
+                    sprintln!("                     — the same pipeline, both ends: RNA/DNA in gives");
+                    sprintln!("                       a compiled protein with real fold info (Chou-");
+                    sprintln!("                       Fasman secondary structure, heuristic tertiary");
+                    sprintln!("                       contacts, a real 3D backbone via B4-Ramachandran-");
+                    sprintln!("                       NeRF); protein in gives RNA/DNA back out, with");
+                    sprintln!("                       full codon degeneracy and the SAME fold info");
+                    sprintln!("                       computed on the input. Input alphabet auto-");
+                    sprintln!("                       detects the direction. --pdb writes a real PDB");
+                    sprintln!("                       structure file, readable back by `rebis pdb`.");
+                    sprintln!("vox run <file> [--argv a,b]");
+                    sprintln!("                     — run the whole file as a real process from");
+                    sprintln!("                       its own entry point: a real argv/envp/auxv");
+                    sprintln!("                       stack underneath it, real registers, memory,");
+                    sprintln!("                       flags, ALU in front of it, and real syscalls");
+                    sprintln!("                       — read/write/open/openat/close go through");
+                    sprintln!("                       the host filesystem and console for real,");
+                    sprintln!("                       mmap/brk hand out a real anonymous heap. No");
+                    sprintln!("                       function ever returns here; it ends by");
+                    sprintln!("                       calling exit, same as any process. This is");
+                    sprintln!("                       the only thing a PE binary offers too, since");
+                    sprintln!("                       the loader never reads a symbol table for");
+                    sprintln!("                       that format.");
+                    sprintln!("vox run <sym> <file> [--args a,b]");
+                    sprintln!("                     — call ONE function directly instead: scalar");
+                    sprintln!("                       int args in, one int back, no process at");
+                    sprintln!("                       all — the older, narrower contract.");
+                    sprintln!("                       A statically-linked binary using only direct");
+                    sprintln!("                       syscalls runs for real end to end. A dynamically-");
+                    sprintln!("                       linked binary's calls into libc, and a glibc");
+                    sprintln!("                       static binary's own TLS/segment-register setup,");
+                    sprintln!("                       are further rungs, not yet built: those halt or");
+                    sprintln!("                       loop rather than silently pretending to work.");
+                    sprintln!("                       Hosted builds only.");
                     sprintln!("A word closes at T, carries an open fork at B, and runs clean");
                     sprintln!("and linear at N. The fork is what the verdict is looking for.");
                 } else {
@@ -336,12 +400,40 @@ pub fn repl(k: &mut Kernel) {
                                 sprintln!("vox verdict <glyph-word>");
                             }
                         }
+                        "sixteen3" => {
+                            // The real 16-valued machine (imasm_core::imasm16_3),
+                            // not this command's own classic FOUR-valued verdict
+                            // above — that one reads the same close-condition
+                            // rule the SIXTEEN_3 engine does, but over T/F/B/N,
+                            // never touching t/f. This runs the actual register.
+                            let args: Vec<alloc::string::String> = rest[1..].to_vec();
+                            sprint!("{}", imasm_core::imasm16_3::run(&args));
+                        }
                         "lift" => {
                             if rest.len() < 2 {
                                 sprintln!("vox lift <path>   — lift an ELF's executable sections");
                             } else {
                                 vox_lift_file(&rest[1]);
                             }
+                        }
+                        "rna" => {
+                            if rest.len() > 1 {
+                                let dialect = rest.get(2).map(|s| s.as_str()).unwrap_or("standard");
+                                let t = vox_core::genetic::lift_rna_dialect(&rest[1], dialect);
+                                sprintln!("code    {}", dialect);
+                                sprintln!("word    {}", crate::vox::glyphs(&t.word));
+                                if let Some(stop) = t.stopped {
+                                    sprintln!("stop    {}", stop);
+                                }
+                                sprintln!("verdict {}", crate::vox::verdict(&t.word));
+                            } else { sprintln!("vox rna <sequence> [standard|mitochondrial]"); }
+                        }
+                        "peptide" | "aa" => {
+                            if rest.len() > 1 {
+                                let t = vox_core::genetic::lift_peptide(&rest[1]);
+                                sprintln!("word    {}", crate::vox::glyphs(&t.word));
+                                sprintln!("verdict {}", crate::vox::verdict(&t.word));
+                            } else { sprintln!("vox peptide <residues>"); }
                         }
                         "evm" => {
                             if rest.len() > 1 {
@@ -368,6 +460,8 @@ pub fn repl(k: &mut Kernel) {
                                 sprintln!("vox classify <mnemonic> [operands]");
                             }
                         }
+                        "compile" => vox_compile(&rest[1..]),
+                        "run" => vox_run_symbol(&rest[1..]),
                         other => sprintln!("vox has no `{}`; try `vox help`", other),
                     }
                 }
@@ -682,7 +776,7 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("fibqc knot [name]        — Jones value for a knot from the census");
                         sprintln!("fibqc winding            — the phase lattice, in windings");
                         sprintln!("fibqc readout <a> <N>    — one-shot topological readout (ModExp invariant -> winding -> period)");
-                        sprintln!("fibqc alkahest <a> <N>   — the four-name dissolution report (root, fixed point, one, ◻-promotion)");
+                        sprintln!("fibqc alkahest <a> <N>   — the four-name dissolution report (root, fixed point, one, ⊡-promotion)");
                         sprintln!("fibqc protocol           — show the IMASM braiding protocol report");
                         sprintln!("fibqc braid <gens...>    — δ: compile a braid word to an IMASM program");
                         sprintln!("fibqc braid <gens...> close — same, closed (trace closure)");
@@ -1043,7 +1137,11 @@ pub fn repl(k: &mut Kernel) {
                     _other => sprintln!("teich: unknown subcommand. Try `teich help`.",),
                 }
             }
-            "classify" => print_classify(k),
+            "classify" => {
+                let arg: alloc::string::String =
+                    parts.collect::<alloc::vec::Vec<&str>>().join(" ");
+                print_classify(k, &arg)
+            }
             "arev" => {
                 match parts.next().unwrap_or("") {
                     ""     => print_arev_hop(k),
@@ -1072,6 +1170,11 @@ pub fn repl(k: &mut Kernel) {
                         let a_str = parts.next().unwrap_or("");
                         print_shor_gap(parse_u64(n_str), parse_u64(a_str));
                     }
+                    "dialetheic" => {
+                        let n_str = parts.next().unwrap_or("");
+                        let a_str = parts.next().unwrap_or("");
+                        print_shor_dialetheic(parse_u64(n_str), parse_u64(a_str));
+                    }
                     "help" => {
                         sprintln!("shor — Belnap Shor pipeline + 4-problem solutions");
                         sprintln!("  shor                 default pipeline (N=15,21)");
@@ -1081,6 +1184,7 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("  shor phase N a       Phase-augmented Shor (P1+P2 solved)");
                         sprintln!("  shor ring N a        IMASM ring walk verification (P4)");
                         sprintln!("  shor fib N a         Fibonacci anyon braid estimation (P3)");
+                        sprintln!("  shor dialetheic N a  Dialetheic Fibonacci Shor (ob3ect word ⊢∈≻⋈⊞∈⊤≻⊥≺∋⊙⋈⊡⊣)");
                         sprintln!("  shor integrated N a  All 4 problems integrated");
                     }
                     "phase" => {
@@ -1108,6 +1212,189 @@ pub fn repl(k: &mut Kernel) {
                         let a_val = parse_u64(parts.next().unwrap_or(""));
                         print_shor_custom(n_val, a_val);
                     }
+                }
+            }
+            "prime_winding" => {
+                use crate::prime_winding::*;
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "help" => sprintln!("{}", help()),
+                    "word" => sprintln!("{}", word()),
+                    "find" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("prime_winding find: usage: prime_winding find <n>");
+                        } else {
+                            sprintln!("{}", find(n_str));
+                        }
+                    },
+                    "factor" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("prime_winding factor: usage: prime_winding factor <n>");
+                        } else {
+                            sprintln!("{}", factor(n_str));
+                        }
+                    },
+                    "cycle" => sprintln!("{}", cycle()),
+                    "tuple" => sprintln!("{}", tuple()),
+                    "verdict" => sprintln!("{}", verdict()),
+                    "artifact" => sprintln!("{}", artifact()),
+                    other => {
+                        sprintln!("prime_winding: unknown subcommand '{}'", other);
+                        sprintln!("{}", help());
+                    }
+                }
+            }
+            "oneshot_prime_winder" => {
+                let arg = parts.next().unwrap_or("");
+                crate::oneshot_prime_winder::repl_oneshot_prime_winder(&[arg]);
+            }
+            "nested_oneshot" | "nested" | "nos" => {
+                let tail: Vec<&str> = parts.collect();
+                crate::nested_oneshot::repl_nested_oneshot(&tail);
+            }
+            "doubly_nested_oneshot" | "dnos" => {
+                let tail: Vec<&str> = parts.collect();
+                crate::doubly_nested_oneshot::repl_doubly_nested_oneshot(&tail);
+            }
+            "dyn_nest" | "dynamic_nest" | "dyn" => {
+                let tail: Vec<&str> = parts.collect();
+                crate::dynamic_nesting_prime_finder::repl_dyn(&tail);
+            }
+            "qft" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "help" => {
+                        sprintln!("qft — Quantum Fourier Transform circuit, phases, and braid compilation");
+                        sprintln!("  qft <n>              QFT circuit diagram for n qubits");
+                        sprintln!("  qft circuit <n>      QFT circuit diagram (explicit)");
+                        sprintln!("  qft iqft <n>         Inverse QFT circuit diagram");
+                        sprintln!("  qft phases <n>       Controlled-R_k phase angles for n qubits");
+                        sprintln!("  qft braid <n>        Compile QFT to Fibonacci anyon braid word");
+                        sprintln!("  qft iqft braid <n>   Compile IQFT to Fibonacci anyon braid word");
+                        sprintln!("  qft verify <n>       Verify QFT∘IQFT = identity structure");
+                        sprintln!("  qft estimate <n>     Estimate braid length for QFT/IQFT");
+                    }
+                    "circuit" => {
+                        let n = parts.next().and_then(|s| s.parse::<usize>().ok()).unwrap_or(0);
+                        if n == 0 {
+                            sprintln!("qft circuit: usage: qft circuit <n>  (n > 0)");
+                        } else {
+                            let c = crate::qft::qft_circuit(n, false);
+                            sprintln!("{}", crate::qft::format_circuit(&c));
+                        }
+                    }
+                    "iqft" => {
+                        let sub2 = parts.next().unwrap_or("");
+                        if sub2 == "braid" {
+                            let n = parts.next().and_then(|s| s.parse::<usize>().ok()).unwrap_or(0);
+                            if n == 0 {
+                                sprintln!("qft iqft braid: usage: qft iqft braid <n>  (n > 0)");
+                            } else {
+                                let braid = crate::qft::qft_to_braid(n, true);
+                                sprintln!("IQFT braid ({} qubits, {} generators):", n, braid.len());
+                                for chunk in braid.chunks(24) {
+                                    sprintln!("  {}", chunk.iter().map(|g: &i32| g.to_string()).collect::<alloc::vec::Vec<_>>().join(" "));
+                                }
+                            }
+                        } else {
+                            let n = sub2.parse::<usize>().unwrap_or(0);
+                            if n == 0 {
+                                sprintln!("qft iqft: usage: qft iqft <n>  (n > 0)");
+                            } else {
+                                let c = crate::qft::qft_circuit(n, true);
+                                sprintln!("{}", crate::qft::format_circuit(&c));
+                            }
+                        }
+                    }
+                    "phases" => {
+                        let n = parts.next().and_then(|s| s.parse::<usize>().ok()).unwrap_or(0);
+                        if n == 0 {
+                            sprintln!("qft phases: usage: qft phases <n>  (n > 0)");
+                        } else {
+                            let c = crate::qft::qft_circuit(n, false);
+                            let phases = crate::qft::circuit_phases(&c);
+                            sprintln!("QFT phases ({} qubits):", n);
+                            sprintln!("  control target  angle (rad)  angle (deg)  angle / π");
+                            for (ctrl, target, angle) in phases {
+                                sprintln!("  {:>7} {:>6}  {:>10.6}  {:>10.2}  {:>7.4}π",
+                                    ctrl, target, angle, angle * 180.0 / core::f64::consts::PI, angle / core::f64::consts::PI);
+                            }
+                        }
+                    }
+                    "braid" => {
+                        let n = parts.next().and_then(|s| s.parse::<usize>().ok()).unwrap_or(0);
+                        if n == 0 {
+                            sprintln!("qft braid: usage: qft braid <n>  (n > 0)");
+                        } else {
+                            let braid = crate::qft::qft_to_braid(n, false);
+                            sprintln!("QFT braid ({} qubits, {} generators):", n, braid.len());
+                            for chunk in braid.chunks(24) {
+                                sprintln!("  {}", chunk.iter().map(|g: &i32| g.to_string()).collect::<alloc::vec::Vec<_>>().join(" "));
+                            }
+                        }
+                    }
+                    "verify" => {
+                        let n = parts.next().and_then(|s| s.parse::<usize>().ok()).unwrap_or(0);
+                        if n == 0 {
+                            sprintln!("qft verify: usage: qft verify <n>  (n > 0)");
+                        } else {
+                            let ok = crate::qft::verify_qft_iqft(n);
+                            sprintln!("QFT∘IQFT verification for {} qubits: {}", n, if ok { "PASS" } else { "FAIL" });
+                        }
+                    }
+                    "estimate" => {
+                        let n = parts.next().and_then(|s| s.parse::<usize>().ok()).unwrap_or(0);
+                        if n == 0 {
+                            sprintln!("qft estimate: usage: qft estimate <n>  (n > 0)");
+                        } else {
+                            let est = crate::qft::estimate_qft_braid_length(n);
+                            sprintln!("QFT braid length estimate for {} qubits: ~{} generators", n, est);
+                        }
+                    }
+                    other => {
+                        // Try to parse as a number for default QFT circuit
+                        let n = other.parse::<usize>().unwrap_or(0);
+                        if n == 0 {
+                            sprintln!("qft: unknown subcommand '{}' (try 'qft help')", other);
+                        } else {
+                            let c = crate::qft::qft_circuit(n, false);
+                            sprintln!("{}", crate::qft::format_circuit(&c));
+                        }
+                    }
+                }
+            }
+            "shors_btc_2" => {
+                let arg = parts.next().unwrap_or("");
+                if arg.is_empty() || arg == "help" {
+                    sprintln!("shors_btc_2 — Quantum period-finding for Bitcoin secp256k1 ECDLP");
+                    sprintln!("  shors_btc_2          Extract private key from standard test public key");
+                    sprintln!("  shors_btc_2 <hex>    Extract private key from given compressed public key (02|03 + 64 hex x)");
+                    sprintln!("example:");
+                    sprintln!("  shors_btc_2 03f01d6b9018ab421dd410404cb869072065522bf85734008f105cf385a023a80f");
+                } else {
+                    let result = crate::shors_btc_2::run_shors_btc_2_from_hex(arg);
+                    result.print_report();
+                }
+            }
+            "btc_oneshot" => {
+                let sub = parts.next().unwrap_or("");
+                let pk_hex = parts.next().unwrap_or("");
+                if sub.is_empty() || sub == "help" {
+                    sprintln!("btc_oneshot — BTC Secret Key Oneshot Operator");
+                    sprintln!("  btc_oneshot verify    — full structural verification suite");
+                    sprintln!("  btc_oneshot steps     — 12 operational phase steps");
+                    sprintln!("  btc_oneshot tuple     — print grammar tuple");
+                    sprintln!("  btc_oneshot word      — print IMASM word");
+                    sprintln!("  btc_oneshot extract   — extract private key from compressed pubkey");
+                } else {
+                    let args: Vec<&str> = if pk_hex.is_empty() {
+                        vec![sub]
+                    } else {
+                        vec![sub, pk_hex]
+                    };
+                    sprintln!("{}", crate::btc_secret_key_oneshot::btc_oneshot_repl(&args));
                 }
             }
             "rh" => print_rh(),
@@ -1510,6 +1797,10 @@ pub fn repl(k: &mut Kernel) {
                 let args: Vec<&str> = parts.collect();
                 sprintln!("{}", crate::repair::repair_main(&args));
             }
+            "ringspec" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::ringspec::ringspec_main(&args));
+            }
             "sk_forge" | "sk-forge" => {
                 // sk_forge_main takes &str; join the remaining fields back.
                 let rest: Vec<&str> = parts.collect();
@@ -1537,7 +1828,7 @@ pub fn repl(k: &mut Kernel) {
                         if args.len() >= 2 {
                             if let (Ok(start), Ok(end)) = (args[0].parse::<u32>(), args[1].parse::<u32>()) {
                                 sprintln!("=== MERSENNE SCAN p={}..{} ===", start, end);
-                                sprintln!("{:>4} {:>24} {:>14} {:>6}", "p", "M_p", "VERDICT", "◻");
+                                sprintln!("{:>4} {:>24} {:>14} {:>6}", "p", "M_p", "VERDICT", "⊡");
                                 sprintln!("{}", "-".repeat(52));
                                 let results = crate::divisor_ring::scan_mersenne_range(start, end);
                                 for (p, mp, verdict, omega) in &results {
@@ -1859,9 +2150,18 @@ pub fn repl(k: &mut Kernel) {
                             Ok(t) => {
                                 let prog = crate::sequence::build_via_substrate(
                                     &t, 12, t.t == crate::imas_ig::IgPrim::are, 3);
+                                let word = crate::belnap_ring_shor::glyphs_from_program(&prog);
                                 sprintln!("tuple: {}", t.display());
-                                sprintln!("word:  {}",
-                                    crate::belnap_ring_shor::glyphs_from_program(&prog));
+                                sprintln!("word:  {}", word);
+                                // Every word a tool hands back gets the same standing audit a
+                                // proof-in-progress gets: cycled, weighed, banked, and checked
+                                // for a repair — served here rather than left for whoever reads
+                                // the word to remember to ask for separately.
+                                sprintln!("\n-- word instruments, run on the above --");
+                                crate::lattice_flow::weight_report(&word);
+                                crate::lattice_flow::banked_report(&word);
+                                crate::lattice_flow::cycle_report(&word);
+                                crate::lattice_flow::insert_report(&word);
                             }
                             Err((i, g)) => sprintln!("imasm write: {} at slot {}", g, i),
                         }
@@ -1872,12 +2172,27 @@ pub fn repl(k: &mut Kernel) {
                             Ok(prog) => {
                                 let t = IgTuple::from_snapshot(
                                     &crate::kernel::self_imscribe(&prog));
-                                sprintln!("word:  {}",
-                                    crate::belnap_ring_shor::glyphs_from_program(&prog));
+                                let word = crate::belnap_ring_shor::glyphs_from_program(&prog);
+                                sprintln!("word:  {}", word);
                                 sprintln!("tuple: {}", t.display());
                                 sprintln!("crystal: {}", t.crystal_address());
+                                // Same standing audit as `imasm write`: served automatically,
+                                // not gated on the crystal address looking fine.
+                                sprintln!("\n-- word instruments, run on the above --");
+                                crate::lattice_flow::weight_report(&word);
+                                crate::lattice_flow::banked_report(&word);
+                                crate::lattice_flow::cycle_report(&word);
+                                crate::lattice_flow::insert_report(&word);
                             }
-                            Err((i, c)) => sprintln!("imasm derive: '{}' at position {} is not a mark", c, i),
+                            Err((i, c)) => {
+                                if crate::belnap_ring_shor::Glyph::from_char(c).is_some() {
+                                    sprintln!("imasm derive: word exceeds the {}-token program capacity at position {}",
+                                        crate::tokens::Program::CAPACITY, i);
+                                    sprintln!("  the word instruments — weight, banked, cycle, insert, trans — have no such bound");
+                                } else {
+                                    sprintln!("imasm derive: '{}' at position {} is not a mark", c, i);
+                                }
+                            }
                         }
                     }
                     _ => {
@@ -1885,6 +2200,240 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("imasm derive <word>       the tuple a word imscribes to");
                         sprintln!("Word instruments: weight | banked | cycle | insert | trans");
                     }
+                }
+            }
+            "collatz" => {
+                // `parts` is splitn(4), so a fourth argument arrives glued to the
+                // third. Re-split the tail before reading it, or `balanced lo hi d`
+                // loses its depth and reports a usage line instead of an answer.
+                let tail: Vec<&str> = parts.collect();
+                let joined = tail.join(" ");
+                let rest: Vec<&str> = joined.split_whitespace().collect();
+                match rest.first().copied() {
+                    None | Some("help") => sprintln!("{}", crate::collatz::Collatz::help()),
+                    Some("trace") => match rest.get(1).map(|v| v.parse::<u64>()) {
+                        Some(Ok(v)) => sprintln!("{}", crate::collatz::Collatz::trace(v)),
+                        _ => sprintln!("collatz trace <n> — n must be a number"),
+                    },
+                    Some("opnorm") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
+                                             rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
+                        (Some(r), Some(i)) => sprintln!("{}", crate::collatz::Collatz::opnorm_w(r, i,
+                            rest.get(3).and_then(|v| v.parse::<f64>().ok()).unwrap_or(1.0))),
+                        _ => sprintln!("collatz opnorm <rmax> <iters>"),
+                    },
+                    Some("operator") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
+                                               rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
+                        (Some(r), Some(i)) => sprintln!("{}", crate::collatz::Collatz::operator(r, i)),
+                        _ => sprintln!("collatz operator <rmax> <iters>"),
+                    },
+                    Some("prbound") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
+                                              rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
+                        (Some(d), Some(r)) => sprintln!("{}", crate::collatz::Collatz::prbound(d, r)),
+                        _ => sprintln!("collatz prbound <depth> <rungs>"),
+                    },
+                    Some("participation") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
+                                                    rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
+                        (Some(d), Some(r)) => sprintln!("{}", crate::collatz::Collatz::participation(d, r)),
+                        _ => sprintln!("collatz participation <depth> <rungs>"),
+                    },
+                    Some("concentrate") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
+                                                  rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
+                        (Some(d), Some(r)) => sprintln!("{}", crate::collatz::Collatz::concentrate(d, r)),
+                        _ => sprintln!("collatz concentrate <depth> <rungs>"),
+                    },
+                    Some("winding") => match rest.get(1).and_then(|v| v.parse::<u32>().ok()) {
+                        Some(d) => sprintln!("{}", crate::collatz::Collatz::winding(d)),
+                        _ => sprintln!("collatz winding <depth>"),
+                    },
+                    Some("lambda") => match rest.get(1).and_then(|v| v.parse::<u32>().ok()) {
+                        Some(d) => sprintln!("{}", crate::collatz::Collatz::lambda(d)),
+                        _ => sprintln!("collatz lambda <depth>"),
+                    },
+                    Some("lag") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
+                                          rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
+                        (Some(d), Some(r)) => sprintln!("{}", crate::collatz::Collatz::lag(d, r)),
+                        _ => sprintln!("collatz lag <depth> <r>"),
+                    },
+                    Some("jratio") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
+                                             rest.get(2).and_then(|v| v.parse::<u32>().ok())) {
+                        (Some(d), Some(r)) => sprintln!("{}", crate::collatz::Collatz::jratio(d, r)),
+                        _ => sprintln!("collatz jratio <depth> <rungs>"),
+                    },
+                    Some("attack") => match (rest.get(1).and_then(|v| v.parse::<u32>().ok()),
+                                             rest.get(2).and_then(|v| v.parse::<u32>().ok()),
+                                             rest.get(3).and_then(|v| v.parse::<u64>().ok())) {
+                        (Some(d), Some(r), Some(m)) =>
+                            sprintln!("{}", crate::collatz::Collatz::attack(d, r, m)),
+                        _ => sprintln!("collatz attack <depth> <rungs> <minN>"),
+                    },
+                    Some("disjunct") => match rest.get(1).map(|v| v.parse::<u32>()) {
+                        Some(Ok(d)) => sprintln!("{}", crate::collatz::Collatz::disjunct(d)),
+                        _ => sprintln!("collatz disjunct <depth>"),
+                    },
+                    Some("norm") => match rest.get(1).map(|v| v.parse::<u32>()) {
+                        Some(Ok(d)) => sprintln!("{}", crate::collatz::Collatz::norm(d,
+                            rest.get(2).and_then(|v| v.parse::<u32>().ok()).unwrap_or(0))),
+                        _ => sprintln!("collatz norm <depth>"),
+                    },
+                    Some("perturb9") => match rest.get(1).map(|v| v.parse::<u32>()) {
+                        Some(Ok(d)) => sprintln!("{}", crate::collatz::Collatz::perturb9(d)),
+                        _ => sprintln!("collatz perturb9 <depth>"),
+                    },
+                    Some("perturb") => match rest.get(1).map(|v| v.parse::<u32>()) {
+                        Some(Ok(d)) => sprintln!("{}", crate::collatz::Collatz::perturb(d)),
+                        _ => sprintln!("collatz perturb <depth>"),
+                    },
+                    Some("excess") => match (rest.get(1).map(|v| v.parse::<u32>()),
+                                             rest.get(2).map(|v| v.parse::<u32>())) {
+                        (Some(Ok(d)), Some(Ok(r))) =>
+                            sprintln!("{}", crate::collatz::Collatz::excess(d, r)),
+                        _ => sprintln!("collatz excess <depth> <r>"),
+                    },
+                    Some("collisions") => match (rest.get(1).map(|v| v.parse::<u32>()),
+                                                 rest.get(2).map(|v| v.parse::<u32>())) {
+                        (Some(Ok(d)), Some(Ok(r))) =>
+                            sprintln!("{}", crate::collatz::Collatz::collisions(d, r)),
+                        _ => sprintln!("collatz collisions <depth> <r>"),
+                    },
+                    Some("flow") => match (rest.get(1).map(|v| v.parse::<u32>()),
+                                           rest.get(2).map(|v| v.parse::<u32>())) {
+                        (Some(Ok(d)), Some(Ok(r))) =>
+                            sprintln!("{}", crate::collatz::Collatz::flow(d, r)),
+                        _ => sprintln!("collatz flow <depth> <r>"),
+                    },
+                    Some("fourier") => match (rest.get(1).map(|v| v.parse::<u32>()),
+                                              rest.get(2).map(|v| v.parse::<u32>())) {
+                        (Some(Ok(d)), Some(Ok(r))) =>
+                            sprintln!("{}", crate::collatz::Collatz::fourier(d, r)),
+                        _ => sprintln!("collatz fourier <depth> <rmax>"),
+                    },
+                    Some("amax") => match (rest.get(1).map(|v| v.parse::<u64>()),
+                                           rest.get(2).map(|v| v.parse::<u64>()),
+                                           rest.get(3).map(|v| v.parse::<u32>())) {
+                        (Some(Ok(l)), Some(Ok(h)), Some(Ok(d))) =>
+                            sprintln!("{}", crate::collatz::Collatz::amax(l, h, d)),
+                        _ => sprintln!("collatz amax <lo> <hi> <depth>"),
+                    },
+                    Some("birkhoff") => match (rest.get(1).map(|v| v.parse::<u64>()),
+                                               rest.get(2).map(|v| v.parse::<u64>()),
+                                               rest.get(3).map(|v| v.parse::<u32>())) {
+                        (Some(Ok(l)), Some(Ok(h)), Some(Ok(d))) =>
+                            sprintln!("{}", crate::collatz::Collatz::birkhoff(l, h, d)),
+                        _ => sprintln!("collatz birkhoff <lo> <hi> <depth>"),
+                    },
+                    Some("amplitudes") => match (rest.get(1).map(|v| v.parse::<u64>()),
+                                                 rest.get(2).map(|v| v.parse::<u64>()),
+                                                 rest.get(3).map(|v| v.parse::<u32>())) {
+                        (Some(Ok(l)), Some(Ok(h)), Some(Ok(d))) =>
+                            sprintln!("{}", crate::collatz::Collatz::amplitudes(l, h, d)),
+                        _ => sprintln!("collatz amplitudes <lo> <hi> <depth>"),
+                    },
+                    Some("growth") => match (rest.get(1).map(|v| v.parse::<u64>()),
+                                             rest.get(2).map(|v| v.parse::<u32>())) {
+                        (Some(Ok(v)), Some(Ok(d))) =>
+                            sprintln!("{}", crate::collatz::Collatz::growth(v, d)),
+                        _ => sprintln!("collatz growth <v> <dmax>"),
+                    },
+                    Some("adic") => match (rest.get(1).map(|v| v.parse::<u32>()),
+                                           rest.get(2).map(|v| v.parse::<u64>()),
+                                           rest.get(3).map(|v| v.parse::<u32>())) {
+                        (Some(Ok(g)), Some(Ok(n)), Some(Ok(d))) =>
+                            sprintln!("{}", crate::collatz::Collatz::adic(g, n, d)),
+                        _ => sprintln!("collatz adic <digits> <n> <depth>"),
+                    },
+                    Some("classes") => match (rest.get(1).map(|v| v.parse::<u64>()),
+                                              rest.get(2).map(|v| v.parse::<u64>()),
+                                              rest.get(3).map(|v| v.parse::<u32>())) {
+                        (Some(Ok(m)), Some(Ok(n)), Some(Ok(d))) =>
+                            sprintln!("{}", crate::collatz::Collatz::classes(m, n, d)),
+                        _ => sprintln!("collatz classes <mod> <n> <depth>"),
+                    },
+                    Some("balance") => match (rest.get(1).map(|v| v.parse::<u64>()),
+                                              rest.get(2).map(|v| v.parse::<u32>())) {
+                        (Some(Ok(v)), Some(Ok(d))) =>
+                            sprintln!("{}", crate::collatz::Collatz::balance(v, d)),
+                        _ => sprintln!("collatz balance <v> <depth>"),
+                    },
+                    Some("balanced") => match (rest.get(1).map(|v| v.parse::<u64>()),
+                                               rest.get(2).map(|v| v.parse::<u64>()),
+                                               rest.get(3).map(|v| v.parse::<u32>())) {
+                        (Some(Ok(l)), Some(Ok(h)), Some(Ok(d))) =>
+                            sprintln!("{}", crate::collatz::Collatz::balanced(l, h, d)),
+                        _ => sprintln!("collatz balanced <lo> <hi> <depth>"),
+                    },
+                    Some("junctions") => match (rest.get(1).map(|v| v.parse::<u64>()),
+                                                rest.get(2).map(|v| v.parse::<u64>())) {
+                        (Some(Ok(l)), Some(Ok(h))) =>
+                            sprintln!("{}", crate::collatz::Collatz::junctions(l, h, 20)),
+                        _ => sprintln!("collatz junctions <lo> <hi> — both must be numbers"),
+                    },
+                    Some("chain") => match rest.get(1).map(|v| v.parse::<u64>()) {
+                        Some(Ok(v)) => sprintln!("{}", crate::collatz::Collatz::chain(v)),
+                        _ => sprintln!("collatz chain <n> — n must be a number"),
+                    },
+                    Some("merge") => match (rest.get(1).map(|v| v.parse::<u64>()),
+                                            rest.get(2).map(|v| v.parse::<u64>())) {
+                        (Some(Ok(x)), Some(Ok(y))) => sprintln!("{}", crate::collatz::Collatz::merge(x, y)),
+                        _ => sprintln!("collatz merge <a> <b> — both must be numbers"),
+                    },
+                    Some("sweep") => match (rest.get(1).map(|v| v.parse::<u64>()),
+                                           rest.get(2).map(|v| v.parse::<u64>())) {
+                        (Some(Ok(l)), Some(Ok(h))) => sprintln!("{}", crate::collatz::Collatz::sweep(l, h)),
+                        _ => sprintln!("collatz sweep <lo> <hi> — both must be numbers"),
+                    },
+                    Some("ceiling") => match (rest.get(1).map(|v| v.parse::<u64>()),
+                                              rest.get(2).map(|v| v.parse::<u64>())) {
+                        (Some(Ok(l)), Some(Ok(h))) => sprintln!("{}", crate::collatz::Collatz::ceiling(l, h)),
+                        _ => sprintln!("collatz ceiling <lo> <hi> — both must be numbers"),
+                    },
+                    Some("descent3") => {
+                        use crate::tokens::{Program, Token};
+                        // The Collatz descent ∀n>1 ∃k col^[k] n < n is item 1', and it sits
+                        // at CLINK L9's ≻ 𐑑 (tot) and ≺ 𐑬 (out) — the two frobenius_order=3
+                        // slots no twelve-mark word can write. The affine identity
+                        // col^[k](2^k t + r) = 3^j t + col^[k] r composes three levels
+                        // (root, class rep, image): a functorial, three-arity fork. So write
+                        // the closing-form protocol with the three-arity Frobenius opcodes.
+                        //   ⊢ ⊙ ∈₃ ≻ ⊤ ≺ ⊥ ∋₃ ⋈ ⊞ ⊡×8 ⊢   (self-referential: first = last)
+                        let build = |splits3: bool| -> Program {
+                            let mut p = Program::empty();
+                            let (fs, ff) = if splits3 {
+                                (Token::Fsplit3, Token::Ffuse3)
+                            } else {
+                                (Token::Fsplit, Token::Ffuse)
+                            };
+                            for t in [Token::Vinit, Token::Imscrib, fs, Token::Afwd,
+                                      Token::Evalt, Token::Arev, Token::Evalf, ff,
+                                      Token::Clink, Token::Engagr] { p.push(t); }
+                            for _ in 0..8 { p.push(Token::Ifix); }
+                            p.push(Token::Vinit); // close on ⊢ — self-referential
+                            p
+                        };
+                        let l9 = "𐑛𐑥𐑑𐑬𐑐𐑪𐑔𐑝⊙𐑫𐑳𐑭";
+                        for (label, splits3) in [("two-arity (word-reachable)", false),
+                                                 ("three-arity (Fsplit3/Ffuse3)", true)] {
+                            let prog = build(splits3);
+                            let snap = crate::kernel::self_imscribe(&prog);
+                            let tup = crate::imas_ig::IgTuple::from_snapshot(&snap);
+                            let glyphs: alloc::string::String = tup.display().to_string();
+                            let bare: alloc::string::String =
+                                glyphs.chars().filter(|c| !"⟨⟩ ·".contains(*c)).collect();
+                            let agree = bare.chars().zip(l9.chars())
+                                .filter(|(a, b)| a == b).count();
+                            sprintln!("  {}", label);
+                            sprintln!("    fo={}  tuple {}  crystal {}",
+                                snap.frobenius_order, glyphs, tup.crystal_address());
+                            sprintln!("    tier {}  self_ref {}  dialetheia {}",
+                                snap.tier_name(), snap.self_ref, snap.dialetheia_complete);
+                            sprintln!("    vs CLINK L9 {} — {}/12 slots agree", l9, agree);
+                        }
+                        sprintln!("  CLINK L9 ≻ 𐑑 and ≺ 𐑬 are frobenius_order=3; the two-arity");
+                        sprintln!("  row cannot reach them, the three-arity row does.");
+                    }
+                    Some(x) => match x.parse::<u64>() {
+                        Ok(v) => sprintln!("{}", crate::collatz::Collatz::one(v)),
+                        Err(_) => sprintln!("collatz <n> | trace <n> | descent3 | sweep <lo> <hi> | ceiling <lo> <hi>"),
+                    },
                 }
             }
             "straus" => {
@@ -2382,6 +2931,9 @@ Stopped after {} ticks.", ran);
                     sprint!("R{}:{} ", i, k.registers.read(i).name());
                 }
                 sprintln!();
+                if let Some(r) = k.last_reg16_3 {
+                    sprintln!("SIXTEEN_3 (last FSPLIT3/FFUSE3/EVALI): {}", r.name());
+                }
             }
             "stack" => {
                 sprintln!("Depth: {}", k.stack.depth());
@@ -2519,9 +3071,9 @@ Stopped after {} ticks.", ran);
                                 // other dialect. They used to carry hand-written gates using
                                 // `(x as u8) <= (thresh as u8)`, which is the discriminant trick
                                 // `IgPrim::ordinal`'s own docstring warns is invalid for ⊙
-                                // Criticality and ◻ Winding — the two families these very gates
+                                // Criticality and ⊡ Winding — the two families these very gates
                                 // test at G2 and G3. It rejected roar/err/haha at ⊙≥⊙ and zoo at
-                                // ◻≥𐑭, and dialect 5's ◻≥𐑟 admitted every winding value, a gate
+                                // ⊡≥𐑭, and dialect 5's ⊡≥𐑟 admitted every winding value, a gate
                                 // that always passed. Arms 8–11 had already been moved to
                                 // `.ordinal()`; this finishes that move and removes the second
                                 // copy of the gate table at the same time.
@@ -2550,7 +3102,7 @@ Stopped after {} ticks.", ran);
                                         if !t_ok { all_pass = false; }
                                     }
                                 }
-                                8 => { // chirality_first: G1:⊥≥𐑖  G2:⊙≥⊙  G3:◻≥𐑭
+                                8 => { // chirality_first: G1:⊥≥𐑖  G2:⊙≥⊙  G3:⊡≥𐑭
                                        // T: T_CEILING — see manuscripts/clay_cross_dialect_closure.md.
                                        // Uses IgPrim::ordinal(), NOT raw discriminant comparison — the
                                        // discriminant trick used in arms 0-7 is invalid for the criticality
@@ -2560,18 +3112,18 @@ Stopped after {} ticks.", ran);
                                     let g3 = ig.omega.ordinal() >= IgPrim::ah.ordinal();
                                     sprintln!("  G1 (⊥≥𐑖): {}  ⊥={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.h.glyph(), ig.h.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
-                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
+                                    sprintln!("  G3 (⊡≥𐑭): {}  ⊡={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                     if !t_ceiling_check(&ig) { all_pass = false; }
                                 }
-                                9 => { // scope_dialect: G1:∈≥𐑲(maximal scope)  G2:⊙≥⊙  G3:◻≥𐑭
+                                9 => { // scope_dialect: G1:∈≥𐑲(maximal scope)  G2:⊙≥⊙  G3:⊡≥𐑭
                                        // T: T_CEILING — same generalization as U8, paired with a different gate spec.
                                     let g1 = ig.g.ordinal() >= IgPrim::ice.ordinal();
                                     let g2 = ig.phi.ordinal() >= IgPrim::monad.ordinal();
                                     let g3 = ig.omega.ordinal() >= IgPrim::ah.ordinal();
                                     sprintln!("  G1 (∈≥𐑲): {}  ∈={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.g.glyph(), ig.g.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
-                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
+                                    sprintln!("  G3 (⊡≥𐑭): {}  ⊡={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                     if !t_ceiling_check(&ig) { all_pass = false; }
                                 }
@@ -2579,7 +3131,7 @@ Stopped after {} ticks.", ran);
                                     let g1 = ig.phi.ordinal() >= IgPrim::woe.ordinal();
                                     let g2 = ig.phi.ordinal() >= IgPrim::monad.ordinal();
                                     let g3 = ig.phi.ordinal() >= IgPrim::haha.ordinal();
-                                    sprintln!("  G1 (⊙≥woe): {}  ⊙={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
+                                    sprintln!("  G1 (⊙≥𐑢): {}  ⊙={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     sprintln!("  G3 (⊙≥𐑣): {}  ⊙={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
@@ -2589,7 +3141,7 @@ Stopped after {} ticks.", ran);
                                     let g1 = ig.phi.ordinal() >= IgPrim::woe.ordinal();
                                     let g2 = ig.phi.ordinal() >= IgPrim::monad.ordinal();
                                     let g3 = ig.phi.ordinal() >= IgPrim::haha.ordinal();
-                                    sprintln!("  G1 (⊙≥woe): {}  ⊙={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
+                                    sprintln!("  G1 (⊙≥𐑢): {}  ⊙={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     sprintln!("  G3 (⊙≥𐑣): {}  ⊙={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
@@ -2919,6 +3471,8 @@ Stopped after {} ticks.", ran);
                 }
             },
         }
+        // Update live HUD (hosted build) - inside the main loop
+        #[cfg(feature = "hosted")] { let _ = { /* HUD disabled */ }; }
     }
 }
 
@@ -3087,7 +3641,7 @@ fn redraw_input(old_len: usize, src: &[u8], src_len: usize, buf: &mut [u8]) {
 // ─── T_CEILING — shared T-constitution check for U8/U9 ─────────
 //
 // Ceiling-generalizes canonical's existing ⊤-only ceiling rule to all five
-// dynamics primitives, same anchors: <<=𐑹 ⋈<=𐑐 ⊤<=𐑧 ⊥<=𐑫 ◻<=𐑭.
+// dynamics primitives, same anchors: <<=𐑹 ⋈<=𐑐 ⊤<=𐑧 ⊥<=𐑫 ⊡<=𐑭.
 // See manuscripts/clay_cross_dialect_closure.md for the derivation. Uses
 // IgPrim::ordinal(), not raw discriminant comparison.
 // Canonical's actual T-constitution (exact-equality on four primitives,
@@ -3130,7 +3684,7 @@ fn t_ceiling_check(ig: &IgTuple) -> bool {
     let t_h   = ig.h.ordinal()     <= IgPrim::wool.ordinal();
     let t_om  = ig.omega.ordinal() <= IgPrim::ah.ordinal();
     let t_ok = t_phi && t_f && t_k && t_h && t_om;
-    sprintln!("  T_CEILING <<=𐑹: {}  ⋈<=𐑐: {}  ⊤<=𐑧: {}  ⊥<=𐑫: {}  ◻<=𐑭: {}",
+    sprintln!("  T_CEILING <<=𐑹: {}  ⋈<=𐑐: {}  ⊤<=𐑧: {}  ⊥<=𐑫: {}  ⊡<=𐑭: {}",
         if t_phi {"PASS"} else {"FAIL"}, if t_f {"PASS"} else {"FAIL"},
         if t_k {"PASS"} else {"FAIL"}, if t_h {"PASS"} else {"FAIL"},
         if t_om {"PASS"} else {"FAIL"});
@@ -3145,7 +3699,7 @@ fn t_ceiling_gapped_check(ig: &IgTuple) -> bool {
     let t_h   = ig.h.ordinal()     <= IgPrim::wool.ordinal();
     let t_om  = ig.omega.ordinal() <= IgPrim::ah.ordinal();
     let t_ok = t_phi && t_f && t_k && t_h && t_om;
-    sprintln!("  T_CEILING(gapped) <<=𐑹: {}  ⋈<=𐑐: {}  ⊤<=𐑪: {}  ⊥<=𐑫: {}  ◻<=𐑭: {}",
+    sprintln!("  T_CEILING(gapped) <<=𐑹: {}  ⋈<=𐑐: {}  ⊤<=𐑪: {}  ⊥<=𐑫: {}  ⊡<=𐑭: {}",
         if t_phi {"PASS"} else {"FAIL"}, if t_f {"PASS"} else {"FAIL"},
         if t_k {"PASS"} else {"FAIL"}, if t_h {"PASS"} else {"FAIL"},
         if t_om {"PASS"} else {"FAIL"});
@@ -3375,8 +3929,22 @@ fn print_ig(k: &Kernel) {
     }
 }
 
-fn print_classify(k: &Kernel) {
-    use crate::imas_ig::Classification;
+fn print_classify(k: &Kernel, arg: &str) {
+    use crate::imas_ig::{Classification, IgTuple};
+    let arg = arg.trim();
+    if !arg.is_empty() {
+        // `classify <t>` classifies the tuple it is HANDED. Reading the live
+        // kernel instead makes the command report its own state whatever it is
+        // given, which is not a classification of anything the caller asked about.
+        match IgTuple::from_glyphs(arg) {
+            Ok(t) => sprintln!("{}", Classification::classify_tuple(&t).display()),
+            // from_glyphs reuses its error pair for a length fault, where the
+            // second field is a message rather than a glyph. Say which it is.
+            Err((i, g)) if g.starts_with("expected") => sprintln!("classify: {}", g),
+            Err((i, g)) => sprintln!("classify: slot {} is not a primitive: `{}`", i, g),
+        }
+        return;
+    }
     if let Some(snap) = k.snapshot {
         let c = Classification::classify(&snap);
         sprintln!("{}", c.display());
@@ -3738,6 +4306,30 @@ fn print_shor_integrated(n_val: u64, a_val: u64) {
         sprintln!("  ✗ factorization failed");
     }
 }
+
+fn print_shor_dialetheic(n_val: u64, a_val: u64) {
+    use crate::dialetheic_fib_shor::{run_dialetheic_fib_shor, report};
+    if n_val == 0 || a_val == 0 {
+        sprintln!("  {}Dialetheic Fibonacci Shor (ob3ect word ⊢∈≻⋈⊞∈⊤≻⊥≺∋⊙⋈⊡⊣){}", style_section(), crate::style::reset());
+        sprintln!();
+        for (N, a) in &[(15u64, 7u64), (21, 5), (35, 2)] {
+            let r = run_dialetheic_fib_shor(*N, *a);
+            sprintln!("  N={:<4} a={} period={:<3} cost=2r={:<3} ratio={:.2} strands={} fusion=F_{}={} factors={}×{} verdict={}",
+                N, a, r.period, r.belnap_cost, r.ratio, r.strands, r.strands-1, r.fusion_dim,
+                r.factor1.unwrap_or(0), r.factor2.unwrap_or(0),
+                if r.walk.open_frames > 0 { "B (dialetheic)" } else { "T (closed)" });
+        }
+        sprintln!();
+        sprintln!("  usage: shor dialetheic N a   (e.g. shor dialetheic 15 7)");
+        sprintln!("  The 16₃ register walk is the control flow: ∈ splits T-arm/F-arm,");
+        sprintln!("  ⊤/⊥ evaluate constructive/destructive interference, ∋ fuses to TF.");
+        sprintln!("  Period r is read from the 2:1 B-bias/T-bias coherence cost ratio.");
+        return;
+    }
+    let r = run_dialetheic_fib_shor(n_val, a_val);
+    sprintln!("{}", report(&r));
+}
+
 
 
 fn parse_u64(s: &str) -> u64 {
@@ -4118,10 +4710,10 @@ fn print_cl8nk(action: &str, name: &str) {
         }
         "transcendence" => {
             let tr = compute_transcendence();
-            sprintln!("  {}The ◻/∋ Transcendence — CLINK L8 beyond ZFC_fe{}", style_section(), crate::style::reset());
+            sprintln!("  {}The ⊡/∋ Transcendence — CLINK L8 beyond ZFC_fe{}", style_section(), crate::style::reset());
             sprintln!("  d(ZFC_fe, CLINK L8) = {:.4}", tr.d_zfcfe_to_cl8nk);
             sprintln!();
-            sprintln!("  ◻: {} → {}",
+            sprintln!("  ⊡: {} → {}",
                 catalog::primitive_glyph(tr.omega_zfcfe),
                 catalog::primitive_glyph(tr.omega_cl8nk));
             sprintln!("    ZFC_fe: {}", tr.omega_zfcfe_frag);
@@ -4216,7 +4808,7 @@ fn print_cl8nk(action: &str, name: &str) {
             sprintln!("  entry  <name>    — Full CL8NK formula decomposition");
             sprintln!("  promotions        — 3-stage ladder: ZFC→ZFCₜ→ZFC_fe→CLINK L8");
             sprintln!("  distance <name>   — d(name, CLINK L8)");
-            sprintln!("  transcendence     — ◻/∋ transcendence analysis");
+            sprintln!("  transcendence     — ⊡/∋ transcendence analysis");
             sprintln!("  tensor  <name>    — CLINK L8 ⊗ name (absorption test)");
             sprintln!("  meet    <name>    — CLINK L8 ⊓ name");
             sprintln!("  join    <name>    — CLINK L8 ⊔ name");
@@ -4520,11 +5112,11 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
         }
 
         "stop" => {
-            // Stop codon analysis as ◻ boundary
+            // Stop codon analysis as ⊡ boundary
             use crate::belnap::B4;
-            sprintln!("Stop Codon Analysis (◻ boundary — kernel winding limit):");
+            sprintln!("Stop Codon Analysis (⊡ boundary — kernel winding limit):");
             let stops = [
-                ("UAA", Codon { p1: crate::belnap::B4::N, p2: B4::F, p3: B4::F }, "◻₀  trivial winding — null boundary"),
+                ("UAA", Codon { p1: crate::belnap::B4::N, p2: B4::F, p3: B4::F }, "⊡₀  trivial winding — null boundary"),
                 ("UAG", Codon { p1: crate::belnap::B4::N, p2: B4::F, p3: B4::B }, "𐑴  Z2-protected — amber boundary"),
                 ("UGA", Codon { p1: crate::belnap::B4::N, p2: B4::B, p3: B4::F }, "𐑭   integer winding — opal boundary"),
             ];
@@ -4534,8 +5126,8 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                     name, s[0] as char, s[1] as char, s[2] as char,
                     codon.p1, codon.p2, codon.p3, desc);
             }
-            sprintln!("  Mito additional stops: AGA (F,B,F)=◻_AGA  AGG (F,B,B)=◻_AGG");
-            sprintln!("  Mito UGA → Trp (not Stop — ◻ gate lifted in mitochondrial context)");
+            sprintln!("  Mito additional stops: AGA (F,B,F)=⊡_AGA  AGG (F,B,B)=⊡_AGG");
+            sprintln!("  Mito UGA → Trp (not Stop — ⊡ gate lifted in mitochondrial context)");
         }
 
         "mutation" => {
@@ -4855,7 +5447,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
             sprintln!("Codon Strata:");
             sprintln!("  Exact: {} codons (ffuse∘fsplit = id exactly)", exact);
             sprintln!("  Split: {} codons (ffuse∘fsplit = id mod Z2)", split);
-            sprintln!("  Stop:  {} codons (◻ boundary)", stop);
+            sprintln!("  Stop:  {} codons (⊡ boundary)", stop);
         }
                 "asm" => {
             let programs = all_genetic_programs();
@@ -5396,12 +5988,15 @@ fn vox_lift_file(path: &str) {
 
     let mut tally = [0usize; 4];   // T, B, N, F
     let mut illtyped = alloc::vec::Vec::new();
+    // B locates the arm left open, so the address is the useful part — a tally
+    // says how many and nothing about which.
+    let mut open_arms = alloc::vec::Vec::new();
     for (start, f) in funcs {
         let word = crate::vox::recompile_function(f);
         let v = crate::vox::verdict(&word);
         match v {
             'T' => tally[0] += 1,
-            'B' => tally[1] += 1,
+            'B' => { tally[1] += 1; open_arms.push((*start, f.len())); }
             'N' => tally[2] += 1,
             _ => {
                 tally[3] += 1;
@@ -5413,6 +6008,34 @@ fn vox_lift_file(path: &str) {
     }
     sprintln!("");
     sprintln!("  verdicts  T {}   B {}   N {}   F {}", tally[0], tally[1], tally[2], tally[3]);
+    if !open_arms.is_empty() {
+        sprintln!("  B is an arm left OPEN. The addresses carrying one:");
+        for (a, len) in open_arms.iter() {
+            sprintln!("    0x{:x}   {} instruction(s)", a, len);
+        }
+        // The word itself is what `insert` and `weight` can act on, so print the
+        // shortest open function's word: a repair is found on a word, not on a
+        // tally. Run the same standing audit `imasm derive`/`imasm write` serve
+        // automatically, on this one representative word rather than on every
+        // function in the file — that would be one full report per function,
+        // most of them redundant with each other.
+        if let Some((addr, _)) = open_arms.iter().min_by_key(|(_, l)| *l) {
+            for (start, f) in funcs {
+                if start == addr {
+                    let word = crate::vox::recompile_function(f);
+                    let g = crate::vox::glyphs(&word);
+                    sprintln!("");
+                    sprintln!("  shortest open arm, 0x{:x}:", addr);
+                    sprintln!("  {}", g);
+                    sprintln!("\n  -- word instruments, run on the above --");
+                    crate::lattice_flow::weight_report(&g);
+                    crate::lattice_flow::banked_report(&g);
+                    crate::lattice_flow::cycle_report(&g);
+                    crate::lattice_flow::insert_report(&g);
+                }
+            }
+        }
+    }
     if tally[3] > 0 {
         sprintln!("  F is not a truth value: the word is ill-typed, a ∋ with no ∈ to");
         sprintln!("  pair. It marks a function cut in the wrong place, not a program.");
@@ -5426,4 +6049,308 @@ fn vox_lift_file(path: &str) {
 #[cfg(not(feature = "hosted"))]
 fn vox_lift_file(_path: &str) {
     sprintln!("vox lift needs a host filesystem; not available in the kernel build");
+}
+
+/// `vox run <symbol> --args a,b <file>` — order-tolerant, mirroring the
+/// standalone `vox` binary's own CLI parser exactly (Vox/src/main.rs). Lifts
+/// the file to the payload-carrying twelve-glyph module (`imasm_exec::emit`,
+/// not the bare-glyph `vox lift`/`imasm derive` form) and actually runs the
+/// named function through it: real registers, memory, flags, ALU. Only
+/// exit()/exit_group() syscalls do anything; every other syscall halts rather
+/// than pretending to succeed.
+#[cfg(feature = "hosted")]
+fn vox_run_symbol(args: &[alloc::string::String]) {
+    // vox run <file> [--argv a,b]            — run it: real process, real
+    //                                           argv/envp/auxv stack, real
+    //                                           syscalls, from its own entry.
+    // vox run <symbol> <file> [--args 1,2]   — call one function directly:
+    //                                           scalar int args in, one int
+    //                                           back, no process at all.
+    // A single bare token is the FILE, not the symbol — with no name given
+    // there is no function to call, so the whole file runs as a process.
+    // This is also the only thing a PE binary offers, since the loader never
+    // populates a symbol table for PE at all (only ELF has one).
+    let mut bare: alloc::vec::Vec<alloc::string::String> = alloc::vec::Vec::new();
+    let mut argv_ints: alloc::vec::Vec<i64> = alloc::vec::Vec::new();
+    let mut argv_strs: alloc::vec::Vec<alloc::string::String> = alloc::vec::Vec::new();
+    let mut i = 0;
+    while i < args.len() {
+        match args[i].as_str() {
+            "--args" => {
+                i += 1;
+                if i < args.len() {
+                    for a in args[i].split(',') {
+                        let a = a.trim();
+                        if !a.is_empty() {
+                            let v = if let Some(h) = a.strip_prefix("0x") {
+                                i64::from_str_radix(h, 16).unwrap_or(0)
+                            } else {
+                                a.parse().unwrap_or(0)
+                            };
+                            argv_ints.push(v);
+                        }
+                    }
+                }
+            }
+            "--argv" => {
+                i += 1;
+                if i < args.len() {
+                    for a in args[i].split(',') { argv_strs.push(a.to_string()); }
+                }
+            }
+            other => bare.push(other.to_string()),
+        }
+        i += 1;
+    }
+    let (sym, file) = match bare.len() {
+        0 => {
+            sprintln!("vox run <file> [--argv a,b]   or   vox run <symbol> <file> [--args 1,2]");
+            return;
+        }
+        1 => (alloc::string::String::new(), bare[0].clone()),
+        _ => (bare[0].clone(), bare[1..].join(" ")),
+    };
+    if file.is_empty() {
+        sprintln!("vox run <file> [--argv a,b]   or   vox run <symbol> <file> [--args 1,2]");
+        return;
+    }
+    // A `.imasm` file is a saved module: text, already carrying its own
+    // symbol table (`; sym NAME 0xADDR`), so it runs directly with no second
+    // read of the original binary. Anything else is read as raw bytes and
+    // lifted fresh — same as `vox imasm`/`vox run` in the standalone binary.
+    let raw_for_words = std::fs::read(&file).ok();
+    let is_module = file.ends_with(".imasm")
+        || raw_for_words.as_deref().map(|b| b.starts_with(b"; ")).unwrap_or(false);
+    let mut m = if is_module {
+        match std::fs::read_to_string(&file) {
+            Ok(text) => crate::imasm_exec::Machine::new(&text),
+            Err(e) => {
+                sprintln!("cannot read {}: {}", file, e);
+                return;
+            }
+        }
+    } else {
+        let raw = match &raw_for_words {
+            Some(r) => r,
+            None => {
+                sprintln!("cannot read {}", file);
+                return;
+            }
+        };
+        crate::imasm_exec::Machine::new(&crate::imasm_exec::emit(raw))
+    };
+    m.set_host(std::boxed::Box::new(crate::imasm_exec::StdHost::new()));
+    let addr = if sym.is_empty() {
+        let mut argv = alloc::vec![file.clone()];
+        argv.extend(argv_strs);
+        match m.run_process(&argv, &[], 50_000_000) {
+            Ok(()) => sprintln!("entry(...) ran off the end with no exit call   [{} steps]", m.steps),
+            Err(crate::imasm_exec::Stop::SysExit(c)) => sprintln!("entry(...) exited({})   [{} steps in the twelve]", c, m.steps),
+            Err(crate::imasm_exec::Stop::Halt(e)) => sprintln!("entry(...) halted: {}   [{} steps]", e, m.steps),
+        }
+        m.entry
+    } else {
+        let addr = match m.resolve(&sym) {
+            Some(a) => a,
+            None => {
+                sprintln!("no symbol '{}' in {}", sym, file);
+                return;
+            }
+        };
+        let argv_str: alloc::vec::Vec<alloc::string::String> =
+            argv_ints.iter().map(|a| a.to_string()).collect();
+        match m.call(addr, &argv_ints, 50_000_000) {
+            Ok(r) => sprintln!("{}({}) = {}   [{} steps in the twelve]", sym, argv_str.join(", "), r, m.steps),
+            Err(crate::imasm_exec::Stop::SysExit(c)) => sprintln!("{}(...) called exit({})   [{} steps in the twelve]", sym, c, m.steps),
+            Err(crate::imasm_exec::Stop::Halt(e)) => sprintln!("{}(...) halted: {}   [{} steps]", sym, e, m.steps),
+        }
+        addr
+    };
+    // The execution above reads the payload-carrying module (real operands).
+    // What weight/banked/cycle/imasm-derive read is the bare structural word
+    // for the same function — the other half of the same object, not a
+    // separate lookup. `words()` needs the raw x86 bytes to walk (a saved
+    // `.imasm` file no longer carries those), so this half only runs when a
+    // real binary was given.
+    if !is_module {
+        if let Some(raw) = &raw_for_words {
+            let target = alloc::format!("0x{:x}\t", addr);
+            let bare = crate::imasm_exec::words(raw);
+            if let Some(line) = bare.lines().find(|l| l.starts_with(&target)) {
+                if let Some(word) = line.split('\t').nth(1) {
+                    let glyphs: alloc::vec::Vec<char> = word.chars().collect();
+                    sprintln!("structure word (feed to weight/banked/cycle/imasm derive):");
+                    sprintln!("  {}   verdict {}", word, crate::vox::verdict(&glyphs));
+                }
+            }
+        }
+    }
+}
+
+#[cfg(not(feature = "hosted"))]
+fn vox_run_symbol(_args: &[alloc::string::String]) {
+    sprintln!("vox run needs a host filesystem; not available in the kernel build");
+}
+
+#[cfg(feature = "hosted")]
+fn vox_write_pdb_file(path: &str, contents: &str) {
+    match std::fs::write(path, contents.as_bytes()) {
+        Ok(()) => sprintln!("PDB written to {}", path),
+        Err(e) => sprintln!("Could not write PDB to {}: {}", path, e),
+    }
+}
+
+#[cfg(not(feature = "hosted"))]
+fn vox_write_pdb_file(_path: &str, _contents: &str) {
+    sprintln!("--pdb needs a host filesystem; not available in the kernel build");
+}
+
+/// `vox compile <seq> [--code standard|mitochondrial] [--pdb <path>]`
+///
+/// One entry point, both directions of the same pipeline. RNA/DNA in:
+/// translate (rebis::translate::run_pipeline_table) then fold (rebis::fold::
+/// fold_sequence for secondary/tertiary, rebis::fold3d for the real 3D
+/// backbone). Protein in: reverse-translate with the Frobenius-preferred
+/// codon per residue (rebis::genetics::preferred_codon_for_aa, not the
+/// arbitrary first-in-enumeration pick `rebis reverse` uses) and run the
+/// SAME fold on the input protein, so the "vice versa" direction carries
+/// fold info too. Direction is auto-detected from the input alphabet: pure
+/// A/C/G/T/U reads as nucleic acid, anything else as protein codes.
+fn vox_compile(args: &[alloc::string::String]) {
+    use crate::belnap::B4;
+    use crate::rebis::codon::{Codon, CodeTable, b4_to_nucleotide};
+    use crate::rebis::AminoAcid;
+
+    if args.is_empty() {
+        sprintln!("vox compile <seq> [--code standard|mitochondrial] [--pdb <path>]");
+        sprintln!("  RNA/DNA in  -> protein out, with real fold info: Chou-Fasman");
+        sprintln!("                 secondary structure, heuristic tertiary contacts,");
+        sprintln!("                 and a real 3D backbone (B4-Ramachandran-NeRF).");
+        sprintln!("  protein in  -> RNA/DNA out (Frobenius-preferred codon per");
+        sprintln!("                 residue, full degeneracy reported), with the");
+        sprintln!("                 SAME fold computed on the input protein.");
+        sprintln!("  A/C/G/T/U-only input reads as nucleic acid; anything else,");
+        sprintln!("  as protein 1- or 3-letter codes. --pdb writes a real PDB");
+        sprintln!("  file, readable back by `rebis pdb`.");
+        return;
+    }
+
+    let mut table = CodeTable::Standard;
+    let mut pdb_path: Option<alloc::string::String> = None;
+    let mut seq_parts: Vec<alloc::string::String> = Vec::new();
+    let mut i = 0;
+    while i < args.len() {
+        match args[i].as_str() {
+            "--code" if i + 1 < args.len() => {
+                table = if args[i + 1] == "mitochondrial" || args[i + 1] == "mito" {
+                    CodeTable::Mitochondrial
+                } else {
+                    CodeTable::Standard
+                };
+                i += 2;
+            }
+            "--pdb" if i + 1 < args.len() => {
+                pdb_path = Some(args[i + 1].clone());
+                i += 2;
+            }
+            other => { seq_parts.push(alloc::string::String::from(other)); i += 1; }
+        }
+    }
+    let seq = seq_parts.join(" ");
+    let table_name = match table { CodeTable::Standard => "standard", CodeTable::Mitochondrial => "mitochondrial" };
+
+    let compact: alloc::string::String = seq.chars()
+        .filter(|c| !c.is_whitespace() && *c != '-' && *c != ',')
+        .collect();
+    let is_nucleic = !compact.is_empty()
+        && compact.chars().all(|c| matches!(c.to_ascii_uppercase(), 'A' | 'C' | 'G' | 'T' | 'U'));
+
+    // Shared tail: fold whatever protein chain either direction produced,
+    // build the real 3D backbone from its own B4 path, print, optionally write.
+    fn report_fold(chain: &[AminoAcid], b4_path: &[B4], pdb_path: Option<&str>) {
+        let fold = crate::rebis::fold::fold_sequence(chain);
+        let n_h = fold.residues.iter().filter(|r| r.secondary == crate::rebis::fold::SecondaryLabel::Helix).count();
+        let n_s = fold.residues.iter().filter(|r| r.secondary == crate::rebis::fold::SecondaryLabel::Sheet).count();
+        let n_c = fold.residues.len() - n_h - n_s;
+        sprintln!();
+        sprintln!("Fold: helix {}  sheet {}  coil {}   ({} contacts, SerpentRod invariant {})",
+            n_h, n_s, n_c, fold.contacts.len(), if fold.frobenius_ok { "PASS" } else { "FAIL" });
+        sprintln!("IG primitives activated: {}/12  Tier: {}", fold.unique_primitives, fold.ouroboricity_tier);
+
+        let steps = crate::rebis::fold3d::rama_steps(b4_path);
+        let backbone = crate::rebis::fold3d::build_backbone(&steps);
+        sprintln!("3D backbone: {} residues placed (B4-Ramachandran-NeRF)", backbone.len());
+
+        if let Some(path) = pdb_path {
+            let elements = crate::rebis::fold3d::group_ss_elements(&steps);
+            let winding = fold.residues.iter().map(|r| r.winding_number).max().unwrap_or(0);
+            let pdb = crate::rebis::fold3d::write_pdb(
+                chain, &backbone, &elements, fold.frobenius_ok, fold.unique_primitives, winding,
+                "COMPILED THROUGH VOX", 'A',
+            );
+            vox_write_pdb_file(path, &pdb);
+        }
+    }
+
+    if is_nucleic {
+        let result = crate::rebis::translate::run_pipeline_table(compact.as_bytes(), table);
+        let chain: Vec<AminoAcid> = result.protein.iter()
+            .filter(|&&aa| aa != AminoAcid::Stop).copied().collect();
+        if chain.is_empty() {
+            sprintln!("No protein translated from '{}'. Needs an ATG/AUG start codon.", seq);
+            return;
+        }
+        let mut b4_path: Vec<B4> = Vec::with_capacity(chain.len());
+        for k in 0..chain.len() {
+            let p = result.start_codon_pos + k * 3;
+            let step = if p + 2 < result.mrna.len() {
+                Codon::from_bytes(result.mrna[p], result.mrna[p + 1], result.mrna[p + 2]).ok()
+            } else { None };
+            b4_path.push(step.map(|c| c.p1).unwrap_or(B4::N));
+        }
+
+        sprintln!("== vox compile: RNA/DNA -> protein ({}) ==", table_name);
+        sprintln!("Input:      {}", seq);
+        sprintln!("mRNA:       {}", core::str::from_utf8(&result.mrna).unwrap_or("???"));
+        sprintln!("Protein:    {}", crate::rebis::translate::format_chain_1letter(&chain));
+        sprintln!("            {}", crate::rebis::translate::format_chain(&chain));
+        sprintln!("Frobenius round-trip verified: {}", if result.frobenius_verified { "YES" } else { "NO" });
+        report_fold(&chain, &b4_path, pdb_path.as_deref());
+    } else {
+        let chain = match crate::rebis::translate::parse_chain(&seq) {
+            Some(c) if !c.is_empty() => c,
+            _ => {
+                sprintln!("Could not parse '{}' as protein or nucleic acid.", seq);
+                sprintln!("Use 3-letter (Met-Ala) or 1-letter (MA) amino acid codes, or A/C/G/T/U.");
+                return;
+            }
+        };
+
+        let mut mrna: Vec<u8> = Vec::with_capacity(chain.len() * 3);
+        let mut b4_path: Vec<B4> = Vec::with_capacity(chain.len());
+        let mut degeneracies: Vec<usize> = Vec::with_capacity(chain.len());
+        for &aa in &chain {
+            degeneracies.push(crate::rebis::genetics::codons_for_aa_table(aa, table).len());
+            match crate::rebis::genetics::preferred_codon_for_aa(aa, table) {
+                Some(c) => {
+                    b4_path.push(c.p1);
+                    mrna.push(b4_to_nucleotide(c.p1));
+                    mrna.push(b4_to_nucleotide(c.p2));
+                    mrna.push(b4_to_nucleotide(c.p3));
+                }
+                None => { sprintln!("No codon exists for {} under the {} table.", aa.name(), table_name); return; }
+            }
+        }
+        let dna = crate::rebis::translate::reverse_transcribe(&mrna);
+        let mut total: u64 = 1;
+        for &d in &degeneracies { if d == 0 { total = 0; break; } total = total.saturating_mul(d as u64); }
+
+        sprintln!("== vox compile: protein -> RNA/DNA ({}) ==", table_name);
+        sprintln!("Input:      {}", crate::rebis::translate::format_chain(&chain));
+        sprintln!("            {}", crate::rebis::translate::format_chain_1letter(&chain));
+        sprintln!("mRNA (Frobenius-preferred codon per residue): {}", core::str::from_utf8(&mrna).unwrap_or("???"));
+        sprintln!("DNA:        {}", core::str::from_utf8(&dna).unwrap_or("???"));
+        sprintln!("Degeneracy: {} total possible mRNA sequences (product of per-residue codon counts)", total);
+        report_fold(&chain, &b4_path, pdb_path.as_deref());
+    }
 }

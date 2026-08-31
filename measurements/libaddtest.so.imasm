@@ -1,0 +1,161 @@
+; ⊙ module (elf x86-64)
+; entry 0x0
+; bits 64
+; sym __do_global_dtors_aux 0x10b0
+; sym _fini 0x1114
+; sym _init 0x1000
+; sym add 0x10f9
+; sym deregister_tm_clones 0x1040
+; sym frame_dummy 0x10f0
+; sym register_tm_clones 0x1070
+=0x2000	011b033b240000000300000020f0ffff4000000030f0ffff68000000f9f0ffff80000000
+=0x2028	1400000000000000017a5200017810011b0c070890010000240000001c000000d8efffff10000000000e10460e184a0f0b770880003f1a3a2a332422000000001400000044000000c0efffff1000000000000000000000001c0000005c00000071f0ffff1800000000450e108602430d064f0c070800000000000000
+=0x3fe0	0000000000000000000000000000000000000000000000000000000000000000
+=0x4000	903e00000000000000000000000000000000000000000000
+=0x4018	1840000000000000
+@0x1000
+⊞	endbr64
+@0x1004
+⊞	sub	r:rsp	i:0x8
+@0x1008
+⋈	mov	r:rax	m:rip::1:0x2fe9:8
+@0x100f
+⊤	test	r:rax	r:rax
+@0x1012
+∈	e	i:0x1016
+@0x1014
+⊙	call	r:eax
+@0x1016
+⊞	add	r:rsp	i:0x8
+@0x101a
+⊣	ret
+@0x1020
+⋈	push	m:rip::1:0x2fe2:4
+@0x1026
+⊙	jmp	m:rip::1:0x2fe3:4
+@0x102d
+⊞	nop
+@0x1030
+⊞	endbr64
+@0x1034
+⊙	jmp	m:rip::1:0x2fa5:4
+@0x103b
+⊞	nop
+@0x1040
+⊞	lea	r:rdi	m:rip::1:0x2fd9:8
+@0x1047
+⊞	lea	r:rax	m:rip::1:0x2fd2:8
+@0x104e
+⊤	cmp	r:rax	r:rdi
+@0x1051
+∈	e	i:0x1068
+@0x1053
+⋈	mov	r:rax	m:rip::1:0x2f96:8
+@0x105a
+⊤	test	r:rax	r:rax
+@0x105d
+∈	e	i:0x1068
+@0x105f
+⊙	jmp	r:eax
+@0x1061
+⊞	nop
+@0x1068
+⊣	ret
+@0x1069
+⊞	nop
+@0x1070
+⊞	lea	r:rdi	m:rip::1:0x2fa9:8
+@0x1077
+⊞	lea	r:rsi	m:rip::1:0x2fa2:8
+@0x107e
+⊞	sub	r:rsi	r:rdi
+@0x1081
+⋈	mov	r:rax	r:rsi
+@0x1084
+⊞	shr	r:rsi	i:0x3f
+@0x1088
+⊞	sar	r:rax	i:0x3
+@0x108c
+⊞	add	r:rsi	r:rax
+@0x108f
+⊞	sar	r:rsi	i:0x1
+@0x1092
+∈	e	i:0x10a8
+@0x1094
+⋈	mov	r:rax	m:rip::1:0x2f4d:8
+@0x109b
+⊤	test	r:rax	r:rax
+@0x109e
+∈	e	i:0x10a8
+@0x10a0
+⊙	jmp	r:eax
+@0x10a2
+⊞	nop
+@0x10a8
+⊣	ret
+@0x10a9
+⊞	nop
+@0x10b0
+⊞	endbr64
+@0x10b4
+⊤	cmp	m:rip::1:0x2f65:1	i:0x0
+@0x10bb
+∈	ne	i:0x10e8
+@0x10bd
+⋈	push	r:rbp
+@0x10be
+⊤	cmp	m:rip::1:0x2f1a:8	i:0x0
+@0x10c6
+⋈	mov	r:rbp	r:rsp
+@0x10c9
+∈	e	i:0x10d7
+@0x10cb
+⋈	mov	r:rdi	m:rip::1:0x2f46:8
+@0x10d2
+≻	call	i:0x1030
+@0x10d7
+≻	call	i:0x1040
+@0x10dc
+⋈	mov	m:rip::1:0x2f3d:1	i:0x1
+@0x10e3
+⋈	pop	r:rbp
+@0x10e4
+⊣	ret
+@0x10e5
+⊞	nop
+@0x10e8
+⊣	ret
+@0x10e9
+⊞	nop
+@0x10f0
+⊞	endbr64
+@0x10f4
+≺	jmp	i:0x1070
+@0x10f9
+⊞	endbr64
+@0x10fd
+⋈	push	r:rbp
+@0x10fe
+⋈	mov	r:rbp	r:rsp
+@0x1101
+⋈	mov	m:rbp::1:-0x4:4	r:edi
+@0x1104
+⋈	mov	m:rbp::1:-0x8:4	r:esi
+@0x1107
+⋈	mov	r:edx	m:rbp::1:-0x4:4
+@0x110a
+⋈	mov	r:eax	m:rbp::1:-0x8:4
+@0x110d
+⊞	add	r:eax	r:edx
+@0x110f
+⋈	pop	r:rbp
+@0x1110
+⊣	ret
+@0x1114
+⊞	endbr64
+@0x1118
+⊞	sub	r:rsp	i:0x8
+@0x111c
+⊞	add	r:rsp	i:0x8
+@0x1120
+⊣	ret

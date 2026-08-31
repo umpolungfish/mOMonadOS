@@ -1,0 +1,236 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["9716f9975db58fca.olean"],
+  "i": "449735b5261343c3.ilean",
+  "c": "0d46fc6d390a5fa7.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/home/mrnob0dy666/imsgct/mOMonadOS/momonados-proof-2026-08-10/lean/.lake/packages/Cli/.lake/build/lib/lean:/home/mrnob0dy666/imsgct/mOMonadOS/momonados-proof-2026-08-10/lean/.lake/packages/batteries/.lake/build/lib/lean:/home/mrnob0dy666/imsgct/mOMonadOS/momonados-proof-2026-08-10/lean/.lake/packages/Qq/.lake/build/lib/lean:/home/mrnob0dy666/imsgct/mOMonadOS/momonados-proof-2026-08-10/lean/.lake/packages/aesop/.lake/build/lib/lean:/home/mrnob0dy666/imsgct/mOMonadOS/momonados-proof-2026-08-10/lean/.lake/packages/proofwidgets/.lake/build/lib/lean:/home/mrnob0dy666/imsgct/mOMonadOS/momonados-proof-2026-08-10/lean/.lake/packages/importGraph/.lake/build/lib/lean:/home/mrnob0dy666/imsgct/mOMonadOS/momonados-proof-2026-08-10/lean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/home/mrnob0dy666/imsgct/mOMonadOS/momonados-proof-2026-08-10/lean/.lake/packages/plausible/.lake/build/lib/lean:/home/mrnob0dy666/imsgct/mOMonadOS/momonados-proof-2026-08-10/lean/.lake/packages/mathlib/.lake/build/lib/lean:/home/mrnob0dy666/imsgct/mOMonadOS/momonados-proof-2026-08-10/lean/.lake/build/lib/lean /home/mrnob0dy666/.elan/toolchains/leanprover--lean4---v4.28.0/bin/lean /home/mrnob0dy666/imsgct/mOMonadOS/momonados-proof-2026-08-10/lean/Imscribing/CLINK.lean -o /home/mrnob0dy666/imsgct/mOMonadOS/momonados-proof-2026-08-10/lean/.lake/build/lib/lean/Imscribing/CLINK.olean -i /home/mrnob0dy666/imsgct/mOMonadOS/momonados-proof-2026-08-10/lean/.lake/build/lib/lean/Imscribing/CLINK.ilean -c /home/mrnob0dy666/imsgct/mOMonadOS/momonados-proof-2026-08-10/lean/.lake/build/ir/Imscribing/CLINK.c --setup /home/mrnob0dy666/imsgct/mOMonadOS/momonados-proof-2026-08-10/lean/.lake/build/ir/Imscribing/CLINK.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "Imscribing/CLINK.lean:582:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:587:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:593:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:598:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:599:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:604:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:605:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:610:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:611:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:617:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:621:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:651:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:677:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:678:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:679:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:695:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:696:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:697:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:911:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:912:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:913:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:918:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:919:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:920:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:926:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:927:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:928:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:934:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:935:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:936:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:941:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:942:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:943:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:949:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:950:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:951:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:957:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:958:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:959:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:1053:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:1054:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:1055:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:1060:100: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:1073:2: 'simp [tensorProduct, planck_imaginary_time]' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.\n\nNote: This linter can be disabled with `set_option linter.flexible false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:1073:2: Try this:\n  [apply] simp only [ne_eq]",
+   "level": "info"},
+  {"message": "Imscribing/CLINK.lean:1074:22: 'decide' uses '⊢'!",
+   "level": "info"},
+  {"message":
+   "Imscribing/CLINK.lean:1073:2: 'simp [tensorProduct, planck_imaginary_time]' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.\n\nNote: This linter can be disabled with `set_option linter.flexible false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:1073:2: Try this:\n  [apply] simp only [ne_eq]",
+   "level": "info"},
+  {"message": "Imscribing/CLINK.lean:1074:22: 'decide' uses '⊢'!",
+   "level": "info"},
+  {"message":
+   "Imscribing/CLINK.lean:1073:2: 'simp [tensorProduct, planck_imaginary_time]' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.\n\nNote: This linter can be disabled with `set_option linter.flexible false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:1073:2: Try this:\n  [apply] simp only [ne_eq]",
+   "level": "info"},
+  {"message": "Imscribing/CLINK.lean:1074:22: 'decide' uses '⊢'!",
+   "level": "info"},
+  {"message":
+   "Imscribing/CLINK.lean:1073:2: 'simp [tensorProduct, planck_imaginary_time]' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.\n\nNote: This linter can be disabled with `set_option linter.flexible false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:1073:2: Try this:\n  [apply] simp only [ne_eq]",
+   "level": "info"},
+  {"message": "Imscribing/CLINK.lean:1074:22: 'decide' uses '⊢'!",
+   "level": "info"},
+  {"message":
+   "Imscribing/CLINK.lean:1073:2: 'simp [tensorProduct, planck_imaginary_time]' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.\n\nNote: This linter can be disabled with `set_option linter.flexible false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:1073:2: Try this:\n  [apply] simp only [ne_eq]",
+   "level": "info"},
+  {"message": "Imscribing/CLINK.lean:1074:22: 'decide' uses '⊢'!",
+   "level": "info"},
+  {"message":
+   "Imscribing/CLINK.lean:1206:40: unused variable `h`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "Imscribing/CLINK.lean:1210:37: unused variable `h`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"}],
+ "inputs":
+ [["Imscribing.CLINK:deps",
+   [["deps",
+     [["«imscribing-lean»/Imscribing:extraDep",
+       [["@«imscribing-lean»:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["Imscribing.Primitives.Core transitive imports (legacy)",
+         "9317c57739e38342"],
+        ["Imscribing.Primitives.Core:importAllArts", "7fe1825a775a6a8b"],
+        ["Imscribing.Primitives.Imscription transitive imports (legacy)",
+         "7959de06de549ca5"],
+        ["Imscribing.Primitives.Imscription:importAllArts", "5639484a108b9e19"],
+        ["Imscribing.Paraconsistent.QuarkBelnap transitive imports (legacy)",
+         "3401aa044383ac11"],
+        ["Imscribing.Paraconsistent.QuarkBelnap:importAllArts",
+         "7856667639150425"],
+        ["Imscribing.Paraconsistent.OrbitalBelnap transitive imports (legacy)",
+         "3eed5d6ded225b0e"],
+        ["Imscribing.Paraconsistent.OrbitalBelnap:importAllArts",
+         "e17ea6ecca722f01"],
+        ["Imscribing.Paraconsistent.HadronBelnap transitive imports (legacy)",
+         "9b4b4366c02aa2a0"],
+        ["Imscribing.Paraconsistent.HadronBelnap:importAllArts",
+         "141c0b401e447de7"],
+        ["Imscribing.Paraconsistent.Belnap transitive imports (legacy)",
+         "00000000000006bb"],
+        ["Imscribing.Paraconsistent.Belnap:importAllArts", "1d26823843ba4dba"],
+        ["Imscribing.Consciousness transitive imports (legacy)",
+         "35d6c09f42488d29"],
+        ["Imscribing.Consciousness:importAllArts", "6820c598dbc166f6"],
+        ["Imscribing.Frobenius transitive imports (legacy)",
+         "9471ce022b8bf398"],
+        ["Imscribing.Frobenius:importAllArts", "e9dfb29a46af0bff"],
+        ["Imscribing.Algebra transitive imports (legacy)", "b23bbc965df8554c"],
+        ["Imscribing.Algebra:importAllArts", "0ab596d4490e4680"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.28.0, commit 7e01a1bf5c70fc6167d49c345d3bf80596e9a79b",
+   "a96bc04a2e5e9630"],
+  ["/home/mrnob0dy666/imsgct/mOMonadOS/momonados-proof-2026-08-10/lean/Imscribing/CLINK.lean",
+   "f0561fe8fa04cb57"],
+  ["options",
+   [["-DmaxSynthPendingDepth=3", "c78e353d34de85d4"],
+    ["-Dweak.linter.mathlibStandardSet=true", "8a155799906f2b42"],
+    ["-DrelaxedAutoImplicit=false", "74a2b5546b55be80"],
+    ["-Dpp.unicode.fun=true", "9b94070140457fab"]]],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "8407a160f3161afd"}

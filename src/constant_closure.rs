@@ -554,7 +554,7 @@ pub fn constant_closure_status_report() -> String {
 //
 //   (A) Curvature series truncation — O(1/d^k)      [5 params]
 //   (B) RG running from SIC scale (d=12) to IR       [10 params]
-//   (C) ◻_corr gate — non-Abelian braiding closure   [2 params]
+//   (C) ⊡_corr gate — non-Abelian braiding closure   [2 params]
 //
 // 6 parameters are structurally exact at ALL scales (pure Q).
 //
@@ -569,7 +569,7 @@ pub enum ResidualSource {
     CurvatureTruncation { order: u32 },
     /// RG flow from SIC scale to measurement scale.
     RGRunning { from_scale: &'static str, to_scale: &'static str },
-    /// Non-Abelian braiding closure gate ◻_corr.
+    /// Non-Abelian braiding closure gate ⊡_corr.
     OmegaCorr,
 }
 
@@ -643,8 +643,8 @@ pub fn residual_source_report() -> String {
     s.push_str("    CKM angles:  UV boundary conditions, large Yukawa RG\n");
     s.push_str("    α_s:         UV=gear·α, IR=0.1181 (QCD running)\n\n");
 
-    s.push_str("  (C) ◻_corr GATE — non-Abelian braiding [2 params]\n");
-    s.push_str("    H₀, ρ_Λ:     closure awaits ◻_corr braiding resolution\n");
+    s.push_str("  (C) ⊡_corr GATE — non-Abelian braiding [2 params]\n");
+    s.push_str("    H₀, ρ_Λ:     closure awaits ⊡_corr braiding resolution\n");
     s.push_str("    Hubble tension = braiding phase (unresolved)\n\n");
 
     s.push_str("  STRUCTURALLY EXACT (pure Q, zero residual):\n");

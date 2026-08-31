@@ -191,11 +191,11 @@ pub fn bridge_report() -> String {
     out.push_str("  SIC_D12_Equiangularity.lean:     143 overlaps, all native_decide \u{2713}\n");
     out.push_str("  SIC_D12_MagnitudeClasses.lean:  7 witnesses, K16 tower, native_decide \u{2713}\n");
     out.push_str("  SIC_D12_SymmetricModuli.lean:    z0,z6 in Q(sqrt2,sqrt13), 4 theorems \u{2713}\n");
-    out.push_str("  SIC_D12_ExistenceRing.lean:      ALL 143 overlaps in R, 0 sorries \u{2713}\n");
+    out.push_str("  SIC_D12_ExistenceRing.lean:      ALL 143 overlaps in R, *sans* sorry \u{2713}\n");
     out.push_str("  SIC_D12_Embedding.lean:          ring hom R->C, 8 sorries remaining \u{27f3}\n");
     out.push_str("  SIC_POVM_DualLinkClosure.lean:   unconditional d=2^n SIC \u{2713}\n");
     out.push_str("  QCI_SICPOVM_Bridge.lean:         quantum-classical interface \u{2713}\n");
-    out.push_str("  BelnapNFiducial.lean:            22 theorems, 0 sorries \u{2713}\n");
+    out.push_str("  BelnapNFiducial.lean:            22 theorems, *sans* sorry \u{2713}\n");
     out.push_str("  ZaunerEmbeddingEquivalence.lean:  Hilbert-space embedding \u{2713}\n");
 
     out

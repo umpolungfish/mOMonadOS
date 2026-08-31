@@ -240,7 +240,9 @@ pub fn next_eagle_report() -> String {
     s.push_str("3. Pin moduli; verify flat autocorrelation\n");
     s.push_str("4. ob3ect batch for ramified distillation\n\n");
     s.push_str(&alloc::format!(
-        "Numerical seeds DEAD (residual {}). Do not polish fiducial.\n",
+        "Numerical seeds sit at residual {} and every one reaches the same \
+         attractor, so the budget on that arm is spent; the exact extraction \
+         carries the moduli instead (`d2048 exact`).\n",
         SPURIOUS_RESIDUAL
     ));
     s

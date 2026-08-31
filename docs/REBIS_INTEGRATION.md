@@ -130,4 +130,4 @@ $$\langle \text{𐑦} \cdot \text{𐑸} \cdot \text{𐑾} \cdot \text{𐑹} \cdo
 - T=𐑸: Self-referential — the genetics module verifies itself (7-stage)
 - P=𐑹: Frobenius-special — every codon is Frobenius-verified
 - ⊙=⊙: Self-modeling — the kernel's consciousness score uses its own IG type
-- ◻=𐑭: Integer winding — traceable through the REPL command log
+- ⊡=𐑭: Integer winding — traceable through the REPL command log

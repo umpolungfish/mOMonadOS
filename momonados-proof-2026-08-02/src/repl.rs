@@ -219,6 +219,11 @@ pub fn repl(k: &mut Kernel) {
                     other => sprintln!("winding: unknown subcommand '{}' (try 'winding help')", other),
                 }
             },
+
+            "oneshot_prime_winder" | "opw" => {
+                let args: Vec<&str> = parts.collect();
+                crate::oneshot_prime_winder::repl_oneshot_prime_winder(&args);
+            },
             "proof" => {
                 match parts.next().unwrap_or("") {
                     "" | "list" => crate::proof::list_proofs(),
@@ -676,7 +681,7 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("fibqc knot [name]        — Jones value for a knot from the census");
                         sprintln!("fibqc winding            — the phase lattice, in windings");
                         sprintln!("fibqc readout <a> <N>    — one-shot topological readout (ModExp invariant -> winding -> period)");
-                        sprintln!("fibqc alkahest <a> <N>   — the four-name dissolution report (root, fixed point, one, ◻-promotion)");
+                        sprintln!("fibqc alkahest <a> <N>   — the four-name dissolution report (root, fixed point, one, ⊡-promotion)");
                         sprintln!("fibqc protocol           — show the IMASM braiding protocol report");
                         sprintln!("fibqc braid <gens...>    — δ: compile a braid word to an IMASM program");
                         sprintln!("fibqc braid <gens...> close — same, closed (trace closure)");
@@ -1367,7 +1372,7 @@ pub fn repl(k: &mut Kernel) {
                         if args.len() >= 2 {
                             if let (Ok(start), Ok(end)) = (args[0].parse::<u32>(), args[1].parse::<u32>()) {
                                 sprintln!("=== MERSENNE SCAN p={}..{} ===", start, end);
-                                sprintln!("{:>4} {:>24} {:>14} {:>6}", "p", "M_p", "VERDICT", "◻");
+                                sprintln!("{:>4} {:>24} {:>14} {:>6}", "p", "M_p", "VERDICT", "⊡");
                                 sprintln!("{}", "-".repeat(52));
                                 let results = crate::divisor_ring::scan_mersenne_range(start, end);
                                 for (p, mp, verdict, omega) in &results {
@@ -2187,40 +2192,40 @@ Stopped after {} ticks.", ran);
                             }
 
                             match u {
-                                0 => { // canonical: G1:<≥𐑹  G2:⊙≥⊙  G3:◻≥𐑭
+                                0 => { // canonical: G1:<≥𐑹  G2:⊙≥⊙  G3:⊡≥𐑭
                                     let g1 = (ig.p as u8) <= (IgPrim::or_ as u8);
                                     let g2 = (ig.phi as u8) <= (IgPrim::monad as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::ah as u8);
                                     sprintln!("  G1 (<≥𐑹): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                    sprintln!("  G3 (⊡≥𐑭): {}  ⊡={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                1 => { // low_gate: G1:<≥𐑬  G2:⊙≥𐑢  G3:◻≥𐑭
+                                1 => { // low_gate: G1:<≥𐑬  G2:⊙≥𐑢  G3:⊡≥𐑭
                                     let g1 = (ig.p as u8) <= (IgPrim::out as u8);
                                     let g2 = (ig.phi as u8) <= (IgPrim::woe as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::ah as u8);
                                     sprintln!("  G1 (<≥𐑬): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     sprintln!("  G2 (⊙≥woe): {}  ⊙={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                    sprintln!("  G3 (⊡≥𐑭): {}  ⊡={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                2 => { // strict_frobenius: G1:⋈≥𐑐  G2:<≥𐑹  G3:◻≥𐑭
+                                2 => { // strict_frobenius: G1:⋈≥𐑐  G2:<≥𐑹  G3:⊡≥𐑭
                                     let g1 = (ig.f as u8) <= (IgPrim::peep as u8);
                                     let g2 = (ig.p as u8) <= (IgPrim::or_ as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::ah as u8);
                                     sprintln!("  G1 (⋈≥𐑐): {}  ⋈={}", if g1 {"PASS"} else {"FAIL"}, ig.f.glyph());
                                     sprintln!("  G2 (<≥𐑹): {}  <={}", if g2 {"PASS"} else {"FAIL"}, ig.p.glyph());
-                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                    sprintln!("  G3 (⊡≥𐑭): {}  ⊡={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                3 => { // inverted_gates: G1:⊙≥⊙  G2:<≥𐑹  G3:◻≥𐑭
+                                3 => { // inverted_gates: G1:⊙≥⊙  G2:<≥𐑹  G3:⊡≥𐑭
                                     let g1 = (ig.phi as u8) <= (IgPrim::monad as u8);
                                     let g2 = (ig.p as u8) <= (IgPrim::or_ as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::ah as u8);
                                     sprintln!("  G1 (⊙≥⊙): {}  ⊙={}", if g1 {"PASS"} else {"FAIL"}, ig.phi.glyph());
                                     sprintln!("  G2 (<≥𐑹): {}  <={}", if g2 {"PASS"} else {"FAIL"}, ig.p.glyph());
-                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                    sprintln!("  G3 (⊡≥𐑭): {}  ⊡={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
                                 4 => { // no_ordering: G1+G2+G3 parallel — same as canonical but independence asserted
@@ -2229,40 +2234,40 @@ Stopped after {} ticks.", ran);
                                     let g3 = (ig.omega as u8) <= (IgPrim::ah as u8);
                                     sprintln!("  G1 (<≥𐑹): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                    sprintln!("  G3 (⊡≥𐑭): {}  ⊡={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     sprintln!("  Mode: PARALLEL — gates evaluated independently.");
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                5 => { // high_gate: G1:<≥𐑹  G2:⊙≥𐑮  G3:◻≥𐑟
+                                5 => { // high_gate: G1:<≥𐑹  G2:⊙≥𐑮  G3:⊡≥𐑟
                                     let g1 = (ig.p as u8) <= (IgPrim::or_ as u8);
                                     let g2 = (ig.phi as u8) <= (IgPrim::roar as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::zoo as u8);
                                     sprintln!("  G1 (<≥𐑹): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     sprintln!("  G2 (⊙≥roar): {}  ⊙={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G3 (◻≥𐑟): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                    sprintln!("  G3 (⊡≥𐑟): {}  ⊡={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                6 => { // winding_first: G1:◻≥𐑭  G2:⊙≥⊙  G3:<≥𐑹
+                                6 => { // winding_first: G1:⊡≥𐑭  G2:⊙≥⊙  G3:<≥𐑹
                                     let g1 = (ig.omega as u8) <= (IgPrim::ah as u8);
                                     let g2 = (ig.phi as u8) <= (IgPrim::monad as u8);
                                     let g3 = (ig.p as u8) <= (IgPrim::or_ as u8);
-                                    sprintln!("  G1 (◻≥𐑭): {}  ◻={}", if g1 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                    sprintln!("  G1 (⊡≥𐑭): {}  ⊡={}", if g1 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
                                     sprintln!("  G3 (<≥𐑹): {}  <={}", if g3 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                 }
-                                7 => { // t_structural: G1:<≥𐑹  G2:⊙≥⊙  G3:◻≥𐑭  T:∋=𐑠
+                                7 => { // t_structural: G1:<≥𐑹  G2:⊙≥⊙  G3:⊡≥𐑭  T:∋=𐑠
                                     let g1 = (ig.p as u8) <= (IgPrim::or_ as u8);
                                     let g2 = (ig.phi as u8) <= (IgPrim::monad as u8);
                                     let g3 = (ig.omega as u8) <= (IgPrim::ah as u8);
                                     let t_ok = ig.c == IgPrim::measure;
                                     sprintln!("  G1 (<≥𐑹): {}  <={}", if g1 {"PASS"} else {"FAIL"}, ig.p.glyph());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={}", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph());
-                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
+                                    sprintln!("  G3 (⊡≥𐑭): {}  ⊡={}", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph());
                                     sprintln!("  T  (∋=𐑠): {}  ∋={}", if t_ok {"PASS"} else {"FAIL"}, ig.c.glyph());
                                     if !g1 || !g2 || !g3 || !t_ok { all_pass = false; }
                                 }
-                                8 => { // chirality_first: G1:⊥≥𐑖  G2:⊙≥⊙  G3:◻≥𐑭
+                                8 => { // chirality_first: G1:⊥≥𐑖  G2:⊙≥⊙  G3:⊡≥𐑭
                                        // T: T_CEILING — see manuscripts/clay_cross_dialect_closure.md.
                                        // Uses IgPrim::ordinal(), NOT raw discriminant comparison — the
                                        // discriminant trick used in arms 0-7 is invalid for the criticality
@@ -2272,18 +2277,18 @@ Stopped after {} ticks.", ran);
                                     let g3 = ig.omega.ordinal() >= IgPrim::ah.ordinal();
                                     sprintln!("  G1 (⊥≥𐑖): {}  ⊥={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.h.glyph(), ig.h.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
-                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
+                                    sprintln!("  G3 (⊡≥𐑭): {}  ⊡={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                     if !t_ceiling_check(&ig) { all_pass = false; }
                                 }
-                                9 => { // scope_dialect: G1:∈≥𐑲(maximal scope)  G2:⊙≥⊙  G3:◻≥𐑭
+                                9 => { // scope_dialect: G1:∈≥𐑲(maximal scope)  G2:⊙≥⊙  G3:⊡≥𐑭
                                        // T: T_CEILING — same generalization as U8, paired with a different gate spec.
                                     let g1 = ig.g.ordinal() >= IgPrim::ice.ordinal();
                                     let g2 = ig.phi.ordinal() >= IgPrim::monad.ordinal();
                                     let g3 = ig.omega.ordinal() >= IgPrim::ah.ordinal();
                                     sprintln!("  G1 (∈≥𐑲): {}  ∈={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.g.glyph(), ig.g.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
-                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
+                                    sprintln!("  G3 (⊡≥𐑭): {}  ⊡={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                     if !t_ceiling_check(&ig) { all_pass = false; }
                                 }
@@ -2794,7 +2799,7 @@ fn redraw_input(old_len: usize, src: &[u8], src_len: usize, buf: &mut [u8]) {
 // ─── T_CEILING — shared T-constitution check for U8/U9 ─────────
 //
 // Ceiling-generalizes canonical's existing ⊤-only ceiling rule to all five
-// dynamics primitives, same anchors: <<=𐑹 ⋈<=𐑐 ⊤<=𐑧 ⊥<=𐑫 ◻<=𐑭.
+// dynamics primitives, same anchors: <<=𐑹 ⋈<=𐑐 ⊤<=𐑧 ⊥<=𐑫 ⊡<=𐑭.
 // See manuscripts/clay_cross_dialect_closure.md for the derivation. Uses
 // IgPrim::ordinal(), not raw discriminant comparison.
 // Canonical's actual T-constitution (exact-equality on four primitives,
@@ -2837,7 +2842,7 @@ fn t_ceiling_check(ig: &IgTuple) -> bool {
     let t_h   = ig.h.ordinal()     <= IgPrim::wool.ordinal();
     let t_om  = ig.omega.ordinal() <= IgPrim::ah.ordinal();
     let t_ok = t_phi && t_f && t_k && t_h && t_om;
-    sprintln!("  T_CEILING <<=𐑹: {}  ⋈<=𐑐: {}  ⊤<=𐑧: {}  ⊥<=𐑫: {}  ◻<=𐑭: {}",
+    sprintln!("  T_CEILING <<=𐑹: {}  ⋈<=𐑐: {}  ⊤<=𐑧: {}  ⊥<=𐑫: {}  ⊡<=𐑭: {}",
         if t_phi {"PASS"} else {"FAIL"}, if t_f {"PASS"} else {"FAIL"},
         if t_k {"PASS"} else {"FAIL"}, if t_h {"PASS"} else {"FAIL"},
         if t_om {"PASS"} else {"FAIL"});
@@ -2852,7 +2857,7 @@ fn t_ceiling_gapped_check(ig: &IgTuple) -> bool {
     let t_h   = ig.h.ordinal()     <= IgPrim::wool.ordinal();
     let t_om  = ig.omega.ordinal() <= IgPrim::ah.ordinal();
     let t_ok = t_phi && t_f && t_k && t_h && t_om;
-    sprintln!("  T_CEILING(gapped) <<=𐑹: {}  ⋈<=𐑐: {}  ⊤<=𐑪: {}  ⊥<=𐑫: {}  ◻<=𐑭: {}",
+    sprintln!("  T_CEILING(gapped) <<=𐑹: {}  ⋈<=𐑐: {}  ⊤<=𐑪: {}  ⊥<=𐑫: {}  ⊡<=𐑭: {}",
         if t_phi {"PASS"} else {"FAIL"}, if t_f {"PASS"} else {"FAIL"},
         if t_k {"PASS"} else {"FAIL"}, if t_h {"PASS"} else {"FAIL"},
         if t_om {"PASS"} else {"FAIL"});
@@ -3782,10 +3787,10 @@ fn print_cl8nk(action: &str, name: &str) {
         }
         "transcendence" => {
             let tr = compute_transcendence();
-            sprintln!("  {}The ◻/∋ Transcendence — CLINK L8 beyond ZFC_fe{}", style_section(), crate::style::reset());
+            sprintln!("  {}The ⊡/∋ Transcendence — CLINK L8 beyond ZFC_fe{}", style_section(), crate::style::reset());
             sprintln!("  d(ZFC_fe, CLINK L8) = {:.4}", tr.d_zfcfe_to_cl8nk);
             sprintln!();
-            sprintln!("  ◻: {} → {}",
+            sprintln!("  ⊡: {} → {}",
                 catalog::primitive_glyph(tr.omega_zfcfe),
                 catalog::primitive_glyph(tr.omega_cl8nk));
             sprintln!("    ZFC_fe: {}", tr.omega_zfcfe_frag);
@@ -3880,7 +3885,7 @@ fn print_cl8nk(action: &str, name: &str) {
             sprintln!("  entry  <name>    — Full CL8NK formula decomposition");
             sprintln!("  promotions        — 3-stage ladder: ZFC→ZFCₜ→ZFC_fe→CLINK L8");
             sprintln!("  distance <name>   — d(name, CLINK L8)");
-            sprintln!("  transcendence     — ◻/∋ transcendence analysis");
+            sprintln!("  transcendence     — ⊡/∋ transcendence analysis");
             sprintln!("  tensor  <name>    — CLINK L8 ⊗ name (absorption test)");
             sprintln!("  meet    <name>    — CLINK L8 ⊓ name");
             sprintln!("  join    <name>    — CLINK L8 ⊔ name");
@@ -4184,11 +4189,11 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
         }
 
         "stop" => {
-            // Stop codon analysis as ◻ boundary
+            // Stop codon analysis as ⊡ boundary
             use crate::belnap::B4;
-            sprintln!("Stop Codon Analysis (◻ boundary — kernel winding limit):");
+            sprintln!("Stop Codon Analysis (⊡ boundary — kernel winding limit):");
             let stops = [
-                ("UAA", Codon { p1: crate::belnap::B4::N, p2: B4::F, p3: B4::F }, "◻₀  trivial winding — null boundary"),
+                ("UAA", Codon { p1: crate::belnap::B4::N, p2: B4::F, p3: B4::F }, "⊡₀  trivial winding — null boundary"),
                 ("UAG", Codon { p1: crate::belnap::B4::N, p2: B4::F, p3: B4::B }, "𐑴  Z2-protected — amber boundary"),
                 ("UGA", Codon { p1: crate::belnap::B4::N, p2: B4::B, p3: B4::F }, "𐑭   integer winding — opal boundary"),
             ];
@@ -4198,8 +4203,8 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                     name, s[0] as char, s[1] as char, s[2] as char,
                     codon.p1, codon.p2, codon.p3, desc);
             }
-            sprintln!("  Mito additional stops: AGA (F,B,F)=◻_AGA  AGG (F,B,B)=◻_AGG");
-            sprintln!("  Mito UGA → Trp (not Stop — ◻ gate lifted in mitochondrial context)");
+            sprintln!("  Mito additional stops: AGA (F,B,F)=⊡_AGA  AGG (F,B,B)=⊡_AGG");
+            sprintln!("  Mito UGA → Trp (not Stop — ⊡ gate lifted in mitochondrial context)");
         }
 
         "mutation" => {
@@ -4519,7 +4524,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
             sprintln!("Codon Strata:");
             sprintln!("  Exact: {} codons (ffuse∘fsplit = id exactly)", exact);
             sprintln!("  Split: {} codons (ffuse∘fsplit = id mod Z2)", split);
-            sprintln!("  Stop:  {} codons (◻ boundary)", stop);
+            sprintln!("  Stop:  {} codons (⊡ boundary)", stop);
         }
                 "asm" => {
             let programs = all_genetic_programs();

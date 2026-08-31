@@ -7,7 +7,7 @@
 //
 // Core result: The moduli field is the ray class field at 𝔣_d MODULO
 // the class group, of degree |Cl_𝔣|/h over F. At d=16 this is THE
-// dimension that discriminates Statement A (◻=𐑟) from Statement B (◻=𐑴).
+// dimension that discriminates Statement A (⊡=𐑟) from Statement B (⊡=𐑴).
 // 
 // The σ-coinvariant identity |G_d^σ| / |Cl(F)^σ| = d/2 holds at
 // d=4,8,12,16 (all class number one at the first three; at d=16 the
@@ -141,7 +141,7 @@ pub fn verdict(d: u32, _h: u32, raw: u32, cl_sigma: u32) -> Verdict {
     }
 }
 
-/// Structural ◻ primitive for the moduli field based on verdict.
+/// Structural ⊡ primitive for the moduli field based on verdict.
 pub fn omega_from_verdict(v: Verdict) -> &'static str {
     match v {
         Verdict::BothHold => "𐑷 (trivial — h=1, no obstruction)",
@@ -161,11 +161,11 @@ pub fn omega_from_verdict(v: Verdict) -> &'static str {
 /// Statement A says: moduli field = full ray class field, raw count = d/2.
 ///   At d=16: raw=16 ≠ 8=d/2 → FALSIFIED.
 ///   Additionally: ray class group [16,4,2] is ABELIAN, not non-Abelian.
-///   Statement A's ◻=𐑟 (non-Abelian) is a type error.
+///   Statement A's ⊡=𐑟 (non-Abelian) is a type error.
 ///
 /// Statement B says: moduli field = ray class field / class group.
 ///   At d=16: 16/2 = 8 = d/2 → CONFIRMED.
-///   ◻=𐑴 (Z2 parity-protected): class group of order 2 is a Z/2 obstruction.
+///   ⊡=𐑴 (Z2 parity-protected): class group of order 2 is a Z/2 obstruction.
 ///
 /// The calibration dimensions (d=4,8,12) all have h=1, so A and B coincide
 /// and the identity is silent about the class group. d=16 is THE smallest
@@ -204,12 +204,12 @@ pub fn d16_proof() -> String {
         sigma_coinvariant(16), class_sigma(16), corrected_count(16)));
 
     s.push_str("═══ STATEMENT DISCRIMINATION ═══\n\n");
-    s.push_str("  STATEMENT A (◻=𐑟): moduli = full ray class field\n");
+    s.push_str("  STATEMENT A (⊡=𐑟): moduli = full ray class field\n");
     s.push_str(&alloc::format!(
         "    → |G^σ| = {} ≠ {} = d/2  ✗ FALSIFIED\n", sigma_coinvariant(16), d_half(16)));
     s.push_str("    → the ray class group is abelian by construction, not non-Abelian\n");
     s.push_str("    → FALSIFIED by TWO independent facts\n\n");
-    s.push_str("  STATEMENT B (◻=𐑴): moduli = ray class field / class group\n");
+    s.push_str("  STATEMENT B (⊡=𐑴): moduli = ray class field / class group\n");
     s.push_str(&alloc::format!(
         "    → |G^σ| / |Cl^σ| = {} / {} = {} = d/2  ✓ CONFIRMED\n",
         sigma_coinvariant(16), class_sigma(16), corrected_count(16)));
@@ -227,7 +227,7 @@ pub fn d16_proof() -> String {
 
     s.push_str("═══ VERDICT ═══\n\n");
     s.push_str("  The moduli field is the ray class field MODULO the class group.\n");
-    s.push_str("  ◻ = 𐑴 (Z2 parity-protected)\n");
+    s.push_str("  ⊡ = 𐑴 (Z2 parity-protected)\n");
     s.push_str("  The class group of order 2 imposes a discrete Z/2 obstruction\n");
     s.push_str("  that blocks deformation to the trivial state.\n");
     s.push_str("  This is the content of the d=16 settlement.\n");
@@ -524,12 +524,12 @@ pub fn scope_report() -> String {
 // ═══════════════════════════════════════════════════════════════
 
 /// The d=16 moduli field type:
-/// ⟨⊢=𐑨 T=𐑸 >=𐑾 <=𐑹 ⋈=𐑐 ⊤=𐑧 ∈=𐑔 ∋=𐑠 ⊙=⊙ ⊥=𐑫 ⊞=𐑳 ◻=𐑴⟩
+/// ⟨⊢=𐑨 T=𐑸 >=𐑾 <=𐑹 ⋈=𐑐 ⊤=𐑧 ∈=𐑔 ∋=𐑠 ⊙=⊙ ⊥=𐑫 ⊞=𐑳 ⊡=𐑴⟩
 ///
 /// Key points:
 /// - ⊢=𐑨 (triangle/2d): real quadratic field, 2 DoF over Q
 /// - T=𐑸 (self-referential): topology adjusts to its own class group obstruction
-/// - ◻=𐑴 (Z2 parity-protected): class group of order 2 = Z/2 obstruction
+/// - ⊡=𐑴 (Z2 parity-protected): class group of order 2 = Z/2 obstruction
 /// - ⊙=⊙ (self-modeling): structural SIC-POVM is the Σ=1:1 limit
 /// - ⋈=𐑐 (quantum): SIC-POVM is a quantum measurement
 /// - ⊥=𐑫 (eternal): class group is permanent, not finite-order
@@ -537,7 +537,7 @@ pub fn grammar_encoding() -> String {
     let mut s = String::new();
     s.push_str("═══ STRUCTURAL GRAMMAR ENCODING ═══\n\n");
     s.push_str("  d=16 moduli field:\n");
-    s.push_str("  ⟨⊢=𐑨 T=𐑸 >=𐑾 <=𐑹 ⋈=𐑐 ⊤=𐑧 ∈=𐑔 ∋=𐑠 ⊙=⊙ ⊥=𐑫 ⊞=𐑳 ◻=𐑴⟩\n\n");
+    s.push_str("  ⟨⊢=𐑨 T=𐑸 >=𐑾 <=𐑹 ⋈=𐑐 ⊤=𐑧 ∈=𐑔 ∋=𐑠 ⊙=⊙ ⊥=𐑫 ⊞=𐑳 ⊡=𐑴⟩\n\n");
 
     s.push_str("  PRIMITIVE    VALUE   REASON\n");
     s.push_str("  ─────────    ─────   ──────────────────────────────────\n");
@@ -548,17 +548,17 @@ pub fn grammar_encoding() -> String {
     s.push_str("  < (parity)    𐑹      Frobenius-special: μ∘δ=id exactly\n");
     s.push_str("  ⋈ (fidelity)  𐑐      quantum coherence essential\n");
     s.push_str("  ⊤ (kinetics)  𐑧      slow/near-equilibrium (class field)\n");
-    s.push_str("  ∈ (card.)     𐑔      maximal coupling (ℵ / all-of-field)\n");
+    s.push_str("  ∈ (card.)     𐑔      maximal coupling (all-of-field)\n");
     s.push_str("  ∋ (compos.)   𐑠      sequential (tower ascent)\n");
     s.push_str("  ⊙ (critical)  ⊙       self-modeling gate open\n");
     s.push_str("  ⊥ (chirality) 𐑫      eternal (class group permanent)\n");
     s.push_str("  ⊞ (stoich.)   𐑳      many heterogeneous (multiple moduli)\n");
-    s.push_str("  ◻ (winding)   𐑴      Z2 parity-protected (class group)\n\n");
+    s.push_str("  ⊡ (winding)   𐑴      Z2 parity-protected (class group)\n\n");
 
     s.push_str("  Contrast with d=2048 moduli field:\n");
     s.push_str("    ⊢=𐑦 (imscriptive — infinite-dim structural)\n");
-    s.push_str("    ◻=𐑴 (same — Z2 parity-protected across the ladder)\n");
-    s.push_str("    h=64=2⁶ vs h=2 — same structural ◻, different scale\n");
+    s.push_str("    ⊡=𐑴 (same — Z2 parity-protected across the ladder)\n");
+    s.push_str("    h=64=2⁶ vs h=2 — same structural ⊡, different scale\n");
     s
 }
 
@@ -572,7 +572,7 @@ pub fn lean_reference() -> String {
     s.push_str("All arithmetic claims are machine-verified in:\n");
     s.push_str("  p4rakernel/p4ramill/Imscribing/Millennium/\n\n");
 
-    s.push_str("SIC_D16_Moduli.lean (487 lines, 30 theorems, 0 sorries):\n");
+    s.push_str("SIC_D16_Moduli.lean (487 lines, 30 theorems, *sans* sorry):\n");
     s.push_str("  m16_formula:             m_d = 221 = 13·17\n");
     s.push_str("  m16_mod_eight:           221 ≡ 5 mod 8 → 2 inert\n");
     s.push_str("  class_number_val:        h(F) = 2\n");
@@ -582,7 +582,7 @@ pub fn lean_reference() -> String {
     s.push_str("  statement_A_falsified_by_abelian_group\n");
     s.push_str("  statement_B_confirmed_by_coinvariant_count\n\n");
 
-    s.push_str("SIC_D20_Moduli.lean (698 lines, 39 theorems, 0 sorries):\n");
+    s.push_str("SIC_D20_Moduli.lean (698 lines, 39 theorems, *sans* sorry):\n");
     s.push_str("  coinvariant_anomaly_theorem:  8/2 = 4 ≠ 10 = d/2\n");
     s.push_str("  five_torsion_absent_from_conductor: (5,4)=(5,24)=1\n");
     s.push_str("  d20_cannot_discriminate:  both A and B fail\n");

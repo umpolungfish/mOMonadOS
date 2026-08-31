@@ -115,6 +115,46 @@ pub fn codons_for_aa_table(aa: AminoAcid, table: CodeTable) -> alloc::vec::Vec<C
     result
 }
 
+/// The single preferred codon for an amino acid, derived from the genetic
+/// code alone — no external codon-usage table. Port of red-hot_rebis's
+/// `_compute_preferred_codons` (serpentrod/protein_v5.py): within whichever
+/// exact-stratum tier the AA's codons fall into, prefer the position-3 C
+/// variant (highest fidelity); fall through tiers until one applies.
+///
+/// Tier 1: codons with middle base C (p2 == B4::T) — the exact-stratum box.
+/// Tier 2: a 4-fold degenerate box (all four p3 variants at this p1,p2 code
+///         the same AA) even when the middle base isn't C.
+/// Tier 3: any codon with position 3 == C.
+/// Tier 4: the first codon in enumeration order — only ever reached by a
+///         singleton codon set (Met, Trp), where order can't matter.
+pub fn preferred_codon_for_aa(aa: AminoAcid, table: CodeTable) -> Option<Codon> {
+    let codons = codons_for_aa_table(aa, table);
+    if codons.is_empty() { return None; }
+
+    let exact: alloc::vec::Vec<Codon> = codons.iter().copied().filter(|c| c.p2 == B4::T).collect();
+    if !exact.is_empty() {
+        return Some(exact.iter().copied().find(|c| c.p3 == B4::T).unwrap_or(exact[0]));
+    }
+
+    let translate = |c: &Codon| -> AminoAcid {
+        match table {
+            CodeTable::Standard => translate_codon(c),
+            CodeTable::Mitochondrial => translate_codon_mito(c),
+        }
+    };
+    let four_fold: alloc::vec::Vec<Codon> = codons.iter().copied().filter(|c| {
+        [B4::N, B4::T, B4::F, B4::B].iter().all(|&p3| {
+            translate(&Codon { p1: c.p1, p2: c.p2, p3 }) == aa
+        })
+    }).collect();
+    if !four_fold.is_empty() {
+        return Some(four_fold.iter().copied().find(|c| c.p3 == B4::T).unwrap_or(four_fold[0]));
+    }
+
+    let c3c = codons.iter().copied().find(|c| c.p3 == B4::T);
+    Some(c3c.unwrap_or(codons[0]))
+}
+
 fn index_to_b4(x: u8) -> B4 {
     match x % 4 {
         3 => B4::B,

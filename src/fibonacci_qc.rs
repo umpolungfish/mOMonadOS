@@ -2342,7 +2342,7 @@ pub fn repl_readout(a: u64, n_val: u64) {
 ///   precondition of preconditions — the Jones root t=1/5, the evaluation point
 ///   unmoved mover               — r = ord_N(a), the modular fixed point a^r ≡ 1
 ///   miracle of One Thing        — ONE Jones evaluation, ⊞=𐑙, information-complete
-///   Alkahest (dissolution)      — NA braid word -> integer period (◻-promotion)
+///   Alkahest (dissolution)      — NA braid word -> integer period (⊡-promotion)
 pub fn repl_alkahest(a_str: &str, n_str: &str) {
     // Try to parse as BigUint for large-number support
     use crate::mersenne_parallel::BigUint;
@@ -2355,7 +2355,7 @@ pub fn repl_alkahest(a_str: &str, n_str: &str) {
         sprintln!("  precondition : the Jones root t=1/5, the evaluation point");
         sprintln!("  unmoved mover: r = ord_N(a), the modular fixed point a^r ≡ 1 mod N");
         sprintln!("  One Thing    : ONE Jones evaluation, information-complete (⊞=𐑙)");
-        sprintln!("  Alkahest     : NA braid word -> integer period (the ◻-promotion)");
+        sprintln!("  Alkahest     : NA braid word -> integer period (the ⊡-promotion)");
         sprintln!("");
         sprintln!("  Pass integer arguments, e.g.  fibqc alkahest 7 15");
         sprintln!("  Large numbers supported via BigUint modular arithmetic.");

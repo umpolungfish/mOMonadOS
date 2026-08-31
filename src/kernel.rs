@@ -2,6 +2,7 @@
 use crate::belnap::*;
 use crate::tokens::*;
 use crate::frob_verify::FrobeniusHarness;
+use imasm_core::imasm16_3::Reg16_3;
 
 /// Maximum simultaneous FSPLIT fork depth. Real programs never nest this deep;
 /// the cap is a safety bound, and exceeding it is now counted (`fork_overflow`)
@@ -11,14 +12,43 @@ const FORK_STACK_CAP: usize = 64;
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum Phase { Boot, Think, Act, Observe, Update, Halt }
 
+/// B4's four values as their SIXTEEN_3 embedding: N={}, T={T}, F={F}, B={T,F}.
+/// Identity on the classical slice, so routing FSPLIT/FFUSE through this and
+/// back changes nothing they compute; FSPLIT3/FFUSE3/EVALI need the wider
+/// carrier for real, so the fork frame is typed for it.
+fn b4_to_reg16_3(v: B4) -> Reg16_3 {
+    match v {
+        B4::N => Reg16_3::default(),
+        B4::T => Reg16_3 { big_t: true, ..Default::default() },
+        B4::F => Reg16_3 { big_f: true, ..Default::default() },
+        B4::B => Reg16_3 { big_t: true, big_f: true, ..Default::default() },
+    }
+}
+
+/// The classical-slice collapse back: reads only the constructive bits, same
+/// as the primer's own "a value that touches t or f has left the slice" — the
+/// information layer has no B4 representation, which is expected, not lossy
+/// by accident.
+fn reg16_3_to_b4(v: Reg16_3) -> B4 {
+    match (v.big_t, v.big_f) {
+        (false, false) => B4::N,
+        (true, false)  => B4::T,
+        (false, true)  => B4::F,
+        (true, true)   => B4::B,
+    }
+}
+
 /// A fork frame pushed when FSPLIT bifurcates execution.
 /// Tracks the two parallel branches until FFUSE joins them.
 #[derive(Copy, Clone)]
 struct ForkFrame {
     /// Position just after the matching FFUSE (where to resume after join).
     resume_ip: usize,
-    /// The value carried on the right branch (gated by EVALT/EVALF).
-    right_val: B4,
+    /// The value carried on the right branch. SIXTEEN_3-typed so FSPLIT3's
+    /// two non-inline arms (falsity_part ∪ info_part) fit in the one slot
+    /// FSPLIT already had room for; FSPLIT/FFUSE round-trip through it via
+    /// the classical embedding above and see no change.
+    right_val: Reg16_3,
     /// Whether the right branch has been populated.
     right_set: bool,
 }
@@ -103,6 +133,11 @@ pub struct Kernel {
     fork_stack:      [ForkFrame; FORK_STACK_CAP],
     fork_depth:      usize,
     pub fork_overflow: u64,   // FSPLITs that exceeded FORK_STACK_CAP (0 in practice)
+    /// The real SIXTEEN_3 value most recently produced by FSPLIT3, FFUSE3, or
+    /// EVALI — None until one of those three has run. The B4 stack only ever
+    /// sees these collapsed to the classical slice; this is the uncollapsed
+    /// reading, so the information layer is actually observable.
+    pub last_reg16_3: Option<Reg16_3>,
     pub halted:      bool,
     pub dynamic_mode: bool,  // true → rebuild program from IgTuple each wrap
     // ── Cross-dialect ruleset state ──
@@ -137,9 +172,10 @@ impl Kernel {
             frob_checks: 0,
             frob_open:   0,
             harness:     FrobeniusHarness::new("mOMonadOS"),
-            fork_stack:  [ForkFrame { resume_ip: 0, right_val: B4::N, right_set: false }; FORK_STACK_CAP],
+            fork_stack:  [ForkFrame { resume_ip: 0, right_val: Reg16_3 { big_t: false, big_f: false, small_t: false, small_f: false }, right_set: false }; FORK_STACK_CAP],
             fork_depth:  0,
             fork_overflow: 0,
+            last_reg16_3: None,
             halted:      false,
             dynamic_mode: false,
             active_dialect:      0,
@@ -166,7 +202,7 @@ impl Kernel {
         if self.fork_depth < FORK_STACK_CAP {
             self.fork_stack[self.fork_depth] = ForkFrame {
                 resume_ip,
-                right_val: B4::N,
+                right_val: Reg16_3::default(),
                 right_set: false,
             };
             self.fork_depth += 1;
@@ -287,6 +323,14 @@ impl Kernel {
                 self.registers.write(0, B4::from_u8(r0.wrapping_add(1)));
             }
             Token::Arev => {
+                // ≺'s own table entry names it exactly: "reverse morphism
+                // (involution T↔F, t↔f)" — the real invol(), not a carry like
+                // ≻/⋈/⊙. This is additional to the existing register-0
+                // decrement below, which touches different state and is
+                // untouched by this: the stack's top value gets the real
+                // involution, register 0 keeps its own bookkeeping.
+                let v = self.stack.pop();
+                self.stack.push(reg16_3_to_b4(b4_to_reg16_3(v).invol()));
                 let r0 = self.registers.read(0) as u8;
                 self.registers.write(0, B4::from_u8(r0.wrapping_sub(1)));
             }
@@ -310,7 +354,7 @@ impl Kernel {
                              else { ffuse_ip + 1 };
                 self.push_fork(resume);
                 if let Some(frame) = self.fork_top_mut() {
-                    frame.right_val = v;
+                    frame.right_val = b4_to_reg16_3(v);
                     frame.right_set = true;
                 }
                 self.stack.push(v);
@@ -336,7 +380,7 @@ impl Kernel {
             Token::Ffuse => {
                 let left = self.stack.pop();
                 if let Some(frame) = self.pop_fork() {
-                    let right = if frame.right_set { frame.right_val } else { B4::N };
+                    let right = if frame.right_set { reg16_3_to_b4(frame.right_val) } else { B4::N };
                     self.stack.push(b4_join(left, right));
                     next_ip = frame.resume_ip;
                 } else {
@@ -353,33 +397,52 @@ impl Kernel {
                 self.memory.write(addr, val);
             }
             Token::Fsplit3 => {
-                // 3-way fork (T/F/I arms). In B4 context, same as Fsplit.
+                // Real 3-way δ over SIXTEEN_3: x∩{T}, x∩{F}, x∩{t,f} (Imscriber's
+                // Guide Part IV). The inline arm continues at the pre-fork value,
+                // same as Fsplit, and picks up its own filter from whatever
+                // EVALT/EVALI actually follows in the program; this VM runs one
+                // instruction stream, so the two arms that get no explicit
+                // opcodes here (falsity_part and info_part) are computed once,
+                // at fork time, and unioned into the one stored slot.
                 let v = self.stack.peek();
+                let r = b4_to_reg16_3(v);
                 let ffuse_ip = self.find_matching_ffuse3(self.ip);
                 let resume = if ffuse_ip + 1 >= self.program.len() { 0 }
                              else { ffuse_ip + 1 };
                 self.push_fork(resume);
                 if let Some(frame) = self.fork_top_mut() {
-                    frame.right_val = v;
+                    frame.right_val = r.constructive_part().falsity_part().union(r.info_part());
                     frame.right_set = true;
                 }
+                self.last_reg16_3 = Some(r);
                 self.stack.push(v);
             }
             Token::Ffuse3 => {
-                // 3-way fuse. In B4 context, same as Ffuse.
+                // Real μ₃: union of the arms (Imscriber's Guide Part IV), not
+                // the classical b4_join — the stored slot may carry info-layer
+                // bits b4_join has no notion of.
                 let left = self.stack.pop();
                 if let Some(frame) = self.pop_fork() {
-                    let right = if frame.right_set { frame.right_val } else { B4::N };
-                    self.stack.push(b4_join(left, right));
+                    let right = if frame.right_set { frame.right_val } else { Reg16_3::default() };
+                    let fused = b4_to_reg16_3(left).union(right);
+                    self.last_reg16_3 = Some(fused);
+                    self.stack.push(reg16_3_to_b4(fused));
                     next_ip = frame.resume_ip;
                 } else {
                     self.stack.push(left);
                 }
             }
             Token::Evali => {
-                // Evaluate on Information axis: keep B (both), everything else -> N.
+                // EVALI ⊞ (trilattice face): the pass-gate to the information
+                // part, x∩{t,f} — the same shape as EVALT/EVALF, per Part IV.
+                // imasm16_3.rs's own doc comment on info_part() confirms it
+                // directly: "the third δ arm, and what EVALI sets." The
+                // collapse back to B4 drops small_t/small_f, same loss the
+                // classical stack always had for anything off its slice.
                 let v = self.stack.pop();
-                self.stack.push(if v == B4::B { B4::B } else { B4::N });
+                let info = b4_to_reg16_3(v).info_part();
+                self.last_reg16_3 = Some(info);
+                self.stack.push(reg16_3_to_b4(info));
             }
             Token::Rotat => {
                 // ROTAT — the first op-opcode: cyclic shift of the program-ring
@@ -608,7 +671,11 @@ pub fn self_imscribe(prog: &Program) -> Snapshot {
     let n = prog.len();
 
     let diversity = {
-        let mut seen = [false; 12];
+        // Sixteen Token variants: the twelve classical opcodes (0..12) plus the
+        // extension opcodes Fsplit3, Ffuse3, Evali, Rotat (12..16). A two-arity word
+        // only ever indexes 0..12, so its diversity is unchanged; a three-arity
+        // Program reaches the higher slots and must not index out of bounds.
+        let mut seen = [false; 16];
         for t in prog.as_slice() { seen[*t as usize] = true; }
         seen.iter().filter(|&&b| b).count()
     };
@@ -617,14 +684,26 @@ pub fn self_imscribe(prog: &Program) -> Snapshot {
 
     let fsplit = prog.as_slice().iter().any(|t| *t == Token::Fsplit);
     let ffuse  = prog.as_slice().iter().any(|t| *t == Token::Ffuse);
-    let frob_order = match (fsplit, ffuse) {
-        (false, false) => 0,
-        (true,  false) => 1,
-        (false, true)  => 2,
-        (true,  true)  => {
-            let first_split = prog.as_slice().iter().position(|t| *t == Token::Fsplit).unwrap();
-            let first_fuse  = prog.as_slice().iter().position(|t| *t == Token::Ffuse).unwrap();
-            if first_split < first_fuse { 1 } else { 2 }
+    // A genuine three-arity Frobenius opcode makes the coupling functorial (order 3):
+    // FSPLIT3/FFUSE3 fork and fuse a third (Information) arm. The twelve-mark word
+    // alphabet cannot emit these — no glyph maps to them (belnap_ring_shor::glyph_to_token)
+    // — so every word derives here with fo ∈ {0,1,2} exactly as before; only a Program
+    // carrying the extension opcode directly reaches order 3, which is what ≻ 𐑑 (tot) and
+    // ≺ 𐑬 (out) read, the two CLINK L9 slots outside the word→tuple image.
+    let fsplit3 = prog.as_slice().iter().any(|t| *t == Token::Fsplit3);
+    let ffuse3  = prog.as_slice().iter().any(|t| *t == Token::Ffuse3);
+    let frob_order = if fsplit3 || ffuse3 {
+        3
+    } else {
+        match (fsplit, ffuse) {
+            (false, false) => 0,
+            (true,  false) => 1,
+            (false, true)  => 2,
+            (true,  true)  => {
+                let first_split = prog.as_slice().iter().position(|t| *t == Token::Fsplit).unwrap();
+                let first_fuse  = prog.as_slice().iter().position(|t| *t == Token::Ffuse).unwrap();
+                if first_split < first_fuse { 1 } else { 2 }
+            }
         }
     };
 
@@ -672,8 +751,11 @@ pub fn self_imscribe(prog: &Program) -> Snapshot {
 
     // ── R2 structural conditions (atomicity, bifurcation) — static, mirrors
     // frob_order/self_ref above. winding_count is dynamic-only (see dynamic_imscribe). ──
-    let fsplit_count = prog.as_slice().iter().filter(|t| **t == Token::Fsplit).count();
-    let ffuse_count  = prog.as_slice().iter().filter(|t| **t == Token::Ffuse).count();
+    // is_fsplit/is_ffuse match both arities, so a single three-arity fork pair also reads
+    // as the point-like re-entry (one fork, one fuse). A two-arity word is counted exactly
+    // as before, since it carries no three-arity opcode.
+    let fsplit_count = prog.as_slice().iter().filter(|t| t.is_brancher()).count();
+    let ffuse_count  = prog.as_slice().iter().filter(|t| t.is_merger()).count();
     let atomic_reentry = fsplit_count == 1 && ffuse_count == 1;
     let bifurcation_revisited = atomic_reentry && self_ref;
 
@@ -782,4 +864,118 @@ fn compute_value_period(trace: &[B4; 16], head: usize) -> usize {
         }
     }
     0 // not yet known / aperiodic
+}
+
+#[cfg(test)]
+mod sixteen_3_tests {
+    use super::*;
+
+    /// FSPLIT3/FFUSE3 now run the real SIXTEEN_3 partition (Imscriber's Guide
+    /// Part IV) instead of the old stand-in that treated them as Fsplit/Ffuse.
+    /// Forking a live B (both) value and fusing back through EVALT on the
+    /// inline arm: the old code did `b4_join(N, B)` = B (bitwise OR of a raw
+    /// copy); the real union of the falsity/info partition gives F instead —
+    /// a genuinely different, checkable result, not a relabeled one.
+    #[test]
+    fn fsplit3_ffuse3_run_real_sixteen_3_semantics() {
+        let mut k = Kernel::new();
+        k.program = Program::empty();
+        k.program.push(Token::Vinit);   // stack: [N]
+        k.program.push(Token::Engagr);  // stack: [N, B] — a live B to fork
+        k.program.push(Token::Fsplit3); // fork on B; inline arm continues at B
+        k.program.push(Token::Evalt);   // inline: B is not T, filters to N
+        k.program.push(Token::Ffuse3);  // real union(N, falsity∪info of B) = F
+        k.program.push(Token::Tanch);   // commit to memory[0], halt
+        k.boot();
+        k.run(20);
+
+        assert_eq!(k.memory.read(0), B4::F, "real FFUSE3 union should land on F, not the old b4_join(N,B)=B");
+        assert_eq!(k.last_reg16_3.map(|r| r.name()), Some("F".to_string()));
+    }
+
+    /// FSPLIT/FFUSE (the 2-arm classic ops) round-trip through the same
+    /// Reg16_3-typed fork frame now, via the classical embedding — this
+    /// proves that widening the field changed nothing they compute.
+    #[test]
+    fn fsplit_ffuse_unchanged_by_the_reg16_3_field_widening() {
+        let mut k = Kernel::new();
+        k.program = Program::empty();
+        k.program.push(Token::Vinit);   // stack: [N]
+        k.program.push(Token::Engagr);  // stack: [N, B]
+        k.program.push(Token::Fsplit);  // fork on B, classic 2-arm
+        k.program.push(Token::Evalt);   // inline: B -> N
+        k.program.push(Token::Ffuse);   // b4_join(N, B) = B, same as always
+        k.program.push(Token::Tanch);
+        k.boot();
+        k.run(20);
+
+        assert_eq!(k.memory.read(0), B4::B, "classic Fsplit/Ffuse must be byte-identical to before");
+    }
+
+    /// EVALI's real formula is the pass-gate to the information part, the
+    /// same shape as EVALT/EVALF — not the old "keep B else N" stand-in.
+    /// Starting from B (no t/f bits at all), the real info_part() is N,
+    /// which happens to match the old stand-in's answer for this one input;
+    /// the FSPLIT3/FFUSE3 test above is what shows the two implementations
+    /// actually diverge on a full three-arm program.
+    #[test]
+    fn evali_reads_the_real_info_part() {
+        let mut k = Kernel::new();
+        k.program = Program::empty();
+        k.program.push(Token::Vinit);
+        k.program.push(Token::Engagr); // stack: [N, B]
+        k.program.push(Token::Evali);  // info_part(B) = {} = N
+        k.program.push(Token::Tanch);
+        k.boot();
+        k.run(20);
+
+        assert_eq!(k.memory.read(0), B4::N);
+        assert_eq!(k.last_reg16_3.map(|r| r.name()), Some("N".to_string()));
+    }
+
+    /// ≺'s own table entry names it exactly: "reverse morphism (involution
+    /// T↔F, t↔f)" — not a carry like ≻/⋈/⊙, and not the old no-op-on-the-stack
+    /// behavior that used to leave the top value untouched while only
+    /// decrementing register 0. T swaps to F, matching the involution on the
+    /// classical slice where no t/f bits are present to also swap.
+    #[test]
+    fn arev_applies_the_real_involution_to_the_stack() {
+        let mut k = Kernel::new();
+        k.program = Program::empty();
+        k.program.push(Token::Vinit); // stack: [N]
+        k.program.push(Token::Afwd);  // register 0: N(0) -> T(1), unrelated to the stack
+        k.program.push(Token::Evalt); // stack top N is not T, filters to N — stack: [N]
+        k.program.push(Token::Engagr); // stack: [N, B] — a live B to invert
+        k.program.push(Token::Arev);  // invol(B) = {T,F} still, B is a fixed point
+        k.program.push(Token::Tanch);
+        k.boot();
+        k.run(20);
+
+        assert_eq!(k.memory.read(0), B4::B, "B is invol's fixed point, same as N");
+    }
+
+    /// The involution is not vacuous, though: a pure-truth value actually
+    /// flips. This is what the old code, which never touched the stack at
+    /// ≺ at all, could never produce.
+    #[test]
+    fn arev_flips_a_pure_truth_value() {
+        let mut k = Kernel::new();
+        k.program = Program::empty();
+        // ≺'s own register-0 decrement (its pre-existing, unrelated
+        // bookkeeping) would otherwise redirect TANCH's target address away
+        // from 0 — register 0 starts at N(0), and wrapping_sub(1) on that
+        // lands on B(3), not back on N. ≻ first cancels it out, the same way
+        // the test above does, so TANCH still writes to address 0.
+        k.program.push(Token::Afwd);
+        k.program.push(Token::Arev);
+        k.program.push(Token::Tanch);
+        // No single existing opcode constructs a bare T from nothing (Evalt/
+        // Evalf are pass-gates on an existing value, Engagr only gives B) —
+        // seed the stack directly rather than chase an indirect construction.
+        k.stack.push(B4::T);
+        k.boot();
+        k.run(20);
+
+        assert_eq!(k.memory.read(0), B4::F, "invol(T) must be F, not the untouched T the old code gave");
+    }
 }

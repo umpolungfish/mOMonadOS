@@ -1,0 +1,11 @@
+[package]
+name = "imasm_core"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = ["std"]
+std = ["dep:serde_json"]
+
+[dependencies]
+serde_json = { version = "1", optional = true }

@@ -408,7 +408,7 @@ function updateGatePanel(){
     document.getElementById('dialect-name').textContent=d.name+' (U'+currentDialect+')';
     document.getElementById('knot-info').textContent='(p,q)=('+kn.p+','+kn.q+') · winding: '+kn.p+'/'+kn.q+' toroidal/poloidal';
     document.getElementById('gate-ordering').textContent=d.seq?'sequential: G1 → G2 → G3':'parallel: all independent';
-    const pNames={odot:"⊙",Omega:"◻",Phi:"<",T:"⊣"};
+    const pNames={odot:"⊙",Omega:"⊡",Phi:"<",T:"⊣"};
     const g=evalTokenGates("IMSCRIB",currentDialect);
     let html='';
     html+='<div class="gr '+(g.g1?'pass':'fail')+'"><span class="gl">G1: '+(pNames[g.g1p]||g.g1p)+' ≥ '+g.g1m+'</span><span class="gv">'+g.v1+'/'+g.g1m+' '+(g.g1?'✓':'✗')+'</span></div>';

@@ -5,5 +5,5 @@ alphabet (CLINK as `=`, FSPLIT as `◇`, FFUSE as `●`, EVALT as `+`,
 EVALF as `×`, IFIX as `¬`) and is two months stale.
 
 The live source is /home/mrnob0dy666/imsgct/MoDoT/imasm_core/src/classic.rs,
-where those opcodes emit the canonical `⋈ ∈ ∋ ⊤ ⊥ ◻`. A review once read this
+where those opcodes emit the canonical `⋈ ∈ ∋ ⊤ ⊥ ⊡`. A review once read this
 directory as canonical and reported the kernel broken on the strength of it.

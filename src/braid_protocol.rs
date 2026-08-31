@@ -26,7 +26,7 @@ use crate::tokens::Token;
 pub fn token_name(tok: &Token) -> &'static str { tok.name() }
 
 /// The token's canonical glyph — ⋈ for CLINK, ∈ ∋ for the dyad, ⊤ ⊥ for the
-/// evaluators, ◻ for IFIX. Exposed here so a caller reaching for the braid
+/// evaluators, ⊡ for IFIX. Exposed here so a caller reaching for the braid
 /// protocol does not have to know which module owns the alphabet.
 pub fn token_glyph(tok: &Token) -> &'static str { tok.code() }
 

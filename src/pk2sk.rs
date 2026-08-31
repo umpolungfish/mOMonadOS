@@ -151,7 +151,7 @@ impl U256 {
     }
 
     /// self − b (mod P). Assumes self, b < P; result < P.
-    fn sub_mod(&self, b: &U256) -> U256 {
+    pub fn sub_mod(&self, b: &U256) -> U256 {
         let (d, bor) = self.sub_plain(b);
         if bor {
             // self < b: answer = P − (b − self), NOT P − (self − b mod 2^256).
@@ -165,7 +165,7 @@ impl U256 {
     }
 
     /// self + b (mod P). Assumes self, b < P; result < P.
-    fn add_mod(&self, b: &U256) -> U256 {
+    pub fn add_mod(&self, b: &U256) -> U256 {
         let (s, c) = self.add_overflow(b);
         if c {
             // s + 2^256 ≡ s + C (mod P); s < 2^256 so s + C < 2^257.
@@ -190,7 +190,7 @@ impl U256 {
 
     /// self · b (mod P). 8-limb schoolbook product, then fold the top half
     /// with 2^256 ≡ C (mod P) until it fits in 4 limbs.
-    fn mul_mod(&self, b: &U256) -> U256 {
+    pub fn mul_mod(&self, b: &U256) -> U256 {
         let mut v = [0u64; 8];
         for i in 0..4 {
             let mut carry = 0u128;
@@ -205,7 +205,7 @@ impl U256 {
         // hi shrinks to one limb < 2^34; after the second to ≤ 1; the last
         // two iterations hold it there, so 4 passes terminate with v[4] ∈ {0,1}.
         for _ in 0..4 {
-            if v[4] | v[5] | v[6] | v[7] == 0 { break; }
+            if (v[4] | v[5] | v[6] | v[7]) == 0 { break; }
             let mut t = [0u64; 5];
             let mut carry = 0u128;
             for k in 0..4 {
@@ -244,7 +244,7 @@ impl U256 {
     /// b (b = b² per bit) without ever squaring r — for e = 3 it returned a⁶
     /// instead of a³, so every modinv (Fermat a^(P−2)) was garbage and every
     /// point addition with a division landed off-curve.
-    fn powmod(&self, e: &U256) -> U256 {
+    pub fn powmod(&self, e: &U256) -> U256 {
         let mut r = U256::from_u64(1);
         let a = *self;
         for i in (0..4).rev() {
@@ -260,7 +260,7 @@ impl U256 {
 
     /// Multiplicative inverse mod P by Fermat: a^(P−2). den ≠ 0 mod P for
     /// every live secp256k1 affine coordinate, so this is never called on 0.
-    fn modinv(&self) -> U256 {
+    pub fn modinv(&self) -> U256 {
         let pm2 = U256([0xfffffffefffffc2d, 0xffffffffffffffff, 0xffffffffffffffff, 0xffffffffffffffff]);
         self.powmod(&pm2)
     }
@@ -281,7 +281,7 @@ impl U256 {
 type Point = Option<(U256, U256)>;
 
 /// Affine point add, ported line-for-line from pk2sk.py. None = identity.
-fn pt_add(p: Point, q: Point) -> Point {
+pub fn pt_add(p: Point, q: Point) -> Point {
     match (p, q) {
         (None, q) => q,
         (p, None) => p,
@@ -307,7 +307,7 @@ fn pt_add(p: Point, q: Point) -> Point {
 
 /// Double-and-add scalar multiply. k is a u64 (< 2^64 < N, the group order,
 /// so no reduction of k mod N is ever needed for kernel command ranges).
-fn pt_mul(k: u64, x: U256, y: U256) -> Point {
+pub fn pt_mul(k: u64, x: U256, y: U256) -> Point {
     let mut rx: Point = None;
     let (mut cx, mut cy) = (x, y);
     let mut kk = k;
@@ -429,6 +429,16 @@ fn bsgs(px: U256, py: U256, lo: u64, hi: u64, target_x: &U256, target_even: bool
     None
 }
 
+/// Bounded-range ECDLP recovery from an already-decompressed point, exposing
+/// the same BSGS walk the `run` instrument uses. Returns the scalar in [lo, hi)
+/// whose curve point is (px, py), or None. The gate resolves against the
+/// point's own x-coordinate and y-parity, so no compressed-hex round-trip is
+/// needed by callers that already hold the decompressed point.
+pub fn recover_in_window(px: &U256, py: &U256, lo: u64, hi: u64) -> Option<u64> {
+    let even = py.0[0] & 1 == 0;
+    bsgs(*px, *py, lo, hi, px, even).map(|h| h.cand)
+}
+
 // ── Grammar verification layer: the 12-slot mapping, ported ────
 
 const DIM: [&str; 4] = ["𐑛", "𐑨", "𐑼", "𐑦"];   // bitlen: ≤250 ≤252 ≤254 else
@@ -462,7 +472,7 @@ fn imscribe_slots(sk: u64) -> String {
 /// Parse a compressed public key hex (02|03 + 64 hex chars of x) into the
 /// x-coordinate and the y-parity the prefix asserts. Same shape as the
 /// python's coincurve parse: 02 = y even, 03 = y odd.
-fn parse_pk(pk_hex: &str) -> Option<(U256, bool)> {
+pub fn parse_pk(pk_hex: &str) -> Option<(U256, bool)> {
     let h = pk_hex.trim();
     let x = h.strip_prefix("02").or_else(|| h.strip_prefix("03"))?;
     if x.len() != 64 { return None; }

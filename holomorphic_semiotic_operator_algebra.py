@@ -153,7 +153,7 @@ def exceptional_point_spectrum(H: SemioticOperator,
 
 
 # ──────────────────────────────────────────────────────────────────────────
-#  4.  Winding Number  (◻=𐑭 : Z/integer winding)
+#  4.  Winding Number  (⊡=𐑭 : Z/integer winding)
 # ──────────────────────────────────────────────────────────────────────────
 def winding_number(H: SemioticOperator,
                    ep_center: complex,
@@ -164,7 +164,7 @@ def winding_number(H: SemioticOperator,
     W = (1/2πi) ∮_γ ∂_z log det(H - zI) dz
 
     where γ is a circular contour centered at ep_center.
-    This returns an integer (◻=𐑭).
+    This returns an integer (⊡=𐑭).
     """
     theta = np.linspace(0, 2*np.pi, n_pts, endpoint=False)
     z_vals = ep_center + radius * np.exp(1j * theta)
@@ -310,13 +310,13 @@ def main():
         print("  No EP found on real λ-axis (expected: EPs are typically off-axis)")
 
     # ── 8c. Winding Number ────────────────────────────────────
-    print("\n[◻=𐑭] Integer Winding Number")
+    print("\n[⊡=𐑭] Integer Winding Number")
     # Use the complex eigenvalue closest to the origin as EP center
     evals = eig(H0.M)[0]
     ep_center = evals[np.argmin(np.abs(evals))]
     W = winding_number(H0, ep_center, radius=0.3)
     print(f"  EP center: {ep_center:.4f}")
-    print(f"  Winding number W = {W}  (should be integer: ◻=𐑭)")
+    print(f"  Winding number W = {W}  (should be integer: ⊡=𐑭)")
 
     # ── 8d. MBL Structure ─────────────────────────────────────
     print("\n[⊤=𐑘] MBL (Frozen Kinetics)")

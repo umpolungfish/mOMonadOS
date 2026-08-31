@@ -1,0 +1,901 @@
+weight ⊢⊡⋈∈⊢⊡⊢⊡⊤⊞⊞⋈⊢⋈⋈
+banked ⊢⊡⋈∈⊢⊡⊢⊡⊤⊞⊞⋈⊢⋈⋈
+counterfactual ⊢⊡⋈∈⊢⊡⊢⊡⊤⊞⊞⋈⊢⋈⋈ rotate 1
+weight ⊢⊞⊢⊞∈⊞⋈∈⋈⋈
+banked ⊢⊞⊢⊞∈⊞⋈∈⋈⋈
+counterfactual ⊢⊞⊢⊞∈⊞⋈∈⋈⋈ rotate 1
+weight ⊢⊞⊞⋈⋈∈⊞⋈⊞∈⊢⊞
+banked ⊢⊞⊞⋈⋈∈⊞⋈⊞∈⊢⊞
+counterfactual ⊢⊞⊞⋈⋈∈⊞⋈⊞∈⊢⊞ rotate 1
+weight ⊢⋈⊣⊢∈⋈⊢⊡⊞⊢⊞⊢⋈⊢∈⊞⊡∈
+banked ⊢⋈⊣⊢∈⋈⊢⊡⊞⊢⊞⊢⋈⊢∈⊞⊡∈
+counterfactual ⊢⋈⊣⊢∈⋈⊢⊡⊞⊢⊞⊢⋈⊢∈⊞⊡∈ rotate 1
+weight ⊢⊞⊞⋈⋈⊣⊢⊡⋈⋈⊡
+banked ⊢⊞⊞⋈⋈⊣⊢⊡⋈⋈⊡
+counterfactual ⊢⊞⊞⋈⋈⊣⊢⊡⋈⋈⊡ rotate 1
+weight ⊢⊞⊢∈⋈⊢⋈⊢⊡
+banked ⊢⊞⊢∈⋈⊢⋈⊢⊡
+counterfactual ⊢⊞⊢∈⋈⊢⋈⊢⊡ rotate 1
+weight ⊢⋈⊞⊞⊢⊣⊢⊤⊞∈⋈⋈⊢⊡⊡⊡⊞⋈⊞⊢⊞
+banked ⊢⋈⊞⊞⊢⊣⊢⊤⊞∈⋈⋈⊢⊡⊡⊡⊞⋈⊞⊢⊞
+counterfactual ⊢⋈⊞⊞⊢⊣⊢⊤⊞∈⋈⋈⊢⊡⊡⊡⊞⋈⊞⊢⊞ rotate 1
+weight ⊢⊞∈⊞⋈⋈⊞⊞⋈
+banked ⊢⊞∈⊞⋈⋈⊞⊞⋈
+counterfactual ⊢⊞∈⊞⋈⋈⊞⊞⋈ rotate 1
+weight ⊢⊞≻⋈∈⊞⋈∈⊡∈⊞⋈
+banked ⊢⊞≻⋈∈⊞⋈∈⊡∈⊞⋈
+counterfactual ⊢⊞≻⋈∈⊞⋈∈⊡∈⊞⋈ rotate 1
+weight ⊢⊡∈⊞⊤⊢⊡⊡⊣⊢⊡⋈⊢⋈⊡⊡⊡⋈
+banked ⊢⊡∈⊞⊤⊢⊡⊡⊣⊢⊡⋈⊢⋈⊡⊡⊡⋈
+counterfactual ⊢⊡∈⊞⊤⊢⊡⊡⊣⊢⊡⋈⊢⋈⊡⊡⊡⋈ rotate 1
+weight ⊢⋈⋈⊞⊢∈∋⊡∈⊤
+banked ⊢⋈⋈⊞⊢∈∋⊡∈⊤
+counterfactual ⊢⋈⋈⊞⊢∈∋⊡∈⊤ rotate 1
+weight ⊢⊞⊞⋈⊞⋈∈⋈∈⊞⋈⋈
+banked ⊢⊞⊞⋈⊞⋈∈⋈∈⊞⋈⋈
+counterfactual ⊢⊞⊞⋈⊞⋈∈⋈∈⊞⋈⋈ rotate 1
+weight ⊢⊞⊞⊞∈⊞∈⊡⋈⋈⊡⊡⊢⊡
+banked ⊢⊞⊞⊞∈⊞∈⊡⋈⋈⊡⊡⊢⊡
+counterfactual ⊢⊞⊞⊞∈⊞∈⊡⋈⋈⊡⊡⊢⊡ rotate 1
+weight ⊢⋈⋈⊡
+banked ⊢⋈⋈⊡
+counterfactual ⊢⋈⋈⊡ rotate 1
+weight ⊢⊞⊢⋈⋈⊢⋈⊞⊡⊢⋈⊢⋈
+banked ⊢⊞⊢⋈⋈⊢⋈⊞⊡⊢⋈⊢⋈
+counterfactual ⊢⊞⊢⋈⋈⊢⋈⊞⊡⊢⋈⊢⋈ rotate 1
+weight ⊢⊡⊤⊢∈⊢⋈⊢⋈⊞⊡⋈⋈⊞⊤⊡⊡∈⊞
+banked ⊢⊡⊤⊢∈⊢⋈⊢⋈⊞⊡⋈⋈⊞⊤⊡⊡∈⊞
+counterfactual ⊢⊡⊤⊢∈⊢⋈⊢⋈⊞⊡⋈⋈⊞⊤⊡⊡∈⊞ rotate 1
+weight ⊢⊞≺⊢⋈∈⊢⊤∈⋈⊤⊞⋈⊞
+banked ⊢⊞≺⊢⋈∈⊢⊤∈⋈⊤⊞⋈⊞
+counterfactual ⊢⊞≺⊢⋈∈⊢⊤∈⋈⊤⊞⋈⊞ rotate 1
+weight ⊢⊞⊞∈⊢⋈⊡⊡⋈⊤⋈
+banked ⊢⊞⊞∈⊢⋈⊡⊡⋈⊤⋈
+counterfactual ⊢⊞⊞∈⊢⋈⊡⊡⋈⊤⋈ rotate 1
+weight ⊢⊞⊡⊢⊞∈⊢⊡⋈⋈⊢⊞⋈⊞∈⋈⋈⊢⊡⊢⊡⋈
+banked ⊢⊞⊡⊢⊞∈⊢⊡⋈⋈⊢⊞⋈⊞∈⋈⋈⊢⊡⊢⊡⋈
+counterfactual ⊢⊞⊡⊢⊞∈⊢⊡⋈⋈⊢⊞⋈⊞∈⋈⋈⊢⊡⊢⊡⋈ rotate 1
+weight ⊢∈⊢⊞⊢⋈∈⊞⋈⋈⊢⋈
+banked ⊢∈⊢⊞⊢⋈∈⊞⋈⋈⊢⋈
+counterfactual ⊢∈⊢⊞⊢⋈∈⊞⋈⋈⊢⋈ rotate 1
+weight ⊢⊞⊞⊞⊡⊡
+banked ⊢⊞⊞⊞⊡⊡
+counterfactual ⊢⊞⊞⊞⊡⊡ rotate 1
+weight ⊢⊞⊞⊢⋈⊞⋈⊣⊢⋈⊞⊡⋈
+banked ⊢⊞⊞⊢⋈⊞⋈⊣⊢⋈⊞⊡⋈
+counterfactual ⊢⊞⊞⊢⋈⊞⋈⊣⊢⋈⊞⊡⋈ rotate 1
+weight ⊢⋈⊡⊢⋈⊤⊢⊞⊞⊞∈
+banked ⊢⋈⊡⊢⋈⊤⊢⊞⊞⊞∈
+counterfactual ⊢⋈⊡⊢⋈⊤⊢⊞⊞⊞∈ rotate 1
+weight ⊢⊞⊞⊞⊡⊞⋈⊞⊢⊡⊤⊞
+banked ⊢⊞⊞⊞⊡⊞⋈⊞⊢⊡⊤⊞
+counterfactual ⊢⊞⊞⊞⊡⊞⋈⊞⊢⊡⊤⊞ rotate 1
+weight ⊢⊤⊡⊢⊞⋈⋈⊞⊢⊞⋈⋈∈⋈⊢⊞
+banked ⊢⊤⊡⊢⊞⋈⋈⊞⊢⊞⋈⋈∈⋈⊢⊞
+counterfactual ⊢⊤⊡⊢⊞⋈⋈⊞⊢⊞⋈⋈∈⋈⊢⊞ rotate 1
+weight ⊢⊞⊢⊞⊞∈⋈⊤⋈⊞⊢∈
+banked ⊢⊞⊢⊞⊞∈⋈⊤⋈⊞⊢∈
+counterfactual ⊢⊞⊢⊞⊞∈⋈⊤⋈⊞⊢∈ rotate 1
+weight ⊢⊞⊢⊞⊡⊞⊞⊡⋈
+banked ⊢⊞⊢⊞⊡⊞⊞⊡⋈
+counterfactual ⊢⊞⊢⊞⊡⊞⊞⊡⋈ rotate 1
+weight ⊢⊣⊢⋈⊡⊞∈⊞⋈⊡⊤⊞⊢∈⋈⊣⊡⋈
+banked ⊢⊣⊢⋈⊡⊞∈⊞⋈⊡⊤⊞⊢∈⋈⊣⊡⋈
+counterfactual ⊢⊣⊢⋈⊡⊞∈⊞⋈⊡⊤⊞⊢∈⋈⊣⊡⋈ rotate 1
+weight ⊢⊞⋈⊢⊞⊞⊞⋈⊞⊢⋈
+banked ⊢⊞⋈⊢⊞⊞⊞⋈⊞⊢⋈
+counterfactual ⊢⊞⋈⊢⊞⊞⊞⋈⊞⊢⋈ rotate 1
+weight ⊢⊞⊢∈∈⊢⋈⋈⊞∈∈⊢∈
+banked ⊢⊞⊢∈∈⊢⋈⋈⊞∈∈⊢∈
+counterfactual ⊢⊞⊢∈∈⊢⋈⋈⊞∈∈⊢∈ rotate 1
+weight ⊢⋈⊞⋈⊞⋈⊞⊤∈⊢⋈⊢⋈∈⊣⊢⋈∈⊞⊢⊤⊤
+banked ⊢⋈⊞⋈⊞⋈⊞⊤∈⊢⋈⊢⋈∈⊣⊢⋈∈⊞⊢⊤⊤
+counterfactual ⊢⋈⊞⋈⊞⋈⊞⊤∈⊢⋈⊢⋈∈⊣⊢⋈∈⊞⊢⊤⊤ rotate 1
+weight ⊢⊡⊞⊞⊡∈⊞
+banked ⊢⊡⊞⊞⊡∈⊞
+counterfactual ⊢⊡⊞⊞⊡∈⊞ rotate 1
+weight ⊢⊞⋈⋈⊞⊞⋈⊡⋈⋈
+banked ⊢⊞⋈⋈⊞⊞⋈⊡⋈⋈
+counterfactual ⊢⊞⋈⋈⊞⊞⋈⊡⋈⋈ rotate 1
+weight ⊢⊞⊢⊤⊡∈⊢∈⊢⊡⋈⊢⊡⊢⋈∈⋈⊢⊞⊞⊞⊤≻
+banked ⊢⊞⊢⊤⊡∈⊢∈⊢⊡⋈⊢⊡⊢⋈∈⋈⊢⊞⊞⊞⊤≻
+counterfactual ⊢⊞⊢⊤⊡∈⊢∈⊢⊡⋈⊢⊡⊢⋈∈⋈⊢⊞⊞⊞⊤≻ rotate 1
+weight ⊢⋈⊞⊞⊢⊡⋈⊞
+banked ⊢⋈⊞⊞⊢⊡⋈⊞
+counterfactual ⊢⋈⊞⊞⊢⊡⋈⊞ rotate 1
+weight ⊢⊞⋈⋈⊞⊢⊡⋈⊞⋈
+banked ⊢⊞⋈⋈⊞⊢⊡⋈⊞⋈
+counterfactual ⊢⊞⋈⋈⊞⊢⊡⋈⊞⋈ rotate 1
+weight ⊢⊞⊞⊢∈⊞⊞⊡⊢⊞⊢⊡⊢⊞⋈⊢≺
+banked ⊢⊞⊞⊢∈⊞⊞⊡⊢⊞⊢⊡⊢⊞⋈⊢≺
+counterfactual ⊢⊞⊞⊢∈⊞⊞⊡⊢⊞⊢⊡⊢⊞⋈⊢≺ rotate 1
+weight ⊢⊤⊢⋈⊢⊡⊢∈
+banked ⊢⊤⊢⋈⊢⊡⊢∈
+counterfactual ⊢⊤⊢⋈⊢⊡⊢∈ rotate 1
+weight ⊢⊞⋈⋈⋈⊤⋈⋈⊞⊡
+banked ⊢⊞⋈⋈⋈⊤⋈⋈⊞⊡
+counterfactual ⊢⊞⋈⋈⋈⊤⋈⋈⊞⊡ rotate 1
+weight ⊢⋈≻⊞⋈⊞⊢∈⊤⊢⊤⋈⊞⊞⊢⊡⋈∈⊡⊞⊞
+banked ⊢⋈≻⊞⋈⊞⊢∈⊤⊢⊤⋈⊞⊞⊢⊡⋈∈⊡⊞⊞
+counterfactual ⊢⋈≻⊞⋈⊞⊢∈⊤⊢⊤⋈⊞⊞⊢⊡⋈∈⊡⊞⊞ rotate 1
+weight ⊢⋈⊞⊞⊢⋈⊞⋈⊢⋈
+banked ⊢⋈⊞⊞⊢⋈⊞⋈⊢⋈
+counterfactual ⊢⋈⊞⊞⊢⋈⊞⋈⊢⋈ rotate 1
+weight ⊢⊞⊞∈⊞⊞⋈⊢⋈∈
+banked ⊢⊞⊞∈⊞⊞⋈⊢⋈∈
+counterfactual ⊢⊞⊞∈⊞⊞⋈⊢⋈∈ rotate 1
+weight ⊢⋈⋈⊢∈∈⋈⊞⊢⋈∈⊢≺
+banked ⊢⋈⋈⊢∈∈⋈⊞⊢⋈∈⊢≺
+counterfactual ⊢⋈⋈⊢∈∈⋈⊞⊢⋈∈⊢≺ rotate 1
+weight ⊢⊞⋈⋈⊢∈⊞∈∈⊞
+banked ⊢⊞⋈⋈⊢∈⊞∈∈⊞
+counterfactual ⊢⊞⋈⋈⊢∈⊞∈∈⊞ rotate 1
+weight ⊢⊞⊡⊞⊢⋈⊢⊞⊞∈⊤
+banked ⊢⊞⊡⊞⊢⋈⊢⊞⊞∈⊤
+counterfactual ⊢⊞⊡⊞⊢⋈⊢⊞⊞∈⊤ rotate 1
+weight ⊢⋈⊤⊞⊢⊞⊞⊞⊤
+banked ⊢⋈⊤⊞⊢⊞⊞⊞⊤
+counterfactual ⊢⋈⊤⊞⊢⊞⊞⊞⊤ rotate 1
+weight ⊢⊡⊢⊞⊢∈⋈⊤⊞
+banked ⊢⊡⊢⊞⊢∈⋈⊤⊞
+counterfactual ⊢⊡⊢⊞⊢∈⋈⊤⊞ rotate 1
+weight ⊢⊞⋈⋈⊢⋈⋈⊢⊞⊢∈⊞⊞
+banked ⊢⊞⋈⋈⊢⋈⋈⊢⊞⊢∈⊞⊞
+counterfactual ⊢⊞⋈⋈⊢⋈⋈⊢⊞⊢∈⊞⊞ rotate 1
+weight ⊢⋈
+banked ⊢⋈
+counterfactual ⊢⋈ rotate 1
+weight ⊢⋈⋈⊡∈⊞⊞⊞⊞⊢⊞⋈⊞
+banked ⊢⋈⋈⊡∈⊞⊞⊞⊞⊢⊞⋈⊞
+counterfactual ⊢⋈⋈⊡∈⊞⊞⊞⊞⊢⊞⋈⊞ rotate 1
+weight ⊢⊞⊞⊢⊡⋈⊢⊞∈⋈
+banked ⊢⊞⊞⊢⊡⋈⊢⊞∈⋈
+counterfactual ⊢⊞⊞⊢⊡⋈⊢⊞∈⋈ rotate 1
+weight ⊢⋈⋈⋈⋈⋈⊤⊢⊞∈⊡⊢∈⋈⊡⊢⋈⊡⊡⊤⋈
+banked ⊢⋈⋈⋈⋈⋈⊤⊢⊞∈⊡⊢∈⋈⊡⊢⋈⊡⊡⊤⋈
+counterfactual ⊢⋈⋈⋈⋈⋈⊤⊢⊞∈⊡⊢∈⋈⊡⊢⋈⊡⊡⊤⋈ rotate 1
+weight ⊢⊞⊞⊡⊞⋈⊢⋈∈⋈⊢⋈∈
+banked ⊢⊞⊞⊡⊞⋈⊢⋈∈⋈⊢⋈∈
+counterfactual ⊢⊞⊞⊡⊞⋈⊢⋈∈⋈⊢⋈∈ rotate 1
+weight ⊢⊞⋈∈⊞⊞⊢∈⊢⋈
+banked ⊢⊞⋈∈⊞⊞⊢∈⊢⋈
+counterfactual ⊢⊞⋈∈⊞⊞⊢∈⊢⋈ rotate 1
+weight ⊢⋈⊢∈⋈⋈⋈⊞∈⊞∈⊢⋈⊡∈≺
+banked ⊢⋈⊢∈⋈⋈⋈⊞∈⊞∈⊢⋈⊡∈≺
+counterfactual ⊢⋈⊢∈⋈⋈⋈⊞∈⊞∈⊢⋈⊡∈≺ rotate 1
+weight ⊢⊞≺⊢⊞⊣⊞⊢⊞⊞
+banked ⊢⊞≺⊢⊞⊣⊞⊢⊞⊞
+counterfactual ⊢⊞≺⊢⊞⊣⊞⊢⊞⊞ rotate 1
+weight ⊢⊞⊞⊤∈⊢⋈⊞⊞⊡⋈⊞
+banked ⊢⊞⊞⊤∈⊢⋈⊞⊞⊡⋈⊞
+counterfactual ⊢⊞⊞⊤∈⊢⋈⊞⊞⊡⋈⊞ rotate 1
+weight ⊢⋈⊞⋈⋈∈⊞⊢⋈⊤⋈⊢⊡⊢⊤⊞≺⊢⋈
+banked ⊢⋈⊞⋈⋈∈⊞⊢⋈⊤⋈⊢⊡⊢⊤⊞≺⊢⋈
+counterfactual ⊢⋈⊞⋈⋈∈⊞⊢⋈⊤⋈⊢⊡⊢⊤⊞≺⊢⋈ rotate 1
+weight ⊢⊞⊢⊞⊢⋈⊢⋈⊤
+banked ⊢⊞⊢⊞⊢⋈⊢⋈⊤
+counterfactual ⊢⊞⊢⊞⊢⋈⊢⋈⊤ rotate 1
+weight ⊢⊞⊞⊞⊞⋈⊤⊞⊞
+banked ⊢⊞⊞⊞⊞⋈⊤⊞⊞
+counterfactual ⊢⊞⊞⊞⊞⋈⊤⊞⊞ rotate 1
+weight ⊢⊤⊢⊤⋈⋈⊢⋈∈∈⊢⋈⋈⊢⋈⊢⋈⋈⊡⊢⋈⋈⊞
+banked ⊢⊤⊢⊤⋈⋈⊢⋈∈∈⊢⋈⋈⊢⋈⊢⋈⋈⊡⊢⋈⋈⊞
+counterfactual ⊢⊤⊢⊤⋈⋈⊢⋈∈∈⊢⋈⋈⊢⋈⊢⋈⋈⊡⊢⋈⋈⊞ rotate 1
+weight ⊢⋈⋈⋈⊞⊡⊞⊞⊞⊤
+banked ⊢⋈⋈⋈⊞⊡⊞⊞⊞⊤
+counterfactual ⊢⋈⋈⋈⊞⊡⊞⊞⊞⊤ rotate 1
+weight ⊢⊞⊤⋈⊣⊢⋈
+banked ⊢⊞⊤⋈⊣⊢⋈
+counterfactual ⊢⊞⊤⋈⊣⊢⋈ rotate 1
+weight ⊢⊞⊤⊞⊞∈⋈∋⋈⊢⋈⊤⊢⊞⊞⊣≺⊢⊡⋈⊡⊢⊤⋈
+banked ⊢⊞⊤⊞⊞∈⋈∋⋈⊢⋈⊤⊢⊞⊞⊣≺⊢⊡⋈⊡⊢⊤⋈
+counterfactual ⊢⊞⊤⊞⊞∈⋈∋⋈⊢⋈⊤⊢⊞⊞⊣≺⊢⊡⋈⊡⊢⊤⋈ rotate 1
+weight ⊢⋈⋈⊞⊞⊤⊞⊡⊢⊤
+banked ⊢⋈⋈⊞⊞⊤⊞⊡⊢⊤
+counterfactual ⊢⋈⋈⊞⊞⊤⊞⊡⊢⊤ rotate 1
+weight ⊢⊞⋈⊢⊞⊡⋈⊢⊞
+banked ⊢⊞⋈⊢⊞⊡⋈⊢⊞
+counterfactual ⊢⊞⋈⊢⊞⊡⋈⊢⊞ rotate 1
+weight ⊢⋈⊡⋈⊞⊞⊢⊡⊞⋈⊣⊢⊡∈∈⊤
+banked ⊢⋈⊡⋈⊞⊞⊢⊡⊞⋈⊣⊢⊡∈∈⊤
+counterfactual ⊢⋈⊡⋈⊞⊞⊢⊡⊞⋈⊣⊢⊡∈∈⊤ rotate 1
+weight ⊢⊡⊢⊞≺
+banked ⊢⊡⊢⊞≺
+counterfactual ⊢⊡⊢⊞≺ rotate 1
+weight ⊢⊞⊞⊞∈⊢⊞⊢⋈⊞⊞⊤⊢⊡
+banked ⊢⊞⊞⊞∈⊢⊞⊢⋈⊞⊞⊤⊢⊡
+counterfactual ⊢⊞⊞⊞∈⊢⊞⊢⋈⊞⊞⊤⊢⊡ rotate 1
+weight ⊢⋈⋈⋈∈⊤⊞⊞⊞⋈⊢⊞⊤⊞⋈⊞
+banked ⊢⋈⋈⋈∈⊤⊞⊞⊞⋈⊢⊞⊤⊞⋈⊞
+counterfactual ⊢⋈⋈⋈∈⊤⊞⊞⊞⋈⊢⊞⊤⊞⋈⊞ rotate 1
+weight ⊢⋈⊤⊞⊢⋈∈⊞⊞⊡
+banked ⊢⋈⊤⊞⊢⋈∈⊞⊞⊡
+counterfactual ⊢⋈⊤⊞⊢⋈∈⊞⊞⊡ rotate 1
+weight ⊢⊞⊢⊡⋈⊢⊡∈⋈⊡⊤⋈
+banked ⊢⊞⊢⊡⋈⊢⊡∈⋈⊡⊤⋈
+counterfactual ⊢⊞⊢⊡⋈⊢⊡∈⋈⊡⊤⋈ rotate 1
+weight ⊢⊞⋈⋈⋈⊢⊞⋈⋈⊡⊣
+banked ⊢⊞⋈⋈⋈⊢⊞⋈⋈⊡⊣
+counterfactual ⊢⊞⋈⋈⋈⊢⊞⋈⋈⊡⊣ rotate 1
+weight ⊢⊞⊞⋈∈⊞⊢⋈∈
+banked ⊢⊞⊞⋈∈⊞⊢⋈∈
+counterfactual ⊢⊞⊞⋈∈⊞⊢⋈∈ rotate 1
+weight ⊢⊞⊞⊞⊢⋈⊡
+banked ⊢⊞⊞⊞⊢⋈⊡
+counterfactual ⊢⊞⊞⊞⊢⋈⊡ rotate 1
+weight ⊢⊤⊞⋈⊢⊞⊞⋈∈⊢⊞⊞⊡⊡⊡⊞⊢⊤∈
+banked ⊢⊤⊞⋈⊢⊞⊞⋈∈⊢⊞⊞⊡⊡⊡⊞⊢⊤∈
+counterfactual ⊢⊤⊞⋈⊢⊞⊞⋈∈⊢⊞⊞⊡⊡⊡⊞⊢⊤∈ rotate 1
+weight ⊢⊡⊡⊢⋈⊣
+banked ⊢⊡⊡⊢⋈⊣
+counterfactual ⊢⊡⊡⊢⋈⊣ rotate 1
+weight ⊢⊞⋈⊢⋈⊢∈⊞⊢⊞
+banked ⊢⊞⋈⊢⋈⊢∈⊞⊢⊞
+counterfactual ⊢⊞⋈⊢⋈⊢∈⊞⊢⊞ rotate 1
+weight ⊢⊞⊞⊞∈∈⊤∈⊡⊞⋈≺
+banked ⊢⊞⊞⊞∈∈⊤∈⊡⊞⋈≺
+counterfactual ⊢⊞⊞⊞∈∈⊤∈⊡⊞⋈≺ rotate 1
+weight ⊢⊞≺⊙⊢⊞⊢⊡⊢⋈∈⊢⋈∈
+banked ⊢⊞≺⊙⊢⊞⊢⊡⊢⋈∈⊢⋈∈
+counterfactual ⊢⊞≺⊙⊢⊞⊢⊡⊢⋈∈⊢⋈∈ rotate 1
+weight ⊢⊞∈≺⊢⊞⋈⊢⊞
+banked ⊢⊞∈≺⊢⊞⋈⊢⊞
+counterfactual ⊢⊞∈≺⊢⊞⋈⊢⊞ rotate 1
+weight ⊢⊞⊞⊞⊢⊞⋈⊤⊡⊢⊤⊡⊞∈⋈⊢⊞⊞⋈
+banked ⊢⊞⊞⊞⊢⊞⋈⊤⊡⊢⊤⊡⊞∈⋈⊢⊞⊞⋈
+counterfactual ⊢⊞⊞⊞⊢⊞⋈⊤⊡⊢⊤⊡⊞∈⋈⊢⊞⊞⋈ rotate 1
+weight ⊢⊞⊣⊢⊡⋈⊡⋈⋈⊢⋈
+banked ⊢⊞⊣⊢⊡⋈⊡⋈⋈⊢⋈
+counterfactual ⊢⊞⊣⊢⊡⋈⊡⋈⋈⊢⋈ rotate 1
+weight ⊢⊞⋈⊞⋈⋈∈⊞⋈⊢⊞
+banked ⊢⊞⋈⊞⋈⋈∈⊞⋈⊢⊞
+counterfactual ⊢⊞⋈⊞⋈⋈∈⊞⋈⊢⊞ rotate 1
+weight ⊢⊞⊢⊞⊡⊞⋈⊢⊞⋈⊡⋈∈⊞⋈⊢∈⊞
+banked ⊢⊞⊢⊞⊡⊞⋈⊢⊞⋈⊡⋈∈⊞⋈⊢∈⊞
+counterfactual ⊢⊞⊢⊞⊡⊞⋈⊢⊞⋈⊡⋈∈⊞⋈⊢∈⊞ rotate 1
+weight ⊢⋈⊞⊞∈⊢∈⋈⊢⊞
+banked ⊢⋈⊞⊞∈⊢∈⋈⊢⊞
+counterfactual ⊢⋈⊞⊞∈⊢∈⋈⊢⊞ rotate 1
+weight ⊢⊞⊞⊢⋈⊢⋈⋈⊢⊡⊢⋈
+banked ⊢⊞⊞⊢⋈⊢⋈⋈⊢⊡⊢⋈
+counterfactual ⊢⊞⊞⊢⋈⊢⋈⋈⊢⊡⊢⋈ rotate 1
+weight ⊢⋈⊢⋈⊢⋈⊢⊤⊡⋈⊞⋈⊢⊞⊞⊞⋈⊢⋈∈⊢⊞
+banked ⊢⋈⊢⋈⊢⋈⊢⊤⊡⋈⊞⋈⊢⊞⊞⊞⋈⊢⋈∈⊢⊞
+counterfactual ⊢⋈⊢⋈⊢⋈⊢⊤⊡⋈⊞⋈⊢⊞⊞⊞⋈⊢⋈∈⊢⊞ rotate 1
+weight ⊢⋈⊡⋈⋈⊤⊞⊢⋈∈⊞⊢⊞⊞
+banked ⊢⋈⊡⋈⋈⊤⊞⊢⋈∈⊞⊢⊞⊞
+counterfactual ⊢⋈⊡⋈⋈⊤⊞⊢⋈∈⊞⊢⊞⊞ rotate 1
+weight ⊢⊞⊢⊤⊢⋈⋈⊞
+banked ⊢⊞⊢⊤⊢⋈⋈⊞
+counterfactual ⊢⊞⊢⊤⊢⋈⋈⊞ rotate 1
+weight ⊢⋈≻⊞⋈⊞⊢⊞⊢⋈⊞⊞⊢⊡⊡⋈⋈⋈
+banked ⊢⋈≻⊞⋈⊞⊢⊞⊢⋈⊞⊞⊢⊡⊡⋈⋈⋈
+counterfactual ⊢⋈≻⊞⋈⊞⊢⊞⊢⋈⊞⊞⊢⊡⊡⋈⋈⋈ rotate 1
+weight ⊢⊞⊞≻⊞∈⊞⊢⊞⊞
+banked ⊢⊞⊞≻⊞∈⊞⊢⊞⊞
+counterfactual ⊢⊞⊞≻⊞∈⊞⊢⊞⊞ rotate 1
+weight ⊢⊞⋈⊞⊡⊞⊞∈⊢⋈
+banked ⊢⊞⋈⊞⊡⊞⊞∈⊢⋈
+counterfactual ⊢⊞⋈⊞⊡⊞⊞∈⊢⋈ rotate 1
+weight ⊢⊡⋈⊞⋈⋈⊡⊞∈⋈⋈∈⋈⋈⊤⊞⊤⊢⊤
+banked ⊢⊡⋈⊞⋈⋈⊡⊞∈⋈⋈∈⋈⋈⊤⊞⊤⊢⊤
+counterfactual ⊢⊡⋈⊞⋈⋈⊡⊞∈⋈⋈∈⋈⋈⊤⊞⊤⊢⊤ rotate 1
+weight ⊢∈⊞⊡⊡⊢⊞⊞⋈⊤∈
+banked ⊢∈⊞⊡⊡⊢⊞⊞⋈⊤∈
+counterfactual ⊢∈⊞⊡⊡⊢⊞⊞⋈⊤∈ rotate 1
+weight ⊢⊞⊞∈⊡⊞⊢⊞⊡⋈
+banked ⊢⊞⊞∈⊡⊞⊢⊞⊡⋈
+counterfactual ⊢⊞⊞∈⊡⊞⊢⊞⊡⋈ rotate 1
+weight ⊢∈⋈⋈⊢⋈⊞⋈⋈⊣⊞∈⊞⊞⊢⋈⊤
+banked ⊢∈⋈⋈⊢⋈⊞⋈⋈⊣⊞∈⊞⊞⊢⋈⊤
+counterfactual ⊢∈⋈⋈⊢⋈⊞⋈⋈⊣⊞∈⊞⊞⊢⋈⊤ rotate 1
+weight ⊢⊞⋈⊞∈⊡⋈⊡⊞
+banked ⊢⊞⋈⊞∈⊡⋈⊡⊞
+counterfactual ⊢⊞⋈⊞∈⊡⋈⊡⊞ rotate 1
+weight ⊢⊞⊢⊞⊡⋈⊞⋈∈⋈⊢⊞⊢∈
+banked ⊢⊞⊢⊞⊡⋈⊞⋈∈⋈⊢⊞⊢∈
+counterfactual ⊢⊞⊢⊞⊡⋈⊞⋈∈⋈⊢⊞⊢∈ rotate 1
+weight ⊢⊞⋈⋈⊞⊞⊞⊡⊞⋈⊞⋈⊡∈⋈⊣⊢⊞∈⊡⊞⊢⋈
+banked ⊢⊞⋈⋈⊞⊞⊞⊡⊞⋈⊞⋈⊡∈⋈⊣⊢⊞∈⊡⊞⊢⋈
+counterfactual ⊢⊞⋈⋈⊞⊞⊞⊡⊞⋈⊞⋈⊡∈⋈⊣⊢⊞∈⊡⊞⊢⋈ rotate 1
+weight ⊢⊞∈⊢⊡⋈∈∈⊢⊞⋈⊞⊞
+banked ⊢⊞∈⊢⊡⋈∈∈⊢⊞⋈⊞⊞
+counterfactual ⊢⊞∈⊢⊡⋈∈∈⊢⊞⋈⊞⊞ rotate 1
+weight ⊢⊞⊢⊡⋈∈⊞⊢⋈⊞⊞⊞
+banked ⊢⊞⊢⊡⋈∈⊞⊢⋈⊞⊞⊞
+counterfactual ⊢⊞⊢⊡⋈∈⊞⊢⋈⊞⊞⊞ rotate 1
+weight ⊢⋈⋈⋈⊞⊢⊞⊢∈⊞∈⋈⊞⊢⋈⊞⊞⊞∈⊢∈
+banked ⊢⋈⋈⋈⊞⊢⊞⊢∈⊞∈⋈⊞⊢⋈⊞⊞⊞∈⊢∈
+counterfactual ⊢⋈⋈⋈⊞⊢⊞⊢∈⊞∈⋈⊞⊢⋈⊞⊞⊞∈⊢∈ rotate 1
+weight ⊢⊡⊞⊞⊢⊞⊡⊡
+banked ⊢⊡⊞⊞⊢⊞⊡⊡
+counterfactual ⊢⊡⊞⊞⊢⊞⊡⊡ rotate 1
+weight ⊢⊞⊢⊞⊞⊞⊞⊤⊢⊡
+banked ⊢⊞⊢⊞⊞⊞⊞⊤⊢⊡
+counterfactual ⊢⊞⊢⊞⊞⊞⊞⊤⊢⊡ rotate 1
+weight ⊢⊞⋈⊡⋈⊢⋈⊞⊢⊞⋈⊢⊡⊣⊢⊡⊞⋈⊡
+banked ⊢⊞⋈⊡⋈⊢⋈⊞⊢⊞⋈⊢⊡⊣⊢⊡⊞⋈⊡
+counterfactual ⊢⊞⋈⊡⋈⊢⋈⊞⊢⊞⋈⊢⊡⊣⊢⊡⊞⋈⊡ rotate 1
+weight ⊢∈⊞≻⋈⋈⊢∈⊢⋈∈∈
+banked ⊢∈⊞≻⋈⋈⊢∈⊢⋈∈∈
+counterfactual ⊢∈⊞≻⋈⋈⊢∈⊢⋈∈∈ rotate 1
+weight ⊢⊞⊡⊞⊢⋈⊡∈⊡
+banked ⊢⊞⊡⊞⊢⋈⊡∈⊡
+counterfactual ⊢⊞⊡⊞⊢⋈⊡∈⊡ rotate 1
+weight ⊢⊞⊡⊤≺∈⊢⋈⊡⊡⋈⋈⊢⋈⊞⊞⊞⊢⋈⊢⊞
+banked ⊢⊞⊡⊤≺∈⊢⋈⊡⊡⋈⋈⊢⋈⊞⊞⊞⊢⋈⊢⊞
+counterfactual ⊢⊞⊡⊤≺∈⊢⋈⊡⊡⋈⋈⊢⋈⊞⊞⊞⊢⋈⊢⊞ rotate 1
+weight ⊢⊤⊡⊡⋈∈⋈⊤
+banked ⊢⊤⊡⊡⋈∈⋈⊤
+counterfactual ⊢⊤⊡⊡⋈∈⋈⊤ rotate 1
+weight ⊢⊞⊢⊞⊢⋈⋈⊣
+banked ⊢⊞⊢⊞⊢⋈⋈⊣
+counterfactual ⊢⊞⊢⊞⊢⋈⋈⊣ rotate 1
+weight ⊢⋈⊞⋈⊢⊞⋈⊡⊢⋈⊡⊞⊢⊞⋈∈⋈
+banked ⊢⋈⊞⋈⊢⊞⋈⊡⊢⋈⊡⊞⊢⊞⋈∈⋈
+counterfactual ⊢⋈⊞⋈⊢⊞⋈⊡⊢⋈⊡⊞⊢⊞⋈∈⋈ rotate 1
+weight ⊢⊞⊢⊡⊢∈∈⋈
+banked ⊢⊞⊢⊡⊢∈∈⋈
+counterfactual ⊢⊞⊢⊡⊢∈∈⋈ rotate 1
+weight ⊢⊞⊞⊢⊡⊞⋈⊢⋈
+banked ⊢⊞⊞⊢⊡⊞⋈⊢⋈
+counterfactual ⊢⊞⊞⊢⊡⊞⋈⊢⋈ rotate 1
+weight ⊢⋈⋈⊡⋈⋈⊞⋈⋈⊢⊞⊞⊞⊢⊞⊢⊤⋈
+banked ⊢⋈⋈⊡⋈⋈⊞⋈⋈⊢⊞⊞⊞⊢⊞⊢⊤⋈
+counterfactual ⊢⋈⋈⊡⋈⋈⊞⋈⋈⊢⊞⊞⊞⊢⊞⊢⊤⋈ rotate 1
+weight ⊢∈⋈⋈⋈⊞⊣⊢∈⊞∈⋈⊞
+banked ⊢∈⋈⋈⋈⊞⊣⊢∈⊞∈⋈⊞
+counterfactual ⊢∈⋈⋈⋈⊞⊣⊢∈⊞∈⋈⊞ rotate 1
+weight ⊢⊞⊢⋈⊞⋈⋈⋈⋈⋈
+banked ⊢⊞⊢⋈⊞⋈⋈⋈⋈⋈
+counterfactual ⊢⊞⊢⋈⊞⋈⋈⋈⋈⋈ rotate 1
+weight ⊢⊞⋈⋈⊤⋈⋈⊞∈⊢⊞⋈⊞⋈⊡⊞⊢⋈⊡⋈⊞⊢⋈⊢⊞⊞
+banked ⊢⊞⋈⋈⊤⋈⋈⊞∈⊢⊞⋈⊞⋈⊡⊞⊢⋈⊡⋈⊞⊢⋈⊢⊞⊞
+counterfactual ⊢⊞⋈⋈⊤⋈⋈⊞∈⊢⊞⋈⊞⋈⊡⊞⊢⋈⊡⋈⊞⊢⋈⊢⊞⊞ rotate 1
+weight ⊢⊞⊞⋈⊢⊞⋈⊢∈
+banked ⊢⊞⊞⋈⊢⊞⋈⊢∈
+counterfactual ⊢⊞⊞⋈⊢⊞⋈⊢∈ rotate 1
+weight ⊢⊞⊣⊢⋈⋈⊞⋈⊢⋈⊞
+banked ⊢⊞⊣⊢⋈⋈⊞⋈⊢⋈⊞
+counterfactual ⊢⊞⊣⊢⋈⋈⊞⋈⊢⋈⊞ rotate 1
+weight ⊢⋈⊞⋈⋈⊞⋈⊢⋈⊢⋈⊤⊤⊢⊤⊞⊡⋈⊢⊤
+banked ⊢⋈⊞⋈⋈⊞⋈⊢⋈⊢⋈⊤⊤⊢⊤⊞⊡⋈⊢⊤
+counterfactual ⊢⋈⊞⋈⋈⊞⋈⊢⋈⊢⋈⊤⊤⊢⊤⊞⊡⋈⊢⊤ rotate 1
+weight ⊢⊞⊢⋈⊢⊤⊢⋈⊢⋈⋈
+banked ⊢⊞⊢⋈⊢⊤⊢⋈⊢⋈⋈
+counterfactual ⊢⊞⊢⋈⊢⊤⊢⋈⊢⋈⋈ rotate 1
+weight ⊢⊞⊢⊡⋈⊡⊡⊞
+banked ⊢⊞⊢⊡⋈⊡⊡⊞
+counterfactual ⊢⊞⊢⊡⋈⊡⊡⊞ rotate 1
+weight ⊢⊤∈⊞⊢⋈⊞⋈⊢⊞⊞⊞⊡⋈⊞⊡⊡
+banked ⊢⊤∈⊞⊢⋈⊞⋈⊢⊞⊞⊞⊡⋈⊞⊡⊡
+counterfactual ⊢⊤∈⊞⊢⋈⊞⋈⊢⊞⊞⊞⊡⋈⊞⊡⊡ rotate 1
+weight ⊢⋈⊞⊞⊢⊤⊡⊞⊞∈⋈
+banked ⊢⋈⊞⊞⊢⊤⊡⊞⊞∈⋈
+counterfactual ⊢⋈⊞⊞⊢⊤⊡⊞⊞∈⋈ rotate 1
+weight ⊢⊞⋈∈⋈⊢⊤⊢⋈⊤⋈⋈⊢⊞
+banked ⊢⊞⋈∈⋈⊢⊤⊢⋈⊤⋈⋈⊢⊞
+counterfactual ⊢⊞⋈∈⋈⊢⊤⊢⋈⊤⋈⋈⊢⊞ rotate 1
+weight ⊢⋈⊞⋈⊞⊢⊞⊡∈⊢⋈⊞⊢⊤
+banked ⊢⋈⊞⋈⊞⊢⊞⊡∈⊢⋈⊞⊢⊤
+counterfactual ⊢⋈⊞⋈⊞⊢⊞⊡∈⊢⋈⊞⊢⊤ rotate 1
+weight ⊢⋈⊞⊞⊞⊞⊢∈⋈
+banked ⊢⋈⊞⊞⊞⊞⊢∈⋈
+counterfactual ⊢⋈⊞⊞⊞⊞⊢∈⋈ rotate 1
+weight ⊢⊞⊤⊣⊢⊞⊡⊢∈⊡⋈⊢∈
+banked ⊢⊞⊤⊣⊢⊞⊡⊢∈⊡⋈⊢∈
+counterfactual ⊢⊞⊤⊣⊢⊞⊡⊢∈⊡⋈⊢∈ rotate 1
+weight ⊢⊞⋈⋈⋈⊞⊞⊞⊢∈⊞⊞⊞⊢∈⊞⊢⋈
+banked ⊢⊞⋈⋈⋈⊞⊞⊞⊢∈⊞⊞⊞⊢∈⊞⊢⋈
+counterfactual ⊢⊞⋈⋈⋈⊞⊞⊞⊢∈⊞⊞⊞⊢∈⊞⊢⋈ rotate 1
+weight ⊢⊞⊞⊞⊞⋈⊡
+banked ⊢⊞⊞⊞⊞⋈⊡
+counterfactual ⊢⊞⊞⊞⊞⋈⊡ rotate 1
+weight ⊢⊞⋈∈∈⊞⊞⊡⊢⋈∈⊞⊞∈⊢⋈
+banked ⊢⊞⋈∈∈⊞⊞⊡⊢⋈∈⊞⊞∈⊢⋈
+counterfactual ⊢⊞⋈∈∈⊞⊞⊡⊢⋈∈⊞⊞∈⊢⋈ rotate 1
+weight ⊢⋈⊢⋈⊞⊢⊣⊢∈⊡⊞⊞⊡⋈⊞⊡⊡⋈
+banked ⊢⋈⊢⋈⊞⊢⊣⊢∈⊡⊞⊞⊡⋈⊞⊡⊡⋈
+counterfactual ⊢⋈⊢⋈⊞⊢⊣⊢∈⊡⊞⊞⊡⋈⊞⊡⊡⋈ rotate 1
+weight ⊢⊞⊢∈∈⊢⊞⊢⋈⋈⊞⊢⋈
+banked ⊢⊞⊢∈∈⊢⊞⊢⋈⋈⊞⊢⋈
+counterfactual ⊢⊞⊢∈∈⊢⊞⊢⋈⋈⊞⊢⋈ rotate 1
+weight ⊢⊞∈⊢⊡⊢⊡⊢∈⋈⊞
+banked ⊢⊞∈⊢⊡⊢⊡⊢∈⋈⊞
+counterfactual ⊢⊞∈⊢⊡⊢⊡⊢∈⋈⊞ rotate 1
+weight ⊢⋈⊢∈⊢⊞∈⊢⊡
+banked ⊢⋈⊢∈⊢⊞∈⊢⊡
+counterfactual ⊢⋈⊢∈⊢⊞∈⊢⊡ rotate 1
+weight ⊢⋈⊢∈⊢⊡⊞⋈
+banked ⊢⋈⊢∈⊢⊡⊞⋈
+counterfactual ⊢⋈⊢∈⊢⊡⊞⋈ rotate 1
+weight ⊢⊞⋈⋈⊞⋈⊞
+banked ⊢⊞⋈⋈⊞⋈⊞
+counterfactual ⊢⊞⋈⋈⊞⋈⊞ rotate 1
+weight ⊢⊞⋈⊞⊢∈⊢⊡∈⋈⋈⊢⊡∈⋈⊢⋈⋈⊢⋈
+banked ⊢⊞⋈⊞⊢∈⊢⊡∈⋈⋈⊢⊡∈⋈⊢⋈⋈⊢⋈
+counterfactual ⊢⊞⋈⊞⊢∈⊢⊡∈⋈⋈⊢⊡∈⋈⊢⋈⋈⊢⋈ rotate 1
+weight ⊢⊞⊞⋈⊣⊢⊡∈⋈⊞∈⊞
+banked ⊢⊞⊞⋈⊣⊢⊡∈⋈⊞∈⊞
+counterfactual ⊢⊞⊞⋈⊣⊢⊡∈⋈⊞∈⊞ rotate 1
+weight ⊢⊞∈⊢∈⊤⊞⊤⊡⋈⋈
+banked ⊢⊞∈⊢∈⊤⊞⊤⊡⋈⋈
+counterfactual ⊢⊞∈⊢∈⊤⊞⊤⊡⋈⋈ rotate 1
+weight ⊢⊞⊡⋈⊞⊢⋈⊞⋈⊤⋈⊡⊞⊢∈⊞⊞
+banked ⊢⊞⊡⋈⊞⊢⋈⊞⋈⊤⋈⊡⊞⊢∈⊞⊞
+counterfactual ⊢⊞⊡⋈⊞⊢⋈⊞⋈⊤⋈⊡⊞⊢∈⊞⊞ rotate 1
+weight ⊢⋈⊞⊢⊤⋈⋈⊢⊤⊞⊡
+banked ⊢⋈⊞⊢⊤⋈⋈⊢⊤⊞⊡
+counterfactual ⊢⋈⊞⊢⊤⋈⋈⊢⊤⊞⊡ rotate 1
+weight ⊢⊞⊞⊢⊞⊞⊞∈⊞⋈⊞
+banked ⊢⊞⊞⊢⊞⊞⊞∈⊞⋈⊞
+counterfactual ⊢⊞⊞⊢⊞⊞⊞∈⊞⋈⊞ rotate 1
+weight ⊢∈⊣⊢∈⊢≻⋈⊢⊞⊢⋈⊢⋈⊡⋈⋈⋈⊞⊞⊡
+banked ⊢∈⊣⊢∈⊢≻⋈⊢⊞⊢⋈⊢⋈⊡⋈⋈⋈⊞⊞⊡
+counterfactual ⊢∈⊣⊢∈⊢≻⋈⊢⊞⊢⋈⊢⋈⊡⋈⋈⋈⊞⊞⊡ rotate 1
+weight ⊢⊞∈⊢⋈⊡⊢⋈⊤⊤⊞
+banked ⊢⊞∈⊢⋈⊡⊢⋈⊤⊤⊞
+counterfactual ⊢⊞∈⊢⋈⊡⊢⋈⊤⊤⊞ rotate 1
+weight ⊢⊞⊢≺
+banked ⊢⊞⊢≺
+counterfactual ⊢⊞⊢≺ rotate 1
+weight ⊢⊞⊢⊞⊢⋈⋈≺⊢⊞⊡∈⊡⊡⊢⊞⊢⋈
+banked ⊢⊞⊢⊞⊢⋈⋈≺⊢⊞⊡∈⊡⊡⊢⊞⊢⋈
+counterfactual ⊢⊞⊢⊞⊢⋈⋈≺⊢⊞⊡∈⊡⊡⊢⊞⊢⋈ rotate 1
+weight ⊢∈⊞⋈⋈⊞⊤⊤⊣
+banked ⊢∈⊞⋈⋈⊞⊤⊤⊣
+counterfactual ⊢∈⊞⋈⋈⊞⊤⊤⊣ rotate 1
+weight ⊢⊞⊞⋈⊡⊡⋈
+banked ⊢⊞⊞⋈⊡⊡⋈
+counterfactual ⊢⊞⊞⋈⊡⊡⋈ rotate 1
+weight ⊢∈⋈⊢⊞⊤⊢∈⋈⊞⊢⋈⊣⊢⋈⊡⊞⋈
+banked ⊢∈⋈⊢⊞⊤⊢∈⋈⊞⊢⋈⊣⊢⋈⊡⊞⋈
+counterfactual ⊢∈⋈⊢⊞⊤⊢∈⋈⊞⊢⋈⊣⊢⋈⊡⊞⋈ rotate 1
+weight ⊢⊞⊤⊞⊤⋈⊞⊞
+banked ⊢⊞⊤⊞⊤⋈⊞⊞
+counterfactual ⊢⊞⊤⊞⊤⋈⊞⊞ rotate 1
+weight ⊢⊞⊞⊢⋈⋈⊞⋈∈
+banked ⊢⊞⊞⊢⋈⋈⊞⋈∈
+counterfactual ⊢⊞⊞⊢⋈⋈⊞⋈∈ rotate 1
+weight ⊢⋈⊢∈⊡⊢⊞⋈⊡⋈⊢⊞⊢⋈⊞⋈⊢⊞⊤⋈
+banked ⊢⋈⊢∈⊡⊢⊞⋈⊡⋈⊢⊞⊢⋈⊞⋈⊢⊞⊤⋈
+counterfactual ⊢⋈⊢∈⊡⊢⊞⋈⊡⋈⊢⊞⊢⋈⊞⋈⊢⊞⊤⋈ rotate 1
+weight ⊢⋈⊞⋈⋈⊢⊞⊞⊞
+banked ⊢⋈⊞⋈⋈⊢⊞⊞⊞
+counterfactual ⊢⋈⊞⋈⋈⊢⊞⊞⊞ rotate 1
+weight ⊢⊞⋈⊞⊞⋈⋈∈⋈
+banked ⊢⊞⋈⊞⊞⋈⋈∈⋈
+counterfactual ⊢⊞⋈⊞⊞⋈⋈∈⋈ rotate 1
+weight ⊢⊡⊡⊢⋈⋈⊤⊢⊡⊢⊞⋈∈⊤⊞⊞⋈⊤⊢⋈
+banked ⊢⊡⊡⊢⋈⋈⊤⊢⊡⊢⊞⋈∈⊤⊞⊞⋈⊤⊢⋈
+counterfactual ⊢⊡⊡⊢⋈⋈⊤⊢⊡⊢⊞⋈∈⊤⊞⊞⋈⊤⊢⋈ rotate 1
+weight ⊢⋈⊢⊞⊞⋈⊞⋈∈⊞⋈⊞
+banked ⊢⋈⊢⊞⊞⋈⊞⋈∈⊞⋈⊞
+counterfactual ⊢⋈⊢⊞⊞⋈⊞⋈∈⊞⋈⊞ rotate 1
+weight ⊢⊞⊢⋈⋈⊢∈⊡⊤⋈⊞
+banked ⊢⊞⊢⋈⋈⊢∈⊡⊤⋈⊞
+counterfactual ⊢⊞⊢⋈⋈⊢∈⊡⊤⋈⊞ rotate 1
+weight ⊢⋈⊞⋈⋈⋈⊞⊞⊞⊢⊞⊡⊤⊢⊤⊢⋈⊞⋈
+banked ⊢⋈⊞⋈⋈⋈⊞⊞⊞⊢⊞⊡⊤⊢⊤⊢⋈⊞⋈
+counterfactual ⊢⋈⊞⋈⋈⋈⊞⊞⊞⊢⊞⊡⊤⊢⊤⊢⋈⊞⋈ rotate 1
+weight ⊢∈⋈⊢∈⋈∈⋈⊤⊞⊤⊡⊢⋈
+banked ⊢∈⋈⊢∈⋈∈⋈⊤⊞⊤⊡⊢⋈
+counterfactual ⊢∈⋈⊢∈⋈∈⋈⊤⊞⊤⊡⊢⋈ rotate 1
+weight ⊢⊞⊡⊡∈⊞⊞⊤∈⊞
+banked ⊢⊞⊡⊡∈⊞⊞⊤∈⊞
+counterfactual ⊢⊞⊡⊡∈⊞⊞⊤∈⊞ rotate 1
+weight ⊢≺⊞∈⊢⊡⋈⊢⋈∈⋈⊡⊢⊤⊡∈⊢⋈
+banked ⊢≺⊞∈⊢⊡⋈⊢⋈∈⋈⊡⊢⊤⊡∈⊢⋈
+counterfactual ⊢≺⊞∈⊢⊡⋈⊢⋈∈⋈⊡⊢⊤⊡∈⊢⋈ rotate 1
+weight ⊢⊞⋈≻⊞⊞∈⊞⊤∈⋈
+banked ⊢⊞⋈≻⊞⊞∈⊞⊤∈⋈
+counterfactual ⊢⊞⋈≻⊞⊞∈⊞⊤∈⋈ rotate 1
+weight ⊢⊞∈⊞⊡⊢⊞⋈⊞⋈⊞
+banked ⊢⊞∈⊞⊡⊢⊞⋈⊞⋈⊞
+counterfactual ⊢⊞∈⊞⊡⊢⊞⋈⊞⋈⊞ rotate 1
+weight ⊢⊡⊡⊢⊤⊞⊡⊢⋈⋈⊤⊡⋈⊤⋈
+banked ⊢⊡⊡⊢⊤⊞⊡⊢⋈⋈⊤⊡⋈⊤⋈
+counterfactual ⊢⊡⊡⊢⊤⊞⊡⊢⋈⋈⊤⊡⋈⊤⋈ rotate 1
+weight ⊢⊤⋈⊞⊞⊞≺⊢⊞⊞
+banked ⊢⊤⋈⊞⊞⊞≺⊢⊞⊞
+counterfactual ⊢⊤⋈⊞⊞⊞≺⊢⊞⊞ rotate 1
+weight ⊢⊞⊡∈⋈⋈⊢⊡∈⊞
+banked ⊢⊞⊡∈⋈⋈⊢⊡∈⊞
+counterfactual ⊢⊞⊡∈⋈⋈⊢⊡∈⊞ rotate 1
+weight ⊢⋈≻⋈⊞⋈⊢∈⊢≺⊢∈⊡⋈⊢⋈⊞⊞⋈
+banked ⊢⋈≻⋈⊞⋈⊢∈⊢≺⊢∈⊡⋈⊢⋈⊞⊞⋈
+counterfactual ⊢⋈≻⋈⊞⋈⊢∈⊢≺⊢∈⊡⋈⊢⋈⊞⊞⋈ rotate 1
+weight ⊢⊞⊣⊢⋈⊡⊞⋈⊡
+banked ⊢⊞⊣⊢⋈⊡⊞⋈⊡
+counterfactual ⊢⊞⊣⊢⋈⊡⊞⋈⊡ rotate 1
+weight ⊢⊞⊞⊞⋈⊡⊢⊞≻⋈⊣
+banked ⊢⊞⊞⊞⋈⊡⊢⊞≻⋈⊣
+counterfactual ⊢⊞⊞⊞⋈⊡⊢⊞≻⋈⊣ rotate 1
+weight ⊢⊡⋈⊞⋈⋈⊤⊞⋈⊤⊢⊤∈⊞
+banked ⊢⊡⋈⊞⋈⋈⊤⊞⋈⊤⊢⊤∈⊞
+counterfactual ⊢⊡⋈⊞⋈⋈⊤⊞⋈⊤⊢⊤∈⊞ rotate 1
+weight ⊢⊞⊡∈⊞⊞⊡⊡⋈⊞
+banked ⊢⊞⊡∈⊞⊞⊡⊡⋈⊞
+counterfactual ⊢⊞⊡∈⊞⊞⊡⊡⋈⊞ rotate 1
+weight ⊢⊞⊢⊞⊞⊢⋈⊞⊡⊞⋈⋈
+banked ⊢⊞⊢⊞⊞⊢⋈⊞⊡⊞⋈⋈
+counterfactual ⊢⊞⊢⊞⊞⊢⋈⊞⊡⊞⋈⋈ rotate 1
+weight ⊢⋈⋈⊤⊞⊢⊞⊤⊞⊡⋈⊞⋈⊞⊢⋈⊞
+banked ⊢⋈⋈⊤⊞⊢⊞⊤⊞⊡⋈⊞⋈⊞⊢⋈⊞
+counterfactual ⊢⋈⋈⊤⊞⊢⊞⊤⊞⊡⋈⊞⋈⊞⊢⋈⊞ rotate 1
+weight ⊢⊡⋈∈⋈⋈⊢⋈⊞⋈⊤⊞⋈
+banked ⊢⊡⋈∈⋈⋈⊢⋈⊞⋈⊤⊞⋈
+counterfactual ⊢⊡⋈∈⋈⋈⊢⋈⊞⋈⊤⊞⋈ rotate 1
+weight ⊢⊞⊤⊡⊞⊞≺⊢⋈
+banked ⊢⊞⊤⊡⊞⊞≺⊢⋈
+counterfactual ⊢⊞⊤⊡⊞⊞≺⊢⋈ rotate 1
+weight ⊢⊞⋈∈⊢⊞⊞⊢⊞⊞⊢⋈∈⋈∈⋈⊞∈
+banked ⊢⊞⋈∈⊢⊞⊞⊢⊞⊞⊢⋈∈⋈∈⋈⊞∈
+counterfactual ⊢⊞⋈∈⊢⊞⊞⊢⊞⊞⊢⋈∈⋈∈⋈⊞∈ rotate 1
+weight ⊢⊞⊢⊤⊤⊤⊢⋈⊢⊞⋈∈⊤
+banked ⊢⊞⊢⊤⊤⊤⊢⋈⊢⊞⋈∈⊤
+counterfactual ⊢⊞⊢⊤⊤⊤⊢⋈⊢⊞⋈∈⊤ rotate 1
+weight ⊢⊞⋈⊞⊢⊞∈⊡⊢⊤⋈⊞⊞
+banked ⊢⊞⋈⊞⊢⊞∈⊡⊢⊤⋈⊞⊞
+counterfactual ⊢⊞⋈⊞⊢⊞∈⊡⊢⊤⋈⊞⊞ rotate 1
+weight ⊢∈⋈⊞⋈⋈⋈⊢⊡⊞⊢⊞⊞⋈⊤⊢⋈⊞⊡⊞⋈⊢⋈⊡∈
+banked ⊢∈⋈⊞⋈⋈⋈⊢⊡⊞⊢⊞⊞⋈⊤⊢⋈⊞⊡⊞⋈⊢⋈⊡∈
+counterfactual ⊢∈⋈⊞⋈⋈⋈⊢⊡⊞⊢⊞⊞⋈⊤⊢⋈⊞⊡⊞⋈⊢⋈⊡∈ rotate 1
+weight ⊢⋈⊞⊞⊢⋈⋈⊞⋈⊢⊞∈⋈
+banked ⊢⋈⊞⊞⊢⋈⋈⊞⋈⊢⊞∈⋈
+counterfactual ⊢⋈⊞⊞⊢⋈⋈⊞⋈⊢⊞∈⋈ rotate 1
+weight ⊢⊞⊡⋈⊢⋈⊞
+banked ⊢⊞⊡⋈⊢⋈⊞
+counterfactual ⊢⊞⊡⋈⊢⋈⊞ rotate 1
+weight ⊢⊣⊢⊡⊣
+banked ⊢⊣⊢⊡⊣
+counterfactual ⊢⊣⊢⊡⊣ rotate 1
+weight ⊢∈⊡⋈⋈∈⋈⊢⊞
+banked ⊢∈⊡⋈⋈∈⋈⊢⊞
+counterfactual ⊢∈⊡⋈⋈∈⋈⊢⊞ rotate 1
+weight ⊢⊞⊢⊞⊤≺
+banked ⊢⊞⊢⊞⊤≺
+counterfactual ⊢⊞⊢⊞⊤≺ rotate 1
+weight ⊢⋈⊢⊞∈⊢∈⊞∈⊤⊤⊡∈⊞⋈⊢≻⊞
+banked ⊢⋈⊢⊞∈⊢∈⊞∈⊤⊤⊡∈⊞⋈⊢≻⊞
+counterfactual ⊢⋈⊢⊞∈⊢∈⊞∈⊤⊤⊡∈⊞⋈⊢≻⊞ rotate 1
+weight ⊢⋈⋈⋈⊤⊞⊢∈⊞⋈
+banked ⊢⋈⋈⋈⊤⊞⊢∈⊞⋈
+counterfactual ⊢⋈⋈⋈⊤⊞⊢∈⊞⋈ rotate 1
+weight ⊢⊞⊞⋈⊞⊢∈⊣
+banked ⊢⊞⊞⋈⊞⊢∈⊣
+counterfactual ⊢⊞⊞⋈⊞⊢∈⊣ rotate 1
+weight ⊢⋈⋈⊡⊢⊞⋈⊢⊞⊞
+banked ⊢⋈⋈⊡⊢⊞⋈⊢⊞⊞
+counterfactual ⊢⋈⋈⊡⊢⊞⋈⊢⊞⊞ rotate 1
+weight ⊢⊞⊞⋈⊢⊞
+banked ⊢⊞⊞⋈⊢⊞
+counterfactual ⊢⊞⊞⋈⊢⊞ rotate 1
+weight ⊢⊞⊤⊣⊢⋈⊢∈⊞⊡
+banked ⊢⊞⊤⊣⊢⋈⊢∈⊞⊡
+counterfactual ⊢⊞⊤⊣⊢⋈⊢∈⊞⊡ rotate 1
+weight ⊢⊞⊤⊢⊤⋈⋈⋈⋈⊞⊡⋈⋈∈
+banked ⊢⊞⊤⊢⊤⋈⋈⋈⋈⊞⊡⋈⋈∈
+counterfactual ⊢⊞⊤⊢⊤⋈⋈⋈⋈⊞⊡⋈⋈∈ rotate 1
+weight ⊢⊞⊞⊣⊢⋈≺
+banked ⊢⊞⊞⊣⊢⋈≺
+counterfactual ⊢⊞⊞⊣⊢⋈≺ rotate 1
+weight ⊢⊞⋈⊞⊞⋈⊞⋈⊞⋈∈⋈⋈
+banked ⊢⊞⋈⊞⊞⋈⊞⋈⊞⋈∈⋈⋈
+counterfactual ⊢⊞⋈⊞⊞⋈⊞⋈⊞⋈∈⋈⋈ rotate 1
+weight ⊢⊞⊞⋈⋈⊤⊡⋈⊞⋈⊞⊡⊢∈⋈
+banked ⊢⊞⊞⋈⋈⊤⊡⋈⊞⋈⊞⊡⊢∈⋈
+counterfactual ⊢⊞⊞⋈⋈⊤⊡⋈⊞⋈⊞⊡⊢∈⋈ rotate 1
+weight ⊢⊡⊞⊞⊞⊞⊡
+banked ⊢⊡⊞⊞⊞⊞⊡
+counterfactual ⊢⊡⊞⊞⊞⊞⊡ rotate 1
+weight ⊢⊞∈⊞⋈⊢⋈⋈⋈⊢⊞∈⊣
+banked ⊢⊞∈⊞⋈⊢⋈⋈⋈⊢⊞∈⊣
+counterfactual ⊢⊞∈⊞⋈⊢⋈⋈⋈⊢⊞∈⊣ rotate 1
+weight ⊢⋈⋈⋈⊢∈⊞≺⊢⊞⋈⊤∈⋈⊡⊢∈
+banked ⊢⋈⋈⋈⊢∈⊞≺⊢⊞⋈⊤∈⋈⊡⊢∈
+counterfactual ⊢⋈⋈⋈⊢∈⊞≺⊢⊞⋈⊤∈⋈⊡⊢∈ rotate 1
+weight ⊢⋈∈⋈⋈⋈⊤⊤⋈⋈⊞≺⊢⋈
+banked ⊢⋈∈⋈⋈⋈⊤⊤⋈⋈⊞≺⊢⋈
+counterfactual ⊢⋈∈⋈⋈⋈⊤⊤⋈⋈⊞≺⊢⋈ rotate 1
+weight ⊢⊞⊣⊢⋈⋈
+banked ⊢⊞⊣⊢⋈⋈
+counterfactual ⊢⊞⊣⊢⋈⋈ rotate 1
+weight ⊢⋈⋈⊞⋈⊞⋈⊢⋈⊢⊞⊢∈⊡⊡∈⋈⊤⊢∈⊢⊞
+banked ⊢⋈⋈⊞⋈⊞⋈⊢⋈⊢⊞⊢∈⊡⊡∈⋈⊤⊢∈⊢⊞
+counterfactual ⊢⋈⋈⊞⋈⊞⋈⊢⋈⊢⊞⊢∈⊡⊡∈⋈⊤⊢∈⊢⊞ rotate 1
+weight ⊢⋈⋈⊢⋈
+banked ⊢⋈⋈⊢⋈
+counterfactual ⊢⋈⋈⊢⋈ rotate 1
+weight ⊢⊞⊞⋈⊞⊢⋈⊞⋈
+banked ⊢⊞⊞⋈⊞⊢⋈⊞⋈
+counterfactual ⊢⊞⊞⋈⊞⊢⋈⊞⋈ rotate 1
+weight ⊢⋈⋈⊡⊞⊞⋈⊢⊞∈∈⊞⊡∈∈⋈
+banked ⊢⋈⋈⊡⊞⊞⋈⊢⊞∈∈⊞⊡∈∈⋈
+counterfactual ⊢⋈⋈⊡⊞⊞⋈⊢⊞∈∈⊞⊡∈∈⋈ rotate 1
+weight ⊢⊤∈⊞⊢⋈⊢⋈⊡⊤⊞⊞
+banked ⊢⊤∈⊞⊢⋈⊢⋈⊡⊤⊞⊞
+counterfactual ⊢⊤∈⊞⊢⋈⊢⋈⊡⊤⊞⊞ rotate 1
+weight ⊢⊞⊞⊞⊞⋈∈⋈
+banked ⊢⊞⊞⊞⊞⋈∈⋈
+counterfactual ⊢⊞⊞⊞⊞⋈∈⋈ rotate 1
+weight ⊢⊡⊣⊢⊞⋈⊞⋈⋈⊡⊞⊤⊤⊞⊢⊞⋈∈⋈⋈⊡
+banked ⊢⊡⊣⊢⊞⋈⊞⋈⋈⊡⊞⊤⊤⊞⊢⊞⋈∈⋈⋈⊡
+counterfactual ⊢⊡⊣⊢⊞⋈⊞⋈⋈⊡⊞⊤⊤⊞⊢⊞⋈∈⋈⋈⊡ rotate 1
+weight ⊢⋈⋈⊡⋈⊡∈⊞⊢⊡
+banked ⊢⋈⋈⊡⋈⊡∈⊞⊢⊡
+counterfactual ⊢⋈⋈⊡⋈⊡∈⊞⊢⊡ rotate 1
+weight ⊢⊞⋈∈⊞⊞⋈∈⊤
+banked ⊢⊞⋈∈⊞⊞⋈∈⊤
+counterfactual ⊢⊞⋈∈⊞⊞⋈∈⊤ rotate 1
+weight ⊢⋈⊞⊞⋈⊢⊞⋈⊞⊡∈⊢⊞∈⊞⊤∈⋈⋈∋∈⊡
+banked ⊢⋈⊞⊞⋈⊢⊞⋈⊞⊡∈⊢⊞∈⊞⊤∈⋈⋈∋∈⊡
+counterfactual ⊢⋈⊞⊞⋈⊢⊞⋈⊞⊡∈⊢⊞∈⊞⊤∈⋈⋈∋∈⊡ rotate 1
+weight ⊢⊤⋈⊡⋈⊞⋈≻⋈⋈
+banked ⊢⊤⋈⊡⋈⊞⋈≻⋈⋈
+counterfactual ⊢⊤⋈⊡⋈⊞⋈≻⋈⋈ rotate 1
+weight ⊢⊞⋈⋈⊤⊢⊣⊢⊞∈⊡⊞
+banked ⊢⊞⋈⋈⊤⊢⊣⊢⊞∈⊡⊞
+counterfactual ⊢⊞⋈⋈⊤⊢⊣⊢⊞∈⊡⊞ rotate 1
+weight ⊢⊞⋈⊢⊞≺⊢⋈∈⋈∈⊞⊢⊞⊡⊤⋈⊢⊡
+banked ⊢⊞⋈⊢⊞≺⊢⋈∈⋈∈⊞⊢⊞⊡⊤⋈⊢⊡
+counterfactual ⊢⊞⋈⊢⊞≺⊢⋈∈⋈∈⊞⊢⊞⊡⊤⋈⊢⊡ rotate 1
+weight ⊢⊞⊞⋈⊞⊡⋈⋈⊡⋈⋈
+banked ⊢⊞⊞⋈⊞⊡⋈⋈⊡⋈⋈
+counterfactual ⊢⊞⊞⋈⊞⊡⋈⋈⊡⋈⋈ rotate 1
+weight ⊢⊞⋈⊢⊞⊞⊢⊞⊞⊡
+banked ⊢⊞⋈⊢⊞⊞⊢⊞⊞⊡
+counterfactual ⊢⊞⋈⊢⊞⊞⊢⊞⊞⊡ rotate 1
+weight ⊢⊡⋈⊢⊞⊞⋈⋈⊞⊞⊡∈⊢⊞⋈∈⋈
+banked ⊢⊡⋈⊢⊞⊞⋈⋈⊞⊞⊡∈⊢⊞⋈∈⋈
+counterfactual ⊢⊡⋈⊢⊞⊞⋈⋈⊞⊞⊡∈⊢⊞⋈∈⋈ rotate 1
+weight ⊢∈∈⊞⊡⊢⋈⊢⊡
+banked ⊢∈∈⊞⊡⊢⋈⊢⊡
+counterfactual ⊢∈∈⊞⊡⊢⋈⊢⊡ rotate 1
+weight ⊢⊞⊢∈⊞⊞⊢⊞⊤⊤⊢⊤
+banked ⊢⊞⊢∈⊞⊞⊢⊞⊤⊤⊢⊤
+counterfactual ⊢⊞⊢∈⊞⊞⊢⊞⊤⊤⊢⊤ rotate 1
+weight ⊢⋈⊡⋈⊢⊡⊡⋈⋈⊢⊞⋈⊞⋈⊢⊤⊞⊢⋈⋈∈⋈⊡⊢⋈⊤
+banked ⊢⋈⊡⋈⊢⊡⊡⋈⋈⊢⊞⋈⊞⋈⊢⊤⊞⊢⋈⋈∈⋈⊡⊢⋈⊤
+counterfactual ⊢⋈⊡⋈⊢⊡⊡⋈⋈⊢⊞⋈⊞⋈⊢⊤⊞⊢⋈⋈∈⋈⊡⊢⋈⊤ rotate 1
+weight ⊢⊡⋈⋈⊡⊢⋈⊞
+banked ⊢⊡⋈⋈⊡⊢⋈⊞
+counterfactual ⊢⊡⋈⋈⊡⊢⋈⊞ rotate 1
+weight ⊢⊞⊡⋈⊡⊡⊢⊞
+banked ⊢⊞⊡⋈⊡⊡⊢⊞
+counterfactual ⊢⊞⊡⋈⊡⊡⊢⊞ rotate 1
+weight ⊢⋈⋈⋈⊤⋈⊞⊢⊞∈⋈⊞⋈∈⊞
+banked ⊢⋈⋈⋈⊤⋈⊞⊢⊞∈⋈⊞⋈∈⊞
+counterfactual ⊢⋈⋈⋈⊤⋈⊞⊢⊞∈⋈⊞⋈∈⊞ rotate 1
+weight ⊢⊞∈⊡⊤⋈⊢⋈
+banked ⊢⊞∈⊡⊤⋈⊢⋈
+counterfactual ⊢⊞∈⊡⊤⋈⊢⋈ rotate 1
+weight ⊢⊞⊢⊞
+banked ⊢⊞⊢⊞
+counterfactual ⊢⊞⊢⊞ rotate 1
+weight ⊢⋈⊞⊡∈⊡⊢⋈⊤⊢∈⋈∈⋈⊞⋈⋈⊤⊢⊞⋈⊞
+banked ⊢⋈⊞⊡∈⊡⊢⋈⊤⊢∈⋈∈⋈⊞⋈⋈⊤⊢⊞⋈⊞
+counterfactual ⊢⋈⊞⊡∈⊡⊢⋈⊤⊢∈⋈∈⋈⊞⋈⋈⊤⊢⊞⋈⊞ rotate 1
+weight ⊢⊞⋈⊤⊢⊤⋈⋈⊤∈⊢⋈
+banked ⊢⊞⋈⊤⊢⊤⋈⋈⊤∈⊢⋈
+counterfactual ⊢⊞⋈⊤⊢⊤⋈⋈⊤∈⊢⋈ rotate 1
+weight ⊢⊞⊢⋈⊢⊞⊡
+banked ⊢⊞⊢⋈⊢⊞⊡
+counterfactual ⊢⊞⊢⋈⊢⊞⊡ rotate 1
+weight ⊢⋈⊞∈⊢⊤∈∈⊢⋈⋈⊞⊞⋈⊢⋈⋈⊢⋈
+banked ⊢⋈⊞∈⊢⊤∈∈⊢⋈⋈⊞⊞⋈⊢⋈⋈⊢⋈
+counterfactual ⊢⋈⊞∈⊢⊤∈∈⊢⋈⋈⊞⊞⋈⊢⋈⋈⊢⋈ rotate 1
+weight ⊢⋈∈⊢∈⊞⊢⋈⊞
+banked ⊢⋈∈⊢∈⊞⊢⋈⊞
+counterfactual ⊢⋈∈⊢∈⊞⊢⋈⊞ rotate 1
+weight ⊢⊞⊢⋈⊡⊞≺⊢⋈≺
+banked ⊢⊞⊢⋈⊡⊞≺⊢⋈≺
+counterfactual ⊢⊞⊢⋈⊡⊞≺⊢⋈≺ rotate 1
+weight ⊢⋈⊤⊞⊞⊤∈⊢⊞⋈⋈⋈⊤⋈⊞⊡⊤
+banked ⊢⋈⊤⊞⊞⊤∈⊢⊞⋈⋈⋈⊤⋈⊞⊡⊤
+counterfactual ⊢⋈⊤⊞⊞⊤∈⊢⊞⋈⋈⋈⊤⋈⊞⊡⊤ rotate 1
+weight ⊢⊞⊢⊤⊞⊞⊞⊞∈⊡
+banked ⊢⊞⊢⊤⊞⊞⊞⊞∈⊡
+counterfactual ⊢⊞⊢⊤⊞⊞⊞⊞∈⊡ rotate 1
+weight ⊢⊞⊢⊤⋈⋈⋈⊡⊢∈⊞⊞
+banked ⊢⊞⊢⊤⋈⋈⋈⊡⊢∈⊞⊞
+counterfactual ⊢⊞⊢⊤⋈⋈⋈⊡⊢∈⊞⊞ rotate 1
+weight ⊢⊡⊢⊞⋈⊡⊞⋈⋈⊢⊞⊞⊣⊢⊡⋈∈⋈⊣
+banked ⊢⊡⊢⊞⋈⊡⊞⋈⋈⊢⊞⊞⊣⊢⊡⋈∈⋈⊣
+counterfactual ⊢⊡⊢⊞⋈⊡⊞⋈⋈⊢⊞⊞⊣⊢⊡⋈∈⋈⊣ rotate 1
+weight ⊢∈⊡⋈⋈∈⋈⊢⋈⊡⊤
+banked ⊢∈⊡⋈⋈∈⋈⊢⋈⊡⊤
+counterfactual ⊢∈⊡⋈⋈∈⋈⊢⋈⊡⊤ rotate 1
+weight ⊢⊞⋈⊡⋈⋈⋈⊞⊡
+banked ⊢⊞⋈⊡⋈⋈⋈⊞⊡
+counterfactual ⊢⊞⋈⊡⋈⋈⋈⊞⊡ rotate 1
+weight ⊢⊞⊢⊞⊤⊢⊞⊞⊢⊞⊤⋈⊞⋈⋈⊢⊞⊤⊤⋈⊞
+banked ⊢⊞⊢⊞⊤⊢⊞⊞⊢⊞⊤⋈⊞⋈⋈⊢⊞⊤⊤⋈⊞
+counterfactual ⊢⊞⊢⊞⊤⊢⊞⊞⊢⊞⊤⋈⊞⋈⋈⊢⊞⊤⊤⋈⊞ rotate 1
+weight ⊢⋈⊤⊞⋈⊞⊢⋈⊢⊞⊞⋈∈
+banked ⊢⋈⊤⊞⋈⊞⊢⋈⊢⊞⊞⋈∈
+counterfactual ⊢⋈⊤⊞⋈⊞⊢⋈⊢⊞⊞⋈∈ rotate 1
+weight ⊢⊞⊡⊤⋈⊤∈⋈≺⊢≻⊞∈⋈
+banked ⊢⊞⊡⊤⋈⊤∈⋈≺⊢≻⊞∈⋈
+counterfactual ⊢⊞⊡⊤⋈⊤∈⋈≺⊢≻⊞∈⋈ rotate 1
+weight ⊢⊤⊞⊞⋈⊡⊞⊢∈⋈⊣⊢⋈⊢⊤⋈⊢⋈⊤
+banked ⊢⊤⊞⊞⋈⊡⊞⊢∈⋈⊣⊢⋈⊢⊤⋈⊢⋈⊤
+counterfactual ⊢⊤⊞⊞⋈⊡⊞⊢∈⋈⊣⊢⋈⊢⊤⋈⊢⋈⊤ rotate 1
+weight ⊢⊤⊤⊞⊢⋈⊡⊢⋈
+banked ⊢⊤⊤⊞⊢⋈⊡⊢⋈
+counterfactual ⊢⊤⊤⊞⊢⋈⊡⊢⋈ rotate 1
+weight ⊢⊞⊤≺⊢⊡∈∋⊞⊢⊞
+banked ⊢⊞⊤≺⊢⊡∈∋⊞⊢⊞
+counterfactual ⊢⊞⊤≺⊢⊡∈∋⊞⊢⊞ rotate 1
+weight ⊢⋈⊢∈⊞⋈∈⋈⊢⊞⊡⋈⊡⋈⋈⊢≺⊢∈
+banked ⊢⋈⊢∈⊞⋈∈⋈⊢⊞⊡⋈⊡⋈⋈⊢≺⊢∈
+counterfactual ⊢⋈⊢∈⊞⋈∈⋈⊢⊞⊡⋈⊡⋈⋈⊢≺⊢∈ rotate 1
+weight ⊢⊤⊤⋈∈⊢⊞⋈
+banked ⊢⊤⊤⋈∈⊢⊞⋈
+counterfactual ⊢⊤⊤⋈∈⊢⊞⋈ rotate 1
+weight ⊢⊞⋈⊞⊞⊢⊡≺⊢∈⊤⊞⊢⋈
+banked ⊢⊞⋈⊞⊞⊢⊡≺⊢∈⊤⊞⊢⋈
+counterfactual ⊢⊞⋈⊞⊞⊢⊡≺⊢∈⊤⊞⊢⋈ rotate 1
+weight ⊢⋈∈⊞⊤⊢⊞⊡⋈⋈⊢⋈⊤⊢∈⊢⊞⊞
+banked ⊢⋈∈⊞⊤⊢⊞⊡⋈⋈⊢⋈⊤⊢∈⊢⊞⊞
+counterfactual ⊢⋈∈⊞⊤⊢⊞⊡⋈⋈⊢⋈⊤⊢∈⊢⊞⊞ rotate 1
+weight ⊢⋈⋈⋈⊢⊡⊡⊤
+banked ⊢⋈⋈⋈⊢⊡⊡⊤
+counterfactual ⊢⋈⋈⋈⊢⊡⊡⊤ rotate 1
+weight ⊢⊞⊢⊞⊢⊞⊢⋈⋈⋈⊥∈∈
+banked ⊢⊞⊢⊞⊢⊞⊢⋈⋈⋈⊥∈∈
+counterfactual ⊢⊞⊢⊞⊢⊞⊢⋈⋈⋈⊥∈∈ rotate 1
+weight ⊢⊞⊤⊡⊡∈⋈⋈⊤⋈⊢⊞⋈⋈⊞⋈⊞⋈
+banked ⊢⊞⊤⊡⊡∈⋈⋈⊤⋈⊢⊞⋈⋈⊞⋈⊞⋈
+counterfactual ⊢⊞⊤⊡⊡∈⋈⋈⊤⋈⊢⊞⋈⋈⊞⋈⊞⋈ rotate 1
+weight ⊢⋈⋈∈⊞⊣⊢⋈⊡∈
+banked ⊢⋈⋈∈⊞⊣⊢⋈⊡∈
+counterfactual ⊢⋈⋈∈⊞⊣⊢⋈⊡∈ rotate 1
+weight ⊢⊞⊢⊡⊞⊞⊢⊤∈⊢⊞⋈
+banked ⊢⊞⊢⊡⊞⊞⊢⊤∈⊢⊞⋈
+counterfactual ⊢⊞⊢⊡⊞⊞⊢⊤∈⊢⊞⋈ rotate 1
+weight ⊢⊞⊡⊢⊞⋈⊢⋈∈∈⊢⋈⊣
+banked ⊢⊞⊡⊢⊞⋈⊢⋈∈∈⊢⋈⊣
+counterfactual ⊢⊞⊡⊢⊞⋈⊢⋈∈∈⊢⋈⊣ rotate 1
+weight ⊢⊞⋈⊢⊡⋈∈⊡⊞
+banked ⊢⊞⋈⊢⊡⋈∈⊡⊞
+counterfactual ⊢⊞⋈⊢⊡⋈∈⊡⊞ rotate 1
+weight ⊢⊞⊞∈⊤∈⊞⊢⊞⋈⊞
+banked ⊢⊞⊞∈⊤∈⊞⊢⊞⋈⊞
+counterfactual ⊢⊞⊞∈⊤∈⊞⊢⊞⋈⊞ rotate 1
+weight ⊢∈⋈⊢⊞⊞⊞⊞⊡⊞⊢⋈⊢⊞⋈⊢⊞∈
+banked ⊢∈⋈⊢⊞⊞⊞⊞⊡⊞⊢⋈⊢⊞⋈⊢⊞∈
+counterfactual ⊢∈⋈⊢⊞⊞⊞⊞⊡⊞⊢⋈⊢⊞⋈⊢⊞∈ rotate 1
+weight ⊢⊞⊢⋈⊣⋈⊞∈⊞⊞
+banked ⊢⊞⊢⋈⊣⋈⊞∈⊞⊞
+counterfactual ⊢⊞⊢⋈⊣⋈⊞∈⊞⊞ rotate 1
+weight ⊢⊞⊡⋈⊥⊢∈⊣⊢⊞
+banked ⊢⊞⊡⋈⊥⊢∈⊣⊢⊞
+counterfactual ⊢⊞⊡⋈⊥⊢∈⊣⊢⊞ rotate 1
+weight ⊢⊞⋈⋈⊢⊞⋈⊢⊞⊡⊡⋈⊢∈⋈⊡⋈⊢∈⋈
+banked ⊢⊞⋈⋈⊢⊞⋈⊢⊞⊡⊡⋈⊢∈⋈⊡⋈⊢∈⋈
+counterfactual ⊢⊞⋈⋈⊢⊞⋈⊢⊞⊡⊡⋈⊢∈⋈⊡⋈⊢∈⋈ rotate 1
+weight ⊢⋈⊢⋈⊢⋈⋈⋈⋈
+banked ⊢⋈⊢⋈⊢⋈⋈⋈⋈
+counterfactual ⊢⋈⊢⋈⊢⋈⋈⋈⋈ rotate 1
+weight ⊢⊞⊞⋈⊢⊞
+banked ⊢⊞⊞⋈⊢⊞
+counterfactual ⊢⊞⊞⋈⊢⊞ rotate 1
+weight ⊢∈∈⊞⊤⊞⋈⋈∋⋈⋈⊤⊢∈⋈⊤⊡⊢⊞⋈⊡
+banked ⊢∈∈⊞⊤⊞⋈⋈∋⋈⋈⊤⊢∈⋈⊤⊡⊢⊞⋈⊡
+counterfactual ⊢∈∈⊞⊤⊞⋈⋈∋⋈⋈⊤⊢∈⋈⊤⊡⊢⊞⋈⊡ rotate 1
+weight ⊢⊡⊤⊢⊞⊡⊞∈∈
+banked ⊢⊡⊤⊢⊞⊡⊞∈∈
+counterfactual ⊢⊡⊤⊢⊞⊡⊞∈∈ rotate 1
+weight ⊢⊞⋈⊡⊞⊤⊡∈⋈⊡
+banked ⊢⊞⋈⊡⊞⊤⊡∈⋈⊡
+counterfactual ⊢⊞⋈⊡⊞⊤⊡∈⋈⊡ rotate 1
+weight ⊢⋈⊡⋈∈∈⊢⊤⊢⋈⊞⊞⋈⊢⊡∈⊢∈⊢⋈⊡⋈⋈
+banked ⊢⋈⊡⋈∈∈⊢⊤⊢⋈⊞⊞⋈⊢⊡∈⊢∈⊢⋈⊡⋈⋈
+counterfactual ⊢⋈⊡⋈∈∈⊢⊤⊢⋈⊞⊞⋈⊢⊡∈⊢∈⊢⋈⊡⋈⋈ rotate 1
+weight ⊢⊞⊢⊞⊢⋈
+banked ⊢⊞⊢⊞⊢⋈
+counterfactual ⊢⊞⊢⊞⊢⋈ rotate 1
+weight ⊢⊞⊢⋈∈⋈⊞⊢⊤⊞⊢⊞⋈⊤
+banked ⊢⊞⊢⋈∈⋈⊞⊢⊤⊞⊢⊞⋈⊤
+counterfactual ⊢⊞⊢⋈∈⋈⊞⊢⊤⊞⊢⊞⋈⊤ rotate 1
+weight ⊢⋈⊞⊞⊢⋈⋈⊞⊞⊢⊞⊣
+banked ⊢⋈⊞⊞⊢⋈⋈⊞⊞⊢⊞⊣
+counterfactual ⊢⋈⊞⊞⊢⋈⋈⊞⊞⊢⊞⊣ rotate 1
+weight ⊢⊞⊞⋈⊢⊡⊞
+banked ⊢⊞⊞⋈⊢⊡⊞
+counterfactual ⊢⊞⊞⋈⊢⊡⊞ rotate 1
+weight ⊢⊞⋈⊞⊢⊤⊞⊞⊤⋈⊡⊞⋈
+banked ⊢⊞⋈⊞⊢⊤⊞⊞⊤⋈⊡⊞⋈
+counterfactual ⊢⊞⋈⊞⊢⊤⊞⊞⊤⋈⊡⊞⋈ rotate 1
+weight ⊢⋈⊢⋈⊞⋈⊡⊢⋈⊢⊞∈⊤⊢⋈⋈⋈⊢⋈⊡
+banked ⊢⋈⊢⋈⊞⋈⊡⊢⋈⊢⊞∈⊤⊢⋈⋈⋈⊢⋈⊡
+counterfactual ⊢⋈⊢⋈⊞⋈⊡⊢⋈⊢⊞∈⊤⊢⋈⋈⋈⊢⋈⊡ rotate 1
+weight ⊢⋈⊞⋈⊢⊡⊤⊞⊢⊤
+banked ⊢⋈⊞⋈⊢⊡⊤⊞⊢⊤
+counterfactual ⊢⋈⊞⋈⊢⊡⊤⊞⊢⊤ rotate 1
+weight ⊢⊞∈⊢⋈⊞≺
+banked ⊢⊞∈⊢⋈⊞≺
+counterfactual ⊢⊞∈⊢⋈⊞≺ rotate 1
+weight ⊢⊡⊞⋈⊞⊢⋈⊢⋈⋈⊙⋈⊢⊞⊢⊡⊢⋈⋈⊞⊢⋈
+banked ⊢⊡⊞⋈⊞⊢⋈⊢⋈⋈⊙⋈⊢⊞⊢⊡⊢⋈⋈⊞⊢⋈
+counterfactual ⊢⊡⊞⋈⊞⊢⋈⊢⋈⋈⊙⋈⊢⊞⊢⊡⊢⋈⋈⊞⊢⋈ rotate 1
+weight ⊢⊡∈⋈⊢⋈
+banked ⊢⊡∈⋈⊢⋈
+counterfactual ⊢⊡∈⋈⊢⋈ rotate 1
+weight ⊢⊞⊞⋈⊢⋈⊞⋈⊞⊢⊞⊣
+banked ⊢⊞⊞⋈⊢⋈⊞⋈⊞⊢⊞⊣
+counterfactual ⊢⊞⊞⋈⊢⋈⊞⋈⊞⊢⊞⊣ rotate 1
+weight ⊢⊞⋈⊞⊞⊤⊢⊤⊢⋈⋈⊞⊤⋈⊡⊢⊤⊢⊞⊢⊡
+banked ⊢⊞⋈⊞⊞⊤⊢⊤⊢⋈⋈⊞⊤⋈⊡⊢⊤⊢⊞⊢⊡
+counterfactual ⊢⊞⋈⊞⊞⊤⊢⊤⊢⋈⋈⊞⊤⋈⊡⊢⊤⊢⊞⊢⊡ rotate 1
+weight ⊢⊡⊞⊢⊞⋈⊡∈
+banked ⊢⊡⊞⊢⊞⋈⊡∈
+counterfactual ⊢⊡⊞⊢⊞⋈⊡∈ rotate 1
+weight ⊢⊞⋈⊡⊢⊞⋈⊞⊡
+banked ⊢⊞⋈⊡⊢⊞⋈⊞⊡
+counterfactual ⊢⊞⋈⊡⊢⊞⋈⊞⊡ rotate 1
+weight ⊢∈⊤⊞⋈⊞⋈⊢⊤⊢⋈⊣
+banked ⊢∈⊤⊞⋈⊞⋈⊢⊤⊢⋈⊣
+counterfactual ⊢∈⊤⊞⋈⊞⋈⊢⊤⊢⋈⊣ rotate 1
+weight ⊢⋈∈⊢⊞⊞⊞⊞⊢⊞⊤⋈
+banked ⊢⋈∈⊢⊞⊞⊞⊞⊢⊞⊤⋈
+counterfactual ⊢⋈∈⊢⊞⊞⊞⊞⊢⊞⊤⋈ rotate 1
+weight ⊢⊞∈⋈∈∈⋈⋈⊙⊢⊞⊡⊢⋈
+banked ⊢⊞∈⋈∈∈⋈⋈⊙⊢⊞⊡⊢⋈
+counterfactual ⊢⊞∈⋈∈∈⋈⋈⊙⊢⊞⊡⊢⋈ rotate 1
+weight ⊢⋈⊞∈∋∈⊞⋈∈⋈⋈∈⊢⋈⊡⊡⊡⋈⋈⊞⊞⊞
+banked ⊢⋈⊞∈∋∈⊞⋈∈⋈⋈∈⊢⋈⊡⊡⊡⋈⋈⊞⊞⊞
+counterfactual ⊢⋈⊞∈∋∈⊞⋈∈⋈⋈∈⊢⋈⊡⊡⊡⋈⋈⊞⊞⊞ rotate 1
+weight ⊢⊞⊞⊢⊞⊞≻⊢⊡⋈⋈⊢⋈⊡
+banked ⊢⊞⊞⊢⊞⊞≻⊢⊡⋈⋈⊢⋈⊡
+counterfactual ⊢⊞⊞⊢⊞⊞≻⊢⊡⋈⋈⊢⋈⊡ rotate 1
+weight ⊢⊞⊞≺⊢⊞⊞∈⊢⊞⊣⊞
+banked ⊢⊞⊞≺⊢⊞⊞∈⊢⊞⊣⊞
+counterfactual ⊢⊞⊞≺⊢⊞⊞∈⊢⊞⊣⊞ rotate 1
+weight ⊢⋈⋈⋈∈⊤⋈⊞⊢⊡⊢⊤⋈⊡⊢⊞∈⊞
+banked ⊢⋈⋈⋈∈⊤⋈⊞⊢⊡⊢⊤⋈⊡⊢⊞∈⊞
+counterfactual ⊢⋈⋈⋈∈⊤⋈⊞⊢⊡⊢⊤⋈⊡⊢⊞∈⊞ rotate 1
+weight ⊢⋈⊣⊢⊞⊣
+banked ⊢⋈⊣⊢⊞⊣
+counterfactual ⊢⋈⊣⊢⊞⊣ rotate 1
+weight ⊢⊞⊞⊢⊞⊢⋈⊞⋈⊞
+banked ⊢⊞⊞⊢⊞⊢⋈⊞⋈⊞
+counterfactual ⊢⊞⊞⊢⊞⊢⋈⊞⋈⊞ rotate 1
+weight ⊢⋈⊞⊢⋈⊢⋈⊞⊞⊢⊞⊤⋈⊤⋈⊢⊣
+banked ⊢⋈⊞⊢⋈⊢⋈⊞⊞⊢⊞⊤⋈⊤⋈⊢⊣
+counterfactual ⊢⋈⊞⊢⋈⊢⋈⊞⊞⊢⊞⊤⋈⊤⋈⊢⊣ rotate 1
+weight ⊢⊞⊞⊞⊢⊞∈⊡∈⋈
+banked ⊢⊞⊞⊞⊢⊞∈⊡∈⋈
+counterfactual ⊢⊞⊞⊞⊢⊞∈⊡∈⋈ rotate 1
+weight ⊢⊞⊢⊤⋈⋈⊞⊞⊞⊞⊞⋈⊡⊤
+banked ⊢⊞⊢⊤⋈⋈⊞⊞⊞⊞⊞⋈⊡⊤
+counterfactual ⊢⊞⊢⊤⋈⋈⊞⊞⊞⊞⊞⋈⊡⊤ rotate 1
+weight ⊢⊤≺⊢⋈⊤⋈∈⊡⋈⊞⊞⊞⊢⊞∈⊢⊞
+banked ⊢⊤≺⊢⋈⊤⋈∈⊡⋈⊞⊞⊞⊢⊞∈⊢⊞
+counterfactual ⊢⊤≺⊢⋈⊤⋈∈⊡⋈⊞⊞⊞⊢⊞∈⊢⊞ rotate 1
+weight ⊢⋈⊢∈⊞⊡⊤⊢⊞⋈⊞⋈
+banked ⊢⋈⊢∈⊞⊡⊤⊢⊞⋈⊞⋈
+counterfactual ⊢⋈⊢∈⊞⊡⊤⊢⊞⋈⊞⋈ rotate 1
+weight ⊢⊞⊢⋈⋈⊞⋈⋈⊢⋈
+banked ⊢⊞⊢⋈⋈⊞⋈⋈⊢⋈
+counterfactual ⊢⊞⊢⋈⋈⊞⋈⋈⊢⋈ rotate 1
+weight ⊢⊞⊢⊞⋈∈⊞⋈⊢⋈⊡∈⋈⋈⊢⊡⊢⋈≺
+banked ⊢⊞⊢⊞⋈∈⊞⋈⊢⋈⊡∈⋈⋈⊢⊡⊢⋈≺
+counterfactual ⊢⊞⊢⊞⋈∈⊞⋈⊢⋈⊡∈⋈⋈⊢⊡⊢⋈≺ rotate 1
+weight ⊢∈⊣⊢⋈⊢⊞⊞∈∈⊞⊞
+banked ⊢∈⊣⊢⋈⊢⊞⊞∈∈⊞⊞
+counterfactual ⊢∈⊣⊢⋈⊢⊞⊞∈∈⊞⊞ rotate 1
+weight ⊢⊞⋈⊢⋈⊞⊡⋈⋈⋈⊢⋈⊢∈⊞
+banked ⊢⊞⋈⊢⋈⊞⊡⋈⋈⋈⊢⋈⊢∈⊞
+counterfactual ⊢⊞⋈⊢⋈⊞⊡⋈⋈⋈⊢⋈⊢∈⊞ rotate 1
+weight ⊢⋈⊞⋈⋈⊡⊞⊢⊞⋈⊞⋈⊞⊢⋈⊞⊞⊞∈⊞
+banked ⊢⋈⊞⋈⋈⊡⊞⊢⊞⋈⊞⋈⊞⊢⋈⊞⊞⊞∈⊞
+counterfactual ⊢⋈⊞⋈⋈⊡⊞⊢⊞⋈⊞⋈⊞⊢⋈⊞⊞⊞∈⊞ rotate 1
+weight ⊢∈⊞⊢⋈⊢⋈⊤⊞
+banked ⊢∈⊞⊢⋈⊢⋈⊤⊞
+counterfactual ⊢∈⊞⊢⋈⊢⋈⊤⊞ rotate 1
+weight ⊢⊞⊡⊡⊢⊞⊡∈⋈⋈⊞⊡⊞⊤
+banked ⊢⊞⊡⊡⊢⊞⊡∈⋈⋈⊞⊡⊞⊤
+counterfactual ⊢⊞⊡⊡⊢⊞⊡∈⋈⋈⊞⊡⊞⊤ rotate 1
+quit

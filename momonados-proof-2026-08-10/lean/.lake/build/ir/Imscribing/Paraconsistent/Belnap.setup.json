@@ -1,0 +1,11 @@
+{"plugins": [],
+ "package": "imscribing-lean",
+ "options":
+ {"weak.linter.mathlibStandardSet": true,
+  "relaxedAutoImplicit": false,
+  "pp.unicode.fun": true,
+  "maxSynthPendingDepth": 3},
+ "name": "Imscribing.Paraconsistent.Belnap",
+ "isModule": false,
+ "importArts": {},
+ "dynlibs": []}

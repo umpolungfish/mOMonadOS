@@ -39,8 +39,8 @@ impl MinimalEngine {
         Self {
             // The 12 IMASM glyphs
             glyphs: vec![
-                '⊢', '⊣', '>', '<', '⋈', '⊤', 
-                '∈', '∋', '⊙', '⊥', '⊞', '◻'
+                '⊢', '⊣', '≻', '≺', '⋈', '⊤', 
+                '∈', '∋', '⊙', '⊥', '⊞', '⊡'
             ],
             max_length: 16,
         }
@@ -180,8 +180,8 @@ impl MinimalEngine {
         match glyph {
             '⊢' => "VINIT".to_string(),
             '⊣' => "TANCH".to_string(),
-            '>' => "AFWD".to_string(),
-            '<' => "AREV".to_string(),
+            '≻' => "AFWD".to_string(),
+            '≺' => "AREV".to_string(),
             '⋈' => "CLINK".to_string(),
             '⊤' => "EVALT".to_string(),
             '∈' => "FSPLIT".to_string(),
@@ -189,7 +189,7 @@ impl MinimalEngine {
             '⊙' => "IMSCRIB".to_string(),
             '⊥' => "EVALF".to_string(),
             '⊞' => "ENGAGR".to_string(),
-            '◻' => "IFIX".to_string(),
+            '⊡' => "IFIX".to_string(),
             _ => format!("UNKNOWN({})", glyph),
         }
     }

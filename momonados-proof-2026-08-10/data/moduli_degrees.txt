@@ -1,0 +1,6 @@
+== true irreducible degree of each |z_k|^2 (deep-vanish @1500 digits) ==
+|z0|^2  deg=4   htbits=16     -> running compositum deg=4
+|z1|^2  deg=8   htbits=33     -> running compositum deg=32
+|z2|^2  deg=8   htbits=33     -> running compositum deg=256
+|z3|^2  deg=4   htbits=16     -> running compositum deg=1024
+|z4|^2  deg=8   htbits=33     -> running compositum deg=8192

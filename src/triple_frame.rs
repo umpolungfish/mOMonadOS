@@ -58,9 +58,9 @@ impl Opcode {
             Opcode::ENGAGR  => "⊞",
             Opcode::FFUSE   => "∋",
             Opcode::CLINK   => "⋈",
-            Opcode::AFWD    => ">",
-            Opcode::AREV    => "<",
-            Opcode::IFIX    => "◻",
+            Opcode::AFWD    => "≻",
+            Opcode::AREV    => "≺",
+            Opcode::IFIX    => "⊡",
             Opcode::TANCH   => "⊣",
         }
     }
@@ -92,8 +92,8 @@ impl Opcode {
             '⊞' => Some(Opcode::ENGAGR),
             '∋' | '●' => Some(Opcode::FFUSE),
             '=' => Some(Opcode::CLINK),
-            '>' => Some(Opcode::AFWD),
-            '<' => Some(Opcode::AREV),
+            '≻' => Some(Opcode::AFWD),
+            '≺' => Some(Opcode::AREV),
             '¬' => Some(Opcode::IFIX),
             '⊣' => Some(Opcode::TANCH),
             _ => None,
@@ -149,21 +149,21 @@ static TYPE_PROGRAMS: &[TypeProgram] = &[
         domain_reading: "Imscriptive topology: boundary↔bulk closure",
     },
     TypeProgram {
-        shavian: "ear", primitive_axis: ">", value_glyph: "𐑽",
+        shavian: "ear", primitive_axis: "≻", value_glyph: "𐑽",
         opcodes: &[VINIT, IMSCRIB, FSPLIT, AFWD, EVALT, AREV,
                     EVALF, FFUSE, CLINK, ENGAGR, IFIX, TANCH],
         rho: 2.2581,
         domain_reading: "Dagger-adjoint coupling: A→A†→bidirectional",
     },
     TypeProgram {
-        shavian: "tot", primitive_axis: ">", value_glyph: "𐑽",
+        shavian: "tot", primitive_axis: "≻", value_glyph: "𐑽",
         opcodes: &[VINIT, IMSCRIB, FSPLIT, AFWD, EVALT, AREV,
                     EVALF, FFUSE, CLINK, ENGAGR, IFIX, TANCH],
         rho: 2.2581,
         domain_reading: "Functor adjunction: composed functor pair",
     },
     TypeProgram {
-        shavian: "out", primitive_axis: "<", value_glyph: "𐑬",
+        shavian: "out", primitive_axis: "≺", value_glyph: "𐑬",
         opcodes: &[VINIT, IMSCRIB,
                     IFIX, IFIX, IFIX, IFIX, IFIX, IFIX,
                     IFIX, IFIX, IFIX, IFIX, IFIX, IFIX,
@@ -222,7 +222,7 @@ static TYPE_PROGRAMS: &[TypeProgram] = &[
         domain_reading: "Many-identical stoichiometry: n↔n cardinality verification",
     },
     TypeProgram {
-        shavian: "ah", primitive_axis: "◻", value_glyph: "𐑭",
+        shavian: "ah", primitive_axis: "⊡", value_glyph: "𐑭",
         opcodes: &[VINIT, IMSCRIB, AFWD, FSPLIT, EVALT, CLINK,
                     FFUSE, IMSCRIB, IFIX, TANCH],
         rho: 2.3180,
@@ -258,10 +258,10 @@ pub const ROOT_WORD_RHO: f32 = 2.2526;
 // Primitive → Shavian type name mapping
 pub fn primitive_to_type(prim: &str) -> Option<&'static str> {
     match prim {
-        "⊢" => Some("if"),  "⊣" => Some("are"), ">" => Some("ear"),
-        "<" => Some("out"), "⋈" => Some("peep"), "⊤" => Some("egg"),
+        "⊢" => Some("if"),  "⊣" => Some("are"), "≻" => Some("ear"),
+        "≺" => Some("out"), "⋈" => Some("peep"), "⊤" => Some("egg"),
         "∈" => Some("thigh"), "∋" => Some("vow"), "⊙" => Some("monad"),
-        "⊥" => Some("sure"), "⊞" => Some("so"), "◻" => Some("ah"),
+        "⊥" => Some("sure"), "⊞" => Some("so"), "⊡" => Some("ah"),
         _ => None,
     }
 }
@@ -557,7 +557,7 @@ impl TripleFrameManifold {
                Frobenius μ∘δ=id  ↔  Fibonacci fusion τ×τ=1+τ\n\
                Belnap B-class    ↔  both hold paradox (ENGAGR ↔ τ channel)\n\
                ρ ≈ 2.2581        ↔  det(S) curvature at φ²\n\
-               ◻=𐑭 (Z)           ↔  central charge c=14/5\n\
+               ⊡=𐑭 (Z)           ↔  central charge c=14/5\n\
                ⊙=⊙ (critical)    ↔  topological spin θ_τ at fixed point\n",
             self.phi, self.d, self.c, pb.rho, curv
         )
@@ -644,7 +644,7 @@ pub fn full_report() -> String {
            monad (⊙=⊙): shortest at 9 opcodes — the critical fixed point.\n\
          \n\
          ── Integration with m3iosis ───────────────────────────────────\n\
-           Shared invariants: ρ, ◻, ⊙\n\
+           Shared invariants: ρ, ⊡, ⊙\n\
            Frobenius μ∘δ=id ↔ Fibonacci fusion τ×τ=1+τ (both Belnap B-class).\n",
         TRIPLE_FRAME_TUPLE, total_ops, n_closed,
         proto_a_word, pa.rho, pa.verdict.glyph(), PROTOCOL_A_ARM,
@@ -682,7 +682,7 @@ pub fn expand_report(name: &str) -> String {
         None => {
             let known: Vec<&str> = TYPE_PROGRAMS.iter()
                 .map(|tp| tp.shavian).collect();
-            format!("Unknown type: '{}'. Known: {:?}\nTry primitive axis: ⊢ ⊣ > < ⋈ ⊤ ∈ ∋ ⊙ ⊥ ⊞ ◻",
+            format!("Unknown type: '{}'. Known: {:?}\nTry primitive axis: ⊢ ⊣ ≻ ≺ ⋈ ⊤ ∈ ∋ ⊙ ⊥ ⊞ ⊡",
                 name, known)
         }
     }
@@ -813,7 +813,7 @@ mod tests {
 
     #[test]
     fn test_expand_by_primitive() {
-        let tp = TripleFrameAlgebra::expand("◻").expect("◻ should expand");
+        let tp = TripleFrameAlgebra::expand("⊡").expect("⊡ should expand");
         assert_eq!(tp.shavian, "ah");
     }
 

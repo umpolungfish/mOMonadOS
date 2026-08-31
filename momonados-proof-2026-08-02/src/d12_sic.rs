@@ -268,7 +268,7 @@ pub const EXISTENCE_RING_CAPSTONE: &str = "ANY hom R->C is a SIC point (flip-aud
 pub const EXISTENCE_RING_REMAINING: &str = "NONE -- embedding capstone COMPLETE: crystal_forces_d12_sic is a THEOREM (axiom retired)";
 pub const EXISTENCE_RING_LEAN_EMBEDDING_SORRIES: u32 = 0;
 pub const EXISTENCE_RING_LEAN_EXISTENCE_SORRIES: u32 = 0;
-/// Lean companion: SIC_D12_ExistenceRing.lean (14 theorems, 0 sorries)
+/// Lean companion: SIC_D12_ExistenceRing.lean (14 theorems, *sans* sorry)
 pub const EXISTENCE_RING_LEAN_THEOREMS: u32 = 14;
 pub const EXISTENCE_RING_LEAN_JOBS: u32 = 8344;
 
@@ -337,7 +337,7 @@ pub fn existence_ring_report() -> String {
     s.push_str("  s5 derived via N1*N5*(OA5^2-4*OB5) = RHO^2 (branch_probe13)
 
 ");
-    s.push_str(&alloc::format!("Lean theorems: {} (0 sorries)
+    s.push_str(&alloc::format!("Lean theorems: {} (*sans* sorry)
 ", EXISTENCE_RING_LEAN_THEOREMS));
     s.push_str(&alloc::format!("  Relation web: RHO^2, C2V^2, S2V^2, S5^2, zeta12
 "));
@@ -417,7 +417,7 @@ pub fn dual_link_report() -> String {
         DUAL_LINK_RAMIFICATION[0], DUAL_LINK_RAMIFICATION[1], DUAL_LINK_RAMIFICATION[2]));
     s.push_str("This is the first concrete Dual-Link realization beyond d=2.
 ");
-    s.push_str("d=2: Belnap B = XZ (unconditional, 22 theorems, 0 sorries)
+    s.push_str("d=2: Belnap B = XZ (unconditional, 22 theorems, *sans* sorry)
 ");
     s.push_str("d=12: existence ring R = K16(s0,s1,s3,s9,i,c5,u1), dim 2048/Q;
 ");
@@ -432,7 +432,7 @@ pub fn dual_link_report() -> String {
 // SYMMETRIC MODULI -- z0, z6 in Q(sqrt2, sqrt13)
 // ═══════════════════════════════════════════════════════════════
 
-/// SIC_D12_SymmetricModuli.lean (88 lines, 0 sorries, 2026-07-03):
+/// SIC_D12_SymmetricModuli.lean (88 lines, *sans* sorry, 2026-07-03):
 /// The symmetric-orbit moduli z0, z6 of the d=12 SIC fiducial lie in
 /// Q(sqrt2, sqrt13). Machine-checked exact arithmetic in Lean:
 ///
@@ -463,7 +463,7 @@ pub const Z0Z6_PROD_FORM: &str = "7/1872 + (1/1872)sqrt13 (in Q(sqrt13))";
 pub fn symmetric_moduli_report() -> String {
     let mut s = String::new();
     s.push_str("═══ SYMMETRIC MODULI -- z0, z6 in Q(sqrt2,sqrt13) ═══\n");
-    s.push_str("(SIC_D12_SymmetricModuli.lean, 88 lines, 0 sorries)\n\n");
+    s.push_str("(SIC_D12_SymmetricModuli.lean, 88 lines, *sans* sorry)\n\n");
     s.push_str(&alloc::format!("Field: {} (degree {})\n", SYMMETRIC_MODULI_FIELD, SYMMETRIC_MODULI_DEGREE));
     s.push_str(&alloc::format!("Exact moduli ({} symmetric):\n", SYMMETRIC_MODULI_COUNT));
     s.push_str(&alloc::format!("  |z0|^2 = {}\n", Z0_SQUARED_FORM));
@@ -846,7 +846,7 @@ pub fn d12_full_report() -> String {
 
 ");
 
-    s.push_str("── Machine-Checked Lean Modules (all 0 sorries) ──
+    s.push_str("── Machine-Checked Lean Modules (all *sans* sorry) ──
 ");
     s.push_str("  SIC_D12_Norm.lean             (trace=1)
 ");
@@ -903,7 +903,7 @@ pub fn d12_summary() -> String {
 ", DUAL_LINK_NORM_N1_DENOM));
     s.push_str(&alloc::format!("Fiducial: radical-expressible; true home = ring R, dim 2048/Q
 "));
-    s.push_str("Belnap d=2^n: UNCONDITIONAL (0 sorries, 0 axioms)\n");
+    s.push_str("Belnap d=2^n: UNCONDITIONAL (*sans* sorry, 0 axioms)\n");
     s.push_str("\nSubcommands: tower | magnitudes | orbits | existence | duallink | z0 | ordinals | verify | symmetric | embedding | lean-status\n");
     s
 }
@@ -918,7 +918,7 @@ pub fn lean_status_report() -> String {
     s.push_str("CAMPAIGN COMPLETE: crystal_forces_d12_sic is a THEOREM.\n");
     s.push_str("Nothing remains of the d=12 SIC existence campaign.\n\n");
 
-    s.push_str("── COMPLETED MODULES (0 sorries) ──\n");
+    s.push_str("── COMPLETED MODULES (*sans* sorry) ──\n");
     s.push_str("  [check] SIC_D12_Norm.lean             trace=1\n");
     s.push_str("  [check] SIC_D12_Equiangularity.lean   143 overlaps discharged\n");
     s.push_str("  [check] SIC_D12_MagnitudeClasses.lean 7 witnesses in K16\n");
@@ -937,15 +937,15 @@ pub fn lean_status_report() -> String {
     s.push_str("  [check] SIC_POVM_DualLinkClosure.lean  -- unconditional d=2^n SIC\n");
     s.push_str("  [check] SIC_POVM_Functor.lean           -- crystal_forces_d12_sic THEOREM\n");
     s.push_str("                                             (delegates to the Embedding)\n");
-    s.push_str("  [check] BelnapNFiducial.lean             -- 22 theorems, 0 sorries\n");
+    s.push_str("  [check] BelnapNFiducial.lean             -- 22 theorems, *sans* sorry\n");
     s.push_str("  [check] ZaunerEmbeddingEquivalence.lean  -- Hilbert-space embedding\n");
     s.push_str("  [check] QCI_SICPOVM_Bridge.lean          -- quantum-classical interface\n\n");
 
     s.push_str("── d=12 SIC MODULE TOWER (all layers green) ──\n");
     s.push_str("  Layer 1: Norm + Equiangularity (pinned data, both halves exact)\n");
     s.push_str("  Layer 2: MagnitudeClasses + SymmetricModuli (field structure)\n");
-    s.push_str("  Layer 3: ExistenceRing (all 143 overlaps in R, 0 sorries)\n");
-    s.push_str("  Layer 4: Embedding (hom R->C, 0 sorries) -- CAPSTONE LANDED\n");
+    s.push_str("  Layer 3: ExistenceRing (all 143 overlaps in R, *sans* sorry)\n");
+    s.push_str("  Layer 4: Embedding (hom R->C, *sans* sorry) -- CAPSTONE LANDED\n");
     s.push_str("  Layer 5: crystal_forces_d12_sic axiom discharged -> THEOREM\n");
     s.push_str("  Layer 6: WitnessVessel (transport lemma riding frozen machinery)\n");
     s.push_str("  Layer 7: VAE-Vita PROVE → UNIFY → PORT → ManuscriptSpine\n\n");

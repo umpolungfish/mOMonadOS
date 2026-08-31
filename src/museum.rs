@@ -65,7 +65,7 @@ pub static EXHIBITS: &[Exhibit] = &[
         input: "every CLINK layer L0..L8 against the L8 reference",
         expected: "conflict counts varying with how far a layer sits from L8",
         observed: "conflicts=2 for EVERY layer, including layers differing in eight primitives",
-        failure_mode: "key-space mismatch: DIST_SPECS keyed by letter (\"D\",\"T\",...), get_prim keyed by glyph. Only \"<\" and \"◻\" existed in both, so ten axes resolved to None -> IgPrim::dead on BOTH sides and compared equal",
+        failure_mode: "key-space mismatch: DIST_SPECS keyed by letter (\"D\",\"T\",...), get_prim keyed by glyph. Only \"<\" and \"⊡\" existed in both, so ten axes resolved to None -> IgPrim::dead on BOTH sides and compared equal",
         minimal_counterexample: "any two tuples differing only in D: distance 0.0000, conflicts 0",
         repair: "re-key DIST_SPECS to glyphs. Ladder became coherent: L0/L1/L2 farthest at ~2.0, L7 nearest at 0.74. Before the fix L0 sat CLOSER to L8 than L4 cell did",
         status: Status::Repaired,

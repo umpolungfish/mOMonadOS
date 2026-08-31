@@ -53,8 +53,8 @@ impl RepairEngine {
     pub fn new() -> Self {
         Self {
             glyphs: vec![
-                '⊢', '⊣', '>', '<', '⋈', '⊤', 
-                '∈', '∋', '⊙', '⊥', '⊞', '◻'
+                '⊢', '⊣', '≻', '≺', '⋈', '⊤', 
+                '∈', '∋', '⊙', '⊥', '⊞', '⊡'
             ],
             alpha: 1.0,
             beta: 0.5,
@@ -169,10 +169,20 @@ impl RepairEngine {
         }.to_string()
     }
 
-    fn verify_repair(&self, _repaired: &str, _artifact_type: &str) -> bool {
-        // Would actually execute/verify the repaired artifact
-        // Placeholder: accept repairs that are valid IMASM words
-        true
+    fn verify_repair(&self, repaired: &str, _artifact_type: &str) -> bool {
+        // A repair must (a) parse as a non-empty IMASM word of the twelve
+        // glyphs, and (b) not be ill-typed: a fuse (∋) with no split (∈) to
+        // pair reads verdict F, which is still broken. The fuse count may not
+        // exceed the split count.
+        if repaired.is_empty() {
+            return false;
+        }
+        if !repaired.chars().all(|c| self.glyphs.contains(&c)) {
+            return false;
+        }
+        let splits = repaired.chars().filter(|&c| c == '∈').count();
+        let fuses = repaired.chars().filter(|&c| c == '∋').count();
+        fuses <= splits
     }
 
     fn make_candidate(&self, repair: RepairType, repaired: &str, original: &str) -> RepairCandidate {
@@ -198,9 +208,26 @@ impl RepairEngine {
         }
     }
 
-    fn compute_edit_distance(&self, _a: &str, _b: &str) -> usize {
-        // Levenshtein distance
-        1 // Placeholder
+    fn compute_edit_distance(&self, a: &str, b: &str) -> usize {
+        // Levenshtein edit distance between the two words.
+        let a: Vec<char> = a.chars().collect();
+        let b: Vec<char> = b.chars().collect();
+        let mut dp = vec![vec![0usize; b.len() + 1]; a.len() + 1];
+        for i in 0..=a.len() {
+            dp[i][0] = i;
+        }
+        for j in 0..=b.len() {
+            dp[0][j] = j;
+        }
+        for i in 1..=a.len() {
+            for j in 1..=b.len() {
+                let cost = if a[i - 1] == b[j - 1] { 0 } else { 1 };
+                dp[i][j] = (dp[i - 1][j] + 1)
+                    .min(dp[i][j - 1] + 1)
+                    .min(dp[i - 1][j - 1] + cost);
+            }
+        }
+        dp[a.len()][b.len()]
     }
 
     fn compute_entropy_delta(&self, a: &str, b: &str) -> f64 {
@@ -229,14 +256,32 @@ impl RepairEngine {
         entropy
     }
 
-    fn compute_tier_change(&self, _a: &str, _b: &str) -> f64 {
-        // Would compute tier difference
-        0.0 // Placeholder
+    fn compute_tier_change(&self, a: &str, b: &str) -> f64 {
+        // Tier proxy: mean glyph ordinal along the 12-mark order. The change
+        // is the absolute shift in mean ordinal (measured in slots).
+        (self.mean_ordinal(b) - self.mean_ordinal(a)).abs()
     }
 
-    fn count_new_assumptions(&self, _a: &str, _b: &str) -> usize {
-        // Count additional assumptions introduced
-        0 // Placeholder
+    fn mean_ordinal(&self, word: &str) -> f64 {
+        let ordinals: Vec<usize> = word.chars()
+            .filter_map(|c| self.glyphs.iter().position(|&g| g == c))
+            .collect();
+        if ordinals.is_empty() {
+            return 0.0;
+        }
+        ordinals.iter().sum::<usize>() as f64 / ordinals.len() as f64
+    }
+
+    fn count_new_assumptions(&self, a: &str, b: &str) -> usize {
+        // An assumption is a glyph class introduced by the repair that was
+        // absent from the original word. Count distinct new glyph classes.
+        let mut distinct: Vec<char> = Vec::new();
+        for c in b.chars() {
+            if !a.contains(c) && !distinct.contains(&c) {
+                distinct.push(c);
+            }
+        }
+        distinct.len()
     }
 
     fn insert_at(&self, word: &str, glyph: char, pos: usize) -> String {
@@ -323,7 +368,7 @@ pub fn repair_main(args: &[&str]) -> String {
                  cost = α(edit_distance) + β(ΔS) + γ(tier_change) + δ(new_assumptions)\n\
                  \n\
                  Example:\n\
-                 repair ⊢⊙∈⊤⊥∋◻⊣\n"
+                 repair ⊢⊙∈⊤⊥∋⊡⊣\n"
             .to_string();
     }
 

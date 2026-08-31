@@ -144,7 +144,7 @@ pub fn dialect_description(u: u8) -> &'static str {
               stay plain no matter how structured. G2=self-model, G3=winding. \
               T-constitution is ceiling-mode (T_CEILING), not exact-equality.",
         10 => "Criticality is everything: all three gates are the SAME primitive \
-               (⊙) at escalating thresholds (𐑢 / ⊙ / 𐑣). <, ◻, and the rest are \
+               (⊙) at escalating thresholds (𐑢 / ⊙ / 𐑣). <, ⊡, and the rest are \
                descriptive, not gating. T-constitution is ceiling-mode (T_CEILING).",
         11 => "Same as U10, but the kinetics ceiling admits trapped/gapped spectra \
                (⊤=𐑪), not just slow ones (⊤=𐑧) — the temporal-closure condition \
@@ -159,38 +159,40 @@ pub fn dialect_description(u: u8) -> &'static str {
 
 /// Format a single GateSpec into a human-readable string fragment.
 fn gate_spec_fmt(g: &crate::dialect_expansion::GateSpec) -> String {
-    format!("{}≥{}", g.prim, g.min_ord)
+    // A threshold is a value on that mark's axis, so it prints as the Shavian
+    // letter that value is, not as the ordinal number standing behind it: the
+    // first value on the axis that meets the bar.
+    let table = crate::catalog::ordinal_table(g.prim);
+    let value = table
+        .iter()
+        .find(|v| v.ordinal() >= g.min_ord)
+        .or_else(|| table.last());
+    match value {
+        Some(v) => format!("{}≥{}", g.prim, v.glyph()),
+        None => format!("{}≥{}", g.prim, g.min_ord),
+    }
 }
 
 /// Return the gate summary string for a dialect.
 pub fn dialect_gates(u: u8) -> String {
-    match u {
-        0 => "G1:Phi>=pmsym  G2:Phc>=c  G3:Omega>=Z  T:o".to_string(),
-        1 => "G1:Phi>=pm  G2:Phc>=sub  G3:Omega>=Z  T:o".to_string(),
-        2 => "G1:f>=hbar  G2:Phi>=pmsym  G3:Omega>=Z  T:o".to_string(),
-        3 => "G1:Phc>=c  G2:Phi>=pmsym  G3:Omega>=Z  T:o".to_string(),
-        4 => "G1+G2+G3 parallel              T:o".to_string(),
-        5 => "G1:Phi>=pmsym  G2:Phc>=c_complex  G3:Omega>=NA  T:o".to_string(),
-        6 => "G1:Omega>=Z  G2:Phc>=c  G3:Phi>=pmsym  T:o".to_string(),
-        7 => "G1:Phi>=pmsym  G2:Phc>=c  G3:Omega>=Z  T:Gm=seq".to_string(),
-        8 => "G1:⊥≥𐑖  G2:⊙≥⊙  G3:◻≥𐑭  T:ceiling(5)".to_string(),
-        9 => "G1:∈≥𐑲  G2:⊙≥⊙  G3:◻≥𐑭  T:ceiling(5)".to_string(),
-        10 => "G1:⊙≥woe  G2:⊙≥⊙  G3:⊙≥𐑣  T:ceiling(5)".to_string(),
-        11 => "G1:⊙≥woe  G2:⊙≥⊙  G3:⊙≥𐑣  T:ceiling(⊤≤𐑪)".to_string(),
-        _ if is_expansion(u) => {
-            let unis = all_dialects();
-            let uni = &unis[u as usize];
-            format!(
-                "G1:{}  G2:{}  G3:{}  [{}]  T:{}",
-                gate_spec_fmt(&uni.g1),
-                gate_spec_fmt(&uni.g2),
-                gate_spec_fmt(&uni.g3),
-                if uni.gate_ordering { "seq" } else { "par" },
-                if uni.t_entries.is_empty() { "none" } else { "dynamic" }
-            )
-        }
-        _ => "Unknown gates".to_string(),
+    // Every dialect carries its gates as GateSpecs in the marks, so every
+    // dialect is printed from them. The hand-written strings that used to sit
+    // here for the first twelve were a second notation: Phi, Phc, Omega, f, Gm
+    // for the marks, and the English names of Shavian letters where the letters
+    // belong. There is one notation and these are not it.
+    if is_out_of_range(u) {
+        return "Unknown gates".to_string();
     }
+    let unis = all_dialects();
+    let uni = &unis[u as usize];
+    format!(
+        "G1:{}  G2:{}  G3:{}  [{}]  T:{}",
+        gate_spec_fmt(&uni.g1),
+        gate_spec_fmt(&uni.g2),
+        gate_spec_fmt(&uni.g3),
+        if uni.gate_ordering { "seq" } else { "par" },
+        if uni.t_entries.is_empty() { "none" } else { "dynamic" }
+    )
 }
 
 /// Return O_∞ fraction description for a dialect.
@@ -214,13 +216,13 @@ use crate::imas_ig::{IgPrim, IgTuple};
 /// Returns None for unrecognized primitive names.
 pub fn prim_from_name(name: &str, ig: &IgTuple) -> Option<IgPrim> {
     match name {
-        "<" => Some(ig.p),
+        "≺" => Some(ig.p),
         "⊙" => Some(ig.phi),
-        "◻" => Some(ig.omega),
+        "⊡" => Some(ig.omega),
         "⊥" => Some(ig.h),
         "∈" => Some(ig.g),
         "⊣" => Some(ig.t),
-        ">" => Some(ig.r),
+        "≻" => Some(ig.r),
         "⋈" => Some(ig.f),
         "⊤" => Some(ig.k),
         "⊢" => Some(ig.d),

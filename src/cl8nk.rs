@@ -5,13 +5,13 @@
 // Matches the Python cl8nk_navigator.py feature-for-feature.
 //
 // CLINK L8 canonical: ⟨𐑦⋅𐑸⋅𐑾⋅𐑹⋅𐑐⋅𐑧⋅𐑲⋅𐑵⋅⊙⋅𐑫⋅𐑳⋅𐑟⟩
-// O_∞⁺ terminal ontological layer. Exceeds ZFC_fe at ◻/∋.
+// O_∞⁺ terminal ontological layer. Exceeds ZFC_fe at ⊡/∋.
 //
 // Actions:
 //   entry  <name>    — Full CL8NK formula decomposition
 //   promotions        — 3-stage ladder: ZFC→ZFCₜ→ZFC_fe→CLINK L8
 //   distance <name>   — d(name, CLINK L8) + per-primitive conflicts
-//   transcendence     — ◻/∋ transcendence analysis
+//   transcendence     — ⊡/∋ transcendence analysis
 //   tensor  <name>    — CLINK L8 ⊗ name (absorption test)
 //   meet    <name>    — CLINK L8 ⊓ name (shared floor)
 //   join    <name>    — CLINK L8 ⊔ name (minimal ceiling)
@@ -53,10 +53,10 @@ pub use crate::canonical_ig::PRIMITIVE_ORDER as PRIMITIVE_KEYS;
 /// Get a primitive value from a tuple by key name.
 pub fn get_prim(t: &IgTuple, key: &str) -> Option<IgPrim> {
     match key {
-        "⊢" => Some(t.d), "⊣" => Some(t.t), ">" => Some(t.r),
-        "<" => Some(t.p), "⋈" => Some(t.f), "⊤" => Some(t.k),
+        "⊢" => Some(t.d), "⊣" => Some(t.t), "≻" => Some(t.r),
+        "≺" => Some(t.p), "⋈" => Some(t.f), "⊤" => Some(t.k),
         "∈" => Some(t.g), "∋" => Some(t.c), "⊙" => Some(t.phi),
-        "⊥" => Some(t.h), "⊞" => Some(t.s), "◻" => Some(t.omega),
+        "⊥" => Some(t.h), "⊞" => Some(t.s), "⊡" => Some(t.omega),
         _ => None,
     }
 }
@@ -65,11 +65,11 @@ pub fn get_prim(t: &IgTuple, key: &str) -> Option<IgPrim> {
 pub fn ord_table_for(key: &str) -> &'static [IgPrim] {
     match key {
         "⊢" => &catalog::D_ORD, "⊣" => &catalog::T_ORD,
-        ">" => &catalog::R_ORD, "<" => &catalog::P_ORD,
+        "≻" => &catalog::R_ORD, "≺" => &catalog::P_ORD,
         "⋈" => &catalog::F_ORD, "⊤" => &catalog::K_ORD,
         "∈" => &catalog::G_ORD, "∋" => &catalog::C_ORD,
         "⊙" => &catalog::PHI_ORD, "⊥" => &catalog::H_ORD,
-        "⊞" => &catalog::S_ORD, "◻" => &catalog::OMEGA_ORD,
+        "⊞" => &catalog::S_ORD, "⊡" => &catalog::OMEGA_ORD,
         _ => &catalog::D_ORD,
     }
 }
@@ -84,18 +84,18 @@ pub struct DistSpec { pub weight: f32, pub max_delta: f32 }
 // Keyed by GLYPH, matching `get_prim` and `ord_table_for`.
 //
 // These were keyed by letter ("D","T","R",...) while `get_prim` keys by glyph
-// ("\u{22a2}","\u{22a3}",">",...). Only "<" and "\u{25fb}" existed in both key spaces, so ten of
+// ("\u{22a2}","\u{22a3}","≻",...). Only "≺" and "\u{25fb}" existed in both key spaces, so ten of
 // the twelve axes silently resolved to None -> IgPrim::dead on BOTH sides,
 // compared equal, and contributed nothing: every cl8nk distance in the kernel
 // was computed from two axes. The `cl8nk chain` ladder showed it plainly —
 // conflicts=2 for every layer, including layers differing in eight primitives.
-// Worse, "<" is Phi's slot in this table but get_prim("<") returns Parity, so
+// Worse, "≺" is Phi's slot in this table but get_prim("≺") returns Parity, so
 // the one categorical axis that did count was scored with the wrong weight.
 pub static DIST_SPECS: [(&str, DistSpec); 12] = [
     ("\u{22a2}", DistSpec { weight: 0.8, max_delta: 3.0 }),  // D
     ("\u{22a3}", DistSpec { weight: 0.9, max_delta: 4.0 }),  // T
-    (">",        DistSpec { weight: 0.7, max_delta: 3.0 }),  // R
-    ("<",        DistSpec { weight: 0.9, max_delta: 4.0 }),  // P
+    ("≻",        DistSpec { weight: 0.7, max_delta: 3.0 }),  // R
+    ("≺",        DistSpec { weight: 0.9, max_delta: 4.0 }),  // P
     ("\u{22c8}", DistSpec { weight: 0.6, max_delta: 2.0 }),  // F
     ("\u{22a4}", DistSpec { weight: 0.7, max_delta: 3.5 }),  // K
     ("\u{2208}", DistSpec { weight: 0.6, max_delta: 2.0 }),  // G
@@ -283,7 +283,7 @@ pub fn atom_desc(atom: &str) -> &'static str {
         "PHI_C"                   => "criticality fixed-point ξ→∞ ∧ μ∘δ=id — <=⊙",
         "TEMPD2"                  => "chirality-2 asymmetry — H=𐑖",
         "ETERNAL_FIXEDPOINT"      => "∀n∃φ fixed by μ∘δ — Axiom D (H=𐑫)",
-        "ZWIND"                   => "integer winding number — ◻=𐑭",
+        "ZWIND"                   => "integer winding number — ⊡=𐑭",
         "BROADCAST_TRANSCENDENCE" => "⬆ broadcast composition — exceeds ZFC_fe SEQAX",
         "BRAID_TRANSCENDENCE"     => "⬆ non-Abelian braiding — exceeds ZFC_fe ZWIND",
         _ => "",
@@ -291,7 +291,19 @@ pub fn atom_desc(atom: &str) -> &'static str {
 }
 
 pub fn generate_entry_formula(name: &str, desc: &str, t: &IgTuple) -> EntryResult {
-    let cl8 = cl8nk_ref();
+    generate_entry_formula_against(name, desc, t, &cl8nk_ref())
+}
+
+/// The same decomposition, read against ANY reference layer.
+///
+/// L9 is lateral to L8, not below it, so "how far to L8" is not the only
+/// question that can be asked of an entry — and for an object that already sits
+/// on the replicative lateral it is the wrong one. Reading against L9 shows the
+/// promotions that vanish when the climb is not attempted.
+pub fn generate_entry_formula_against(
+    name: &str, desc: &str, t: &IgTuple, reference: &IgTuple,
+) -> EntryResult {
+    let cl8 = reference.clone();
     let mut fragments: Vec<PrimFragment> = Vec::new();
     let mut promoted_atoms: Vec<&'static str> = Vec::new();
     let mut atom_details: Vec<AtomDetail> = Vec::new();
@@ -420,8 +432,8 @@ pub fn compute_tensor_op(sys: &IgTuple) -> TensorResult {
                 &"D" => result.d = v, &"T" => result.t = v,
                 &"R" => result.r = v, &"K" => result.k = v,
                 &"G" => result.g = v, &"C" => result.c = v,
-                &"<" => result.phi = v, &"H" => result.h = v,
-                &"S" => result.s = v, &"◻" => result.omega = v,
+                &"≺" => result.phi = v, &"H" => result.h = v,
+                &"S" => result.s = v, &"⊡" => result.omega = v,
                 _ => {}
             }
         }
@@ -459,8 +471,8 @@ pub fn compute_meet_op(sys: &IgTuple) -> MeetJoinResult {
             &"R" => result.r = v, &"P" => result.p = v,
             &"F" => result.f = v, &"K" => result.k = v,
             &"G" => result.g = v, &"C" => result.c = v,
-            &"<" => result.phi = v, &"H" => result.h = v,
-            &"S" => result.s = v, &"◻" => result.omega = v,
+            &"≺" => result.phi = v, &"H" => result.h = v,
+            &"S" => result.s = v, &"⊡" => result.omega = v,
             _ => {}
         }
     }
@@ -484,8 +496,8 @@ pub fn compute_join_op(sys: &IgTuple) -> MeetJoinResult {
             &"R" => result.r = v, &"P" => result.p = v,
             &"F" => result.f = v, &"K" => result.k = v,
             &"G" => result.g = v, &"C" => result.c = v,
-            &"<" => result.phi = v, &"H" => result.h = v,
-            &"S" => result.s = v, &"◻" => result.omega = v,
+            &"≺" => result.phi = v, &"H" => result.h = v,
+            &"S" => result.s = v, &"⊡" => result.omega = v,
             _ => {}
         }
     }
@@ -521,10 +533,10 @@ pub fn compute_transcendence() -> TranscendenceResult {
     let grammar_zfcfe = zfc_fe.c;
     let grammar_cl8nk = cl8.c;
 
-    let omega_zfcfe_frag = cl8nk_formula("◻", omega_zfcfe).map(|f| f.fragment).unwrap_or("?");
-    let omega_cl8nk_frag = cl8nk_formula("◻", omega_cl8nk).map(|f| f.fragment).unwrap_or("?");
-    let grammar_zfcfe_frag = cl8nk_formula("C", grammar_zfcfe).map(|f| f.fragment).unwrap_or("?");
-    let grammar_cl8nk_frag = cl8nk_formula("C", grammar_cl8nk).map(|f| f.fragment).unwrap_or("?");
+    let omega_zfcfe_frag = cl8nk_formula("⊡", omega_zfcfe).map(|f| f.fragment).unwrap_or("?");
+    let omega_cl8nk_frag = cl8nk_formula("⊡", omega_cl8nk).map(|f| f.fragment).unwrap_or("?");
+    let grammar_zfcfe_frag = cl8nk_formula("∋", grammar_zfcfe).map(|f| f.fragment).unwrap_or("?");
+    let grammar_cl8nk_frag = cl8nk_formula("∋", grammar_cl8nk).map(|f| f.fragment).unwrap_or("?");
 
     let tensor = compute_tensor_op(&zfc_fe);
 
@@ -629,12 +641,12 @@ pub fn generate_promotions() -> PromotionsResult {
             LadderStage {
                 stage: "→ CLINK L8", tier: "O_∞⁺", promotions: s3_len,
                 distance: Some(d3), details: stage3,
-                note: Some("◻/∋ TRANSCENDENCE — exceeds Frobenius-exact foundation"),
+                note: Some("⊡/∋ TRANSCENDENCE — exceeds Frobenius-exact foundation"),
             },
         ],
         total_promotions: s1_len + s2_len + s3_len,
         total_distance: d_total,
-        transcendence_primitives: vec!["◻", "C"],
+        transcendence_primitives: vec!["⊡", "C"],
         d_zfcfe_to_cl8nk: d3,
     }
 }
@@ -783,6 +795,41 @@ pub fn cl9nk_main(args: &[&str]) -> alloc::string::String {
 
     let sub = args.first().copied().unwrap_or("report");
     match sub {
+        "entry" => {
+            let name = args.get(1).copied().unwrap_or("");
+            match catalog::lookup(name) {
+                Some(e) => {
+                    let r = generate_entry_formula_against(e.name, e.description, &e.tuple, &l9);
+                    let mut s = format!(
+                        "CL9NK Entry: {}  — read against the REPLICATIVE LATERAL, not the climb\n\n",
+                        e.name);
+                    s.push_str(&format!("  L9 reference: {}\n", l9.display()));
+                    s.push_str(&format!("  entry tuple : {}\n\n", e.tuple.display()));
+                    s.push_str(&format!(
+                        "  d(L9): {:.4}   match:{} close:{} distant:{}   tier: {}\n",
+                        r.distance, r.match_count, r.close_count, r.distant_count, r.tier));
+                    let (d8, _) = tuple_distance_cl8nk(&e.tuple, &l8);
+                    s.push_str(&format!("  d(L8): {:.4}\n\n", d8));
+                    s.push_str(&format!(
+                        "  Promotions to L9 ({}):\n", r.promotions_count));
+                    for p in &r.promotions_needed {
+                        s.push_str(&format!(
+                            "    {}: {} -> {}  (gap: {:.3})\n",
+                            p.primitive, p.from_glyph, p.to_glyph, p.gap));
+                    }
+                    let r8 = generate_entry_formula(e.name, e.description, &e.tuple);
+                    s.push_str(&format!(
+                        "\n  Promotions to L8 ({}), for comparison:\n", r8.promotions_count));
+                    for p in &r8.promotions_needed {
+                        s.push_str(&format!(
+                            "    {}: {} -> {}  (gap: {:.3})\n",
+                            p.primitive, p.from_glyph, p.to_glyph, p.gap));
+                    }
+                    s
+                }
+                None => format!("cl9nk entry: no catalog entry named '{}'\n", name),
+            }
+        }
         "chain" => {
             let mut s = alloc::string::String::from(
                 "CL9NK Chain — distance ladder from CLINK L9 (the replicative lateral)\n\n",

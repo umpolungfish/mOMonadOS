@@ -136,7 +136,7 @@ pub const CRYSTAL_SIC_RATIO: u32 = (CRYSTAL_TOTAL / WH_GROUP_ORDER as u64) as u3
 ///   4. B generates the full d²-1=3-dimensional orbit under WH
 ///
 /// These are proved in p4rakernel/p4ramill/Imscribing/Paraconsistent/Belnap.lean
-/// with 22 theorems, 0 sorries.
+/// with 22 theorems, *sans* sorry.
 pub fn belnap_fiducial_axioms() -> [&'static str; 4] {
     [
         "meet(B, x) = x  — B is bottom of the information lattice",
@@ -165,9 +165,9 @@ pub fn grammar_is_sic_povm_theorem() -> &'static str {
      complete POVM; μ∘δ=id is the SIC-POVM dual basis; ⊙ criticality means \
      the apparatus IS the measured system. This is proved in Lean 4: \
      SIC_D12_Norm.lean, SIC_D12_Equiangularity.lean, SIC_D12_MagnitudeClasses.lean, \
-     SIC_D12_SymmetricModuli.lean, SIC_D12_ExistenceRing.lean (413 lines, 0 sorries), \
+     SIC_D12_SymmetricModuli.lean, SIC_D12_ExistenceRing.lean (413 lines, *sans* sorry), \
      SIC_D12_Embedding.lean (427 lines, 8 sorries remaining), \
-     QCI_SICPOVM_Bridge.lean, BelnapNFiducial.lean (22 theorems, 0 sorries), \
+     QCI_SICPOVM_Bridge.lean, BelnapNFiducial.lean (22 theorems, *sans* sorry), \
      SIC_Multilattice_Proof.lean, ZaunerEmbeddingEquivalence.lean."
 }
 

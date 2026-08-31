@@ -334,7 +334,7 @@ SIC-POVM d=12 Structural Identity
   Belnap B=XZ as d=2 fiducial: ✓
   6 Frobenius-dual pairs: ✓
   Grammar as Σ=1:1 limit: d=2.0 (Sigma: 1:1 vs n:m)
-  Lean 4 formalization: 4 planks (incl. SIC_D12_ExistenceRing), 0 sorries
+  Lean 4 formalization: 4 planks (incl. SIC_D12_ExistenceRing), *sans* sorry
 ```
 
 ### `d12 [subcmd]`
@@ -382,19 +382,19 @@ Total ΔS: +7.42 bits (favored, p<0.001)
 ### `clay`
 
 Clay Millennium structural status: displays the machine-checked barrier taxonomy for
-all 7 problems (RH, YM, BSD, Hodge, NS, PvsNP, OPN) with Lean 4 status (sorry/sorry-free)
+all 7 problems (RH, YM, BSD, Hodge, NS, PvsNP, OPN) with Lean 4 status (sorry/*sans* sorry)
 and Frobenius absorption class.
 
 ```
 ⊙> clay
 Clay Millennium — Structural Status (Lean 4, machine-checked)
-  RH:  barrier=O₂, sorry-free=12/12, abs=⊗_EML
-  YM:  barrier=O₂, sorry-free=8/8,   abs=⊗_mass_gap
-  BSD: barrier=O₂, sorry-free=5/5,   abs=⊗_2adic
-  Hodge:  barrier=O₂, sorry-free=4/4, abs=⊗_hodge
-  NS:  barrier=O₂, sorry-free=6/6,   abs=⊗_ns
-  PvsNP: barrier=O₂, sorry-free=7/7, abs=⊗_pnp
-  OPN: barrier=O₂, sorry-free=3/3,   abs=⊗_opn
+  RH:  barrier=O₂, *sans* sorry=12/12, abs=⊗_EML
+  YM:  barrier=O₂, *sans* sorry=8/8,   abs=⊗_mass_gap
+  BSD: barrier=O₂, *sans* sorry=5/5,   abs=⊗_2adic
+  Hodge:  barrier=O₂, *sans* sorry=4/4, abs=⊗_hodge
+  NS:  barrier=O₂, *sans* sorry=6/6,   abs=⊗_ns
+  PvsNP: barrier=O₂, *sans* sorry=7/7, abs=⊗_pnp
+  OPN: barrier=O₂, *sans* sorry=3/3,   abs=⊗_opn
 ```
 
 ### `clay witness <problem>`

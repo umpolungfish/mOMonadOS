@@ -138,7 +138,7 @@ impl IgPrim {
     /// non-monotonic extra value: ⊤ (Kinetics: air=4.5 sits between
     /// on=4 and yea=1, not below yea), ⊙/Phi (Criticality:
     /// roar=2.33 and err=2.67 sit between ⊙=2 and
-    /// haha=3, not below woe=1), and ◻ (Winding: zoo=4 sits
+    /// haha=3, not below woe=1), and ⊡ (Winding: zoo=4 sits
     /// above ah=3, not below awe=1). Any new gate logic should
     /// compare `ordinal()` directly rather than raw discriminants.
     pub fn ordinal(self) -> f32 {
@@ -167,7 +167,7 @@ impl IgPrim {
             fee => 1.0, kick => 2.0, sure => 3.0, wool => 4.0,
             // ⊞ Stoichiometry
             hung => 1.0, so => 2.0, up => 3.0,
-            // ◻ Winding — non-monotonic: zoo sits above ah, not below awe.
+            // ⊡ Winding — non-monotonic: zoo sits above ah, not below awe.
             awe => 1.0, oak => 2.0, ah => 3.0, zoo => 4.0,
         }
     }
@@ -179,7 +179,7 @@ impl IgTuple {
     /// This is the structural bridge — same rules as imas_ig_bridge.py.
     /// Parse a 12-glyph tuple, with or without ⟨⟩ brackets and any separators.
     ///
-    /// Slot order is the canonical ⊢ ⊣ > < ⋈ ⊤ ∈ ∋ ⊙ ⊥ ⊞ ◻. Returns the index
+    /// Slot order is the canonical ⊢ ⊣ ≻ ≺ ⋈ ⊤ ∈ ∋ ⊙ ⊥ ⊞ ⊡. Returns the index
     /// of the first glyph that is not a primitive, so a bad tuple names its own
     /// fault rather than failing wholesale.
     pub fn from_glyphs(src: &str) -> Result<IgTuple, (usize, alloc::string::String)> {
@@ -214,15 +214,27 @@ impl IgTuple {
         let sr = snap.self_ref;
         let dc = snap.dialetheia_complete || snap.b_live_ticks > 0;
         let sx = snap.sig.3; // IFIX count
+        // R2 (O_inf_dag) structural conditions. kernel.rs names these for the exact
+        // primitive values they carry — atomic_reentry is "dim=dead", a point-like
+        // fork of one FSPLIT/FFUSE pair; bifurcation_revisited is "top=mime", that
+        // single fork recurring every wrap. Both are computed at kernel.rs:677 and
+        // were never read here, so dead and mime had a second definition in
+        // token_diversity and period, and the kernel's own replicative-opening
+        // program ⊙∈∋⊙ derived to 𐑨 𐑸 instead of the 𐑛 𐑥 it targets.
+        let ar = snap.atomic_reentry;
+        let br = snap.bifurcation_revisited;
 
-        // D — Dimensionality from token diversity
-        let d_val = if d <= 2 { IgPrim::dead }
+        // D — Dimensionality: a point-like fork is 0d, otherwise token diversity
+        let d_val = if ar { IgPrim::dead }
+            else if d <= 2 { IgPrim::dead }
             else if d <= 5 { IgPrim::ash }
             else if d <= 9 { IgPrim::array }
             else { IgPrim::if_ };
 
-        // T — Topology from self_ref + period + frobenius_order
-        let t_val = if sr { IgPrim::are }
+        // T — Topology: the recurring single fork is the bowtie, and it is more
+        // specific than self-reference alone, which it implies
+        let t_val = if br { IgPrim::mime }
+            else if sr { IgPrim::are }
             else if p == 1 { IgPrim::judge }
             else if p == 2 { IgPrim::mime }
             else if fo > 0 { IgPrim::oil }
@@ -250,19 +262,34 @@ impl IgTuple {
             else { IgPrim::they };
 
         // K — Kinetics from period + IFIX count
+        //   on (𐑪) is trapped by ORDER: the fixation count sits exactly on eight.
+        //   air (𐑺) is trapped by DISORDER: fixed past that count, with no ordered
+        //   count to sit on. Without this branch `air` was never emitted at all, and
+        //   184 catalog entries carry it.
         let k_val = if sx == 8 { IgPrim::on }
+            else if sx > 8 { IgPrim::air }
             else if p == 1 { IgPrim::egg }
             else if p <= 4 { IgPrim::loll }
             else { IgPrim::yea };
 
         // G — Cardinality from IFIX + diversity
-        let g_val = if sx >= 3 { IgPrim::ice }
-            else if sx >= 1 { IgPrim::thigh }
-            else if d <= 3 { IgPrim::bib }
-            else { IgPrim::thigh };
+        // This axis is bib / thigh / ice — it counts DISTINCT MARKS, not fixations. Branching
+        // on sx welded it to k_val's `sx == 8`, so eight fixations forced ℵ and the
+        // pairs (⊤𐑪,∈𐑔), (⊤𐑪,∈𐑚) and every (⊤𐑺,·) became unwritable: 998 catalog
+        // entries, ten_sefirot and CLINK L9 among them. `--recalibrate` walks ⊤ and ∈
+        // through every value with the other held, so the Grammar keeps them conjugate
+        // and free; the code had them collapsed.
+        let g_val = if d >= 10 { IgPrim::ice }
+            else if d >= 4 { IgPrim::thigh }
+            else { IgPrim::bib };
 
         // C — Composition from frobenius_order + period
-        let c_val = if fo > 0 { IgPrim::measure }
+        //   A three-arity fuse (FFUSE3) joins its arms all at once, which is `vow`
+        //   ("all-simultaneous", STITCH_3 f∧g∧h) — the same reading `measure`
+        //   ("ordered steps") gets wrong for a functorial fork that a two-arity
+        //   sequential fuse gets right. So fo == 3 composes simultaneously.
+        let c_val = if fo == 3 { IgPrim::vow }
+            else if fo > 0 { IgPrim::measure }
             else if p == 1 { IgPrim::vow }
             else if p == 2 { IgPrim::gag }
             else { IgPrim::ooze };
@@ -331,7 +358,7 @@ impl IgTuple {
     }
 }
 
-/// Display helper for IgTuple — formats as ⟨D · T · R · P · F · K · G · C · < · H · S · ◻⟩
+/// Display helper for IgTuple — formats as ⟨D · T · R · P · F · K · G · C · < · H · S · ⊡⟩
 pub struct IgDisplay { tuple: IgTuple }
 
 impl core::fmt::Display for IgDisplay {
@@ -389,8 +416,14 @@ pub struct Classification {
 impl Classification {
     /// Classify a kernel snapshot against the 12 canonical IG types.
     pub fn classify(snap: &Snapshot) -> Self {
+        Self::classify_tuple(&IgTuple::from_snapshot(snap))
+    }
+
+    /// Classify a tuple given directly, rather than read off the live kernel.
+    /// `classify <t>` is documented to take its argument; this is what it calls.
+    pub fn classify_tuple(current: &IgTuple) -> Self {
         use crate::tokens::canonical_name;
-        let current = IgTuple::from_snapshot(snap);
+        let current = *current;
         let canonicals = all_canonical_ig();
 
         let mut nearest_idx = 0;
@@ -550,9 +583,9 @@ mod discriminant_gate_tests {
         // and rejects err and haha, which clear the threshold. woe fails under
         // both readings, so it is not a disagreement.
         assert_eq!(disagreements(roar), alloc::vec![monad, err, haha]);
-        // ◻ ≥ 𐑭 (ah): dialects 0–4,6,7 reject zoo, which passes.
+        // ⊡ ≥ 𐑭 (ah): dialects 0–4,6,7 reject zoo, which passes.
         assert_eq!(disagreements(ah), alloc::vec![zoo]);
-        // ◻ ≥ 𐑟 (zoo): dialect 5's G3 admits every value — a vacuous gate.
+        // ⊡ ≥ 𐑟 (zoo): dialect 5's G3 admits every value — a vacuous gate.
         assert_eq!(disagreements(zoo), alloc::vec![ah, oak, awe]);
     }
 }

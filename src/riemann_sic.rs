@@ -3,7 +3,7 @@
 // Encodes the ob3ect: "the zeros of ζ(s) correspond to the eigenvalues
 // of a SIC-POVM-driven Hamiltonian" as an IMASM protocol.
 //
-// IMASM word: ⊢∈><⊤⋈⊙⊞∋◻⊣  (11 opcodes, period 11)
+// IMASM word: ⊢∈><⊤⋈⊙⊞∋⊡⊣  (11 opcodes, period 11)
 // Topology: flat_chain (1 FSPLIT/FFUSE pair, 6 T-ops, 0 F-ops)
 // Tier lift: O₀ → O₂dag
 // Lean: Imscribing.Ob3ects.the_zeros_of_s_correspond_to_the_eigenvalues_of_abe3fc55_scaffold
@@ -256,7 +256,7 @@ pub fn run_sic_verify() -> String {
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// The IMASM word for this protocol — the glued program as 11 glyphs.
-pub const IMASM_WORD: &[&str] = &["⊢", "∈", ">", "<", "⊤", "⋈", "⊙", "⊞", "∋", "◻", "⊣"];
+pub const IMASM_WORD: &[&str] = &["⊢", "∈", "≻", "≺", "⊤", "⋈", "⊙", "⊞", "∋", "⊡", "⊣"];
 
 /// Opcode names in order
 pub const OPCODES: &[&str] = &[
@@ -463,15 +463,15 @@ pub fn sixteen3_breakdown() -> String {
     s.push_str("═══ SIXTEEN_3 Trilattice Breakdown (Phase 11) ═══\n\n");
     s.push_str("  Carrier: P({T,F,t,f}) = 16 generalized truth values\n");
     s.push_str("  Three orderings: ≤_i (information), ≤_t (truth), ≤_c (constructivity)\n");
-    s.push_str("  Word: ⊢∈><⊤⋈⊙⊞∋◻⊣\n\n");
+    s.push_str("  Word: ⊢∈><⊤⋈⊙⊞∋⊡⊣\n\n");
     s.push_str("  Step  Glyph  12-op     16₃-op    Reg↓ →  Reg↑\n");
     s.push_str("  ───  ─────  ────────  ────────  ─────   ─────\n");
 
     let rows: &[(&str, &str, &str, &str, &str)] = &[
         ("1", "⊢", "VINIT",   "VINIT",    "N  →  N"),
         ("2", "∈", "FSPLIT",  "FSPLIT3",  "N  →  N"),
-        ("3", ">", "AFWD",    "AFWD",     "N  →  T"),
-        ("4", "<", "AREV",    "AREV",     "T  →  N"),
+        ("3", "≻", "AFWD",    "AFWD",     "N  →  T"),
+        ("4", "≺", "AREV",    "AREV",     "T  →  N"),
         ("5", "+", "EVALT",   "EVALT",    "N  →  T"),
         ("6", "=", "CLINK",   "CLINK",    "T  →  T"),
         ("7", "⊙", "IMSCRIB", "IMSCRIB",  "T  →  T"),
@@ -513,24 +513,24 @@ pub fn rotat_audit() -> String {
     s.push_str("  Rotation orbit:\n");
 
     let rotations: &[(&str, &str)] = &[
-        ("k=0",  "⊢∈><⊤⋈⊙⊞∋◻⊣"),
-        ("k=1",  "∈><⊤⋈⊙⊞∋◻⊣⊢"),
-        ("k=2",  "><⊤⋈⊙⊞∋◻⊣⊢∈"),
-        ("k=3",  "<⊤⋈⊙⊞∋◻⊣⊢∈>"),
-        ("k=4",  "⊤⋈⊙⊞∋◻⊣⊢∈><"),
-        ("k=5",  "⋈⊙⊞∋◻⊣⊢∈><⊤"),
-        ("k=6",  "⊙⊞∋◻⊣⊢∈><⊤⋈"),
-        ("k=7",  "⊞∋◻⊣⊢∈><⊤⋈⊙"),
-        ("k=8",  "∋◻⊣⊢∈><⊤⋈⊙⊞"),
-        ("k=9",  "◻⊣⊢∈><⊤⋈⊙⊞∋"),
-        ("k=10", "⊣⊢∈><⊤⋈⊙⊞∋◻"),
+        ("k=0",  "⊢∈><⊤⋈⊙⊞∋⊡⊣"),
+        ("k=1",  "∈><⊤⋈⊙⊞∋⊡⊣⊢"),
+        ("k=2",  "><⊤⋈⊙⊞∋⊡⊣⊢∈"),
+        ("k=3",  "<⊤⋈⊙⊞∋⊡⊣⊢∈>"),
+        ("k=4",  "⊤⋈⊙⊞∋⊡⊣⊢∈><"),
+        ("k=5",  "⋈⊙⊞∋⊡⊣⊢∈><⊤"),
+        ("k=6",  "⊙⊞∋⊡⊣⊢∈><⊤⋈"),
+        ("k=7",  "⊞∋⊡⊣⊢∈><⊤⋈⊙"),
+        ("k=8",  "∋⊡⊣⊢∈><⊤⋈⊙⊞"),
+        ("k=9",  "⊡⊣⊢∈><⊤⋈⊙⊞∋"),
+        ("k=10", "⊣⊢∈><⊤⋈⊙⊞∋⊡"),
     ];
 
     for (k, word) in rotations {
         s.push_str(&alloc::format!("    {:>4}:  {}\n", k, word));
     }
 
-    s.push_str("\n  Canonical rotation: k=4  word: ⊤⋈⊙⊞∋◻⊣⊢∈><\n");
+    s.push_str("\n  Canonical rotation: k=4  word: ⊤⋈⊙⊞∋⊡⊣⊢∈><\n");
     s.push_str("  Verdict: PHASE-BEARING — moves under ROTAT: final_register\n");
     s
 }
@@ -583,7 +583,7 @@ pub fn grammar_encoding() -> String {
     s.push_str("    ⊞=𐑳  (heterogeneous) — The zeros and eigenvalues span multiple\n");
     s.push_str("          distinct types: complex numbers (zeros), real numbers\n");
     s.push_str("          (eigenvalues), operators, and SIC-POVM projectors.\n\n");
-    s.push_str("    ◻=𐑭  (integer winding) — The argument principle gives integer\n");
+    s.push_str("    ⊡=𐑭  (integer winding) — The argument principle gives integer\n");
     s.push_str("          winding around the critical strip. The number of zeros up\n");
     s.push_str("          to height T follows N(T) ~ (T/2π)log(T/2πe), an integer\n");
     s.push_str("          count with topological protection.\n\n");
@@ -625,7 +625,7 @@ pub fn lean_reference() -> String {
     s.push_str("    Primitives.Imscription.lean    — Imscription struct\n");
     s.push_str("    Primitives.TierCrossing.lean   — OuroboricityTier (O₀..O_inf_dag)\n\n");
     s.push_str("  Build status:       ✓ ELABORATED (lake build)\n");
-    s.push_str("  Kernel verdict:     ✓ 0 errors, 0 sorries\n");
+    s.push_str("  Kernel verdict:     ✓ 0 errors, *sans* sorry\n");
     s.push_str("  Tier verdicts:      O₀ (ground) → O₂dag (terminal)\n");
     s.push_str("  Frobenius closure:  μ∘δ = id (proved via igFrobAlg_self_fusion)\n");
     s
@@ -673,7 +673,7 @@ pub fn hilbert_polya_connection() -> String {
     s.push_str("    The SIC-POVM {Πₖ} on C^d is the measurement basis.\n");
     s.push_str("    The correspondence is the identity:\n\n");
     s.push_str("      spec(H) = {ρₙ : ζ(ρₙ) = 0, 0 < Re(ρₙ) < 1}\n\n");
-    s.push_str("  The IMASM protocol ⊢∈><⊤⋈⊙⊞∋◻⊣ encodes this as:\n");
+    s.push_str("  The IMASM protocol ⊢∈><⊤⋈⊙⊞∋⊡⊣ encodes this as:\n");
     s.push_str("    ⊢  VINIT   — establish the zeta domain\n");
     s.push_str("    ∈  FSPLIT  — bifurcate into real/imaginary\n");
     s.push_str("    >  AFWD    — forward morphism to Hamiltonian\n");
@@ -713,7 +713,7 @@ pub fn full_report() -> String {
     s.push_str("  Period:      11 (ROTAT-invariant: tri_ancestral_verdict, closed_walk, topology_class)\n");
     s.push_str("  Tier:        O₀ → O₂dag\n");
     s.push_str("  Lean:        Imscribing.Ob3ects.the_zeros_of_s_correspond_to_the_eigenvalues_of_abe3fc55_scaffold\n");
-    s.push_str("  Build:       ✓ ELABORATED (0 errors, 0 sorries)\n");
+    s.push_str("  Build:       ✓ ELABORATED (0 errors, *sans* sorry)\n");
     s.push_str("\n  ─── Ob3ect ───\n");
     s.push_str("  Name:        the_zeros_of_s_correspond_to_the_eigenvalues_of_abe3fc55\n");
     s.push_str("  Path:        ob3ect/digital/the_zeros_of_s_correspond_to_the_eigenvalues_of_abe3fc55/\n");
