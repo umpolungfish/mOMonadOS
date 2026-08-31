@@ -13,10 +13,13 @@
 //   T = "one-shot closure" — inner object is at fixed point → N is prime
 //   F = "no closure"       — inner object outside basin → N is composite
 //   B = "paradice"         — both conditions held simultaneously (N = 1)
+//   N = "neither"          — winding-order search did not close within budget
 //
-// FOLD TOPOLOGY: the outer frame wraps the inner fold/kiss topology.
-// Nesting depth = 2 means two sequential fold operations before closure.
-// The outer frame opens (∈), the inner fold runs, the outer frame fuses (∋).
+// Primality and factorization both run on `prime_winding`'s BSGS
+// winding-order engine, the same one the inner nested_oneshot word and the
+// artifact `winding_period_of_the_primes_on_the_number_line` share. The
+// outer frame here is a display/verdict wrapper only; it was never a
+// second, independently-run Brent's rho, and no longer contains one.
 //
 // Tuple: ⟨𐑦𐑰𐑾𐑿𐑐𐑧𐑲𐑠⊙𐑓𐑳𐑴⟩ (same tuple as nested_oneshot, but word has depth 2)
 
@@ -25,12 +28,8 @@
 extern crate alloc;
 
 use crate::sprintln;
-use super::prime_winding::is_prime;
+use super::prime_winding::{is_prime, factor, PrimeVerdict};
 use alloc::string::String;
-use alloc::vec::Vec;
-use num_bigint::BigUint;
-use num_traits::{One, Zero, ToPrimitive};
-use core::str::FromStr;
 
 /// The doubly-nested glyph word (inner word wrapped in outer frame).
 pub const WORD: &str = "⊢∈⊢∈≻⊤≺⊥⋈⊙⊞∋⊡⊣∋⊣";
@@ -59,7 +58,7 @@ pub const LANDINGS: [&str; 16] = [
     "A",   // k=15
 ];
 
-pub enum B4Verdict { T, F, B }
+pub enum B4Verdict { T, F, B, N }
 
 impl core::fmt::Display for B4Verdict {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
@@ -67,6 +66,7 @@ impl core::fmt::Display for B4Verdict {
             B4Verdict::T => write!(f, "T"),
             B4Verdict::F => write!(f, "F"),
             B4Verdict::B => write!(f, "B"),
+            B4Verdict::N => write!(f, "N"),
         }
     }
 }
@@ -74,7 +74,7 @@ impl core::fmt::Display for B4Verdict {
 pub fn landing_at(k: usize) -> &'static str { LANDINGS[k % PERIOD] }
 pub fn winding_number() -> &'static str { "0/1" }
 
-// ── String helpers ─────────────────────────────────────────────────────────────
+// ── String helpers — only what verdict_for's small-N cases need ────────
 
 fn trim(s: &str) -> String {
     let bytes = s.as_bytes();
@@ -92,172 +92,16 @@ fn lt(a: &str, b: &str) -> bool {
     ta < tb
 }
 
-// ── BigUint arithmetic helpers ────────────────────────────────────────────────
-
-fn parse_big(s: &str) -> Option<BigUint> {
-    let t = trim(s);
-    if t.is_empty() { return None; }
-    BigUint::from_str(&t).ok()
-}
-
-fn big_gcd(mut a: BigUint, mut b: BigUint) -> BigUint {
-    while !b.is_zero() {
-        let t = b.clone();
-        b = &a % &b;
-        a = t;
-    }
-    a
-}
-
-// Brent's polynomial: x → x² + c mod n
-fn brent_f(x: &BigUint, c: &BigUint, n: &BigUint) -> BigUint {
-    let x2 = (x * x) % n;
-    (&x2 + c) % n
-}
-
-// Miller-Rabin primality test for BigUint.
-fn is_prime_big(n: &BigUint) -> bool {
-    if n < &BigUint::from(2u32) { return false; }
-    let two = BigUint::from(2u32);
-    let three = BigUint::from(3u32);
-    if n == &two || n == &three { return true; }
-    if n % 2u32 == BigUint::zero() { return false; }
-
-    // write n-1 = d * 2^s with d odd
-    let n_minus_1 = n - 1u32;
-    let mut s: u32 = 0;
-    let mut d = n_minus_1.clone();
-    let two_b = BigUint::from(2u32);
-    while &d % &two_b == BigUint::zero() {
-        d /= 2u32;
-        s += 1;
-    }
-
-    // Deterministic bases for practical ranges.
-    let max_det: BigUint = BigUint::from_str("33170440646798834559697582").unwrap();
-    let bases: Vec<BigUint> = if n < &max_det {
-        alloc::vec![BigUint::from(2u32)]
-    } else {
-        let small: [u32; 7] = [2, 3, 5, 7, 11, 13, 17];
-        small.iter().map(|&b| BigUint::from(b) % n).collect()
-    };
-
-    for a in &bases {
-        if a.is_zero() { continue; }
-        let mut x = a.modpow(&d, n);
-        if x == BigUint::one() || x == n_minus_1 { continue; }
-        let mut cont = false;
-        for _ in 1..s {
-            x = (&x * &x) % n;
-            if x == n_minus_1 { cont = true; break; }
-        }
-        if !cont { return false; }
-    }
-    true
-}
-
-// Brent's cycle detection (fold/kiss topology) — arbitrary length
-fn brent_factor_big(n: &BigUint) -> Option<BigUint> {
-    let two = BigUint::from(2u32);
-    if n % 2u32 == BigUint::zero() { return Some(two.clone()); }
-    if n.is_one() { return None; }
-
-    let c_candidates: [u64; 4] = [3, 7, 11, 17];
-    let n_mod_97 = (n % BigUint::from(97u32)).to_u64().unwrap_or(0);
-
-    for (i, &base_c) in c_candidates.iter().enumerate() {
-        let c_raw = base_c.wrapping_add((n_mod_97 as u64).wrapping_mul(i as u64 + 1)) % 1_000_000;
-        let c = BigUint::from(if c_raw == 0 { 1u64 } else { c_raw });
-
-        let x_init = BigUint::from(2u64 + (n_mod_97 % 95));
-        let mut x: BigUint = x_init.clone();
-        let m: u64 = 128;
-        let mut power: u64 = 1;
-        #[allow(unused_assignments)]
-        let mut y: BigUint = x.clone();
-
-        while power < 1_000_000 {
-            let mut step: u64 = 0;
-            while step < power {
-                x = brent_f(&x, &c, n);
-                step += 1;
-            }
-            y = x.clone();
-            let upper = power.min(m);
-            let mut j: u64 = 0;
-            while j < upper {
-                x = brent_f(&x, &c, n);
-                let d = if x > y { &x - &y } else { &y - &x };
-                let g = big_gcd(d, n.clone());
-                if !g.is_one() && g != *n { return Some(g); }
-                j += 1;
-            }
-            power = match power.checked_mul(2) {
-                Some(p) => p,
-                None => break,
-            };
-        }
-    }
-    None
-}
-
-/// Returns (confirmed prime factors, unfactored composite cofactors).
-///
-/// FIXED 2026-08-31: same bug as nested_oneshot.rs's copy of this function --
-/// on a Brent failure it pushed the cofactor `m` straight into the factor
-/// list, even though `m` had already failed `is_prime_big` (real
-/// Miller-Rabin) one line above. A confirmed composite got reported as a
-/// prime factor whenever Brent's rho (no guaranteed success bound) failed
-/// to split it, which any RSA-scale semiprime reliably triggers.
-fn factor_recursive_big(mut n: BigUint) -> (Vec<BigUint>, Vec<BigUint>) {
-    let mut factors: Vec<BigUint> = Vec::new();
-    let mut unfactored: Vec<BigUint> = Vec::new();
-    let two = BigUint::from(2u32);
-    while &n % &two == BigUint::zero() {
-        factors.push(two.clone());
-        n /= 2u32;
-    }
-    let mut stack: Vec<BigUint> = Vec::new();
-    if !n.is_one() { stack.push(n); }
-    while let Some(m) = stack.pop() {
-        if m.is_one() { continue; }
-        if is_prime_big(&m) { factors.push(m); continue; }
-        if let Some(f) = brent_factor_big(&m) {
-            let g = &m / &f;
-            if f >= g {
-                stack.push(f);
-                stack.push(g);
-            } else {
-                stack.push(g);
-                stack.push(f);
-            }
-        } else {
-            unfactored.push(m); // confirmed composite, Brent could not split it
-        }
-    }
-    factors.sort_unstable();
-    unfactored.sort_unstable();
-    (factors, unfactored)
-}
-
-fn collect_factors_big(n_str: &str) -> (Vec<BigUint>, Vec<BigUint>) {
-    let t = trim(n_str);
-    if t.is_empty() || t == "0" { return (Vec::new(), Vec::new()); }
-    match parse_big(&t) {
-        Some(ref n) if n > &BigUint::one() => factor_recursive_big(n.clone()),
-        _ => (Vec::new(), Vec::new()),
-    }
-}
-
-fn big_to_string(b: &BigUint) -> String { b.to_str_radix(10) }
-
 // ── B4 verdict ────────────────────────────────────────────────────────────────
 
 pub fn verdict_for(n_str: &str) -> B4Verdict {
     if eq(n_str, "1") { return B4Verdict::B; }
     if lt(n_str, "1") { return B4Verdict::F; }
-    if eq(n_str, "2") { return B4Verdict::T; }
-    if is_prime(n_str) { B4Verdict::T } else { B4Verdict::F }
+    match is_prime(n_str) {
+        PrimeVerdict::Prime => B4Verdict::T,
+        PrimeVerdict::Composite => B4Verdict::F,
+        PrimeVerdict::Undetermined => B4Verdict::N,
+    }
 }
 
 // ── REPL entry ────────────────────────────────────────────────────────────────
@@ -267,14 +111,15 @@ pub fn repl_doubly_nested_oneshot(args: &[&str]) {
         sprintln!("doubly_nested_oneshot <N> — one level deeper than nested_oneshot");
         sprintln!("  Word: ⊢∈⊢∈≻⊤≺⊥⋈⊙⊞∋⊡⊣∋⊣  (period 16, 5 distinct landings)");
         sprintln!("  N has ARBITRARY LENGTH (BigUint, no fixed digit limit).");
-        sprintln!("  Returns B4 verdict: T (prime), F (composite), B (paradice).");
+        sprintln!("  Returns B4 verdict: T (prime), F (composite), B (paradice),");
+        sprintln!("  N (undetermined — order search exceeded its step budget).");
         sprintln!("  Subcommands:");
         sprintln!("    dnos word        — canonical glyph word");
         sprintln!("    dnos cycle       — ROTAT orbit with landing register");
         sprintln!("    dnos verdict N   — B4 verdict for N");
         sprintln!("    dnos winding    — winding number");
         sprintln!("    dnos landings    — landing register states by k");
-        sprintln!("    dnos factor N   — oneshot factor via Brent fold/kiss (arbitrary length)");
+        sprintln!("    dnos factor N   — factor via winding-order search (arbitrary length)");
         sprintln!("  Examples:");
         sprintln!("    dnos 17");
         sprintln!("    dnos factor 1234567");
@@ -305,6 +150,7 @@ pub fn repl_doubly_nested_oneshot(args: &[&str]) {
                 B4Verdict::T => "one-shot closure (prime)",
                 B4Verdict::F => "no closure (composite)",
                 B4Verdict::B => "paradice (neither prime nor composite)",
+                B4Verdict::N => "neither — winding-order search did not close within budget",
             };
             sprintln!("doubly_nested_oneshot verdict {}: {}", n, v);
             sprintln!("  └─ {}", desc);
@@ -317,42 +163,15 @@ pub fn repl_doubly_nested_oneshot(args: &[&str]) {
         "factor" => {
             if args.len() < 2 { sprintln!("Usage: dnos factor <N>"); return; }
             let n = args[1];
-            let v = verdict_for(n);
-            match v {
-                B4Verdict::B => {
-                    sprintln!("doubly_nested_oneshot factor {}: B — paradice (1 is the unit)", n);
-                }
+            match verdict_for(n) {
+                B4Verdict::B => sprintln!("doubly_nested_oneshot factor {}: B — paradice (1 is the unit)", n),
+                B4Verdict::N => sprintln!(
+                    "doubly_nested_oneshot factor {}: N — order search on {} did not close within budget", n, n
+                ),
+                B4Verdict::T => sprintln!("doubly_nested_oneshot factor {}: T — prime (no non-trivial factors)", n),
                 B4Verdict::F => {
-                    let (factors, unfactored) = collect_factors_big(n);
-                    if factors.is_empty() && unfactored.is_empty() {
-                        sprintln!("doubly_nested_oneshot factor {}: F — could not factor (non-numeric input?)", n);
-                    } else {
-                        let group = |xs: &[BigUint]| -> Vec<String> {
-                            let mut reps: Vec<String> = Vec::new();
-                            let mut i = 0usize;
-                            while i < xs.len() {
-                                let p = &xs[i];
-                                let mut cnt = 1usize;
-                                while (i + cnt) < xs.len() && &xs[i + cnt] == p {
-                                    cnt += 1;
-                                }
-                                if cnt == 1 { reps.push(big_to_string(p)); }
-                                else { reps.push(alloc::format!("{}^{}", big_to_string(p), cnt)); }
-                                i += cnt;
-                            }
-                            reps
-                        };
-                        sprintln!("doubly_nested_oneshot factor {}: F — composite (doubly-nested fold)", n);
-                        if !factors.is_empty() {
-                            sprintln!("  └─ confirmed prime factors: {}", group(&factors).join(" × "));
-                        }
-                        if !unfactored.is_empty() {
-                            sprintln!("  └─ unfactored composite cofactor(s), Brent could not split (confirmed NOT prime by Miller-Rabin): {}", group(&unfactored).join(" × "));
-                        }
-                    }
-                }
-                B4Verdict::T => {
-                    sprintln!("doubly_nested_oneshot factor {}: T — prime (no non-trivial factors)", n);
+                    sprintln!("doubly_nested_oneshot factor {}: F — composite (winding-order search)", n);
+                    sprintln!("{}", factor(n));
                 }
             }
         }
@@ -363,6 +182,7 @@ pub fn repl_doubly_nested_oneshot(args: &[&str]) {
                 B4Verdict::T => "prime",
                 B4Verdict::F => "composite",
                 B4Verdict::B => "paradice",
+                B4Verdict::N => "undetermined",
             };
             sprintln!("{}", v);
             sprintln!("  └─ {}: {} (doubly-nested)", desc, n);

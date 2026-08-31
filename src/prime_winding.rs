@@ -14,13 +14,22 @@
 //!   prime_winding verdict    return the Frobenius verdict
 //!   prime_winding help       list subcommands
 //!
-//! All arithmetic is string-based, so n is unbounded (no u64 limit).
+//! Primality and factorization both run on `winding_period`'s BSGS order
+//! search (the artifact's own winding-number engine) — order r of a base
+//! a mod N by baby-step/giant-step, N prime by Fermat iff r | (N-1) across
+//! several bases; N split by the Shor step, r even and a^(r/2) not ±1
+//! gives gcd(a^(r/2) − 1, N). No Miller-Rabin, no Brent's rho: the search
+//! either closes within its step budget or reports plainly that it did
+//! not. n is unbounded (BigUint), but the ORDER a search can certify is
+//! bounded by the baby-step table it can build in memory — past that
+//! bound the verdict is Undetermined, not a guess dressed as an answer.
 
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 use alloc::format;
 use num_bigint::BigUint;
 use num_traits::{One, Zero};
+use crate::winding_period::{winding_order_big, factor_big, WindingBig, FactorBig};
 
 pub const WORD: &str = "⊢⊙∈≻⊤⋈≺⊥⊞∋⊡⋈⊙⊣";
 pub const PERIOD: usize = 14;
@@ -28,6 +37,16 @@ pub const PHASE_BEARING: bool = true;
 pub const FROBENIUS_VERDICT: &str = "T";
 pub const ARTIFACT_SLUG: &str = "winding_period_of_the_primes_on_the_number_line";
 pub const OB3ECT_DIR: &str = "/home/mrnob0dy666/ob3ect/digital/winding_period_of_the_primes_on_the_number_line";
+
+/// Baby-step table bound for every order search this module runs — an
+/// order past step_cap*(step_cap+1) is Undetermined, not guessed at.
+/// Matches the documented sqrt~1e6 reach already established for the u64
+/// winding path in oneshot_prime_winder.rs.
+pub const STEP_CAP: u64 = 1_000_000;
+
+/// Coprime-base retries a Shor-style split gets before a composite N is
+/// reported as unsplit rather than factored.
+pub const FACTOR_TRIES: u32 = 64;
 
 /// The 12-slot tuple at the artifact's foundation.
 pub const TUPLE: [&str; 12] = [
@@ -41,8 +60,7 @@ pub const LANDINGS: [&str; 14] = [
     "A", "A", "A", "Ftf", "Ftf", "Ftf", "Ftf", "Ftf", "tf", "T", "T", "A", "A", "A",
 ];
 
-// ── Arbitrary-precision decimal arithmetic (schoolbook) ────────────────────
-// Strings only — no external crate. Each function takes &str and returns String.
+// ── Decimal string trim/compare/subtract — only what `find`'s scan needs ───
 
 /// Strip leading zeros, return "0" if all zero.
 fn trim(s: &str) -> String {
@@ -60,43 +78,6 @@ fn lt(a: &str, b: &str) -> bool {
     let tb = trim(b);
     if ta.len() != tb.len() { return ta.len() < tb.len(); }
     ta < tb
-}
-
-/// True if a == b.
-fn eq(a: &str, b: &str) -> bool { trim(a) == trim(b) }
-
-/// True if a == "0".
-fn is_zero(a: &str) -> bool {
-    for c in a.chars() { if c != '0' { return false; } }
-    true
-}
-
-/// True if a is even.
-fn is_even(a: &str) -> bool {
-    let t = trim(a);
-    let last = t.as_bytes().last().copied().unwrap_or(b'0');
-    (last - b'0') % 2 == 0
-}
-
-/// a + b, both decimal, non-negative.
-fn add(a: &str, b: &str) -> String {
-    let ta = trim(a);
-    let tb = trim(b);
-    let av: Vec<u8> = ta.bytes().rev().collect();
-    let bv: Vec<u8> = tb.bytes().rev().collect();
-    let mut out: Vec<u8> = Vec::new();
-    let mut carry: u8 = 0;
-    let n = av.len().max(bv.len());
-    for i in 0..n {
-        let x = if i < av.len() { av[i] - b'0' } else { 0 };
-        let y = if i < bv.len() { bv[i] - b'0' } else { 0 };
-        let s = x + y + carry;
-        out.push(b'0' + s % 10);
-        carry = s / 10;
-    }
-    if carry > 0 { out.push(b'0' + carry); }
-    let s: String = out.iter().rev().map(|c| *c as char).collect();
-    trim(&s)
 }
 
 /// a - b, assumes a >= b. Both non-negative.
@@ -122,150 +103,56 @@ fn sub(a: &str, b: &str) -> String {
     trim(&s)
 }
 
-/// a mod 10 (returns u8 0..9).
-fn last_digit(a: &str) -> u8 {
+// ── Primality: the artifact's own winding-order engine ─────────────────
+
+/// The three outcomes an order-based primality search can reach. Never
+/// collapsed to a bool: Undetermined is a real, distinct answer, not a
+/// stand-in for either Prime or Composite.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum PrimeVerdict { Prime, Composite, Undetermined }
+
+/// Order r of a mod N divides N-1 iff a^(N-1) == 1 mod N (Fermat), so a
+/// base whose order does NOT divide N-1 proves N composite outright. A
+/// base whose order search does not close within STEP_CAP leaves N
+/// Undetermined for that base — every subsequent base gets the same
+/// treatment, so the overall verdict is Undetermined the moment any one
+/// base's search runs out of budget, Composite the moment any one base
+/// proves it, and Prime only once every tested base has passed clean.
+pub fn is_prime(a: &str) -> PrimeVerdict {
     let t = trim(a);
-    let last = t.as_bytes().last().copied().unwrap_or(b'0');
-    last - b'0'
-}
+    let n: BigUint = match t.parse() {
+        Ok(v) => v,
+        Err(_) => return PrimeVerdict::Composite,
+    };
+    let two = BigUint::from(2u32);
+    if n < two { return PrimeVerdict::Composite; }
+    if n == two { return PrimeVerdict::Prime; }
+    if &n % &two == BigUint::zero() { return PrimeVerdict::Composite; }
 
-/// a mod d. d is small (<= 1_000_000_000). Returns the small remainder.
-/// Full-precision schoolbook: never rounds.
-fn rem_small(a: &str, d: u64) -> u64 {
-    let mut r: u64 = 0;
-    for c in a.bytes() {
-        // r is always < d here, and d <= 1e9, so r*10 + digit < 1e10, fits u64.
-        // For d up to ~1.84e18 this is exact. We use u128 for the product+carry
-        // to guarantee no overflow even if d grows to 1e18.
-        r = (r as u128 * 10 + (c - b'0') as u128 % d as u128) as u64 % d;
-    }
-    r
-}
-
-/// True if d (u64) divides a exactly.
-fn divisible_by(a: &str, d: u64) -> bool {
-    if d < 10 {
-        // Fast path for small divisors
-        match d {
-            1 => true,
-            2 => is_even(a),
-            3 => rem_small(a, 3) == 0,
-            4 => {
-                let r = rem_small(a, 100);
-                r % 4 == 0
+    let n_minus_1 = &n - BigUint::one();
+    let bases: [u32; 6] = [2, 3, 5, 7, 11, 13];
+    for &b in &bases {
+        let a_b = BigUint::from(b);
+        if a_b >= n { continue; }
+        match winding_order_big(&a_b, &n, STEP_CAP) {
+            WindingBig::Order(r) => {
+                if r == 0 || &n_minus_1 % BigUint::from(r) != BigUint::zero() {
+                    return PrimeVerdict::Composite;
+                }
             }
-            5 => last_digit(a) == 0 || last_digit(a) == 5,
-            6 => is_even(a) && rem_small(a, 3) == 0,
-            7 => rem_small(a, 7) == 0,
-            8 => rem_small(a, 1000) % 8 == 0,
-            9 => rem_small(a, 9) == 0,
-            _ => false,
+            // gcd(a, N) != 1 for a < N means a shares a factor with N.
+            WindingBig::NotInGroup => return PrimeVerdict::Composite,
+            WindingBig::BudgetExceeded => return PrimeVerdict::Undetermined,
         }
-    } else {
-        rem_small(a, d) == 0
     }
+    PrimeVerdict::Prime
 }
 
-/// a / d for small u64 divisor d, returns string. Exact division.
-/// Schoolbook: r is bounded by d, so r*10+digit < 10*d <= 1e19, fits in u128.
-fn div_small(a: &str, d: u64) -> String {
-    let mut out: Vec<u8> = Vec::new();
-    let mut r: u128 = 0;
-    for c in a.bytes() {
-        r = r * 10 + (c - b'0') as u128;
-        let q = (r / d as u128) as u8;
-        if !out.is_empty() || q > 0 {
-            out.push(b'0' + q);
-        }
-        r %= d as u128;
-    }
-    if out.is_empty() { String::from("0") } else { String::from_utf8(out).unwrap() }
-}
-
-/// Miller-Rabin, arbitrary precision, via BigUint::modpow. The 13 witnesses
-/// 2..41 are deterministic for every n < 3,317,044,064,679,887,385,961,981
-/// (Sinclair's known bound); past that they still carry a false-positive
-/// probability below 4^-13 per composite, the same witness practice GMP and
-/// OpenSSL use for arbitrary-size candidates.
-fn miller_rabin(n: &BigUint) -> bool {
-    let zero = BigUint::zero();
-    let one = BigUint::one();
-    let two = &one + &one;
-    if *n < two { return false; }
-    if *n == two { return true; }
-    if n % &two == zero { return false; }
-
-    let n_minus_one = n - &one;
-    let mut d = n_minus_one.clone();
-    let mut r: u32 = 0;
-    while &d % &two == zero {
-        d = &d / &two;
-        r += 1;
-    }
-
-    let witnesses: [u64; 13] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41];
-    for &a_u64 in witnesses.iter() {
-        let a = BigUint::from(a_u64);
-        if &a >= n { continue; }
-        let mut x = a.modpow(&d, n);
-        if x == one || x == n_minus_one { continue; }
-        let mut passed = false;
-        for _ in 0..r.saturating_sub(1) {
-            x = x.modpow(&two, n);
-            if x == n_minus_one { passed = true; break; }
-        }
-        if !passed { return false; }
-    }
-    true
-}
-
-/// True if a is prime. Trial division for anything that fits u64 (exact,
-/// fast); beyond that, a small-factor pre-filter followed by Miller-Rabin.
-///
-/// FIXED 2026-08-31: the arbitrary-precision path used to walk trial
-/// division only up to d=10,000,000 and then silently fall through to
-/// `true` regardless of whether a factor had actually been ruled out past
-/// that point -- so any number whose smallest prime factor exceeds 1e7 was
-/// reported prime unconditionally. That is every real RSA modulus by
-/// construction (both factors are always far larger than 1e7). Verified
-/// against the real RSA-100 challenge modulus (a published, historical,
-/// definitely-composite 100-digit semiprime, confirmed composite via
-/// sympy.isprime): this function used to return true on it.
-pub fn is_prime(a: &str) -> bool {
-    let t = trim(a);
-    if t == "1" || t == "0" { return false; }
-    if t == "2" { return true; }
-    if is_even(&t) { return false; }
-    // Quick small-prime sieve
-    if divisible_by(&t, 3) { return t == "3"; }
-    if divisible_by(&t, 5) { return t == "5"; }
-    if divisible_by(&t, 7) { return t == "7"; }
-    if divisible_by(&t, 11) { return t == "11"; }
-    if divisible_by(&t, 13) { return t == "13"; }
-
-    // For numbers that fit in u64, trial division to sqrt is exact and fast.
-    if t.len() <= 18 {
-        if let Ok(n) = t.parse::<u64>() {
-            let mut d: u64 = 17;
-            while d * d <= n {
-                if n % d == 0 { return false; }
-                d += 2;
-            }
-            return true;
-        }
-    }
-
-    // Beyond u64 (t.len() > 18, so t is always far larger than any d below):
-    // a cheap small-factor pre-filter, then the real verdict from
-    // Miller-Rabin -- never a silent fall-through to true.
-    let mut d: u64 = 17;
-    while d <= 100_000 {
-        if rem_small(&t, d) == 0 { return false; }
-        d += 2;
-    }
-    match t.parse::<BigUint>() {
-        Ok(n) => miller_rabin(&n),
-        Err(_) => false,
+fn prime_verdict_str(v: PrimeVerdict) -> &'static str {
+    match v {
+        PrimeVerdict::Prime => "PRIME",
+        PrimeVerdict::Composite => "COMPOSITE",
+        PrimeVerdict::Undetermined => "UNDETERMINED (order search exceeded the step budget)",
     }
 }
 
@@ -279,19 +166,34 @@ pub fn word() -> String {
 }
 
 /// Find the nearest prime ≤ n. n is a decimal string (arbitrary precision).
+/// Stops and says so the moment the search meets an Undetermined verdict —
+/// it does not step past a number it could not certify.
 pub fn find(n: &str) -> String {
     if lt(n, "2") {
         return format!("prime_winding find {}: no primes ≤ {}", n, n);
     }
-    if is_prime(n) {
-        return format!(
-            "prime_winding find {}: {} IS PRIME\n  glyph: {}",
-            n, n, WORD
-        );
-    }
     let mut m = trim(n);
     let mut steps: u64 = 0;
-    while !is_prime(&m) {
+    loop {
+        match is_prime(&m) {
+            PrimeVerdict::Prime => {
+                return if steps == 0 {
+                    format!("prime_winding find {}: {} IS PRIME\n  glyph: {}", n, n, WORD)
+                } else {
+                    format!(
+                        "prime_winding find {}: {} is composite, nearest prime ≤ {} is {}\n  glyph: {}",
+                        n, n, n, m, WORD
+                    )
+                };
+            }
+            PrimeVerdict::Undetermined => {
+                return format!(
+                    "prime_winding find {}: order search on {} did not close within the step budget — cannot certify further",
+                    n, m
+                );
+            }
+            PrimeVerdict::Composite => {}
+        }
         if lt(&m, "2") {
             return format!("prime_winding find {}: no prime found below", n);
         }
@@ -301,75 +203,91 @@ pub fn find(n: &str) -> String {
             return format!("prime_winding find {}: scan limit reached (1B steps)", n);
         }
     }
-    format!(
-        "prime_winding find {}: {} is composite, nearest prime ≤ {} is {}\n  glyph: {}",
-        n, n, n, m, WORD
-    )
 }
 
-/// Factor n (decimal string, arbitrary precision) into primes with multiplicity.
-///
-/// FIXED 2026-08-31: the same false-positive class as `is_prime`. Trial
-/// division ran to a fixed cap (d > 1,000,000) and, on hitting it, pushed
-/// whatever remained as though it were a single prime factor -- so a large
-/// semiprime with no factor below the cap (an RSA modulus, by construction)
-/// was reported as prime with no factors at all. Now checks the leftover
-/// cofactor with `is_prime` (real Miller-Rabin) before ever calling it
-/// prime, and says plainly when trial division could not finish the split.
+/// Factor n (decimal string, arbitrary precision) via the winding-order
+/// engine only. Three outcomes per component, none collapsed into the
+/// others: confirmed prime factors, composite cofactors the Shor step
+/// could not split within its retries, and cofactors whose own
+/// primality search never closed at all.
 pub fn factor(n: &str) -> String {
-    if lt(n, "2") {
+    let t = trim(n);
+    let n_big: BigUint = match t.parse() {
+        Ok(v) => v,
+        Err(_) => return format!("prime_winding factor {}: not a valid non-negative integer", n),
+    };
+    if n_big < BigUint::from(2u32) {
         return format!("prime_winding factor {}: n < 2, no prime factors", n);
     }
-    let mut m = trim(n);
-    let mut factors: Vec<String> = Vec::new();
 
-    while is_even(&m) {
-        factors.push(String::from("2"));
-        m = div_small(&m, 2);
-    }
-    let mut d: u64 = 3;
-    loop {
-        let d2 = (d as u128 * d as u128).to_string();
-        // Break only once d^2 exceeds m -- d^2 == m (m a perfect square of
-        // the next divisor, e.g. m=25 at d=5) must still be tested, or that
-        // divisor is silently skipped. Was `!lt(&d2, &m)`, which broke one
-        // step early on exactly that boundary; caught live testing 100.
-        if lt(&m, &d2) { break; }
-        while rem_small(&m, d) == 0 {
-            factors.push(d.to_string());
-            m = div_small(&m, d);
-        }
-        d += 2;
-        if d > 1_000_000 { break; }
+    let mut m = n_big;
+    let mut primes: Vec<BigUint> = Vec::new();
+    let two = BigUint::from(2u32);
+    while &m % &two == BigUint::zero() {
+        primes.push(two.clone());
+        m /= &two;
     }
 
-    if !is_zero(&m) && m != "1" {
-        if is_prime(&m) {
-            factors.push(m.clone());
-        } else if factors.is_empty() {
-            return format!(
-                "prime_winding factor {}: {} is composite (Miller-Rabin) but has no factor below 1,000,000 — trial division cannot split it further",
-                n, n
-            );
-        } else {
-            let rep = factors.join(" × ");
-            return format!(
-                "prime_winding factor {}: {} = {} × <composite cofactor {}> — trial division found no further factor below 1,000,000, and Miller-Rabin confirms the cofactor is not prime",
-                n, n, rep, m
-            );
+    let mut composite_unsplit: Vec<BigUint> = Vec::new();
+    let mut undetermined: Vec<BigUint> = Vec::new();
+    let mut stack: Vec<BigUint> = Vec::new();
+    if m > BigUint::one() { stack.push(m); }
+    let mut seed: u64 = 0xC0FFEE_1234_5678;
+
+    while let Some(cand) = stack.pop() {
+        if cand == BigUint::one() { continue; }
+        match is_prime(&cand.to_str_radix(10)) {
+            PrimeVerdict::Prime => primes.push(cand),
+            PrimeVerdict::Undetermined => undetermined.push(cand),
+            PrimeVerdict::Composite => {
+                seed = seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+                match factor_big(&cand, FACTOR_TRIES, STEP_CAP, seed) {
+                    FactorBig::Found { p, q, .. } => {
+                        stack.push(p);
+                        stack.push(q);
+                    }
+                    FactorBig::NoFactorInTries | FactorBig::BudgetExceeded => {
+                        composite_unsplit.push(cand);
+                    }
+                }
+            }
         }
     }
+    primes.sort_unstable();
+    composite_unsplit.sort_unstable();
+    undetermined.sort_unstable();
 
-    if factors.is_empty() {
+    if primes.is_empty() && composite_unsplit.is_empty() && undetermined.is_empty() {
         return format!("prime_winding factor {}: {} IS PRIME", n, n);
     }
-    let distinct: bool = factors.len() == 1 && factors[0] == n;
-    if distinct {
-        format!("prime_winding factor {}: {} IS PRIME", n, n)
-    } else {
-        let rep = factors.join(" × ");
-        format!("prime_winding factor {}: {} = {}", n, n, rep)
+    if composite_unsplit.is_empty() && undetermined.is_empty() && primes.len() == 1
+        && primes[0].to_str_radix(10) == trim(n)
+    {
+        return format!("prime_winding factor {}: {} IS PRIME", n, n);
     }
+
+    let mut out = format!("prime_winding factor {}: ", n);
+    if !primes.is_empty() {
+        let rep: Vec<String> = primes.iter().map(|p| p.to_str_radix(10)).collect();
+        out.push_str(&format!("{} = {}", n, rep.join(" × ")));
+    } else {
+        out.push_str(&format!("{} — no confirmed prime factors", n));
+    }
+    if !composite_unsplit.is_empty() {
+        let rep: Vec<String> = composite_unsplit.iter().map(|p| p.to_str_radix(10)).collect();
+        out.push_str(&format!(
+            "\n  └─ composite cofactor(s), order search could not split within {} tries: {}",
+            FACTOR_TRIES, rep.join(" × ")
+        ));
+    }
+    if !undetermined.is_empty() {
+        let rep: Vec<String> = undetermined.iter().map(|p| p.to_str_radix(10)).collect();
+        out.push_str(&format!(
+            "\n  └─ cofactor(s) whose primality itself did not close within the step budget: {}",
+            rep.join(" × ")
+        ));
+    }
+    out
 }
 
 pub fn cycle() -> String {
@@ -414,7 +332,10 @@ pub fn help() -> String {
     format!(
         "prime_winding — winding period of the primes on the number line\n\
          glyph word: {}\n\
-         period: {}, phase-bearing, Frobenius verdict: {}\n\n\
+         period: {}, phase-bearing, Frobenius verdict: {}\n\
+         primality and factoring both run on the BSGS winding-order search\n\
+         (step budget {} baby steps); past that budget a cofactor's status\n\
+         reports as UNDETERMINED rather than a guess.\n\n\
          subcommands:\n\
            prime_winding word       canonical glyph word\n\
            prime_winding find <n>   find nearest prime ≤ n (arbitrary precision)\n\
@@ -424,6 +345,8 @@ pub fn help() -> String {
            prime_winding verdict    Frobenius verdict and tri-ancestral reading\n\
            prime_winding artifact   ob3ect + Lean scaffold paths\n\
            prime_winding help       this help",
-        WORD, PERIOD, FROBENIUS_VERDICT
+        WORD, PERIOD, FROBENIUS_VERDICT, STEP_CAP
     )
 }
+
+pub fn prime_verdict_label(v: PrimeVerdict) -> &'static str { prime_verdict_str(v) }

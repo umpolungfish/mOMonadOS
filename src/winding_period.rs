@@ -20,6 +20,8 @@
 
 use alloc::vec::Vec;
 use crate::sprintln;
+use num_bigint::{BigUint, BigInt, Sign};
+use num_traits::{Zero, One, ToPrimitive};
 
 // ── Winding: the torus coordinate ──────────────────────────────
 
@@ -291,4 +293,180 @@ pub fn repl_factorgen(bits: u32, tries: u32, seed: u64) {
             N, f1, f2, a, r, f1 * f2 == N, bits),
         None => sprintln!("factorgen({} bits): no factor in {} tries (N={})", bits, tries, N),
     }
+}
+
+// ── Arbitrary-precision winding order: BSGS on BigUint ─────────────────
+//
+// N can be as large as the caller wants; the ORDER r this can certify
+// cannot be, because the baby-step table it walks has to fit in memory.
+// r is bounded by step_cap*(step_cap+1), which is why it always comes
+// back as a plain u64 even when N does not: the table is what limits
+// reach, not N's size. Past that reach the search reports plainly that
+// it did not close within the cap -- never a silent switch to a
+// different, non-winding method.
+
+/// a mod N, N mod a, gcd -- same Euclid as the u64 `gcd` above, BigUint.
+fn gcd_big(mut a: BigUint, mut b: BigUint) -> BigUint {
+    while !b.is_zero() {
+        let t = &a % &b;
+        a = b;
+        b = t;
+    }
+    a
+}
+
+/// Integer square root by Newton's method, BigUint -- same shape as `isqrt`.
+fn isqrt_big(n: &BigUint) -> BigUint {
+    if n.is_zero() { return BigUint::zero(); }
+    let two = BigUint::from(2u32);
+    let mut x = n.clone();
+    let mut y = (&x + BigUint::one()) / &two;
+    while y < x {
+        x = y;
+        y = (&x + n / &x) / &two;
+    }
+    x
+}
+
+/// Modular inverse via extended Euclid on BigInt -- same shape as `egcd`
+/// + `modinv`, promoted to signed arbitrary precision for the subtraction.
+fn modinv_big(a: &BigUint, m: &BigUint) -> Option<BigUint> {
+    let a_i = BigInt::from_biguint(Sign::Plus, a.clone());
+    let m_i = BigInt::from_biguint(Sign::Plus, m.clone());
+    let (mut old_r, mut r) = (a_i, m_i.clone());
+    let (mut old_s, mut s) = (BigInt::from(1), BigInt::from(0));
+    while !r.is_zero() {
+        let q = &old_r / &r;
+        let t_r = &old_r - &q * &r; old_r = r; r = t_r;
+        let t_s = &old_s - &q * &s; old_s = s; s = t_s;
+    }
+    if old_r != BigInt::from(1) { return None; }
+    let inv = ((old_s % &m_i) + &m_i) % &m_i;
+    inv.to_biguint()
+}
+
+/// Three outcomes for a BigUint order search: found (always u64, per the
+/// reach argument above), a not coprime to N (or N<=1, degenerate), or
+/// the table the step cap allows was not big enough to see the closure.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum WindingBig {
+    Order(u64),
+    NotInGroup,
+    BudgetExceeded,
+}
+
+/// Denominator reduction on a u64 order, BigUint modpow underneath --
+/// same algorithm as `minimal_winding`, promoted so N can be arbitrary.
+fn minimal_winding_big(a: &BigUint, n: &BigUint, mut r: u64) -> u64 {
+    if r <= 1 { return r; }
+    let mut factors: Vec<u64> = Vec::new();
+    let mut rr = r;
+    let mut d = 2u64;
+    while d * d <= rr {
+        if rr % d == 0 {
+            factors.push(d);
+            while rr % d == 0 { rr /= d; }
+        }
+        d += if d == 2 { 1 } else { 2 };
+    }
+    if rr > 1 { factors.push(rr); }
+    let one = BigUint::one();
+    let mut changed = true;
+    while changed {
+        changed = false;
+        for &p in &factors {
+            if r % p == 0 && a.modpow(&BigUint::from(r / p), n) == one {
+                r /= p;
+                changed = true;
+            }
+        }
+    }
+    r
+}
+
+/// BSGS order of a mod N, BigUint. `step_cap` bounds the baby-step table
+/// (and so the order this can certify, to step_cap*(step_cap+1)) --
+/// exceeding it is BudgetExceeded, not a guess and not a fallback.
+pub fn winding_order_big(a: &BigUint, n: &BigUint, step_cap: u64) -> WindingBig {
+    let one = BigUint::one();
+    if *n <= one { return WindingBig::NotInGroup; }
+    let a_mod = a % n;
+    if gcd_big(a_mod.clone(), n.clone()) != one { return WindingBig::NotInGroup; }
+    if a_mod == one { return WindingBig::Order(1); }
+
+    let m_big = isqrt_big(n) + &one;
+    if m_big > BigUint::from(step_cap) { return WindingBig::BudgetExceeded; }
+    let m = match m_big.to_u64() { Some(v) => v, None => return WindingBig::BudgetExceeded };
+
+    let mut baby: Vec<(BigUint, u64)> = Vec::with_capacity(m as usize);
+    let mut cur = one.clone();
+    for j in 0..m {
+        baby.push((cur.clone(), j));
+        cur = (&cur * &a_mod) % n;
+    }
+    baby.sort_unstable_by(|x, y| x.0.cmp(&y.0));
+    baby.dedup_by(|x, y| x.0 == y.0);
+
+    let a_inv = match modinv_big(&a_mod, n) { Some(v) => v, None => return WindingBig::NotInGroup };
+    let giant_step = a_inv.modpow(&BigUint::from(m), n);
+    let mut gamma = one.clone();
+    for i in 1..=m {
+        gamma = (&gamma * &giant_step) % n;
+        if let Ok(k) = baby.binary_search_by(|probe| probe.0.cmp(&gamma)) {
+            let j = baby[k].1;
+            let cand = i.saturating_mul(m) + j;
+            if cand > 0 && a_mod.modpow(&BigUint::from(cand), n) == one {
+                return WindingBig::Order(minimal_winding_big(&a_mod, n, cand));
+            }
+        }
+    }
+    WindingBig::BudgetExceeded
+}
+
+/// Three outcomes for a BigUint factorization attempt: a non-trivial
+/// split, the tries exhausted with no split found (N may still be
+/// prime, or the bases tried just did not work), or the order search
+/// itself did not reach far enough to try -- BudgetExceeded takes
+/// priority in the report because it means the attempt stopped short,
+/// not that N resisted a complete one.
+pub enum FactorBig {
+    Found { a: BigUint, r: u64, p: BigUint, q: BigUint },
+    NoFactorInTries,
+    BudgetExceeded,
+}
+
+/// Shor's winding step, BigUint: order r of a random base a, r even and
+/// a^(r/2) not ±1 gives gcd(a^(r/2) - 1, N) as a non-trivial factor.
+/// Same retry shape as `factor`, promoted to arbitrary precision.
+pub fn factor_big(n: &BigUint, max_tries: u32, step_cap: u64, mut seed: u64) -> FactorBig {
+    let one = BigUint::one();
+    let three = BigUint::from(3u32);
+    if *n <= three { return FactorBig::NoFactorInTries; }
+    let n_minus_1 = n - &one;
+    let range = n - &three;
+    let mut budget_hit = false;
+    for _ in 0..max_tries {
+        seed = xorshift64(seed);
+        let a = &BigUint::from(seed) % &range + &three;
+        let g0 = gcd_big(a.clone(), n.clone());
+        if g0 != one && &g0 != n {
+            let q = n / &g0;
+            return FactorBig::Found { a, r: 0, p: g0, q };
+        }
+        match winding_order_big(&a, n, step_cap) {
+            WindingBig::Order(r) => {
+                if r == 0 || r % 2 != 0 { continue; }
+                let x = a.modpow(&BigUint::from(r / 2), n);
+                if x == one || x == n_minus_1 { continue; }
+                let g = gcd_big(&x - &one, n.clone());
+                if g != one && &g != n {
+                    let q = n / &g;
+                    return FactorBig::Found { a, r, p: g, q };
+                }
+            }
+            WindingBig::BudgetExceeded => budget_hit = true,
+            WindingBig::NotInGroup => {}
+        }
+    }
+    if budget_hit { FactorBig::BudgetExceeded } else { FactorBig::NoFactorInTries }
 }

@@ -26,7 +26,7 @@
 extern crate alloc;
 
 use crate::sprintln;
-use super::prime_winding::is_prime;
+use super::prime_winding::{is_prime, PrimeVerdict};
 use alloc::string::String;
 use num_bigint::BigUint;
 use num_traits::{One, Zero, ToPrimitive};
@@ -146,7 +146,7 @@ pub fn find_optimal_depth(n_str: &str, max_depth: usize) -> (usize, Option<BigUi
         Some(n) if n > BigUint::one() => n,
         _ => return (0, None),
     };
-    if is_prime(n_str) { return (1, None); }
+    if is_prime(n_str) == PrimeVerdict::Prime { return (1, None); }
     for d in 1..=max_depth {
         let c = closure_seed(&n, d);
         if let Some(factor) = brent_factor_at_depth(&n, &c, d) {
@@ -216,6 +216,9 @@ pub fn repl_dyn(args: &[&str]) {
                 }
                 crate::oneshot_prime_winder::B4Verdict::F => {
                     sprintln!("oneshot[winder] verdict: F (composite) — proceeding to dynamic nesting");
+                }
+                crate::oneshot_prime_winder::B4Verdict::N => {
+                    sprintln!("oneshot[winder] verdict: N (undetermined — order search exceeded its step budget) — proceeding to dynamic nesting");
                 }
             }
 
