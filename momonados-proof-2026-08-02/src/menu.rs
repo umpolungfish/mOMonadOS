@@ -83,6 +83,7 @@ pub static PROGRAMS_MENU: &[MenuItem] = &[
     MenuItem { name: "novel",    cmd: "novel",    desc: "Load novel program 1-3", example: "novel 1", submenu: None },
     MenuItem { name: "shunt",    cmd: "shunt",    desc: "Load shunted program 1-9", example: "shunt 5", submenu: None },
     MenuItem { name: "dynamic",  cmd: "dynamic",  desc: "Dynamic mode: rebuild sequence from IgTuple each wrap", example: "dynamic on", submenu: None },
+    MenuItem { name: "oneshot",  cmd: "oneshot_prime_winder",  desc: "OneShot Prime Winder: prime number primality test", example: "oneshot_prime_winder 17", submenu: None },
 ];
 
 pub static CRYSTAL_MENU: &[MenuItem] = &[

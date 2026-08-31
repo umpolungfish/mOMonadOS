@@ -16,7 +16,7 @@
 //!
 //! All arithmetic is string-based, so n is unbounded (no u64 limit).
 
-use alloc::string::String;
+use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 use alloc::format;
 
@@ -181,7 +181,7 @@ fn div_small(a: &str, d: u64) -> String {
 }
 
 /// True if a is prime, by trial division up to √a (small u64 divisor path).
-fn is_prime(a: &str) -> bool {
+pub fn is_prime(a: &str) -> bool {
     let t = trim(a);
     if t == "1" || t == "0" { return false; }
     if t == "2" { return true; }

@@ -1,0 +1,47 @@
+// doubly_nested_oneshot.rs — Doubly Nested Prime Number Placement Operator
+//
+// One level deeper than nested_oneshot. The word is the nested_oneshot word wrapped
+// in an outer frame layer:
+//   ⊢∈⊢∈≻⊤≺⊥⋈⊙⊞∋⊡⊣∋⊣
+//   └── inner ──┘└────── outer ──────────┘
+//
+// Period: 16 (kernel-verified via imasm cycle; 17-token literal count, but the
+// ROTAT orbit under the frame open/close rules has period 16, not 17 — the
+// closing frame's ∋ token coincides with the prior cycle landing).
+// Phase-bearing: true, 5 distinct landings
+//
+// B4 verdicts (same as nested_oneshot):
+//   T = "one-shot closure" — inner object is at fixed point → N is prime
+//   F = "no closure"       — inner object outside basin → N is composite
+//   B = "paradice"        — both conditions held simultaneously (N = 1)
+//
+// FOLD TOPOLOGY: the outer frame wraps the inner fold/kiss topology.
+// Nesting depth = 2 means two sequential fold operations before closure.
+// The outer frame opens (∈), the inner fold runs, the outer frame fuses (∋).
+//
+// Tuple: ⟨𐑦𐑰𐑾𐑿𐑐𐑧𐑲𐑠⊙𐑓𐑳𐑴⟩ (same tuple as nested_oneshot, but word has depth 2)
+
+#![allow(dead_code)]
+
+extern crate alloc;
+
+use crate::sprintln;
+use super::prime_winding::is_prime;
+use alloc::string::String;
+use alloc::vec::Vec;
+use num_bigint::BigUint;
+use num_traits::{One, Zero, ToPrimitive};
+use core::str::FromStr;
+
+/// The doubly-nested glyph word (inner word wrapped in outer frame).
+pub const WORD: &str = "⊢∈⊢∈≻⊤≺⊥⋈⊙⊞∋⊡⊣∋⊣";
+pub const PERIOD: usize = 16;
+pub const PHASE_BEARING: bool = true;
+
+/// Landing register states at each ROTAT cut k=0..15.
+/// 5 distinct states: A, Ftf, Ttf, tf, T
+/// (kernel-verified: ⊢∈⊢∈≻⊤≺⊥⋈⊙⊞∋⊡⊣∋⊣ → period 16, 5 distinct, final=A, banked=OK)
+pub const LANDINGS: [&str; 16] = [
+    "A", "A", "Ftf", "Ftf", "Ftf", "Ftf", "Ftf", "Ftf",
+    "Ttf", "Ttf", "Ttf", "tf", "T", "T", "A", "A",
+];

@@ -135,174 +135,24 @@ fn token_style(t: Token) -> &'static str {
 pub const HUD_HEIGHT: u16 = 9;
 
 /// Draw the full HUD. Occupies rows 1–9. Content starts at row 10.
-pub fn draw_hud(k: &Kernel, program_name: &str, width: u16) {
-    let w = width as usize;
-
-    // ── Row 1: top bar ──
-    cursor_goto(1, 1);
-    clear_line();
-    styled(BOLD_WHITE, "╔");
-    hr("═", width - 2);
-    styled(BOLD_WHITE, "╗");
-
-    // ── Row 2: program name + tick + tier ──
-    cursor_goto(2, 1); clear_line();
-    serial::write_str("  ");
-    styled(BOLD_CYAN, "mOMonadOS · ");
-    serial::write_str(program_name);
-
-    // Right-justify tick count + tier
-    {
-        let tier = k.snapshot.map(|s| s.tier).unwrap_or(0);
-        let used = 16 + program_name.len(); // "  mOMonadOS · " + name
-        let right_info = 24; // "Tick: 00000000  Tier: O_inf"
-        let pad = if w > used + right_info { w - used - right_info } else { 0 };
-        for _ in 0..pad { serial::write_byte(b' '); }
-        serial::write_str("Tick: ");
-        write_u64(k.tick_count);
-        serial::write_str("  Tier: ");
-        styled(tier_color(tier), tier_label(tier));
-    }
-
-    // ── Row 3: phase, IP, current token, halted ──
-    cursor_goto(3, 1); clear_line();
-    serial::write_str("  ");
-    styled(DIM, "Phase: ");
-    let phases = ["THINK", "ACT", "OBSERVE", "UPDATE"];
-    let idx = (k.tick_count as usize) % 4;
-    serial::write_str(phases[idx]);
-    serial::write_str("  ");
-    styled(DIM, "IP: "); write_usize(k.ip); serial::write_str("/"); write_usize(k.program.len());
-    serial::write_str("  ");
-    styled(DIM, "Token: ");
-    if k.ip < k.program.len() {
-        let t = k.program.get(k.ip).unwrap();
-        styled(token_style(t), t.name());
-    } else { serial::write_str("—"); }
-    // Right side
-    {
-        if k.halted {
-            let used = 28;
-            let right = "HALTED";
-            let pad = if w > used + right.len() { w - used - right.len() } else { 0 };
-            for _ in 0..pad { serial::write_byte(b' '); }
-            styled(BOLD_RED, "HALTED");
-        }
-    }
-
-    // ── Row 4: counters ──
-    cursor_goto(4, 1); clear_line();
-    serial::write_str("  ");
-    styled(DIM, "Frob: "); write_u64(k.frob_checks - k.frob_open);
-    serial::write_str("/"); write_u64(k.frob_checks);
-    serial::write_str("  ");
-    styled(DIM, "B-live: ");
-    if let Some(s) = k.snapshot { write_u64(s.b_live_ticks); } else { serial::write_str("0"); }
-    serial::write_str("  ");
-    styled(DIM, "Gates: ");
-    if let Some(s) = k.snapshot { write_u64(s.gate_discriminations); } else { serial::write_str("0"); }
-    serial::write_str("  ");
-    styled(DIM, "Val-p: ");
-    if let Some(s) = k.snapshot { write_usize(s.value_period); } else { serial::write_str("0"); }
-
-    // ── Row 5: structural snapshot ──
-    cursor_goto(5, 1); clear_line();
-    serial::write_str("  ");
-    if let Some(snap) = k.snapshot {
-        styled(DIM, "Sig:(");
-        write_usize(snap.sig.0); serial::write_str(",");
-        write_usize(snap.sig.1); serial::write_str(",");
-        write_usize(snap.sig.2); serial::write_str(",");
-        write_usize(snap.sig.3); serial::write_str(") ");
-        styled(DIM, "Div:"); write_usize(snap.token_diversity); serial::write_str("/12 ");
-        styled(DIM, "Self:");
-        styled(if snap.self_ref { GREEN } else { DIM }, if snap.self_ref { "T" } else { "F" });
-        serial::write_str(" ");
-        styled(DIM, "Frob-ord:"); write_usize(snap.frobenius_order as usize);
-        serial::write_str(" ");
-        styled(DIM, "Dialeth:");
-        let eff_dial = snap.dialetheia_complete || snap.b_live_ticks > 0;
-        styled(if eff_dial { GREEN } else { DIM },
-               if eff_dial { "YES" } else { "no" });
-        serial::write_str(" ");
-        styled(DIM, "Per:"); write_usize(snap.period);
-    }
-
-    // ── Row 6: stack + fork ──
-    cursor_goto(6, 1); clear_line();
-    serial::write_str("  ");
-    styled(DIM, "Stack["); write_usize(k.stack.depth()); serial::write_str("]: ");
-    let depth = k.stack.depth();
-    let show = if depth > 10 { 10 } else { depth };
-    for i in 0..show {
-        let val = k.stack.peek_at(depth - show + i);
-        styled(b4_style(val), val.name());
-        serial::write_str(" ");
-    }
-    if depth > 10 { serial::write_str("… "); }
-    styled(DIM, "Fork:"); write_usize(k.fork_depth());
-
-    // ── Row 7: registers ──
-    cursor_goto(7, 1); clear_line();
-    serial::write_str("  ");
-    styled(DIM, "R0-R7: ");
-    for i in 0..8 {
-        let v = k.registers.read(i);
-        styled(b4_style(v), v.name());
-        serial::write_str(" ");
-    }
-
-    // ── Row 8: token trace ──
-    cursor_goto(8, 1); clear_line();
-    serial::write_str("  ");
-    styled(DIM, "Trace: ");
-    let n = k.program.len();
-    let show_start = if k.ip > 6 { k.ip - 6 } else { 0 };
-    let show_end = if show_start + 13 < n { show_start + 13 } else { n };
-    if show_start > 0 { serial::write_str("… "); }
-    for i in show_start..show_end {
-        let t = k.program.get(i).unwrap();
-        if i == k.ip {
-            styled(BOLD_WHITE, "▶");
-            styled(token_style(t), t.name());
-        } else {
-            if i > show_start { serial::write_str("·"); }
-            styled(DIM, t.name());
-        }
-        if i < show_end - 1 { serial::write_str(" "); }
-    }
-    if show_end < n { serial::write_str(" …"); }
-
-    // ── Row 9: bottom bar ──
-    cursor_goto(9, 1); clear_line();
-    styled(BOLD_WHITE, "╚");
-    hr("═", width - 2);
-    styled(BOLD_WHITE, "╝");
-
-    // Move cursor below HUD
-    cursor_goto(HUD_HEIGHT + 1, 1);
+pub fn draw_hud(_k: &Kernel, _program_name: &str, _width: u16) {
+    // HUD fully disabled — no terminal rendering, no cursor moves
 }
 
-// ─── Full-screen display modes ────────────────────────────────
-
 /// Initialize display: clear screen, hide cursor, draw HUD.
-pub fn display_init(k: &Kernel, program_name: &str, width: u16) {
-    enter_alt_screen();
-    cls();
-    cursor_hide();
-    draw_hud(k, program_name, width);
+pub fn display_init(_k: &Kernel, _program_name: &str, _width: u16) {
+    // HUD fully disabled — no alt-screen, no clear, no cursor moves
 }
 
 /// Shutdown display: exit alt screen, show cursor.
-/// Terminal restores its original screen and cursor position naturally.
+/// HUD fully disabled — no alt-screen to leave, no cursor to restore.
 pub fn display_shutdown() {
-    exit_alt_screen();
-    cursor_show();
+    // no-op
 }
 
 /// Refresh HUD only (no full clear — faster).
-pub fn display_refresh(k: &Kernel, program_name: &str, width: u16) {
-    draw_hud(k, program_name, width);
+pub fn display_refresh(_k: &Kernel, _program_name: &str, _width: u16) {
+    // HUD fully disabled — no refresh
 }
 
 // ─── Continuous execution with periodic display refresh ───────

@@ -181,6 +181,8 @@ pub fn repl(k: &mut Kernel) {
         match cmd {
             "quit" | "exit" | "halt" => {
                 sprintln!("Halting. μ∘δ=id.");
+                #[cfg(feature = "hosted")]
+                crate::live_hud::stop_hud();
                 k.halt();
                 break;
             }
@@ -1243,6 +1245,22 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("{}", help());
                     }
                 }
+            }
+            "oneshot_prime_winder" => {
+                let arg = parts.next().unwrap_or("");
+                crate::oneshot_prime_winder::repl_oneshot_prime_winder(&[arg]);
+            }
+            "nested_oneshot" | "nested" | "nos" => {
+                let tail: Vec<&str> = parts.collect();
+                crate::nested_oneshot::repl_nested_oneshot(&tail);
+            }
+            "doubly_nested_oneshot" | "dnos" => {
+                let tail: Vec<&str> = parts.collect();
+                crate::doubly_nested_oneshot::repl_doubly_nested_oneshot(&tail);
+            }
+            "dyn_nest" | "dynamic_nest" | "dyn" => {
+                let tail: Vec<&str> = parts.collect();
+                crate::dynamic_nesting_prime_finder::repl_dyn(&tail);
             }
             "qft" => {
                 let sub = parts.next().unwrap_or("");
@@ -3453,6 +3471,8 @@ Stopped after {} ticks.", ran);
                 }
             },
         }
+        // Update live HUD (hosted build) - inside the main loop
+        #[cfg(feature = "hosted")] { let _ = { /* HUD disabled */ }; }
     }
 }
 

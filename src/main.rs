@@ -75,7 +75,7 @@ mod pari_integration;
 mod tower_polynomials;
 mod parasm;
 mod belnap_shor;
-mod prime_winding;
+pub mod prime_winding;
 mod belnap_shor_factors;
 mod fibonacci_shor;
 mod belnap_ring_shor;
@@ -131,6 +131,10 @@ mod constant_closure;
 mod repl;
 mod fibonacci_qc;
 mod winding_period;
+mod oneshot_prime_winder;
+mod nested_oneshot;
+mod doubly_nested_oneshot;
+mod dynamic_nesting_prime_finder;
 mod lattice_flow;
 mod triple_frame;
 mod iuft_qc;
@@ -347,6 +351,87 @@ mod hosted_heap {
     }
 }
 
+/// Live corner HUD — background thread that displays register state in terminal corner.
+#[cfg(feature = "hosted")]
+mod live_hud {
+    use core::sync::atomic::{AtomicBool, Ordering};
+    use std::sync::{Mutex, OnceLock};
+    use std::thread;
+
+    // Shared kernel state for HUD
+    #[derive(Default, Clone)]
+    pub struct HudState {
+        pub tick_count: u64,
+        pub ip: usize,
+        pub program_len: usize,
+        pub tier: u8,
+        pub frob_checks: u64,
+        pub frob_open: u64,
+        pub b_live_ticks: u64,
+        pub gate_discriminations: u64,
+        pub value_period: usize,
+        pub sig: (usize, usize, usize, usize),
+        pub token_diversity: usize,
+        pub self_ref: bool,
+        pub halted: bool,
+    }
+
+    static HUD_STATE: OnceLock<Mutex<HudState>> = OnceLock::new();
+    static HUD_RUNNING: AtomicBool = AtomicBool::new(false);
+    static HUD_THREAD: OnceLock<Mutex<Option<thread::JoinHandle<()>>>> = OnceLock::new();
+
+    fn get_state() -> &'static Mutex<HudState> {
+        HUD_STATE.get_or_init(|| Mutex::new(HudState::default()))
+    }
+
+    fn get_thread_handle() -> &'static Mutex<Option<thread::JoinHandle<()>>> {
+        HUD_THREAD.get_or_init(|| Mutex::new(None))
+    }
+
+    pub fn update_hud_state(state: HudState) {
+        if let Some(mut guard) = get_state().lock().ok() {
+            *guard = state;
+        }
+    }
+
+    fn draw_corner_hud(_state: &HudState) {
+        // HUD fully disabled — no ANSI output
+    }
+
+    pub fn start_hud() {
+        // HUD fully disabled — no background thread, no ANSI cursor movement
+        if HUD_RUNNING.swap(true, Ordering::Relaxed) {
+            return; // Already running
+        }
+    }
+
+    pub fn stop_hud() {
+        HUD_RUNNING.store(false, Ordering::Relaxed);
+        if let Some(handle) = get_thread_handle().lock().unwrap().take() {
+            handle.join().ok();
+        }
+    }
+
+    pub fn update_from_kernel(k: &crate::kernel::Kernel) {
+        let state = HudState {
+            tick_count: k.tick_count,
+            ip: k.ip,
+            program_len: k.program.len(),
+            tier: k.snapshot.map(|s| s.tier).unwrap_or(0),
+            frob_checks: k.frob_checks,
+            frob_open: k.frob_open,
+            b_live_ticks: k.snapshot.map(|s| s.b_live_ticks).unwrap_or(0),
+            gate_discriminations: k.snapshot.map(|s| s.gate_discriminations).unwrap_or(0),
+            value_period: k.snapshot.map(|s| s.value_period).unwrap_or(0),
+            sig: k.snapshot.map(|s| s.sig).unwrap_or((0,0,0,0)),
+            token_diversity: k.snapshot.map(|s| s.token_diversity).unwrap_or(0),
+            self_ref: k.snapshot.map(|s| s.self_ref).unwrap_or(false),
+            halted: k.halted,
+        };
+        update_hud_state(state);
+    }
+}
+
 #[cfg(feature = "hosted")]
 #[global_allocator]
 static ALLOCATOR: hosted_heap::Counting = hosted_heap::Counting;
@@ -446,6 +531,11 @@ fn kmain() -> ! {
     sprintln!();
 
     print_banner();
+    
+    // Start live corner HUD (hosted build)
+    #[cfg(feature = "hosted")]
+    live_hud::start_hud();
+    
     repl::repl(&mut k);
 
     // ── Shutdown: write to QEMU isa-debug-exit port (0xf4).

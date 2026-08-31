@@ -219,6 +219,11 @@ pub fn repl(k: &mut Kernel) {
                     other => sprintln!("winding: unknown subcommand '{}' (try 'winding help')", other),
                 }
             },
+
+            "oneshot_prime_winder" | "opw" => {
+                let args: Vec<&str> = parts.collect();
+                crate::oneshot_prime_winder::repl_oneshot_prime_winder(&args);
+            },
             "proof" => {
                 match parts.next().unwrap_or("") {
                     "" | "list" => crate::proof::list_proofs(),
