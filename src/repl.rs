@@ -2063,6 +2063,10 @@ pub fn repl(k: &mut Kernel) {
                 let rest: Vec<&str> = joined.split_whitespace().collect();
                 crate::combo::repl_combo(&rest);
             }
+            "combo2" => {
+                let word = parts.next().unwrap_or("");
+                crate::combo::repl_combo2(&[word]);
+            }
             // Manuscript spine: PROVE→UNIFY→PORT ledger + vessel runtime half.
             // No Python. Formal pack in p4ramill VAE_Vita_ManuscriptSpine.
             "spine" => {

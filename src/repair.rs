@@ -357,23 +357,27 @@ impl RepairEngine {
     }
 }
 
+/// The cheapest candidate in a repair search, and how many were found,
+/// computed once and shared by `repair_best_report` (which formats it) and
+/// `repair_best_word` (which just wants the resulting word to feed onward).
+fn cheapest(word: &str) -> (usize, Option<RepairCandidate>) {
+    let engine = RepairEngine::new();
+    let result = engine.repair(word, "program");
+    let count = result.repairs.len();
+    let best = result.repairs.into_iter()
+        .min_by(|a, b| a.cost.partial_cmp(&b.cost).unwrap_or(core::cmp::Ordering::Equal));
+    (count, best)
+}
+
 /// The single cheapest repair only, not the full ranked-by-address listing
 /// `repair_main` gives. Same search, same engine; just the one line a caller
 /// who already knows the search is real usually wants.
 pub fn repair_best_report(word: &str) -> String {
-    let engine = RepairEngine::new();
-    let result = engine.repair(word, "program");
-
-    if result.repairs.is_empty() {
-        return format!(
-            "repair {}: no repair found in search space (error: {})\n",
-            word, result.error_type
-        );
-    }
-
-    let best = result.repairs.iter()
-        .min_by(|a, b| a.cost.partial_cmp(&b.cost).unwrap_or(core::cmp::Ordering::Equal))
-        .expect("repairs is non-empty");
+    let (count, best) = cheapest(word);
+    let best = match best {
+        Some(b) => b,
+        None => return format!("repair {}: no repair found in search space\n", word),
+    };
 
     let addr = crystal_address_of(&best.repaired_word)
         .map(|a| a.to_string())
@@ -381,9 +385,16 @@ pub fn repair_best_report(word: &str) -> String {
 
     format!(
         "repair {}: {} candidate(s), cheapest below\n  {:?} -> {}\n  cost {:.2}  edit distance {}  ΔS {:.4}  crystal {}\n",
-        word, result.repairs.len(), best.repair, best.repaired_word,
+        word, count, best.repair, best.repaired_word,
         best.cost, best.edit_distance, best.entropy_delta, addr
     )
+}
+
+/// Just the cheapest repaired word, no formatting -- for a caller that wants
+/// to run the repair itself through something else. None if the word already
+/// holds (nothing to repair) or the search space came up empty.
+pub fn repair_best_word(word: &str) -> Option<String> {
+    cheapest(word).1.map(|b| b.repaired_word)
 }
 
 pub fn repair_main(args: &[&str]) -> String {

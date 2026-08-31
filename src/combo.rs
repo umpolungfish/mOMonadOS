@@ -99,3 +99,77 @@ pub fn repl_combo(args: &[&str]) {
     let word_args: &[&str] = if brief && !args.is_empty() { &args[..args.len()-1] } else { args };
     sprintln!("{}", combo_main(word_args, brief));
 }
+
+/// combo, then again: weight | banked | insert | repair on every distinct
+/// rotation of the input word (brief -- combo's own full listing on the
+/// source side would be the 19000-line report all over again for a word
+/// that's only the starting point here), then the same four instruments a
+/// second time, on every distinct word that repair's cheapest fix produced
+/// across that first pass. A repair that closes one cut is not yet known to
+/// hold on its OWN orbit; this is what checks that instead of assuming it.
+pub fn combo2_main(args: &[&str]) -> String {
+    let mut out = String::new();
+    if args.is_empty() {
+        out.push_str("combo2 <word>   combo (brief) on the word, then weight | banked |\n");
+        out.push_str("                insert | repair again on every distinct repaired\n");
+        out.push_str("                word the first pass produced\n");
+        return out;
+    }
+    let word = args[0];
+
+    out.push_str("══ FIRST PASS — the word's own orbit ═══════════════════════════\n");
+    out.push_str(&combo_main(&[word], true));
+
+    let rotations = distinct_rotations(word);
+    let mut repaired: Vec<String> = Vec::new();
+    for (_, rot) in rotations.iter() {
+        if let Some(rw) = crate::repair::repair_best_word(rot) {
+            if !repaired.iter().any(|w| w == &rw) {
+                repaired.push(rw);
+            }
+        }
+    }
+
+    out.push('\n');
+    out.push_str("══ SECOND PASS — weight | banked | insert | repair on each repair ═\n");
+    if repaired.is_empty() {
+        out.push_str("  no rotation produced a repair (every one already held, or none was found)\n");
+        return out;
+    }
+    out.push_str(&alloc::format!(
+        "{} distinct repaired word(s) from the first pass\n", repaired.len()
+    ));
+
+    for rw in repaired.iter() {
+        out.push('\n');
+        out.push_str("┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n");
+        out.push_str(&alloc::format!("repaired word: {}\n", rw));
+        out.push_str("┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n");
+
+        out.push_str("┌─ weight ────────────────────────────────────────────────────\n");
+        for line in imasm_core::lattice_flow::weight_report(rw).lines() {
+            out.push_str("│ "); out.push_str(line); out.push('\n');
+        }
+
+        out.push_str("├─ banked ────────────────────────────────────────────────────\n");
+        for line in imasm_core::lattice_flow::banked_report(rw).lines() {
+            out.push_str("│ "); out.push_str(line); out.push('\n');
+        }
+
+        out.push_str("├─ insert ────────────────────────────────────────────────────\n");
+        for line in imasm_core::lattice_flow::insert_report(rw).lines() {
+            out.push_str("│ "); out.push_str(line); out.push('\n');
+        }
+
+        out.push_str("└─ repair ────────────────────────────────────────────────────\n");
+        for line in crate::repair::repair_best_report(rw).lines() {
+            out.push_str("  "); out.push_str(line); out.push('\n');
+        }
+    }
+
+    out
+}
+
+pub fn repl_combo2(args: &[&str]) {
+    sprintln!("{}", combo2_main(args));
+}

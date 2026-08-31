@@ -250,6 +250,7 @@ pub static GRAMMAR_MENU: &[MenuItem] = &[
     MenuItem { name: "fde", cmd: "fde", desc: "FDE(n) tower navigation: embed | restrict | walk | roundtrip | trans | report — ascend/descend the truth-value lattice at any depth", example: "fde walk 2 3 4 3 2 1", submenu: None },
     MenuItem { name: "rsa", cmd: "rsa", desc: "RSA decrypter via BSGS period-finding on ord_N(C): word | period | verify | <C> <N> <e> — only closes when that order is small, not for real RSA moduli", example: "rsa word", submenu: None },
     MenuItem { name: "combo", cmd: "combo", desc: "cycle a word, then run weight | banked | insert | repair on every distinct rotation it produces, formatted as one report; add 'brief' for repair's cheapest candidate only", example: "combo ⊢∈≻⊤≺⊥⋈⊞⊙⋈∈≻⊤≺⊥⋈⊞⋈∋⊡⊣⊙ brief", submenu: None },
+    MenuItem { name: "combo2", cmd: "combo2", desc: "combo (brief) on a word, then weight | banked | insert | repair again on every distinct word the first pass's repairs produced", example: "combo2 ⊢∈≻⊤≺⊥⋈⊞⊙⋈∈≻⊤≺⊥⋈⊞⋈∋⊡⊣⊙", submenu: None },
 ];
 
 pub static PK2SK_MENU: &[MenuItem] = &[
