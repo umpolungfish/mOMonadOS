@@ -2057,8 +2057,11 @@ pub fn repl(k: &mut Kernel) {
                 crate::rsa_decrypter::repl_rsa(&rest);
             }
             "combo" => {
-                let word = parts.next().unwrap_or("");
-                crate::combo::repl_combo(&[word]);
+                // `combo <word> brief` -- same splitn(4) gluing as elsewhere.
+                let tail: Vec<&str> = parts.collect();
+                let joined = tail.join(" ");
+                let rest: Vec<&str> = joined.split_whitespace().collect();
+                crate::combo::repl_combo(&rest);
             }
             // Manuscript spine: PROVE→UNIFY→PORT ledger + vessel runtime half.
             // No Python. Formal pack in p4ramill VAE_Vita_ManuscriptSpine.

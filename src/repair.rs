@@ -357,6 +357,35 @@ impl RepairEngine {
     }
 }
 
+/// The single cheapest repair only, not the full ranked-by-address listing
+/// `repair_main` gives. Same search, same engine; just the one line a caller
+/// who already knows the search is real usually wants.
+pub fn repair_best_report(word: &str) -> String {
+    let engine = RepairEngine::new();
+    let result = engine.repair(word, "program");
+
+    if result.repairs.is_empty() {
+        return format!(
+            "repair {}: no repair found in search space (error: {})\n",
+            word, result.error_type
+        );
+    }
+
+    let best = result.repairs.iter()
+        .min_by(|a, b| a.cost.partial_cmp(&b.cost).unwrap_or(core::cmp::Ordering::Equal))
+        .expect("repairs is non-empty");
+
+    let addr = crystal_address_of(&best.repaired_word)
+        .map(|a| a.to_string())
+        .unwrap_or_else(|| "unaddressable".to_string());
+
+    format!(
+        "repair {}: {} candidate(s), cheapest below\n  {:?} -> {}\n  cost {:.2}  edit distance {}  ΔS {:.4}  crystal {}\n",
+        word, result.repairs.len(), best.repair, best.repaired_word,
+        best.cost, best.edit_distance, best.entropy_delta, addr
+    )
+}
+
 pub fn repair_main(args: &[&str]) -> String {
     let engine = RepairEngine::new();
     

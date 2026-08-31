@@ -35,11 +35,16 @@ fn distinct_rotations(word: &str) -> Vec<(usize, String)> {
     out
 }
 
-pub fn combo_main(args: &[&str]) -> String {
+/// `brief`: repair prints only its cheapest candidate (`repair_best_report`)
+/// instead of every candidate grouped by crystal address. Same search either
+/// way; only what gets printed changes.
+pub fn combo_main(args: &[&str], brief: bool) -> String {
     let mut out = String::new();
     if args.is_empty() {
-        out.push_str("combo <word>   cycle the word, then run weight | banked | insert | repair\n");
-        out.push_str("               on every distinct rotation it produces\n");
+        out.push_str("combo <word> [brief]   cycle the word, then run weight | banked |\n");
+        out.push_str("                       insert | repair on every distinct rotation\n");
+        out.push_str("                       it produces. brief: repair shows only its\n");
+        out.push_str("                       cheapest candidate, not every one found.\n");
         return out;
     }
     let word = args[0];
@@ -50,7 +55,8 @@ pub fn combo_main(args: &[&str]) -> String {
     let rotations = distinct_rotations(word);
     out.push('\n');
     out.push_str(&alloc::format!(
-        "auditing {} distinct rotation(s)\n", rotations.len()
+        "auditing {} distinct rotation(s){}\n", rotations.len(),
+        if brief { " (brief: cheapest repair only)" } else { "" }
     ));
 
     for (k, rot) in rotations.iter() {
@@ -75,7 +81,11 @@ pub fn combo_main(args: &[&str]) -> String {
         }
 
         out.push_str("└─ repair ────────────────────────────────────────────────────\n");
-        let rep = crate::repair::repair_main(&[rot.as_str(), "program"]);
+        let rep = if brief {
+            crate::repair::repair_best_report(rot)
+        } else {
+            crate::repair::repair_main(&[rot.as_str(), "program"])
+        };
         for line in rep.lines() {
             out.push_str("  "); out.push_str(line); out.push('\n');
         }
@@ -85,5 +95,7 @@ pub fn combo_main(args: &[&str]) -> String {
 }
 
 pub fn repl_combo(args: &[&str]) {
-    sprintln!("{}", combo_main(args));
+    let brief = args.last().copied() == Some("brief");
+    let word_args: &[&str] = if brief && !args.is_empty() { &args[..args.len()-1] } else { args };
+    sprintln!("{}", combo_main(word_args, brief));
 }
