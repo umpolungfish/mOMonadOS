@@ -21,6 +21,7 @@
 #![allow(dead_code)]
 
 use crate::sprintln;
+use alloc::string::String;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum B4Verdict { T, F, B }

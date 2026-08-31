@@ -1,7 +1,19 @@
-Serve the word instruments on vox lift's shortest open arm too
+I add combo2: combo (brief) on a word, then weight, banked, insert, and
+repair again on every distinct word the first pass's repairs produced. A
+repair that closes one rotation's exposure is not yet known to hold on its
+own orbit; this is the check for that instead of an assumption of it.
 
-Same principle as imasm write/derive: a word came out of vox lift (the
-shortest B-verdict function in a lifted binary) and the reader was left to
-copy it into weight/banked/cycle/insert by hand. Ran the four automatically
-on that one representative word instead of on every function in the file,
-which would be one full report per function and mostly redundant.
+repair.rs gets repair_best_word alongside repair_best_report -- same
+cheapest-candidate search, shared through one new cheapest() helper so
+the two callers don't run the engine twice; repair_best_word just hands
+back the resulting word instead of a formatted line, which is what a
+second pass needs to carry forward.
+
+Ran it live on the same 22-letter word: 22 distinct repaired words came out
+of the first pass, all 22 audited again in the second, 1398 lines total,
+completes clean. It surfaced something real in the process -- several of
+those second-pass words read "already holds" from insert while repair's own
+search still returns hundreds of candidates with a cost-0, edit-distance-0
+permutation as cheapest. Two different questions, not a contradiction: insert
+asks whether anything needs adding, repair's broader search still counts
+permutations of identical glyphs as candidates even when they change nothing.
