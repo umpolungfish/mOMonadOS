@@ -2067,6 +2067,14 @@ pub fn repl(k: &mut Kernel) {
                 let word = parts.next().unwrap_or("");
                 crate::combo::repl_combo2(&[word]);
             }
+            "millennium" => {
+                let arg = parts.next().unwrap_or("");
+                if arg.is_empty() {
+                    crate::millennium::repl_millennium(&[]);
+                } else {
+                    crate::millennium::repl_millennium(&[arg]);
+                }
+            }
             // Manuscript spine: PROVE→UNIFY→PORT ledger + vessel runtime half.
             // No Python. Formal pack in p4ramill VAE_Vita_ManuscriptSpine.
             "spine" => {

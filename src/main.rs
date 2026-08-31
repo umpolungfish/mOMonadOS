@@ -123,6 +123,7 @@ mod dqi;
 mod fde;
 mod rsa_decrypter;
 mod combo;
+mod millennium;
 mod sic_moduli;
 mod riemann_sic;
 mod riemann_hilbert;

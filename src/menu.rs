@@ -251,6 +251,7 @@ pub static GRAMMAR_MENU: &[MenuItem] = &[
     MenuItem { name: "rsa", cmd: "rsa", desc: "RSA decrypter via BSGS period-finding on ord_N(C): word | period | verify | <C> <N> <e> — only closes when that order is small, not for real RSA moduli", example: "rsa word", submenu: None },
     MenuItem { name: "combo", cmd: "combo", desc: "cycle a word, then run weight | banked | insert | repair on every distinct rotation it produces, formatted as one report; add 'brief' for repair's cheapest candidate only", example: "combo ⊢∈≻⊤≺⊥⋈⊞⊙⋈∈≻⊤≺⊥⋈⊞⋈∋⊡⊣⊙ brief", submenu: None },
     MenuItem { name: "combo2", cmd: "combo2", desc: "combo (brief) on a word, then weight | banked | insert | repair again on every distinct word the first pass's repairs produced", example: "combo2 ⊢∈≻⊤≺⊥⋈⊞⊙⋈∈≻⊤≺⊥⋈⊞⋈∋⊡⊣⊙", submenu: None },
+    MenuItem { name: "millennium", cmd: "millennium", desc: "run weight | banked | insert on a Millennium conjecture's promotion word and print its live executed crystal address and tuple; no argument runs all seven, 'list' names them", example: "millennium rh_positivity_promotion", submenu: None },
 ];
 
 pub static PK2SK_MENU: &[MenuItem] = &[
