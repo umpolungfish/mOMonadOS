@@ -2069,7 +2069,10 @@ pub fn repl(k: &mut Kernel) {
             }
             "millennium" => {
                 let arg = parts.next().unwrap_or("");
-                if arg.is_empty() {
+                if arg == "raw" {
+                    let word = parts.next().unwrap_or("");
+                    crate::millennium::repl_millennium(&["raw", word]);
+                } else if arg.is_empty() {
                     crate::millennium::repl_millennium(&[]);
                 } else {
                     crate::millennium::repl_millennium(&[arg]);

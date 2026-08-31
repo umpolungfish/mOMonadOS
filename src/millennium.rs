@@ -18,7 +18,6 @@ extern crate alloc;
 use crate::sprintln;
 use alloc::format;
 use alloc::string::String;
-use alloc::vec::Vec;
 
 /// name, one-line note on which value would move if the conjecture closed, glyph word
 const PROBLEMS: &[(&str, &str, &str)] = &[
@@ -118,39 +117,60 @@ fn report_one(name: &str, note: &str, word: &str) -> String {
     out
 }
 
-/// millennium [name]   run every problem's word, or just one by name.
-pub fn millennium_main(args: &[&str]) -> String {
+fn list() -> String {
     let mut out = String::new();
-    if args.first().copied() == Some("list") {
-        out.push_str("millennium [name]   run the OVM instrument suite on a Millennium\n");
-        out.push_str("                    conjecture's promotion word (or every one, with\n");
-        out.push_str("                    no argument). names:\n");
-        for (name, note, _) in PROBLEMS {
-            out.push_str(&format!("  {:<24} {}\n", name, note));
-        }
-        return out;
-    }
-
-    let selected: Vec<&(&str, &str, &str)> = if let Some(want) = args.first() {
-        PROBLEMS.iter().filter(|(name, _, _)| name == want).collect()
-    } else {
-        PROBLEMS.iter().collect()
-    };
-
-    if selected.is_empty() {
-        out.push_str(&format!(
-            "no problem named {:?} — run `millennium list` for names\n", args.first()
-        ));
-        return out;
-    }
-
-    for (i, (name, note, word)) in selected.iter().enumerate() {
-        if i > 0 { out.push('\n'); }
-        out.push_str(&report_one(name, note, word));
+    out.push_str("millennium <name>   run the OVM instrument suite on a Millennium\n");
+    out.push_str("                    conjecture's promotion word. 'all' runs every\n");
+    out.push_str("                    one below in sequence.\n");
+    for (name, note, _) in PROBLEMS {
+        out.push_str(&format!("  {:<24} {}\n", name, note));
     }
     out
 }
 
+/// millennium [name|all]   no argument (or 'list') prints the names, same as
+/// every other multi-item command (`seals`, `proof`); a name runs just that
+/// problem; 'all' runs every one in sequence.
+pub fn millennium_main(args: &[&str]) -> String {
+    match args.first().copied() {
+        None | Some("") | Some("list") => return list(),
+        Some("all") => {
+            let mut out = String::new();
+            for (i, (name, note, word)) in PROBLEMS.iter().enumerate() {
+                if i > 0 { out.push('\n'); }
+                out.push_str(&report_one(name, note, word));
+            }
+            return out;
+        }
+        _ => {}
+    }
+
+    let want = args[0];
+    match PROBLEMS.iter().find(|(name, _, _)| *name == want) {
+        Some((name, note, word)) => report_one(name, note, word),
+        None => alloc::format!(
+            "no problem named {:?} — run `millennium` with no argument for names\n", want
+        ),
+    }
+}
+
+/// `millennium raw <word>` — the control. Runs the identical pipeline on any
+/// word, not one of the seven curated ones. Exists because the seven curated
+/// words are all permutations of the same twelve-mark alphabet (one of each
+/// mark, plus a repeated ⋈⊙ closing pair on two of them), and every one of
+/// them executes to the same crystal address. Before that counts as a
+/// finding about the conjectures, it has to be checked against words with no
+/// relation to any of them: an unrelated permutation of the same alphabet,
+/// and a word that is not a permutation at all.
+pub fn millennium_raw(word: &str) -> String {
+    report_one("raw", "control word, no conjecture attached", word)
+}
+
 pub fn repl_millennium(args: &[&str]) {
+    if args.first().copied() == Some("raw") {
+        let word = args.get(1).copied().unwrap_or("");
+        sprintln!("{}", millennium_raw(word));
+        return;
+    }
     sprintln!("{}", millennium_main(args));
 }
