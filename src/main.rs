@@ -121,6 +121,7 @@ mod provenance;
 mod quadratic;
 mod dqi;
 mod fde;
+mod rsa_decrypter;
 mod sic_moduli;
 mod riemann_sic;
 mod riemann_hilbert;

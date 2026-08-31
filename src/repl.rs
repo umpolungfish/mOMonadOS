@@ -2048,6 +2048,14 @@ pub fn repl(k: &mut Kernel) {
                 let rest: Vec<&str> = joined.split_whitespace().collect();
                 crate::fde::repl_fde(&rest);
             }
+            "rsa" => {
+                // Same splitn(4) gluing: `rsa <C> <N> <e>` and `rsa verify
+                // <M> <e> <N>` both take more than two arguments.
+                let tail: Vec<&str> = parts.collect();
+                let joined = tail.join(" ");
+                let rest: Vec<&str> = joined.split_whitespace().collect();
+                crate::rsa_decrypter::repl_rsa(&rest);
+            }
             // Manuscript spine: PROVE→UNIFY→PORT ledger + vessel runtime half.
             // No Python. Formal pack in p4ramill VAE_Vita_ManuscriptSpine.
             "spine" => {
