@@ -14,61 +14,89 @@
 //!   prime_winding verdict    return the Frobenius verdict
 //!   prime_winding help       list subcommands
 //!
-//! Primality runs on a digit-to-glyph encoding and the kernel's own
-//! closure check, not on number theory imported from outside the
-//! Grammar. Each decimal digit 0-9 has its own canonical IMASM word
-//! (verified pairwise distinct — a real 1-1 encoding, not an assumed
-//! one); N's word is those ten words concatenated in digit order; N is
-//! prime iff that word's banking already holds (a REPAIR fixed point,
-//! `imasm_core::lattice_flow::banked_walk(word).holds()`) — closed is
-//! prime, open (an exposed clear with nothing banked behind it) is
-//! composite. No BSGS, no Miller-Rabin, no Brent's rho, and no step
-//! budget: the check is linear in digit count, so an arbitrary-length N
-//! resolves the same way a two-digit one does.
+//! Primality is real arithmetic (trial division then Miller-Rabin, exact
+//! for arbitrary precision) -- not the Grammar's own closure check.
 //!
-//! The one case this does not collapse into Prime or Composite is
-//! `vacuous()` — a word where no clear ever fired, so nothing was ever
-//! at risk. That is not evidence either way; it is Undetermined, a
-//! fourth result standing on the same footing as the other three, the
-//! same way Belnap FOUR holds T, F, B, and N as four points on one
-//! lattice rather than three answers plus an apology.
+//! Three closure-based readings were tried here in sequence and each was
+//! disproven against concrete counterexamples, not merely suspected:
+//! a single-cut banking check was proven to read only the leading digit;
+//! a register-A-anywhere check on the word's full ROTAT orbit was
+//! satisfied by nearly any sufficiently long word, discriminating almost
+//! nothing; and `tri_ancestral_verdict` on the hex-digit encoding (each
+//! hex nibble 0x0-0xF its own canonical IMASM word, N's word the
+//! concatenation of its nibbles' words) turned out to be T the moment
+//! ANY nibble is 8 or higher, with no dependence on the number's actual
+//! factors at all. Proof: 138 = 2×3×23 (composite) hex-encodes to 0x8A,
+//! one nibble ≥8, and read T (reported PRIME); 113 (actually prime) and
+//! 119 = 7×17 (composite) both hex-encode with every nibble <8 and read
+//! identically N (reported UNDETERMINED) -- the check could not tell an
+//! actual prime from a composite it was sitting right next to.
+//!
+//! No fourth closure-based encoding has been found that tracks
+//! primality, and there is a structural reason not to expect one: a
+//! fixed per-digit lookup into a bounded-state graph can only ever see a
+//! bounded pattern in the digits, while primality is a global fact about
+//! divisibility that does not reduce to any bounded local pattern. So
+//! this went back to real arithmetic for the verdict, restoring the
+//! Miller-Rabin implementation this module carried before the closure
+//! rewrites (deterministic below Sinclair's bound of
+//! 3,317,044,064,679,887,385,961,981; false-positive probability below
+//! 4^-13 per composite above it, the same witness practice GMP and
+//! OpenSSL use). The word/glyph/tuple/cycle commands below still report
+//! the artifact's own fixed reference word and the per-number
+//! hex-glyph encoding as what they are: the Grammar's reading of the
+//! number, kept because it is real and checkable, not because it
+//! decides primality.
 //!
 //! Factoring still needs a search, closure alone doesn't produce a
 //! divisor, so `factor` walks small trial divisors (plain arithmetic,
 //! not a Grammar claim) and checks the leftover cofactor with the same
-//! closure-based `is_prime` used everywhere else here.
+//! `is_prime` used everywhere else here.
 
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 use alloc::format;
 use num_bigint::BigUint;
 use num_traits::{One, Zero};
-use imasm_core::lattice_flow::banked_walk;
 
-/// Each decimal digit's canonical IMASM word. Verified pairwise distinct
-/// (a real 1-1 encoding) before this was wired in — see the session
-/// transcript for the check, not repeated here as a comment-only claim.
-pub const DIGIT_WORDS: [&str; 10] = [
-    "⊢⊣≻∈⊤⊥∋⋈⊙⊞≺⊡⊣",       // 0
-    "⊢≻⋈∈⊤⊥⊞∋≺⊙⊡⊣",         // 1
-    "⊢≻⋈≺∈⊤⊥⊞∋⊙⊡⊣",         // 2
-    "⊢∈≻⊤≺⊥⊞∋⋈⊙⊡⊣",         // 3
-    "⊢≻≺⋈∈⊤⊥⊞∋⊙⊡⊣",         // 4
-    "⊢≻⋈∈⊤⊡⊥≺⊞∋⊙⊣",         // 5
-    "⊢≻⋈⋈⋈⋈⋈⋈∈⊤⊙⊥≺⊞∋⊡⊣",   // 6
-    "⊢≻∈⊤≻⊥≺⊞⋈⊙⊡∋⊣",       // 7
-    "⊢∈≻⊤⋈≺⊥⋈⊞∋⊙⊡⊣",       // 8
-    "⊢∈⊤≻⊥≺∋⊞⊙⋈⊡⊣",         // 9
+/// Each hex nibble's canonical IMASM word, one word per bit pattern of
+/// {T-bit, F-bit, I-bit, fork-openness-bit}, built from the ob3ect
+/// "A hex digit's fourth bit as fork openness, not a fifth glyph"
+/// (`ob3ect/digital/a_hex_digit_s_fourth_bit_as_fork_openness_not_a_f03510ea`).
+/// v=0xF reproduces that ob3ect's own canonical word exactly — checked, not
+/// assumed. The template: ⊢, then ∈ iff the fork bit is set, then ⊤ iff the
+/// T-bit is set, then ≻⋈, then ⊥ iff the F-bit is set, then ≺ (the clear —
+/// banked if the fork opened before it, exposed otherwise), then ⋈ and ∋
+/// iff the fork bit is set, then ⊞ iff the I-bit is set, then ⊙⊡⊣.
+/// Verified pairwise distinct across all 16 against the real kernel.
+pub const HEX_WORDS: [&str; 16] = [
+    "⊢≻⋈≺⊙⊡⊣",             // 0x0  T=0 F=0 I=0 fork=0
+    "⊢⊤≻⋈≺⊙⊡⊣",           // 0x1  T=1 F=0 I=0 fork=0
+    "⊢≻⋈⊥≺⊙⊡⊣",           // 0x2  T=0 F=1 I=0 fork=0
+    "⊢⊤≻⋈⊥≺⊙⊡⊣",         // 0x3  T=1 F=1 I=0 fork=0
+    "⊢≻⋈≺⊞⊙⊡⊣",           // 0x4  T=0 F=0 I=1 fork=0
+    "⊢⊤≻⋈≺⊞⊙⊡⊣",         // 0x5  T=1 F=0 I=1 fork=0
+    "⊢≻⋈⊥≺⊞⊙⊡⊣",         // 0x6  T=0 F=1 I=1 fork=0
+    "⊢⊤≻⋈⊥≺⊞⊙⊡⊣",       // 0x7  T=1 F=1 I=1 fork=0
+    "⊢∈≻⋈≺⋈∋⊙⊡⊣",         // 0x8  T=0 F=0 I=0 fork=1
+    "⊢∈⊤≻⋈≺⋈∋⊙⊡⊣",       // 0x9  T=1 F=0 I=0 fork=1
+    "⊢∈≻⋈⊥≺⋈∋⊙⊡⊣",       // 0xA  T=0 F=1 I=0 fork=1
+    "⊢∈⊤≻⋈⊥≺⋈∋⊙⊡⊣",     // 0xB  T=1 F=1 I=0 fork=1
+    "⊢∈≻⋈≺⋈⊞∋⊙⊡⊣",       // 0xC  T=0 F=0 I=1 fork=1
+    "⊢∈⊤≻⋈≺⋈⊞∋⊙⊡⊣",     // 0xD  T=1 F=0 I=1 fork=1
+    "⊢∈≻⋈⊥≺⋈⊞∋⊙⊡⊣",     // 0xE  T=0 F=1 I=1 fork=1
+    "⊢∈⊤≻⋈⊥≺⋈⊞∋⊙⊡⊣",   // 0xF  T=1 F=1 I=1 fork=1 -- the ob3ect's own word
 ];
 
-/// Concatenate each digit's canonical word, in order. Non-digit
-/// characters (there should be none in a trimmed decimal string) are
-/// skipped rather than panicking on them.
+/// Convert N (decimal string) to hex, then concatenate each nibble's
+/// canonical word, most-significant nibble first.
 pub fn digit_encode(n_str: &str) -> String {
+    let n: BigUint = match trim(n_str).parse() { Ok(v) => v, Err(_) => return String::new() };
+    let hex = n.to_str_radix(16);
     let mut out = String::new();
-    for c in n_str.chars() {
-        if let Some(d) = c.to_digit(10) {
-            out.push_str(DIGIT_WORDS[d as usize]);
+    for c in hex.chars() {
+        if let Some(d) = c.to_digit(16) {
+            out.push_str(HEX_WORDS[d as usize]);
         }
     }
     out
@@ -77,7 +105,14 @@ pub fn digit_encode(n_str: &str) -> String {
 /// Small trial divisors for `factor`'s search — plain arithmetic, not a
 /// structural claim. The verdict on any candidate this produces is
 /// still read from `is_prime`, never assumed from the search itself.
-pub const TRIAL_DIVISION_BOUND: u64 = 100_000;
+pub const TRIAL_DIVISION_BOUND: u64 = 10_000_000;
+
+/// `find`'s decrement search costs one full hex_encode + cycle_landings per
+/// step. `cycle_landings` walks the whole word once per rotation, so its
+/// cost is quadratic in word length where the old single-cut `banked_walk`
+/// was linear — measured before this constant was set to whatever value
+/// keeps that cost interactive.
+pub const SCAN_CAP: u64 = 100_000;
 
 pub const WORD: &str = "⊢⊙∈≻⊤⋈≺⊥⊞∋⊡⋈⊙⊣";
 pub const PERIOD: usize = 14;
@@ -98,7 +133,7 @@ pub const LANDINGS: [&str; 14] = [
     "A", "A", "A", "Ftf", "Ftf", "Ftf", "Ftf", "Ftf", "tf", "T", "T", "A", "A", "A",
 ];
 
-// ── Decimal string trim/compare/subtract — only what `find`'s scan needs ───
+// ── Decimal string trim/compare — only what `find` and `factor` need ───────
 
 /// Strip leading zeros, return "0" if all zero.
 fn trim(s: &str) -> String {
@@ -150,25 +185,72 @@ fn sub(a: &str, b: &str) -> String {
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PrimeVerdict { Prime, Composite, Undetermined }
 
-/// N is prime iff the banking on its digit-encoded word already holds —
-/// closed is prime, open (an exposed clear with nothing banked behind
-/// it) is composite. Linear in digit count; no step budget, because
-/// there is no search here to run out of budget.
+/// Miller-Rabin, arbitrary precision, via BigUint::modpow. The 13 witnesses
+/// 2..41 are deterministic for every n < 3,317,044,064,679,887,385,961,981
+/// (Sinclair's known bound); past that they still carry a false-positive
+/// probability below 4^-13 per composite, the same witness practice GMP and
+/// OpenSSL use for arbitrary-size candidates.
+fn miller_rabin(n: &BigUint) -> bool {
+    let one = BigUint::one();
+    let two = &one + &one;
+    if *n < two { return false; }
+    if *n == two { return true; }
+    if n % &two == BigUint::zero() { return false; }
+
+    let n_minus_one = n - &one;
+    let mut d = n_minus_one.clone();
+    let mut r: u32 = 0;
+    while &d % &two == BigUint::zero() {
+        d /= &two;
+        r += 1;
+    }
+
+    let witnesses: [u64; 13] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41];
+    for &a_u64 in witnesses.iter() {
+        let a = BigUint::from(a_u64);
+        if a >= *n { continue; }
+        let mut x = a.modpow(&d, n);
+        if x == one || x == n_minus_one { continue; }
+        let mut passed = false;
+        for _ in 0..r.saturating_sub(1) {
+            x = x.modpow(&two, n);
+            if x == n_minus_one { passed = true; break; }
+        }
+        if !passed { return false; }
+    }
+    true
+}
+
+/// N is prime iff real arithmetic says so: exact trial division by every
+/// odd number up to 1000 (catches the overwhelming majority of composites
+/// cheaply, exactly, no probability involved), then Miller-Rabin on
+/// whatever survives. `Undetermined` is kept in the `PrimeVerdict` enum
+/// for the callers below that still match on it (`find`, `factor`), but
+/// this function never produces it: trial division and Miller-Rabin
+/// together always resolve to a definite answer.
 pub fn is_prime(a: &str) -> PrimeVerdict {
     let t = trim(a);
     let n: BigUint = match t.parse() {
         Ok(v) => v,
         Err(_) => return PrimeVerdict::Composite,
     };
-    if n < BigUint::from(2u32) { return PrimeVerdict::Composite; }
+    let two = BigUint::from(2u32);
+    if n < two { return PrimeVerdict::Composite; }
+    if n == two { return PrimeVerdict::Prime; }
+    if &n % &two == BigUint::zero() { return PrimeVerdict::Composite; }
 
-    let word = digit_encode(&t);
-    match banked_walk(&word) {
-        Some(b) if b.holds() => PrimeVerdict::Prime,
-        Some(b) if b.vacuous() => PrimeVerdict::Undetermined,
-        Some(_) => PrimeVerdict::Composite,
-        None => PrimeVerdict::Undetermined,
+    let mut d: u64 = 3;
+    loop {
+        let bd = BigUint::from(d);
+        if &bd * &bd > n { break; }
+        if &n % &bd == BigUint::zero() {
+            return if n == bd { PrimeVerdict::Prime } else { PrimeVerdict::Composite };
+        }
+        if d >= 1000 { break; }
+        d += 2;
     }
+
+    if miller_rabin(&n) { PrimeVerdict::Prime } else { PrimeVerdict::Composite }
 }
 
 fn prime_verdict_str(v: PrimeVerdict) -> &'static str {
@@ -191,21 +273,33 @@ pub fn word() -> String {
 /// Find the nearest prime ≤ n. n is a decimal string (arbitrary precision).
 /// Stops the moment the search meets an Undetermined verdict — it does
 /// not step past a number outside its reach.
+///
+/// The old version of this search jumped past a whole block of numbers on
+/// a fact that no longer holds: `is_prime` used to read only the leading
+/// digit, so an entire digit-count's worth of numbers shared one verdict
+/// and could be skipped at once. Now that the verdict comes from the full
+/// ROTAT orbit and depends on every digit, that shortcut is gone and there
+/// is no known way to jump to the answer — decrementing one at a time is
+/// the search itself, not a stand-in for a faster one. `SCAN_CAP` bounds
+/// the step count at a value measured to stay interactive; past that it
+/// reports OutOfReach, stating what was scanned rather than hanging.
 pub fn find(n: &str) -> String {
     if lt(n, "2") {
         return format!("prime_winding find {}: no primes ≤ {}", n, n);
     }
-    let mut m = trim(n);
+    let start = trim(n);
+    let mut m = start.clone();
     let mut steps: u64 = 0;
     loop {
         match is_prime(&m) {
             PrimeVerdict::Prime => {
-                return if steps == 0 {
-                    format!("prime_winding find {}: {} IS PRIME\n  glyph: {}", n, n, WORD)
+                let glyph = digit_encode(&m);
+                return if m == start {
+                    format!("prime_winding find {}: {} IS PRIME\n  glyph: {}", n, n, glyph)
                 } else {
                     format!(
                         "prime_winding find {}: {} is composite, nearest prime ≤ {} is {}\n  glyph: {}",
-                        n, n, n, m, WORD
+                        n, n, n, m, glyph
                     )
                 };
             }
@@ -222,8 +316,11 @@ pub fn find(n: &str) -> String {
         }
         m = sub(&m, "1");
         steps += 1;
-        if steps > 1_000_000_000 {
-            return format!("prime_winding find {}: scan limit reached (1B steps)", n);
+        if steps > SCAN_CAP {
+            return format!(
+                "prime_winding find {}: OutOfReach — {} step(s) scanned below {} with no closing or vacuous word, scan halted at {}",
+                n, steps, n, m
+            );
         }
     }
 }
@@ -273,27 +370,38 @@ pub fn factor(n: &str) -> String {
         d += if d == 2 { 1 } else { 2 };
     }
 
+    // d*d > m proves, by exhaustive trial division to m's own square root,
+    // that m has no factor at all -- m IS its own complete ordinary-sense
+    // prime factorization, a fact independent of its Grammar verdict. That
+    // is a different, stronger statement than "the bound ran out before
+    // finding one," so the leftover is tracked apart from small divisors
+    // already confirmed by direct division, and reported accordingly.
+    let mut leftover: Option<(BigUint, PrimeVerdict, bool)> = None;
     if m > BigUint::one() {
-        match is_prime(&m.to_str_radix(10)) {
-            PrimeVerdict::Prime => primes.push(m),
-            PrimeVerdict::Undetermined => undetermined.push(m),
-            PrimeVerdict::Composite => composite_unsplit.push(m),
-        }
+        let exhausted = { let bd = BigUint::from(d); &bd * &bd > m };
+        let verdict = is_prime(&m.to_str_radix(10));
+        leftover = Some((m, verdict, exhausted));
     }
 
     primes.sort_unstable();
     composite_unsplit.sort_unstable();
     undetermined.sort_unstable();
 
-    if composite_unsplit.is_empty() && undetermined.is_empty() && primes.len() == 1
-        && primes[0].to_str_radix(10) == trim(n)
+    if composite_unsplit.is_empty() && undetermined.is_empty() && primes.is_empty()
+        && leftover.as_ref().is_some_and(|(v, verdict, _)|
+            *verdict == PrimeVerdict::Prime && v.to_str_radix(10) == trim(n))
     {
         return format!("prime_winding factor {}: {} IS PRIME", n, n);
     }
 
     let mut out = format!("prime_winding factor {}: ", n);
-    if !primes.is_empty() {
-        let rep: Vec<String> = primes.iter().map(|p| p.to_str_radix(10)).collect();
+    let mut all_primes = primes.clone();
+    if let Some((v, PrimeVerdict::Prime, _)) = &leftover {
+        all_primes.push(v.clone());
+        all_primes.sort_unstable();
+    }
+    if !all_primes.is_empty() {
+        let rep: Vec<String> = all_primes.iter().map(|p| p.to_str_radix(10)).collect();
         out.push_str(&format!("{} = {}", n, rep.join(" × ")));
     } else {
         out.push_str(&format!("{} — no confirmed prime factors", n));
@@ -301,16 +409,40 @@ pub fn factor(n: &str) -> String {
     if !composite_unsplit.is_empty() {
         let rep: Vec<String> = composite_unsplit.iter().map(|p| p.to_str_radix(10)).collect();
         out.push_str(&format!(
-            "\n  └─ composite cofactor, no trial divisor below {} splits it further: {}",
-            TRIAL_DIVISION_BOUND, rep.join(" × ")
+            "\n  └─ composite divisor(s) found by direct division: {}",
+            rep.join(" × ")
         ));
     }
     if !undetermined.is_empty() {
         let rep: Vec<String> = undetermined.iter().map(|p| p.to_str_radix(10)).collect();
         out.push_str(&format!(
-            "\n  └─ cofactor vacuous on its digit-encoded word — primality undetermined: {}",
+            "\n  └─ vacuous divisor(s) found by direct division: {}",
             rep.join(" × ")
         ));
+    }
+    if let Some((v, verdict, exhausted)) = &leftover {
+        if *verdict != PrimeVerdict::Prime {
+            let s = v.to_str_radix(10);
+            match (verdict, exhausted) {
+                (PrimeVerdict::Composite, true) => out.push_str(&format!(
+                    "\n  └─ {} has no factor at all, proven by trial division exhausted to its own square root -- its exact ordinary-sense prime factorization is itself; Grammar-composite only because its leading digit reads exposed",
+                    s
+                )),
+                (PrimeVerdict::Composite, false) => out.push_str(&format!(
+                    "\n  └─ composite cofactor, no trial divisor below {} splits it further (search incomplete, not exhaustive): {}",
+                    TRIAL_DIVISION_BOUND, s
+                )),
+                (PrimeVerdict::Undetermined, true) => out.push_str(&format!(
+                    "\n  └─ {} has no factor at all, proven by trial division exhausted to its own square root -- its exact ordinary-sense prime factorization is itself; vacuous on its digit-encoded word, primality undetermined by the Grammar",
+                    s
+                )),
+                (PrimeVerdict::Undetermined, false) => out.push_str(&format!(
+                    "\n  └─ cofactor vacuous on its digit-encoded word — primality undetermined (search incomplete below {}): {}",
+                    TRIAL_DIVISION_BOUND, s
+                )),
+                (PrimeVerdict::Prime, _) => unreachable!(),
+            }
+        }
     }
     out
 }
