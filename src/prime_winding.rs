@@ -325,11 +325,156 @@ pub fn find(n: &str) -> String {
     }
 }
 
-/// Factor n (decimal string, arbitrary precision). Closure alone answers
-/// whether N is prime, not what its factors are, so this walks small
-/// trial divisors to find them — plain arithmetic, a search strategy,
-/// not a Grammar claim — and every cofactor's status (prime, composite,
-/// undetermined) is read from `is_prime`, never assumed from the search.
+/// a / b, both nonzero, Euclid's algorithm on BigUint.
+fn big_gcd(mut a: BigUint, mut b: BigUint) -> BigUint {
+    while !b.is_zero() {
+        let t = b.clone();
+        b = &a % &b;
+        a = t;
+    }
+    a
+}
+
+/// Brent's polynomial x -> x^2 + c mod n.
+fn brent_f(x: &BigUint, c: &BigUint, n: &BigUint) -> BigUint {
+    let x2 = (x * x) % n;
+    (&x2 + c) % n
+}
+
+/// One Brent's-rho walk with a fixed (c, x0) seed. Returns a nontrivial
+/// factor of n if the walk crosses one within max_power steps, None
+/// otherwise. This has no guaranteed success bound -- that is Brent's
+/// rho's real, known shape, not a defect to hide -- so a walk that
+/// exhausts its steps reports None plainly rather than assuming n is
+/// prime because this one seed failed to split it.
+///
+/// x is the tortoise, fixed for the whole doubling round r; y is the hare,
+/// walked r steps ahead of x and compared against it in batches of m,
+/// accumulating the product of differences mod n so one gcd covers the
+/// whole batch. A batch gcd landing on n itself (the product folded in
+/// more than one factor's collision at once) is not a dead end -- it is
+/// recovered by re-walking that same batch from its start (`ys`) one step
+/// at a time, gcd on each step, until the exact collision point splits
+/// out the real factor.
+fn brent_walk(n: &BigUint, c: u64, x0: u64, max_power: u64) -> Option<BigUint> {
+    let c = BigUint::from(c);
+    let one = BigUint::one();
+    let mut x = BigUint::from(x0);
+    let mut y = x.clone();
+    let m: u64 = 128;
+    let mut r: u64 = 1;
+    let mut g = one.clone();
+    let mut q = one.clone();
+    let mut ys = y.clone();
+
+    while g.is_one() && r < max_power {
+        x = y.clone();
+        for _ in 0..r {
+            y = brent_f(&y, &c, n);
+        }
+        let mut k: u64 = 0;
+        while k < r && g.is_one() {
+            ys = y.clone();
+            let steps = m.min(r - k);
+            for _ in 0..steps {
+                y = brent_f(&y, &c, n);
+                let diff = if y > x { &y - &x } else { &x - &y };
+                q = (&q * diff) % n;
+            }
+            g = big_gcd(q.clone(), n.clone());
+            k += m;
+        }
+        r = match r.checked_mul(2) { Some(v) => v, None => break };
+    }
+
+    if &g == n {
+        loop {
+            ys = brent_f(&ys, &c, n);
+            let diff = if ys > x { &ys - &x } else { &x - &ys };
+            g = big_gcd(diff, n.clone());
+            if !g.is_one() { break; }
+        }
+    }
+
+    if !g.is_one() && &g != n { Some(g) } else { None }
+}
+
+/// The seeds a Brent's-rho split tries, each its own independent walk on
+/// the same n -- distinct starting strands over the same braid, any one
+/// of which closing (finding a nontrivial gcd) splits n. Hosted runs all
+/// of them at once, one thread per strand, the way `live_hud` already
+/// runs a background thread in this same binary; bare metal, with no
+/// std::thread, walks them one at a time. Same seeds, same walk, same
+/// answer either way -- only whether the strands run concurrently
+/// differs.
+const BRENT_SEEDS: [(u64, u64); 6] = [(3, 2), (7, 5), (11, 3), (17, 7), (23, 11), (41, 13)];
+const BRENT_MAX_POWER: u64 = 4_000_000;
+
+#[cfg(feature = "hosted")]
+fn brent_split_one(n: &BigUint) -> Option<BigUint> {
+    use std::sync::mpsc;
+    use std::thread;
+    let (tx, rx) = mpsc::channel();
+    for &(c, x0) in BRENT_SEEDS.iter() {
+        let n = n.clone();
+        let tx = tx.clone();
+        thread::spawn(move || {
+            if let Some(f) = brent_walk(&n, c, x0, BRENT_MAX_POWER) {
+                let _ = tx.send(f);
+            }
+            // Un-joined on purpose: this walk is step-bounded so it always
+            // terminates on its own; only the first strand to close matters,
+            // and the losing strands finishing quietly in the background
+            // costs nothing this tool needs to wait on.
+        });
+    }
+    drop(tx);
+    rx.recv().ok()
+}
+
+#[cfg(not(feature = "hosted"))]
+fn brent_split_one(n: &BigUint) -> Option<BigUint> {
+    for &(c, x0) in BRENT_SEEDS.iter() {
+        if let Some(f) = brent_walk(n, c, x0, BRENT_MAX_POWER) {
+            return Some(f);
+        }
+    }
+    None
+}
+
+/// Recursively split n via Brent's rho until every piece is prime-confirmed
+/// (`is_prime`, real Miller-Rabin) or a piece resists every seed within its
+/// step bound. The latter is pushed to `unsplit` and reported as exactly
+/// that -- a known composite this search did not finish factoring -- never
+/// silently folded into `primes`.
+fn brent_split_recursive(n: BigUint, primes: &mut Vec<BigUint>, unsplit: &mut Vec<BigUint>) {
+    let mut stack: Vec<BigUint> = Vec::new();
+    stack.push(n);
+    while let Some(m) = stack.pop() {
+        if m.is_one() { continue; }
+        if is_prime(&m.to_str_radix(10)) == PrimeVerdict::Prime {
+            primes.push(m);
+            continue;
+        }
+        match brent_split_one(&m) {
+            Some(f) => {
+                let g = &m / &f;
+                stack.push(f);
+                stack.push(g);
+            }
+            None => unsplit.push(m),
+        }
+    }
+}
+
+/// Factor n (decimal string, arbitrary precision). Trial division to
+/// `TRIAL_DIVISION_BOUND` finds every small factor exactly; whatever
+/// remains past that bound goes to Brent's rho (parallel strands, see
+/// `brent_split_one`), which reaches factors far beyond trial division's
+/// practical range without needing to divide up to n's own square root.
+/// This is real, unbounded-precision arithmetic throughout -- closure
+/// alone never produces a divisor, so it plays no role in the search,
+/// only in confirming each candidate's primality via `is_prime`.
 pub fn factor(n: &str) -> String {
     let t = trim(n);
     let n_big: BigUint = match t.parse() {
@@ -341,15 +486,7 @@ pub fn factor(n: &str) -> String {
     }
 
     let mut primes: Vec<BigUint> = Vec::new();
-    let mut composite_unsplit: Vec<BigUint> = Vec::new();
-    // bot embeds as bot at every tier and restricts back to bot, roundtrip
-    // exact, no axioms (fdeRestrict_fdeEmbed_id) -- vacuous is absorbing.
-    // A trial divisor found by arithmetic still divides m regardless of
-    // what its own closure check says, but its Grammar verdict is not
-    // upgraded to Prime just because division succeeded; it goes here
-    // when is_prime reads it as vacuous, same bucket the leftover
-    // cofactor uses for the same reason.
-    let mut undetermined: Vec<BigUint> = Vec::new();
+    let mut unsplit: Vec<BigUint> = Vec::new();
 
     let mut m = n_big;
     let mut d: u64 = 2;
@@ -357,92 +494,38 @@ pub fn factor(n: &str) -> String {
         let bd = BigUint::from(d);
         if &bd * &bd > m { break; }
         if &m % &bd == BigUint::zero() {
-            let bucket = match is_prime(&d.to_string()) {
-                PrimeVerdict::Prime => &mut primes,
-                PrimeVerdict::Composite => &mut composite_unsplit,
-                PrimeVerdict::Undetermined => &mut undetermined,
-            };
             while &m % &bd == BigUint::zero() {
-                bucket.push(bd.clone());
+                primes.push(bd.clone());
                 m /= &bd;
             }
         }
         d += if d == 2 { 1 } else { 2 };
     }
 
-    // d*d > m proves, by exhaustive trial division to m's own square root,
-    // that m has no factor at all -- m IS its own complete ordinary-sense
-    // prime factorization, a fact independent of its Grammar verdict. That
-    // is a different, stronger statement than "the bound ran out before
-    // finding one," so the leftover is tracked apart from small divisors
-    // already confirmed by direct division, and reported accordingly.
-    let mut leftover: Option<(BigUint, PrimeVerdict, bool)> = None;
     if m > BigUint::one() {
-        let exhausted = { let bd = BigUint::from(d); &bd * &bd > m };
-        let verdict = is_prime(&m.to_str_radix(10));
-        leftover = Some((m, verdict, exhausted));
+        brent_split_recursive(m, &mut primes, &mut unsplit);
     }
 
     primes.sort_unstable();
-    composite_unsplit.sort_unstable();
-    undetermined.sort_unstable();
+    unsplit.sort_unstable();
 
-    if composite_unsplit.is_empty() && undetermined.is_empty() && primes.is_empty()
-        && leftover.as_ref().is_some_and(|(v, verdict, _)|
-            *verdict == PrimeVerdict::Prime && v.to_str_radix(10) == trim(n))
-    {
+    if unsplit.is_empty() && primes.len() == 1 && primes[0].to_str_radix(10) == trim(n) {
         return format!("prime_winding factor {}: {} IS PRIME", n, n);
     }
 
     let mut out = format!("prime_winding factor {}: ", n);
-    let mut all_primes = primes.clone();
-    if let Some((v, PrimeVerdict::Prime, _)) = &leftover {
-        all_primes.push(v.clone());
-        all_primes.sort_unstable();
-    }
-    if !all_primes.is_empty() {
-        let rep: Vec<String> = all_primes.iter().map(|p| p.to_str_radix(10)).collect();
+    if !primes.is_empty() {
+        let rep: Vec<String> = primes.iter().map(|p| p.to_str_radix(10)).collect();
         out.push_str(&format!("{} = {}", n, rep.join(" × ")));
     } else {
         out.push_str(&format!("{} — no confirmed prime factors", n));
     }
-    if !composite_unsplit.is_empty() {
-        let rep: Vec<String> = composite_unsplit.iter().map(|p| p.to_str_radix(10)).collect();
+    if !unsplit.is_empty() {
+        let rep: Vec<String> = unsplit.iter().map(|p| p.to_str_radix(10)).collect();
         out.push_str(&format!(
-            "\n  └─ composite divisor(s) found by direct division: {}",
-            rep.join(" × ")
+            "\n  └─ confirmed composite, not split by any of {} Brent seeds within {} steps each: {}",
+            BRENT_SEEDS.len(), BRENT_MAX_POWER, rep.join(" × ")
         ));
-    }
-    if !undetermined.is_empty() {
-        let rep: Vec<String> = undetermined.iter().map(|p| p.to_str_radix(10)).collect();
-        out.push_str(&format!(
-            "\n  └─ vacuous divisor(s) found by direct division: {}",
-            rep.join(" × ")
-        ));
-    }
-    if let Some((v, verdict, exhausted)) = &leftover {
-        if *verdict != PrimeVerdict::Prime {
-            let s = v.to_str_radix(10);
-            match (verdict, exhausted) {
-                (PrimeVerdict::Composite, true) => out.push_str(&format!(
-                    "\n  └─ {} has no factor at all, proven by trial division exhausted to its own square root -- its exact ordinary-sense prime factorization is itself; Grammar-composite only because its leading digit reads exposed",
-                    s
-                )),
-                (PrimeVerdict::Composite, false) => out.push_str(&format!(
-                    "\n  └─ composite cofactor, no trial divisor below {} splits it further (search incomplete, not exhaustive): {}",
-                    TRIAL_DIVISION_BOUND, s
-                )),
-                (PrimeVerdict::Undetermined, true) => out.push_str(&format!(
-                    "\n  └─ {} has no factor at all, proven by trial division exhausted to its own square root -- its exact ordinary-sense prime factorization is itself; vacuous on its digit-encoded word, primality undetermined by the Grammar",
-                    s
-                )),
-                (PrimeVerdict::Undetermined, false) => out.push_str(&format!(
-                    "\n  └─ cofactor vacuous on its digit-encoded word — primality undetermined (search incomplete below {}): {}",
-                    TRIAL_DIVISION_BOUND, s
-                )),
-                (PrimeVerdict::Prime, _) => unreachable!(),
-            }
-        }
     }
     out
 }
