@@ -43,23 +43,34 @@ pub fn oneshot_verdict(n_str: &str) -> B4Verdict {
     let trimmed = t.trim_start_matches('0');
     if trimmed.is_empty() || trimmed == "1" { return B4Verdict::B; }
 
-    // u64 path: use winding_period::winding_order
+    // u64 winding path: only below a threshold where BSGS stays fast.
+    // winding_order is O(sqrt(N)) time AND memory (a Vec of sqrt(N) baby
+    // steps, sorted), run once per base. Above ~1e12 that Vec alone is
+    // tens of millions of entries per base, six bases -- not a hang, just
+    // an algorithm that stopped being practical for a synchronous call.
+    // FIXED 2026-08-31: was gated only on "fits in u64" (up to ~1.8e19),
+    // so any 15+ digit input past that point never returned. Now anything
+    // at or above the threshold falls to the same Miller-Rabin path
+    // arbitrary-precision inputs already use.
+    const WINDING_SAFE_MAX: u64 = 1_000_000_000_000; // 1e12, sqrt ~= 1e6
     if let Ok(n) = trimmed.parse::<u64>() {
         if n < 3 { return B4Verdict::B; }
-        let bases = [2u64, 3, 5, 7, 11, 13];
-        for &a in &bases {
-            if a % n == 0 { continue; }
-            if let Some(r) = crate::winding_period::winding_order(a, n) {
-                if (n - 1) % r != 0 { return B4Verdict::F; }
-            } else {
-                return B4Verdict::F;
+        if n < WINDING_SAFE_MAX {
+            let bases = [2u64, 3, 5, 7, 11, 13];
+            for &a in &bases {
+                if a % n == 0 { continue; }
+                if let Some(r) = crate::winding_period::winding_order(a, n) {
+                    if (n - 1) % r != 0 { return B4Verdict::F; }
+                } else {
+                    return B4Verdict::F;
+                }
             }
+            return B4Verdict::T;
         }
-        return B4Verdict::T;
     }
 
-    // Arbitrary-precision: fall back to the prime_winding Miller-Rabin
-    // primality test (the only tool that handles bigints).
+    // Arbitrary-precision (and any u64 at or above WINDING_SAFE_MAX): the
+    // prime_winding Miller-Rabin primality test.
     if super::prime_winding::is_prime(trimmed) { B4Verdict::T } else { B4Verdict::F }
 }
 

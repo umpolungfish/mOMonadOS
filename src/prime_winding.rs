@@ -19,6 +19,8 @@
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 use alloc::format;
+use num_bigint::BigUint;
+use num_traits::{One, Zero};
 
 pub const WORD: &str = "⊢⊙∈≻⊤⋈≺⊥⊞∋⊡⋈⊙⊣";
 pub const PERIOD: usize = 14;
@@ -180,7 +182,55 @@ fn div_small(a: &str, d: u64) -> String {
     if out.is_empty() { String::from("0") } else { String::from_utf8(out).unwrap() }
 }
 
-/// True if a is prime, by trial division up to √a (small u64 divisor path).
+/// Miller-Rabin, arbitrary precision, via BigUint::modpow. The 13 witnesses
+/// 2..41 are deterministic for every n < 3,317,044,064,679,887,385,961,981
+/// (Sinclair's known bound); past that they still carry a false-positive
+/// probability below 4^-13 per composite, the same witness practice GMP and
+/// OpenSSL use for arbitrary-size candidates.
+fn miller_rabin(n: &BigUint) -> bool {
+    let zero = BigUint::zero();
+    let one = BigUint::one();
+    let two = &one + &one;
+    if *n < two { return false; }
+    if *n == two { return true; }
+    if n % &two == zero { return false; }
+
+    let n_minus_one = n - &one;
+    let mut d = n_minus_one.clone();
+    let mut r: u32 = 0;
+    while &d % &two == zero {
+        d = &d / &two;
+        r += 1;
+    }
+
+    let witnesses: [u64; 13] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41];
+    for &a_u64 in witnesses.iter() {
+        let a = BigUint::from(a_u64);
+        if &a >= n { continue; }
+        let mut x = a.modpow(&d, n);
+        if x == one || x == n_minus_one { continue; }
+        let mut passed = false;
+        for _ in 0..r.saturating_sub(1) {
+            x = x.modpow(&two, n);
+            if x == n_minus_one { passed = true; break; }
+        }
+        if !passed { return false; }
+    }
+    true
+}
+
+/// True if a is prime. Trial division for anything that fits u64 (exact,
+/// fast); beyond that, a small-factor pre-filter followed by Miller-Rabin.
+///
+/// FIXED 2026-08-31: the arbitrary-precision path used to walk trial
+/// division only up to d=10,000,000 and then silently fall through to
+/// `true` regardless of whether a factor had actually been ruled out past
+/// that point -- so any number whose smallest prime factor exceeds 1e7 was
+/// reported prime unconditionally. That is every real RSA modulus by
+/// construction (both factors are always far larger than 1e7). Verified
+/// against the real RSA-100 challenge modulus (a published, historical,
+/// definitely-composite 100-digit semiprime, confirmed composite via
+/// sympy.isprime): this function used to return true on it.
 pub fn is_prime(a: &str) -> bool {
     let t = trim(a);
     if t == "1" || t == "0" { return false; }
@@ -193,7 +243,7 @@ pub fn is_prime(a: &str) -> bool {
     if divisible_by(&t, 11) { return t == "11"; }
     if divisible_by(&t, 13) { return t == "13"; }
 
-    // For numbers that fit in u64, do trial division by u64.
+    // For numbers that fit in u64, trial division to sqrt is exact and fast.
     if t.len() <= 18 {
         if let Ok(n) = t.parse::<u64>() {
             let mut d: u64 = 17;
@@ -204,19 +254,19 @@ pub fn is_prime(a: &str) -> bool {
             return true;
         }
     }
-    // Arbitrary precision trial division up to √a.
-    // Walk odd d from 17 upward as decimal string, stop when d*d > a.
+
+    // Beyond u64 (t.len() > 18, so t is always far larger than any d below):
+    // a cheap small-factor pre-filter, then the real verdict from
+    // Miller-Rabin -- never a silent fall-through to true.
     let mut d: u64 = 17;
-    loop {
-        // d*d as string
-        let d2 = (d as u128 * d as u128).to_string();
-        if !lt(&d2, &t) { break; }
+    while d <= 100_000 {
         if rem_small(&t, d) == 0 { return false; }
         d += 2;
-        // Safety cap: a number with > 1000 digits is not testable here.
-        if d > 10_000_000 { break; }
     }
-    true
+    match t.parse::<BigUint>() {
+        Ok(n) => miller_rabin(&n),
+        Err(_) => false,
+    }
 }
 
 // ── Output formatters ───────────────────────────────────────────────────────
@@ -258,6 +308,14 @@ pub fn find(n: &str) -> String {
 }
 
 /// Factor n (decimal string, arbitrary precision) into primes with multiplicity.
+///
+/// FIXED 2026-08-31: the same false-positive class as `is_prime`. Trial
+/// division ran to a fixed cap (d > 1,000,000) and, on hitting it, pushed
+/// whatever remained as though it were a single prime factor -- so a large
+/// semiprime with no factor below the cap (an RSA modulus, by construction)
+/// was reported as prime with no factors at all. Now checks the leftover
+/// cofactor with `is_prime` (real Miller-Rabin) before ever calling it
+/// prime, and says plainly when trial division could not finish the split.
 pub fn factor(n: &str) -> String {
     if lt(n, "2") {
         return format!("prime_winding factor {}: n < 2, no prime factors", n);
@@ -272,7 +330,11 @@ pub fn factor(n: &str) -> String {
     let mut d: u64 = 3;
     loop {
         let d2 = (d as u128 * d as u128).to_string();
-        if !lt(&d2, &m) { break; }
+        // Break only once d^2 exceeds m -- d^2 == m (m a perfect square of
+        // the next divisor, e.g. m=25 at d=5) must still be tested, or that
+        // divisor is silently skipped. Was `!lt(&d2, &m)`, which broke one
+        // step early on exactly that boundary; caught live testing 100.
+        if lt(&m, &d2) { break; }
         while rem_small(&m, d) == 0 {
             factors.push(d.to_string());
             m = div_small(&m, d);
@@ -280,8 +342,22 @@ pub fn factor(n: &str) -> String {
         d += 2;
         if d > 1_000_000 { break; }
     }
+
     if !is_zero(&m) && m != "1" {
-        factors.push(m.clone());
+        if is_prime(&m) {
+            factors.push(m.clone());
+        } else if factors.is_empty() {
+            return format!(
+                "prime_winding factor {}: {} is composite (Miller-Rabin) but has no factor below 1,000,000 — trial division cannot split it further",
+                n, n
+            );
+        } else {
+            let rep = factors.join(" × ");
+            return format!(
+                "prime_winding factor {}: {} = {} × <composite cofactor {}> — trial division found no further factor below 1,000,000, and Miller-Rabin confirms the cofactor is not prime",
+                n, n, rep, m
+            );
+        }
     }
 
     if factors.is_empty() {
