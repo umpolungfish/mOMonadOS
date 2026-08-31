@@ -2040,6 +2040,14 @@ pub fn repl(k: &mut Kernel) {
                 let rest: Vec<&str> = joined.split_whitespace().collect();
                 crate::dqi::repl_dqi(&rest);
             }
+            "fde" => {
+                // Same splitn(4) gluing: `fde walk` and `fde trans` both take
+                // more than three arguments after the subcommand.
+                let tail: Vec<&str> = parts.collect();
+                let joined = tail.join(" ");
+                let rest: Vec<&str> = joined.split_whitespace().collect();
+                crate::fde::repl_fde(&rest);
+            }
             // Manuscript spine: PROVE→UNIFY→PORT ledger + vessel runtime half.
             // No Python. Formal pack in p4ramill VAE_Vita_ManuscriptSpine.
             "spine" => {

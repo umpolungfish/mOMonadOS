@@ -22,7 +22,7 @@ pub static MAIN_MENU: &[MenuItem] = &[
     MenuItem { name: "Status",   cmd: "status",   desc: "Status (program, snapshot, graph, heatmap, registers)", example: "", submenu: Some(STATUS_MENU) },
     MenuItem { name: "Programs", cmd: "programs",  desc: "Program loading (list, canonical, continuous, novel, shunt)", example: "", submenu: Some(PROGRAMS_MENU) },
     MenuItem { name: "Crystal",  cmd: "crystal",  desc: "Crystal FS (decode, store, find, name)", example: "", submenu: Some(CRYSTAL_MENU) },
-    MenuItem { name: "Grammar",  cmd: "grammar",  desc: "Grammar bridges (ig, classify, frob, aleph, shor, rh, ym)", example: "", submenu: Some(GRAMMAR_MENU) },
+    MenuItem { name: "Grammar",  cmd: "grammar",  desc: "Grammar bridges (ig, classify, frob, aleph, shor, rh, ym, fde)", example: "", submenu: Some(GRAMMAR_MENU) },
     MenuItem { name: "Quantum",  cmd: "quantum",  desc: "Quantum computation (fibqc, jones, braids, shor, shors_btc_2, btc_oneshot, qft, iuft, sic, d12, d2048, dqi)", example: "help quantum", submenu: Some(QUANTUM_MENU) },
     MenuItem { name: "IMASM",    cmd: "imasm",    desc: "IMASM word walks (cycle, weight, banked, insert, trans, arev)", example: "", submenu: Some(IMASM_MENU) },
     MenuItem { name: "Kernel",   cmd: "kernel",   desc: "Kernel utilities (ask, spine, vessel, vita, whoami, ruleset)", example: "", submenu: Some(KERNEL_MENU) },
@@ -247,6 +247,7 @@ pub static GRAMMAR_MENU: &[MenuItem] = &[
     MenuItem { name: "repair", cmd: "repair", desc: "Ranked program/proof surgery with a proof-diff", example: "repair \u{22a2}\u{2208}", submenu: None },
     MenuItem { name: "mersearch", cmd: "mersearch", desc: "Mersenne search: run|ll. Composite exponents answer at once (alias msearch)", example: "msearch ll 2213", submenu: None },
     MenuItem { name: "pk2sk", cmd: "pk2sk", desc: "PK→SK recovery: bounded-range ECDLP on secp256k1 — recover the scalar in [lo, hi) from its compressed public key, curve-gated, imscribed", example: "pk2sk selftest", submenu: Some(PK2SK_MENU) },
+    MenuItem { name: "fde", cmd: "fde", desc: "FDE(n) tower navigation: embed | restrict | walk | roundtrip | trans | report — ascend/descend the truth-value lattice at any depth", example: "fde walk 2 3 4 3 2 1", submenu: None },
 ];
 
 pub static PK2SK_MENU: &[MenuItem] = &[

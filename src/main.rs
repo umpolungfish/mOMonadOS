@@ -120,6 +120,7 @@ mod d2048_sieve;
 mod provenance;
 mod quadratic;
 mod dqi;
+mod fde;
 mod sic_moduli;
 mod riemann_sic;
 mod riemann_hilbert;
