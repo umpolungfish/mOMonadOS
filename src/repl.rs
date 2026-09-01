@@ -1324,7 +1324,7 @@ pub fn repl(k: &mut Kernel) {
                     }
                     _ => {
                         sprintln!("gpu16_3 verify [n] [device]   — batch n random SIXTEEN_3 register");
-                        sprintln!("                        pairs through all 11 Reg16_3 gates on the");
+                        sprintln!("                        pairs through all 12 Reg16_3 gates on the");
                         sprintln!("                        GPU, checked bit-for-bit against the CPU");
                         sprintln!("                        scalar implementation (imasm_core::imasm16_3).");
                         sprintln!("                        n defaults to 100000, device to 0.");

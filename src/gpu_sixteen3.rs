@@ -6,12 +6,20 @@
 //! `imasm_core::imasm16_3::Reg16_3` is a plain 4-bool tuple over the lanes
 //! [T, F, t, f], and every lattice op on it (`union`, `meet_t`, `join_t`,
 //! `meet_c`, `join_c`, `leq_i`, `leq_t`, `leq_c`, `truth_swap`, `info_swap`,
-//! `invol`) is a fixed, data-independent per-lane bitwise op or permutation
-//! -- never a branch on the value's content. That is a fixed-width
-//! elementwise/permute kernel over an (N,4) boolean tensor, which is what
-//! this module actually runs on GPU, verified bit-for-bit against the CPU
-//! implementation it is a batched port of, not a reimplementation with its
-//! own independent logic.
+//! `invol`, `engagr`) is a fixed, data-independent per-lane bitwise op or
+//! permutation -- never a branch on the value's content. That is a
+//! fixed-width elementwise/permute kernel over an (N,4) boolean tensor,
+//! which is what this module actually runs on GPU, verified bit-for-bit
+//! against the CPU implementation it is a batched port of, not a
+//! reimplementation with its own independent logic.
+//!
+//! `engagr` (⊞) closes the last gap: everything else here had already been
+//! run at scale, ⊞ itself never had (only checked as "does the result
+//! happen to carry a B value", not as the operator that unconditionally
+//! produces one). It pins both information-axis lanes true regardless of
+//! input, the paraconsistency operator made literal -- after ENGAGR the
+//! register carries a live, held contradiction on the information layer no
+//! matter what it carried before.
 //!
 //! Hosted only: no_std has no CUDA driver to link against. The bare-metal
 //! build never sees this module at all (see main.rs's tree).
@@ -63,7 +71,8 @@ extern "C" __global__ void sixteen3_unary(
     unsigned char rt, rf, rtt, rff;
     if (op == 0) { rt=xf; rf=xt; rtt=xtt; rff=xff; }       // truth_swap
     else if (op == 1) { rt=xt; rf=xf; rtt=xff; rff=xtt; }  // info_swap
-    else { rt=xf; rf=xt; rtt=xff; rff=xtt; }                // invol
+    else if (op == 2) { rt=xf; rf=xt; rtt=xff; rff=xtt; }  // invol
+    else { rt=xt; rf=xf; rtt=1; rff=1; }                    // engagr (ENGAGR): pin t,f true, truth lanes untouched
     out[i] = rt | (rf<<1) | (rtt<<2) | (rff<<3);
 }
 
@@ -215,8 +224,8 @@ pub fn verify(n: usize, device: usize) -> String {
         report.push_str(&format!("  {name:<8} {n} pairs, {mismatches} mismatch(es)\n"));
     }
 
-    // Unary swaps: op 0..2 = truth_swap, info_swap, invol.
-    let unary_names = ["truth_swap", "info_swap", "invol"];
+    // Unary swaps: op 0..3 = truth_swap, info_swap, invol, engagr.
+    let unary_names = ["truth_swap", "info_swap", "invol", "engagr"];
     for (op, name) in unary_names.iter().enumerate() {
         let mut d_out = match stream.alloc_zeros::<u8>(n) {
             Ok(d) => d,
@@ -241,6 +250,7 @@ pub fn verify(n: usize, device: usize) -> String {
                     "truth_swap" => xs[i].truth_swap(),
                     "info_swap" => xs[i].info_swap(),
                     "invol" => xs[i].invol(),
+                    "engagr" => xs[i].engagr(),
                     _ => unreachable!(),
                 };
                 pack(cpu) != gpu_out[i]
@@ -290,7 +300,7 @@ pub fn verify(n: usize, device: usize) -> String {
 
     let device_name = ctx.name().unwrap_or_else(|_| String::from("unknown device"));
     format!(
-        "gpu16_3 verify: device {device_name}, {n} registers/pair, 11 gates\n{report}\
+        "gpu16_3 verify: device {device_name}, {n} registers/pair, 12 gates\n{report}\
          total: {total_checks} checks, {total_mismatches} mismatch(es) -- {}\n",
         if total_mismatches == 0 { "GPU batch matches CPU scalar exactly" } else { "MISMATCH FOUND" }
     )
