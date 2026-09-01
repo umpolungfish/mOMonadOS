@@ -1,13 +1,16 @@
-Adopted the corrected repair as PROTOCOL_WORD: swap TANCH and FFUSE
-(positions 1 and 8) instead of inserting an extra VINIT. Same multiset of
-tokens as the ob3ect's original word, no insertion, verified against all
-three instruments now that candidate_holds checks all three: banked_walk
-holds, tri_ancestral_word_verdict T, check::word_verdict grammar-legal.
-check's own closure reading is B/Open, not T, and that's real, not a
-downgrade to paper over -- its pairing is a linear stack with no
-wraparound, tri_ancestral's is cyclic, and this word puts a FFUSE at tick
-2, before any FSPLIT has fired. Ran it live: tick 2 of gpu_native_cycle
-shows exactly that, OBSERVE closing None, a fuse with nothing pending to
-close. Reran run/run_real/run_chained/run_cycle against the new word on
-the RTX 4070, all four clean, zero mismatches against the CPU where they
-check one.
+Built gpu_crystal_full_space.rs. Phase_5 of gpu_native_build_of_momonados
+names memory_mechanism as "a 17.28-million-entry Crystal type space
+navigated by address lookup," and nothing built so far actually touched
+that space -- gpu_catalog_crystal.rs and gpu_imasm_cycle.rs both batch the
+live catalog, 8667 entries, the populated fraction of it, not the claim.
+This checks the claim at its own scale: every one of the 17,280,000
+addresses crystal::TOTAL names, decode(addr) into its 12-axis tuple then
+re-encode, on the GPU. Cross-checked against the CPU's own crystal::decode/
+encode on 2.16 million of them, not trusted from internal self-agreement,
+since a GPU kernel that only agrees with itself proves nothing if it shares
+a bug with its own inverse.
+
+Ran live on the RTX 4070: 0 round-trip failures across all 17,280,000
+addresses, 0 mismatches against the CPU sample. The full address space this
+ob3ect claims is coherent at the scale it actually names, not the 8667-entry
+subset everything before this checked.
