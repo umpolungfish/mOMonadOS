@@ -1287,6 +1287,10 @@ pub fn repl(k: &mut Kernel) {
                 sprintln!("{}", crate::gpu_catalog_crystal::run());
             }
             #[cfg(feature = "hosted")]
+            "gpu_imasm_cycle" => {
+                sprintln!("{}", crate::gpu_imasm_cycle::run());
+            }
+            #[cfg(feature = "hosted")]
             "gpu16_3" => {
                 let sub = parts.next().unwrap_or("");
                 match sub {
