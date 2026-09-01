@@ -150,7 +150,7 @@ fn xor_into(a: &mut [u64], b: &[u64]) {
     }
 }
 
-fn build_rows(clauses: &[(Vec<usize>, bool)], num_vars: usize) -> Vec<Gf2Row> {
+pub(crate) fn build_rows(clauses: &[(Vec<usize>, bool)], num_vars: usize) -> Vec<Gf2Row> {
     let w = words_for(num_vars);
     clauses
         .iter()
@@ -167,7 +167,7 @@ fn build_rows(clauses: &[(Vec<usize>, bool)], num_vars: usize) -> Vec<Gf2Row> {
 /// Full Gauss-Jordan elimination to reduced row-echelon form, in place.
 /// Returns (rank, pivot_row_of_col) — pivot_row_of_col[c] is Some(r) if
 /// column c is a pivot column, found in row r after reduction.
-fn eliminate(rows: &mut [Gf2Row], num_vars: usize) -> (usize, Vec<Option<usize>>) {
+pub(crate) fn eliminate(rows: &mut [Gf2Row], num_vars: usize) -> (usize, Vec<Option<usize>>) {
     let mut pivot_row_of_col = vec![None; num_vars];
     let mut rank = 0usize;
     for col in 0..num_vars {

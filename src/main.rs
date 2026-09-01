@@ -139,6 +139,7 @@ mod provenance;
 mod quadratic;
 mod dqi;
 mod yz;
+mod yz_list;
 mod fde;
 mod rsa_decrypter;
 mod combo;
