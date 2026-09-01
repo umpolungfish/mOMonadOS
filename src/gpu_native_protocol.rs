@@ -20,7 +20,7 @@ use alloc::vec::Vec;
 use core::sync::atomic::{AtomicU64, Ordering};
 use cudarc::driver::{CudaContext, LaunchConfig, PushKernelArg};
 use cudarc::nvrtc::compile_ptx;
-use imasm_core::imasm16_3::{join_t, meet_t, Reg16_3};
+use imasm_core::imasm16_3::{join_c, join_t, leq_c, leq_i, leq_t, meet_c, meet_t, Reg16_3};
 use imasm_core::lattice_flow::{banked_walk, tri_ancestral_word_verdict};
 
 /// `kernel_repairs.holds[0]` (insert a second `∈` after `⊢`) does NOT
@@ -352,5 +352,182 @@ pub fn run(n_per_pass: u64) -> String {
         pass2.1,
         WINDING_INVARIANT.load(Ordering::SeqCst)
     ));
+    out
+}
+
+// ── run_chained: all 11 gates, one kernel, one launch ──────────────────────
+//
+// The chained_gpu_native_gates ob3ect's own scope: reuse the 11 gates
+// already built and verified separately in gpu_sixteen3.rs, but run them
+// chained -- one thread computing all 11 in a single kernel body, instead
+// of 11 separate kernel launches over the same batch. Same gate logic
+// (this is a faithful copy of the per-lane bit ops, not a reimplementation
+// with independent semantics), different execution shape: ⋈ CLINK, "chain
+// specialized compute kernels," made literal as fusion into one kernel
+// rather than a sequence of launches.
+
+const CHAINED_SRC: &str = r#"
+extern "C" __global__ void chained_gates(
+    unsigned char *out_union, unsigned char *out_meet_t, unsigned char *out_join_t,
+    unsigned char *out_meet_c, unsigned char *out_join_c,
+    unsigned char *out_truth_swap, unsigned char *out_info_swap, unsigned char *out_invol,
+    unsigned char *out_leq_i, unsigned char *out_leq_t, unsigned char *out_leq_c,
+    const unsigned char *x, const unsigned char *y, const unsigned long long n)
+{
+    unsigned long long i = (unsigned long long)blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= n) return;
+    unsigned char xv = x[i], yv = y[i];
+    unsigned char xt=(xv>>0)&1, xf=(xv>>1)&1, xtt=(xv>>2)&1, xff=(xv>>3)&1;
+    unsigned char yt=(yv>>0)&1, yf=(yv>>1)&1, ytt=(yv>>2)&1, yff=(yv>>3)&1;
+
+    // union
+    out_union[i] = (xt|yt) | ((xf|yf)<<1) | ((xtt|ytt)<<2) | ((xff|yff)<<3);
+    // meet_t / join_t
+    out_meet_t[i] = (xt&yt) | ((xf|yf)<<1) | ((xtt&ytt)<<2) | ((xff|yff)<<3);
+    out_join_t[i] = (xt|yt) | ((xf&yf)<<1) | ((xtt|ytt)<<2) | ((xff&yff)<<3);
+    // meet_c / join_c
+    out_meet_c[i] = (xt&yt) | ((xf&yf)<<1) | ((xtt|ytt)<<2) | ((xff|yff)<<3);
+    out_join_c[i] = (xt|yt) | ((xf|yf)<<1) | ((xtt&ytt)<<2) | ((xff&yff)<<3);
+    // swaps (unary, on x only)
+    out_truth_swap[i] = xf | (xt<<1) | (xtt<<2) | (xff<<3);
+    out_info_swap[i]  = xt | (xf<<1) | (xff<<2) | (xtt<<3);
+    out_invol[i]       = xf | (xt<<1) | (xff<<2) | (xtt<<3);
+    // leq_i / leq_t / leq_c (boolean, byte 0/1)
+    out_leq_i[i] = (!xt||yt) && (!xf||yf) && (!xtt||ytt) && (!xff||yff);
+    {
+        unsigned char pos_ok = (!xt||yt) && (!xtt||ytt);
+        unsigned char neg_ok = (!yf||xf) && (!yff||xff);
+        out_leq_t[i] = pos_ok && neg_ok;
+    }
+    {
+        unsigned char con_ok = (!xt||yt) && (!xf||yf);
+        unsigned char noncon_ok = (!ytt||xtt) && (!yff||xff);
+        out_leq_c[i] = con_ok && noncon_ok;
+    }
+}
+"#;
+
+fn pack2(r: Reg16_3) -> u8 {
+    (r.big_t as u8) | ((r.big_f as u8) << 1) | ((r.small_t as u8) << 2) | ((r.small_f as u8) << 3)
+}
+fn unpack2(b: u8) -> Reg16_3 {
+    Reg16_3 { big_t: b & 1 != 0, big_f: b & 2 != 0, small_t: b & 4 != 0, small_f: b & 8 != 0 }
+}
+struct Xorshift2(u64);
+impl Xorshift2 {
+    fn next_u8(&mut self) -> u8 {
+        let mut x = self.0;
+        x ^= x << 13; x ^= x >> 7; x ^= x << 17;
+        self.0 = x;
+        (x & 0xF) as u8
+    }
+}
+
+/// Runs all 11 SIXTEEN_3 gates on n register pairs in ONE kernel launch,
+/// checked bit-for-bit against the CPU (imasm_core::imasm16_3) for every
+/// gate. Same live pre-check on PROTOCOL_WORD as run/run_real before
+/// anything launches.
+pub fn run_chained(n: u64) -> String {
+    let mut out = format!("gpu_native run_chained: word {PROTOCOL_WORD}\n\n");
+    let verdict = tri_ancestral_word_verdict(PROTOCOL_WORD);
+    let banked = banked_walk(PROTOCOL_WORD);
+    let holds = banked.as_ref().map(|b| b.holds()).unwrap_or(false);
+    out.push_str(&format!(
+        "  tri_ancestral_word_verdict: {:?}\n  banked_walk.holds(): {holds}\n\n",
+        verdict
+    ));
+    if verdict != Some('T') || !holds {
+        out.push_str("  STOPPING: word does not check out against the real instruments.\n");
+        return out;
+    }
+
+    let ctx = match CudaContext::new(0) {
+        Ok(c) => c,
+        Err(e) => return format!("{out}  no CUDA context: {e}\n"),
+    };
+    let stream = ctx.default_stream();
+    let ptx = match compile_ptx(CHAINED_SRC) {
+        Ok(p) => p,
+        Err(e) => return format!("{out}  NVRTC compile failed: {e}\n"),
+    };
+    let module = match ctx.load_module(ptx) {
+        Ok(m) => m,
+        Err(e) => return format!("{out}  module load failed: {e}\n"),
+    };
+    let f = match module.load_function("chained_gates") {
+        Ok(f) => f,
+        Err(e) => return format!("{out}  load chained_gates failed: {e}\n"),
+    };
+    let device_name = ctx.name().unwrap_or_else(|_| String::from("unknown device"));
+    out.push_str(&format!("  device: {device_name}\n"));
+
+    let mut rng = Xorshift2(0xA24BAED4963EE407 ^ n.wrapping_mul(0xD1342543DE82EF95));
+    let xs_packed: Vec<u8> = (0..n).map(|_| rng.next_u8()).collect();
+    let ys_packed: Vec<u8> = (0..n).map(|_| rng.next_u8()).collect();
+    let xs: Vec<Reg16_3> = xs_packed.iter().map(|&b| unpack2(b)).collect();
+    let ys: Vec<Reg16_3> = ys_packed.iter().map(|&b| unpack2(b)).collect();
+
+    let d_xs = match stream.clone_htod(&xs_packed) { Ok(d) => d, Err(e) => return format!("{out}  htod x failed: {e}") };
+    let d_ys = match stream.clone_htod(&ys_packed) { Ok(d) => d, Err(e) => return format!("{out}  htod y failed: {e}") };
+
+    let names = ["union","meet_t","join_t","meet_c","join_c","truth_swap","info_swap","invol","leq_i","leq_t","leq_c"];
+    let mut outs: Vec<_> = Vec::new();
+    for name in names.iter() {
+        match stream.alloc_zeros::<u8>(n as usize) {
+            Ok(d) => outs.push(d),
+            Err(e) => return format!("{out}  alloc {name} failed: {e}"),
+        }
+    }
+
+    {
+        let mut builder = stream.launch_builder(&f);
+        for d in outs.iter_mut() { builder.arg(d); }
+        builder.arg(&d_xs);
+        builder.arg(&d_ys);
+        builder.arg(&n);
+        let cfg = LaunchConfig::for_num_elems(n as u32);
+        if let Err(e) = unsafe { builder.launch(cfg) } {
+            return format!("{out}  launch chained_gates failed: {e}");
+        }
+    }
+
+    out.push_str(&format!("  ⋈ chained all 11 gates into one kernel launch over {n} register pairs\n\n"));
+
+    let mut total_mismatches: u64 = 0;
+    for (idx, name) in names.iter().enumerate() {
+        let gpu_out: Vec<u8> = match stream.clone_dtoh(&outs[idx]) {
+            Ok(v) => v,
+            Err(e) => return format!("{out}  dtoh {name} failed: {e}"),
+        };
+        let mismatches = (0..n as usize)
+            .filter(|&i| {
+                let cpu_byte = match *name {
+                    "union" => pack2(xs[i].union(ys[i])),
+                    "meet_t" => pack2(meet_t(xs[i], ys[i])),
+                    "join_t" => pack2(join_t(xs[i], ys[i])),
+                    "meet_c" => pack2(meet_c(xs[i], ys[i])),
+                    "join_c" => pack2(join_c(xs[i], ys[i])),
+                    "truth_swap" => pack2(xs[i].truth_swap()),
+                    "info_swap" => pack2(xs[i].info_swap()),
+                    "invol" => pack2(xs[i].invol()),
+                    "leq_i" => leq_i(xs[i], ys[i]) as u8,
+                    "leq_t" => leq_t(xs[i], ys[i]) as u8,
+                    "leq_c" => leq_c(xs[i], ys[i]) as u8,
+                    _ => unreachable!(),
+                };
+                cpu_byte != gpu_out[i]
+            })
+            .count() as u64;
+        total_mismatches += mismatches;
+        out.push_str(&format!("  {name:<12} {n} checked, {mismatches} mismatch(es)\n"));
+    }
+    out.push_str(&format!(
+        "\n  total: {} checks across 11 gates, {total_mismatches} mismatch(es) -- {}\n",
+        n * 11,
+        if total_mismatches == 0 { "one chained kernel matches 11 separately-verified gates exactly" } else { "MISMATCH FOUND" }
+    ));
+
+    let wind = WINDING_INVARIANT.fetch_add(1, Ordering::SeqCst) + 1;
+    out.push_str(&format!("  ⊡ winding invariant incremented, never decremented: now {wind}\n"));
     out
 }

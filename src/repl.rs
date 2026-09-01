@@ -1258,6 +1258,10 @@ pub fn repl(k: &mut Kernel) {
                         let n: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(1_000_000);
                         sprintln!("{}", crate::gpu_native_protocol::run_real(n));
                     }
+                    "run_chained" => {
+                        let n: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(1_000_000);
+                        sprintln!("{}", crate::gpu_native_protocol::run_chained(n));
+                    }
                     _ => {
                         sprintln!("gpu_native run [n]        — run the repaired GPU-native-build ob3ect");
                         sprintln!("                             protocol word: checks it against the");
@@ -1271,6 +1275,10 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("                             the reverse-blocked step measured as an");
                         sprintln!("                             actual per-lane count, not asserted.");
                         sprintln!("                             n defaults to 1000000.");
+                        sprintln!("gpu_native run_chained [n] — all 11 gates from gpu_sixteen3.rs, chained");
+                        sprintln!("                             into ONE kernel launch instead of 11, over");
+                        sprintln!("                             n register pairs, each checked against the");
+                        sprintln!("                             CPU. n defaults to 1000000.");
                     }
                 }
             }
