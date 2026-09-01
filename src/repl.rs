@@ -1254,13 +1254,23 @@ pub fn repl(k: &mut Kernel) {
                         let n: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(1024);
                         sprintln!("{}", crate::gpu_native_protocol::run(n));
                     }
+                    "run_real" => {
+                        let n: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(1_000_000);
+                        sprintln!("{}", crate::gpu_native_protocol::run_real(n));
+                    }
                     _ => {
-                        sprintln!("gpu_native run [n]   — run the repaired GPU-native-build ob3ect");
-                        sprintln!("                        protocol word for real: checks it against");
-                        sprintln!("                        the Grammar's own instruments, then executes");
-                        sprintln!("                        its two divergence/sync/winding passes as");
-                        sprintln!("                        real GPU kernel launches, n threads each.");
-                        sprintln!("                        n defaults to 1024.");
+                        sprintln!("gpu_native run [n]        — run the repaired GPU-native-build ob3ect");
+                        sprintln!("                             protocol word: checks it against the");
+                        sprintln!("                             Grammar's own instruments, then executes");
+                        sprintln!("                             its two divergence/sync/winding passes as");
+                        sprintln!("                             real GPU kernel launches, n threads each.");
+                        sprintln!("                             n defaults to 1024.");
+                        sprintln!("gpu_native run_real [n]   — the same protocol word, driven by n real");
+                        sprintln!("                             Reg16_3 register pairs through meet_t/join_t");
+                        sprintln!("                             on the GPU, checked against the CPU, with");
+                        sprintln!("                             the reverse-blocked step measured as an");
+                        sprintln!("                             actual per-lane count, not asserted.");
+                        sprintln!("                             n defaults to 1000000.");
                     }
                 }
             }
