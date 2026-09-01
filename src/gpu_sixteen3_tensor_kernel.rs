@@ -75,8 +75,12 @@ __device__ __forceinline__ unsigned long long mix(unsigned long long seed, unsig
 // n): nothing downstream ever reads a generated input back except that
 // fixed-size CPU control check, so writing all n of them would be 3*n
 // bytes of global memory traffic with no reader for all but the first k.
-// out_stage1/2/3 stay full length -- the computed tensor IS this kernel's
-// product, phase_4's own "commit to memory" step, not a verification aid.
+// Phase_4 step 11 says "commit the FINAL computed tensor" -- singular.
+// stage3 is that tensor, full length, the kernel's actual product.
+// stage1/stage2 are what step 9 (⋈) chains THROUGH on the way there, not
+// separately committed, so they're k-sized like x/y/z: materialized only
+// for the control window, computed in registers (and cross-checked in
+// full, on every thread, via the atomic counters below) everywhere else.
 extern "C" __global__ void tensor_chain_verify(
     unsigned char *out_stage1, unsigned char *out_stage2, unsigned char *out_stage3,
     unsigned char *out_x, unsigned char *out_y, unsigned char *out_z,
@@ -104,7 +108,7 @@ extern "C" __global__ void tensor_chain_verify(
     unsigned char s1_f_arm  = (x_f | y_f) | ((x_ff | y_ff) << 2);
     // ∋ rejoin T-arm and F-arm into one packed register.
     unsigned char stage1 = (s1_t_arm & 0x5) | ((s1_f_arm & 0x5) << 1);
-    out_stage1[i] = stage1;
+    if (i < k) out_stage1[i] = stage1;
     // ⊞ hold the B state where this result genuinely has both T and F.
     if ((stage1 & 1) && ((stage1>>1)&1)) atomicAdd(&counters[3], 1ULL);
 
@@ -119,7 +123,7 @@ extern "C" __global__ void tensor_chain_verify(
     unsigned char s2_t_arm = (s1v_t & z_t) | ((s1v_tt & z_tt) << 2);
     unsigned char s2_f_arm = (s1v_f | z_f) | ((s1v_ff | z_ff) << 2);
     unsigned char stage2 = (s2_t_arm & 0x5) | ((s2_f_arm & 0x5) << 1);
-    out_stage2[i] = stage2;
+    if (i < k) out_stage2[i] = stage2;
     if ((stage2 & 1) && ((stage2>>1)&1)) atomicAdd(&counters[4], 1ULL);
 
     // ref2: the flat, independently-written meet_t expression.
@@ -199,11 +203,12 @@ pub fn run(n: u64) -> String {
     // written by that same thread first (every i<n hits every out_* write
     // unconditionally), so zeroing ahead of a kernel that overwrites all
     // of it is pure waste. Only the counters buffer is accumulated into
-    // (atomicAdd) and must start at zero. out_x/y/z are sized k, not n --
-    // see the kernel source comment: nothing reads a generated input back
-    // past the fixed-size control sample.
-    let mut d_s1 = match unsafe { stream.alloc::<u8>(n as usize) } { Ok(d) => d, Err(e) => return format!("{out}  alloc s1: {e}") };
-    let mut d_s2 = match unsafe { stream.alloc::<u8>(n as usize) } { Ok(d) => d, Err(e) => return format!("{out}  alloc s2: {e}") };
+    // (atomicAdd) and must start at zero. out_x/y/z/stage1/stage2 are
+    // sized k, not n -- see the kernel source comment: nothing reads a
+    // generated input, or an intermediate stage, past the control sample.
+    // stage3 alone is the committed record, full length.
+    let mut d_s1 = match unsafe { stream.alloc::<u8>(k) } { Ok(d) => d, Err(e) => return format!("{out}  alloc s1: {e}") };
+    let mut d_s2 = match unsafe { stream.alloc::<u8>(k) } { Ok(d) => d, Err(e) => return format!("{out}  alloc s2: {e}") };
     let mut d_s3 = match unsafe { stream.alloc::<u8>(n as usize) } { Ok(d) => d, Err(e) => return format!("{out}  alloc s3: {e}") };
     let mut d_x = match unsafe { stream.alloc::<u8>(k) } { Ok(d) => d, Err(e) => return format!("{out}  alloc x: {e}") };
     let mut d_y = match unsafe { stream.alloc::<u8>(k) } { Ok(d) => d, Err(e) => return format!("{out}  alloc y: {e}") };
