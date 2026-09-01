@@ -484,7 +484,8 @@ pub fn repl_dqi(args: &[&str]) {
         sprintln!("  dqi xorsat <m>        solve a random m-variable XOR system (Gaussian elimination), verify");
         sprintln!("  dqi decode <m> <ell>  weight-≤ell syndrome decode on a random m-variable code");
         sprintln!("  dqi benchmark <m>     elimination vs brute force on the same random instance (m≤24 runs both)");
-        sprintln!("  dqi gpu-benchmark <m> [device]  brute-force all 2^m assignments on GPU, cross-check vs elimination (hosted, m≤30)");
+        sprintln!("  dqi gpu-benchmark <m> [unsat] [device]  brute-force all 2^m assignments on GPU, cross-check vs elimination");
+        sprintln!("                          add 'unsat' to force the worst case (no thread can exit early)");
         sprintln!("  Single-⊤ variant: ⊢∈∈≻⋈⊤⊥∋≺⋈∋⊣⊙ (period 13)");
         sprintln!("  Double-⊤ variant: ⊢∈∈≻⋈⊤⊤⊥∋≺⋈∋⊣⊙ (period 14)");
         sprintln!("  Triple-⊤ variant: ⊢∈∈≻⋈⊤⊤⊤⊥∋≺⋈∋⊣⊙ (period 15)");

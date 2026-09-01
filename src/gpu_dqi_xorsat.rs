@@ -2,15 +2,16 @@
 //! Gaussian-elimination XORSAT solver in dqi.rs.
 //!
 //! Follows gpu_sixteen3.rs's pattern: one CUDA kernel, JIT-compiled via
-//! cudarc/NVRTC, launched over the full 2^m assignment space, each thread
-//! checking one assignment against every clause (packed as a u64
-//! variable-subset bitmask + rhs bit, m <= 30 here). This pushes
-//! brute-force verification past what serial CPU brute force in dqi.rs
-//! can reach (capped at m=24 there, to stay a benchmark rather than a
-//! multi-hour loop) and cross-checks dqi::xorsat_solve's answer against
-//! ground truth at that larger scale -- the same "run both, compare, zero
-//! mismatches" discipline gpu_sixteen3.rs::verify already established for
-//! the trilattice gates, applied here to the DQI solver.
+//! cudarc/NVRTC, launched over a fixed grid that grid-strides across the
+//! full 2^m assignment space, each thread checking a share of the
+//! assignments against every clause (packed as a u64 variable-subset
+//! bitmask + rhs bit). This pushes brute-force verification past what
+//! serial CPU brute force in dqi.rs can reach (capped at m=24 there, to
+//! stay a benchmark rather than a multi-hour loop) and cross-checks
+//! dqi::xorsat_solve's answer against ground truth at that larger scale --
+//! the same "run both, compare, zero mismatches" discipline
+//! gpu_sixteen3.rs::verify already established for the trilattice gates,
+//! applied here to the DQI solver.
 //!
 //! Hosted only: no CUDA driver in the bare-metal build.
 
@@ -20,25 +21,38 @@ use alloc::vec::Vec;
 use cudarc::driver::{CudaContext, LaunchConfig, PushKernelArg};
 use cudarc::nvrtc::compile_ptx;
 
+// Grid-stride loop, not one thread per assignment: `total` (2^num_vars)
+// is a u64 and is never narrowed to fit a launch-config dimension, so
+// there is no size at which the grid silently under-covers the space.
+// Earlier version launched `LaunchConfig::for_num_elems(total as u32)`,
+// which truncates any `total` that doesn't fit in a u32 -- at num_vars=32,
+// `total as u32` wraps to 0 and the kernel launches zero threads, so it
+// would have silently reported UNSAT for every instance from there up
+// instead of erroring. Caught by checking why the num_vars<=30 refusal
+// was there at all, rather than just re-asserting a number chosen by
+// caution the first time through.
 const KERNEL_SRC: &str = r#"
 extern "C" __global__ void xorsat_brute(
     unsigned long long *found_mask, int *found_flag,
     const unsigned long long *clause_masks, const unsigned char *clause_rhs,
     const int num_clauses, const unsigned long long total)
 {
-    unsigned long long i = (unsigned long long)blockIdx.x * blockDim.x + threadIdx.x;
-    if (i >= total) return;
-    if (*found_flag) return; // racy early-out is fine: correctness comes from the atomic below
-    bool ok = true;
-    for (int c = 0; c < num_clauses; c++) {
-        unsigned long long parity = __popcll(i & clause_masks[c]) & 1ULL;
-        bool want = clause_rhs[c] != 0;
-        if ((parity != 0) != want) { ok = false; break; }
-    }
-    if (ok) {
-        int prev = atomicExch(found_flag, 1);
-        if (prev == 0) {
-            *found_mask = i;
+    unsigned long long stride = (unsigned long long)gridDim.x * blockDim.x;
+    for (unsigned long long i = (unsigned long long)blockIdx.x * blockDim.x + threadIdx.x;
+         i < total; i += stride) {
+        if (*found_flag) return; // racy early-out is fine: correctness comes from the atomic below
+        bool ok = true;
+        for (int c = 0; c < num_clauses; c++) {
+            unsigned long long parity = __popcll(i & clause_masks[c]) & 1ULL;
+            bool want = clause_rhs[c] != 0;
+            if ((parity != 0) != want) { ok = false; break; }
+        }
+        if (ok) {
+            int prev = atomicExch(found_flag, 1);
+            if (prev == 0) {
+                *found_mask = i;
+            }
+            return;
         }
     }
 }
@@ -48,12 +62,16 @@ extern "C" __global__ void xorsat_brute(
 /// given clause set (same (variable-index-subset, rhs) shape
 /// `dqi::xorsat_solve` takes), then cross-checks the result directly
 /// against the CPU elimination solver run on the identical instance.
-/// Refuses num_vars outside 1..=30: above that a single kernel launch
-/// stops being the right tool, and 0 has no assignments to brute force.
+/// Refuses num_vars outside 1..=40: below 1 there is nothing to brute
+/// force; above 40 (2^40, over a trillion assignments) a forced-UNSAT
+/// instance -- the case with no early exit -- runs long enough on this
+/// GPU that the command stops being a benchmark and starts being a wait.
+/// That ceiling is a measured runtime choice now, not a launch-config
+/// size limit: the grid-stride kernel has no architectural wall.
 pub fn verify_against_cpu(clauses: &[(Vec<usize>, bool)], num_vars: usize, device: usize) -> String {
-    if num_vars == 0 || num_vars > 30 {
+    if num_vars == 0 || num_vars > 40 {
         return format!(
-            "gpu_dqi_xorsat: refusing num_vars={} (supported: 1..=30 — 2^30 assignments is already the practical ceiling for one launch)",
+            "gpu_dqi_xorsat: refusing num_vars={} (supported: 1..=40, a measured runtime ceiling, not an architectural one)",
             num_vars
         );
     }
@@ -100,8 +118,14 @@ pub fn verify_against_cpu(clauses: &[(Vec<usize>, bool)], num_vars: usize, devic
         Err(e) => return format!("gpu_dqi_xorsat: alloc found_flag failed: {e}"),
     };
 
-    // total <= 2^30 by the guard above, well inside u32 range: exact, not truncated.
-    let cfg = LaunchConfig::for_num_elems(total as u32);
+    // Fixed grid, independent of `total`: the kernel's own stride loop
+    // covers however many assignments there are, so the launch shape
+    // doesn't need to scale with (or be limited by) num_vars at all.
+    let cfg = LaunchConfig {
+        grid_dim: (65536, 1, 1),
+        block_dim: (256, 1, 1),
+        shared_mem_bytes: 0,
+    };
     let mut builder = stream.launch_builder(&f);
     builder.arg(&mut d_found_mask);
     builder.arg(&mut d_found_flag);
@@ -109,9 +133,14 @@ pub fn verify_against_cpu(clauses: &[(Vec<usize>, bool)], num_vars: usize, devic
     builder.arg(&d_rhs);
     builder.arg(&num_clauses);
     builder.arg(&total);
+    let t0 = std::time::Instant::now();
     if let Err(e) = unsafe { builder.launch(cfg) } {
         return format!("gpu_dqi_xorsat: launch failed: {e}");
     }
+    if let Err(e) = stream.synchronize() {
+        return format!("gpu_dqi_xorsat: synchronize failed: {e}");
+    }
+    let kernel_micros = t0.elapsed().as_micros();
 
     let found_flag: Vec<i32> = match stream.clone_dtoh(&d_found_flag) {
         Ok(v) => v,
@@ -135,8 +164,9 @@ pub fn verify_against_cpu(clauses: &[(Vec<usize>, bool)], num_vars: usize, devic
         total
     ));
     out.push_str(&format!(
-        "  GPU brute force: {}\n",
-        if gpu_sat { "SAT" } else { "UNSAT" }
+        "  GPU brute force: {}  ({} us kernel time)\n",
+        if gpu_sat { "SAT" } else { "UNSAT" },
+        kernel_micros
     ));
     out.push_str(&format!(
         "  CPU elimination: {}\n",

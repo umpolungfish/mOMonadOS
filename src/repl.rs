@@ -2126,8 +2126,22 @@ pub fn repl(k: &mut Kernel) {
                 #[cfg(feature = "hosted")]
                 let handled_gpu = if rest.first().copied() == Some("gpu-benchmark") {
                     let m: usize = rest.get(1).and_then(|s| s.parse().ok()).unwrap_or(24);
-                    let device: usize = rest.get(2).and_then(|s| s.parse().ok()).unwrap_or(0);
-                    let (clauses, _planted) = crate::dqi::random_xorsat_instance(m, m as u64);
+                    let force_unsat = rest.iter().any(|a| *a == "unsat");
+                    let device: usize = rest
+                        .iter()
+                        .skip(2)
+                        .filter(|a| **a != "unsat")
+                        .find_map(|a| a.parse().ok())
+                        .unwrap_or(0);
+                    let (mut clauses, _planted) = crate::dqi::random_xorsat_instance(m, m as u64);
+                    if force_unsat {
+                        // Same trick dqi::benchmark_report uses on the CPU
+                        // side: one 0=1 clause makes the whole system
+                        // unsatisfiable, so no thread can exit early and
+                        // the full 2^m space must be swept -- the actual
+                        // worst case, not the lucky-early-hit common case.
+                        clauses.push((alloc::vec::Vec::new(), true));
+                    }
                     sprintln!("{}", crate::gpu_dqi_xorsat::verify_against_cpu(&clauses, m, device));
                     true
                 } else {
