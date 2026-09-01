@@ -57,6 +57,8 @@ mod gpu_native_cycle;
 mod gpu_crystal_full_space;
 #[cfg(feature = "hosted")]
 mod gpu_ipc_no_serialization;
+#[cfg(feature = "hosted")]
+mod gpu_sixteen3_tensor_kernel;
 mod frob_verify;
 mod imas_ig;
 mod aleph;

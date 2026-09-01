@@ -1309,6 +1309,11 @@ pub fn repl(k: &mut Kernel) {
                 sprintln!("{}", crate::gpu_ipc_no_serialization::run());
             }
             #[cfg(feature = "hosted")]
+            "gpu_sixteen3_tensor_kernel" => {
+                let n: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(1_000_000);
+                sprintln!("{}", crate::gpu_sixteen3_tensor_kernel::run(n));
+            }
+            #[cfg(feature = "hosted")]
             "gpu16_3" => {
                 let sub = parts.next().unwrap_or("");
                 match sub {
