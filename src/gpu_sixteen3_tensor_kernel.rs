@@ -16,6 +16,13 @@
 //! by gate, and chains three real gates through it -- union, meet_t, then
 //! truth_swap (the one of the three that actually exercises step 6's
 //! permutation) -- checked against the CPU at every stage, not just the end.
+//!
+//! Input generation is on the GPU too, one thread deriving its own x, y, z
+//! from its own index and a seed (`mix`, a MurmurHash3 finalizer) instead
+//! of a host loop filling a buffer the kernel then reads -- no host RNG
+//! cost, no htod copy of the inputs at all. See measurements/
+//! gpu_sixteen3_tensor_kernel_scaling.png: at n=10^9 host generation was
+//! 5.6s of a 6.3s total, the single largest cost in the whole pipeline.
 
 use alloc::format;
 use alloc::string::String;
@@ -48,19 +55,36 @@ use std::time::Instant;
 /// sample against the real CPU `imasm_core` functions as the ground-truth
 /// control that a GPU-only self-consistency check cannot be.
 const TENSOR_SRC: &str = r#"
+// MurmurHash3 finalizer, a counter-based generator: same (seed, counter)
+// always produces the same value, no state carried between threads, no
+// host-side loop -- each thread derives its own x, y, z from its own
+// index instead of reading them from a buffer someone else filled.
+__device__ __forceinline__ unsigned long long mix(unsigned long long seed, unsigned long long counter)
+{
+    unsigned long long h = seed ^ (counter * 0x9E3779B97F4A7C15ULL);
+    h ^= h >> 33; h *= 0xff51afd7ed558ccdULL;
+    h ^= h >> 33; h *= 0xc4ceb9fe1a85ec53ULL;
+    h ^= h >> 33;
+    return h;
+}
+
 // counters[0..7) = mismatch1, mismatch2, mismatch3, both1, both2, both3, self_ref_fail --
 // one buffer, indexed by offset, so the host side passes one argument, not seven.
 extern "C" __global__ void tensor_chain_verify(
     unsigned char *out_stage1, unsigned char *out_stage2, unsigned char *out_stage3,
+    unsigned char *out_x, unsigned char *out_y, unsigned char *out_z,
     unsigned long long *counters,
-    const unsigned char *x, const unsigned char *y, const unsigned char *z,
-    const unsigned long long n)
+    const unsigned long long seed, const unsigned long long n)
 {
     unsigned long long i = (unsigned long long)blockIdx.x * blockDim.x + threadIdx.x;
     if (i >= n) return;
 
-    // ⊢ void state for this thread's slot -- nothing read yet.
-    unsigned char xv = x[i], yv = y[i], zv = z[i];
+    // ⊢ void state for this thread's slot -- generated here, not read from
+    // a host-filled buffer: no host RNG loop, no htod copy of the inputs.
+    unsigned char xv = (unsigned char)(mix(seed, i*3ULL + 0) & 0xF);
+    unsigned char yv = (unsigned char)(mix(seed, i*3ULL + 1) & 0xF);
+    unsigned char zv = (unsigned char)(mix(seed, i*3ULL + 2) & 0xF);
+    out_x[i] = xv; out_y[i] = yv; out_z[i] = zv;
 
     // ── stage 1: union(x, y), arm/rejoin shape ──
     // ∈ split into T-arm / F-arm lanes.
@@ -129,16 +153,6 @@ fn pack(r: Reg16_3) -> u8 {
 fn unpack(b: u8) -> Reg16_3 {
     Reg16_3 { big_t: b & 1 != 0, big_f: b & 2 != 0, small_t: b & 4 != 0, small_f: b & 8 != 0 }
 }
-struct Xorshift(u64);
-impl Xorshift {
-    fn next_u8(&mut self) -> u8 {
-        let mut x = self.0;
-        x ^= x << 13; x ^= x >> 7; x ^= x << 17;
-        self.0 = x;
-        (x & 0xF) as u8
-    }
-}
-
 pub fn run(n: u64) -> String {
     let mut out = format!("gpu_sixteen3_tensor_kernel: chained union -> meet_t -> truth_swap, {n} register triples\n\n");
 
@@ -163,20 +177,20 @@ pub fn run(n: u64) -> String {
         Err(e) => return format!("{out}  load tensor_chain_verify failed: {e}\n"),
     };
 
+    // No host RNG loop, no htod copy of input triples -- each thread
+    // derives its own x, y, z from its own index and a seed (see `mix` in
+    // TENSOR_SRC), so the only "generation" cost left is choosing the seed.
     let t_gen = Instant::now();
-    let mut rng = Xorshift(0xC2B2AE3D27D4EB4F ^ n.wrapping_mul(0x165667B19E3779F9));
-    let xs_packed: Vec<u8> = (0..n).map(|_| rng.next_u8()).collect();
-    let ys_packed: Vec<u8> = (0..n).map(|_| rng.next_u8()).collect();
-    let zs_packed: Vec<u8> = (0..n).map(|_| rng.next_u8()).collect();
+    let seed = 0xC2B2AE3D27D4EB4Fu64 ^ n.wrapping_mul(0x165667B19E3779F9);
     let gen_elapsed = t_gen.elapsed();
 
     let t_htod = Instant::now();
-    let d_x = match stream.clone_htod(&xs_packed) { Ok(d) => d, Err(e) => return format!("{out}  htod x: {e}") };
-    let d_y = match stream.clone_htod(&ys_packed) { Ok(d) => d, Err(e) => return format!("{out}  htod y: {e}") };
-    let d_z = match stream.clone_htod(&zs_packed) { Ok(d) => d, Err(e) => return format!("{out}  htod z: {e}") };
     let mut d_s1 = match stream.alloc_zeros::<u8>(n as usize) { Ok(d) => d, Err(e) => return format!("{out}  alloc s1: {e}") };
     let mut d_s2 = match stream.alloc_zeros::<u8>(n as usize) { Ok(d) => d, Err(e) => return format!("{out}  alloc s2: {e}") };
     let mut d_s3 = match stream.alloc_zeros::<u8>(n as usize) { Ok(d) => d, Err(e) => return format!("{out}  alloc s3: {e}") };
+    let mut d_x = match stream.alloc_zeros::<u8>(n as usize) { Ok(d) => d, Err(e) => return format!("{out}  alloc x: {e}") };
+    let mut d_y = match stream.alloc_zeros::<u8>(n as usize) { Ok(d) => d, Err(e) => return format!("{out}  alloc y: {e}") };
+    let mut d_z = match stream.alloc_zeros::<u8>(n as usize) { Ok(d) => d, Err(e) => return format!("{out}  alloc z: {e}") };
     let mut d_counters = match stream.alloc_zeros::<u64>(7) { Ok(d) => d, Err(e) => return format!("{out}  alloc counters: {e}") };
 
     {
@@ -184,10 +198,11 @@ pub fn run(n: u64) -> String {
         builder.arg(&mut d_s1);
         builder.arg(&mut d_s2);
         builder.arg(&mut d_s3);
+        builder.arg(&mut d_x);
+        builder.arg(&mut d_y);
+        builder.arg(&mut d_z);
         builder.arg(&mut d_counters);
-        builder.arg(&d_x);
-        builder.arg(&d_y);
-        builder.arg(&d_z);
+        builder.arg(&seed);
         builder.arg(&n);
         let cfg = LaunchConfig::for_num_elems(n as u32);
         if let Err(e) = unsafe { builder.launch(cfg) } {
@@ -230,14 +245,17 @@ pub fn run(n: u64) -> String {
     // imasm_core functions directly, cost bounded regardless of n.
     let t_control = Instant::now();
     let k = (n as usize).min(10_000);
+    let ctrl_x: Vec<u8> = match stream.clone_dtoh(&d_x.slice(0..k)) { Ok(v) => v, Err(e) => return format!("{out}  dtoh control x: {e}") };
+    let ctrl_y: Vec<u8> = match stream.clone_dtoh(&d_y.slice(0..k)) { Ok(v) => v, Err(e) => return format!("{out}  dtoh control y: {e}") };
+    let ctrl_z: Vec<u8> = match stream.clone_dtoh(&d_z.slice(0..k)) { Ok(v) => v, Err(e) => return format!("{out}  dtoh control z: {e}") };
     let ctrl_s1: Vec<u8> = match stream.clone_dtoh(&d_s1.slice(0..k)) { Ok(v) => v, Err(e) => return format!("{out}  dtoh control s1: {e}") };
     let ctrl_s2: Vec<u8> = match stream.clone_dtoh(&d_s2.slice(0..k)) { Ok(v) => v, Err(e) => return format!("{out}  dtoh control s2: {e}") };
     let ctrl_s3: Vec<u8> = match stream.clone_dtoh(&d_s3.slice(0..k)) { Ok(v) => v, Err(e) => return format!("{out}  dtoh control s3: {e}") };
     let mut control_mismatch = 0u64;
     for i in 0..k {
-        let x = unpack(xs_packed[i]);
-        let y = unpack(ys_packed[i]);
-        let z = unpack(zs_packed[i]);
+        let x = unpack(ctrl_x[i]);
+        let y = unpack(ctrl_y[i]);
+        let z = unpack(ctrl_z[i]);
         let cpu_s1 = x.union(y);
         let cpu_s2 = meet_t(cpu_s1, z);
         let cpu_s3 = cpu_s2.truth_swap();
@@ -261,7 +279,7 @@ pub fn run(n: u64) -> String {
     ));
 
     out.push_str(&format!(
-        "\n  TIMING n={n} gen_ms={:.3} htod_launch_sync_ms={:.3} dtoh_counters_ms={:.3} cpu_control_ms={:.3} (control sample size {k}) total_ms={:.3}\n",
+        "\n  TIMING n={n} seed_ms={:.3} alloc_launch_sync_ms={:.3} dtoh_counters_ms={:.3} cpu_control_ms={:.3} (control sample size {k}) total_ms={:.3}\n",
         gen_elapsed.as_secs_f64() * 1000.0,
         htod_launch_elapsed.as_secs_f64() * 1000.0,
         dtoh_elapsed.as_secs_f64() * 1000.0,

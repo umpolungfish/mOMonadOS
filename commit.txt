@@ -1,22 +1,20 @@
-Moved gpu_sixteen3_tensor_kernel's verification onto the GPU. The
-single-threaded CPU loop was 30x the cost of the GPU work it checked at
-n=10^9. Every thread now also computes the same three chained stages via
-an independently-written flat kernel (the exact expressions
-gpu_native_protocol.rs's CHAINED_SRC already verified separately at
-billion scale) and folds any disagreement into one atomic counter per
-stage, all O(N) work staying on the device. Two GPU kernels agreeing with
-each other isn't the same as being right if they share a bug, so a fixed
-10,000-entry sample, regardless of n, still gets checked directly against
-the real CPU imasm_core functions as the ground-truth control a
-GPU-only self-check can't be. Only seven u64 counters and that small
-sample cross back to the host now, not four full n-length arrays.
+Moved gpu_sixteen3_tensor_kernel's input generation onto the GPU. Once
+verification stopped being the bottleneck, host-side RNG (a single-
+threaded loop filling three n-length buffers, then htod-copying them) was
+89% of total time at n=10^9. Each thread now derives its own x, y, z from
+its own index and a seed via a MurmurHash3 finalizer applied to (seed,
+counter) -- Lando's suggestion, a hand-rolled counter-based generator in
+the kernel instead of cuRAND, since the mixing only needs to look uniform
+per-lane, not survive statistical scrutiny as a general-purpose RNG. No
+host loop, no htod copy of the inputs at all now; the kernel writes its
+generated x, y, z to device memory (so the control check can still read
+a slice of them back) but the host never sends them.
 
-Reran the full 10^4-10^9 sweep and kept the old numbers rather than
-overwrite them: measurements/gpu_sixteen3_tensor_kernel_scaling_before_
-gpu_verify.csv is what the module used to measure,
-gpu_sixteen3_tensor_kernel_scaling.csv is what it measures now. Total wall
-time drops about 5x from 10^6 triples up (5.3x at 10^8), and regresses
-below 10^5 -- atomic-counter overhead with nothing to amortize it against,
-kept in the chart rather than cropped. Host-side RNG generation of the
-input triples is the new bottleneck at scale, not verification: 5.6s of
-the 6.3s total at n=10^9.
+Reran the full 10^4-10^9 sweep, kept stage 2's numbers as their own file
+(gpu_sixteen3_tensor_kernel_scaling_gpu_verify_host_rng.csv) rather than
+overwrite them, alongside the original stage 1 file. Total wall time at
+n=10^9: 180ms, down from 6283ms with GPU verify alone, down from 30427ms
+in the original CPU-verify version. About 169x cumulative, peaking at
+179x at n=3x10^8. Every stage still checked on-GPU against the
+independent flat kernel and against a fixed 10,000-entry CPU control
+sample: 0 mismatches at every n tried, self-reference check holds.
