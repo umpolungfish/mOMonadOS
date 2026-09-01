@@ -19,7 +19,7 @@ Kept because a measurement whose inputs are gone is a claim, not a measurement.
   keys. A different object from the twelve-glyph type words, and it is kept apart
   for that reason: 36 of 80 vacuous there, and that rate does NOT transfer.
 
-Three stages of the same benchmark, `gpu_sixteen3_tensor_kernel <n>`, n from
+Four stages of the same benchmark, `gpu_sixteen3_tensor_kernel <n>`, n from
 10^4 to 10^9, one `run_hosted_cmds.sh` boot per row so CUDA context/module
 setup happens once and every number is the module's own internal `Instant`
 timing:
@@ -39,17 +39,28 @@ timing:
   the device (htod) -- that generation became the new bottleneck, ~89% of
   total time at n=10^9.
 
-`gpu_sixteen3_tensor_kernel_scaling.csv` (stage 3, current)
+`gpu_sixteen3_tensor_kernel_scaling_gpu_verify_gpu_rng.csv` (stage 3)
   Input generation moved onto the GPU too: each thread derives its own x,
   y, z from its own index and a seed (a MurmurHash3-finalizer mix,
-  counter-based -- no host loop, no htod of the inputs at all). A fixed
-  10,000-entry sample, regardless of n, is still read back and checked
-  directly against the real CPU imasm_core functions as the ground-truth
-  control a GPU-only self-check cannot be.
+  counter-based -- no host loop, no htod of the inputs at all). x/y/z and
+  the three stage-output arrays were still allocated and written at full n
+  length even though only a fixed 10,000-entry control sample ever gets
+  read back.
+
+`gpu_sixteen3_tensor_kernel_scaling.csv` (stage 4, current)
+  Device allocations switched from `alloc_zeros` to `alloc` for the six
+  per-element buffers (every element is unconditionally overwritten before
+  any read, so zeroing first was waste -- this alone was within measurement
+  noise, not the win it looked like on paper). The regenerated x/y/z
+  buffers shrunk from length n to length k=10,000, the actual number ever
+  read back -- writing all n of them was 3*n bytes of global memory traffic
+  for a 3*k-byte reader, and this one was real: consistently separated from
+  stage 3's numbers, not noise. The three stage-output arrays stay full
+  length, that tensor is the kernel's actual product.
 
 `plot_gpu_sixteen3_tensor_kernel_scaling.py` / `gpu_sixteen3_tensor_kernel_scaling.png`
-  All three stages, and cumulative speedup vs stage 1: roughly 169x at
-  n=10^9, peaking at 179x at n=3x10^8. Below 10^5 the speedup is closer to
-  1-2x -- kernel-launch and atomic-counter overhead has little to amortize
-  against at that size, shown rather than cropped out. Regenerate with
-  `python3 plot_gpu_sixteen3_tensor_kernel_scaling.py` from this directory.
+  All four stages, and cumulative speedup vs stage 1: 276x at n=10^9.
+  Below 10^5 the speedup is closer to 1-2x -- kernel-launch and
+  atomic-counter overhead has little to amortize against at that size,
+  shown rather than cropped out. Regenerate with `python3
+  plot_gpu_sixteen3_tensor_kernel_scaling.py` from this directory.

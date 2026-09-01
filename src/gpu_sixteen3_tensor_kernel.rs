@@ -70,11 +70,18 @@ __device__ __forceinline__ unsigned long long mix(unsigned long long seed, unsig
 
 // counters[0..7) = mismatch1, mismatch2, mismatch3, both1, both2, both3, self_ref_fail --
 // one buffer, indexed by offset, so the host side passes one argument, not seven.
+//
+// out_x/out_y/out_z are sized for the control sample only (length k, not
+// n): nothing downstream ever reads a generated input back except that
+// fixed-size CPU control check, so writing all n of them would be 3*n
+// bytes of global memory traffic with no reader for all but the first k.
+// out_stage1/2/3 stay full length -- the computed tensor IS this kernel's
+// product, phase_4's own "commit to memory" step, not a verification aid.
 extern "C" __global__ void tensor_chain_verify(
     unsigned char *out_stage1, unsigned char *out_stage2, unsigned char *out_stage3,
     unsigned char *out_x, unsigned char *out_y, unsigned char *out_z,
     unsigned long long *counters,
-    const unsigned long long seed, const unsigned long long n)
+    const unsigned long long seed, const unsigned long long n, const unsigned long long k)
 {
     unsigned long long i = (unsigned long long)blockIdx.x * blockDim.x + threadIdx.x;
     if (i >= n) return;
@@ -84,7 +91,7 @@ extern "C" __global__ void tensor_chain_verify(
     unsigned char xv = (unsigned char)(mix(seed, i*3ULL + 0) & 0xF);
     unsigned char yv = (unsigned char)(mix(seed, i*3ULL + 1) & 0xF);
     unsigned char zv = (unsigned char)(mix(seed, i*3ULL + 2) & 0xF);
-    out_x[i] = xv; out_y[i] = yv; out_z[i] = zv;
+    if (i < k) { out_x[i] = xv; out_y[i] = yv; out_z[i] = zv; }
 
     // ── stage 1: union(x, y), arm/rejoin shape ──
     // ∈ split into T-arm / F-arm lanes.
@@ -184,13 +191,23 @@ pub fn run(n: u64) -> String {
     let seed = 0xC2B2AE3D27D4EB4Fu64 ^ n.wrapping_mul(0x165667B19E3779F9);
     let gen_elapsed = t_gen.elapsed();
 
+    let k = (n as usize).min(10_000);
+    let k_u64 = k as u64;
+
     let t_htod = Instant::now();
-    let mut d_s1 = match stream.alloc_zeros::<u8>(n as usize) { Ok(d) => d, Err(e) => return format!("{out}  alloc s1: {e}") };
-    let mut d_s2 = match stream.alloc_zeros::<u8>(n as usize) { Ok(d) => d, Err(e) => return format!("{out}  alloc s2: {e}") };
-    let mut d_s3 = match stream.alloc_zeros::<u8>(n as usize) { Ok(d) => d, Err(e) => return format!("{out}  alloc s3: {e}") };
-    let mut d_x = match stream.alloc_zeros::<u8>(n as usize) { Ok(d) => d, Err(e) => return format!("{out}  alloc x: {e}") };
-    let mut d_y = match stream.alloc_zeros::<u8>(n as usize) { Ok(d) => d, Err(e) => return format!("{out}  alloc y: {e}") };
-    let mut d_z = match stream.alloc_zeros::<u8>(n as usize) { Ok(d) => d, Err(e) => return format!("{out}  alloc z: {e}") };
+    // alloc, not alloc_zeros: every element the kernel could read was
+    // written by that same thread first (every i<n hits every out_* write
+    // unconditionally), so zeroing ahead of a kernel that overwrites all
+    // of it is pure waste. Only the counters buffer is accumulated into
+    // (atomicAdd) and must start at zero. out_x/y/z are sized k, not n --
+    // see the kernel source comment: nothing reads a generated input back
+    // past the fixed-size control sample.
+    let mut d_s1 = match unsafe { stream.alloc::<u8>(n as usize) } { Ok(d) => d, Err(e) => return format!("{out}  alloc s1: {e}") };
+    let mut d_s2 = match unsafe { stream.alloc::<u8>(n as usize) } { Ok(d) => d, Err(e) => return format!("{out}  alloc s2: {e}") };
+    let mut d_s3 = match unsafe { stream.alloc::<u8>(n as usize) } { Ok(d) => d, Err(e) => return format!("{out}  alloc s3: {e}") };
+    let mut d_x = match unsafe { stream.alloc::<u8>(k) } { Ok(d) => d, Err(e) => return format!("{out}  alloc x: {e}") };
+    let mut d_y = match unsafe { stream.alloc::<u8>(k) } { Ok(d) => d, Err(e) => return format!("{out}  alloc y: {e}") };
+    let mut d_z = match unsafe { stream.alloc::<u8>(k) } { Ok(d) => d, Err(e) => return format!("{out}  alloc z: {e}") };
     let mut d_counters = match stream.alloc_zeros::<u64>(7) { Ok(d) => d, Err(e) => return format!("{out}  alloc counters: {e}") };
 
     {
@@ -204,6 +221,7 @@ pub fn run(n: u64) -> String {
         builder.arg(&mut d_counters);
         builder.arg(&seed);
         builder.arg(&n);
+        builder.arg(&k_u64);
         let cfg = LaunchConfig::for_num_elems(n as u32);
         if let Err(e) = unsafe { builder.launch(cfg) } {
             return format!("{out}  launch tensor_chain_verify failed: {e}");
@@ -244,10 +262,9 @@ pub fn run(n: u64) -> String {
     // control: a small, fixed-size sample checked against the real CPU
     // imasm_core functions directly, cost bounded regardless of n.
     let t_control = Instant::now();
-    let k = (n as usize).min(10_000);
-    let ctrl_x: Vec<u8> = match stream.clone_dtoh(&d_x.slice(0..k)) { Ok(v) => v, Err(e) => return format!("{out}  dtoh control x: {e}") };
-    let ctrl_y: Vec<u8> = match stream.clone_dtoh(&d_y.slice(0..k)) { Ok(v) => v, Err(e) => return format!("{out}  dtoh control y: {e}") };
-    let ctrl_z: Vec<u8> = match stream.clone_dtoh(&d_z.slice(0..k)) { Ok(v) => v, Err(e) => return format!("{out}  dtoh control z: {e}") };
+    let ctrl_x: Vec<u8> = match stream.clone_dtoh(&d_x) { Ok(v) => v, Err(e) => return format!("{out}  dtoh control x: {e}") };
+    let ctrl_y: Vec<u8> = match stream.clone_dtoh(&d_y) { Ok(v) => v, Err(e) => return format!("{out}  dtoh control y: {e}") };
+    let ctrl_z: Vec<u8> = match stream.clone_dtoh(&d_z) { Ok(v) => v, Err(e) => return format!("{out}  dtoh control z: {e}") };
     let ctrl_s1: Vec<u8> = match stream.clone_dtoh(&d_s1.slice(0..k)) { Ok(v) => v, Err(e) => return format!("{out}  dtoh control s1: {e}") };
     let ctrl_s2: Vec<u8> = match stream.clone_dtoh(&d_s2.slice(0..k)) { Ok(v) => v, Err(e) => return format!("{out}  dtoh control s2: {e}") };
     let ctrl_s3: Vec<u8> = match stream.clone_dtoh(&d_s3.slice(0..k)) { Ok(v) => v, Err(e) => return format!("{out}  dtoh control s3: {e}") };
