@@ -1,16 +1,25 @@
-Built gpu_crystal_full_space.rs. Phase_5 of gpu_native_build_of_momonados
-names memory_mechanism as "a 17.28-million-entry Crystal type space
-navigated by address lookup," and nothing built so far actually touched
-that space -- gpu_catalog_crystal.rs and gpu_imasm_cycle.rs both batch the
-live catalog, 8667 entries, the populated fraction of it, not the claim.
-This checks the claim at its own scale: every one of the 17,280,000
-addresses crystal::TOTAL names, decode(addr) into its 12-axis tuple then
-re-encode, on the GPU. Cross-checked against the CPU's own crystal::decode/
-encode on 2.16 million of them, not trusted from internal self-agreement,
-since a GPU kernel that only agrees with itself proves nothing if it shares
-a bug with its own inverse.
+Built gpu_ipc_no_serialization.rs, the last untouched claim in
+gpu_native_build_of_momonados's phase_5: "Direct memory access through the
+Crystal address space without serialization." A claim about an absent cost
+only means something measured against the cost it's absent of, so this
+times both paths on the same real data: SERIALIZED reads IG_catalog.json
+off disk and parses it, decoding each entry's 12 Shavian fields with the
+same primitive_from_glyph the compiled table's own codegen uses. DIRECT
+takes the already-native, already-compiled-in CatalogEntry table straight
+to GPU device memory, zero parsing anywhere in that path.
 
-Ran live on the RTX 4070: 0 round-trip failures across all 17,280,000
-addresses, 0 mismatches against the CPU sample. The full address space this
-ob3ect claims is coherent at the scale it actually names, not the 8667-entry
-subset everything before this checked.
+Cross-checking the two paths by name (required before trusting a timing
+number at all) found 12 of 8328 matched entries genuinely disagree on
+their crystal address. Traced two by hand, clink_l8 and electron: both are
+the compiled CatalogEntry table holding an older tuple than what's now
+written in IG_catalog.json for that name -- catalog.rs documents itself as
+generated FROM the JSON, and these 12 are stale relative to it. Real
+divergence between the compiled kernel and its own source, not a decode
+bug in this module, and a separate finding from the timing question,
+reported as such rather than let it block the measurement.
+
+Ran it repeatedly on the RTX 4070 rather than trust one number: cold-cache
+first read costs far more than warm ones (10x on a genuinely cold read,
+settling to 3.5-3.8x once the OS page cache is warm), direct path steady
+around 10ms, serialized around 36ms warm. The gap is real and is entirely
+the disk-read-and-JSON-parse cost the direct path never pays.

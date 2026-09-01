@@ -1305,6 +1305,10 @@ pub fn repl(k: &mut Kernel) {
                 sprintln!("{}", crate::gpu_crystal_full_space::run());
             }
             #[cfg(feature = "hosted")]
+            "gpu_ipc_no_serialization" => {
+                sprintln!("{}", crate::gpu_ipc_no_serialization::run());
+            }
+            #[cfg(feature = "hosted")]
             "gpu16_3" => {
                 let sub = parts.next().unwrap_or("");
                 match sub {
