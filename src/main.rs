@@ -141,6 +141,7 @@ mod dqi;
 mod yz;
 mod yz_list;
 mod shor_qft;
+mod opi;
 mod fde;
 mod rsa_decrypter;
 mod combo;
