@@ -4,3 +4,7 @@ target/
 # disk for reference, out of the tracked tree to keep the repo lean.
 IG_catalog.json
 .ordinals.log
+circt.txt
+500circt.txt
+1000circt.txt
+tools/_hex256_combo_out.txt
