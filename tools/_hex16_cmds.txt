@@ -1,0 +1,16 @@
+banked ⊢≻⋈≺⊙⊡⊣
+banked ⊢⊤≻⋈≺⊙⊡⊣
+banked ⊢≻⋈⊥≺⊙⊡⊣
+banked ⊢⊤≻⋈⊥≺⊙⊡⊣
+banked ⊢≻⋈≺⊞⊙⊡⊣
+banked ⊢⊤≻⋈≺⊞⊙⊡⊣
+banked ⊢≻⋈⊥≺⊞⊙⊡⊣
+banked ⊢⊤≻⋈⊥≺⊞⊙⊡⊣
+banked ⊢∈≻⋈≺⋈∋⊙⊡⊣
+banked ⊢∈⊤≻⋈≺⋈∋⊙⊡⊣
+banked ⊢∈≻⋈⊥≺⋈∋⊙⊡⊣
+banked ⊢∈⊤≻⋈⊥≺⋈∋⊙⊡⊣
+banked ⊢∈≻⋈≺⋈⊞∋⊙⊡⊣
+banked ⊢∈⊤≻⋈≺⋈⊞∋⊙⊡⊣
+banked ⊢∈≻⋈⊥≺⋈⊞∋⊙⊡⊣
+banked ⊢∈⊤≻⋈⊥≺⋈⊞∋⊙⊡⊣

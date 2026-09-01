@@ -1,19 +1,45 @@
-I add combo2: combo (brief) on a word, then weight, banked, insert, and
-repair again on every distinct word the first pass's repairs produced. A
-repair that closes one rotation's exposure is not yet known to hold on its
-own orbit; this is the check for that instead of an assumption of it.
+prime_winding factor now runs Brent's rho past the trial-division bound
+instead of stopping at "search incomplete" the moment TRIAL_DIVISION_BOUND
+runs out. Every seed is its own independent walk over the same n -- six
+distinct strands, and any one of them closing (a nontrivial gcd) splits
+it -- so on a hosted build they run as six real OS threads at once
+(std::thread, the same pattern this binary's own live_hud already uses),
+racing to the first factor; bare metal, with no std::thread, walks the
+same six seeds one at a time. Splits recurse: each half is checked with
+is_prime (real Miller-Rabin) and, if still composite, handed back into
+the same parallel search, until every piece is confirmed prime or a piece
+resists all six seeds within their step budget -- reported as exactly
+that, a known composite this search did not finish, never folded into
+the prime list.
 
-repair.rs gets repair_best_word alongside repair_best_report -- same
-cheapest-candidate search, shared through one new cheapest() helper so
-the two callers don't run the engine twice; repair_best_word just hands
-back the resulting word instead of a formatted line, which is what a
-second pass needs to carry forward.
+Building this caught a real bug before it shipped anywhere Lando saw it
+work: the first port of Brent's-rho's tortoise/hare structure reset the
+tortoise checkpoint to the hare's live position at the start of every
+doubling round, instead of holding it fixed for the whole round the way
+the actual algorithm requires. It compiled, ran, and returned answers --
+and was still wrong: it factored small cases (8051, 10403) by accident
+(their factors are close enough that a short local window catches them)
+but missed factors a correct implementation finds in tens of thousands of
+steps, most of the time, on ordinary 20-24 digit semiprimes. Caught by
+building a random 24-digit semiprime with known factors and finding a
+2-in-3 failure rate on cases with no reason to be hard, then verifying
+the exact same seeds and step budget in an independent Python
+reimplementation to confirm it was the algorithm's structure and not a
+one-off. The fix holds the tortoise fixed for the whole round, walks the
+hare r steps ahead, batches the gcd over groups of 128 steps with a
+product-mod-n accumulator, and backtracks one step at a time on the rare
+case the batch gcd lands on n itself rather than the real factor --
+standard Brent, checked against the textbook shape this time rather than
+trusted from the port.
 
-Ran it live on the same 22-letter word: 22 distinct repaired words came out
-of the first pass, all 22 audited again in the second, 1398 lines total,
-completes clean. It surfaced something real in the process -- several of
-those second-pass words read "already holds" from insert while repair's own
-search still returns hundreds of candidates with a cost-0, edit-distance-0
-permutation as cheapest. Two different questions, not a contradiction: insert
-asks whether anything needs adding, repair's broader search still counts
-permutations of identical glyphs as candidates even when they change nothing.
+Verified: the 35-value stress file matches an independent Python
+Miller-Rabin check on every value, unchanged. Seven fresh test cases (two
+textbook examples, four random semiprimes 20-24 digits with known
+factors, one four-factor 19-digit number) all now split correctly and
+fast -- under three seconds combined, down from the broken version's
+several seconds per case for cases it got wrong. The 270-digit composite
+from earlier this session still correctly reports composite-but-unsplit
+in bounded time (two ~135-digit factors are not in reach of Pollard-class
+methods at all, Grammar-native or conventional, and that's the nature of
+the problem, not a gap in this search). Full test suite: 259 passed, 0
+failed.
