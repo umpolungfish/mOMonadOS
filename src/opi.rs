@@ -153,10 +153,29 @@ fn find_primitive_root(p: u64) -> u64 {
 /// Lagrange interpolation over GF(p): the unique polynomial of degree
 /// < points.len() passing exactly through every given (x, y) pair,
 /// returned in coefficient form (index i = coefficient of x^i).
-fn lagrange_interpolate(points: &[(u64, u64)], p: u64) -> Vec<u64> {
+///
+/// Theta(k^3): each of the k basis polynomials is rebuilt from scratch,
+/// one (x - xj) factor at a time. The outer loop runs exactly k times
+/// regardless, each iteration costing Theta(k^2) on its own, so checking
+/// a deadline once per outer iteration is a cheap, natural checkpoint --
+/// it cannot abort mid-iteration, but it catches the run before wasting
+/// any of the k^3 total work on iterations that would run past budget.
+/// `deadline_micros` is ignored (never aborts) outside hosted builds,
+/// which have no wall clock here; returns None if the deadline is hit.
+fn lagrange_interpolate(
+    points: &[(u64, u64)],
+    p: u64,
+    #[cfg_attr(not(feature = "hosted"), allow(unused_variables))] deadline_micros: Option<i64>,
+) -> Option<Vec<u64>> {
     let k = points.len();
     let mut coeffs = alloc::vec![0u64; k];
     for i in 0..k {
+        #[cfg(feature = "hosted")]
+        if let Some(deadline) = deadline_micros {
+            if now_micros() >= deadline {
+                return None;
+            }
+        }
         let (xi, yi) = points[i];
         let mut basis = alloc::vec![0u64; k];
         basis[0] = 1;
@@ -183,7 +202,7 @@ fn lagrange_interpolate(points: &[(u64, u64)], p: u64) -> Vec<u64> {
             coeffs[d] = add_mod(coeffs[d], mul_mod(basis[d], scale, p), p);
         }
     }
-    coeffs
+    Some(coeffs)
 }
 
 fn eval_poly(coeffs: &[u64], x: u64, p: u64) -> u64 {
@@ -319,7 +338,7 @@ pub fn gao_decode(points: &[u64], values: &[u64], k: usize, p: u64) -> Option<Ve
     for &(x, _) in &pts {
         g = poly_mul(&g, &[sub_mod(0, x, p), 1], p);
     }
-    let r_poly = lagrange_interpolate(&pts, p);
+    let r_poly = lagrange_interpolate(&pts, p, None).expect("no deadline given, cannot time out");
     let threshold = ((n + k) / 2) as isize;
 
     let (mut r_prev, mut r_curr) = (g, r_poly);
@@ -536,6 +555,8 @@ pub struct OpiResult {
     pub lambda_max: f64,
     pub phi_dqi_exact: f64,
     pub phi_dqi_asymptotic: f64,
+    pub trials_completed: usize,
+    pub time_capped: bool,
     #[cfg(feature = "hosted")]
     pub micros: i64,
 }
@@ -543,10 +564,23 @@ pub struct OpiResult {
 /// The real run, matched to Definition 2.2 and §11.3: m=p-1 constraint
 /// points γ^0..γ^{p-2}, each with an independent random size-⌊p/2⌋
 /// satisfying set (balanced, per eq. 15), Prange's algorithm run for
-/// `trials` repetitions, best satisfaction fraction reported against
+/// up to `trials` repetitions, best satisfaction fraction reported against
 /// both the paper's own finite-size Prange prediction and its
 /// asymptotic DQI+BM prediction.
-pub fn run_opi(p: u64, n: usize, trials: usize, seed: u64) -> Result<OpiResult, String> {
+///
+/// `time_budget_secs`, when given (hosted builds only -- no_std has no
+/// wall clock here), stops the trial loop once elapsed time crosses the
+/// budget, even if `trials` has not been reached: `lagrange_interpolate`
+/// is Theta(n^3) in the interpolation degree (see the doc comment above),
+/// so a single trial at large n can run for tens of minutes, and a
+/// fixed trial COUNT gives no way to bound that from the caller.
+pub fn run_opi(
+    p: u64,
+    n: usize,
+    trials: usize,
+    seed: u64,
+    #[cfg_attr(not(feature = "hosted"), allow(unused_variables))] time_budget_secs: Option<f64>,
+) -> Result<OpiResult, String> {
     if !is_prime(p) {
         return Err(format!("p={} is not prime -- GF(p) arithmetic needs a prime field", p));
     }
@@ -592,9 +626,27 @@ pub fn run_opi(p: u64, n: usize, trials: usize, seed: u64) -> Result<OpiResult, 
 
     #[cfg(feature = "hosted")]
     let t0 = now_micros();
+    #[cfg(feature = "hosted")]
+    let budget_micros = time_budget_secs.map(|s| (s * 1_000_000.0) as i64);
+    // Absolute deadline handed down into lagrange_interpolate, checked once
+    // per its own outer loop iteration -- catches a single oversized trial,
+    // not just the gap between trials (see that function's doc comment).
+    #[cfg(feature = "hosted")]
+    let deadline: Option<i64> = budget_micros.map(|b| t0 + b);
+    #[cfg(not(feature = "hosted"))]
+    let deadline: Option<i64> = None;
 
     let mut best_satisfied = 0usize;
+    let mut trials_completed = 0usize;
+    let mut time_capped = false;
     for _ in 0..trials {
+        #[cfg(feature = "hosted")]
+        if let Some(budget) = budget_micros {
+            if now_micros() - t0 >= budget {
+                time_capped = true;
+                break;
+            }
+        }
         // Prange: keep a random n of the m constraints.
         let mut idx: Vec<usize> = (0..m).collect();
         for i in 0..n {
@@ -611,13 +663,20 @@ pub fn run_opi(p: u64, n: usize, trials: usize, seed: u64) -> Result<OpiResult, 
                 (points[i], pick)
             })
             .collect();
-        let coeffs = lagrange_interpolate(&subset, p);
+        let coeffs = match lagrange_interpolate(&subset, p, deadline) {
+            Some(c) => c,
+            None => {
+                time_capped = true;
+                break;
+            }
+        };
         let satisfied = (0..m)
             .filter(|&i| sat_sets[i][eval_poly(&coeffs, points[i], p) as usize])
             .count();
         if satisfied > best_satisfied {
             best_satisfied = satisfied;
         }
+        trials_completed += 1;
     }
 
     #[cfg(feature = "hosted")]
@@ -654,6 +713,8 @@ pub fn run_opi(p: u64, n: usize, trials: usize, seed: u64) -> Result<OpiResult, 
         lambda_max,
         phi_dqi_exact,
         phi_dqi_asymptotic,
+        trials_completed,
+        time_capped,
         #[cfg(feature = "hosted")]
         micros,
     })
@@ -666,13 +727,27 @@ pub fn report(res: &OpiResult) -> String {
         res.p, res.n, res.m, res.r, res.gamma, res.n as f64 / res.p as f64
     ));
     out.push_str("  balanced (Def. 2.2, eq. 15): each of the m constraints has an independent random size-r satisfying set\n");
-    out.push_str(&format!(
-        "  Prange's algorithm (§11.3), {} trials: best {} / {} satisfied (fraction {:.4})\n",
-        res.trials, res.best_satisfied, res.m, res.best_fraction
-    ));
+    if res.time_capped {
+        if res.trials == usize::MAX {
+            out.push_str(&format!(
+                "  Prange's algorithm (§11.3), {} trials (time budget hit): best {} / {} satisfied (fraction {:.4})\n",
+                res.trials_completed, res.best_satisfied, res.m, res.best_fraction
+            ));
+        } else {
+            out.push_str(&format!(
+                "  Prange's algorithm (§11.3), {} of {} requested trials (time budget hit): best {} / {} satisfied (fraction {:.4})\n",
+                res.trials_completed, res.trials, res.best_satisfied, res.m, res.best_fraction
+            ));
+        }
+    } else {
+        out.push_str(&format!(
+            "  Prange's algorithm (§11.3), {} trials: best {} / {} satisfied (fraction {:.4})\n",
+            res.trials_completed, res.best_satisfied, res.m, res.best_fraction
+        ));
+    }
     out.push_str(&format!(
         "  Prange closed-form prediction n/m + (1-n/m)(r/p): {:.4}  (single-trial expectation; \"best\" above is the max over {} trials, so it is expected to run above this, per §11.3's own \"logarithmic number of standard deviations onto the tail\" argument)\n",
-        res.phi_pr_theory, res.trials
+        res.phi_pr_theory, res.trials_completed
     ));
     out.push_str(&format!(
         "  DQI exact finite-m computation (Lemma 9.2, {}x{} eigenvalue solve, lambda_max={:.6}): {:.4}\n",
@@ -691,7 +766,10 @@ pub fn repl_opi(args: &[&str]) {
     if args.is_empty() || args[0] == "help" {
         sprintln!("opi — Optimal Polynomial Intersection (Definition 2.2), Prange's algorithm (§11.3) over GF(p)");
         sprintln!("  opi run <p> <n> <trials> [seed]   balanced instance, Prange's algorithm, report satisfied/m and runtime");
+        sprintln!("  opi run <p> <n> <N>s [seed]       same, but capped by a wall-clock budget of N seconds instead of a trial count");
         sprintln!("  n is the OPI degree bound (Q has degree <= n-1); m=p-1 constraints are used, not n");
+        sprintln!("  lagrange_interpolate is Theta(n^3): one trial at large n can run for minutes, so a fixed trial");
+        sprintln!("  count alone gives no way to bound wall-clock time -- the <N>s form does.");
         sprintln!("  opi gao <p> <k> [seed]            the single-valued special case, Gao's decoder (Algorithm 1's classical twin), one deterministic decode");
         return;
     }
@@ -699,9 +777,19 @@ pub fn repl_opi(args: &[&str]) {
         "run" => {
             let p: u64 = args.get(1).and_then(|s| s.parse().ok()).unwrap_or(101);
             let n: usize = args.get(2).and_then(|s| s.parse().ok()).unwrap_or(50);
-            let trials: usize = args.get(3).and_then(|s| s.parse().ok()).unwrap_or(2000);
+            let trials_arg = args.get(3).copied().unwrap_or("2000");
+            let (trials, time_budget_secs): (usize, Option<f64>) = match trials_arg.strip_suffix('s') {
+                Some(secs_str) => match secs_str.parse::<f64>() {
+                    Ok(secs) if secs > 0.0 => (usize::MAX, Some(secs)),
+                    _ => {
+                        sprintln!("opi: '{}' is not a valid <N>s time budget", trials_arg);
+                        return;
+                    }
+                },
+                None => (trials_arg.parse().unwrap_or(2000), None),
+            };
             let seed: u64 = args.get(4).and_then(|s| s.parse().ok()).unwrap_or(0);
-            match run_opi(p, n, trials, seed) {
+            match run_opi(p, n, trials, seed, time_budget_secs) {
                 Ok(r) => sprintln!("{}", report(&r)),
                 Err(e) => sprintln!("opi: {}", e),
             }
