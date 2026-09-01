@@ -189,6 +189,246 @@ fn eval_poly(coeffs: &[u64], x: u64, p: u64) -> u64 {
     acc
 }
 
+// ─────────────────────────────────────────────────────────────────────────
+// GAO DECODING — a real, polynomial-time, purely classical Reed-Solomon
+// unique decoder (Shuhong Gao, 2002), mathematically equivalent in
+// correction power to the Berlekamp-Massey syndrome decoder Algorithm 1
+// of the DQI paper actually specifies (both correct up to half the
+// code's minimum distance). Built to answer directly, in code, the
+// question of whether DQI's own decoding step needs anything beyond
+// classical polynomial-time computation: it does not. Applied below to
+// the paper's own explicitly named special case of OPI, |f_i^{-1}(+1)|=1
+// -- a genuine planted polynomial with single-valued positions, some
+// corrupted -- since Gao/Berlekamp-Massey decode a SINGLE received value
+// per position, not the general size-r SET case run_opi/Prange handle
+// above. Conflating the two would be a new unchecked claim, not this one.
+
+fn poly_trim(v: &mut Vec<u64>) {
+    while v.len() > 1 && *v.last().unwrap() == 0 {
+        v.pop();
+    }
+}
+fn poly_deg(v: &[u64]) -> isize {
+    if v.len() == 1 && v[0] == 0 {
+        -1
+    } else {
+        (v.len() as isize) - 1
+    }
+}
+fn poly_add(a: &[u64], b: &[u64], p: u64) -> Vec<u64> {
+    let n = a.len().max(b.len());
+    let mut out = alloc::vec![0u64; n];
+    for i in 0..n {
+        let x = *a.get(i).unwrap_or(&0);
+        let y = *b.get(i).unwrap_or(&0);
+        out[i] = add_mod(x, y, p);
+    }
+    poly_trim(&mut out);
+    out
+}
+fn poly_sub(a: &[u64], b: &[u64], p: u64) -> Vec<u64> {
+    let n = a.len().max(b.len());
+    let mut out = alloc::vec![0u64; n];
+    for i in 0..n {
+        let x = *a.get(i).unwrap_or(&0);
+        let y = *b.get(i).unwrap_or(&0);
+        out[i] = sub_mod(x, y, p);
+    }
+    poly_trim(&mut out);
+    out
+}
+fn poly_mul(a: &[u64], b: &[u64], p: u64) -> Vec<u64> {
+    if poly_deg(a) < 0 || poly_deg(b) < 0 {
+        return alloc::vec![0u64];
+    }
+    let mut out = alloc::vec![0u64; a.len() + b.len() - 1];
+    for (i, &ai) in a.iter().enumerate() {
+        if ai == 0 {
+            continue;
+        }
+        for (j, &bj) in b.iter().enumerate() {
+            out[i + j] = add_mod(out[i + j], mul_mod(ai, bj, p), p);
+        }
+    }
+    poly_trim(&mut out);
+    out
+}
+/// Polynomial long division over GF(p): returns (quotient, remainder).
+fn poly_divmod(a: &[u64], b: &[u64], p: u64) -> (Vec<u64>, Vec<u64>) {
+    let db = poly_deg(b);
+    assert!(db >= 0, "division by zero polynomial");
+    // Index by the ACTUAL degree, not b.len()-1: if b carries any
+    // untrimmed trailing zero coefficient, b[b.len()-1] is 0, mod_inv(0,p)
+    // is 0 (0^(p-2) mod p = 0, not a real inverse), coeff is always 0, the
+    // leading term of rem never gets eliminated, and this loop never
+    // terminates. Confirmed by hitting exactly that hang before this fix.
+    let lead_inv = mod_inv(b[db as usize], p);
+    let mut rem = a.to_vec();
+    poly_trim(&mut rem);
+    let da_start = poly_deg(&rem);
+    let mut quot = alloc::vec![0u64; (da_start - db + 1).max(1) as usize];
+    let mut diag_iters: u64 = 0;
+    loop {
+        diag_iters += 1;
+        if diag_iters > 100_000 {
+            sprintln!(
+                "opi gao DIAG: poly_divmod exceeded 100000 iterations, a={:?} b={:?} db={} rem_len={}",
+                &a[..a.len().min(6)], &b[..b.len().min(6)], db, rem.len()
+            );
+            break;
+        }
+        let dr = poly_deg(&rem);
+        if dr < db {
+            break;
+        }
+        let coeff = mul_mod(rem[dr as usize], lead_inv, p);
+        let shift = (dr - db) as usize;
+        quot[shift] = coeff;
+        for (j, &bj) in b.iter().enumerate() {
+            if bj == 0 {
+                continue;
+            }
+            let idx = shift + j;
+            rem[idx] = sub_mod(rem[idx], mul_mod(coeff, bj, p), p);
+        }
+        poly_trim(&mut rem);
+        if poly_deg(&rem) < 0 {
+            break;
+        }
+    }
+    poly_trim(&mut quot);
+    (quot, rem)
+}
+
+/// Gao's Reed-Solomon decoding algorithm: given N (point, value) pairs
+/// and a message-degree bound k, recovers the unique degree-<k
+/// polynomial agreeing with more than (N+k)/2 of the points, if one
+/// exists -- i.e. corrects up to floor((N-k)/2) errors, deterministically,
+/// in polynomial time, no repeated trials, no randomness anywhere in
+/// this function.
+pub fn gao_decode(points: &[u64], values: &[u64], k: usize, p: u64) -> Option<Vec<u64>> {
+    let pts: Vec<(u64, u64)> = points.iter().zip(values.iter()).map(|(&x, &y)| (x, y)).collect();
+    let n = pts.len();
+    // g(x) = product (x - x_i)
+    let mut g: Vec<u64> = alloc::vec![1u64];
+    for &(x, _) in &pts {
+        g = poly_mul(&g, &[sub_mod(0, x, p), 1], p);
+    }
+    let r_poly = lagrange_interpolate(&pts, p);
+    let threshold = ((n + k) / 2) as isize;
+
+    let (mut r_prev, mut r_curr) = (g, r_poly);
+    let (mut t_prev, mut t_curr): (Vec<u64>, Vec<u64>) = (alloc::vec![0u64], alloc::vec![1u64]);
+    while poly_deg(&r_curr) >= threshold {
+        let (q, rem) = poly_divmod(&r_prev, &r_curr, p);
+        let t_next = poly_sub(&t_prev, &poly_mul(&q, &t_curr, p), p);
+        r_prev = r_curr;
+        r_curr = rem;
+        t_prev = t_curr;
+        t_curr = t_next;
+        if poly_deg(&r_curr) < 0 {
+            break;
+        }
+    }
+    if poly_deg(&t_curr) < 0 {
+        return None;
+    }
+    let (f, rem) = poly_divmod(&r_curr, &t_curr, p);
+    if poly_deg(&rem) >= 0 {
+        return None; // division not exact -- decoding failure
+    }
+    if poly_deg(&f) >= k as isize {
+        return None;
+    }
+    let mut out = f;
+    out.resize(k, 0);
+    Some(out)
+}
+
+/// The paper's own explicitly named special case (Remark 5.2 area):
+/// |f_i^{-1}(+1)|=1, "noisy polynomial reconstruction" -- a genuine
+/// planted degree-<k polynomial evaluated at N points, exactly t of
+/// them corrupted to a wrong single value, t = floor((N-k)/2), the
+/// Gao/Berlekamp-Massey unique-decoding radius. One deterministic
+/// decode, not a search over trials.
+pub struct GaoResult {
+    pub p: u64,
+    pub n_points: usize,
+    pub k: usize,
+    pub errors_planted: usize,
+    pub max_correctable: usize,
+    pub decoded_correctly: bool,
+    #[cfg(feature = "hosted")]
+    pub micros: i64,
+}
+
+pub fn run_gao_demo(p: u64, k: usize, seed: u64) -> Result<GaoResult, String> {
+    if !is_prime(p) {
+        return Err(format!("p={} is not prime", p));
+    }
+    let n_points = (p - 1) as usize;
+    if k == 0 || k >= n_points {
+        return Err(format!("k={} must satisfy 0 < k < p-1={}", k, n_points));
+    }
+    let t = (n_points - k) / 2; // Gao's unique-decoding radius
+
+    let mut rng = Xorshift(seed ^ 0x9E3779B97F4A7C15);
+    let message: Vec<u64> = (0..k).map(|_| rng.next_below(p)).collect();
+    let points: Vec<u64> = (0..n_points as u64).collect();
+    let mut values: Vec<u64> = points.iter().map(|&x| eval_poly(&message, x, p)).collect();
+
+    let mut corrupted: Vec<usize> = Vec::new();
+    while corrupted.len() < t {
+        let pos = rng.next_below(n_points as u64) as usize;
+        if !corrupted.contains(&pos) {
+            corrupted.push(pos);
+        }
+    }
+    for &pos in &corrupted {
+        loop {
+            let bad = rng.next_below(p);
+            if bad != values[pos] {
+                values[pos] = bad;
+                break;
+            }
+        }
+    }
+
+    #[cfg(feature = "hosted")]
+    let t0 = now_micros();
+    let decoded = gao_decode(&points, &values, k, p);
+    #[cfg(feature = "hosted")]
+    let micros = now_micros() - t0;
+
+    let decoded_correctly = decoded.as_deref() == Some(message.as_slice());
+    Ok(GaoResult {
+        p,
+        n_points,
+        k,
+        errors_planted: t,
+        max_correctable: t,
+        decoded_correctly,
+        #[cfg(feature = "hosted")]
+        micros,
+    })
+}
+
+pub fn gao_report(r: &GaoResult) -> String {
+    let mut out = String::new();
+    out.push_str(&format!(
+        "gao: p={}, N=p-1={}, k={} (message degree < {}), errors planted = {} (Gao's unique-decoding radius floor((N-k)/2))\n",
+        r.p, r.n_points, r.k, r.k, r.errors_planted
+    ));
+    out.push_str("  single deterministic decode -- no trials, no randomness in the decoder itself\n");
+    out.push_str(&format!(
+        "  decoded polynomial exactly matches the planted message: {}\n",
+        r.decoded_correctly
+    ));
+    #[cfg(feature = "hosted")]
+    out.push_str(&format!("  runtime: {} us ({:.3} ms)\n", r.micros, r.micros as f64 / 1000.0));
+    out
+}
+
 #[cfg(feature = "hosted")]
 fn now_micros() -> i64 {
     use std::time::{SystemTime, UNIX_EPOCH};
@@ -353,6 +593,7 @@ pub fn repl_opi(args: &[&str]) {
         sprintln!("opi — Optimal Polynomial Intersection (Definition 2.2), Prange's algorithm (§11.3) over GF(p)");
         sprintln!("  opi run <p> <n> <trials> [seed]   balanced instance, Prange's algorithm, report satisfied/m and runtime");
         sprintln!("  n is the OPI degree bound (Q has degree <= n-1); m=p-1 constraints are used, not n");
+        sprintln!("  opi gao <p> <k> [seed]            the single-valued special case, Gao's decoder (Algorithm 1's classical twin), one deterministic decode");
         return;
     }
     match args[0] {
@@ -364,6 +605,15 @@ pub fn repl_opi(args: &[&str]) {
             match run_opi(p, n, trials, seed) {
                 Ok(r) => sprintln!("{}", report(&r)),
                 Err(e) => sprintln!("opi: {}", e),
+            }
+        }
+        "gao" => {
+            let p: u64 = args.get(1).and_then(|s| s.parse().ok()).unwrap_or(101);
+            let k: usize = args.get(2).and_then(|s| s.parse().ok()).unwrap_or(50);
+            let seed: u64 = args.get(3).and_then(|s| s.parse().ok()).unwrap_or(0);
+            match run_gao_demo(p, k, seed) {
+                Ok(r) => sprintln!("{}", gao_report(&r)),
+                Err(e) => sprintln!("opi gao: {}", e),
             }
         }
         other => sprintln!("opi: unknown subcommand '{}' (try 'opi help')", other),
