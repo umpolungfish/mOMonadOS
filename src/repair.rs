@@ -182,19 +182,23 @@ impl RepairEngine {
     }
 
     fn verify_repair(&self, repaired: &str, _artifact_type: &str) -> bool {
-        // A repair must (a) parse as a non-empty IMASM word of the twelve
-        // glyphs, and (b) not be ill-typed: a fuse (∋) with no split (∈) to
-        // pair reads verdict F, which is still broken. The fuse count may not
-        // exceed the split count.
+        // A repair must parse as a non-empty IMASM word of the twelve
+        // glyphs, and then hold on BOTH real instruments: `banked_walk`
+        // (weight didn't clear in the open) and `tri_ancestral_word_verdict`
+        // (the fork/fuse pairing itself still closes over real work, not
+        // just a fuse-count that doesn't exceed the split-count -- that
+        // count check passed plenty of candidates whose forks or fuses
+        // still dangled, because count alone doesn't see pairing). Caught
+        // live: `combo2`'s repair search kept returning cost-0.00 no-op
+        // permutations because this check accepted almost anything that
+        // merely parsed.
         if repaired.is_empty() {
             return false;
         }
         if !repaired.chars().all(|c| self.glyphs.contains(&c)) {
             return false;
         }
-        let splits = repaired.chars().filter(|&c| c == '∈').count();
-        let fuses = repaired.chars().filter(|&c| c == '∋').count();
-        fuses <= splits
+        imasm_core::lattice_flow::candidate_holds(repaired)
     }
 
     fn make_candidate(&self, repair: RepairType, repaired: &str, original: &str) -> RepairCandidate {
