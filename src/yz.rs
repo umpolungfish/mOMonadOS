@@ -21,6 +21,7 @@ use crate::belnap::{c, corollary_11_2_report, inc, r, theorem_5_5_report, B4};
 use crate::sprintln;
 use alloc::format;
 use alloc::string::String;
+use alloc::vec::Vec;
 
 struct Xorshift(u64);
 impl Xorshift {

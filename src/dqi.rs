@@ -16,33 +16,30 @@
 // them"). That failure is about missing the outer frame entirely, not about
 // which of WORD/WORD_SINGLE_T is canonical.
 //
-// The DQI word implements QFT-induced constructive interference on
-// high-objective symbol strings, reduced to syndrome decoding for the
-// LDPC code C⊥ = {d∈F₂ᵐ : Bd=0} with up to ℓ errors.
+// DQI_IMASM_UNIFIED.md's target problem: syndrome decoding for the LDPC
+// code C⊥ = {d∈F₂ᵐ : Bd=0} with up to ℓ errors. dqi_verdict and
+// dqi_syndrome_decode run the word's B4 register through FOUR-native
+// operations directly: parity count, alternating XOR mask. FDE is prior to
+// QM: the project's algebraic demonstration of that boundary lives in
+// multilattice.rs, where the Belnap evidence-counting Born rule and the
+// real QM Hadamard agree exactly at n=1.
 //
 // B4 verdict: T=closure (objective-met), F=no-closure, B=paradice.
 // Tuple: ⟨𐑨𐑶𐑽𐑿𐑐𐑘𐑔𐑠⊙𐑖𐑙𐑭⟩ — dqi_algorithm (catalog).
 //
 // ─────────────────────────────────────────────────────────────────────────
-// THE ADVANTAGE, IMPLEMENTED (not just asserted)
+// WHAT IS CHECKED HERE
 // ─────────────────────────────────────────────────────────────────────────
-// DQI_IMASM_UNIFIED.md §6 claims DQI's "superpolynomial speedup" for
-// max-XORSAT is not quantum: solving a system of XOR (parity) constraints
-// over F2 is Gaussian elimination, O(m^3), no QFT needed. That claim is
-// either true or false independent of any IMASM word, and it is checkable
-// directly: `xorsat_solve` below is a real GF(2) Gaussian-elimination
-// solver, not a stub, and `benchmark_report` runs it against brute-force
-// enumeration over the same instance so the O(m^3) vs O(2^m) gap is
-// measured, not claimed.
+// DQI_IMASM_UNIFIED.md §6: max-XORSAT, an exact system of XOR (parity)
+// constraints over F2, solves by Gaussian elimination, O(m^3). `xorsat_solve`
+// is that solver, run for real; `benchmark_report` measures it against
+// brute-force enumeration on the same instance, so the O(m^3) vs O(2^m) gap
+// is a measured number.
 //
-// The harder half of DQI -- syndrome decoding with up to ℓ *errors*, not
-// an exact system -- is NOT claimed polynomial here. Bounded-weight
-// syndrome decoding is the general syndrome decoding problem, worst-case
-// NP-hard; `syndrome_decode_bounded` handles it by elimination down to the
-// code's free-variable (nullspace) dimension and then an exhaustive search
-// over that residual space bounded by weight ℓ -- exponential in that
-// residual dimension, by construction, and documented as such rather than
-// oversold as the same O(m^3) result.
+// `syndrome_decode_bounded` handles the harder case, up to ℓ *errors*: it
+// eliminates down to the code's free-variable (nullspace) dimension, then
+// searches that residual space by weight -- exponential in that dimension,
+// the real cost of general syndrome decoding, stated at the size it runs.
 
 #![allow(dead_code)]
 
@@ -70,17 +67,15 @@ impl core::fmt::Display for B4Verdict {
     }
 }
 
-/// DQI verdict: a B4 result computed from the constructed/interfered
-/// string. The double-⊤ form carries two T-deposits before the ⊥ F-deposit,
-/// so the Belnap register lands at TF — phase-bearing across 3 distinct
-/// ROTAT cuts (TF, N, T). The word is kernel-verified: period 14, banked=OK,
-/// μ∘δ=id closed.
+/// B4 classifier over a 1/0 string for the word's REPL surface (`dqi
+/// verdict`): counts ones vs zeros and maps the count to T/F/B by parity.
+/// The word's own kernel banking result (period 14, banked=OK, μ∘δ=id
+/// closed) is stated above.
 pub fn dqi_verdict(symbol_string: &str) -> B4Verdict {
     if symbol_string.is_empty() {
         return B4Verdict::B;
     }
-    // Constructive interference: count objective bits vs non-objective bits.
-    // Even count with majority 1s → T (closure); odd/uneven → F; empty → B.
+    // Majority-1s with an even ones-count → T; tied → B; else → F.
     let (ones, zeros): (usize, usize) = symbol_string.chars().fold(
         (0usize, 0usize),
         |(o, z), c| match c {
@@ -101,13 +96,12 @@ pub fn dqi_verdict(symbol_string: &str) -> B4Verdict {
     }
 }
 
-/// DQI syndrome-decoding stub: takes a syndrome vector s, returns
-/// the estimated error vector e such that B·e = s (mod 2). For the
-/// DQI word, this is the inner "interference" step.
+/// Fixed-mask transform for the word's REPL surface (`dqi syndrome`): XORs
+/// the input against an alternating 1,0,1,0... mask by position.
+/// `syndrome_decode_bounded` below runs bounded-weight decoding against a
+/// real parity-check matrix; `dqi decode` calls that one.
 pub fn dqi_syndrome_decode(syndrome: &[u8]) -> alloc::vec::Vec<u8> {
-    // DQI interference: the syndrome is XOR-folded with the word's
-    // T-deposit pattern (T⊤×2 from double-⊤ form). This is the
-    // constructive-interference step that gives DQI its name.
+    // Alternating XOR mask by position parity.
     let mut out = alloc::vec::Vec::with_capacity(syndrome.len());
     for (i, &s) in syndrome.iter().enumerate() {
         let mask = if i % 2 == 0 { 1u8 } else { 0u8 };
@@ -478,7 +472,7 @@ pub fn repl_dqi(args: &[&str]) {
         sprintln!("  dqi period            print the period");
         sprintln!("  dqi phase             print whether the word is phase-bearing");
         sprintln!("  dqi verdict <string>  B4 verdict for a bit string (1/0 chars)");
-        sprintln!("  dqi syndrome <bits>   syndrome-decode a bit string");
+        sprintln!("  dqi syndrome <bits>   alternating XOR-mask transform on a bit string; 'dqi decode' runs the real bounded-weight decoder");
         sprintln!("  dqi tuple             print the catalog tuple");
         sprintln!("  dqi report            full DQI report");
         sprintln!("  dqi xorsat <m>        solve a random m-variable XOR system (Gaussian elimination), verify");

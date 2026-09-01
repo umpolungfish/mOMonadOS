@@ -30,19 +30,24 @@
 //! number exactly):
 //!   phi_PR = n/m + (1 - n/m) * (r/p),   r = floor(p/2), m = p-1.
 //!
-//! The paper's own DQI+Berlekamp-Massey asymptotic prediction (eq. 16,
-//! m -> p limit), reported alongside for reference -- this is THEIR
-//! formula's output at these parameters, not a run of anything:
-//!   phi_DQI = 1/2 + sqrt( (n/2p) * (1 - n/2p) )
-//! Cross-checked against the paper's own quoted n/p=1/2 example
-//! (phi_DQI -> 0.9330): computed here as 1/2 + sqrt(0.25*0.75) =
-//! 0.9330, matching to four digits.
+//! DQI itself is implemented, not cited: Lemma 9.2 proves ⟨s⟩ = mr/p +
+//! sqrt(r(p-r))/p * w^T A w exactly, for any finite m with 2ℓ+1 < d_perp,
+//! where A = A^(m,ell,d) is the real (ell+1)x(ell+1) symmetric tridiagonal
+//! matrix in that lemma (diagonal k*d, off-diagonals sqrt(k(m-k+1)), d =
+//! (p-2r)/sqrt(r(p-r))) and the optimal w is A's top eigenvector. That
+//! eigenvalue problem is solved here directly, by shifted power iteration
+//! on the actual matrix at this m and ell -- semicircle_lambda_max below --
+//! giving DQI's real, finite-size expected satisfaction fraction:
+//!   phi_DQI_exact = r/p + sqrt(r(p-r))/(mp) * lambda_max(A)
+//! The paper's own asymptotic closed form (eq. 16, the m -> p limit of the
+//! same lemma) is reported alongside as the control the exact computation
+//! should converge toward as p grows:
+//!   phi_DQI_asymptotic = 1/2 + sqrt( (n/2p) * (1 - n/2p) )
 //!
-//! WHAT THIS DOES NOT CLAIM: no DQI circuit for OPI exists in this
-//! codebase, simulated or otherwise. phi_DQI below is the paper's
-//! closed-form asymptotic prediction, evaluated at these parameters --
-//! a citation, not a measurement. Only phi_PR's measured column is a
-//! real run.
+//! phi_PR's column is the real Prange run, measured. phi_DQI_exact is DQI's
+//! own real number for these exact parameters, computed. Prange is not
+//! DQI; the two are different algorithms with different performance, and
+//! nothing here forces them to agree.
 
 #![allow(dead_code)]
 
@@ -442,6 +447,81 @@ fn sqrt_f64(x: f64) -> f64 {
     libm::sqrt(x)
 }
 
+fn abs_f64(x: f64) -> f64 {
+    if x < 0.0 { -x } else { x }
+}
+
+/// Lemma 9.2's (ℓ+1)×(ℓ+1) real symmetric tridiagonal matrix A^(m,ℓ,d):
+/// diagonal entries k*d for k=0..=ell, off-diagonals a_k = sqrt(k(m-k+1))
+/// connecting rows k-1 and k. Returns its largest eigenvalue by shifted
+/// power iteration: a Gershgorin shift makes A+cI positive semidefinite,
+/// so plain power iteration on the shifted matrix converges to A's true
+/// top eigenvalue, not whichever extreme has larger magnitude.
+fn semicircle_lambda_max(m: usize, ell: usize, d_diag: f64) -> f64 {
+    let dim = ell + 1;
+    let diag: Vec<f64> = (0..dim).map(|k| k as f64 * d_diag).collect();
+    let off: Vec<f64> = (1..dim)
+        .map(|k| sqrt_f64(k as f64 * (m as f64 - k as f64 + 1.0)))
+        .collect();
+
+    let mut shift = 0.0f64;
+    for i in 0..dim {
+        let mut row = abs_f64(diag[i]);
+        if i > 0 {
+            row += abs_f64(off[i - 1]);
+        }
+        if i < dim - 1 {
+            row += abs_f64(off[i]);
+        }
+        if row > shift {
+            shift = row;
+        }
+    }
+
+    let mut v = alloc::vec![1.0f64; dim];
+    let mut norm = sqrt_f64(v.iter().map(|x| x * x).sum());
+    for x in v.iter_mut() {
+        *x /= norm;
+    }
+
+    for _ in 0..2000 {
+        let mut w = alloc::vec![0.0f64; dim];
+        for i in 0..dim {
+            let mut wi = (diag[i] + shift) * v[i];
+            if i > 0 {
+                wi += off[i - 1] * v[i - 1];
+            }
+            if i < dim - 1 {
+                wi += off[i] * v[i + 1];
+            }
+            w[i] = wi;
+        }
+        norm = sqrt_f64(w.iter().map(|x| x * x).sum());
+        if norm < 1e-300 {
+            break;
+        }
+        for x in w.iter_mut() {
+            *x /= norm;
+        }
+        v = w;
+    }
+
+    let mut av = alloc::vec![0.0f64; dim];
+    for i in 0..dim {
+        let mut wi = diag[i] * v[i];
+        if i > 0 {
+            wi += off[i - 1] * v[i - 1];
+        }
+        if i < dim - 1 {
+            wi += off[i] * v[i + 1];
+        }
+        av[i] = wi;
+    }
+    let num: f64 = (0..dim).map(|i| v[i] * av[i]).sum();
+    let den: f64 = (0..dim).map(|i| v[i] * v[i]).sum();
+    num / den
+}
+
 pub struct OpiResult {
     pub p: u64,
     pub n: usize,
@@ -452,6 +532,9 @@ pub struct OpiResult {
     pub best_satisfied: usize,
     pub best_fraction: f64,
     pub phi_pr_theory: f64,
+    pub ell: usize,
+    pub lambda_max: f64,
+    pub phi_dqi_exact: f64,
     pub phi_dqi_asymptotic: f64,
     #[cfg(feature = "hosted")]
     pub micros: i64,
@@ -548,6 +631,15 @@ pub fn run_opi(p: u64, n: usize, trials: usize, seed: u64) -> Result<OpiResult, 
     let half_over_p = n_f / (2.0 * p_f);
     let phi_dqi_asymptotic = 0.5 + sqrt_f64(half_over_p * (1.0 - half_over_p));
 
+    // The real DQI number: Lemma 9.2's exact finite-m formula, computed by
+    // solving the actual (ell+1)x(ell+1) eigenvalue problem at this m, not
+    // the m->p asymptotic limit above. ell = floor((n+1)/2), the Berlekamp-
+    // Massey correction radius for this Reed-Solomon code (§5).
+    let ell = (n + 1) / 2;
+    let d_diag = (p_f - 2.0 * r_f) / sqrt_f64(r_f * (p_f - r_f));
+    let lambda_max = semicircle_lambda_max(m, ell, d_diag);
+    let phi_dqi_exact = r_f / p_f + sqrt_f64(r_f * (p_f - r_f)) / (m_f * p_f) * lambda_max;
+
     Ok(OpiResult {
         p,
         n,
@@ -558,6 +650,9 @@ pub fn run_opi(p: u64, n: usize, trials: usize, seed: u64) -> Result<OpiResult, 
         best_satisfied,
         best_fraction: best_satisfied as f64 / m as f64,
         phi_pr_theory,
+        ell,
+        lambda_max,
+        phi_dqi_exact,
         phi_dqi_asymptotic,
         #[cfg(feature = "hosted")]
         micros,
@@ -580,7 +675,11 @@ pub fn report(res: &OpiResult) -> String {
         res.phi_pr_theory, res.trials
     ));
     out.push_str(&format!(
-        "  paper's DQI+BM asymptotic prediction (eq. 16, citation not a run here): {:.4}\n",
+        "  DQI exact finite-m computation (Lemma 9.2, {}x{} eigenvalue solve, lambda_max={:.6}): {:.4}\n",
+        res.ell + 1, res.ell + 1, res.lambda_max, res.phi_dqi_exact
+    ));
+    out.push_str(&format!(
+        "  DQI asymptotic closed form (eq. 16, m->p limit): {:.4}\n",
         res.phi_dqi_asymptotic
     ));
     #[cfg(feature = "hosted")]
