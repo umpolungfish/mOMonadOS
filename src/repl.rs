@@ -2165,6 +2165,12 @@ pub fn repl(k: &mut Kernel) {
                 let rest: Vec<&str> = joined.split_whitespace().collect();
                 crate::yz_list::repl_yz_list(&rest);
             }
+            "shor-sim" => {
+                let tail: Vec<&str> = parts.collect();
+                let joined = tail.join(" ");
+                let rest: Vec<&str> = joined.split_whitespace().collect();
+                crate::shor_sim::repl_shor_sim(&rest);
+            }
             "fde" => {
                 // Same splitn(4) gluing: `fde walk` and `fde trans` both take
                 // more than three arguments after the subcommand.
