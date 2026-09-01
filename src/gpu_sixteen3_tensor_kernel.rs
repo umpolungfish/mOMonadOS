@@ -23,6 +23,7 @@ use alloc::vec::Vec;
 use cudarc::driver::{CudaContext, LaunchConfig, PushKernelArg};
 use cudarc::nvrtc::compile_ptx;
 use imasm_core::imasm16_3::{meet_t, Reg16_3};
+use std::time::Instant;
 
 /// Three gates chained through the explicit T-arm/F-arm/rejoin shape:
 ///   stage 1: union(x, y)            -- combine, no permutation needed
@@ -125,11 +126,14 @@ pub fn run(n: u64) -> String {
         Err(e) => return format!("{out}  load tensor_chain failed: {e}\n"),
     };
 
+    let t_gen = Instant::now();
     let mut rng = Xorshift(0xC2B2AE3D27D4EB4F ^ n.wrapping_mul(0x165667B19E3779F9));
     let xs_packed: Vec<u8> = (0..n).map(|_| rng.next_u8()).collect();
     let ys_packed: Vec<u8> = (0..n).map(|_| rng.next_u8()).collect();
     let zs_packed: Vec<u8> = (0..n).map(|_| rng.next_u8()).collect();
+    let gen_elapsed = t_gen.elapsed();
 
+    let t_htod = Instant::now();
     let d_x = match stream.clone_htod(&xs_packed) { Ok(d) => d, Err(e) => return format!("{out}  htod x: {e}") };
     let d_y = match stream.clone_htod(&ys_packed) { Ok(d) => d, Err(e) => return format!("{out}  htod y: {e}") };
     let d_z = match stream.clone_htod(&zs_packed) { Ok(d) => d, Err(e) => return format!("{out}  htod z: {e}") };
@@ -157,15 +161,19 @@ pub fn run(n: u64) -> String {
     if let Err(e) = stream.synchronize() {
         return format!("{out}  synchronize failed: {e}");
     }
+    let htod_launch_elapsed = t_htod.elapsed();
 
+    let t_dtoh = Instant::now();
     let gpu_s1: Vec<u8> = match stream.clone_dtoh(&d_s1) { Ok(v) => v, Err(e) => return format!("{out}  dtoh s1: {e}") };
     let gpu_s2: Vec<u8> = match stream.clone_dtoh(&d_s2) { Ok(v) => v, Err(e) => return format!("{out}  dtoh s2: {e}") };
     let gpu_s3: Vec<u8> = match stream.clone_dtoh(&d_s3) { Ok(v) => v, Err(e) => return format!("{out}  dtoh s3: {e}") };
     let gpu_both: Vec<u8> = match stream.clone_dtoh(&d_both) { Ok(v) => v, Err(e) => return format!("{out}  dtoh both: {e}") };
+    let dtoh_elapsed = t_dtoh.elapsed();
     // ⊡ commit: the readback above IS the immutable record for this run.
 
     out.push_str("  ⊢∈⊤≻⊥≺∋⊞ per gate, ⋈ chaining, three stages, checked against the CPU at each stage\n\n");
 
+    let t_verify = Instant::now();
     let mut mismatch_s1 = 0u64;
     let mut mismatch_s2 = 0u64;
     let mut mismatch_s3 = 0u64;
@@ -212,6 +220,8 @@ pub fn run(n: u64) -> String {
         "  ⊙ self-reference check (truth_swap is its own inverse): {self_ref_fail} of {n} failed to recover stage 2\n"
     ));
 
+    let verify_elapsed = t_verify.elapsed();
+
     let total_mismatch = mismatch_s1 + mismatch_s2 + mismatch_s3 + self_ref_fail;
     out.push_str(&format!(
         "\n  {}\n",
@@ -220,6 +230,15 @@ pub fn run(n: u64) -> String {
         } else {
             "MISMATCH FOUND"
         }
+    ));
+
+    out.push_str(&format!(
+        "\n  TIMING n={n} gen_ms={:.3} htod_launch_sync_ms={:.3} dtoh_ms={:.3} cpu_verify_ms={:.3} total_ms={:.3}\n",
+        gen_elapsed.as_secs_f64() * 1000.0,
+        htod_launch_elapsed.as_secs_f64() * 1000.0,
+        dtoh_elapsed.as_secs_f64() * 1000.0,
+        verify_elapsed.as_secs_f64() * 1000.0,
+        (gen_elapsed + htod_launch_elapsed + dtoh_elapsed + verify_elapsed).as_secs_f64() * 1000.0,
     ));
 
     out

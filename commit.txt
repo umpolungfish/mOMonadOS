@@ -1,21 +1,13 @@
-Built gpu_sixteen3_tensor_kernel.rs, a fourth GPU ob3ect nobody had touched
-this session. Its own phase_4 names a specific shape per gate: split into
-a T-arm and F-arm, compute each separately, a real lane permutation on the
-F-arm "if required by the gate," rejoin into one register, hold the B
-state where the result has both, chain into the next gate, a self-
-reference check, commit. gpu_sixteen3.rs already computes the identical
-bits as one flat per-lane expression -- correct, but not this shape, and a
-structure's shape is its own content, not an artifact of how it happened
-to get built. This builds the two-arm split/rejoin explicitly, three real
-gates chained through it: union (a combine, no permutation needed) into
-meet_t (chained input) into truth_swap (the one of the three that
-actually exercises the permutation step, T and F trading places).
+Charted gpu_sixteen3_tensor_kernel's real scaling, 10^4 to 10^9 register
+triples. Added internal Instant timing to the module itself (generate,
+htod+launch+sync, dtoh, CPU verify) rather than time the whole process
+including boot, so a sweep across seven orders of magnitude is comparable
+point to point. Ran it once per n, one boot per point, real numbers in
+measurements/gpu_sixteen3_tensor_kernel_scaling.csv.
 
-Checked against the CPU at every stage, not just the end, plus a genuine
-self-reference check: truth_swap applied twice must recover its own
-input, verified per-thread on the GPU output, not assumed from the
-algebra. Ran live on the RTX 4070 at 5,000,000 register triples: 0
-mismatches on all three stages, 0 self-reference failures. The "both T
-and F held" counts for stage 2 and stage 3 came out identical, which
-they must -- swapping T and F can't change whether a register holds both
--- a structural check the kernel passed for free, not one I had to add.
+The chart makes the shape plain: the GPU stage itself is under a percent
+of total time once n gets large, the CPU loop that verifies every result
+against imasm_core dominates by roughly 30:1 at the billion scale, which
+matches the 34.6s wall-clock Lando measured directly. The 10^4/10^5 points
+are single-sample and noisy, said so in the README rather than smoothed
+over -- the ~30:1 ratio from 10^6 up is the real, repeatable finding.
