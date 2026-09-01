@@ -31,10 +31,28 @@ use std::time::Instant;
 ///   stage 3: truth_swap(stage2)     -- unary, REAL lane permutation (≺)
 /// Each stage computes its T-arm (T,t lanes) and F-arm (F,f lanes)
 /// separately before packing them together (∋), not as one expression.
+///
+/// The verification used to be a single-threaded CPU loop reading every
+/// element back -- at 10^9 triples that loop was 30x the cost of the GPU
+/// work it was checking (measurements/gpu_sixteen3_tensor_kernel_scaling.*).
+/// Moved onto the GPU: every thread ALSO computes the same three stages via
+/// the flat, single-expression form (`ref1`/`ref2`/`ref3` below, the exact
+/// expressions `gpu_native_protocol.rs`'s CHAINED_SRC already verified
+/// independently at billion scale in an earlier, separate kernel), compares
+/// against its own arm-shape result, and folds any disagreement into one
+/// atomic counter per stage -- O(N) work that stays on the device, only a
+/// handful of u64 counters cross back to host. A kernel that only agrees
+/// with itself proves nothing, so this cross-checks two independently
+/// written GPU code paths against each other, not one path against a copy
+/// of itself; `run` below additionally spot-checks a small, fixed-size
+/// sample against the real CPU `imasm_core` functions as the ground-truth
+/// control that a GPU-only self-consistency check cannot be.
 const TENSOR_SRC: &str = r#"
-extern "C" __global__ void tensor_chain(
+// counters[0..7) = mismatch1, mismatch2, mismatch3, both1, both2, both3, self_ref_fail --
+// one buffer, indexed by offset, so the host side passes one argument, not seven.
+extern "C" __global__ void tensor_chain_verify(
     unsigned char *out_stage1, unsigned char *out_stage2, unsigned char *out_stage3,
-    unsigned char *both_flags,
+    unsigned long long *counters,
     const unsigned char *x, const unsigned char *y, const unsigned char *z,
     const unsigned long long n)
 {
@@ -44,7 +62,7 @@ extern "C" __global__ void tensor_chain(
     // ⊢ void state for this thread's slot -- nothing read yet.
     unsigned char xv = x[i], yv = y[i], zv = z[i];
 
-    // ── stage 1: union(x, y) ──
+    // ── stage 1: union(x, y), arm/rejoin shape ──
     // ∈ split into T-arm / F-arm lanes.
     unsigned char x_t = (xv>>0)&1, x_f = (xv>>1)&1, x_tt = (xv>>2)&1, x_ff = (xv>>3)&1;
     unsigned char y_t = (yv>>0)&1, y_f = (yv>>1)&1, y_tt = (yv>>2)&1, y_ff = (yv>>3)&1;
@@ -57,20 +75,28 @@ extern "C" __global__ void tensor_chain(
     unsigned char stage1 = (s1_t_arm & 0x5) | ((s1_f_arm & 0x5) << 1);
     out_stage1[i] = stage1;
     // ⊞ hold the B state where this result genuinely has both T and F.
-    unsigned char stage1_both = ((stage1 & 1) && ((stage1>>1)&1)) ? 1 : 0;
+    if ((stage1 & 1) && ((stage1>>1)&1)) atomicAdd(&counters[3], 1ULL);
+
+    // ref1: the flat, independently-written union expression.
+    unsigned char ref1 = (x_t|y_t) | ((x_f|y_f)<<1) | ((x_tt|y_tt)<<2) | ((x_ff|y_ff)<<3);
+    if (ref1 != stage1) atomicAdd(&counters[0], 1ULL);
 
     // ⋈ chain stage 1's output into stage 2's input.
-    // ── stage 2: meet_t(stage1, z) ──
+    // ── stage 2: meet_t(stage1, z), arm/rejoin shape ──
     unsigned char s1v_t = (stage1>>0)&1, s1v_f = (stage1>>1)&1, s1v_tt = (stage1>>2)&1, s1v_ff = (stage1>>3)&1;
     unsigned char z_t = (zv>>0)&1, z_f = (zv>>1)&1, z_tt = (zv>>2)&1, z_ff = (zv>>3)&1;
     unsigned char s2_t_arm = (s1v_t & z_t) | ((s1v_tt & z_tt) << 2);
     unsigned char s2_f_arm = (s1v_f | z_f) | ((s1v_ff | z_ff) << 2);
     unsigned char stage2 = (s2_t_arm & 0x5) | ((s2_f_arm & 0x5) << 1);
     out_stage2[i] = stage2;
-    unsigned char stage2_both = ((stage2 & 1) && ((stage2>>1)&1)) ? 1 : 0;
+    if ((stage2 & 1) && ((stage2>>1)&1)) atomicAdd(&counters[4], 1ULL);
+
+    // ref2: the flat, independently-written meet_t expression.
+    unsigned char ref2 = (s1v_t&z_t) | ((s1v_f|z_f)<<1) | ((s1v_tt&z_tt)<<2) | ((s1v_ff|z_ff)<<3);
+    if (ref2 != stage2) atomicAdd(&counters[1], 1ULL);
 
     // ⋈ chain stage 2's output into stage 3's input.
-    // ── stage 3: truth_swap(stage2) -- unary, a REAL lane permutation. ──
+    // ── stage 3: truth_swap(stage2), arm/rejoin shape -- a REAL lane permutation. ──
     unsigned char s2v_t = (stage2>>0)&1, s2v_f = (stage2>>1)&1, s2v_tt = (stage2>>2)&1, s2v_ff = (stage2>>3)&1;
     // ⊤/≻ T-arm: truth_swap's T lane comes from F, unchanged t lane.
     unsigned char s3_t_arm = s2v_f | (s2v_tt << 2);
@@ -79,10 +105,21 @@ extern "C" __global__ void tensor_chain(
     unsigned char s3_f_arm = s2v_t | (s2v_ff << 2);
     unsigned char stage3 = (s3_t_arm & 0x5) | ((s3_f_arm & 0x5) << 1);
     out_stage3[i] = stage3;
-    unsigned char stage3_both = ((stage3 & 1) && ((stage3>>1)&1)) ? 1 : 0;
+    if ((stage3 & 1) && ((stage3>>1)&1)) atomicAdd(&counters[5], 1ULL);
 
-    both_flags[i] = stage1_both | (stage2_both << 1) | (stage3_both << 2);
-    // ⊡/⊣ commit and close happen host-side on readback + stream sync.
+    // ref3: the flat, independently-written truth_swap expression.
+    unsigned char ref3 = s2v_f | (s2v_t<<1) | (s2v_tt<<2) | (s2v_ff<<3);
+    if (ref3 != stage3) atomicAdd(&counters[2], 1ULL);
+
+    // ⊙ self-reference check, on the GPU: truth_swap is its own inverse,
+    // so swapping stage3 again must recover stage2 exactly.
+    unsigned char s3v_t = (stage3>>0)&1, s3v_f = (stage3>>1)&1, s3v_tt = (stage3>>2)&1, s3v_ff = (stage3>>3)&1;
+    unsigned char un_swapped = s3v_f | (s3v_t<<1) | (s3v_tt<<2) | (s3v_ff<<3);
+    if (un_swapped != stage2) atomicAdd(&counters[6], 1ULL);
+
+    // ⊡ commit: the three stage arrays above are the immutable record, in
+    // GPU global memory, whether or not a host ever reads them back. ⊣
+    // close happens host-side on stream sync.
 }
 "#;
 
@@ -121,9 +158,9 @@ pub fn run(n: u64) -> String {
         Ok(m) => m,
         Err(e) => return format!("{out}  module load failed: {e}\n"),
     };
-    let f = match module.load_function("tensor_chain") {
+    let f = match module.load_function("tensor_chain_verify") {
         Ok(f) => f,
-        Err(e) => return format!("{out}  load tensor_chain failed: {e}\n"),
+        Err(e) => return format!("{out}  load tensor_chain_verify failed: {e}\n"),
     };
 
     let t_gen = Instant::now();
@@ -140,21 +177,21 @@ pub fn run(n: u64) -> String {
     let mut d_s1 = match stream.alloc_zeros::<u8>(n as usize) { Ok(d) => d, Err(e) => return format!("{out}  alloc s1: {e}") };
     let mut d_s2 = match stream.alloc_zeros::<u8>(n as usize) { Ok(d) => d, Err(e) => return format!("{out}  alloc s2: {e}") };
     let mut d_s3 = match stream.alloc_zeros::<u8>(n as usize) { Ok(d) => d, Err(e) => return format!("{out}  alloc s3: {e}") };
-    let mut d_both = match stream.alloc_zeros::<u8>(n as usize) { Ok(d) => d, Err(e) => return format!("{out}  alloc both: {e}") };
+    let mut d_counters = match stream.alloc_zeros::<u64>(7) { Ok(d) => d, Err(e) => return format!("{out}  alloc counters: {e}") };
 
     {
         let mut builder = stream.launch_builder(&f);
         builder.arg(&mut d_s1);
         builder.arg(&mut d_s2);
         builder.arg(&mut d_s3);
-        builder.arg(&mut d_both);
+        builder.arg(&mut d_counters);
         builder.arg(&d_x);
         builder.arg(&d_y);
         builder.arg(&d_z);
         builder.arg(&n);
         let cfg = LaunchConfig::for_num_elems(n as u32);
         if let Err(e) = unsafe { builder.launch(cfg) } {
-            return format!("{out}  launch tensor_chain failed: {e}");
+            return format!("{out}  launch tensor_chain_verify failed: {e}");
         }
     }
     // ⊣ close the kernel boundary, synchronize before reading anything back.
@@ -164,81 +201,72 @@ pub fn run(n: u64) -> String {
     let htod_launch_elapsed = t_htod.elapsed();
 
     let t_dtoh = Instant::now();
-    let gpu_s1: Vec<u8> = match stream.clone_dtoh(&d_s1) { Ok(v) => v, Err(e) => return format!("{out}  dtoh s1: {e}") };
-    let gpu_s2: Vec<u8> = match stream.clone_dtoh(&d_s2) { Ok(v) => v, Err(e) => return format!("{out}  dtoh s2: {e}") };
-    let gpu_s3: Vec<u8> = match stream.clone_dtoh(&d_s3) { Ok(v) => v, Err(e) => return format!("{out}  dtoh s3: {e}") };
-    let gpu_both: Vec<u8> = match stream.clone_dtoh(&d_both) { Ok(v) => v, Err(e) => return format!("{out}  dtoh both: {e}") };
+    let counters: Vec<u64> = match stream.clone_dtoh(&d_counters) { Ok(v) => v, Err(e) => return format!("{out}  dtoh counters: {e}") };
     let dtoh_elapsed = t_dtoh.elapsed();
-    // ⊡ commit: the readback above IS the immutable record for this run.
+    let (mismatch_s1, mismatch_s2, mismatch_s3, both1, both2, both3, self_ref_fail) =
+        (counters[0], counters[1], counters[2], counters[3], counters[4], counters[5], counters[6]);
 
-    out.push_str("  ⊢∈⊤≻⊥≺∋⊞ per gate, ⋈ chaining, three stages, checked against the CPU at each stage\n\n");
+    out.push_str("  ⊢∈⊤≻⊥≺∋⊞ per gate, ⋈ chaining -- cross-checked against an independently-written flat GPU kernel, entirely on-device (O(N) work never leaves the GPU)\n\n");
 
-    let t_verify = Instant::now();
-    let mut mismatch_s1 = 0u64;
-    let mut mismatch_s2 = 0u64;
-    let mut mismatch_s3 = 0u64;
-    let mut both_count = [0u64; 3];
-    let mut self_ref_fail = 0u64;
-    for i in 0..n as usize {
+    out.push_str(&format!(
+        "  stage 1 union(x,y):        {n} checked on-GPU, {mismatch_s1} mismatch(es) vs independent flat kernel\n"
+    ));
+    out.push_str(&format!(
+        "  stage 2 meet_t(stage1,z):  {n} checked on-GPU, {mismatch_s2} mismatch(es) vs independent flat kernel\n"
+    ));
+    out.push_str(&format!(
+        "  stage 3 truth_swap(stage2): {n} checked on-GPU, {mismatch_s3} mismatch(es) vs independent flat kernel\n"
+    ));
+    out.push_str(&format!(
+        "  ⊞ B-state held (T and F both set): stage1 {both1} of {n}, stage2 {both2} of {n}, stage3 {both3} of {n}\n"
+    ));
+    out.push_str(&format!(
+        "  ⊙ self-reference check (truth_swap is its own inverse), done on-GPU: {self_ref_fail} of {n} failed to recover stage 2\n"
+    ));
+
+    // A GPU kernel agreeing with a second GPU kernel is not the same as
+    // being right -- both could share a bug neither exposes. Ground-truth
+    // control: a small, fixed-size sample checked against the real CPU
+    // imasm_core functions directly, cost bounded regardless of n.
+    let t_control = Instant::now();
+    let k = (n as usize).min(10_000);
+    let ctrl_s1: Vec<u8> = match stream.clone_dtoh(&d_s1.slice(0..k)) { Ok(v) => v, Err(e) => return format!("{out}  dtoh control s1: {e}") };
+    let ctrl_s2: Vec<u8> = match stream.clone_dtoh(&d_s2.slice(0..k)) { Ok(v) => v, Err(e) => return format!("{out}  dtoh control s2: {e}") };
+    let ctrl_s3: Vec<u8> = match stream.clone_dtoh(&d_s3.slice(0..k)) { Ok(v) => v, Err(e) => return format!("{out}  dtoh control s3: {e}") };
+    let mut control_mismatch = 0u64;
+    for i in 0..k {
         let x = unpack(xs_packed[i]);
         let y = unpack(ys_packed[i]);
         let z = unpack(zs_packed[i]);
-
         let cpu_s1 = x.union(y);
-        if pack(cpu_s1) != gpu_s1[i] { mismatch_s1 += 1; }
-
         let cpu_s2 = meet_t(cpu_s1, z);
-        if pack(cpu_s2) != gpu_s2[i] { mismatch_s2 += 1; }
-
         let cpu_s3 = cpu_s2.truth_swap();
-        if pack(cpu_s3) != gpu_s3[i] { mismatch_s3 += 1; }
-
-        for stage in 0..3 {
-            if (gpu_both[i] >> stage) & 1 == 1 { both_count[stage] += 1; }
+        if pack(cpu_s1) != ctrl_s1[i] || pack(cpu_s2) != ctrl_s2[i] || pack(cpu_s3) != ctrl_s3[i] {
+            control_mismatch += 1;
         }
-
-        // ⊙ self-reference check: truth_swap is its own inverse -- applying
-        // it again to the GPU's stage 3 output must recover stage 2 exactly.
-        let un_swapped = unpack(gpu_s3[i]).truth_swap();
-        if pack(un_swapped) != gpu_s2[i] { self_ref_fail += 1; }
     }
-
+    let control_elapsed = t_control.elapsed();
     out.push_str(&format!(
-        "  stage 1 union(x,y):        {n} checked, {mismatch_s1} mismatch(es) vs CPU\n"
-    ));
-    out.push_str(&format!(
-        "  stage 2 meet_t(stage1,z):  {n} checked, {mismatch_s2} mismatch(es) vs CPU\n"
-    ));
-    out.push_str(&format!(
-        "  stage 3 truth_swap(stage2): {n} checked, {mismatch_s3} mismatch(es) vs CPU\n"
-    ));
-    out.push_str(&format!(
-        "  ⊞ B-state held (T and F both set): stage1 {} of {n}, stage2 {} of {n}, stage3 {} of {n}\n",
-        both_count[0], both_count[1], both_count[2]
-    ));
-    out.push_str(&format!(
-        "  ⊙ self-reference check (truth_swap is its own inverse): {self_ref_fail} of {n} failed to recover stage 2\n"
+        "  control: {k} of {n} entries checked directly against CPU imasm_core (union/meet_t/truth_swap), {control_mismatch} mismatch(es)\n"
     ));
 
-    let verify_elapsed = t_verify.elapsed();
-
-    let total_mismatch = mismatch_s1 + mismatch_s2 + mismatch_s3 + self_ref_fail;
+    let total_mismatch = mismatch_s1 + mismatch_s2 + mismatch_s3 + self_ref_fail + control_mismatch;
     out.push_str(&format!(
         "\n  {}\n",
         if total_mismatch == 0 {
-            "all three chained stages match the CPU exactly, the self-reference check holds -- the split/rejoin/chain shape this ob3ect names, built and verified, not the flat expression already covered elsewhere"
+            "all three chained stages agree with the independent GPU kernel and the CPU control sample, the self-reference check holds -- the split/rejoin/chain shape this ob3ect names, built, verified, and now verified without an O(N) CPU loop"
         } else {
             "MISMATCH FOUND"
         }
     ));
 
     out.push_str(&format!(
-        "\n  TIMING n={n} gen_ms={:.3} htod_launch_sync_ms={:.3} dtoh_ms={:.3} cpu_verify_ms={:.3} total_ms={:.3}\n",
+        "\n  TIMING n={n} gen_ms={:.3} htod_launch_sync_ms={:.3} dtoh_counters_ms={:.3} cpu_control_ms={:.3} (control sample size {k}) total_ms={:.3}\n",
         gen_elapsed.as_secs_f64() * 1000.0,
         htod_launch_elapsed.as_secs_f64() * 1000.0,
         dtoh_elapsed.as_secs_f64() * 1000.0,
-        verify_elapsed.as_secs_f64() * 1000.0,
-        (gen_elapsed + htod_launch_elapsed + dtoh_elapsed + verify_elapsed).as_secs_f64() * 1000.0,
+        control_elapsed.as_secs_f64() * 1000.0,
+        (gen_elapsed + htod_launch_elapsed + dtoh_elapsed + control_elapsed).as_secs_f64() * 1000.0,
     ));
 
     out
