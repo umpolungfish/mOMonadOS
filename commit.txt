@@ -1,45 +1,34 @@
-prime_winding factor now runs Brent's rho past the trial-division bound
-instead of stopping at "search incomplete" the moment TRIAL_DIVISION_BOUND
-runs out. Every seed is its own independent walk over the same n -- six
-distinct strands, and any one of them closing (a nontrivial gcd) splits
-it -- so on a hosted build they run as six real OS threads at once
-(std::thread, the same pattern this binary's own live_hud already uses),
-racing to the first factor; bare metal, with no std::thread, walks the
-same six seeds one at a time. Splits recurse: each half is checked with
-is_prime (real Miller-Rabin) and, if still composite, handed back into
-the same parallel search, until every piece is confirmed prime or a piece
-resists all six seeds within their step budget -- reported as exactly
-that, a known composite this search did not finish, never folded into
-the prime list.
+The SIXTEEN_3 trilattice's register gates now run batched on GPU, checked
+bit-for-bit against the CPU implementation they're a port of, not assumed
+correct because they compiled.
 
-Building this caught a real bug before it shipped anywhere Lando saw it
-work: the first port of Brent's-rho's tortoise/hare structure reset the
-tortoise checkpoint to the hare's live position at the start of every
-doubling round, instead of holding it fixed for the whole round the way
-the actual algorithm requires. It compiled, ran, and returned answers --
-and was still wrong: it factored small cases (8051, 10403) by accident
-(their factors are close enough that a short local window catches them)
-but missed factors a correct implementation finds in tens of thousands of
-steps, most of the time, on ordinary 20-24 digit semiprimes. Caught by
-building a random 24-digit semiprime with known factors and finding a
-2-in-3 failure rate on cases with no reason to be hard, then verifying
-the exact same seeds and step budget in an independent Python
-reimplementation to confirm it was the algorithm's structure and not a
-one-off. The fix holds the tortoise fixed for the whole round, walks the
-hare r steps ahead, batches the gcd over groups of 128 steps with a
-product-mod-n accumulator, and backtracks one step at a time on the rare
-case the batch gcd lands on n itself rather than the real factor --
-standard Brent, checked against the textbook shape this time rather than
-trusted from the port.
+Reg16_3 (imasm_core::imasm16_3) is a plain 4-bool tuple over the lanes
+[T, F, t, f], and every op on it -- union, meet_t, join_t, meet_c, join_c,
+leq_i, leq_t, leq_c, truth_swap, info_swap, invol -- is a fixed,
+data-independent per-lane bitwise op or permutation, never a branch on the
+value's content. That's a fixed-width elementwise/permute kernel, so it
+batches onto GPU as one kernel launch over N registers instead of N
+sequential scalar calls. New module `src/gpu_sixteen3.rs` (hosted-only,
+gated the same way live_hud already gates its own std::thread use) carries
+three CUDA kernels, compiled at runtime via NVRTC (cudarc, dynamic loading,
+no build-time link requirement): one for the five binary gates, one for the
+three lane-swaps, one for the three order checks, each register packed as
+a single byte.
 
-Verified: the 35-value stress file matches an independent Python
-Miller-Rabin check on every value, unchanged. Seven fresh test cases (two
-textbook examples, four random semiprimes 20-24 digits with known
-factors, one four-factor 19-digit number) all now split correctly and
-fast -- under three seconds combined, down from the broken version's
-several seconds per case for cases it got wrong. The 270-digit composite
-from earlier this session still correctly reports composite-but-unsplit
-in bounded time (two ~135-digit factors are not in reach of Pollard-class
-methods at all, Grammar-native or conventional, and that's the nature of
-the problem, not a gap in this search). Full test suite: 259 passed, 0
-failed.
+`gpu16_3 verify [n]` runs all eleven gates on n random register pairs once
+on the GPU and once on the CPU scalar functions and reports where, if
+anywhere, they disagree. Ran it at n=1,000,000 (11 million checks, RTX
+4070, under a second) and n=20,000,000 (220 million checks, ~2 seconds):
+zero mismatches both times. Bare-metal build (no `hosted` feature) still
+compiles clean -- cudarc is an optional dependency gated into `hosted`
+only, so no_std never sees it. Full test suite: 259 passed, 0 failed.
+
+This grew out of checking whether the trilattice's own catalog entry
+(`sixteen_3_trilattice`) sits close to `real_swendsen_kernel` /
+`ising_navigator`, the two entries in this catalog that already name a
+real CUDA kernel as their implementation. The tuples share only 3 of 12
+axes, genuinely different objects, but the one shared axis that bears on
+whether something belongs on a GPU -- Stoichiometry, both reading "many
+identical" -- matched. Minted as its own ob3ect first (`sixteen3_gpu_tensor_kernel`,
+grounded, tri-ancestral T, tier O2dag) before writing the kernel, in the
+ob3ect repo, not this one.
