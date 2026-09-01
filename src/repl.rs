@@ -2123,7 +2123,21 @@ pub fn repl(k: &mut Kernel) {
                 let tail: Vec<&str> = parts.collect();
                 let joined = tail.join(" ");
                 let rest: Vec<&str> = joined.split_whitespace().collect();
-                crate::dqi::repl_dqi(&rest);
+                #[cfg(feature = "hosted")]
+                let handled_gpu = if rest.first().copied() == Some("gpu-benchmark") {
+                    let m: usize = rest.get(1).and_then(|s| s.parse().ok()).unwrap_or(24);
+                    let device: usize = rest.get(2).and_then(|s| s.parse().ok()).unwrap_or(0);
+                    let (clauses, _planted) = crate::dqi::random_xorsat_instance(m, m as u64);
+                    sprintln!("{}", crate::gpu_dqi_xorsat::verify_against_cpu(&clauses, m, device));
+                    true
+                } else {
+                    false
+                };
+                #[cfg(not(feature = "hosted"))]
+                let handled_gpu = false;
+                if !handled_gpu {
+                    crate::dqi::repl_dqi(&rest);
+                }
             }
             "fde" => {
                 // Same splitn(4) gluing: `fde walk` and `fde trans` both take

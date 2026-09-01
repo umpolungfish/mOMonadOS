@@ -59,6 +59,8 @@ mod gpu_crystal_full_space;
 mod gpu_ipc_no_serialization;
 #[cfg(feature = "hosted")]
 mod gpu_sixteen3_tensor_kernel;
+#[cfg(feature = "hosted")]
+mod gpu_dqi_xorsat;
 mod frob_verify;
 mod imas_ig;
 mod aleph;

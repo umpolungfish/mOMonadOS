@@ -316,7 +316,7 @@ impl Xorshift {
 /// instances), by planting a random solution and reading each clause's
 /// rhs off it — so `xorsat_solve`'s answer can always be checked against
 /// ground truth, not just "did it return Some".
-fn random_xorsat_instance(num_vars: usize, seed: u64) -> (Vec<(Vec<usize>, bool)>, Vec<bool>) {
+pub fn random_xorsat_instance(num_vars: usize, seed: u64) -> (Vec<(Vec<usize>, bool)>, Vec<bool>) {
     let mut rng = Xorshift(seed ^ 0x9E3779B97F4A7C15);
     let planted: Vec<bool> = (0..num_vars).map(|_| rng.next_u64() & 1 == 1).collect();
     let num_clauses = core::cmp::max(1, num_vars / 2);
@@ -484,6 +484,7 @@ pub fn repl_dqi(args: &[&str]) {
         sprintln!("  dqi xorsat <m>        solve a random m-variable XOR system (Gaussian elimination), verify");
         sprintln!("  dqi decode <m> <ell>  weight-≤ell syndrome decode on a random m-variable code");
         sprintln!("  dqi benchmark <m>     elimination vs brute force on the same random instance (m≤24 runs both)");
+        sprintln!("  dqi gpu-benchmark <m> [device]  brute-force all 2^m assignments on GPU, cross-check vs elimination (hosted, m≤30)");
         sprintln!("  Single-⊤ variant: ⊢∈∈≻⋈⊤⊥∋≺⋈∋⊣⊙ (period 13)");
         sprintln!("  Double-⊤ variant: ⊢∈∈≻⋈⊤⊤⊥∋≺⋈∋⊣⊙ (period 14)");
         sprintln!("  Triple-⊤ variant: ⊢∈∈≻⋈⊤⊤⊤⊥∋≺⋈∋⊣⊙ (period 15)");
