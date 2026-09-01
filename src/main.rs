@@ -142,6 +142,7 @@ mod yz;
 mod yz_list;
 mod shor_qft;
 mod opi;
+mod multilattice;
 mod fde;
 mod rsa_decrypter;
 mod combo;
