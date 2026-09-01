@@ -138,6 +138,7 @@ mod d2048_sieve;
 mod provenance;
 mod quadratic;
 mod dqi;
+mod yz;
 mod fde;
 mod rsa_decrypter;
 mod combo;

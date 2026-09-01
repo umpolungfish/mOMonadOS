@@ -98,6 +98,109 @@ impl B4 {
     }
 }
 
+// ── The Boolean core's two adjoints, and the closure they can't reach ──
+//
+// UNO_Reverse.tex: the inclusion of the Boolean core B_4={F,T} into FOUR
+// has a left adjoint (reflector r) and a right adjoint (coreflector c),
+// not the same map -- checked directly against the manuscript's own
+// theorems, not read off a summary: line ~419 "r(F)=F, r(N)=r(B)=T" (the
+// truth-order reflection theorem, proved by cases at F and T); the
+// coreflection theorem gives c(N)=c(B)=F by the dual argument, c(T)=T.
+// `Inc(v)=B` is the paraconsistent closure: constant, image {B}, a fixed
+// point (`Inc(B)=B`) outside the Boolean core, idempotent.
+//
+// Naming note: the manuscript's "B_4" names the two-element classical
+// SUBSET {F,T} of FOUR. This file's `B4` type is the full four-valued
+// carrier {N,T,F,B}. Same three letters, two different objects -- do not
+// conflate this type with the paper's classical core when reading the
+// functions below.
+
+/// The reflector: the least Boolean value above v in the truth order.
+/// Sends every nonclassical value (N, B) up to T; T and F are fixed.
+pub fn r(v: B4) -> B4 {
+    if v == B4::F { B4::F } else { B4::T }
+}
+
+/// The coreflector: the greatest Boolean value below v in the truth
+/// order. Sends every nonclassical value (N, B) down to F; T and F are
+/// fixed. The same two inputs (N, B) that `r` sends to T, `c` sends to
+/// F -- the manuscript's "erase the same nonclassical values in opposite
+/// directions" theorem, checked below in `theorem_5_5_report`.
+pub fn c(v: B4) -> B4 {
+    if v == B4::T { B4::T } else { B4::F }
+}
+
+/// The paraconsistent closure: constant at B, for every input. Not a
+/// retraction into the Boolean core -- its one output value sits outside
+/// {T, F} entirely, which is the whole content of Corollary 11.2 below:
+/// no Boolean endomap (certainly not r or c) can undo this constancy and
+/// recover what v was.
+pub fn inc(_v: B4) -> B4 {
+    B4::B
+}
+
+/// Corollary 11.2 (UNO_Reverse.tex, the corollary right after the
+/// retraction-square figure): r∘Inc and c∘Inc are constant maps, T and F
+/// respectively, and neither recovers Inc(v)=B. Checked exhaustively over
+/// all four inputs -- only four to check, so "exhaustive" here is a real
+/// claim, not a sampling one.
+pub fn corollary_11_2_report() -> alloc::string::String {
+    use alloc::format;
+    use alloc::string::String;
+    let mut out = String::new();
+    let mut r_inc_constant = true;
+    let mut c_inc_constant = true;
+    for v in [B4::N, B4::T, B4::F, B4::B] {
+        let ri = r(inc(v));
+        let ci = c(inc(v));
+        if ri != B4::T { r_inc_constant = false; }
+        if ci != B4::F { c_inc_constant = false; }
+        out.push_str(&format!(
+            "  v={:<2} Inc(v)={:<2} r(Inc(v))={:<2} c(Inc(v))={:<2}\n",
+            v.name(), inc(v).name(), ri.name(), ci.name()
+        ));
+    }
+    out.push_str(&format!(
+        "  r∘Inc constant at T over all 4 inputs: {}\n",
+        r_inc_constant
+    ));
+    out.push_str(&format!(
+        "  c∘Inc constant at F over all 4 inputs: {}\n",
+        c_inc_constant
+    ));
+    out.push_str("  neither equals Inc(v)=B for any v: true by inspection (T≠B, F≠B)\n");
+    out
+}
+
+/// Theorem 5.5 in the YZ-retranslation document's numbering (the paper's
+/// own "the two universal collapses are distinct" theorem in
+/// UNO_Reverse.tex): r and c send the same two nonclassical inputs to
+/// opposite classical outputs, and agree on the two classical inputs.
+pub fn theorem_5_5_report() -> alloc::string::String {
+    use alloc::format;
+    use alloc::string::String;
+    let mut out = String::new();
+    let mut opposite_on_nonclassical = true;
+    let mut agree_on_classical = true;
+    for v in [B4::N, B4::T, B4::F, B4::B] {
+        let rv = r(v);
+        let cv = c(v);
+        let nonclassical = matches!(v, B4::N | B4::B);
+        if nonclassical && rv == cv { opposite_on_nonclassical = false; }
+        if !nonclassical && rv != cv { agree_on_classical = false; }
+        out.push_str(&format!("  v={:<2} r(v)={:<2} c(v)={:<2}\n", v.name(), rv.name(), cv.name()));
+    }
+    out.push_str(&format!(
+        "  r and c disagree on both nonclassical inputs (N, B): {}\n",
+        opposite_on_nonclassical
+    ));
+    out.push_str(&format!(
+        "  r and c agree on both classical inputs (T, F): {}\n",
+        agree_on_classical
+    ));
+    out
+}
+
 // Convenience aliases matching Python b4_* conventions.
 pub type Belnap = B4;
 
