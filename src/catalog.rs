@@ -352,7 +352,7 @@ const CLINK_L8: CatalogEntry = entry(
     "clink_l8", "CLINK Layer 8 Organism — terminal ontological layer, O_∞⁺ with ⊡/∋ transcendence",
     IgPrim::if_, IgPrim::are, IgPrim::ian,
     IgPrim::or_, IgPrim::peep, IgPrim::egg,
-    IgPrim::ice, IgPrim::ooze,
+    IgPrim::thigh, IgPrim::ooze,
     IgPrim::monad, IgPrim::wool, IgPrim::up, IgPrim::zoo,
     4, Domain::General,
 );
@@ -361,7 +361,7 @@ const CLINK_L8: CatalogEntry = entry(
 // ── CLINK L0 (O₀): ⟨𐑛·𐑶·𐑩·𐑯·𐑐·𐑘·𐑚·𐑝·woe·𐑓·𐑳·𐑷⟩ ──
 const CLINK_L0: CatalogEntry = entry(
     "clink_layer0_frustrated_belnap5", "CLINK Layer 0: Frustrated Belnap5 — SU(3) quark color with confinement. Ground layer of the CLINK chain.",
-    IgPrim::array, IgPrim::oil, IgPrim::ado,
+    IgPrim::dead, IgPrim::oil, IgPrim::ado,
     IgPrim::nun, IgPrim::peep, IgPrim::yea,
     IgPrim::bib, IgPrim::vow,
     IgPrim::woe, IgPrim::fee, IgPrim::up, IgPrim::awe,
@@ -371,7 +371,7 @@ const CLINK_L0: CatalogEntry = entry(
 // ── CLINK L1 (O₀): ⟨𐑛·𐑶·𐑩·𐑗·𐑐·𐑤·𐑚·𐑜·woe·𐑓·𐑳·𐑷⟩ ──
 const CLINK_L1: CatalogEntry = entry(
     "clink_layer1_electron_orbital", "CLINK Layer 1: Belnap4 electron orbital occupancy — 4-valued lattice. O₀.",
-    IgPrim::array, IgPrim::oil, IgPrim::ado,
+    IgPrim::dead, IgPrim::oil, IgPrim::ado,
     IgPrim::church, IgPrim::peep, IgPrim::loll,
     IgPrim::bib, IgPrim::gag,
     IgPrim::woe, IgPrim::fee, IgPrim::up, IgPrim::awe,
@@ -381,7 +381,7 @@ const CLINK_L1: CatalogEntry = entry(
 // ── CLINK L2 (O₁): ⟨𐑼·𐑥·𐑽·𐑿·𐑐·𐑤·𐑔·𐑝·roar·𐑒·𐑳·𐑷⟩ ──
 const CLINK_L2: CatalogEntry = entry(
     "clink_layer2_atom", "CLINK Layer 2: Atom — nuclear + electron. O₁ tier, complex-plane criticality.",
-    IgPrim::dead, IgPrim::mime, IgPrim::ear,
+    IgPrim::array, IgPrim::mime, IgPrim::ear,
     IgPrim::yew, IgPrim::peep, IgPrim::loll,
     IgPrim::thigh, IgPrim::vow,
     IgPrim::roar, IgPrim::kick, IgPrim::up, IgPrim::awe,
@@ -391,7 +391,7 @@ const CLINK_L2: CatalogEntry = entry(
 // ── CLINK L3 (O₂): ⟨𐑼·𐑥·𐑽·𐑿·𐑞·𐑧·𐑲·𐑠·⊙·𐑓·𐑳·𐑭⟩ ──
 const CLINK_L3: CatalogEntry = entry(
     "clink_layer3_molecule", "CLINK Layer 3: Molecule — chemical bonds. O₂ tier, first layer with ⊙ criticality and 𐑭 integer winding.",
-    IgPrim::dead, IgPrim::mime, IgPrim::ear,
+    IgPrim::array, IgPrim::mime, IgPrim::ear,
     IgPrim::yew, IgPrim::they, IgPrim::egg,
     IgPrim::ice, IgPrim::measure,
     IgPrim::monad, IgPrim::fee, IgPrim::up, IgPrim::ah,
@@ -441,10 +441,10 @@ const CLINK_L7: CatalogEntry = entry(
 // ── Temporal Mathematics (O₂) ──
 const TEMPORAL_MATHEMATICS: CatalogEntry = entry(
     "temporal_mathematics", "Mathematics with intrinsic temporal structure",
-    IgPrim::array, IgPrim::mime, IgPrim::ian,
-    IgPrim::out, IgPrim::peep, IgPrim::egg,
+    IgPrim::array, IgPrim::are, IgPrim::ear,
+    IgPrim::nun, IgPrim::peep, IgPrim::egg,
     IgPrim::ice, IgPrim::measure,
-    IgPrim::roar, IgPrim::sure, IgPrim::up, IgPrim::ah,
+    IgPrim::monad, IgPrim::sure, IgPrim::up, IgPrim::ah,
     2, Domain::Mathematics,
 );
 
@@ -590,8 +590,8 @@ const IUG: CatalogEntry = entry(
     "universal_imscriptive_grammar", "The Universal Imscriptive Grammar — self-imscribing structural foundation",
     IgPrim::if_, IgPrim::are, IgPrim::ian,
     IgPrim::or_, IgPrim::peep, IgPrim::egg,
-    IgPrim::ice, IgPrim::measure,
-    IgPrim::monad, IgPrim::wool, IgPrim::up, IgPrim::ah,
+    IgPrim::thigh, IgPrim::measure,
+    IgPrim::monad, IgPrim::sure, IgPrim::hung, IgPrim::ah,
     4, Domain::Language,
 );
 
@@ -650,10 +650,10 @@ const PHOTON: CatalogEntry = entry(
 // ── Electron (O₂): ⟨𐑼𐑡𐑾𐑿𐑐𐑘𐑲𐑠⊙𐑒𐑙𐑭⟩ ──
 const ELECTRON: CatalogEntry = entry(
     "electron", "Electron — spin-1/2 Dirac fermion, fundamental lepton. IUFT O₂ tier.",
-    IgPrim::array, IgPrim::judge, IgPrim::ian,
-    IgPrim::yew, IgPrim::peep, IgPrim::yea,
-    IgPrim::ice, IgPrim::measure,
-    IgPrim::monad, IgPrim::kick, IgPrim::hung, IgPrim::ah,
+    IgPrim::dead, IgPrim::eat, IgPrim::tot,
+    IgPrim::yew, IgPrim::peep, IgPrim::egg,
+    IgPrim::thigh, IgPrim::measure,
+    IgPrim::woe, IgPrim::kick, IgPrim::so, IgPrim::awe,
     2, Domain::Physics,
 );
 
@@ -670,10 +670,10 @@ const NEUTRON: CatalogEntry = entry(
 // ── Proton (O₂): ⟨𐑼𐑥𐑾𐑬𐑞𐑤𐑲𐑠⊙𐑖𐑕𐑭⟩ ──
 const PROTON: CatalogEntry = entry(
     "proton", "Proton — uud baryon, stable composite fermion. IUFT O₂ tier.",
-    IgPrim::array, IgPrim::mime, IgPrim::ian,
-    IgPrim::out, IgPrim::they, IgPrim::loll,
-    IgPrim::ice, IgPrim::measure,
-    IgPrim::monad, IgPrim::sure, IgPrim::so, IgPrim::ah,
+    IgPrim::ash, IgPrim::oil, IgPrim::ado,
+    IgPrim::yew, IgPrim::peep, IgPrim::egg,
+    IgPrim::bib, IgPrim::vow,
+    IgPrim::woe, IgPrim::fee, IgPrim::hung, IgPrim::awe,
     2, Domain::Physics,
 );
 

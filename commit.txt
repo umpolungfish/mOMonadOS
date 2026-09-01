@@ -1,25 +1,29 @@
-Built gpu_ipc_no_serialization.rs, the last untouched claim in
-gpu_native_build_of_momonados's phase_5: "Direct memory access through the
-Crystal address space without serialization." A claim about an absent cost
-only means something measured against the cost it's absent of, so this
-times both paths on the same real data: SERIALIZED reads IG_catalog.json
-off disk and parses it, decoding each entry's 12 Shavian fields with the
-same primitive_from_glyph the compiled table's own codegen uses. DIRECT
-takes the already-native, already-compiled-in CatalogEntry table straight
-to GPU device memory, zero parsing anywhere in that path.
+Synced the compiled catalog to canon. The 12 named entries where the
+compiled table disagreed with the live IG_catalog.json split into two
+groups: 9 live in catalog.rs's hand-written STATIC_CATALOG (clink_l8, the
+four clink_layer0-3 entries, temporal_mathematics,
+universal_imscriptive_grammar, electron, proton), hand-fixed each entry()
+call's IgPrim arguments to the tuple IG_catalog.json's own Shavian fields
+decode to, checked against the same primitive_from_glyph the compiled
+table's own codegen uses, not a second decoder that could drift from it.
+The other 3 (zfc_set_theory, e8_aether, g2_vessel) live in the generated
+catalog_ask_subset.rs; reran tools/gen_catalog_subset.py, the same fix
+already used once before on this file.
 
-Cross-checking the two paths by name (required before trusting a timing
-number at all) found 12 of 8328 matched entries genuinely disagree on
-their crystal address. Traced two by hand, clink_l8 and electron: both are
-the compiled CatalogEntry table holding an older tuple than what's now
-written in IG_catalog.json for that name -- catalog.rs documents itself as
-generated FROM the JSON, and these 12 are stale relative to it. Real
-divergence between the compiled kernel and its own source, not a decode
-bug in this module, and a separate finding from the timing question,
-reported as such rather than let it block the measurement.
+Reran gpu_ipc_no_serialization's cross-check after: the 9 hand-fixed
+entries now agree exactly. proton's canon JSON description is the bare
+word "proton", where every other entry here (and the compiled one it
+replaced) carries real prose -- flagged, not treated as equivalent to the
+other 8, but still applied since the tuple itself decodes cleanly and the
+instruction was that the JSON is canon.
 
-Ran it repeatedly on the RTX 4070 rather than trust one number: cold-cache
-first read costs far more than warm ones (10x on a genuinely cold read,
-settling to 3.5-3.8x once the OS page cache is warm), direct path steady
-around 10ms, serialized around 36ms warm. The gap is real and is entirely
-the disk-read-and-JSON-parse cost the direct path never pays.
+The 3 subset entries are still real mismatches, a different problem: the
+live JSON has a second, differently-cased copy of each name
+(G2_vessel/E8_aether/ZFC_set_theory alongside g2_vessel/e8_aether/
+zfc_set_theory), genuinely different content under each pair, not
+duplicates. gen_catalog_subset.py's collision handling lowercases every
+name before comparing, so it treats the pair as one entry and keeps
+whichever came first in the JSON array -- which happened to be the
+capitalized one both times, so the lowercase name in the compiled table
+now holds the capitalized entry's content, not its own. Left alone,
+not a call to make silently.
