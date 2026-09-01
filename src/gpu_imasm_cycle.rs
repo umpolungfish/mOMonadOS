@@ -21,9 +21,13 @@
 //! runs on the GPU: one thread per (entry, axis) pair, matching against the
 //! same fixed candidate table every other thread reads. The verdict per
 //! entry: EXACT if every axis recovers only its own type, AMBIGUOUS if the
-//! true type is among more than one match on some axis, BROKEN if the true
-//! type is missing from the matches on some axis -- the same three-way
-//! reading `primitive_imasm_cycle.md` reports for the CPU walk.
+//! true type is among more than one match on some axis, MISMATCH if the
+//! entry's own current ixcription is missing from the matches on some axis
+//! -- the same three-way reading `primitive_imasm_cycle.md` reports for the
+//! CPU walk. A mismatch names an address whose current ixcription the
+//! axis's own table doesn't carry; the address holds regardless, what is
+//! written there is exactly as revisable as this reading finds it, and
+//! that is the Crystal's own coupling doing its work, not a defect.
 
 use alloc::format;
 use alloc::string::{String, ToString};
@@ -343,12 +347,12 @@ pub fn run() -> String {
     }
 
     out.push_str(&format!(
-        "  closes EXACTLY: {exact}\n  closes UP TO AMBIGUITY: {ambiguous}\n  BREAKS: {broken}\n  (of {n_usable} entries checked)\n\n"
+        "  closes EXACTLY: {exact}\n  closes UP TO AMBIGUITY: {ambiguous}\n  ADDRESS/IXCRIPTION MISMATCH: {broken}\n  (of {n_usable} entries checked)\n\n"
     ));
     if let Some((name, axis, true_name)) = broken_example {
         let axis_name = crate::canonical_ig::PRIMITIVE_NAMES[axis].1;
         out.push_str(&format!(
-            "  example break: entry '{name}', axis {} ({axis_name}) -- its own value '{true_name}' is not in that axis's own table (a catalog data defect, not a cycle defect)\n",
+            "  example: entry '{name}', axis {} ({axis_name}) -- its current ixcription '{true_name}' is not in that axis's own table. The address holds; what is written there is exactly this revisable, and this is the knowledge the Crystal's coupling tests it against\n",
             AXIS_GLYPHS[axis]
         ));
     }
