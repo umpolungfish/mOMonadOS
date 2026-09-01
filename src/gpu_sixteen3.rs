@@ -127,10 +127,10 @@ impl Xorshift {
 /// This is the check, not a demonstration: a batched port that has not
 /// been run against the implementation it claims to match is a claim, not
 /// a result.
-pub fn verify(n: usize) -> String {
-    let ctx = match CudaContext::new(0) {
+pub fn verify(n: usize, device: usize) -> String {
+    let ctx = match CudaContext::new(device) {
         Ok(c) => c,
-        Err(e) => return format!("gpu16_3 verify: no CUDA context (device 0): {e}"),
+        Err(e) => return format!("gpu16_3 verify: no CUDA context (device {device}): {e}"),
     };
     let stream = ctx.default_stream();
 

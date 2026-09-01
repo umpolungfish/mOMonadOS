@@ -1252,14 +1252,15 @@ pub fn repl(k: &mut Kernel) {
                 match sub {
                     "verify" => {
                         let n: usize = parts.next().and_then(|s| s.parse().ok()).unwrap_or(100_000);
-                        sprintln!("{}", crate::gpu_sixteen3::verify(n));
+                        let device: usize = parts.next().and_then(|s| s.parse().ok()).unwrap_or(0);
+                        sprintln!("{}", crate::gpu_sixteen3::verify(n, device));
                     }
                     _ => {
-                        sprintln!("gpu16_3 verify [n]   — batch n random SIXTEEN_3 register pairs");
-                        sprintln!("                        through all 11 Reg16_3 gates on the GPU,");
-                        sprintln!("                        checked bit-for-bit against the CPU scalar");
-                        sprintln!("                        implementation (imasm_core::imasm16_3).");
-                        sprintln!("                        n defaults to 100000.");
+                        sprintln!("gpu16_3 verify [n] [device]   — batch n random SIXTEEN_3 register");
+                        sprintln!("                        pairs through all 11 Reg16_3 gates on the");
+                        sprintln!("                        GPU, checked bit-for-bit against the CPU");
+                        sprintln!("                        scalar implementation (imasm_core::imasm16_3).");
+                        sprintln!("                        n defaults to 100000, device to 0.");
                     }
                 }
             }
