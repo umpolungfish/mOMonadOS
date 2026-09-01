@@ -47,6 +47,8 @@ mod interrupts;
 mod gpu_sixteen3;
 #[cfg(feature = "hosted")]
 mod gpu_native_protocol;
+#[cfg(feature = "hosted")]
+mod gpu_catalog_crystal;
 mod frob_verify;
 mod imas_ig;
 mod aleph;
