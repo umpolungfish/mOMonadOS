@@ -6,13 +6,38 @@
 //! That ob3ect's word `⊢⊣≻⋈∈⊤⊥⊞∋⊙≺⊡⋈≻∈⊤⊥∋⊙⊡⊣` closes (tri-ancestral T) but
 //! its own `banked_count_check` failed: 4 units cleared in the open at step
 //! 11, the `≺` step it had already, independently, named "hardware-locked
-//! reverse path... blocked by topological chirality." Its own repair search
-//! (263 candidates, 8 held) found that inserting one more `∈` right after
-//! the opening `⊢` closes the exposure. This module runs that repaired
-//! word, `⊢∈⊣≻⋈∈⊤⊥⊞∋⊙≺⊡⋈≻∈⊤⊥∋⊙⊡⊣`, both as a real check against the
-//! Grammar's own instruments and as literal GPU hardware actions matching
-//! each glyph's domain_action in the ob3ect's phase_4 -- not a narrative
-//! about what a GPU-native kernel would do, an actual one launched twice.
+//! reverse path... blocked by topological chirality." A first repair
+//! (inserting one more `⊢` between `⊞` and `∋`) passed `banked_walk` and
+//! `tri_ancestral_word_verdict` and ran on the GPU for real, but a third
+//! instrument this module hadn't asked yet -- `check::word_verdict`'s
+//! `Graph::validate()`, the classic mu-circ-delta grammar check -- flagged
+//! it: that `⊢` (VINIT, zero in-arity by its own contract) sits between two
+//! tokens in the chain, so it gets a predecessor regardless, a real wiring
+//! violation neither of the first two instruments can see because neither
+//! asks about arity. `imasm_core::lattice_flow::candidate_holds` now
+//! requires all three. Reran the ob3ect's repair search on the ORIGINAL
+//! word with the corrected instrument: no single-glyph insertion survives
+//! (264 tried, exhaustive, zero), but permutation repairs do. This module
+//! runs the cheapest one, swapping `⊣` and `∋` (positions 1 and 8): same
+//! multiset of tokens as the original, no insertion, verified against all
+//! three instruments below, not trusted from a search report.
+//!
+//! `check::word_verdict` on this word reads B, ClosureState::Open, not a
+//! clean T -- a real, different answer from tri_ancestral's T, and both are
+//! correct for what they ask. `check`'s pairing is a plain left-to-right
+//! stack with no wraparound; `tri_ancestral_word_verdict`'s is cyclic, the
+//! word read as a ring. The fork this swap leaves at position 4 reconnects
+//! under the cyclic reading and doesn't under the linear one. That is the
+//! two instruments asking genuinely different questions, not one of them
+//! being wrong, and it is why `candidate_holds` only requires `validate()`
+//! to be empty (no grammar violation) rather than requiring a clean T from
+//! `check` too.
+//!
+//! The per-glyph GPU actions below (and in `gpu_native_cycle.rs`) key off
+//! token IDENTITY, not position, so the swap changes what step numbers 2
+//! and 9 mean against the ob3ect's own phase_4 table (the boundary-anchor
+//! action now sits where the rejoin action used to, and vice versa) without
+//! changing what device work actually runs for either glyph.
 
 use alloc::format;
 use alloc::string::String;
@@ -23,17 +48,7 @@ use cudarc::nvrtc::compile_ptx;
 use imasm_core::imasm16_3::{join_c, join_t, leq_c, leq_i, leq_t, meet_c, meet_t, Reg16_3};
 use imasm_core::lattice_flow::{banked_walk, tri_ancestral_word_verdict};
 
-/// `kernel_repairs.holds[0]` (insert a second `∈` after `⊢`) does NOT
-/// actually hold: checked live below against `tri_ancestral_word_verdict`,
-/// it flips the word from T to B, because the second `∈` has no matching
-/// `∋` to pair with and dangles -- true of every `∈`-insertion candidate in
-/// that list by simple count (2 opens, 1 close balances under no cyclic
-/// rotation). The repair search only checked `banked_walk`, never
-/// tri-ancestral balance, so it never saw this. The one candidate that
-/// isn't an `∈` insertion -- `⊢` inserted between `⊞` and `∋` -- doesn't
-/// touch the fork/fuse count, and is used below, verified the same way
-/// before anything runs on the GPU, not trusted from the JSON.
-pub(crate) const PROTOCOL_WORD: &str = "⊢⊣≻⋈∈⊤⊥⊞⊢∋⊙≺⊡⋈≻∈⊤⊥∋⊙⊡⊣";
+pub(crate) const PROTOCOL_WORD: &str = "⊢∋≻⋈∈⊤⊥⊞⊣⊙≺⊡⋈≻∈⊤⊥∋⊙⊡⊣";
 
 /// Persists only for this boot -- the same scope every other per-boot
 /// invariant in this kernel already has (the TORUS winding stats, the
