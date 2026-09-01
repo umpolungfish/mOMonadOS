@@ -98,6 +98,16 @@ The kernel can navigate between 12 dialects with different structural rulesets, 
 
 `vox run <file> [--argv a,b]` lifts a real ELF or PE binary and runs it as an actual process, for real: `vox_core::imasm_module::emit` produces the payload-carrying twelve-glyph module (each glyph plus its actual registers, immediates, and memory operands, not just the bare structural word `weight`/`banked`/`cycle`/`imasm derive` read), and `vox_core::imasm_vm::Machine` interprets it with genuine registers, byte-addressed memory, flags, and ALU semantics. It lays out a real `argv`/`envp`/`auxv` stack the way the psABI guarantees at process entry and runs from the file
 
+### GPU Acceleration
+
+The hosted build carries a full CUDA realization of the SIXTEEN_3 trilattice and the kernel operations built on it, not a numeric stand-in workload. `Reg16_3` (four bools over the lanes T, F, t, f) packs into one byte per register on device, and every gate — `union, meet_t, join_t, meet_c, join_c, truth_swap, info_swap, invol, leq_i, leq_t, leq_c, engagr` — runs as a fixed, branch-free per-lane kernel, checked bit-for-bit against the CPU `imasm_core` implementation it is a batched port of.
+
+`gpu16_3 verify` cross-checks all twelve gates against the CPU at up to 10⁹ registers per gate, 12 billion checks, zero mismatches. `gpu_sixteen3_tensor_kernel` runs the trilattice's split/rejoin/chain protocol shape (three real gates chained: union → meet_t → truth_swap) with verification moved entirely onto the device — an independently-written second kernel cross-checks every result via on-device atomic counters, and a fixed 10,000-entry sample is still checked directly against the CPU as ground truth. Full scaling data and chart: `measurements/gpu_sixteen3_tensor_kernel_scaling.png`. Final result: 425x wall-clock speedup over the reference (host-verified, host-generated) implementation at n=10⁹.
+
+`gpu_crystal_full_space` verifies the entire 17,280,000-address Crystal round-trips (decode then re-encode) on device, cross-checked against 2.16 million independent CPU samples. `gpu_catalog_crystal` and `gpu_imasm_cycle` batch address computation and the full tuple↔word round trip for the live catalog. `gpu_native_cycle` runs the GPU-native-build ob3ect's own protocol word one glyph per tick (THINK→ACT→OBSERVE→UPDATE), a real device action per token. `gpu_ipc_no_serialization` measures direct device-memory access against JSON deserialization on the same catalog data.
+
+A distinct build, `G-mOMonadOS` (sibling directory), makes the GPU path the default and only mode rather than an opt-in feature — see its own README.
+
 ### Distributable Binaries  
 
 The hosted REPL (`--features hosted`) is a normal userspace executable and builds natively for Linux, Windows, and macOS:
@@ -125,6 +135,16 @@ vox run <file> [--argv a,b]
                  → run it as a real process: real argv/envp/auxv, real syscalls
 vox run <sym> <file> [--args a,b]
                  → call one function directly, no process
+gpu16_3 verify [n] [device]
+                 → all 12 SIXTEEN_3 gates, batched on GPU, checked vs CPU
+gpu_sixteen3_tensor_kernel [n]
+                 → chained union->meet_t->truth_swap, split/rejoin protocol shape
+gpu_native run/run_real/run_chained/run_cycle [n]
+                 → the GPU-native-build ob3ect's protocol word, several ways
+gpu_catalog_crystal / gpu_imasm_cycle / gpu_crystal_full_space
+                 → catalog and Crystal address-space verification on GPU
+gpu_ipc_no_serialization
+                 → direct device memory vs JSON deserialization, measured
 ```
 
 ### Why This Matters  
