@@ -93,17 +93,17 @@ def main():
     if args.limit:
         entries = entries[: args.limit]
 
-    seen, rows, skipped, collided = set(), [], [], []
+    seen, rows, skipped = set(), [], []
     for e in entries:
-        name = e.get("name", "").strip().lower()
+        name = e.get("name", "").strip()
         if not name:
             continue
         if name in seen:
-            # Two entries whose names differ only in case. They are distinct
-            # entries with distinct tuples, so keeping the first silently drops
-            # a real one. Say so; which of them should keep the name is a
-            # determination about the entries, not something to guess here.
-            collided.append(e.get("name", ""))
+            # A true exact-name duplicate (same string, same case) -- keep
+            # the first, drop the rest, same as always. Two entries whose
+            # names differ only in case are NOT this: each keeps its own
+            # original-case name below and both are emitted as distinct
+            # entries, addressed as told.
             continue
         try:
             prims = [pick(e[s], s, vmap) for s in SLOTS]
@@ -117,11 +117,6 @@ def main():
         print("%d entries skipped for unmapped glyphs; first few:" % len(skipped))
         for n, why in skipped[:5]:
             print("   ", n, "--", why)
-    if collided:
-        print("%d entries dropped — name collides case-insensitively with one "
-              "already taken:" % len(collided))
-        for n in collided:
-            print("   ", n)
 
     body = []
     for name, desc, p in rows:

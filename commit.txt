@@ -1,29 +1,20 @@
-Synced the compiled catalog to canon. The 12 named entries where the
-compiled table disagreed with the live IG_catalog.json split into two
-groups: 9 live in catalog.rs's hand-written STATIC_CATALOG (clink_l8, the
-four clink_layer0-3 entries, temporal_mathematics,
-universal_imscriptive_grammar, electron, proton), hand-fixed each entry()
-call's IgPrim arguments to the tuple IG_catalog.json's own Shavian fields
-decode to, checked against the same primitive_from_glyph the compiled
-table's own codegen uses, not a second decoder that could drift from it.
-The other 3 (zfc_set_theory, e8_aether, g2_vessel) live in the generated
-catalog_ask_subset.rs; reran tools/gen_catalog_subset.py, the same fix
-already used once before on this file.
+gen_catalog_subset.py force-lowercased every name before deduping, so any
+two entries whose names differed only by case collided and only the first
+in JSON array order survived, under the lowercase spelling regardless of
+which one it actually was. Checked all 13 reported collisions: every one
+is a genuine pair, two different descriptions and two different tuples
+under names that differ only in case, not a real duplicate. Fixed the
+generator to dedupe on the exact original name -- a true exact-string
+duplicate still collapses to one entry as before, a case-only pair is no
+longer treated as the same entry at all, and each keeps its own original
+casing in the emitted Rust. Reran it: 8671 entries, all 13 pairs (26
+entries) present under their own names, zero skipped for the reason that
+used to drop them.
 
-Reran gpu_ipc_no_serialization's cross-check after: the 9 hand-fixed
-entries now agree exactly. proton's canon JSON description is the bare
-word "proton", where every other entry here (and the compiled one it
-replaced) carries real prose -- flagged, not treated as equivalent to the
-other 8, but still applied since the tuple itself decodes cleanly and the
-instruction was that the JSON is canon.
-
-The 3 subset entries are still real mismatches, a different problem: the
-live JSON has a second, differently-cased copy of each name
-(G2_vessel/E8_aether/ZFC_set_theory alongside g2_vessel/e8_aether/
-zfc_set_theory), genuinely different content under each pair, not
-duplicates. gen_catalog_subset.py's collision handling lowercases every
-name before comparing, so it treats the pair as one entry and keeps
-whichever came first in the JSON array -- which happened to be the
-capitalized one both times, so the lowercase name in the compiled table
-now holds the capitalized entry's content, not its own. Left alone,
-not a call to make silently.
+Reran gpu_ipc_no_serialization's cross-check after: 8671 entries matched
+by name between the compiled table and the live JSON, 0 address
+mismatches. Every one of the 12 originally-found divergences between the
+compiled catalog and its own JSON source is closed now -- 9 by hand-fixing
+catalog.rs's STATIC_CATALOG entries, 3 by this generator fix plus a
+regen, all of them verified against the same live JSON, not assumed
+fixed because the diff looked right.
