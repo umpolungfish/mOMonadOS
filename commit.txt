@@ -1,34 +1,30 @@
-The SIXTEEN_3 trilattice's register gates now run batched on GPU, checked
-bit-for-bit against the CPU implementation they're a port of, not assumed
-correct because they compiled.
+Built the GPU-native-build-of-mOMonadOS ob3ect for real: new module
+gpu_native_protocol.rs runs its repaired protocol word as actual GPU
+hardware actions, not a description of what one would do.
 
-Reg16_3 (imasm_core::imasm16_3) is a plain 4-bool tuple over the lanes
-[T, F, t, f], and every op on it -- union, meet_t, join_t, meet_c, join_c,
-leq_i, leq_t, leq_c, truth_swap, info_swap, invol -- is a fixed,
-data-independent per-lane bitwise op or permutation, never a branch on the
-value's content. That's a fixed-width elementwise/permute kernel, so it
-batches onto GPU as one kernel launch over N registers instead of N
-sequential scalar calls. New module `src/gpu_sixteen3.rs` (hosted-only,
-gated the same way live_hud already gates its own std::thread use) carries
-three CUDA kernels, compiled at runtime via NVRTC (cudarc, dynamic loading,
-no build-time link requirement): one for the five binary gates, one for the
-three lane-swaps, one for the three order checks, each register packed as
-a single byte.
+That ob3ect's own word closes (tri-ancestral T) but its own banked_count_check
+failed at step 11, the ≺ step it had already, independently, named
+"hardware-locked reverse path... blocked by topological chirality." Its
+repair search found 8 candidates and marked all 8 as holding. Checked the
+first one live against tri_ancestral_word_verdict before writing a line of
+GPU code and it does not actually hold: inserting a second ∈ with nothing
+to pair it fixes the banked count and breaks the fork/fuse balance, flipping
+the verdict from T to B. True of all 7 ∈-insertion candidates on the list by
+simple count, 2 opens against 1 close balances under no cyclic rotation, and
+the repair search never checked for it because it only ever asked
+banked_walk. The one candidate that isn't an ∈ insertion -- ⊢ inserted
+between ⊞ and ∋ -- doesn't touch the fork/fuse count. Checked that one
+too, live: T and banked_ok both hold.
 
-`gpu16_3 verify [n]` runs all eleven gates on n random register pairs once
-on the GPU and once on the CPU scalar functions and reports where, if
-anywhere, they disagree. Ran it at n=1,000,000 (11 million checks, RTX
-4070, under a second) and n=20,000,000 (220 million checks, ~2 seconds):
-zero mismatches both times. Bare-metal build (no `hosted` feature) still
-compiles clean -- cudarc is an optional dependency gated into `hosted`
-only, so no_std never sees it. Full test suite: 259 passed, 0 failed.
+That word is what actually runs now. Two passes, each a real CUDA kernel
+launch where every thread branches on its own lane parity (∈, real
+divergence, not simulated), both arms' counts read back un-reduced (⊞,
+literally holding both rather than collapsing to one bit), then a real
+attempt to invert the aggregate back to the per-lane assignment (≺) that
+is provably blocked whenever thread count exceeds 2 -- the aggregate has
+strictly less information than what produced it, demonstrated rather than
+asserted -- and a monotonic, never-decremented counter (⊡) closing each
+pass. Ran it at a million threads per pass on the RTX 4070: exact 500000/500000
+split both passes, both instrument checks held before anything launched.
 
-This grew out of checking whether the trilattice's own catalog entry
-(`sixteen_3_trilattice`) sits close to `real_swendsen_kernel` /
-`ising_navigator`, the two entries in this catalog that already name a
-real CUDA kernel as their implementation. The tuples share only 3 of 12
-axes, genuinely different objects, but the one shared axis that bears on
-whether something belongs on a GPU -- Stoichiometry, both reading "many
-identical" -- matched. Minted as its own ob3ect first (`sixteen3_gpu_tensor_kernel`,
-grounded, tri-ancestral T, tier O2dag) before writing the kernel, in the
-ob3ect repo, not this one.
+Full test suite: 259 passed, 0 failed. Bare-metal build still compiles clean.
