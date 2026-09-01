@@ -1,30 +1,30 @@
-Built the GPU-native-build-of-mOMonadOS ob3ect for real: new module
-gpu_native_protocol.rs runs its repaired protocol word as actual GPU
-hardware actions, not a description of what one would do.
+Built gpu_native_cycle.rs, phase_6 of the GPU-native-build ob3ect: a real
+THINK->ACT->OBSERVE->UPDATE tick loop, one glyph of the protocol word per
+tick instead of the two undifferentiated passes run/run_real/run_chained
+already used. Each tick's ACT is a real device action keyed on the token,
+not a log line describing one: VINIT allocates and drops a buffer, TANCH
+is a real stream barrier, AFWD/CLINK launch a small per-thread kernel,
+FSPLIT launches the divergence kernel and holds the counts, EVALT/EVALF
+read the held arms, FFUSE clears them, IFIX increments the append-only
+winding invariant. Reports two instruments on the word before running
+anything, named separately rather than folded together: tri_ancestral_
+word_verdict (the existing gate) and check::word_verdict, the classic
+mu-circ-delta closure condition, which nothing here had asked this word
+about before. Ran live on the RTX 4070, 22 real ticks.
 
-That ob3ect's own word closes (tri-ancestral T) but its own banked_count_check
-failed at step 11, the ≺ step it had already, independently, named
-"hardware-locked reverse path... blocked by topological chirality." Its
-repair search found 8 candidates and marked all 8 as holding. Checked the
-first one live against tri_ancestral_word_verdict before writing a line of
-GPU code and it does not actually hold: inserting a second ∈ with nothing
-to pair it fixes the banked count and breaks the fork/fuse balance, flipping
-the verdict from T to B. True of all 7 ∈-insertion candidates on the list by
-simple count, 2 opens against 1 close balances under no cyclic rotation, and
-the repair search never checked for it because it only ever asked
-banked_walk. The one candidate that isn't an ∈ insertion -- ⊢ inserted
-between ⊞ and ∋ -- doesn't touch the fork/fuse count. Checked that one
-too, live: T and banked_ok both hold.
-
-That word is what actually runs now. Two passes, each a real CUDA kernel
-launch where every thread branches on its own lane parity (∈, real
-divergence, not simulated), both arms' counts read back un-reduced (⊞,
-literally holding both rather than collapsing to one bit), then a real
-attempt to invert the aggregate back to the per-lane assignment (≺) that
-is provably blocked whenever thread count exceeds 2 -- the aggregate has
-strictly less information than what produced it, demonstrated rather than
-asserted -- and a monotonic, never-decremented counter (⊡) closing each
-pass. Ran it at a million threads per pass on the RTX 4070: exact 500000/500000
-split both passes, both instrument checks held before anything launched.
-
-Full test suite: 259 passed, 0 failed. Bare-metal build still compiles clean.
+Asking that second instrument surfaced a real defect in the "repaired"
+protocol word this file already shipped: check::word_verdict came back F,
+not because of anything about closure, because inserting VINIT (zero
+in-arity by its own contract) between ENGAGR and FFUSE gives it a
+predecessor, a genuine grammar violation neither of the other two
+instruments this file already checked can see. Fixed at the source
+(imasm_core::lattice_flow::candidate_holds now requires all three), then
+reran the ob3ect's repair search on the original unrepaired word with the
+corrected instrument. No single-glyph insertion satisfies all three --
+exhaustively checked, 264 candidates, zero survive, a real result, not a
+search gap. 19 permutation-based repairs do, at crystal address 16404190
+and 16144989, edit distance 2 each. Left PROTOCOL_WORD as it stood pending
+a decision on whether a permutation repair -- which moves two existing
+glyphs rather than adding one -- is acceptable against the ob3ect's own
+phase_4 step-by-step domain_action table, since a swap changes what two
+existing step numbers mean where an insertion would not have.

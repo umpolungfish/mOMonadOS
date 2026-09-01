@@ -51,6 +51,8 @@ mod gpu_native_protocol;
 mod gpu_catalog_crystal;
 #[cfg(feature = "hosted")]
 mod gpu_imasm_cycle;
+#[cfg(feature = "hosted")]
+mod gpu_native_cycle;
 mod frob_verify;
 mod imas_ig;
 mod aleph;

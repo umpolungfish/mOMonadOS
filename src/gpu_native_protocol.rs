@@ -33,13 +33,13 @@ use imasm_core::lattice_flow::{banked_walk, tri_ancestral_word_verdict};
 /// isn't an `∈` insertion -- `⊢` inserted between `⊞` and `∋` -- doesn't
 /// touch the fork/fuse count, and is used below, verified the same way
 /// before anything runs on the GPU, not trusted from the JSON.
-const PROTOCOL_WORD: &str = "⊢⊣≻⋈∈⊤⊥⊞⊢∋⊙≺⊡⋈≻∈⊤⊥∋⊙⊡⊣";
+pub(crate) const PROTOCOL_WORD: &str = "⊢⊣≻⋈∈⊤⊥⊞⊢∋⊙≺⊡⋈≻∈⊤⊥∋⊙⊡⊣";
 
 /// Persists only for this boot -- the same scope every other per-boot
 /// invariant in this kernel already has (the TORUS winding stats, the
 /// crystal address counters). "Permanent, append-only" means never
 /// decremented within a run, not surviving a reboot.
-static WINDING_INVARIANT: AtomicU64 = AtomicU64::new(0);
+pub(crate) static WINDING_INVARIANT: AtomicU64 = AtomicU64::new(0);
 
 /// One warp divergence + sync barrier, matching steps 5-9 (`∈⊤⊥⊞∋`) or
 /// 15-18 (`∈⊤⊥∋`): every thread branches on its own lane parity into a
@@ -48,7 +48,7 @@ static WINDING_INVARIANT: AtomicU64 = AtomicU64::new(0);
 /// divergence -- `threadIdx.x % 2` is a real per-thread branch, and the two
 /// counters are the real, un-reduced record of which arms fired, the ⊞
 /// step's "holds both simultaneously" made literal.
-const DIVERGE_SRC: &str = r#"
+pub(crate) const DIVERGE_SRC: &str = r#"
 extern "C" __global__ void diverge_count(
     unsigned long long *truth_count, unsigned long long *falsity_count,
     const unsigned long long n)

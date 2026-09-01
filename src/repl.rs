@@ -1262,6 +1262,10 @@ pub fn repl(k: &mut Kernel) {
                         let n: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(1_000_000);
                         sprintln!("{}", crate::gpu_native_protocol::run_chained(n));
                     }
+                    "run_cycle" => {
+                        let n: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(1024);
+                        sprintln!("{}", crate::gpu_native_cycle::run(n));
+                    }
                     _ => {
                         sprintln!("gpu_native run [n]        — run the repaired GPU-native-build ob3ect");
                         sprintln!("                             protocol word: checks it against the");
@@ -1279,6 +1283,12 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("                             into ONE kernel launch instead of 11, over");
                         sprintln!("                             n register pairs, each checked against the");
                         sprintln!("                             CPU. n defaults to 1000000.");
+                        sprintln!("gpu_native run_cycle [n]   — phase_6's perpetual THINK/ACT/OBSERVE/UPDATE");
+                        sprintln!("                             cycle: one glyph of the protocol word per");
+                        sprintln!("                             tick, each a real device action. Reports");
+                        sprintln!("                             both check::word_verdict and the tri-");
+                        sprintln!("                             ancestral reading before running. n threads");
+                        sprintln!("                             per device-touching tick, defaults to 1024.");
                     }
                 }
             }
