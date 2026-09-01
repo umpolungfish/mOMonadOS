@@ -140,7 +140,7 @@ mod quadratic;
 mod dqi;
 mod yz;
 mod yz_list;
-mod shor_sim;
+mod shor_qft;
 mod fde;
 mod rsa_decrypter;
 mod combo;

@@ -1,4 +1,4 @@
-//! shor_sim.rs — Shor's period-finding, run on a real complex-amplitude
+//! shor_qft.rs — Shor's period-finding, run on a real complex-amplitude
 //! statevector, not asserted from a formula.
 //!
 //! Context for why this file exists: `belnap_shor.rs`'s header claims
@@ -263,7 +263,7 @@ pub fn simulate_shor(a: u64, n_val: u64, n_qubits: usize) -> Result<ShorSimResul
 pub fn report(result: &ShorSimResult) -> String {
     let mut out = String::new();
     out.push_str(&format!(
-        "shor_sim: a={}, N={}, {} index qubits (register size {})\n",
+        "shor_qft: a={}, N={}, {} index qubits (register size {})\n",
         result.a, result.n_val, result.n_qubits, result.register_size
     ));
     out.push_str(&format!("  true period (classical ground truth): {}\n", result.true_period));
@@ -296,10 +296,10 @@ pub fn report(result: &ShorSimResult) -> String {
     out
 }
 
-pub fn repl_shor_sim(args: &[&str]) {
+pub fn repl_shor_qft(args: &[&str]) {
     if args.is_empty() || args[0] == "help" {
-        sprintln!("shor-sim — Shor's period-finding on a real complex-amplitude statevector simulation");
-        sprintln!("  shor-sim run <a> <N> <qubits>   full pipeline: superposition, ModExp, measure, QFT, continued fractions, factor");
+        sprintln!("shor-qft — Shor's period-finding on a real complex-amplitude statevector simulation");
+        sprintln!("  shor-qft run <a> <N> <qubits>   full pipeline: superposition, ModExp, measure, QFT, continued fractions, factor");
         sprintln!("  qubits capped at 14 (register size 16384) -- O(M^2) direct DFT, stays a demo not a wait");
         sprintln!("  classic worked examples: a=7 N=15, a=2 N=21, a=2 N=35, a=8 N=21");
         return;
@@ -311,9 +311,9 @@ pub fn repl_shor_sim(args: &[&str]) {
             let qubits: usize = args.get(3).and_then(|s| s.parse().ok()).unwrap_or(8);
             match simulate_shor(a, n_val, qubits) {
                 Ok(result) => sprintln!("{}", report(&result)),
-                Err(e) => sprintln!("shor-sim: {}", e),
+                Err(e) => sprintln!("shor-qft: {}", e),
             }
         }
-        other => sprintln!("shor-sim: unknown subcommand '{}' (try 'shor-sim help')", other),
+        other => sprintln!("shor-qft: unknown subcommand '{}' (try 'shor-qft help')", other),
     }
 }

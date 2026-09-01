@@ -1,11 +1,69 @@
-Updated the README. It had nothing on any of the GPU work: no
-gpu_16_3/gpu_sixteen3_tensor_kernel/gpu_native/gpu_catalog_crystal/
-gpu_imasm_cycle/gpu_crystal_full_space/gpu_ipc_no_serialization commands
-in the REPL list, no mention that the trilattice's full algebra runs on
-CUDA now, verified at billion-register scale against the CPU. Added a
-GPU Acceleration section stating what's real: all twelve SIXTEEN_3 gates
-cross-checked at 10^9 registers, the tensor kernel's 425x speedup over
-the reference implementation, full Crystal address-space verification,
-the catalog round trip, the ipc measurement. Added the REPL commands.
-Pointed to G-mOMonadOS, the distinct build where this is the default
-mode instead of an opt-in feature.
+Lando asked to show algebraic (true quantum) advantage -- the case
+neither DQI (turned out classical) nor the YZ separation (real, but
+structureless by the paper's own title) actually is. Checked what
+already existed in the codebase for this before writing anything new.
+
+Traced belnap_shor.rs's header claim by hand first: "period r is encoded
+in the 2:1 coherence cost ratio." The register always starts classical
+(all-T), Hadamard costs 1 per qubit regardless of content, B-bias
+measurement costs 2 per qubit, T-bias costs 1 per qubit -- so
+b_meas_only=2n and t_meas_only=n for any n, any a, any N, giving
+ratio=2n/n=2.0 identically. The actual period is computed separately by
+a classical brute-force walk (classical_period / count_distinct_outputs)
+and reported next to that unrelated constant. Not building on it.
+qft.rs only builds gate-count circuit structure, no amplitudes.
+period_finding_ecdlp.rs takes the measured phase as a given input and
+does real, correct classical post-processing on it, but never derives
+that phase from a simulated quantum state.
+
+Added shor_sim.rs: the missing half, a real complex-amplitude simulation
+of Shor's period-finding circuit. Uniform superposition plus modular
+exponentiation as a basis-state permutation plus a real projective
+measurement collapse onto one output branch has one exact closed form --
+equal amplitude on every index x whose a^x mod N lands on the observed
+value, zero elsewhere -- computed directly rather than gate by gate.
+Applied the QFT as the exact unitary DFT on what's left (reused
+fibonacci_qc::Complex rather than writing a second complex-number type).
+Read the resulting probability distribution, extracted peaks, ran
+continued fractions, recovered the period, factored N via gcd.
+
+First run showed the real physics working: for a=7, N=15 (period 4,
+register 256), the four peaks landed at k=0,64,128,192 -- exactly
+2^8/4 apart, k/M*r landing on exact integers. Genuine interference,
+not asserted.
+
+But continued-fraction extraction failed on every one of the four
+textbook cases except one. Two real bugs, both caught by reading the
+actual output rather than trusting the code:
+
+1. top_peaks.first() picks whichever peak sorts first among exact ties.
+   k=0 is always a peak (every periodic comb has a zero-frequency
+   component) and always uninformative -- its convergent is the trivial
+   0/1. With several peaks tied at the same probability, k=0 often sorted
+   first, handing the extractor the one peak with no period information
+   in it. Fixed by trying every top peak in turn, skipping k=0, instead
+   of stopping at whichever peak happened to sort first.
+
+2. The convergents() function's seed values for the continued-fraction
+   recurrence had p and q each set to their own two values swapped.
+   Traced convergents(64, 256) by hand against the standard recurrence
+   (p_{-2}=0, p_{-1}=1, q_{-2}=1, q_{-1}=0): the correct sequence is
+   (0,1) then (1,4), matching k/m=64/256=1/4 exactly. The code as
+   written produced (1,0) then (4,1) -- every convergent's reciprocal.
+   Fixed the seed values; confirmed the fix against that exact case.
+
+With both fixed, all four classic textbook cases (a=7,N=15; a=2,N=21;
+a=2,N=35; a=8,N=21) go the full distance: correct period extracted,
+correct factors recovered, verified by direct multiplication against N.
+Also ran N=33 (period found, factoring declined on a genuine gcd
+degeneracy -- a real, expected outcome of the actual algorithm, not a
+bug) and N=91 (full success), and pushed to the 14-qubit cap (register
+16384) to confirm it still completes in a few seconds.
+
+Wired as `shor-sim run <a> <N> <qubits>`. Capped at 14 qubits since the
+QFT here is a direct O(M^2) unitary matrix application -- exponential in
+the qubit count, which is exactly why a real quantum device would have
+genuine advantage at a scale this simulation cannot reach; the small
+scale is what makes it checkable at all, not a limitation being hidden.
+Ported to G-mOMonadOS and reran two of the cases there, identical
+output.
