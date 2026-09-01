@@ -43,6 +43,8 @@ mod interrupts;
 #[cfg(feature = "hosted")]
 #[path = "interrupts_hosted.rs"]
 mod interrupts;
+#[cfg(feature = "hosted")]
+mod gpu_sixteen3;
 mod frob_verify;
 mod imas_ig;
 mod aleph;

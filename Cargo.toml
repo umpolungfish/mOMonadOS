@@ -9,6 +9,9 @@ num-bigint = { version = "0.4", default-features = false }
 num-traits = { version = "0.2", default-features = false, features = ["libm"] }
 imasm_core = { path = "../MoDoT/imasm_core", default-features = false }
 vox_core = { path = "../Vox", package = "vox", default-features = false }
+# Hosted-only: batched SIXTEEN_3 gates on GPU (gpu_sixteen3.rs). Optional so
+# the bare-metal build never sees it -- no_std has nothing to link this to.
+cudarc = { version = "=0.19.9", optional = true, default-features = false, features = ["driver", "nvrtc", "cuda-12040", "dynamic-loading", "std"] }
 
 [[bin]]
 name = "momonados"
@@ -27,7 +30,7 @@ path = "src/lib.rs"
 # kernel's own code is unchanged: 67 of its 71 modules are already portable
 # no_std Rust, and only serial, interrupts, the entry point and one halt in the
 # REPL touch the machine.
-hosted = []
+hosted = ["dep:cudarc"]
 
 [profile.dev]
 panic = "abort"

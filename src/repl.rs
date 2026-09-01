@@ -1246,6 +1246,23 @@ pub fn repl(k: &mut Kernel) {
                     }
                 }
             }
+            #[cfg(feature = "hosted")]
+            "gpu16_3" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "verify" => {
+                        let n: usize = parts.next().and_then(|s| s.parse().ok()).unwrap_or(100_000);
+                        sprintln!("{}", crate::gpu_sixteen3::verify(n));
+                    }
+                    _ => {
+                        sprintln!("gpu16_3 verify [n]   — batch n random SIXTEEN_3 register pairs");
+                        sprintln!("                        through all 11 Reg16_3 gates on the GPU,");
+                        sprintln!("                        checked bit-for-bit against the CPU scalar");
+                        sprintln!("                        implementation (imasm_core::imasm16_3).");
+                        sprintln!("                        n defaults to 100000.");
+                    }
+                }
+            }
             "oneshot_prime_winder" => {
                 let arg = parts.next().unwrap_or("");
                 crate::oneshot_prime_winder::repl_oneshot_prime_winder(&[arg]);
