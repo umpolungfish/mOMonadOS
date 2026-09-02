@@ -325,78 +325,14 @@ pub fn find(n: &str) -> String {
     }
 }
 
-/// a / b, both nonzero, Euclid's algorithm on BigUint.
-fn big_gcd(mut a: BigUint, mut b: BigUint) -> BigUint {
-    while !b.is_zero() {
-        let t = b.clone();
-        b = &a % &b;
-        a = t;
-    }
-    a
-}
-
-/// Brent's polynomial x -> x^2 + c mod n.
-fn brent_f(x: &BigUint, c: &BigUint, n: &BigUint) -> BigUint {
-    let x2 = (x * x) % n;
-    (&x2 + c) % n
-}
-
-/// One Brent's-rho walk with a fixed (c, x0) seed. Returns a nontrivial
-/// factor of n if the walk crosses one within max_power steps, None
-/// otherwise. This has no guaranteed success bound -- that is Brent's
-/// rho's real, known shape, not a defect to hide -- so a walk that
-/// exhausts its steps reports None plainly rather than assuming n is
-/// prime because this one seed failed to split it.
-///
-/// x is the tortoise, fixed for the whole doubling round r; y is the hare,
-/// walked r steps ahead of x and compared against it in batches of m,
-/// accumulating the product of differences mod n so one gcd covers the
-/// whole batch. A batch gcd landing on n itself (the product folded in
-/// more than one factor's collision at once) is not a dead end -- it is
-/// recovered by re-walking that same batch from its start (`ys`) one step
-/// at a time, gcd on each step, until the exact collision point splits
-/// out the real factor.
+/// One Brent's-rho walk with a fixed (c, x0) seed, batch size 128. Real
+/// engine lives in functional_graph.rs (`pollard_rho_brent`) now -- this
+/// file no longer carries its own private copy of the same walk. Returns a
+/// nontrivial factor of n if the walk crosses one within max_power doubling
+/// rounds, None otherwise -- no guaranteed success bound, Brent's rho's
+/// real, known shape, not a defect to hide.
 fn brent_walk(n: &BigUint, c: u64, x0: u64, max_power: u64) -> Option<BigUint> {
-    let c = BigUint::from(c);
-    let one = BigUint::one();
-    let mut x = BigUint::from(x0);
-    let mut y = x.clone();
-    let m: u64 = 128;
-    let mut r: u64 = 1;
-    let mut g = one.clone();
-    let mut q = one.clone();
-    let mut ys = y.clone();
-
-    while g.is_one() && r < max_power {
-        x = y.clone();
-        for _ in 0..r {
-            y = brent_f(&y, &c, n);
-        }
-        let mut k: u64 = 0;
-        while k < r && g.is_one() {
-            ys = y.clone();
-            let steps = m.min(r - k);
-            for _ in 0..steps {
-                y = brent_f(&y, &c, n);
-                let diff = if y > x { &y - &x } else { &x - &y };
-                q = (&q * diff) % n;
-            }
-            g = big_gcd(q.clone(), n.clone());
-            k += m;
-        }
-        r = match r.checked_mul(2) { Some(v) => v, None => break };
-    }
-
-    if &g == n {
-        loop {
-            ys = brent_f(&ys, &c, n);
-            let diff = if ys > x { &ys - &x } else { &x - &ys };
-            g = big_gcd(diff, n.clone());
-            if !g.is_one() { break; }
-        }
-    }
-
-    if !g.is_one() && &g != n { Some(g) } else { None }
+    crate::functional_graph::pollard_rho_brent(n, &BigUint::from(c), &BigUint::from(x0), 128, max_power)
 }
 
 /// The seeds a Brent's-rho split tries, each its own independent walk on

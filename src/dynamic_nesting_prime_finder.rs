@@ -69,20 +69,6 @@ fn parse_big(s: &str) -> Option<BigUint> {
     BigUint::from_str(&t).ok()
 }
 
-fn big_gcd(mut a: BigUint, mut b: BigUint) -> BigUint {
-    while !b.is_zero() {
-        let t = b.clone();
-        b = &a % &b;
-        a = t;
-    }
-    a
-}
-
-fn brent_f(x: &BigUint, c: &BigUint, n: &BigUint) -> BigUint {
-    let x2 = (x * x) % n;
-    (&x2 + c) % n
-}
-
 fn big_to_string(b: &BigUint) -> String { b.to_str_radix(10) }
 
 /// Construct the depth-d closure seed:
@@ -100,6 +86,12 @@ pub fn closure_seed(n: &BigUint, d: usize) -> BigUint {
 
 /// Brent's cycle detection with depth-bounded power budget.
 /// Higher depth = higher power budget: 2^(8+d) max steps.
+/// Real walk lives in functional_graph.rs (`pollard_rho_brent`) now -- this
+/// file no longer carries its own private copy. The old copy here
+/// truncated its per-round check at 128 steps even once `power` grew past
+/// that, silently skipping the rest of a large round; the shared engine
+/// checks the whole round in batches of 128 instead, strictly more
+/// thorough, same seed derivation and depth-bounded budget as before.
 fn brent_factor_at_depth(n: &BigUint, c: &BigUint, depth: usize) -> Option<BigUint> {
     let two = BigUint::from(2u32);
     if n % two.clone() == BigUint::zero() { return Some(two.clone()); }
@@ -107,34 +99,8 @@ fn brent_factor_at_depth(n: &BigUint, c: &BigUint, depth: usize) -> Option<BigUi
 
     let n_mod_97 = (n % BigUint::from(97u32)).to_u64().unwrap_or(0);
     let x_init = BigUint::from(2u64 + (n_mod_97 % 95));
-    let mut x: BigUint = x_init.clone();
-    let m: u64 = 128;
     let max_power: u64 = 1u64 << (8 + depth.min(20) as u64);
-    let mut power: u64 = 1;
-    #[allow(unused_assignments)] let mut y: BigUint = x.clone();
-
-    while power < max_power {
-        let mut step: u64 = 0;
-        while step < power {
-            x = brent_f(&x, c, n);
-            step += 1;
-        }
-        y = x.clone();
-        let mut j: u64 = 0;
-        let upper = power.min(m);
-        while j < upper {
-            x = brent_f(&x, c, n);
-            let diff = if x > y { &x - &y } else { &y - &x };
-            let g = big_gcd(diff, n.clone());
-            if !g.is_one() && g != *n { return Some(g); }
-            j += 1;
-        }
-        power = match power.checked_mul(2) {
-            Some(p) => p,
-            None => break,
-        };
-    }
-    None
+    crate::functional_graph::pollard_rho_brent(n, c, &x_init, 128, max_power)
 }
 
 /// Find the optimal nesting depth: minimal d at which the Brent cycle

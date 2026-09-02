@@ -14,12 +14,25 @@
 //!
 //! Two algorithms, both textbook, both here so the constant-memory one
 //! (Brent) can be checked against the two-pointer baseline (Floyd) on the
-//! same map before either is trusted: `prime_winding.rs` already carries a
-//! private Brent's-variant walk, hardwired to x^2+c mod N for factoring
-//! alone. This is the general form -- any f: u64 -> u64 -- with a third
-//! capability neither point-reading gives: `decompose` walks the WHOLE
-//! finite domain once and returns every rho-component, not just the one
-//! reached from a chosen start.
+//! same map before either is trusted. `floyd`/`brent`/`decompose` are the
+//! general form, any f: u64 -> u64, over a domain small enough to walk in
+//! full; `decompose` is the third capability neither point-reading gives,
+//! walking the WHOLE finite domain once and returning every rho-component,
+//! not just the one reached from a chosen start.
+//!
+//! `pollard_rho_brent` is the same rho-shaped-orbit phenomenon at a
+//! different scale: `prime_winding.rs` and `dynamic_nesting_prime_finder.rs`
+//! each used to carry their own private copy of Brent's-variant walk over
+//! BigUint, hardwired to x^2+c mod N for factoring. Same algorithm, same
+//! external (non-Grammar-native) technique reached for twice independently
+//! instead of once, from here. Both now call the one copy below.
+
+use alloc::string::{String, ToString};
+use alloc::vec::Vec;
+use alloc::vec;
+use alloc::format;
+use num_bigint::BigUint;
+use num_traits::{One, Zero};
 
 /// Floyd's tortoise-and-hare: the two-pointer baseline. Returns
 /// (tail_length, cycle_length) = (mu, lambda) for the orbit of x0 under f.
@@ -181,6 +194,84 @@ fn quadratic(n: u64, c: u64) -> impl Fn(u64) -> u64 {
         let n = n as u128;
         ((x * x + c) % n) as u64
     }
+}
+
+fn quadratic_big(x: &BigUint, c: &BigUint, n: &BigUint) -> BigUint {
+    let x2 = (x * x) % n;
+    (&x2 + c) % n
+}
+
+fn big_gcd(mut a: BigUint, mut b: BigUint) -> BigUint {
+    while !b.is_zero() {
+        let t = b.clone();
+        b = &a % &b;
+        a = t;
+    }
+    a
+}
+
+/// Brent's power-of-two-burst rho walk, gcd-driven: the same rho-shaped
+/// orbit `decompose` reads directly on a small domain, applied where the
+/// domain itself (mod n) is too large to walk in full. The collision this
+/// finds is not "tortoise meets hare on the same orbit mod n" -- that would
+/// need on the order of sqrt(n) steps by brute force -- it is a collision
+/// mod some unknown, much smaller prime factor p of n, surfaced the moment
+/// it happens via gcd(|hare - tortoise|, n), in around sqrt(p) steps,
+/// without n's factors ever being known in advance. This is the standard
+/// application ig-docs/functional_graph_reference.md's own closing
+/// paragraph names.
+///
+/// x is the tortoise, fixed for the whole doubling round r; y is the hare,
+/// walked r steps ahead of x and compared against it in batches of `batch`,
+/// accumulating the product of differences mod n so one gcd covers the
+/// whole batch (`batch = 1` checks every single step instead, more gcd
+/// calls, no batching at all). A batch gcd landing on n itself -- more than
+/// one collision folded into the same batch -- is recovered by re-walking
+/// that batch from its own start (`ys`), one step at a time, until the
+/// exact collision point splits out the real factor. Returns a nontrivial
+/// factor of n if the walk crosses one within max_power doubling rounds,
+/// None otherwise -- Brent's rho carries no guaranteed termination on a
+/// genuinely hard composite, and that is this walk's real, known shape,
+/// not a defect to hide.
+pub fn pollard_rho_brent(n: &BigUint, c: &BigUint, x0: &BigUint, batch: u64, max_power: u64) -> Option<BigUint> {
+    let one = BigUint::one();
+    let mut x = x0.clone();
+    let mut y = x.clone();
+    let mut r: u64 = 1;
+    let mut g = one.clone();
+    let mut q = one.clone();
+    let mut ys = y.clone();
+
+    while g.is_one() && r < max_power {
+        x = y.clone();
+        for _ in 0..r {
+            y = quadratic_big(&y, c, n);
+        }
+        let mut k: u64 = 0;
+        while k < r && g.is_one() {
+            ys = y.clone();
+            let steps = batch.min(r - k);
+            for _ in 0..steps {
+                y = quadratic_big(&y, c, n);
+                let diff = if y > x { &y - &x } else { &x - &y };
+                q = (&q * diff) % n;
+            }
+            g = big_gcd(q.clone(), n.clone());
+            k += batch;
+        }
+        r = match r.checked_mul(2) { Some(v) => v, None => break };
+    }
+
+    if &g == n {
+        loop {
+            ys = quadratic_big(&ys, c, n);
+            let diff = if ys > x { &ys - &x } else { &x - &ys };
+            g = big_gcd(diff, n.clone());
+            if !g.is_one() { break; }
+        }
+    }
+
+    if !g.is_one() && &g != n { Some(g) } else { None }
 }
 
 pub fn help() -> String {
