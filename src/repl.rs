@@ -1231,9 +1231,10 @@ pub fn repl(k: &mut Kernel) {
                     "factor" => {
                         let n_str = parts.next().unwrap_or("");
                         if n_str.is_empty() {
-                            sprintln!("prime_winding factor: usage: prime_winding factor <n>");
+                            sprintln!("prime_winding factor: usage: prime_winding factor <n> [max_power]");
                         } else {
-                            sprintln!("{}", factor(n_str));
+                            let max_power = parts.next().and_then(|s| s.parse::<u64>().ok());
+                            sprintln!("{}", factor_bounded(n_str, max_power));
                         }
                     },
                     "cycle" => sprintln!("{}", cycle()),

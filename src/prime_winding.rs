@@ -411,7 +411,7 @@ const BRENT_SEEDS: [(u64, u64); 6] = [(3, 2), (7, 5), (11, 3), (17, 7), (23, 11)
 const BRENT_MAX_POWER: u64 = 4_000_000;
 
 #[cfg(feature = "hosted")]
-fn brent_split_one(n: &BigUint) -> Option<BigUint> {
+fn brent_split_one(n: &BigUint, max_power: u64) -> Option<BigUint> {
     use std::sync::mpsc;
     use std::thread;
     let (tx, rx) = mpsc::channel();
@@ -419,7 +419,7 @@ fn brent_split_one(n: &BigUint) -> Option<BigUint> {
         let n = n.clone();
         let tx = tx.clone();
         thread::spawn(move || {
-            if let Some(f) = brent_walk(&n, c, x0, BRENT_MAX_POWER) {
+            if let Some(f) = brent_walk(&n, c, x0, max_power) {
                 let _ = tx.send(f);
             }
             // Un-joined on purpose: this walk is step-bounded so it always
@@ -433,9 +433,9 @@ fn brent_split_one(n: &BigUint) -> Option<BigUint> {
 }
 
 #[cfg(not(feature = "hosted"))]
-fn brent_split_one(n: &BigUint) -> Option<BigUint> {
+fn brent_split_one(n: &BigUint, max_power: u64) -> Option<BigUint> {
     for &(c, x0) in BRENT_SEEDS.iter() {
-        if let Some(f) = brent_walk(n, c, x0, BRENT_MAX_POWER) {
+        if let Some(f) = brent_walk(n, c, x0, max_power) {
             return Some(f);
         }
     }
@@ -447,7 +447,8 @@ fn brent_split_one(n: &BigUint) -> Option<BigUint> {
 /// step bound. The latter is pushed to `unsplit` and reported as exactly
 /// that -- a known composite this search did not finish factoring -- never
 /// silently folded into `primes`.
-fn brent_split_recursive(n: BigUint, primes: &mut Vec<BigUint>, unsplit: &mut Vec<BigUint>) {
+fn brent_split_recursive(n: BigUint, primes: &mut Vec<BigUint>, unsplit: &mut Vec<BigUint>,
+                          max_power: u64) {
     let mut stack: Vec<BigUint> = Vec::new();
     stack.push(n);
     while let Some(m) = stack.pop() {
@@ -456,7 +457,7 @@ fn brent_split_recursive(n: BigUint, primes: &mut Vec<BigUint>, unsplit: &mut Ve
             primes.push(m);
             continue;
         }
-        match brent_split_one(&m) {
+        match brent_split_one(&m, max_power) {
             Some(f) => {
                 let g = &m / &f;
                 stack.push(f);
@@ -475,7 +476,22 @@ fn brent_split_recursive(n: BigUint, primes: &mut Vec<BigUint>, unsplit: &mut Ve
 /// This is real, unbounded-precision arithmetic throughout -- closure
 /// alone never produces a divisor, so it plays no role in the search,
 /// only in confirming each candidate's primality via `is_prime`.
+///
+/// `max_power` bounds each Brent seed's walk (see `brent_walk`); `None`
+/// keeps the default `BRENT_MAX_POWER`. The bound is not optional in the
+/// sense of removable: Brent's rho carries no guaranteed termination on a
+/// genuinely hard composite, and without SOME cutoff a call on such an n
+/// would run forever with no way to ever report `unsplit`. What's
+/// adjustable is the size of that cutoff, not whether one exists.
 pub fn factor(n: &str) -> String {
+    factor_bounded(n, None)
+}
+
+/// `factor`, with the per-seed Brent step bound made explicit rather than
+/// silently defaulted, for a caller that wants to trade search depth
+/// against wall-clock time on a case the default budget resists.
+pub fn factor_bounded(n: &str, max_power: Option<u64>) -> String {
+    let max_power = max_power.unwrap_or(BRENT_MAX_POWER);
     let t = trim(n);
     let n_big: BigUint = match t.parse() {
         Ok(v) => v,
@@ -503,7 +519,7 @@ pub fn factor(n: &str) -> String {
     }
 
     if m > BigUint::one() {
-        brent_split_recursive(m, &mut primes, &mut unsplit);
+        brent_split_recursive(m, &mut primes, &mut unsplit, max_power);
     }
 
     primes.sort_unstable();
@@ -524,7 +540,7 @@ pub fn factor(n: &str) -> String {
         let rep: Vec<String> = unsplit.iter().map(|p| p.to_str_radix(10)).collect();
         out.push_str(&format!(
             "\n  └─ confirmed composite, not split by any of {} Brent seeds within {} steps each: {}",
-            BRENT_SEEDS.len(), BRENT_MAX_POWER, rep.join(" × ")
+            BRENT_SEEDS.len(), max_power, rep.join(" × ")
         ));
     }
     out

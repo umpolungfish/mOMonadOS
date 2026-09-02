@@ -188,9 +188,22 @@ pub enum Splitting {
 /// A unit is a + b*omega with a^2 + t a b - n b^2 = +-1. For fixed b this is a
 /// quadratic in a, solvable exactly, and the fundamental unit is the one with
 /// the least positive b. No continued fraction conventions are involved.
+///
+/// Unlike the Brent factoring bound, this search is guaranteed to terminate
+/// with the true answer: a fundamental unit always exists (Dirichlet's unit
+/// theorem), so an unbounded search always finds it eventually. The bound
+/// below trades that guarantee for a fixed worst-case runtime -- past it,
+/// `b` giving the fundamental unit is not confirmed absent, only not found
+/// within this many tries. `fundamental_unit_bounded` makes that budget a
+/// parameter instead of a silent default.
 pub fn fundamental_unit(f: &RealQuad) -> (i64, i64, i64) {
+    fundamental_unit_bounded(f, None)
+}
+
+/// `fundamental_unit`, with the search bound on `b` made explicit.
+pub fn fundamental_unit_bounded(f: &RealQuad, bound: Option<i64>) -> (i64, i64, i64) {
+    let bound = bound.unwrap_or(4_000_000i64);
     let (t, n) = f.omega_relation();
-    let bound = 4_000_000i64;
     let mut b = 1i64;
     while b <= bound {
         for s in [-1i64, 1i64] {
