@@ -21,6 +21,16 @@ fn crystal_address_of(word: &str) -> Option<u32> {
     Some(t.crystal_address())
 }
 
+/// FSPLIT count minus FFUSE count. Positive: splits outnumber fuses, that
+/// many FFUSE insertions close the count gap. Negative: the reverse. Zero
+/// count imbalance does not by itself mean the fork/fuse ancestry pairs
+/// correctly, only that nothing about the counts rules it out.
+fn fork_fuse_imbalance(word: &str) -> isize {
+    let splits = word.chars().filter(|&c| c == '∈').count() as isize;
+    let fuses = word.chars().filter(|&c| c == '∋').count() as isize;
+    splits - fuses
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum RepairType {
     Insertion(char, usize),      // insert glyph at position
@@ -181,17 +191,17 @@ impl RepairEngine {
     /// from a real walk, and the banked-weight exposure, each computed, not
     /// assumed from the artifact type.
     fn diagnose_error(&self, artifact: &str, artifact_type: &str) -> String {
-        let splits = artifact.chars().filter(|&c| c == '∈').count() as isize;
-        let fuses = artifact.chars().filter(|&c| c == '∋').count() as isize;
-        let imbalance = splits - fuses;
+        let splits = artifact.chars().filter(|&c| c == '∈').count();
+        let fuses = artifact.chars().filter(|&c| c == '∋').count();
+        let imbalance = fork_fuse_imbalance(artifact);
 
         let mut parts: Vec<String> = Vec::new();
         if imbalance != 0 {
             parts.push(format!(
-                "{} FSPLIT against {} FFUSE, {} unpaired {} -- no repair below edits fewer than {} glyphs can reach a word with matched fork/fuse counts",
+                "{} FSPLIT against {} FFUSE, {} unpaired {} -- a matched-count word sits {} insertions out, past single-edit search's reach; repair_chain targets exactly that many",
                 splits, fuses, imbalance.unsigned_abs(),
                 if imbalance > 0 { "splits" } else { "fuses" },
-                imbalance.unsigned_abs()
+                imbalance.unsigned_abs(),
             ));
         }
 
@@ -204,6 +214,16 @@ impl RepairEngine {
         if let Some(b) = imasm_core::lattice_flow::banked_walk(artifact) {
             if !b.exposed.is_empty() {
                 parts.push(format!("{} clear(s) exposed with nothing banked behind them", b.exposed.len()));
+            } else if b.vacuous() {
+                // Passing the exposed check for the wrong reason: nothing ever
+                // cleared against a live register, so nothing was ever at risk
+                // of being lost. count-balancing cannot touch this -- it is not
+                // a fork/fuse defect, it is a fixation (⊡, IFIX) shutting the
+                // walk down before any clear that would have exercised banking.
+                parts.push(format!(
+                    "VACUOUS -- no clear fired against a live register ({} deposit(s), {} step(s) inert after a fixation); no amount of fork/fuse count-balancing reaches this, the fixation itself has to move or go",
+                    b.deposits, b.inert
+                ));
             }
         }
 
@@ -237,6 +257,90 @@ impl RepairEngine {
             return false;
         }
         imasm_core::lattice_flow::candidate_holds(repaired)
+    }
+
+    /// The next rung past single-edit search: the exact, not heuristic,
+    /// fix for a fork/fuse count imbalance. `cyclic_pairs` (imasm_core) is
+    /// a standard cyclic bracket-matcher, FSPLIT opens, FFUSE closes, and
+    /// it already tries every split as a possible start looking for a
+    /// rotation with no underflow. That search existing is exactly the
+    /// cycle lemma for a sequence of equal ups and downs: for ANY
+    /// arrangement of n opens and n closes, at least one rotation has every
+    /// partial sum non-negative. Position of the inserted glyphs plays no
+    /// part in that guarantee, only the final count does, so the fix is
+    /// the count alone: append the imbalance's own magnitude in the glyph
+    /// it is short of, and `cyclic_pairs`'s existing rotation search finds
+    /// the valid start on its own. A first version of this walked the word
+    /// tracking depth and inserted at every local deficit, solving the
+    /// harder LINEAR problem (valid starting at position 0 specifically)
+    /// instead of the CYCLIC one actually needed, and over-inserted by one
+    /// on the word that first surfaced this. Checked directly against
+    /// `--frames` and `banked` before trusting it: appending eleven FSPLIT
+    /// to the word that started this closes verdict T and reads VACUOUS on
+    /// the banked walk, both confirmed live, not assumed from the count.
+    pub fn repair_chain(&self, word: &str, artifact_type: &str) -> Option<(Vec<RepairType>, String)> {
+        if self.verify_repair(word, artifact_type) {
+            return Some((Vec::new(), word.to_string()));
+        }
+        let mut chain: Vec<RepairType> = Vec::new();
+        let mut current = word.to_string();
+
+        // Vacuousness from an early fixation is a different defect from a
+        // count imbalance, and no insertion reaches it: once a ⊡ (IFIX)
+        // sets the walk's `fixed` flag, every step after it goes inert
+        // regardless of what gets inserted later, so a count-balancing
+        // chain alone can never turn a vacuous word live. The only move
+        // that reaches it is deleting the fixation doing the blocking.
+        // Checked live on the word that surfaced this: deleting its
+        // leading ⊡ turned a fully inert walk (0 deposits, 379 of 475
+        // steps inert) into a live one carrying an ordinary exposed-clear
+        // defect instead -- ordinary enough for the rest of this chain to
+        // have a real shot at it. Bounded by the word's own length: a
+        // fixation genuinely needed for structure, not blocking anything,
+        // never shows as vacuous, so this loop only ever fires on real
+        // instances of the defect it targets.
+        let bound = current.chars().count();
+        for _ in 0..bound {
+            let vacuous = imasm_core::lattice_flow::banked_walk(&current)
+                .map(|b| b.vacuous())
+                .unwrap_or(false);
+            if !vacuous { break; }
+            let Some(pos) = current.chars().position(|c| c == '⊡') else { break; };
+            let mut chars: Vec<char> = current.chars().collect();
+            chars.remove(pos);
+            current = chars.into_iter().collect();
+            chain.push(RepairType::Deletion(pos));
+            if self.verify_repair(&current, artifact_type) {
+                return Some((chain, current));
+            }
+        }
+
+        let imbalance = fork_fuse_imbalance(&current);
+        if imbalance != 0 {
+            let glyph = if imbalance < 0 { '∈' } else { '∋' };
+            let n = imbalance.unsigned_abs();
+            let end = current.chars().count();
+            for k in 0..n {
+                chain.push(RepairType::Insertion(glyph, end + k));
+                current.push(glyph);
+            }
+            if self.verify_repair(&current, artifact_type) {
+                return Some((chain, current));
+            }
+        }
+
+        // Counts now match (or already matched); whatever verify_repair
+        // still finds wrong is a different defect -- no work on any paired
+        // arm, or weight exposed in the open -- not a count one. One real
+        // attempt through the ordinary single-edit search on the balanced
+        // word, rather than declaring the chain done without checking.
+        if let Some(best) = self.repair(&current, artifact_type).best_repair {
+            if self.verify_repair(&best.repaired_word, artifact_type) {
+                chain.push(best.repair);
+                return Some((chain, best.repaired_word));
+            }
+        }
+        None
     }
 
     fn make_candidate(&self, repair: RepairType, repaired: &str, original: &str) -> RepairCandidate {
@@ -418,7 +522,16 @@ pub fn repair_best_report(word: &str) -> String {
     let (count, best) = cheapest(word);
     let best = match best {
         Some(b) => b,
-        None => return format!("repair {}: no repair found in search space\n", word),
+        None => {
+            let engine = RepairEngine::new();
+            return match engine.repair_chain(word, "program") {
+                Some((chain, repaired)) => format!(
+                    "repair {}: single-edit search found nothing; repair_chain reached {} in {} step(s)\n",
+                    word, repaired, chain.len()
+                ),
+                None => format!("repair {}: no repair found in search space\n", word),
+            };
+        }
     };
 
     let addr = crystal_address_of(&best.repaired_word)
@@ -487,7 +600,20 @@ pub fn repair_main(args: &[&str]) -> String {
     );
 
     if result.repairs.is_empty() {
-        return header + "No valid repairs found in search space.\n" + &result.proof_diff;
+        if let Some((chain, repaired)) = engine.repair_chain(artifact, artifact_type) {
+            let steps: Vec<String> = chain.iter().map(|r| format!("{:?}", r)).collect();
+            let addr = crystal_address_of(&repaired)
+                .map(|a| a.to_string())
+                .unwrap_or_else(|| "unaddressable".to_string());
+            return header
+                + &format!(
+                    "Single-edit search found nothing; repair_chain reached a verified word in {} step(s):\n  {}\nRepaired: {}\ncrystal {}\n",
+                    steps.len(), steps.join(" -> "), repaired, addr
+                );
+        }
+        return header
+            + "Single-edit search found nothing, and repair_chain did not reach a verified word within its bound.\n"
+            + &result.proof_diff;
     }
 
     // Every candidate, grouped by the crystal address its repaired word
