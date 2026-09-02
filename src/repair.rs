@@ -170,15 +170,53 @@ impl RepairEngine {
         }
     }
 
-    fn diagnose_error(&self, _artifact: &str, artifact_type: &str) -> String {
-        // Diagnose what's wrong with the artifact
-        match artifact_type {
-            "program" => "execution failure",
-            "proof" => "verification failure",
-            "theorem" => "type checking failure",
-            "invariant" => "invariant violation",
-            _ => "unknown error",
-        }.to_string()
+    /// Reads the actual artifact rather than returning a canned label by
+    /// type. A word this diagnosis calls "execution failure" on used to get
+    /// the same string as every other program, whether the real defect was
+    /// a fork/fuse imbalance the search below has no hope of closing in one
+    /// edit, or a single exposed clear one insertion fixes -- indistinguishable
+    /// from the message alone. Reports what's actually there: the FSPLIT/FFUSE
+    /// count imbalance (the search space needs at least that many coordinated
+    /// edits, not one, to reach a paired word at all), the closure verdict
+    /// from a real walk, and the banked-weight exposure, each computed, not
+    /// assumed from the artifact type.
+    fn diagnose_error(&self, artifact: &str, artifact_type: &str) -> String {
+        let splits = artifact.chars().filter(|&c| c == '∈').count() as isize;
+        let fuses = artifact.chars().filter(|&c| c == '∋').count() as isize;
+        let imbalance = splits - fuses;
+
+        let mut parts: Vec<String> = Vec::new();
+        if imbalance != 0 {
+            parts.push(format!(
+                "{} FSPLIT against {} FFUSE, {} unpaired {} -- no repair below edits fewer than {} glyphs can reach a word with matched fork/fuse counts",
+                splits, fuses, imbalance.unsigned_abs(),
+                if imbalance > 0 { "splits" } else { "fuses" },
+                imbalance.unsigned_abs()
+            ));
+        }
+
+        match imasm_core::lattice_flow::tri_ancestral_word_verdict(artifact) {
+            Some(v) if v != 'T' => parts.push(format!("tri-ancestral verdict {} (not T)", v)),
+            None => parts.push("does not parse as a walkable word".to_string()),
+            _ => {}
+        }
+
+        if let Some(b) = imasm_core::lattice_flow::banked_walk(artifact) {
+            if !b.exposed.is_empty() {
+                parts.push(format!("{} clear(s) exposed with nothing banked behind them", b.exposed.len()));
+            }
+        }
+
+        if parts.is_empty() {
+            return match artifact_type {
+                "program" => "execution failure",
+                "proof" => "verification failure",
+                "theorem" => "type checking failure",
+                "invariant" => "invariant violation",
+                _ => "unknown error",
+            }.to_string();
+        }
+        parts.join("; ")
     }
 
     fn verify_repair(&self, repaired: &str, _artifact_type: &str) -> bool {
