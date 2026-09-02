@@ -34,6 +34,43 @@ pub static MAIN_MENU: &[MenuItem] = &[
 
     MenuItem { name: "Proof",    cmd: "proof",    desc: "Guided proofs — walk a proof step by step on the kernel", example: "", submenu: Some(PROOF_MENU) },
     MenuItem { name: "Help",     cmd: "help",     desc: "Help system (help <topic> for details)", example: "help fibqc", submenu: None },
+    MenuItem { name: "Tools",    cmd: "tools",    desc: "Real commands with no prior menu entry: opi, nested factoring, braids, GPU batches, fuzzing, provenance", example: "help opi", submenu: Some(TOOLS_MENU) },
+];
+
+// Every item below is a genuine top-level REPL command (checked against
+// every arm of `match cmd` in repl.rs, not assumed) that had never been
+// reachable from `help` or `help <keyword>` before this menu existed --
+// present in the dispatch, absent from both this tree and the separate
+// `search_commands` fallback list, so a user could only ever find them by
+// already knowing the exact string to type.
+pub static TOOLS_MENU: &[MenuItem] = &[
+    MenuItem { name: "opi",                       cmd: "opi",                       desc: "DQI's Optimal Polynomial Intersection: exact Lemma 9.2 eigenvalue + m to p asymptotic, settable wall-clock budget", example: "opi run 10007 4954 10s", submenu: None },
+    MenuItem { name: "weight_ladder",              cmd: "weight_ladder",             desc: "The general reduction behind opi's eigenvalue, for any m-exchangeable-trial Hamming-weight ladder, not just OPI", example: "weight_ladder 10006 2477 0.0", submenu: None },
+    MenuItem { name: "doubly_nested_oneshot",      cmd: "doubly_nested_oneshot",     desc: "Winding-order factoring, nested two levels deep (alias: dnos)", example: "doubly_nested_oneshot factor 91", submenu: None },
+    MenuItem { name: "nested_oneshot",             cmd: "nested_oneshot",            desc: "Winding-order factoring, nested one level (aliases: nested, nos)", example: "nested_oneshot factor 91", submenu: None },
+    MenuItem { name: "multilattice",               cmd: "multilattice",              desc: "The FDE/QM boundary as real code: the corrected Pauli-algebra WH action, orbit 4^n, zero axioms", example: "multilattice help", submenu: None },
+    MenuItem { name: "jones_polynomial",           cmd: "jones_polynomial",          desc: "Jones polynomial of a braid word (alias: jp)", example: "jp 1 2 1", submenu: None },
+    MenuItem { name: "braid_image",                cmd: "braid_image",               desc: "Render or compute a braid word's IMASM image (alias: bi)", example: "bi 1 2 1", submenu: None },
+    MenuItem { name: "braid-grammar",              cmd: "braid-grammar",             desc: "Braid word to IG-tuple grammar bridge (alias: bg)", example: "braid-grammar tuple \"1 2 1\" 3", submenu: None },
+    MenuItem { name: "circuit",                    cmd: "circuit",                   desc: "Substrate round trips through the twelve-glyph alphabet: x86/RNA/wasm/AA via IMASM", example: "circuit table", submenu: None },
+    MenuItem { name: "counterfactual",             cmd: "counterfactual",            desc: "Perturb one glyph of a word and read what moved: which invariants held, which broke, the smallest repair (alias: cf)", example: "cf help", submenu: None },
+    MenuItem { name: "basin",                      cmd: "basin",                     desc: "Fixed-point archaeology for word maps: orbit, attractor, transient depth, cycle length, basin size", example: "basin help", submenu: None },
+    MenuItem { name: "ouroboros-inverse",          cmd: "ouroboros-inverse",         desc: "Inverse grammar: tuple -> IMASM word -> braid word -> ... -> tuple (alias: oinv)", example: "oinv help", submenu: None },
+    MenuItem { name: "frobenius-fuzzer",           cmd: "frobenius-fuzzer",          desc: "Mine the whole word space for rare, stable Frobenius-closing programs (alias: fuzz)", example: "fuzz help", submenu: None },
+    MenuItem { name: "provenance",                 cmd: "provenance",                desc: "Epistemic type checking: every result carries a provenance, provenances form a lattice (alias: prov)", example: "prov help", submenu: None },
+    MenuItem { name: "ctc-loom",                   cmd: "ctc-loom",                  desc: "Fixed-point enumerator: every IMASM word of a given length walked to its Belnap verdict (alias: loom)", example: "loom help", submenu: None },
+    MenuItem { name: "sk-forge",                   cmd: "sk-forge",                  desc: "Crystal Harvester: read a public key as an IG tuple, find the nearest O-infinity carrier, report the repair path", example: "sk-forge help", submenu: None },
+    MenuItem { name: "demonstrate",                cmd: "demonstrate",               desc: "Turn a claim into an executable experiment, every value computed at print time, nothing stored (alias: demo)", example: "demo help", submenu: None },
+    MenuItem { name: "distance",                   cmd: "distance",                  desc: "Hamming and weighted distance of the active IG tuple from the ZFC baseline tuple (alias: dist)", example: "distance", submenu: None },
+    MenuItem { name: "mersearch",                  cmd: "mersearch",                 desc: "Parallel Mersenne prime search: FSPLIT-forked candidate space, big-integer Lucas-Lehmer (alias: msearch)", example: "mersearch run 1 1000", submenu: None },
+    MenuItem { name: "shor-qft",                   cmd: "shor-qft",                  desc: "Shor's algorithm's QFT step, run directly", example: "shor-qft help", submenu: None },
+    MenuItem { name: "gpu_native",                 cmd: "gpu_native",                desc: "The literal GPU-native build protocol, run for real, not simulated", example: "gpu_native run 1024", submenu: None },
+    MenuItem { name: "gpu16_3",                    cmd: "gpu16_3",                   desc: "Batch SIXTEEN_3 register gates on GPU: many registers at once, verified against the scalar path", example: "gpu16_3 verify", submenu: None },
+    MenuItem { name: "gpu_catalog_crystal",        cmd: "gpu_catalog_crystal",       desc: "Batch the real catalog's crystal addresses on GPU: fixed-width crystal encode over every live entry", example: "gpu_catalog_crystal", submenu: None },
+    MenuItem { name: "gpu_crystal_full_space",     cmd: "gpu_crystal_full_space",    desc: "Checks phase_5's 17.28-million-entry Crystal type-space claim at its actual scale, not just the live catalog", example: "gpu_crystal_full_space", submenu: None },
+    MenuItem { name: "gpu_imasm_cycle",            cmd: "gpu_imasm_cycle",           desc: "The full imasm-cycle round trip, forward and reverse legs, batched on GPU", example: "gpu_imasm_cycle", submenu: None },
+    MenuItem { name: "gpu_ipc_no_serialization",   cmd: "gpu_ipc_no_serialization",  desc: "Measures phase_5's no-serialization IPC claim for real, both paths run and compared", example: "gpu_ipc_no_serialization", submenu: None },
+    MenuItem { name: "gpu_sixteen3_tensor_kernel", cmd: "gpu_sixteen3_tensor_kernel", desc: "The sixteen3_gpu_tensor_kernel ob3ect's own batched-register protocol shape, not the flat per-lane version", example: "gpu_sixteen3_tensor_kernel", submenu: None },
 ];
 
 pub static SEALS_MENU: &[MenuItem] = &[

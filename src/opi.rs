@@ -36,7 +36,7 @@
 //! matrix in that lemma (diagonal k*d, off-diagonals sqrt(k(m-k+1)), d =
 //! (p-2r)/sqrt(r(p-r))) and the optimal w is A's top eigenvector. That
 //! eigenvalue problem is solved here directly, by shifted power iteration
-//! on the actual matrix at this m and ell -- semicircle_lambda_max below --
+//! on the actual matrix at this m and ell -- weight_ladder::lambda_max --
 //! giving DQI's real, finite-size expected satisfaction fraction:
 //!   phi_DQI_exact = r/p + sqrt(r(p-r))/(mp) * lambda_max(A)
 //! The paper's own asymptotic closed form (eq. 16, the m -> p limit of the
@@ -466,80 +466,11 @@ fn sqrt_f64(x: f64) -> f64 {
     libm::sqrt(x)
 }
 
-fn abs_f64(x: f64) -> f64 {
-    if x < 0.0 { -x } else { x }
-}
-
-/// Lemma 9.2's (ℓ+1)×(ℓ+1) real symmetric tridiagonal matrix A^(m,ℓ,d):
-/// diagonal entries k*d for k=0..=ell, off-diagonals a_k = sqrt(k(m-k+1))
-/// connecting rows k-1 and k. Returns its largest eigenvalue by shifted
-/// power iteration: a Gershgorin shift makes A+cI positive semidefinite,
-/// so plain power iteration on the shifted matrix converges to A's true
-/// top eigenvalue, not whichever extreme has larger magnitude.
-fn semicircle_lambda_max(m: usize, ell: usize, d_diag: f64) -> f64 {
-    let dim = ell + 1;
-    let diag: Vec<f64> = (0..dim).map(|k| k as f64 * d_diag).collect();
-    let off: Vec<f64> = (1..dim)
-        .map(|k| sqrt_f64(k as f64 * (m as f64 - k as f64 + 1.0)))
-        .collect();
-
-    let mut shift = 0.0f64;
-    for i in 0..dim {
-        let mut row = abs_f64(diag[i]);
-        if i > 0 {
-            row += abs_f64(off[i - 1]);
-        }
-        if i < dim - 1 {
-            row += abs_f64(off[i]);
-        }
-        if row > shift {
-            shift = row;
-        }
-    }
-
-    let mut v = alloc::vec![1.0f64; dim];
-    let mut norm = sqrt_f64(v.iter().map(|x| x * x).sum());
-    for x in v.iter_mut() {
-        *x /= norm;
-    }
-
-    for _ in 0..2000 {
-        let mut w = alloc::vec![0.0f64; dim];
-        for i in 0..dim {
-            let mut wi = (diag[i] + shift) * v[i];
-            if i > 0 {
-                wi += off[i - 1] * v[i - 1];
-            }
-            if i < dim - 1 {
-                wi += off[i] * v[i + 1];
-            }
-            w[i] = wi;
-        }
-        norm = sqrt_f64(w.iter().map(|x| x * x).sum());
-        if norm < 1e-300 {
-            break;
-        }
-        for x in w.iter_mut() {
-            *x /= norm;
-        }
-        v = w;
-    }
-
-    let mut av = alloc::vec![0.0f64; dim];
-    for i in 0..dim {
-        let mut wi = diag[i] * v[i];
-        if i > 0 {
-            wi += off[i - 1] * v[i - 1];
-        }
-        if i < dim - 1 {
-            wi += off[i] * v[i + 1];
-        }
-        av[i] = wi;
-    }
-    let num: f64 = (0..dim).map(|i| v[i] * av[i]).sum();
-    let den: f64 = (0..dim).map(|i| v[i] * v[i]).sum();
-    num / den
-}
+// Lemma 9.2's (ell+1)x(ell+1) tridiagonal eigenvalue problem is not
+// specific to OPI -- it's the general shape of any m-exchangeable-trial
+// Hamming-weight ladder. Lives in weight_ladder.rs now, one definition
+// instead of a private copy here; opi.rs calls crate::weight_ladder::
+// lambda_max directly below.
 
 pub struct OpiResult {
     pub p: u64,
@@ -696,7 +627,7 @@ pub fn run_opi(
     // Massey correction radius for this Reed-Solomon code (§5).
     let ell = (n + 1) / 2;
     let d_diag = (p_f - 2.0 * r_f) / sqrt_f64(r_f * (p_f - r_f));
-    let lambda_max = semicircle_lambda_max(m, ell, d_diag);
+    let lambda_max = crate::weight_ladder::lambda_max(m, ell, d_diag);
     let phi_dqi_exact = r_f / p_f + sqrt_f64(r_f * (p_f - r_f)) / (m_f * p_f) * lambda_max;
 
     Ok(OpiResult {

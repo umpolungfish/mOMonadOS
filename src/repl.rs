@@ -2178,6 +2178,10 @@ pub fn repl(k: &mut Kernel) {
                 let rest: Vec<&str> = joined.split_whitespace().collect();
                 crate::opi::repl_opi(&rest);
             }
+            "weight_ladder" => {
+                let args: Vec<&str> = parts.collect();
+                sprintln!("{}", crate::weight_ladder::repl_weight_ladder(&args));
+            }
             "multilattice" => {
                 let tail: Vec<&str> = parts.collect();
                 let joined = tail.join(" ");
