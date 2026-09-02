@@ -197,6 +197,7 @@ pub static QUANTUM_MENU: &[MenuItem] = &[
     MenuItem { name: "shor",       cmd: "shor",       desc: "Belnap Shor pipeline + dialetheic Fibonacci Shor (word ⊢∈≻⋈⊞∈⊤≻⊥≺∋⊙⋈⊡⊣); N=15,21", example: "shor dialetheic 15 7", submenu: None },
     MenuItem { name: "shors_btc_2", cmd: "shors_btc_2", desc: "Shor over secp256k1 ECDLP: recover a Bitcoin private key from a public key (x,y)", example: "shors_btc_2", submenu: None },
     MenuItem { name: "prime_winding", cmd: "prime_winding", desc: "Winding period of the primes on the number line - ob3ect-backed: find | factor | cycle | tuple | verdict", example: "prime_winding find 100", submenu: None },
+    MenuItem { name: "fgraph", cmd: "fgraph", desc: "Functional-graph dynamics for an arbitrary (non-bijective) map: point | decompose | bijection, Floyd and Brent cross-checked", example: "fgraph decompose 100 1", submenu: None },
     MenuItem { name: "oneshot_prime_winder", cmd: "oneshot_prime_winder", desc: "One-shot primality test using IMASM word ⊢∈≻⊤⋈⊙≺⊥⊞∋⊡⊣ winding certificate", example: "oneshot_prime_winder 17", submenu: None },
     MenuItem { name: "dyn_nest", cmd: "dyn_nest", desc: "Dynamic Nesting Prime Finder - pipes oneshot verdict, searches optimal nesting depth d=1,2,3,...; period P(d)=5d+7, closure-derived seed", example: "dyn_nest 1234567", submenu: None },
         MenuItem { name: "qft",        cmd: "qft",        desc: "Quantum Fourier Transform: circuit | phases | iqft | iqft braid | braid, on n qubits", example: "qft circuit 3", submenu: None },
