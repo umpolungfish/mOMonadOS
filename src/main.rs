@@ -95,6 +95,7 @@ mod parasm;
 mod belnap_shor;
 pub mod prime_winding;
 pub mod trilattice_factor;
+pub mod native_numeral;
 mod belnap_shor_factors;
 mod fibonacci_shor;
 mod belnap_ring_shor;

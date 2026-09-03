@@ -1247,6 +1247,26 @@ pub fn repl(k: &mut Kernel) {
                     }
                 }
             }
+            "native_numeral" | "numeral" => {
+                use crate::native_numeral as nn;
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "help" => sprintln!("{}", nn::help()),
+                    "word" => sprintln!("{}", nn::word()),
+                    "encode" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("native_numeral encode: usage: native_numeral encode <n>");
+                        } else {
+                            sprintln!("{}", nn::encode_report(n_str));
+                        }
+                    }
+                    other => {
+                        sprintln!("native_numeral: unknown subcommand '{}'", other);
+                        sprintln!("{}", nn::help());
+                    }
+                }
+            }
             "trilattice_factor" | "tfactor" => {
                 use crate::trilattice_factor as tf;
                 let sub = parts.next().unwrap_or("");
