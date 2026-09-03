@@ -88,12 +88,15 @@ use crate::native_numeral::encode as native_encode;
 /// others are asked for their multiplicative order.
 const WINDING_BASES: [u64; 10] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29];
 
-/// The baby-table cap for the order search: the most residues held at once.
-/// Baby-step giant-step finds an order of size up to m^2 from a table of m
-/// entries, so this cap sets the reach at ORDER_TABLE_CAP squared while the
-/// memory stays linear in the cap. It is the cost ceiling of the native route,
-/// not a limit on n's size.
-const ORDER_TABLE_CAP: u64 = 3_000_000;
+/// The baby table's size, which is the real thing at stake here: baby-step
+/// giant-step needs a table of m residues to reach an order of m^2, so the table
+/// IS sqrt(order) memory, the algorithm's own cost, not a policy dial. This sets
+/// how much of that memory to spend, a few GB at this size, reaching orders near
+/// its square. Past it the winding route falls through to the bridge, the
+/// squares route, and rho, none of which hold a table. The table-free sqrt-time
+/// order search is Pollard's kangaroo; a naive small-stride rho does not do it,
+/// it drifts at O(order), not sqrt.
+const ORDER_TABLE_CAP: u64 = 20_000_000;
 
 /// The multiplicative order of `a` modulo `n`: the least r > 0 with a^r ≡ 1,
 /// found by baby-step giant-step, the conventional decomposition of the ⊡
