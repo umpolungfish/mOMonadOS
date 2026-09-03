@@ -1214,15 +1214,6 @@ pub fn repl(k: &mut Kernel) {
                     }
                 }
             }
-            "fgraph" | "functional_graph" => {
-                // splitn(4, ' ') above caps the WHOLE line at 4 pieces, so a
-                // fourth argument here ("point <n> <c> <x0>") arrives glued
-                // to the third -- rejoin and resplit unbounded, the same fix
-                // every other multi-arg command in this file already uses.
-                let joined = parts.collect::<Vec<&str>>().join(" ");
-                let args: Vec<&str> = joined.split_whitespace().collect();
-                sprintln!("{}", crate::functional_graph::fgraph_main(&args));
-            }
             "prime_winding" => {
                 use crate::prime_winding::*;
                 let sub = parts.next().unwrap_or("");
