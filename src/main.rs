@@ -94,6 +94,7 @@ mod tower_polynomials;
 mod parasm;
 mod belnap_shor;
 pub mod prime_winding;
+pub mod trilattice_factor;
 mod belnap_shor_factors;
 mod fibonacci_shor;
 mod belnap_ring_shor;

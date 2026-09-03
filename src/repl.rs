@@ -1247,6 +1247,36 @@ pub fn repl(k: &mut Kernel) {
                     }
                 }
             }
+            "trilattice_factor" | "tfactor" => {
+                use crate::trilattice_factor as tf;
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "help" => sprintln!("{}", tf::help()),
+                    "word" => sprintln!("{}", tf::word()),
+                    "cert" => sprintln!("{}", tf::cert()),
+                    "read" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("trilattice_factor read: usage: trilattice_factor read <n>");
+                        } else {
+                            sprintln!("{}", tf::read(n_str));
+                        }
+                    }
+                    "factor" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("trilattice_factor factor: usage: trilattice_factor factor <n> [max_power]");
+                        } else {
+                            let max_power = parts.next().and_then(|s| s.parse::<u64>().ok());
+                            sprintln!("{}", tf::factor(n_str, max_power));
+                        }
+                    }
+                    other => {
+                        sprintln!("trilattice_factor: unknown subcommand '{}'", other);
+                        sprintln!("{}", tf::help());
+                    }
+                }
+            }
             #[cfg(feature = "hosted")]
             "gpu_native" => {
                 let sub = parts.next().unwrap_or("");
