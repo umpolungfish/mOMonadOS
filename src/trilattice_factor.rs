@@ -46,8 +46,12 @@
 //! Shor's classical core, native to the SIC-phase structure this codebase runs
 //! on (belnap_phase_shor), and it is the factor read from a winding rather than
 //! from a rho search. It runs at arbitrary precision, carrying the full residue
-//! at every step; there is no bound on n's size, only a step budget on the
-//! order search, since finding an order classically is an O(order) walk.
+//! at every step. The order search is baby-step giant-step, the conventional
+//! decomposition of the ⊡ winding through the ∈/∋ pair: the fork lays the baby
+//! table, the giant stride walks, the fuse is their collision, so the order
+//! comes back in O(sqrt order) time and memory where the plain walk was
+//! O(order). There is no bound on n's size; the reach is the baby table's cap
+//! squared.
 //!
 //! The number and the winding both enter the Grammar's own marks now. `read`
 //! shows n's native parity-graded word (Native IMASM-Numeral Mapping), the
@@ -84,26 +88,53 @@ use crate::native_numeral::encode as native_encode;
 /// others are asked for their multiplicative order.
 const WINDING_BASES: [u64; 10] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29];
 
-/// How many multiplication steps the order search spends per base before it
-/// gives the base up. The multiplicative order can be as large as n, and
-/// finding it classically is a real O(order) walk, so a walk this long without
-/// closing hands the number to the rho search rather than run without bound.
-/// This is the cost ceiling of the native route, not a limit on n's size.
-const ORDER_STEP_BUDGET: u64 = 40_000_000;
+/// The baby-table cap for the order search: the most residues held at once.
+/// Baby-step giant-step finds an order of size up to m^2 from a table of m
+/// entries, so this cap sets the reach at ORDER_TABLE_CAP squared while the
+/// memory stays linear in the cap. It is the cost ceiling of the native route,
+/// not a limit on n's size.
+const ORDER_TABLE_CAP: u64 = 3_000_000;
 
-/// The multiplicative order of `a` modulo `n` at arbitrary precision: the least
-/// r > 0 with a^r ≡ 1, walked in BigUint so no product wraps, or None if it
-/// does not close within `budget` steps. This is the winding of the ring `a`
-/// generates, the ROTAT period the factor is read off, carrying the full
-/// residue at every step, not only its parity.
-fn order_big(a: &BigUint, n: &BigUint, budget: u64) -> Option<BigUint> {
+/// The multiplicative order of `a` modulo `n`: the least r > 0 with a^r ≡ 1,
+/// found by baby-step giant-step, the conventional decomposition of the ⊡
+/// winding holonomy through the ∈/∋ pair. The ∈ fork lays down the baby table
+/// a^0, a^1, ..., a^{m-1}; the giant stride walks a^m, a^{2m}, ... and the ∋
+/// fuse is the collision a^{im} = a^j, which gives r = im - j. This meets in
+/// the middle in O(sqrt r) steps and O(sqrt r) memory, where the plain walk was
+/// O(r). Returns None if the order exceeds m^2 for the capped table.
+fn order_bsgs(a: &BigUint, n: &BigUint) -> Option<BigUint> {
+    use alloc::collections::BTreeMap;
+    use alloc::vec::Vec;
     let one = BigUint::one();
-    let mut val = one.clone() % n;
-    let mut r: u64 = 0;
-    while r < budget {
-        val = (&val * a) % n;
-        r += 1;
-        if val == one { return Some(BigUint::from(r)); }
+    let a = a % n;
+    if a == one { return Some(one); }
+
+    // m = ceil(sqrt(n)), capped. Order divides λ(n) < n, so m^2 ≥ n covers
+    // every order when the cap does not bind.
+    let mut m = n.sqrt() + &one;
+    let cap = BigUint::from(ORDER_TABLE_CAP);
+    if m > cap { m = cap; }
+    let m_u64 = m.to_u64_digits().first().copied().unwrap_or(1);
+
+    // ∈ fork: the baby table, a^j keyed by its byte value, smallest j kept.
+    // A small order shows here directly as a^j = 1 with j > 0.
+    let mut baby: BTreeMap<Vec<u8>, u64> = BTreeMap::new();
+    let mut val = one.clone();
+    for j in 0..m_u64 {
+        if j > 0 && val == one { return Some(BigUint::from(j)); }
+        baby.entry(val.to_bytes_le()).or_insert(j);
+        val = (&val * &a) % n;
+    }
+    // val is now a^m, the giant stride.
+    let giant_stride = val.clone();
+    let mut giant = giant_stride.clone(); // a^{m·1}
+    // ∋ fuse: the first giant hit in the baby table, a^{im} = a^j, gives r.
+    for i in 1..=m_u64 {
+        if let Some(&j) = baby.get(&giant.to_bytes_le()) {
+            let e = BigUint::from(i) * &m - BigUint::from(j);
+            if e > BigUint::zero() { return Some(e); }
+        }
+        giant = (&giant * &giant_stride) % n;
     }
     None
 }
@@ -263,7 +294,7 @@ pub fn winding(n: &str, a_opt: Option<u64>) -> String {
             ));
             return o;
         }
-        let r = match order_big(&a, &nv, ORDER_STEP_BUDGET) {
+        let r = match order_bsgs(&a, &nv) {
             Some(r) => r,
             None => { budget_hit = true; continue; }
         };
@@ -303,8 +334,8 @@ pub fn winding(n: &str, a_opt: Option<u64>) -> String {
     }
     if budget_hit {
         o.push_str(&format!(
-            "  order search hit its step budget before closing; hand to `trilattice_factor factor {}`",
-            n
+            "  order exceeds the capped baby table (reach ~{}^2); hand to `trilattice_factor factor {}`",
+            ORDER_TABLE_CAP, n
         ));
     } else {
         o.push_str(&format!(
