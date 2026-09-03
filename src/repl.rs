@@ -1308,6 +1308,15 @@ pub fn repl(k: &mut Kernel) {
                             sprintln!("{}", tf::squares(n_str));
                         }
                     }
+                    "sieve" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("trilattice_factor sieve: usage: trilattice_factor sieve <n> [B]");
+                        } else {
+                            let b_opt = parts.next().and_then(|s| s.parse::<u64>().ok());
+                            sprintln!("{}", tf::sieve(n_str, b_opt));
+                        }
+                    }
                     "factor" => {
                         let n_str = parts.next().unwrap_or("");
                         if n_str.is_empty() {

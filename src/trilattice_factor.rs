@@ -205,6 +205,7 @@ pub fn help() -> String {
     o.push_str("  winding <n> [a]  factor n off a multiplicative-order winding (Shor's core)\n");
     o.push_str("  bridge <n> [B]   factor n off a smooth winding-bridge (⊞/⊡, Pollard p-1)\n");
     o.push_str("  squares <n>   factor n off a comparable-size bridge (∈, difference of squares)\n");
+    o.push_str("  sieve <n> [B]  factor n off a congruence of squares over a factor base (⊞/⊙)\n");
     o.push_str("  factor <n>    factor n (arbitrary precision) with the reading\n");
     o.push_str("  help          this list");
     o
@@ -507,6 +508,181 @@ pub fn squares(n: &str) -> String {
         None => o.push_str(&format!(
             "  no non-trivial difference of squares below (n+1)/2; hand to `trilattice_factor factor {}`",
             n
+        )),
+    }
+    o
+}
+
+/// The default factor-base bound for the congruence route.
+const CONGRUENCE_FB_BOUND: u64 = 2000;
+/// How many trials the congruence route draws before giving up.
+const CONGRUENCE_TRIALS: u64 = 4_000_000;
+
+/// Primes up to `bound`, the fixed alphabet (⊣ factor base) a relation must
+/// factor over to be admitted.
+fn factor_base(bound: u64) -> alloc::vec::Vec<u64> {
+    let mut sieve = alloc::vec![true; (bound as usize) + 1];
+    let mut ps = alloc::vec::Vec::new();
+    let mut p = 2u64;
+    while p <= bound {
+        if sieve[p as usize] {
+            ps.push(p);
+            let mut m = p * p;
+            while m <= bound { sieve[m as usize] = false; m += p; }
+        }
+        p += 1;
+    }
+    ps
+}
+
+/// Factor `q` over the base, returning the exponent of each base prime, or None
+/// if `q` does not reduce to 1 over the base (not smooth). This is the ∈
+/// smoothness gate: only a relation that factors entirely over the alphabet is
+/// admitted, the rest discarded (≺).
+fn smooth_exponents(mut q: BigUint, fb: &[u64]) -> Option<alloc::vec::Vec<u32>> {
+    let mut exps = alloc::vec![0u32; fb.len()];
+    let zero = BigUint::zero();
+    for (i, &p) in fb.iter().enumerate() {
+        let bp = BigUint::from(p);
+        while (&q % &bp) == zero {
+            q /= &bp;
+            exps[i] += 1;
+        }
+    }
+    if q == BigUint::one() { Some(exps) } else { None }
+}
+
+/// The congruence-of-squares split, the sub-exponential route from the ob3ect
+/// `square_congruence_from_smooth_relations` (word ⊢⊣≻∈⊥≺⊤⋈⋈∈⊞≻≻⊙∈⊤⊥∋⊡⊣). It
+/// never touches the order, so it reaches the balanced hard semiprime the order
+/// routes cannot. ⊣ fixes the factor base; ≻ generates a trial x and q = x² mod
+/// n; ∈ is the smoothness branch, ≺ discards a non-smooth trial, ⊤ accepts a
+/// smooth one; ⋈ accumulates its exponent-parity row. ⊞ is the parity
+/// cancellation: once there are more rows than base primes, some combination
+/// sums to all-even by counting alone, guaranteed. ⊙ is the square that
+/// combination forms on both sides; ∋ resolves it to X² ≡ Y² (mod n); ⊥ throws
+/// back a trivial pair X ≡ ±Y; ⊡ records the split gcd(X - Y, n).
+fn congruence_split(n: &BigUint, fb_bound: u64, trials: u64) -> Option<(BigUint, BigUint)> {
+    use alloc::vec::Vec;
+    let one = BigUint::one();
+    let fb = factor_base(fb_bound);
+    let k = fb.len();
+
+    // Collected smooth relations: (x, full exponents).
+    let mut rel_x: Vec<BigUint> = Vec::new();
+    let mut rel_e: Vec<Vec<u32>> = Vec::new();
+    // GF(2) reducers: each carries a parity bitmask and the set of relation ids
+    // that XOR to it, both as bit-vectors, keyed for elimination by leading bit.
+    let bits = (k + 64) / 64;
+    let mut red: Vec<(Vec<u64>, Vec<u64>, usize)> = Vec::new(); // (parity, combo, leadbit)
+
+    let getbit = |v: &[u64], i: usize| -> bool { (v[i >> 6] >> (i & 63)) & 1 == 1 };
+    let setbit = |v: &mut [u64], i: usize| { v[i >> 6] |= 1 << (i & 63); };
+
+    let mut seed: u64 = 0x1234_5678_9ABC_DEF1 ^ (n.to_u64_digits().first().copied().unwrap_or(1));
+    let nsqrt = n.sqrt();
+
+    let mut t: u64 = 0;
+    while t < trials {
+        t += 1;
+        // Trial x drawn above sqrt(n) so q = x² - n stays smaller than n.
+        seed ^= seed << 13; seed ^= seed >> 7; seed ^= seed << 17;
+        let off = BigUint::from(seed % 1_000_000_007);
+        let x = (&nsqrt + &off) % n;
+        if x < BigUint::from(2u32) { continue; }
+        let q = (&x * &x) % n;
+        if q == BigUint::zero() {
+            // x shares a factor with n outright.
+            let g = big_gcd(x.clone(), n.clone());
+            if g > one && &g < n { return Some((g.clone(), n / &g)); }
+            continue;
+        }
+        let exps = match smooth_exponents(q.clone(), &fb) { Some(e) => e, None => continue };
+
+        // Parity row over the base.
+        let mut par = alloc::vec![0u64; bits];
+        for (i, e) in exps.iter().enumerate() { if e & 1 == 1 { setbit(&mut par, i); } }
+
+        let id = rel_x.len();
+        rel_x.push(x);
+        rel_e.push(exps);
+        let mut combo = alloc::vec![0u64; (rel_x.len() + 64) / 64];
+        // combo may need to grow as ids accumulate; size it generously below.
+        if combo.len() * 64 <= id { combo.push(0); }
+        setbit(&mut combo, id);
+
+        // Reduce the new row by existing reducers.
+        for (rpar, rcombo, lead) in red.iter() {
+            if getbit(&par, *lead) {
+                for w in 0..bits { par[w] ^= rpar[w]; }
+                while combo.len() < rcombo.len() { combo.push(0); }
+                for w in 0..rcombo.len() { combo[w] ^= rcombo[w]; }
+            }
+        }
+
+        // Zero parity → a dependency: the combo is a set of relations whose
+        // exponent sums are all even, a square on both sides.
+        let is_zero = par.iter().all(|&w| w == 0);
+        if is_zero {
+            // Build X = prod x_i mod n, and Y from halved summed exponents.
+            let mut sum = alloc::vec![0u32; k];
+            let mut xprod = one.clone();
+            for cid in 0..rel_x.len() {
+                if getbit(&combo, cid) {
+                    xprod = (&xprod * &rel_x[cid]) % n;
+                    for i in 0..k { sum[i] += rel_e[cid][i]; }
+                }
+            }
+            let mut yprod = one.clone();
+            for i in 0..k {
+                if sum[i] > 0 {
+                    let half = sum[i] / 2;
+                    yprod = (&yprod * BigUint::from(fb[i]).modpow(&BigUint::from(half), n)) % n;
+                }
+            }
+            // gcd(X - Y, n): a non-trivial common part splits n.
+            let diff = if xprod >= yprod { &xprod - &yprod } else { (n + &xprod) - &yprod };
+            let g = big_gcd(diff % n, n.clone());
+            if g > one && &g < n { return Some((g.clone(), n / &g)); }
+            // Trivial (X ≡ ±Y): keep collecting for another dependency.
+        } else {
+            let lead = {
+                let mut hb = 0usize;
+                for i in 0..k { if getbit(&par, i) { hb = i; } }
+                hb
+            };
+            red.push((par, combo, lead));
+        }
+    }
+    None
+}
+
+/// The sieve subcommand: factor n by the congruence of squares over a factor
+/// base of primes up to B, reading the split off a parity cancellation.
+pub fn sieve(n: &str, b_opt: Option<u64>) -> String {
+    let bound = b_opt.unwrap_or(CONGRUENCE_FB_BOUND);
+    let nv: BigUint = match n.trim().parse() {
+        Ok(v) => v,
+        Err(_) => return format!("trilattice_factor sieve {}: not a non-negative integer", n),
+    };
+    if nv < BigUint::from(3u32) {
+        return format!("trilattice_factor sieve {}: n < 3, nothing to split", n);
+    }
+    if crate::prime_winding::is_prime(&nv.to_str_radix(10)) == crate::prime_winding::PrimeVerdict::Prime {
+        return format!("trilattice_factor sieve {}: {} is prime, no congruence to build", n, nv);
+    }
+    let mut o = format!("trilattice_factor sieve {}:\n", n);
+    match congruence_split(&nv, bound, CONGRUENCE_TRIALS) {
+        Some((lo, hi)) => {
+            let (lo, hi) = if lo <= hi { (lo, hi) } else { (hi, lo) };
+            o.push_str(&format!("  ⊣ factor base: primes up to {}\n", bound));
+            o.push_str("  ⊞ parity cancellation: smooth rows summed to an all-even square on both sides\n");
+            o.push_str("  ⊙ X² ≡ Y² (mod n); ⊡ gcd(X - Y, n) crosses to the factor\n");
+            o.push_str(&format!("  {} = {} × {}   read off the congruence of squares", nv, lo, hi));
+        }
+        None => o.push_str(&format!(
+            "  no non-trivial congruence at base bound {} within the trial budget; raise the bound or hand to `trilattice_factor factor {}`",
+            bound, n
         )),
     }
     o
