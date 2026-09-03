@@ -325,8 +325,9 @@ pub fn find(n: &str) -> String {
     }
 }
 
-/// a / b, both nonzero, Euclid's algorithm on BigUint.
-fn big_gcd(mut a: BigUint, mut b: BigUint) -> BigUint {
+/// a / b, both nonzero, Euclid's algorithm on BigUint. Public so the
+/// trilattice winding route reads the same gcd rather than carrying its own.
+pub fn big_gcd(mut a: BigUint, mut b: BigUint) -> BigUint {
     while !b.is_zero() {
         let t = b.clone();
         b = &a % &b;

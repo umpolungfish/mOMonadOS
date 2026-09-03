@@ -45,7 +45,9 @@
 //! of the ring a generates, from which gcd(a^(r/2) ± 1, n) splits n. That is
 //! Shor's classical core, native to the SIC-phase structure this codebase runs
 //! on (belnap_phase_shor), and it is the factor read from a winding rather than
-//! from a rho search. It is exact below the 32-bit bound; larger n hands off.
+//! from a rho search. It runs at arbitrary precision, carrying the full residue
+//! at every step; there is no bound on n's size, only a step budget on the
+//! order search, since finding an order classically is an O(order) walk.
 //!
 //! The number and the winding both enter the Grammar's own marks now. `read`
 //! shows n's native parity-graded word (Native IMASM-Numeral Mapping), the
@@ -69,28 +71,41 @@
 //!   trilattice_factor factor <n>      factor n (arbitrary precision) with the reading
 //!   trilattice_factor help            list subcommands
 
-use alloc::string::{String, ToString};
+use alloc::string::String;
 use alloc::format;
+use num_bigint::BigUint;
+use num_traits::{One, Zero};
 use imasm_core::lattice_flow::cycle_landings;
-use crate::prime_winding::{digit_encode, factor_bounded};
-use crate::belnap_phase_shor::classic_period;
-use crate::belnap_shor_factors::extract_factors;
+use crate::prime_winding::{digit_encode, factor_bounded, big_gcd};
 use crate::native_numeral::encode as native_encode;
-
-/// The largest n the winding route handles exactly. `extract_factors`'s
-/// modular exponentiation multiplies two residues in u64, so it stays exact
-/// only while n fits in 32 bits; past that the winding route hands off to the
-/// arbitrary-precision search rather than return a wrapped product.
-const WINDING_EXACT_BOUND: u64 = 1 << 32;
 
 /// Bases tried for the order winding, small units first. Any base sharing a
 /// factor with n is a collision that hands the factor over directly; the
 /// others are asked for their multiplicative order.
 const WINDING_BASES: [u64; 10] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29];
 
-fn small_gcd(mut a: u64, mut b: u64) -> u64 {
-    while b != 0 { let t = b; b = a % b; a = t; }
-    a
+/// How many multiplication steps the order search spends per base before it
+/// gives the base up. The multiplicative order can be as large as n, and
+/// finding it classically is a real O(order) walk, so a walk this long without
+/// closing hands the number to the rho search rather than run without bound.
+/// This is the cost ceiling of the native route, not a limit on n's size.
+const ORDER_STEP_BUDGET: u64 = 40_000_000;
+
+/// The multiplicative order of `a` modulo `n` at arbitrary precision: the least
+/// r > 0 with a^r ≡ 1, walked in BigUint so no product wraps, or None if it
+/// does not close within `budget` steps. This is the winding of the ring `a`
+/// generates, the ROTAT period the factor is read off, carrying the full
+/// residue at every step, not only its parity.
+fn order_big(a: &BigUint, n: &BigUint, budget: u64) -> Option<BigUint> {
+    let one = BigUint::one();
+    let mut val = one.clone() % n;
+    let mut r: u64 = 0;
+    while r < budget {
+        val = (&val * a) % n;
+        r += 1;
+        if val == one { return Some(BigUint::from(r)); }
+    }
+    None
 }
 
 /// The ob3ect's own fixed reference word.
@@ -201,74 +216,102 @@ pub fn read(n: &str) -> String {
 }
 
 /// The winding route: read the factor straight off a winding, the way the ⊡
-/// commit names. For a base a coprime to n, the multiplicative order r is the
-/// period of the ring a generates under multiplication mod n, the ROTAT
-/// period. When r is even and a^(r/2) is not -1, gcd(a^(r/2) ± 1, n) splits n.
-/// This is Shor's classical core, native to the SIC-phase structure, and it is
-/// the factor read from the winding rather than from a rho search. Exact for n
-/// below the 32-bit bound; larger n is handed to the arbitrary-precision route.
+/// commit names, at arbitrary precision. For a base a coprime to n, the
+/// multiplicative order r is the period of the ring a generates under
+/// multiplication mod n, the ROTAT period, carrying the full residue at every
+/// step. When r is even and a^(r/2) is not -1, gcd(a^(r/2) ± 1, n) splits n.
+/// This is Shor's classical core, native to the SIC-phase structure, the factor
+/// read from the winding rather than from a rho search. There is no size bound
+/// on n; the only ceiling is how many steps the order search spends per base
+/// (`ORDER_STEP_BUDGET`), since finding an order classically is an O(order)
+/// walk. A base whose order does not close in budget is given up, and if no
+/// base closes, the number is handed to the rho search, which reaches factors
+/// without needing the order at all.
 pub fn winding(n: &str, a_opt: Option<u64>) -> String {
     let t = n.trim();
-    let nv: u64 = match t.parse() {
+    let nv: BigUint = match t.parse() {
         Ok(v) => v,
-        Err(_) => return format!("trilattice_factor winding {}: not a u64 integer", n),
+        Err(_) => return format!("trilattice_factor winding {}: not a non-negative integer", n),
     };
-    if nv < 2 {
+    let two = BigUint::from(2u32);
+    if nv < two {
         return format!("trilattice_factor winding {}: n < 2, no winding", n);
     }
-    if nv >= WINDING_EXACT_BOUND {
-        return format!(
-            "trilattice_factor winding {}: n is past the 32-bit exact bound for this route; use `trilattice_factor factor {}` for the arbitrary-precision split",
-            n, n
-        );
-    }
-    if nv % 2 == 0 {
+    if (&nv % &two).is_zero() {
         return format!(
             "trilattice_factor winding {}: {} = 2 × {}   (even, split before any winding)",
-            n, nv, nv / 2
+            n, nv, &nv / &two
         );
     }
 
-    let bases: alloc::vec::Vec<u64> = match a_opt {
-        Some(a) => alloc::vec![a],
-        None => WINDING_BASES.iter().copied().collect(),
+    let bases: alloc::vec::Vec<BigUint> = match a_opt {
+        Some(a) => alloc::vec![BigUint::from(a)],
+        None => WINDING_BASES.iter().map(|&a| BigUint::from(a)).collect(),
     };
 
+    let one = BigUint::one();
     let mut o = format!("trilattice_factor winding {}:\n", n);
-    for a in bases {
-        let a = a % nv;
-        if a < 2 { continue; }
-        let g = small_gcd(a, nv);
-        if g > 1 {
+    let mut budget_hit = false;
+    for a in bases.iter() {
+        let a = a % &nv;
+        if a < two { continue; }
+        let g = big_gcd(a.clone(), nv.clone());
+        if g > one {
             o.push_str(&format!(
                 "  base {} shares a factor: gcd = {} → {} = {} × {}",
-                a, g, nv, g, nv / g
+                a, g, nv, g, &nv / &g
             ));
             return o;
         }
-        let r = classic_period(a, nv);
-        let fr = extract_factors(nv, a, r);
-        if !fr.trivial {
-            let (p, q) = (fr.factor1.unwrap_or(0), fr.factor2.unwrap_or(0));
-            o.push_str(&format!(
-                "  base {}: winding r = {} (the ROTAT period of {} mod {})\n",
-                a, r, a, nv
-            ));
-            o.push_str(&format!(
-                "  winding fixed as its native numeral (⊡ immutable_record): {}\n",
-                native_encode(&r.to_string())
-            ));
-            o.push_str(&format!(
-                "  a^(r/2) ± 1 splits it: {} = {} × {}   read off the winding, no rho search",
-                nv, p, q
-            ));
-            return o;
+        let r = match order_big(&a, &nv, ORDER_STEP_BUDGET) {
+            Some(r) => r,
+            None => { budget_hit = true; continue; }
+        };
+        // Even order with a^(r/2) not -1 gives the split.
+        if (&r % &two).is_zero() {
+            let half = &r / &two;
+            let a_half = a.modpow(&half, &nv);
+            if a_half != &nv - &one {
+                let p = big_gcd(
+                    if a_half > BigUint::zero() { &a_half - &one } else { &nv - &one },
+                    nv.clone(),
+                );
+                let q = big_gcd(&a_half + &one, nv.clone());
+                let nontrivial = p > one && q > one && p < nv && q < nv;
+                if nontrivial {
+                    o.push_str(&format!(
+                        "  base {}: winding r = {} (the ROTAT period of {} mod {})\n",
+                        a, r, a, nv
+                    ));
+                    o.push_str(&format!(
+                        "  winding fixed as its native numeral (⊡ immutable_record): {}\n",
+                        native_encode(&r.to_str_radix(10))
+                    ));
+                    o.push_str(&format!(
+                        "  ⊡ ZWIND holonomy: ∮ A = 2π·{}, the integer winding of the orbit loop\n",
+                        r
+                    ));
+                    let (lo, hi) = if p <= q { (p, q) } else { (q, p) };
+                    o.push_str(&format!(
+                        "  a^(r/2) ± 1 splits it: {} = {} × {}   read off the winding, no rho search",
+                        nv, lo, hi
+                    ));
+                    return o;
+                }
+            }
         }
     }
-    o.push_str(&format!(
-        "  no base in the set gave an even winding with a non-trivial split; hand to `trilattice_factor factor {}`",
-        n
-    ));
+    if budget_hit {
+        o.push_str(&format!(
+            "  order search hit its step budget before closing; hand to `trilattice_factor factor {}`",
+            n
+        ));
+    } else {
+        o.push_str(&format!(
+            "  no base in the set gave an even winding with a non-trivial split; hand to `trilattice_factor factor {}`",
+            n
+        ));
+    }
     o
 }
 
