@@ -46,12 +46,14 @@
 //! Shor's classical core, native to the SIC-phase structure this codebase runs
 //! on (belnap_phase_shor), and it is the factor read from a winding rather than
 //! from a rho search. It runs at arbitrary precision, carrying the full residue
-//! at every step. The order search is baby-step giant-step, the conventional
-//! decomposition of the ⊡ winding through the ∈/∋ pair: the fork lays the baby
-//! table, the giant stride walks, the fuse is their collision, so the order
-//! comes back in O(sqrt order) time and memory where the plain walk was
-//! O(order). There is no bound on n's size; the reach is the baby table's cap
-//! squared.
+//! at every step. The order search is the table-free leaping search of the
+//! ob3ect `table_free_winding_by_leaping`: two leapers cross the ring in large
+//! pseudo-random jumps and are known by where their paths meet, the ∈ fork
+//! setting them and the ∋ fuse resolving their crossing, so the winding comes
+//! back in about sqrt(order) leaps holding only the two leapers, no table. The
+//! large jump is load-bearing: a small uniform stride would drift a full order
+//! instead of meeting early. There is no memory cap; the only limit is a leap-
+//! step time budget.
 //!
 //! The number and the winding both enter the Grammar's own marks now. `read`
 //! shows n's native parity-graded word (Native IMASM-Numeral Mapping), the
@@ -88,56 +90,76 @@ use crate::native_numeral::encode as native_encode;
 /// others are asked for their multiplicative order.
 const WINDING_BASES: [u64; 10] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29];
 
-/// The baby table's size, which is the real thing at stake here: baby-step
-/// giant-step needs a table of m residues to reach an order of m^2, so the table
-/// IS sqrt(order) memory, the algorithm's own cost, not a policy dial. This sets
-/// how much of that memory to spend, a few GB at this size, reaching orders near
-/// its square. Past it the winding route falls through to the bridge, the
-/// squares route, and rho, none of which hold a table. The table-free sqrt-time
-/// order search is Pollard's kangaroo; a naive small-stride rho does not do it,
-/// it drifts at O(order), not sqrt.
-const ORDER_TABLE_CAP: u64 = 20_000_000;
+/// Leap steps the search takes before giving a base up. This is a TIME budget,
+/// not a memory one: the leaping search holds only the two leapers, no table, so
+/// nothing grows with the winding. A meeting arrives in about sqrt(order) leaps,
+/// so this reach covers orders up to roughly its square.
+const LEAP_STEPS: u64 = 80_000_000;
 
-/// The multiplicative order of `a` modulo `n`: the least r > 0 with a^r ≡ 1,
-/// found by baby-step giant-step, the conventional decomposition of the ⊡
-/// winding holonomy through the ∈/∋ pair. The ∈ fork lays down the baby table
-/// a^0, a^1, ..., a^{m-1}; the giant stride walks a^m, a^{2m}, ... and the ∋
-/// fuse is the collision a^{im} = a^j, which gives r = im - j. This meets in
-/// the middle in O(sqrt r) steps and O(sqrt r) memory, where the plain walk was
-/// O(r). Returns None if the order exceeds m^2 for the capped table.
-fn order_bsgs(a: &BigUint, n: &BigUint) -> Option<BigUint> {
-    use alloc::collections::BTreeMap;
+/// Number of precomputed jumps the leaper draws from. The leap taken at a point
+/// is chosen by that point, so the walk is a deterministic function and two
+/// leapers on it must eventually meet.
+const LEAP_BUCKETS: usize = 32;
+
+/// A positive multiple of the multiplicative order of `a` modulo `n`, found by
+/// the table-free leaping search of the ob3ect `table_free_winding_by_leaping`
+/// (word ⊢∈≻⋈≻⋈⊥⋈≻⋈≻⋈⊤⊞≺⊡∋⊙⊣). The loop is the ring `a` generates. ∈ sets two
+/// leapers on it. ≻ is a leap of LARGE pseudo-random distance drawn from the
+/// current point, x -> x·a^{s(x)}, not a small stride; ⋈ accumulates the leap
+/// distance into each leaper's exponent. ⊥ is the drift while they have not met;
+/// ⊤ is the meeting x_slow = x_fast; ⊞ holds the meeting where the two carry
+/// different accumulated distances at the same point; ≺ takes their difference,
+/// which the closed loop makes a whole multiple of the winding; ⊡ fixes it.
+///
+/// The large jump is the load-bearing part: leaps that wander the whole loop
+/// meet by the birthday count in about sqrt(order) steps, where a small uniform
+/// stride would only drift and take a full order to return. Memory is the two
+/// leapers and the precomputed jumps, nothing that grows with the order, so
+/// there is no table and no cap on reach beyond the leap-step time budget.
+fn order_multiple_leaping(a: &BigUint, n: &BigUint, steps: u64) -> Option<BigUint> {
     use alloc::vec::Vec;
     let one = BigUint::one();
     let a = a % n;
     if a == one { return Some(one); }
-
-    // m = ceil(sqrt(n)), capped. Order divides λ(n) < n, so m^2 ≥ n covers
-    // every order when the cap does not bind.
-    let mut m = n.sqrt() + &one;
-    let cap = BigUint::from(ORDER_TABLE_CAP);
-    if m > cap { m = cap; }
-    let m_u64 = m.to_u64_digits().first().copied().unwrap_or(1);
-
-    // ∈ fork: the baby table, a^j keyed by its byte value, smallest j kept.
-    // A small order shows here directly as a^j = 1 with j > 0.
-    let mut baby: BTreeMap<Vec<u8>, u64> = BTreeMap::new();
-    let mut val = one.clone();
-    for j in 0..m_u64 {
-        if j > 0 && val == one { return Some(BigUint::from(j)); }
-        baby.entry(val.to_bytes_le()).or_insert(j);
-        val = (&val * &a) % n;
+    // Small pre-walk catches a tiny order directly.
+    let mut v = one.clone();
+    for k in 1..=64u64 {
+        v = (&v * &a) % n;
+        if v == one { return Some(BigUint::from(k)); }
     }
-    // val is now a^m, the giant stride.
-    let giant_stride = val.clone();
-    let mut giant = giant_stride.clone(); // a^{m·1}
-    // ∋ fuse: the first giant hit in the baby table, a^{im} = a^j, gives r.
-    for i in 1..=m_u64 {
-        if let Some(&j) = baby.get(&giant.to_bytes_le()) {
-            let e = BigUint::from(i) * &m - BigUint::from(j);
-            if e > BigUint::zero() { return Some(e); }
+
+    // The jumps: LARGE pseudo-random exponents s_i, as group elements a^{s_i}.
+    // A step at point x multiplies by the jump its low word selects, and adds
+    // that jump's exponent to the leaper's accumulated distance.
+    let mut jexp: Vec<u64> = Vec::with_capacity(LEAP_BUCKETS);
+    let mut jump: Vec<BigUint> = Vec::with_capacity(LEAP_BUCKETS);
+    let mut seed: u64 = 0x2545F4914F6CDD1D;
+    for _ in 0..LEAP_BUCKETS {
+        seed ^= seed << 13; seed ^= seed >> 7; seed ^= seed << 17; // xorshift
+        let s = (seed >> 1) | 1; // a large odd exponent
+        jexp.push(s);
+        jump.push(a.modpow(&BigUint::from(s), n));
+    }
+    let bucket = |x: &BigUint| -> usize {
+        (x.to_u64_digits().first().copied().unwrap_or(0) as usize) % LEAP_BUCKETS
+    };
+
+    let (mut tx, mut te) = (a.clone(), one.clone());      // slow leaper
+    let (mut hx, mut he) = (a.clone(), one.clone());      // fast leaper
+    let mut moved = 0u64;
+    while moved < steps {
+        let bt = bucket(&tx);
+        tx = (&tx * &jump[bt]) % n; te += BigUint::from(jexp[bt]);
+        for _ in 0..2 {
+            let bh = bucket(&hx);
+            hx = (&hx * &jump[bh]) % n; he += BigUint::from(jexp[bh]);
         }
-        giant = (&giant * &giant_stride) % n;
+        moved += 1;
+        if tx == hx {
+            let d = if te > he { &te - &he } else { &he - &te };
+            if d > BigUint::zero() { return Some(d); }
+            break; // degenerate, no usable difference
+        }
     }
     None
 }
@@ -299,48 +321,49 @@ pub fn winding(n: &str, a_opt: Option<u64>) -> String {
             ));
             return o;
         }
-        let r = match order_bsgs(&a, &nv) {
-            Some(r) => r,
+        let d = match order_multiple_leaping(&a, &nv, LEAP_STEPS) {
+            Some(d) => d,
             None => { budget_hit = true; continue; }
         };
-        // Even order with a^(r/2) not -1 gives the split.
-        if (&r % &two).is_zero() {
+        // d is a multiple of the order (a crossing gives a^{d} = 1). Halve while
+        // a^{d/2} = 1, keeping it a multiple, until a^{d/2} is a nontrivial
+        // square root of 1 that splits n.
+        let mut r = d.clone();
+        while (&r % &two).is_zero() {
             let half = &r / &two;
             let a_half = a.modpow(&half, &nv);
-            if a_half != &nv - &one {
-                let p = big_gcd(
-                    if a_half > BigUint::zero() { &a_half - &one } else { &nv - &one },
-                    nv.clone(),
-                );
-                let q = big_gcd(&a_half + &one, nv.clone());
-                let nontrivial = p > one && q > one && p < nv && q < nv;
-                if nontrivial {
-                    o.push_str(&format!(
-                        "  base {}: winding r = {} (the ROTAT period of {} mod {})\n",
-                        a, r, a, nv
-                    ));
-                    o.push_str(&format!(
-                        "  winding fixed as its native numeral (⊡ immutable_record): {}\n",
-                        native_encode(&r.to_str_radix(10))
-                    ));
-                    o.push_str(&format!(
-                        "  ⊡ ZWIND holonomy: ∮ A = 2π·{}, the integer winding of the orbit loop\n",
-                        r
-                    ));
-                    let (lo, hi) = if p <= q { (p, q) } else { (q, p) };
-                    o.push_str(&format!(
-                        "  a^(r/2) ± 1 splits it: {} = {} × {}   read off the winding, no rho search",
-                        nv, lo, hi
-                    ));
-                    return o;
-                }
+            if a_half == one { r = half; continue; }   // still a multiple, reduce
+            if a_half == &nv - &one { break; }          // trivial root, this base fails
+            let p = big_gcd(&a_half - &one, nv.clone());
+            let q = big_gcd(&a_half + &one, nv.clone());
+            let nontrivial = p > one && q > one && p < nv && q < nv;
+            if nontrivial {
+                o.push_str(&format!(
+                    "  base {}: winding r = {} (a ROTAT period of {} mod {}, from a leaper crossing)\n",
+                    a, r, a, nv
+                ));
+                o.push_str(&format!(
+                    "  winding fixed as its native numeral (⊡ immutable_record): {}\n",
+                    native_encode(&r.to_str_radix(10))
+                ));
+                o.push_str(&format!(
+                    "  ⊡ ZWIND holonomy: ∮ A = 2π·{}, the integer winding of the orbit loop\n",
+                    r
+                ));
+                let (lo, hi) = if p <= q { (p, q) } else { (q, p) };
+                o.push_str(&format!(
+                    "  a^(r/2) ± 1 splits it: {} = {} × {}   read off the winding, no table",
+                    nv, lo, hi
+                ));
+                return o;
             }
+            break;
         }
     }
     if budget_hit {
         o.push_str(&format!(
-            "  order exceeds the capped baby table (reach ~{}^2); hand to `trilattice_factor factor {}`",
-            ORDER_TABLE_CAP, n
+            "  no leaper crossing within the walk budget; hand to `trilattice_factor factor {}`",
+            n
         ));
     } else {
         o.push_str(&format!(
