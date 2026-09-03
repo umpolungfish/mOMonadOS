@@ -178,6 +178,7 @@ pub fn help() -> String {
     o.push_str("  cert          the winding-commit certificate of the word\n");
     o.push_str("  read <n>      the trilattice reading of n's digit word\n");
     o.push_str("  winding <n> [a]  factor n off a multiplicative-order winding (Shor's core)\n");
+    o.push_str("  bridge <n> [B]   factor n off a smooth winding-bridge (⊞/⊡, Pollard p-1)\n");
     o.push_str("  factor <n>    factor n (arbitrary precision) with the reading\n");
     o.push_str("  help          this list");
     o
@@ -342,6 +343,73 @@ pub fn winding(n: &str, a_opt: Option<u64>) -> String {
             "  no base in the set gave an even winding with a non-trivial split; hand to `trilattice_factor factor {}`",
             n
         ));
+    }
+    o
+}
+
+/// The default smoothness bound for the winding-bridge route.
+const BRIDGE_BOUND: u64 = 300_000;
+
+/// The winding-bridge, the ⊞/⊡ decomposition past the order ceiling. When one
+/// factor p has a smooth winding, meaning p-1 has only small prime factors, the
+/// accumulated winding M = product of e for e up to the bound is a multiple of
+/// p-1, so a^M ≡ 1 mod p while a^M is generic mod the other factor. That is the
+/// MOAT_BRIDGE_TYPE mismatch: the winding bridges to p and stays across the moat
+/// to q. gcd(a^M - 1, n) reads the bridged factor out. This never touches the
+/// order's size, so it breaks the sqrt-order ceiling for a smooth-winding
+/// factor; it finds nothing when both factors' windings are non-smooth, which
+/// is the case an RSA modulus is chosen to be. This is Pollard's p-1.
+fn winding_bridge(n: &BigUint, bound: u64) -> Option<BigUint> {
+    let one = BigUint::one();
+    let two = BigUint::from(2u32);
+    let mut a = two % n;
+    let mut e: u64 = 2;
+    // Check the gcd at every step. The first factor whose winding divides the
+    // accumulated M sends a to 1 mod that factor while it is still generic mod
+    // the other, so gcd(a-1, n) crosses to it. Checking only in coarse batches
+    // can let the second factor bridge inside the same batch, collapsing the
+    // gcd to n and losing the split; per-step checking catches the first
+    // crossing exactly. Cost stays dominated by the modular power, not the gcd.
+    while e <= bound {
+        a = a.modpow(&BigUint::from(e), n);
+        e += 1;
+        if a.is_zero() || a == one { break; } // bridged out or collapsed; no readable split
+        let g = big_gcd(&a - &one, n.clone());
+        if g > one && &g < n { return Some(g); }
+    }
+    None
+}
+
+/// The bridge subcommand: factor n by the winding-bridge (Pollard p-1) at the
+/// given smoothness bound, reading the split off the bridged winding.
+pub fn bridge(n: &str, bound_opt: Option<u64>) -> String {
+    let bound = bound_opt.unwrap_or(BRIDGE_BOUND);
+    let nv: BigUint = match n.trim().parse() {
+        Ok(v) => v,
+        Err(_) => return format!("trilattice_factor bridge {}: not a non-negative integer", n),
+    };
+    let two = BigUint::from(2u32);
+    if nv < two {
+        return format!("trilattice_factor bridge {}: n < 2, nothing to bridge", n);
+    }
+    let mut o = format!("trilattice_factor bridge {}:\n", n);
+    match winding_bridge(&nv, bound) {
+        Some(g) => {
+            let cof = &nv / &g;
+            let (lo, hi) = if g <= cof { (g, cof) } else { (cof, g) };
+            o.push_str(&format!(
+                "  ⊞ MOAT_BRIDGE_TYPE: one factor's winding is {}-smooth, the other is not\n",
+                bound
+            ));
+            o.push_str(&format!(
+                "  ⊡ WIND_BRIDGE: gcd(a^M - 1, n) crosses to the bridged factor\n"
+            ));
+            o.push_str(&format!("  {} = {} × {}   read off the winding-bridge", nv, lo, hi));
+        }
+        None => o.push_str(&format!(
+            "  no factor with a {}-smooth winding at this bound; raise the bound or hand to `trilattice_factor factor {}`",
+            bound, n
+        )),
     }
     o
 }

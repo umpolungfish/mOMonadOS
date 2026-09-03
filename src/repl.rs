@@ -1291,6 +1291,15 @@ pub fn repl(k: &mut Kernel) {
                             sprintln!("{}", tf::winding(n_str, a_opt));
                         }
                     }
+                    "bridge" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("trilattice_factor bridge: usage: trilattice_factor bridge <n> [B]");
+                        } else {
+                            let b_opt = parts.next().and_then(|s| s.parse::<u64>().ok());
+                            sprintln!("{}", tf::bridge(n_str, b_opt));
+                        }
+                    }
                     "factor" => {
                         let n_str = parts.next().unwrap_or("");
                         if n_str.is_empty() {
