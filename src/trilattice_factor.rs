@@ -47,9 +47,19 @@
 //! on (belnap_phase_shor), and it is the factor read from a winding rather than
 //! from a rho search. It is exact below the 32-bit bound; larger n hands off.
 //!
-//! The rung still standing: read that winding off THIS word's OWN register
-//! structure, so the ⊡ commit does not just certify the fixed word but reports
-//! the order r for a given n. Stated as the open rung, not a wall.
+//! The number and the winding both enter the Grammar's own marks now. `read`
+//! shows n's native parity-graded word (Native IMASM-Numeral Mapping), the
+//! bijective encoding, beside the hex one; and when the winding route finds an
+//! order r, it records r as its own native numeral, the ⊡ immutable_record of
+//! the winding value.
+//!
+//! The rung still standing, and which method bounds it: reading the order r off
+//! the register of n's word alone. Parity, the Z2 grade the native word
+//! carries, does not determine the order: many powers a^k mod n share a parity,
+//! so the parity sequence closes on a shorter cycle than r. The order is a fact
+//! about the full residue, not its parity bit. So the register of the parity
+//! word cannot report r by itself; a mapping carrying the full residue, not
+//! only its Z2 grade, is the method to build next. Named, not walled.
 //!
 //! Subcommands:
 //!   trilattice_factor word            the canonical glyph word and its marks
@@ -59,12 +69,13 @@
 //!   trilattice_factor factor <n>      factor n (arbitrary precision) with the reading
 //!   trilattice_factor help            list subcommands
 
-use alloc::string::String;
+use alloc::string::{String, ToString};
 use alloc::format;
 use imasm_core::lattice_flow::cycle_landings;
 use crate::prime_winding::{digit_encode, factor_bounded};
 use crate::belnap_phase_shor::classic_period;
 use crate::belnap_shor_factors::extract_factors;
+use crate::native_numeral::encode as native_encode;
 
 /// The largest n the winding route handles exactly. `extract_factors`'s
 /// modular exponentiation multiplies two residues in u64, so it stays exact
@@ -170,17 +181,22 @@ pub fn read(n: &str) -> String {
         return format!("trilattice_factor read {}: not a valid non-negative integer", n);
     }
     let landings = cycle_landings(&dw);
-    let mut o = format!("trilattice_factor read {}:\n  digit word : {}\n", n, dw);
+    let mut o = format!("trilattice_factor read {}:\n", n);
+    o.push_str(&format!("  hex-digit word   : {}\n", dw));
     match landings {
         Some(l) => {
             let commits = l.iter().filter(|r| r.as_str() == "T").count();
             o.push_str(&format!(
-                "  period {}, {} winding-commit cut(s) over the orbit",
+                "  period {}, {} winding-commit cut(s) over the orbit\n",
                 l.len(), commits
             ));
         }
-        None => o.push_str("  no IMASM glyphs in the digit word"),
+        None => o.push_str("  no IMASM glyphs in the digit word\n"),
     }
+    // The native parity-graded word: bijective with n, where the hex word is
+    // not. This is the mapping the Native IMASM-Numeral Mapping ob3ect gives.
+    let nw = native_encode(n);
+    o.push_str(&format!("  native word      : {}", nw));
     o
 }
 
@@ -237,6 +253,10 @@ pub fn winding(n: &str, a_opt: Option<u64>) -> String {
             o.push_str(&format!(
                 "  base {}: winding r = {} (the ROTAT period of {} mod {})\n",
                 a, r, a, nv
+            ));
+            o.push_str(&format!(
+                "  winding fixed as its native numeral (⊡ immutable_record): {}\n",
+                native_encode(&r.to_string())
             ));
             o.push_str(&format!(
                 "  a^(r/2) ± 1 splits it: {} = {} × {}   read off the winding, no rho search",
