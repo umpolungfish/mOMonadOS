@@ -40,21 +40,47 @@
 //! module carries the trilattice reading of the number and of the word; the
 //! arithmetic that splits n lives one place, next door.
 //!
-//! The next rung is closing the gap that leaves: a reading off THIS word's
-//! own structure that tracks the factorization event itself, the way the ⊡
-//! commit tracks the winding. That is stated here as the open rung, not a wall.
+//! The winding route closes part of that gap. `winding` reads the factor off a
+//! real winding: the multiplicative order r of a base a mod n, the ROTAT period
+//! of the ring a generates, from which gcd(a^(r/2) ± 1, n) splits n. That is
+//! Shor's classical core, native to the SIC-phase structure this codebase runs
+//! on (belnap_phase_shor), and it is the factor read from a winding rather than
+//! from a rho search. It is exact below the 32-bit bound; larger n hands off.
+//!
+//! The rung still standing: read that winding off THIS word's OWN register
+//! structure, so the ⊡ commit does not just certify the fixed word but reports
+//! the order r for a given n. Stated as the open rung, not a wall.
 //!
 //! Subcommands:
-//!   trilattice_factor word          the canonical glyph word and its marks
-//!   trilattice_factor cert          the winding-commit certificate of the word
-//!   trilattice_factor read <n>      the trilattice reading of n's digit word
-//!   trilattice_factor factor <n>    factor n (arbitrary precision) with the reading
-//!   trilattice_factor help          list subcommands
+//!   trilattice_factor word            the canonical glyph word and its marks
+//!   trilattice_factor cert            the winding-commit certificate of the word
+//!   trilattice_factor read <n>        the trilattice reading of n's digit word
+//!   trilattice_factor winding <n> [a] factor n off a multiplicative-order winding
+//!   trilattice_factor factor <n>      factor n (arbitrary precision) with the reading
+//!   trilattice_factor help            list subcommands
 
 use alloc::string::String;
 use alloc::format;
 use imasm_core::lattice_flow::cycle_landings;
 use crate::prime_winding::{digit_encode, factor_bounded};
+use crate::belnap_phase_shor::classic_period;
+use crate::belnap_shor_factors::extract_factors;
+
+/// The largest n the winding route handles exactly. `extract_factors`'s
+/// modular exponentiation multiplies two residues in u64, so it stays exact
+/// only while n fits in 32 bits; past that the winding route hands off to the
+/// arbitrary-precision search rather than return a wrapped product.
+const WINDING_EXACT_BOUND: u64 = 1 << 32;
+
+/// Bases tried for the order winding, small units first. Any base sharing a
+/// factor with n is a collision that hands the factor over directly; the
+/// others are asked for their multiplicative order.
+const WINDING_BASES: [u64; 10] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29];
+
+fn small_gcd(mut a: u64, mut b: u64) -> u64 {
+    while b != 0 { let t = b; b = a % b; a = t; }
+    a
+}
 
 /// The ob3ect's own fixed reference word.
 pub const WORD: &str = "⊢≻⊙∈⊤⋈⊥≺⊞⊡∋⋈⊣";
@@ -94,6 +120,7 @@ pub fn help() -> String {
     o.push_str("  word          the canonical glyph word and its marks\n");
     o.push_str("  cert          the winding-commit certificate of the word\n");
     o.push_str("  read <n>      the trilattice reading of n's digit word\n");
+    o.push_str("  winding <n> [a]  factor n off a multiplicative-order winding (Shor's core)\n");
     o.push_str("  factor <n>    factor n (arbitrary precision) with the reading\n");
     o.push_str("  help          this list");
     o
@@ -154,6 +181,74 @@ pub fn read(n: &str) -> String {
         }
         None => o.push_str("  no IMASM glyphs in the digit word"),
     }
+    o
+}
+
+/// The winding route: read the factor straight off a winding, the way the ⊡
+/// commit names. For a base a coprime to n, the multiplicative order r is the
+/// period of the ring a generates under multiplication mod n, the ROTAT
+/// period. When r is even and a^(r/2) is not -1, gcd(a^(r/2) ± 1, n) splits n.
+/// This is Shor's classical core, native to the SIC-phase structure, and it is
+/// the factor read from the winding rather than from a rho search. Exact for n
+/// below the 32-bit bound; larger n is handed to the arbitrary-precision route.
+pub fn winding(n: &str, a_opt: Option<u64>) -> String {
+    let t = n.trim();
+    let nv: u64 = match t.parse() {
+        Ok(v) => v,
+        Err(_) => return format!("trilattice_factor winding {}: not a u64 integer", n),
+    };
+    if nv < 2 {
+        return format!("trilattice_factor winding {}: n < 2, no winding", n);
+    }
+    if nv >= WINDING_EXACT_BOUND {
+        return format!(
+            "trilattice_factor winding {}: n is past the 32-bit exact bound for this route; use `trilattice_factor factor {}` for the arbitrary-precision split",
+            n, n
+        );
+    }
+    if nv % 2 == 0 {
+        return format!(
+            "trilattice_factor winding {}: {} = 2 × {}   (even, split before any winding)",
+            n, nv, nv / 2
+        );
+    }
+
+    let bases: alloc::vec::Vec<u64> = match a_opt {
+        Some(a) => alloc::vec![a],
+        None => WINDING_BASES.iter().copied().collect(),
+    };
+
+    let mut o = format!("trilattice_factor winding {}:\n", n);
+    for a in bases {
+        let a = a % nv;
+        if a < 2 { continue; }
+        let g = small_gcd(a, nv);
+        if g > 1 {
+            o.push_str(&format!(
+                "  base {} shares a factor: gcd = {} → {} = {} × {}",
+                a, g, nv, g, nv / g
+            ));
+            return o;
+        }
+        let r = classic_period(a, nv);
+        let fr = extract_factors(nv, a, r);
+        if !fr.trivial {
+            let (p, q) = (fr.factor1.unwrap_or(0), fr.factor2.unwrap_or(0));
+            o.push_str(&format!(
+                "  base {}: winding r = {} (the ROTAT period of {} mod {})\n",
+                a, r, a, nv
+            ));
+            o.push_str(&format!(
+                "  a^(r/2) ± 1 splits it: {} = {} × {}   read off the winding, no rho search",
+                nv, p, q
+            ));
+            return o;
+        }
+    }
+    o.push_str(&format!(
+        "  no base in the set gave an even winding with a non-trivial split; hand to `trilattice_factor factor {}`",
+        n
+    ));
     o
 }
 

@@ -1262,6 +1262,15 @@ pub fn repl(k: &mut Kernel) {
                             sprintln!("{}", tf::read(n_str));
                         }
                     }
+                    "winding" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("trilattice_factor winding: usage: trilattice_factor winding <n> [a]");
+                        } else {
+                            let a_opt = parts.next().and_then(|s| s.parse::<u64>().ok());
+                            sprintln!("{}", tf::winding(n_str, a_opt));
+                        }
+                    }
                     "factor" => {
                         let n_str = parts.next().unwrap_or("");
                         if n_str.is_empty() {

@@ -224,11 +224,17 @@ pub fn run_phase_belnap_shor(n_qubits: usize, a: u64, n_val: u64) -> PhaseShorRe
     }
 }
 
-fn classic_period(a: u64, n: u64) -> u64 {
+/// The multiplicative order of `a` modulo `n`: the least r > 0 with a^r ≡ 1,
+/// or 0 when a is not a unit (gcd(a,n) > 1) or n ≤ 1. This is the winding of
+/// the ring `a` generates under multiplication, the ROTAT period Shor's factor
+/// is read off. The product is taken in u128 so it is exact for any u64 n,
+/// where a bare u64 multiply would wrap past 2^32.
+pub fn classic_period(a: u64, n: u64) -> u64 {
     if n <= 1 { return 0; }
-    let mut val: u64 = 1;
+    let a = a % n;
+    let mut val: u64 = 1 % n;
     for r in 1..=n {
-        val = (val * a) % n;
+        val = ((val as u128 * a as u128) % n as u128) as u64;
         if val == 1 { return r; }
     }
     0
