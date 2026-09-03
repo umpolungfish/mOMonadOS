@@ -1300,6 +1300,14 @@ pub fn repl(k: &mut Kernel) {
                             sprintln!("{}", tf::bridge(n_str, b_opt));
                         }
                     }
+                    "squares" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("trilattice_factor squares: usage: trilattice_factor squares <n>");
+                        } else {
+                            sprintln!("{}", tf::squares(n_str));
+                        }
+                    }
                     "factor" => {
                         let n_str = parts.next().unwrap_or("");
                         if n_str.is_empty() {

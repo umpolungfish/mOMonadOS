@@ -179,6 +179,7 @@ pub fn help() -> String {
     o.push_str("  read <n>      the trilattice reading of n's digit word\n");
     o.push_str("  winding <n> [a]  factor n off a multiplicative-order winding (Shor's core)\n");
     o.push_str("  bridge <n> [B]   factor n off a smooth winding-bridge (⊞/⊡, Pollard p-1)\n");
+    o.push_str("  squares <n>   factor n off a comparable-size bridge (∈, difference of squares)\n");
     o.push_str("  factor <n>    factor n (arbitrary precision) with the reading\n");
     o.push_str("  help          this list");
     o
@@ -409,6 +410,73 @@ pub fn bridge(n: &str, bound_opt: Option<u64>) -> String {
         None => o.push_str(&format!(
             "  no factor with a {}-smooth winding at this bound; raise the bound or hand to `trilattice_factor factor {}`",
             bound, n
+        )),
+    }
+    o
+}
+
+/// How many steps up from ceil(sqrt n) the difference-of-squares search walks
+/// before giving up. Fermat's step count is (a - sqrt n), small when the two
+/// factors are close and growing as they spread, so this bounds the search to
+/// the balanced case it is for.
+const SQUARES_STEP_CAP: u64 = 4_000_000;
+
+/// The bridge-of-comparable-size, the ∈ BRIDGE_EXIST decomposition. The
+/// fragment ∃y∈x(|y|∼|x|) is a factor of the same magnitude as sqrt(n): write
+/// n = a^2 - b^2 = (a-b)(a+b), the congruence of squares. Walk a up from
+/// ceil(sqrt n) until a^2 - n is itself a square b^2; then a-b and a+b are the
+/// two comparable factors. The step count is a - sqrt(n), so this closes fast
+/// exactly when the factors are close, the balanced case rho and the p-1 bridge
+/// are slowest on, and it never depends on either factor's winding.
+fn difference_of_squares(n: &BigUint, cap: u64) -> Option<(BigUint, BigUint)> {
+    let one = BigUint::one();
+    let mut a = n.sqrt();
+    if &a * &a < *n { a += &one; } // ceil(sqrt n)
+    let mut steps: u64 = 0;
+    while steps <= cap {
+        let a2 = &a * &a;
+        if a2 >= *n {
+            let b2 = &a2 - n;
+            let b = b2.sqrt();
+            if &b * &b == b2 {
+                let lo = &a - &b;
+                let hi = &a + &b;
+                if lo > one && lo < *n { return Some((lo, hi)); }
+            }
+        }
+        a += &one;
+        steps += 1;
+    }
+    None
+}
+
+/// The squares subcommand: factor n by the difference-of-squares bridge,
+/// reading the split off two factors of comparable size (∈ BRIDGE_EXIST).
+pub fn squares(n: &str) -> String {
+    let nv: BigUint = match n.trim().parse() {
+        Ok(v) => v,
+        Err(_) => return format!("trilattice_factor squares {}: not a non-negative integer", n),
+    };
+    let two = BigUint::from(2u32);
+    if nv < BigUint::from(3u32) {
+        return format!("trilattice_factor squares {}: n < 3, nothing to bridge", n);
+    }
+    if (&nv % &two).is_zero() {
+        return format!(
+            "trilattice_factor squares {}: {} = 2 × {}   (even; the squares bridge is for odd n)",
+            n, nv, &nv / &two
+        );
+    }
+    let mut o = format!("trilattice_factor squares {}:\n", n);
+    match difference_of_squares(&nv, SQUARES_STEP_CAP) {
+        Some((lo, hi)) => {
+            o.push_str("  ∈ BRIDGE_EXIST: a bridge of comparable size, |y| ∼ |x| ∼ √n\n");
+            o.push_str("  ⊙ n = a² - b² = (a-b)(a+b), the congruence of squares\n");
+            o.push_str(&format!("  {} = {} × {}   read off the difference of squares", nv, lo, hi));
+        }
+        None => o.push_str(&format!(
+            "  factors too far apart for the squares bridge within its step cap; hand to `trilattice_factor factor {}`",
+            n
         )),
     }
     o
