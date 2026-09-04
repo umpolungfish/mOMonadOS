@@ -14,8 +14,7 @@
 //!
 //! The weights are baked in unconditionally: vita_weights.bin is compiled
 //! into the kernel by the include_bytes below, so the command is always
-//! present. It used to sit behind a `vita` feature that no build enabled,
-//! which put it in the menu and out of the binary at the same time.
+//! present.
 
 use alloc::collections::BTreeMap;
 use alloc::format;

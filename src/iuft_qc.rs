@@ -233,12 +233,9 @@ pub fn sensitivity(tuple: &IgTuple) -> IuftSensitivity {
 // WHERE THE HARDCODED GATES WERE
 // ═══════════════════════════════════════════════════════════════
 //
-// Twelve angle triples used to sit here, written out beside the encoder that
-// computes them. They had drifted: the graviton's differed from its own catalog
-// tuple by 0.397 and the electron's by 0.629, and the electron's comment said
-// why — "using encode: θ=180°, φ=105°, ψ=90° — but we refine from IUFT
-// expansion". A hand refinement of a computed value is a second source of
-// truth, and the second source is the one that goes stale.
+// The angle triples are computed by the encoder, the single source. A hand
+// refinement written beside a computed value is a second source of truth that
+// goes stale, so there is none.
 //
 // They also shadowed the encoder. `gate_for` checked the table first, so
 // `iuft encode graviton` printed the hand-written triple under the word
@@ -316,9 +313,8 @@ pub fn distance_matrix(gates: &[(alloc::string::String, IuftQcGate)]) -> Vec<Vec
 
 /// The catalog entry whose gate is nearest a given gate.
 ///
-/// This used to range over twelve hand-picked names, which made "nearest known"
-/// mean "nearest of twelve". It ranges over the catalog now, so the answer is
-/// the nearest entry the kernel actually holds.
+/// Ranges over the whole catalog, so the answer is the nearest entry the kernel
+/// actually holds.
 pub fn nearest_known(gate: &IuftQcGate) -> (&'static str, f64) {
     let mut best_name = "";
     let mut best_dist = f64::INFINITY;

@@ -240,13 +240,8 @@ pub fn word() -> String {
 /// Stops the moment the search meets an Undetermined verdict — it does
 /// not step past a number outside its reach.
 ///
-/// The old version of this search jumped past a whole block of numbers on
-/// a fact that no longer holds: `is_prime` used to read only the leading
-/// digit, so an entire digit-count's worth of numbers shared one verdict
-/// and could be skipped at once. Now that the verdict comes from the full
-/// ROTAT orbit and depends on every digit, that shortcut is gone and there
-/// is no known way to jump to the answer — decrementing one at a time is
-/// the search itself, not a stand-in for a faster one. `SCAN_CAP` bounds
+/// The verdict depends on every digit, so there is no way to jump to the
+/// answer; decrementing one at a time is the search itself. `SCAN_CAP` bounds
 /// the step count at a value measured to stay interactive; past that it
 /// reports OutOfReach, stating what was scanned rather than hanging.
 pub fn find(n: &str) -> String {

@@ -1040,8 +1040,7 @@ pub fn repl(k: &mut Kernel) {
                         crate::iuft_qc::print_distance_matrix(&names);
                     }
                     "list" => {
-                        // The list used to be twelve hand-picked names. It is the
-                        // catalog now; a domain narrows it.
+                        // The list is the catalog; a domain narrows it.
                         let dom = crate::catalog::parse_domain(parts.next().unwrap_or(""));
                         let gates = crate::iuft_qc::gates_in(dom);
                         sprintln!("IUFT QC gate encodings ({} entries):", gates.len());
@@ -3361,15 +3360,8 @@ Stopped after {} ticks.", ran);
 
                             match u {
                                 // Dialects 0–7 evaluate from the SAME GateSpec data as every
-                                // other dialect. They used to carry hand-written gates using
-                                // `(x as u8) <= (thresh as u8)`, which is the discriminant trick
-                                // `IgPrim::ordinal`'s own docstring warns is invalid for ⊙
-                                // Criticality and ⊡ Winding — the two families these very gates
-                                // test at G2 and G3. It rejected roar/err/haha at ⊙≥⊙ and zoo at
-                                // ⊡≥𐑭, and dialect 5's ⊡≥𐑟 admitted every winding value, a gate
-                                // that always passed. Arms 8–11 had already been moved to
-                                // `.ordinal()`; this finishes that move and removes the second
-                                // copy of the gate table at the same time.
+                                // other dialect, through `.ordinal()`, so there is one gate
+                                // table across all of them.
                                 0..=7 => {
                                     let unis = crate::dialect_expansion::all_dialects();
                                     let uni = &unis[u as usize];

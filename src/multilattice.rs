@@ -74,11 +74,9 @@ pub fn wh2_act(d: WhIdx2, v: B4) -> B4 {
 /// amplitude bit applies bnot to the VALUE, phase bit flips a SEPARATE
 /// ZMod 2 phase field the Lean file's `MLQubit{val, phase}` carries
 /// alongside it. Returns (value, phase) as that pair, not the value
-/// alone -- an earlier version of this function dropped the phase bit
-/// entirely, which made every naive-orbit count collapse to 1 instead
-/// of 2^n (since bnot(B)=B leaves the value fixed at B regardless of the
-/// amplitude bit, and with no phase tracked there was nothing left to
-/// vary). Caught by reading the printed orbit table, not asserted.
+/// alone. The phase bit must be tracked: bnot(B)=B leaves the value fixed at
+/// B regardless of the amplitude bit, so without a separate phase every
+/// naive-orbit count collapses to 1 instead of 2^n.
 pub fn wh2_act_naive(d: WhIdx2, v: B4, phase: bool) -> (B4, bool) {
     let new_val = if d.a { v.bnot() } else { v };
     let new_phase = phase ^ d.b;
@@ -139,9 +137,7 @@ pub fn qm_born_prob_0_after_hadamard() -> f64 {
 /// Is d^2/(d+1) -- the exact rational Hilbert-space equiangularity ratio
 /// a real SIC-POVM needs for dimension d -- a perfect square in Q? This
 /// is what SIC_Multilattice_Proof.lean §11's own comment actually
-/// claims fails for every d=2^n, n>1 (NOT that d^2/(d+1) is an integer,
-/// which an earlier version of this function checked instead -- a
-/// mistranscription, not what the file says).
+/// claims fails for every d=2^n, n>1.
 ///
 /// gcd(d, d+1) = 1 always (consecutive integers), so gcd(d^2, d+1) = 1
 /// too: any prime dividing both d^2 and d+1 would divide d, hence divide

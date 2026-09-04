@@ -2085,8 +2085,7 @@ pub fn repl_compile(spec: &str, net_depth: usize, sk_depth: usize, render: u8) {
     let (used0, total) = crate::heap_used();
 
     sprintln!("Building gate net (depth {}, SK recursion {})...", net_depth, sk_depth);
-    // The depth used to be clamped to 12 before it got here, so a larger request
-    // was silently rewritten. It is honoured now; the net stops on the arena.
+    // The depth is honoured as given; the net stops on the arena.
     let net = GateNet::build(net_depth, 200000);
     let (used1, _) = crate::heap_used();
     sprintln!("  net: {} entries, {} KB (heap {} of {} KB)",

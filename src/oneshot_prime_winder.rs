@@ -4,12 +4,9 @@
 // the winding number. N is prime iff the order r = ord_a(N) of a coprime
 // base a divides N-1 (Fermat, order form), checked across several bases.
 //
-// This used to special-case u64 N through winding_period::winding_order
-// directly and fall back to Miller-Rabin above a 1e12 threshold -- two
-// primality tests living side by side, one winding-native and one not.
-// prime_winding::is_prime is now itself winding-native at every size (the
-// BigUint BSGS engine subsumes the u64 fast path), so this delegates to
-// it uniformly and carries no primality test of its own.
+// prime_winding::is_prime is the single winding-native path at every size (the
+// BigUint BSGS engine), so this delegates to it uniformly and carries no
+// primality test of its own.
 //
 // B4 verdict: T=prime, F=composite, B=paradice (N≤1), N=undetermined
 // (the winding-order search did not close within its step budget).

@@ -39,12 +39,9 @@ use std::time::Instant;
 /// Each stage computes its T-arm (T,t lanes) and F-arm (F,f lanes)
 /// separately before packing them together (∋), not as one expression.
 ///
-/// The verification used to be a single-threaded CPU loop reading every
-/// element back -- at 10^9 triples that loop was 30x the cost of the GPU
-/// work it was checking (measurements/gpu_sixteen3_tensor_kernel_scaling.*).
-/// Moved onto the GPU: every thread ALSO computes the same three stages via
-/// the flat, single-expression form (`ref1`/`ref2`/`ref3` below, the exact
-/// expressions `gpu_native_protocol.rs`'s CHAINED_SRC already verified
+/// The verification runs on the GPU: every thread ALSO computes the same three
+/// stages via the flat, single-expression form (`ref1`/`ref2`/`ref3` below, the
+/// exact expressions `gpu_native_protocol.rs`'s CHAINED_SRC already verified
 /// independently at billion scale in an earlier, separate kernel), compares
 /// against its own arm-shape result, and folds any disagreement into one
 /// atomic counter per stage -- O(N) work that stays on the device, only a

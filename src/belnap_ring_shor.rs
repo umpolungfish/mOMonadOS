@@ -420,12 +420,11 @@ pub fn program_from_glyphs(word: &str) -> Result<Program, (usize, char)> {
     for (i, c) in word.chars().filter(|c| !c.is_whitespace()).enumerate() {
         match Glyph::from_char(c) {
             Some(g) => {
-                // `Program` is a fixed 64-token buffer and `push` drops silently past
-                // it, so a longer word used to come back truncated with no sign that
-                // anything was lost — a 513-mark word derived from its first 64 and
-                // reported a tuple for a prefix. Refuse instead, the way a bad mark is
-                // already refused, so the caller sees the limit rather than a wrong
-                // answer. The word instruments take `&str` and have no such bound.
+                // `Program` is a fixed 64-token buffer and `push` drops silently
+                // past it, so a longer word would truncate with no sign of the
+                // loss. Refuse instead, the way a bad mark is refused, so the
+                // caller sees the limit rather than a wrong answer. The word
+                // instruments take `&str` and have no such bound.
                 if p.len() == Program::CAPACITY { return Err((i, c)); }
                 p.push(glyph_to_token(g));
             }

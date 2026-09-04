@@ -13,9 +13,9 @@
 //
 // Primality and factorization both run on `prime_winding`'s BSGS
 // winding-order engine (the same one `winding_period_of_the_primes_on_the_
-// number_line` backs) — the fold this file used to call "kissing
-// endpoints" is the giant-step meeting the baby-step table, not a
-// separately-run Brent's rho. No Miller-Rabin, no local factoring loop.
+// number_line` backs) — the fold here is the giant-step meeting the
+// baby-step table, not a separately-run Brent's rho. No Miller-Rabin, no
+// local factoring loop.
 //
 // ARBITRARY LENGTH: BigUint throughout, no fixed digit limit. The step
 // budget bounds the ORDER a search can certify, not N's size — past that

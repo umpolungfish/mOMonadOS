@@ -35,9 +35,9 @@
 //!
 //! The per-glyph GPU actions below (and in `gpu_native_cycle.rs`) key off
 //! token IDENTITY, not position, so the swap changes what step numbers 2
-//! and 9 mean against the ob3ect's own phase_4 table (the boundary-anchor
-//! action now sits where the rejoin action used to, and vice versa) without
-//! changing what device work actually runs for either glyph.
+//! and 9 mean against the ob3ect's own phase_4 table (boundary-anchor and rejoin
+//! actions are swapped between those two steps) without changing what device
+//! work actually runs for either glyph.
 
 use alloc::format;
 use alloc::string::String;

@@ -846,10 +846,9 @@ pub fn audit_lines(s: &TheoryScope) -> Vec<AuditLine> {
         });
     }
 
-    // 6b. Second imscriptions met at the catalog merge. Recorded because the
-    //     merge keeps only one and used to drop the other in silence; reported
-    //     without a verdict because a differing form at a live address is not a
-    //     defect. crystal_roundtrip proves encode/decode is a bijection onto
+    // 6b. Second imscriptions met at the catalog merge, where only one is kept.
+    //     Recorded and reported without a verdict because a differing form at a
+    //     live address is not a defect. crystal_roundtrip proves encode/decode is a bijection onto
     //     0..17,279,999, so an address cannot be unmade and an improper
     //     imscription never reaches one — the coupling rejects it, not this.
     let drops = crate::catalog::name_collisions();

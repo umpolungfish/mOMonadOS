@@ -30,11 +30,7 @@ pub fn token_name(tok: &Token) -> &'static str { tok.name() }
 /// protocol does not have to know which module owns the alphabet.
 pub fn token_glyph(tok: &Token) -> &'static str { tok.code() }
 
-/// Parse a token from a name OR a glyph.
-///
-/// This used to carry its own table of the twelve ASCII names and reject every
-/// glyph, so `⋈` parsed through `Token::parse` and failed here — two parsers for
-/// one type, disagreeing about the alphabet. `Token::parse` is the one that
+/// Parse a token from a name OR a glyph. `Token::parse` is the one parser that
 /// knows both, including the short forms and the δ/μ spellings, and it is
 /// explicit that the retired marks ◇ ● ☊ ☋ are not tokens.
 pub fn parse_token_name(name: &str) -> Option<Token> { Token::parse(name) }
