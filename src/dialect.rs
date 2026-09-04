@@ -175,11 +175,8 @@ fn gate_spec_fmt(g: &crate::dialect_expansion::GateSpec) -> String {
 
 /// Return the gate summary string for a dialect.
 pub fn dialect_gates(u: u8) -> String {
-    // Every dialect carries its gates as GateSpecs in the marks, so every
-    // dialect is printed from them. The hand-written strings that used to sit
-    // here for the first twelve were a second notation: Phi, Phc, Omega, f, Gm
-    // for the marks, and the English names of Shavian letters where the letters
-    // belong. There is one notation and these are not it.
+    // Every dialect carries its gates as GateSpecs in the marks, and the summary
+    // is printed from them. There is one notation, the marks, and this is it.
     if is_out_of_range(u) {
         return "Unknown gates".to_string();
     }

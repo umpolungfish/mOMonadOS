@@ -181,11 +181,7 @@ impl RepairEngine {
     }
 
     /// Reads the actual artifact rather than returning a canned label by
-    /// type. A word this diagnosis calls "execution failure" on used to get
-    /// the same string as every other program, whether the real defect was
-    /// a fork/fuse imbalance the search below has no hope of closing in one
-    /// edit, or a single exposed clear one insertion fixes -- indistinguishable
-    /// from the message alone. Reports what's actually there: the FSPLIT/FFUSE
+    /// type. Reports what's actually there: the FSPLIT/FFUSE
     /// count imbalance (the search space needs at least that many coordinated
     /// edits, not one, to reach a paired word at all), the closure verdict
     /// from a real walk, and the banked-weight exposure, each computed, not

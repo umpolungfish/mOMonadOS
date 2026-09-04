@@ -161,12 +161,11 @@ pub fn layer_verdict(gate_closed: bool, ceiling_ok: bool) -> B4 {
 // THE PAYLOADS — computed from canonical tuples, never hand-entered
 // ═══════════════════════════════════════════════════════════════
 
-/// The seven Witnesses riding the vessel. BSD, Hodge, and YM were the
-/// original three. RH, NS, and PNP were added when their static
-/// Clay_UnclosedResistance.lean proof turned out to have never actually
-/// been run through boarding/read-back. Collatz is the first Witness with
-/// no Clay-tied theorem behind it at all, open-ended: nothing here
-/// predicts what its verdict should be, so it is boarded to find out.
+/// The Witnesses riding the vessel. BSD, Hodge, and YM carry a Clay-tied
+/// theorem run through boarding and read-back. RH, NS, and PNP ride without
+/// that: their static Clay_UnclosedResistance.lean proof has not been through
+/// boarding/read-back. Collatz has no Clay-tied theorem behind it at all,
+/// open-ended: nothing here predicts its verdict, so it is boarded to find out.
 pub const WITNESSES: [(&str, &str); 9] = [
     ("BSD", "birch_swinnerton_dyer"),
     ("Hodge", "hodge_conjecture"),

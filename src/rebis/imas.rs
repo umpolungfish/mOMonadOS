@@ -168,7 +168,7 @@ pub fn verify_bootstrap(arr: &[u8]) -> alloc::string::String {
 pub fn imasm_summary() -> alloc::string::String {
     use crate::style as S;
     // The token count is the length of the canonical table, not a number
-    // written beside it: the two used to be able to disagree.
+    // written beside it, so the two cannot disagree.
     let n = CANONICAL_NAMES.len();
     let mut s = alloc::string::String::new();
     s.push_str(&alloc::format!("  {}IMASM arranger{}  {}{} canonicals{}\n\n",

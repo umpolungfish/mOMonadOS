@@ -26,9 +26,8 @@
 //! Why this is the genuine article, unlike DQI and unlike the
 //! structureless YZ separation: the interference that produces those
 //! peaks depends on the actual multiplicative/cyclic-group structure of
-//! (Z/NZ)* -- exactly the ALGEBRAIC structure DQI's speedup turned out
-//! not to need and YZ's separation is titled to prove it doesn't need
-//! either. Simulating it here costs O(M^2) in the register size M=2^n --
+//! (Z/NZ)* -- exactly the ALGEBRAIC structure DQI's speedup does not need,
+//! and YZ's separation is titled to prove it doesn't need either. Simulating it here costs O(M^2) in the register size M=2^n --
 //! exponential in the qubit count -- which is exactly why a real quantum
 //! device would have a genuine advantage at a scale this simulation
 //! cannot reach; the small scale here is what makes the simulation

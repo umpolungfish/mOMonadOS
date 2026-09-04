@@ -934,10 +934,9 @@ mod sixteen_3_tests {
     }
 
     /// ≺'s own table entry names it exactly: "reverse morphism (involution
-    /// T↔F, t↔f)" — not a carry like ≻/⋈/⊙, and not the old no-op-on-the-stack
-    /// behavior that used to leave the top value untouched while only
-    /// decrementing register 0. T swaps to F, matching the involution on the
-    /// classical slice where no t/f bits are present to also swap.
+    /// T↔F, t↔f)", not a carry like ≻/⋈/⊙. It applies the involution to the top
+    /// of the stack: T swaps to F, matching the involution on the classical
+    /// slice where no t/f bits are present to also swap.
     #[test]
     fn arev_applies_the_real_involution_to_the_stack() {
         let mut k = Kernel::new();

@@ -493,10 +493,8 @@ fn main() {
 fn kmain() -> ! {
     serial::init();
 
-    // The banner used to claim a PIT and a PIC remap on both builds. Hosted,
-    // neither happens: the host owns the IDT. Saying so is not decoration --
-    // a boot line asserting hardware it never touched is how a wrong finding
-    // gets sourced later.
+    // Hosted: the host owns the IDT, so there is no PIT and no PIC remap. The
+    // boot line states only the hardware this build actually touches.
     interrupts::init(100);
     #[cfg(not(feature = "hosted"))]
     sprintln!("{}[boot]{} Interrupts online — PIT 100Hz, PIC remapped", style::muted(), style::reset());
@@ -533,10 +531,8 @@ fn kmain() -> ! {
     // ── Clay closure/resistance status (Track C) ──
     sprintln!("{}[boot]{} Clay Millennium status: {} closed, {} one-bump-short, {} unclosed", style::muted(), style::reset(),
         clay_status::clay_summary().0, clay_status::clay_summary().1, clay_status::clay_summary().2);
-    // Every figure on this line is read from the constants that define it. It
-    // used to be typed into the format string -- the d, the 49, the 7, the 144
-    // -- so the banner could have gone on asserting a structure the code had
-    // stopped having.
+    // Every figure on this line is read from the constants that define it, so
+    // the banner cannot assert a structure the code no longer carries.
     sprintln!("{}[boot]{} SIC-POVM d={}: Crystal-forced (dual lattice), Shavian count {}={}², WH group |orbit|={}", style::muted(), style::reset(),
         sic_povm::TOTAL_PRIMS, sic_povm::SHAVIAN_COUNT,
         sic_povm::SHAVIAN_ROOT, sic_povm::WH_GROUP_ORDER);
