@@ -1,1 +1,6 @@
-Correcting the framing from the last commit, not the code. I wrote that a search trying one edit at a time "cannot" close an eleven-unit fork/fuse imbalance and "never will... no matter how long the search runs." That declares a permanent wall on the word. It isn't one. It's a fact about the current search's own move-set, one edit at a time, being narrower than the defect. repair.rs's own diagnosis already states this correctly as a floor, "no repair below edits fewer than N glyphs can reach a word with matched fork/fuse counts," a target to build toward, not a claim about what can never be done. The prose around it in the last commit message said it the wrong way. Extending the search past single edits is the next rung, named, not a gap left standing.
+Port the secp256k1_unwinder descriptive module to mOMonadOS
+
+The 19-glyph morphism module: GLYPH_WORD, the twelve phase-1 mappings, the
+UnwindStep enum in phase-4 order, the WindingState/WindingRecord per-step
+landings, and the finalize verdict. Registered with a mod declaration and a
+Quantum menu entry, matching the G-mOMonadOS copy.

@@ -201,6 +201,7 @@ pub static QUANTUM_MENU: &[MenuItem] = &[
     MenuItem { name: "dyn_nest", cmd: "dyn_nest", desc: "Dynamic Nesting Prime Finder - pipes oneshot verdict, searches optimal nesting depth d=1,2,3,...; period P(d)=5d+7, closure-derived seed", example: "dyn_nest 1234567", submenu: None },
         MenuItem { name: "qft",        cmd: "qft",        desc: "Quantum Fourier Transform: circuit | phases | iqft | iqft braid | braid, on n qubits", example: "qft circuit 3", submenu: None },
     MenuItem { name: "btc_oneshot",  cmd: "btc_oneshot",  desc: "BTC Secret Key Oneshot Operator — structural verification & phase steps", example: "btc_oneshot verify", submenu: None },
+    MenuItem { name: "secp256k1_unwinder", cmd: "secp256k1_unwinder", desc: "19-glyph morphism sequence for secp256k1 scalar recovery: word | steps | mapping | walk [k] | verdict [k] | tuple | constants", example: "secp256k1_unwinder walk 0", submenu: None },
     MenuItem { name: "winding",    cmd: "winding",    desc: "Period as a torus winding: order | factor | closure | factorgen (alias wperiod)", example: "winding order 2 101", submenu: None },
     MenuItem { name: "iuft",       cmd: "iuft",       desc: "IUFT QC gates — the 12->3 Euler-angle SU(2) encoding of an IG tuple", example: "iuft list", submenu: None },
     MenuItem { name: "teich",      cmd: "teich",      desc: "IUFT <-> IUTT bridge: Teichmuller deformation paths as gate trajectories", example: "teich canonical", submenu: None },

@@ -87,6 +87,7 @@ mod phase;
 mod pk2sk;
 mod qft;
 mod shors_btc_2;
+mod secp256k1_unwinder;
 mod btc_secret_key_oneshot;
 mod moDOT_alchemy;
 mod pari_integration;
