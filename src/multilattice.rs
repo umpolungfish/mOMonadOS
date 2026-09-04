@@ -185,8 +185,8 @@ pub fn report(max_n: usize) -> String {
         (belnap_val - qm_val).abs() < 1e-9
     ));
 
-    out.push_str("\nequiangularity ratio d^2/(d+1), required for a real SIC-POVM, checked for being a perfect square in Q (the file's actual claim -- d+1 a perfect square in Z, since d^2/(d+1) is already in lowest terms):\n");
-    let mut counterexample_found = false;
+    out.push_str("\nequiangularity ratio d^2/(d+1), the exact rational a real SIC-POVM needs. Since gcd(d, d+1)=1 it is in lowest terms with a square numerator, so it is a perfect square in Q exactly when d+1 is a perfect square in Z:\n");
+    let mut squares_list = String::new();
     for n in 1..=max_n.min(8) {
         let d = 1u64 << n;
         let (num, den, is_square) = equiangularity_ratio_is_perfect_square(d);
@@ -194,15 +194,17 @@ pub fn report(max_n: usize) -> String {
             "  n={} d={:<4} {}^2/{} = {}/{}  perfect square: {}\n",
             n, d, d, d + 1, num, den, is_square
         ));
-        if n > 1 && is_square {
-            counterexample_found = true;
+        if is_square {
+            if !squares_list.is_empty() { squares_list.push_str(", "); }
+            squares_list.push_str(&format!("n={} (d+1={})", n, d + 1));
         }
     }
-    out.push_str(&format!(
-        "\ncounterexample to \"not a perfect square for any n>1\" found in this range: {}\n",
-        counterexample_found
-    ));
-    out.push_str("\nreading: n=1 is exact agreement, both the orbit count and the Born rule. The naive action's orbit is proved and measured short of 4^n for n>1. But the file's own further claim, in a comment rather than a proved theorem, that d^2/(d+1) is never a perfect square for n>1, does not hold in general -- check the counterexample line above against the per-n table.\n");
+    out.push_str("\nreading: n=1 is exact agreement, both the orbit count and the Born rule. The naive action's orbit is proved and measured short of 4^n for n>1. The ratio d^2/(d+1) is a perfect square in Q exactly where d+1 is a perfect square in Z. ");
+    if squares_list.is_empty() {
+        out.push_str("No n in this range has that.\n");
+    } else {
+        out.push_str(&format!("In this range that holds at {}.\n", squares_list));
+    }
     out
 }
 
