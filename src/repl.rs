@@ -217,9 +217,13 @@ pub fn repl(k: &mut Kernel) {
                         crate::winding_period::repl_closure(N, B);
                     }
                     "factorgen" => {
+                        // `parts` is splitn(4,' '): bits is its own field, but tries and
+                        // seed arrive glued in the last field, so split that remainder.
                         let bits = parts.next().and_then(|s| s.parse::<u32>().ok()).unwrap_or(48);
-                        let tries = parts.next().and_then(|s| s.parse::<u32>().ok()).unwrap_or(12);
-                        let seed = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0x9E37_79B9_7F4A_7C15);
+                        let rest = parts.next().unwrap_or("");
+                        let mut a = rest.split_whitespace();
+                        let tries = a.next().and_then(|s| s.parse::<u32>().ok()).unwrap_or(12);
+                        let seed = a.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0x9E37_79B9_7F4A_7C15);
                         crate::winding_period::repl_factorgen(bits, tries, seed);
                     }
                     other => sprintln!("winding: unknown subcommand '{}' (try 'winding help')", other),
