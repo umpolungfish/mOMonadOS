@@ -43,13 +43,24 @@ pub fn f64_sqrt(x: f64) -> f64 {
 }
 
 pub fn f64_exp(x: f64) -> f64 {
-    let mut r = 1.0_f64;
+    // Range reduction: exp(x) = 2^k * exp(r) with r = x - k*ln2 and |r| <= ln2/2,
+    // where the 20-term Maclaurin series is machine-accurate. Without it the bare
+    // series diverges for |x| beyond about 8 (exp(-88*pi) came out as -1.9e29).
+    const LN2: f64 = 0.6931471805599453_f64;
+    let kf = x / LN2;
+    let k = if kf >= 0.0 { (kf + 0.5) as i32 } else { (kf - 0.5) as i32 };
+    let r = x - (k as f64) * LN2;
+    let mut sum = 1.0_f64;
     let mut t = 1.0_f64;
     for i in 1..20 {
-        t *= x / i as f64;
-        r += t;
+        t *= r / i as f64;
+        sum += t;
     }
-    r
+    let mut result = sum;
+    let mut kk = k;
+    while kk > 0 { result *= 2.0_f64; kk -= 1; }
+    while kk < 0 { result *= 0.5_f64; kk += 1; }
+    result
 }
 
 const F64_PI: f64 = 3.14159265358979323846264338327950288_f64;
