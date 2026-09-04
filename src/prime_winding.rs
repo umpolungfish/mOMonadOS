@@ -325,11 +325,6 @@ pub fn find(n: &str) -> String {
     }
 }
 
-/// Cap on how many integers `range` will scan in one call, so a huge span
-/// reports rather than hanging. A range enumeration tests one integer per step,
-/// so this is the width of span it will cover before halting.
-pub const RANGE_SCAN_CAP: u64 = 5_000_000;
-
 /// Enumerate every prime in [lo, hi], high to low, as the find/subtract/repeat
 /// walk: test the current value, on a prime record it and drop to prime-1, on a
 /// composite drop by one, until below lo. One primality test per integer, no
@@ -361,12 +356,6 @@ pub fn range(lo: &str, hi: &str, count_only: bool) -> String {
         }
         if m == "2" { break; }
         m = sub(&m, "1");
-        if tested > RANGE_SCAN_CAP {
-            return format!(
-                "prime_winding range [{}, {}]: OutOfReach — {} integers tested, halted at {}, {} prime(s) so far\n{}",
-                lo, hi, tested, m, count, listing
-            );
-        }
     }
     if count_only {
         format!("prime_winding range [{}, {}]: {} prime(s) ({} integers tested)", lo, hi, count, tested)
