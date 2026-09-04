@@ -1237,6 +1237,20 @@ pub fn repl(k: &mut Kernel) {
                             sprintln!("{}", factor_bounded(n_str, max_power));
                         }
                     },
+                    "range" => {
+                        // `parts` is splitn(4,' '), so the fourth field holds "hi [count]"
+                        // unsplit; parse it here rather than relying on more fields.
+                        let lo = parts.next().unwrap_or("");
+                        let rest = parts.next().unwrap_or("");
+                        let mut rp = rest.split_whitespace();
+                        let hi = rp.next().unwrap_or("");
+                        let count_only = rp.next() == Some("count");
+                        if lo.is_empty() || hi.is_empty() {
+                            sprintln!("prime_winding range: usage: prime_winding range <lo> <hi> [count]");
+                        } else {
+                            sprintln!("{}", range(lo, hi, count_only));
+                        }
+                    },
                     "cycle" => sprintln!("{}", cycle()),
                     "tuple" => sprintln!("{}", tuple()),
                     "verdict" => sprintln!("{}", verdict()),

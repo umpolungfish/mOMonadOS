@@ -325,6 +325,56 @@ pub fn find(n: &str) -> String {
     }
 }
 
+/// Cap on how many integers `range` will scan in one call, so a huge span
+/// reports rather than hanging. A range enumeration tests one integer per step,
+/// so this is the width of span it will cover before halting.
+pub const RANGE_SCAN_CAP: u64 = 5_000_000;
+
+/// Enumerate every prime in [lo, hi], high to low, as the find/subtract/repeat
+/// walk: test the current value, on a prime record it and drop to prime-1, on a
+/// composite drop by one, until below lo. One primality test per integer, no
+/// table, so it runs at arbitrary precision and around an arbitrarily large
+/// starting point where a sieve cannot allocate. For a dense low range a sieve
+/// is faster; this is for reach and for zero memory, not for beating a sieve.
+///
+/// `count_only` suppresses the per-prime listing and returns only the tally,
+/// for spans too wide to print.
+pub fn range(lo: &str, hi: &str, count_only: bool) -> String {
+    let lo_t = trim(lo);
+    let hi_t = trim(hi);
+    if lt(&hi_t, &lo_t) {
+        return format!("prime_winding range [{}, {}]: empty span (hi < lo)", lo, hi);
+    }
+    let mut m = hi_t.clone();
+    let mut count: u64 = 0;
+    let mut tested: u64 = 0;
+    let mut listing = String::new();
+    loop {
+        if lt(&m, &lo_t) || lt(&m, "2") { break; }
+        tested += 1;
+        if let PrimeVerdict::Prime = is_prime(&m) {
+            count += 1;
+            if !count_only {
+                listing.push_str(&m);
+                listing.push('\n');
+            }
+        }
+        if m == "2" { break; }
+        m = sub(&m, "1");
+        if tested > RANGE_SCAN_CAP {
+            return format!(
+                "prime_winding range [{}, {}]: OutOfReach — {} integers tested, halted at {}, {} prime(s) so far\n{}",
+                lo, hi, tested, m, count, listing
+            );
+        }
+    }
+    if count_only {
+        format!("prime_winding range [{}, {}]: {} prime(s) ({} integers tested)", lo, hi, count, tested)
+    } else {
+        format!("prime_winding range [{}, {}]: {} prime(s)\n{}", lo, hi, count, listing)
+    }
+}
+
 /// a / b, both nonzero, Euclid's algorithm on BigUint. Public so the
 /// trilattice winding route reads the same gcd rather than carrying its own.
 pub fn big_gcd(mut a: BigUint, mut b: BigUint) -> BigUint {
@@ -600,6 +650,7 @@ pub fn help() -> String {
          subcommands:\n\
            prime_winding word       canonical glyph word\n\
            prime_winding find <n>   find nearest prime ≤ n (arbitrary precision)\n\
+           prime_winding range <lo> <hi> [count]   every prime in [lo,hi], the find/subtract walk\n\
            prime_winding factor <n>  factor n into prime divisors (with multiplicity)\n\
            prime_winding cycle      ROTAT orbit with landing register per cut\n\
            prime_winding tuple      the 12-slot tuple the word was imscribed from\n\
