@@ -353,6 +353,7 @@ pub fn repl(k: &mut Kernel) {
                     sprintln!("vox sixteen3 ref     — the live 12-opcode SIXTEEN_3 table");
                     sprintln!("vox evm <hex>        — lift EVM bytecode, verdict its closure");
                     sprintln!("vox wasm <hex>       — lift a WASM body, verdict its closure");
+                    sprintln!("vox hex <hex>        — lift raw machine-code hex, verdict its closure");
                     sprintln!("vox classify <mn>    — which glyph an instruction lifts to");
                     sprintln!("vox rna <seq> [code] — lift a coding sequence; code is");
                     sprintln!("                       standard or mitochondrial");
@@ -450,6 +451,11 @@ pub fn repl(k: &mut Kernel) {
                                 let w = vox_core::lanes::wasm_word(&rest[1]);
                                 sprintln!("WASM {}  {}", crate::vox::verdict(&w), crate::vox::glyphs(&w));
                             } else { sprintln!("vox wasm <hex>"); }
+                        }
+                        "hex" => {
+                            if rest.len() > 1 {
+                                vox_hex_lift(&rest[1..].join(""));
+                            } else { sprintln!("vox hex <hex>   — lift raw machine-code hex, verdict its closure"); }
                         }
                         "classify" => {
                             if rest.len() > 1 {
@@ -1564,6 +1570,71 @@ pub fn repl(k: &mut Kernel) {
                 } else {
                     let result = crate::shors_btc_2::run_shors_btc_2_from_hex(arg);
                     result.print_report();
+                }
+            }
+            "secp256k1_unwinder" => {
+                let arg = parts.next().unwrap_or("");
+                if arg.is_empty() || arg == "help" {
+                    sprintln!("secp256k1_unwinder — 19-glyph morphism sequence for secp256k1 scalar recovery");
+                    sprintln!("  secp256k1_unwinder word         print the canonical 19-glyph word");
+                    sprintln!("  secp256k1_unwinder steps        print the 19 phase_4 domain steps");
+                    sprintln!("  secp256k1_unwinder mapping       print the 12 phase_1 opcode→element mappings");
+                    sprintln!("  secp256k1_unwinder walk [k]      walk the 19 steps and print the per-step register landing (default k=0)");
+                    sprintln!("  secp256k1_unwinder verdict [k]   print the finalize() verdict for the canonical walk");
+                    sprintln!("  secp256k1_unwinder tuple         print the grammar tuple (tier: O_2dag)");
+                    sprintln!("  secp256k1_unwinder constants     print P, N, Gx, Gy");
+                } else {
+                    match arg {
+                        "word" => sprintln!("{}", crate::secp256k1_unwinder::GLYPH_WORD),
+                        "steps" => {
+                            for step in crate::secp256k1_unwinder::UnwindStep::ALL.iter() {
+                                sprintln!("  {}", step);
+                            }
+                        }
+                        "mapping" => {
+                            for (g, e) in crate::secp256k1_unwinder::PHASE_1_MAPPING.iter() {
+                                sprintln!("  {} → {}", g, e);
+                            }
+                        }
+                        "walk" => {
+                            let k = parts.next().and_then(|p| p.parse::<u32>().ok()).unwrap_or(0);
+                            let r = crate::secp256k1_unwinder::WindingRecord::walk(k);
+                            for (i, landing) in r.landings.iter().enumerate() {
+                                let step: crate::secp256k1_unwinder::UnwindStep = crate::secp256k1_unwinder::UnwindStep::ALL[i];
+                                sprintln!("  step {:>2} ({}): landing = {:?}", i + 1, step.opcode(), landing);
+                            }
+                        }
+                        "verdict" => {
+                            let k = parts.next().and_then(|p| p.parse::<u32>().ok()).unwrap_or(0);
+                            let r = crate::secp256k1_unwinder::WindingRecord::walk(k);
+                            match r.finalize() {
+                                crate::secp256k1_unwinder::Verdict::T => {
+                                    sprintln!("verdict: T — tri-ancestral reconnection closes (canonical k={})", k);
+                                }
+                                crate::secp256k1_unwinder::Verdict::B => {
+                                    sprintln!("verdict: B — open walk landing (dialetheic) (canonical k={})", k);
+                                }
+                            }
+                        }
+                        "tuple" => {
+                            sprintln!("secp256k1 encryption unwinder — tier O_2dag");
+                            sprintln!("  period: 19");
+                            sprintln!("  dialetheia_complete: true");
+                            sprintln!("  ∈/∋ pairs: (4, 9), (11, 14)");
+                            sprintln!("  frobenius_order: 3");
+                            sprintln!("  self_ref: false");
+                        }
+                        "constants" => {
+                            use crate::secp256k1_unwinder::{P, N, GX, GY};
+                            sprintln!("P  = 0x{:016X}{:016X}{:016X}{:016X}", P[3], P[2], P[1], P[0]);
+                            sprintln!("N  = 0x{:016X}{:016X}{:016X}{:016X}", N[3], N[2], N[1], N[0]);
+                            sprintln!("Gx = 0x{:016X}{:016X}{:016X}{:016X}", GX[3], GX[2], GX[1], GX[0]);
+                            sprintln!("Gy = 0x{:016X}{:016X}{:016X}{:016X}", GY[3], GY[2], GY[1], GY[0]);
+                        }
+                        other => {
+                            sprintln!("secp256k1_unwinder: unknown subcommand '{}' (try 'secp256k1_unwinder help')", other);
+                        }
+                    }
                 }
             }
             "btc_oneshot" => {
@@ -6338,6 +6409,42 @@ fn vox_lift_file(path: &str) {
 #[cfg(not(feature = "hosted"))]
 fn vox_lift_file(_path: &str) {
     sprintln!("vox lift needs a host filesystem; not available in the kernel build");
+}
+
+/// Lift a raw hex value stream: decode the hex to bytes, load them as a flat
+/// code image at a conventional base, walk the control flow, recompile each
+/// function to its glyph word, and read the closure verdict of each. The delta
+/// half of the vox pair pointed at inline hex.
+#[cfg(feature = "hosted")]
+fn vox_hex_lift(hexstr: &str) {
+    let bytes = vox_core::lanes::from_hex(hexstr);
+    if bytes.is_empty() {
+        sprintln!("vox hex: no hex bytes in input");
+        return;
+    }
+    let entry: u64 = 0x1000;
+    let segments: alloc::vec::Vec<(u64, alloc::vec::Vec<u8>)> = alloc::vec![(entry, bytes.clone())];
+    let image = crate::vox_decode::Image { segments };
+    let w = crate::vox_decode::walk(&image, entry, &[entry]);
+    sprintln!("HEX  {} byte(s)  raw  {} function(s) by descent", bytes.len(), w.functions.len());
+    if w.functions.is_empty() {
+        sprintln!("  no function reachable from entry 0x{:x}", entry);
+        return;
+    }
+    let mut tally = [0usize; 4];   // T, B, N, F
+    for (start, f) in &w.functions {
+        let word = crate::vox::recompile_function(f);
+        let v = crate::vox::verdict(&word);
+        match v { 'T' => tally[0]+=1, 'B' => tally[1]+=1, 'N' => tally[2]+=1, _ => tally[3]+=1 }
+        let mark = if v == 'B' { "   <-- FINDING (fork open across commit)" } else { "" };
+        sprintln!("  0x{:08x}  {}  {}{}", start, v, crate::vox::glyphs(&word), mark);
+    }
+    sprintln!("  verdicts  T {}   B {}   N {}   F {}", tally[0], tally[1], tally[2], tally[3]);
+}
+
+#[cfg(not(feature = "hosted"))]
+fn vox_hex_lift(_hexstr: &str) {
+    sprintln!("vox hex needs the host decoder; not available in the kernel build");
 }
 
 /// `vox run <symbol> --args a,b <file>` — order-tolerant, mirroring the

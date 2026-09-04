@@ -1,6 +1,12 @@
-Port the secp256k1_unwinder descriptive module to mOMonadOS
+Wire the secp256k1_unwinder verb and add the vox hex lift lane
 
-The 19-glyph morphism module: GLYPH_WORD, the twelve phase-1 mappings, the
-UnwindStep enum in phase-4 order, the WindingState/WindingRecord per-step
-landings, and the finalize verdict. Registered with a mod declaration and a
-Quantum menu entry, matching the G-mOMonadOS copy.
+The secp256k1_unwinder dispatch arm (word | steps | mapping | walk | verdict |
+tuple | constants) over the ported module, and a new vox hex sub-lane beside
+evm and wasm: vox hex <hex> decodes a raw machine-code hex value stream with
+vox_core::lanes::from_hex, loads the bytes as a flat code image, walks the
+control flow, recompiles each function to its glyph word, and reads the closure
+verdict. Hosted real plus a bare-metal stub, mirroring vox_lift_file.
+
+Verified against the main Vox dir and G-mOMonadOS: a conditional branch
+cmp/jne/xor/ret reads T with the fork and fuse reconnecting, and the shuffle
+control decodes to different words, identical readings across all three builds.
