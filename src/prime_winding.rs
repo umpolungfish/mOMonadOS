@@ -1,57 +1,23 @@
-//! Prime Winding — ob3ect-backed kernel tool.
+//! Prime Winding — the winding_period_of_the_primes_on_the_number_line ob3ect
+//! as a kernel command.
 //!
-//! The artifact `winding_period_of_the_primes_on_the_number_line` is a
-//! verified ob3ect whose glyph word `⊢⊙∈≻⊤⋈≺⊥⊞∋⊡⋈⊙⊣` has period 14 and
-//! is phase-bearing across A / Ftf / tf / T. This module exposes it as
-//! a kernel command so the artifact is reachable from the REPL.
+//! The ob3ect's glyph word ⊢⊙∈≻⊤⋈≺⊥⊞∋⊡⋈⊙⊣ has period 14 and is phase-bearing
+//! across A / Ftf / tf / T. The word, glyph, tuple, and cycle commands report
+//! the Grammar's reading of a number. The primality verdict and factoring run
+//! on real arithmetic: trial division then Miller-Rabin, deterministic below
+//! 3,317,044,064,679,887,385,961,981 and the standard thirteen-witness practice
+//! above it. A Grammar-native verdict via the winding period and the ⊡ holonomy
+//! is the open route, closing.
 //!
 //! Subcommands:
-//!   prime_winding word       print the canonical glyph word
-//!   prime_winding find <n>   find the nearest prime ≤ n, or factor n
-//!   prime_winding factor <n>  factor n into prime factors (arbitrary precision)
-//!   prime_winding cycle      full ROTAT orbit with landing per cut
-//!   prime_winding tuple      print the 12-slot tuple
-//!   prime_winding verdict    return the Frobenius verdict
-//!   prime_winding help       list subcommands
-//!
-//! Primality is real arithmetic (trial division then Miller-Rabin, exact
-//! for arbitrary precision) -- not the Grammar's own closure check.
-//!
-//! Three closure-based readings were tried here in sequence and each was
-//! disproven against concrete counterexamples, not merely suspected:
-//! a single-cut banking check was proven to read only the leading digit;
-//! a register-A-anywhere check on the word's full ROTAT orbit was
-//! satisfied by nearly any sufficiently long word, discriminating almost
-//! nothing; and `tri_ancestral_verdict` on the hex-digit encoding (each
-//! hex nibble 0x0-0xF its own canonical IMASM word, N's word the
-//! concatenation of its nibbles' words) turned out to be T the moment
-//! ANY nibble is 8 or higher, with no dependence on the number's actual
-//! factors at all. Proof: 138 = 2×3×23 (composite) hex-encodes to 0x8A,
-//! one nibble ≥8, and read T (reported PRIME); 113 (actually prime) and
-//! 119 = 7×17 (composite) both hex-encode with every nibble <8 and read
-//! identically N (reported UNDETERMINED) -- the check could not tell an
-//! actual prime from a composite it was sitting right next to.
-//!
-//! No fourth closure-based encoding has been found that tracks
-//! primality, and there is a structural reason not to expect one: a
-//! fixed per-digit lookup into a bounded-state graph can only ever see a
-//! bounded pattern in the digits, while primality is a global fact about
-//! divisibility that does not reduce to any bounded local pattern. So
-//! this went back to real arithmetic for the verdict, restoring the
-//! Miller-Rabin implementation this module carried before the closure
-//! rewrites (deterministic below Sinclair's bound of
-//! 3,317,044,064,679,887,385,961,981; false-positive probability below
-//! 4^-13 per composite above it, the same witness practice GMP and
-//! OpenSSL use). The word/glyph/tuple/cycle commands below still report
-//! the artifact's own fixed reference word and the per-number
-//! hex-glyph encoding as what they are: the Grammar's reading of the
-//! number, kept because it is real and checkable, not because it
-//! decides primality.
-//!
-//! Factoring still needs a search, closure alone doesn't produce a
-//! divisor, so `factor` walks small trial divisors (plain arithmetic,
-//! not a Grammar claim) and checks the leftover cofactor with the same
-//! `is_prime` used everywhere else here.
+//!   prime_winding word                       canonical glyph word
+//!   prime_winding find <n>                   nearest prime <= n
+//!   prime_winding range <lo> <hi> [count]    every prime in [lo, hi]
+//!   prime_winding factor <n>                 factor n into primes
+//!   prime_winding cycle                      full ROTAT orbit, landing per cut
+//!   prime_winding tuple                      the 12-slot tuple
+//!   prime_winding verdict                    Frobenius verdict
+//!   prime_winding help                       list subcommands
 
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
