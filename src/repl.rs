@@ -795,18 +795,45 @@ pub fn repl(k: &mut Kernel) {
                     }
                     sync_at
                 };
-                sprintln!("ENGAGED word (carries ⊞, the braid engagement):");
-                let s1 = run(&THE_WORD);
-                let control = [Op::VINIT, Op::AFWD, Op::EVALT, Op::CLINK, Op::AFWD,
-                               Op::EVALF, Op::EVALT, Op::CLINK, Op::EVALF, Op::AFWD,
-                               Op::IMSCRIB, Op::CLINK, Op::IFIX, Op::TANCH];
-                sprintln!("CONTROL word (no ⊞, never engages):");
-                let s2 = run(&control);
-                sprintln!("");
-                match s1 { Some(k) => sprintln!("engaged: all four lanes synced at step {} (A formed)", k),
-                           None => sprintln!("engaged: never synced") }
-                match s2 { Some(k) => sprintln!("control: synced at step {} (unexpected)", k),
-                           None => sprintln!("control: never synced — the flat word cannot light the t/f atom lanes") }
+                let parse = |w: &str| -> Option<alloc::vec::Vec<Op>> {
+                    let mut v = alloc::vec::Vec::new();
+                    for c in w.chars().filter(|c| !c.is_whitespace()) {
+                        v.push(match c {
+                            '⊢' => Op::VINIT, '∈' => Op::FSPLIT3, '≻' => Op::AFWD, '⋈' => Op::CLINK,
+                            '⊞' => Op::ENGAGR, '⊤' => Op::EVALT, '⊥' => Op::EVALF, '≺' => Op::AREV,
+                            '∋' => Op::FFUSE3, '⊙' => Op::IMSCRIB, '⊡' => Op::IFIX, '⊣' => Op::TANCH,
+                            _ => return None,
+                        });
+                    }
+                    Some(v)
+                };
+                let arg = parts.next().unwrap_or("").trim();
+                if !arg.is_empty() {
+                    match parse(arg) {
+                        Some(w) => {
+                            sprintln!("word {} :", arg);
+                            match run(&w) {
+                                Some(k) => sprintln!("all four lanes synced at step {} (A formed)", k),
+                                None => sprintln!("never synced (no engagement, or F never lands on the engaged state)"),
+                            }
+                        }
+                        None => sprintln!("anyon-sync <glyph-word>  — use the twelve marks; unknown glyph in input"),
+                    }
+                } else {
+                    sprintln!("ENGAGED word (carries ⊞, the braid engagement):");
+                    let s1 = run(&THE_WORD);
+                    let control = [Op::VINIT, Op::AFWD, Op::EVALT, Op::CLINK, Op::AFWD,
+                                   Op::EVALF, Op::EVALT, Op::CLINK, Op::EVALF, Op::AFWD,
+                                   Op::IMSCRIB, Op::CLINK, Op::IFIX, Op::TANCH];
+                    sprintln!("CONTROL word (no ⊞, never engages):");
+                    let s2 = run(&control);
+                    sprintln!("");
+                    match s1 { Some(k) => sprintln!("engaged: all four lanes synced at step {} (A formed)", k),
+                               None => sprintln!("engaged: never synced") }
+                    match s2 { Some(k) => sprintln!("control: synced at step {} (unexpected)", k),
+                               None => sprintln!("control: never synced — the flat word cannot light the t/f atom lanes") }
+                    sprintln!("(pass a glyph-word to compute any sequence live: anyon-sync ⊢⊞⊥)");
+                }
             }
             "fibqc" => {
                 match parts.next().unwrap_or("") {

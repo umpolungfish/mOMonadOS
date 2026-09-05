@@ -1,6 +1,7 @@
-Mirror anyon-sync into mOMonadOS
+anyon-sync takes any word: prove the sync is computed, not stored
 
-Same verb as G-mOMonadOS: runs the engaged Fibonacci-anyon word and a flat
-control side by side, reading the four trilattice lanes each step. All four
-lanes sync (carrier A) only in the engaged word and only at formation; the
-control never lights the atom lanes. Builds bare-metal and hosted.
+The verb now accepts a glyph-word and runs the Carrier16 state machine on it
+step by step, so the four-lane sync tracks the input rather than replaying a
+fixed trace. Demonstrated live: ⊢⊞⊥ syncs at step 3, ⊢≻⋈⊞⊥ moves the sync to
+step 5, and ⊢⊤⊥⊤⊥ never syncs because it never engages. No argument still runs
+the engaged word and the flat control side by side.
