@@ -776,6 +776,38 @@ pub fn repl(k: &mut Kernel) {
                     crate::fibonacci_qc::repl_jones(n, &word);
                 }
             }
+            "anyon-sync" | "anyon_sync" => {
+                use crate::dialetheic_fib_shor::{Op, Carrier16, THE_WORD};
+                let lanes = |c: Carrier16| -> alloc::string::String {
+                    alloc::format!("[T {} F {} t {} f {}]",
+                        if c.has_t() {1} else {0}, if c.has_f() {1} else {0},
+                        if c.has_t_atom() {1} else {0}, if c.has_f_atom() {1} else {0})
+                };
+                let run = |word: &[Op]| {
+                    let mut reg = Carrier16::N;
+                    let mut sync_at: Option<usize> = None;
+                    for (i, op) in word.iter().enumerate() {
+                        reg = op.apply(reg);
+                        let all4 = reg.has_t() && reg.has_f() && reg.has_t_atom() && reg.has_f_atom();
+                        sprintln!("  {:>2} {}  {:<4} {}{}", i+1, op.glyph(), reg.label(), lanes(reg),
+                            if all4 { "   <-- all four lanes synced (A): anyon formed" } else { "" });
+                        if all4 && sync_at.is_none() { sync_at = Some(i+1); }
+                    }
+                    sync_at
+                };
+                sprintln!("ENGAGED word (carries ⊞, the braid engagement):");
+                let s1 = run(&THE_WORD);
+                let control = [Op::VINIT, Op::AFWD, Op::EVALT, Op::CLINK, Op::AFWD,
+                               Op::EVALF, Op::EVALT, Op::CLINK, Op::EVALF, Op::AFWD,
+                               Op::IMSCRIB, Op::CLINK, Op::IFIX, Op::TANCH];
+                sprintln!("CONTROL word (no ⊞, never engages):");
+                let s2 = run(&control);
+                sprintln!("");
+                match s1 { Some(k) => sprintln!("engaged: all four lanes synced at step {} (A formed)", k),
+                           None => sprintln!("engaged: never synced") }
+                match s2 { Some(k) => sprintln!("control: synced at step {} (unexpected)", k),
+                           None => sprintln!("control: never synced — the flat word cannot light the t/f atom lanes") }
+            }
             "fibqc" => {
                 match parts.next().unwrap_or("") {
                     "" | "help" => {
