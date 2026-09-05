@@ -12,7 +12,7 @@ use alloc::vec::Vec;
 // ── secp256k1 curve constants (RFC 6979 / SEC2) ─────────────────────────
 /// Field prime  P  = 2^256 − 2^32 − 2^9 − 2^8 − 2^7 − 2^6 − 2^4 − 1
 pub const P: [u64; 4] = [
-    0xFFFFFC2Fu64,
+    0xFFFFFFFEFFFFFC2Fu64,
     0xFFFFFFFFFFFFFFFFu64,
     0xFFFFFFFFFFFFFFFFu64,
     0xFFFFFFFFFFFFFFFFu64,
@@ -135,22 +135,18 @@ impl U256 {
             r[i] = carry as u64;
             carry >>= 64;
         }
-        let result = U256(r);
         if carry > 0 {
-            let c: u64 = 0x1000003d1;
-            let mut lo = result.0;
-            let (val, of) = lo[0].overflowing_add(c);
-            lo[0] = val;
-            let mut carry2: u128 = if of { 1 } else { 0 };
-            for i in 1..4 {
-                carry2 += lo[i] as u128 + carry2;
-                lo[i] = carry2 as u64;
-                carry2 >>= 64;
+            // sum reached 2^256, and 2^256 ≡ c (mod p): add c, folding once more
+            // if that addition itself overflows.
+            let c: u128 = 0x1000003d1;
+            let mut cc: u128 = c;
+            for i in 0..4 { cc += r[i] as u128; r[i] = cc as u64; cc >>= 64; }
+            if cc > 0 {
+                let mut c2: u128 = c;
+                for i in 0..4 { c2 += r[i] as u128; r[i] = c2 as u64; c2 >>= 64; }
             }
-            U256(lo).cond_sub_p()
-        } else {
-            result.cond_sub_p()
         }
+        U256(r).cond_sub_p()
     }
 
     pub fn sub_mod(&self, b: &U256) -> U256 {
@@ -167,10 +163,17 @@ impl U256 {
             }
         }
         if borrow != 0 {
-            U256(r).add_mod(&U256::p())
-        } else {
-            U256(r)
+            // a < b: the wrap gave a-b+2^256; the residue a-b+p is that minus c,
+            // since 2^256 - p = c. r > c here, so no underflow.
+            let c: u128 = 0x1000003d1;
+            let mut brw: u128 = c;
+            for i in 0..4 {
+                let cur = r[i] as u128;
+                if cur >= brw { r[i] = (cur - brw) as u64; brw = 0; }
+                else { r[i] = (cur + (1u128 << 64) - brw) as u64; brw = 1; }
+            }
         }
+        U256(r)
     }
 
     pub fn mul_mod(&self, b: &U256) -> U256 {
@@ -186,33 +189,27 @@ impl U256 {
             }
             prod[i + 4] = carry;
         }
+        // Reduce the 512-bit product modulo p = 2^256 - c, where
+        // 2^256 ≡ c (mod p), c = 0x1000003d1. Fold the high 256 bits into the
+        // low via *c, and repeat until the high half is empty: each fold shrinks
+        // it (a fold produces at most a ~34-bit carry, the next at most ~3 bits),
+        // so it clears in a few passes and no carry is ever dropped.
         let c: u128 = 0x1000003d1;
-        let mut lo = [0u64; 4];
-        let mut carry: u128 = 0;
-        for i in 0..4 {
-            carry += prod[i] as u128 + (prod[i + 4] as u128) * c;
-            lo[i] = carry as u64;
-            carry >>= 64;
-        }
-        let carry_u64: u64 = carry as u64;
-        if carry_u64 > 0 {
-            let carry_c = (carry_u64 as u128) * c;
-            let carry_c_low = carry_c as u64;
-            let carry_c_high = (carry_c >> 64) as u64;
-            let mut carry2: u128 = 0;
-            carry2 += lo[0] as u128 + carry_c_low as u128;
-            lo[0] = carry2 as u64;
-            carry2 >>= 64;
-            carry2 += lo[1] as u128 + carry_c_high as u128;
-            lo[1] = carry2 as u64;
-            carry2 >>= 64;
-            for i in 2..4 {
-                carry2 += lo[i] as u128;
-                lo[i] = carry2 as u64;
-                carry2 >>= 64;
+        let mut t = prod;
+        loop {
+            if t[4] == 0 && t[5] == 0 && t[6] == 0 && t[7] == 0 { break; }
+            let hi = [t[4], t[5], t[6], t[7]];
+            t[4] = 0; t[5] = 0; t[6] = 0; t[7] = 0;
+            let mut carry: u128 = 0;
+            for i in 0..4 {
+                let v = t[i] as u128 + (hi[i] as u128) * c + carry;
+                t[i] = v as u64;
+                carry = v >> 64;
             }
+            t[4] = carry as u64;   // overflow becomes the next high half to fold
         }
-        U256(lo).cond_sub_p()
+        // t[0..4] < 2^256 now; at most one subtraction of p is needed.
+        U256([t[0], t[1], t[2], t[3]]).cond_sub_p()
     }
 
     pub fn sqr(&self) -> U256 { self.mul_mod(self) }

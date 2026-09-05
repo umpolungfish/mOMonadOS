@@ -1,14 +1,7 @@
-Mirror G-mOMonadOS: full secp256k1 arithmetic with recover and verify
+Mirror the secp256k1 field-arithmetic fix from G-mOMonadOS
 
-Replaced the descriptive-only secp256k1_unwinder module with the full one from
-G-mOMonadOS, byte-identical: the 19-step walk types kept, plus the public-key
-to-secret-key arithmetic (U256 field ops, curve points, decompress,
-recover_private_key, verify_keypair). Wired the two key-I/O subcommands into the
-verb to match:
-
-  secp256k1_unwinder recover <pubkey_hex> [start] [max_k]   key in, private key out
-  secp256k1_unwinder verify <sk_hex> <pk_hex>               check a keypair
-
-No search cap: max_k defaults to the full u64 range. Builds bare-metal and
-hosted. Verified on the generator vector: verify 1 <G> is true, recover <G>
-returns private key 1, identical to G-mOMonadOS. The two repos now mirror.
+Same module, byte-identical: corrects the prime P low limb
+(0xFFFFFFFEFFFFFC2F), the add_mod carry-doubling, the sub_mod borrow fold, and
+the mul_mod dropped fold carry. recover and verify now return correct keys for
+all tested k, even and odd, verified against a python oracle. Builds bare-metal
+and hosted; identical to G-mOMonadOS.
