@@ -258,6 +258,13 @@ pub fn compress(x: &U256, y: &U256) -> String {
 /// Decompress compressed public key hex → (x, y).
 pub fn decompress(pk_hex: &str) -> Option<(U256, U256)> {
     let h = pk_hex.trim();
+    // Uncompressed: 04 || x || y. Both coordinates are given, so no square root
+    // is needed; read them straight off.
+    if h.starts_with("04") && h.len() == 130 {
+        let x = U256::from_hex(&h[2..66])?;
+        let y = U256::from_hex(&h[66..130])?;
+        return Some((x, y));
+    }
     let (x_hex, want_even) = if h.starts_with("02") {
         (&h[2..], true)
     } else if h.starts_with("03") {

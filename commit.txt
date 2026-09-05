@@ -1,7 +1,8 @@
-Mirror the secp256k1 field-arithmetic fix from G-mOMonadOS
+Accept uncompressed (04) public keys in decompress
 
-Same module, byte-identical: corrects the prime P low limb
-(0xFFFFFFFEFFFFFC2F), the add_mod carry-doubling, the sub_mod borrow fold, and
-the mul_mod dropped fold carry. recover and verify now return correct keys for
-all tested k, even and odd, verified against a python oracle. Builds bare-metal
-and hosted; identical to G-mOMonadOS.
+decompress handled compressed 02/03 and a bare 64-hex x, but a 04-prefixed
+uncompressed key (04 || x || y) fell through to None, so recover reported no
+key when the real issue was an unparsed input. Added the uncompressed branch:
+both coordinates are given, so it reads x and y straight off with no square
+root. Verified: the uncompressed k=2 key recovers 2, and the compressed 02/03
+keys still recover correctly.
