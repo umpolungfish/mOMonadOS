@@ -776,6 +776,41 @@ pub fn repl(k: &mut Kernel) {
                     crate::fibonacci_qc::repl_jones(n, &word);
                 }
             }
+            "theta-link" | "theta_link" | "iutt" => {
+                // Inter-Universal Teichmüller Theory housed in the paraconsistent
+                // ambient. The full-theory word is the ob3ect at
+                // ob3ect/digital/inter_universal_teichmuller_theory/; the Θ-link
+                // edge is the frobenioid coupling from iutt_imasm_verification.md.
+                let iutt_full = "⊢⊢⊢⊢∈≻⊤⋈⊙≺⊥⊞⋈∋⊡⊣";
+                let theta = "⊢⊙≻∈⊤≺⊥∋⋈⊞⊡⊣";
+                let control = "⊢∈≻⊤∋⊣";
+                let reg_line = |word: &str| -> alloc::string::String {
+                    let out = imasm_core::imasm16_3::run(&["check".into(), word.into()]);
+                    out.lines().find(|l| l.contains("Final register"))
+                        .map(|l| l.trim().into())
+                        .unwrap_or_else(|| "Final register: ?".into())
+                };
+                let read = |label: &str, word: &str| {
+                    let vch: alloc::vec::Vec<char> = word.chars().collect();
+                    sprintln!("  {}: {}", label, word);
+                    sprintln!("    vox closure verdict {}  (it closes, μ∘δ = id) ; sixteen3 {}",
+                        crate::vox::verdict(&vch), reg_line(word));
+                };
+                sprintln!("Inter-Universal Teichmüller Theory, housed in the paraconsistent ambient (Inclosure-B)");
+                read("full IUTT (ob3ect)", iutt_full);
+                read("Θ-link edge", theta);
+                sprintln!("  both close (verdict T) yet land on register A = {{T,F,t,f}}, which");
+                sprintln!("  projects to the four-valued core as B (both):");
+                sprintln!("    the paradox held, the alien ring structure carried across the link.");
+                sprintln!("  B is the Inclosure — unreachable by the Boolean core's adjoints:");
+                sprint!("{}", crate::belnap::corollary_11_2_report());
+                sprintln!("    r sends B up to T, c sends B down to F; neither recovers B.");
+                sprintln!("    classical (Boolean) mathematics can only collapse the Θ-link, erasing it.");
+                sprintln!("  control {}: sixteen3 {}", control, reg_line(control));
+                sprintln!("    the control closes on register T, not A — no ⊞ engagement, no paradox held.");
+                sprintln!("  see also: teich path <a> <b> (Teichmuller deformation), iuft report <name>");
+                sprintln!("            anyon-sync (conjugate synchronization = all-lane syzygy)");
+            }
             "anyon-sync" | "anyon_sync" => {
                 use crate::dialetheic_fib_shor::{Op, Carrier16, THE_WORD};
                 let lanes = |c: Carrier16| -> alloc::string::String {

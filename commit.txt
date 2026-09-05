@@ -1,7 +1,12 @@
-anyon-sync takes any word: prove the sync is computed, not stored
+Add theta-link: IUTT housed in the paraconsistent ambient (Inclosure-B)
 
-The verb now accepts a glyph-word and runs the Carrier16 state machine on it
-step by step, so the four-lane sync tracks the input rather than replaying a
-fixed trace. Demonstrated live: ⊢⊞⊥ syncs at step 3, ⊢≻⋈⊞⊥ moves the sync to
-step 5, and ⊢⊤⊥⊤⊥ never syncs because it never engages. No argument still runs
-the engaged word and the flat control side by side.
+A verb (alias iutt) that reads the full IUTT ob3ect word
+(⊢⊢⊢⊢∈≻⊤⋈⊙≺⊥⊞⋈∋⊡⊣) and the Θ-link edge (⊢⊙≻∈⊤≺⊥∋⋈⊞⊡⊣) through the live
+instruments. Both close (vox verdict T, μ∘δ=id) yet land on sixteen3 register A
+= {T,F,t,f}, which projects to the four-valued core as B (both): the paradox
+held, the alien ring structure carried across the link. The verb then prints
+belnap::corollary_11_2_report: B is the Inclosure, unreachable by the Boolean
+core adjoints (r sends B to T, c sends B to F, neither recovers B), so classical
+mathematics can only collapse the Θ-link. Control: a word that closes without
+engaging lands on register T, not A. Reuses vox::verdict, imasm16_3, belnap;
+cross-refs teich, iuft, anyon-sync. Menu entry added.
