@@ -1752,6 +1752,28 @@ pub fn repl(k: &mut Kernel) {
                     }
                 }
             }
+            "pk2sk" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "help" => sprintln!("{}", crate::pk2sk::help()),
+                    "selftest" => sprintln!("{}", crate::pk2sk::selftest()),
+                    "search" => {
+                        let pk_hex = parts.next().unwrap_or("");
+                        let lo = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        let hi = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        if pk_hex.is_empty() || lo == 0 || hi == 0 {
+                            sprintln!("pk2sk search <pk_hex> <lo> <hi>");
+                            sprintln!("example: pk2sk search 03f01d6b9018ab421dd410404cb869072065522bf85734008f105cf385a023a80f 12000 13000");
+                        } else {
+                            sprintln!("{}", crate::pk2sk::run(pk_hex, lo, hi));
+                        }
+                    }
+                    other => {
+                        sprintln!("pk2sk: unknown subcommand '{}'", other);
+                        sprintln!("{}", crate::pk2sk::help());
+                    }
+                }
+            }
             "btc_oneshot" => {
                 let sub = parts.next().unwrap_or("");
                 let pk_hex = parts.next().unwrap_or("");

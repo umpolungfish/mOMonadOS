@@ -1,12 +1,8 @@
-Add theta-link: IUTT housed in the paraconsistent ambient (Inclosure-B)
+Wire the pk2sk verb in mOMonadOS: the menu entry was dead
 
-A verb (alias iutt) that reads the full IUTT ob3ect word
-(⊢⊢⊢⊢∈≻⊤⋈⊙≺⊥⊞⋈∋⊡⊣) and the Θ-link edge (⊢⊙≻∈⊤≺⊥∋⋈⊞⊡⊣) through the live
-instruments. Both close (vox verdict T, μ∘δ=id) yet land on sixteen3 register A
-= {T,F,t,f}, which projects to the four-valued core as B (both): the paradox
-held, the alien ring structure carried across the link. The verb then prints
-belnap::corollary_11_2_report: B is the Inclosure, unreachable by the Boolean
-core adjoints (r sends B to T, c sends B to F, neither recovers B), so classical
-mathematics can only collapse the Θ-link. Control: a word that closes without
-engaging lands on register T, not A. Reuses vox::verdict, imasm16_3, belnap;
-cross-refs teich, iuft, anyon-sync. Menu entry added.
+The pk2sk module, its main.rs declaration, and the Quantum menu entry were all
+present, but repl.rs had no dispatch arm, so pk2sk from the prompt read
+Unknown. Added the arm, identical to G-mOMonadOS: help | selftest | search
+<pk_hex> <lo> <hi>, over crate::pk2sk (bounded-range BSGS ECDLP, curve-gated).
+Selftest recovers a 41-bit scalar and reverifies the public key. Every menu
+entry in both repos now reaches a working verb or a category.
