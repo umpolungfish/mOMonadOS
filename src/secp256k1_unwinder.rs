@@ -216,7 +216,7 @@ impl U256 {
 
     pub fn powmod(&self, e: &U256) -> U256 {
         let mut result = U256::one();
-        let mut base = self.cond_sub_p();
+        let base = self.cond_sub_p();
         // Left-to-right binary exponentiation: process bits from MSB to LSB
         for i in (0..4).rev() {
             for bit in (0..64).rev() {
@@ -375,6 +375,7 @@ fn pt_mul_g_u256(k: U256) -> Point {
     result
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 

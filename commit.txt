@@ -1,8 +1,5 @@
-Wire the pk2sk verb in mOMonadOS: the menu entry was dead
+Clear two secp256k1_unwinder warnings
 
-The pk2sk module, its main.rs declaration, and the Quantum menu entry were all
-present, but repl.rs had no dispatch arm, so pk2sk from the prompt read
-Unknown. Added the arm, identical to G-mOMonadOS: help | selftest | search
-<pk_hex> <lo> <hi>, over crate::pk2sk (bounded-range BSGS ECDLP, curve-gated).
-Selftest recovers a 41-bit scalar and reverifies the public key. Every menu
-entry in both repos now reaches a working verb or a category.
+Drop the redundant mut on base in powmod (it is never reassigned), and gate the
+arithmetic mod tests with #[cfg(test)] so it no longer compiles into the release
+build, which is what flagged its use super::* as unused. Both repos identical.
