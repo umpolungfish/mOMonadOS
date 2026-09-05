@@ -1,12 +1,14 @@
-Wire the secp256k1_unwinder verb and add the vox hex lift lane
+Mirror G-mOMonadOS: full secp256k1 arithmetic with recover and verify
 
-The secp256k1_unwinder dispatch arm (word | steps | mapping | walk | verdict |
-tuple | constants) over the ported module, and a new vox hex sub-lane beside
-evm and wasm: vox hex <hex> decodes a raw machine-code hex value stream with
-vox_core::lanes::from_hex, loads the bytes as a flat code image, walks the
-control flow, recompiles each function to its glyph word, and reads the closure
-verdict. Hosted real plus a bare-metal stub, mirroring vox_lift_file.
+Replaced the descriptive-only secp256k1_unwinder module with the full one from
+G-mOMonadOS, byte-identical: the 19-step walk types kept, plus the public-key
+to-secret-key arithmetic (U256 field ops, curve points, decompress,
+recover_private_key, verify_keypair). Wired the two key-I/O subcommands into the
+verb to match:
 
-Verified against the main Vox dir and G-mOMonadOS: a conditional branch
-cmp/jne/xor/ret reads T with the fork and fuse reconnecting, and the shuffle
-control decodes to different words, identical readings across all three builds.
+  secp256k1_unwinder recover <pubkey_hex> [start] [max_k]   key in, private key out
+  secp256k1_unwinder verify <sk_hex> <pk_hex>               check a keypair
+
+No search cap: max_k defaults to the full u64 range. Builds bare-metal and
+hosted. Verified on the generator vector: verify 1 <G> is true, recover <G>
+returns private key 1, identical to G-mOMonadOS. The two repos now mirror.

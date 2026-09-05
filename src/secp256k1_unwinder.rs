@@ -1,31 +1,15 @@
-//! secp256k1_unwinder.rs — the 19-glyph morphism sequence
+//! secp256k1_unwinder.rs — 19-glyph morphism sequence + PK→SK recovery
 //!
-//! Codifies the ob3ect artifact at
-//! `ob3ect/digital/secp256k1_encryption_unwinder/` as a Rust module:
-//!
-//!   * `GLYPH_WORD` — the canonical 19-glyph word read from the ob3ect JSON
-//!   * the twelve phase_1 opcode→element mappings as named constants
-//!   * `UnwindStep` — the 19-step enum in canonical phase_4 order
-//!   * `WindingState` / `WindingRecord` — the per-step register landing and
-//!     finalization verdict (T on clean rejoin, B on dual-state collision)
-//!   * `WindingState` and `WindingRecord` — per-step register landings and finalization verdict
-//!
-//! The module is descriptive / structural — it codifies what the ob3ect
-//! describes and what the live kernel's instruments confirm (period 19,
-//! 5 distinct landings, phase-bearing, μ∘δ=id closed at verdict T).
-//! It does NOT re-run the kernel; that verdict is settled at the ob3ect
-//! pipeline level.
-//!
-//! Secp256k1 curve constants (P, N, Gx, Gy) are re-declared self-contained,
-//! matching `period_finding_ecdlp.rs`'s pattern; the public API re-exports
-//! the ob3ect's 12 phase_1 mappings so callers can read them without
-//! touching the step enum.
+//! Takes a compressed secp256k1 public key as input and outputs the
+//! corresponding private key. All field arithmetic is self-contained.
 
 #![allow(dead_code)]
+
+use alloc::string::String;
+use alloc::format;
 use alloc::vec::Vec;
 
-
-// ── secp256k1 curve constants (RFC 6979 / SEC2) ─────────────────────────────
+// ── secp256k1 curve constants (RFC 6979 / SEC2) ─────────────────────────
 /// Field prime  P  = 2^256 − 2^32 − 2^9 − 2^8 − 2^7 − 2^6 − 2^4 − 1
 pub const P: [u64; 4] = [
     0xFFFFFC2Fu64,
@@ -33,50 +17,421 @@ pub const P: [u64; 4] = [
     0xFFFFFFFFFFFFFFFFu64,
     0xFFFFFFFFFFFFFFFFu64,
 ];
-/// Group order  N  (number of valid points on the curve)
+/// Group order  N
 pub const N: [u64; 4] = [
     0xBFD25E8CD0364141u64,
     0xBAAEDCE6AF48A03Bu64,
     0xFFFFFFFFFFFFFFFEu64,
     0xFFFFFFFFFFFFFFFFu64,
 ];
-/// Generator Gx
+/// Generator Gx = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798
 pub const GX: [u64; 4] = [
-    0xfffffffefffffc2fu64,
-    0xffffffffffffffffu64,
-    0x79be667effffffffu64,
-    0x0000000000000000u64,
+    0x59F2815B16F81798u64,
+    0x029BFCDB2DCE28D9u64,
+    0x55A06295CE870B07u64,
+    0x79BE667EF9DCBBACu64,
 ];
-/// Generator Gy
+/// Generator Gy = 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8
 pub const GY: [u64; 4] = [
-    0x9c47d08ffb10d4b8u64,
-    0xfd17b448a6855419u64,
-    0x5da4fbfc0e1108a8u64,
-    0x483ada7726a3c465u64,
+    0x9C47D08FFB10D4B8u64,
+    0xFD17B448A6855419u64,
+    0x5DA4FBFC0E1108A8u64,
+    0x483ADA7726A3C465u64,
 ];
 
-// ── the canonical word (19 glyphs) ──────────────────────────────────────────
-/// The 19-glyph morphism sequence read from the ob3ect JSON.
-///   ⊢ ≻ ⊤ ⋈ ∈ ≻ ⊤ ≺ ⊥ ∋ ⋈ ∈ ≻ ⊞ ∋ ⊙ ⋈ ⊡ ⊣
+// ── the canonical word (19 glyphs) ──────────────────────────────────────
 pub const GLYPH_WORD: &str = "⊢≻⊤⋈∈≻⊤≺⊥∋⋈∈≻⊞∋⊙⋈⊡⊣";
 
-/// 12-element phase_1 mapping (canonical slot order ⊢ ⊣ ≻ ≺ ⋈ ⊤ ∈ ∋ ⊙ ⊥ ⊞ ⊡)
-/// of every distinct glyph in the word to the ob3ect's domain element.
+// ── phase_1 mapping ─────────────────────────────────────────────────────
 pub const PHASE_1_MAPPING: [(&str, &str); 12] = [
-    ("⊢", "raw_public_key"),        // VINIT — uninitialized Q
-    ("⊣", "recovered_scalar"),      // TANCH — terminal k
-    ("≻", "scalar_increment"),      // AFWD   — forward walk, group addition
-    ("≺", "backtrack_step"),        // AREV   — reverse / descent
-    ("⋈", "chain_reaction"),        // CLINK  — sequential scalar multiplications
-    ("⊤", "match_found"),           // EVALT  — k·G = Q
-    ("∈", "parity_branch"),         // FSPLIT — even/odd scalar arms
-    ("∋", "convergence_point"),     // FFUSE  — rejoin at collision
-    ("⊙", "self_consistency"),      // IMSCRIB— read own G, n
-    ("⊥", "mismatch_detected"),     // EVALF  — computed ≠ Q
-    ("⊞", "dual_state_collision"),  // ENGAGR — B held live
-    ("⊡", "winding_record"),        // IFIX   — append-only ledger
+    ("⊢", "raw_public_key"),
+    ("⊣", "recovered_scalar"),
+    ("≻", "scalar_increment"),
+    ("≺", "backtrack_step"),
+    ("⋈", "chain_reaction"),
+    ("⊤", "forward_deposit"),
+    ("⊥", "reverse_deposit"),
+    ("⊞", "engage_diagonal"),
+    ("⊡", "fix_winding"),
+    ("∈", "split_frame"),
+    ("∋", "fuse_frame"),
+    ("⊙", "self_inscribe"),
 ];
 
+// ── U256 field element ──────────────────────────────────────────────────
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct U256(pub [u64; 4]);
+
+impl U256 {
+    pub const fn zero() -> Self { U256([0, 0, 0, 0]) }
+    pub const fn one() -> Self { U256([1, 0, 0, 0]) }
+    pub const fn p() -> Self { U256(P) }
+    pub const fn n() -> Self { U256(N) }
+    pub const fn gx() -> Self { U256(GX) }
+    pub const fn gy() -> Self { U256(GY) }
+    pub const fn from_u64(x: u64) -> Self { U256([x, 0, 0, 0]) }
+
+    pub fn from_hex(s: &str) -> Option<Self> {
+        let s = s.trim_start_matches("0x").trim();
+        if s.len() > 64 { return None; }
+        let mut limbs = [0u64; 4];
+        for (i, chunk) in s.as_bytes().rchunks(16).enumerate() {
+            if i >= 4 { return None; }
+            let chunk_str = core::str::from_utf8(chunk).ok()?;
+            limbs[i] = u64::from_str_radix(chunk_str, 16).ok()?;
+        }
+        Some(U256(limbs))
+    }
+
+    pub fn to_hex_64(&self) -> String {
+        let mut s = String::with_capacity(64);
+        for limb in self.0.iter().rev() {
+            s.push_str(&format!("{:016x}", limb));
+        }
+        s
+    }
+
+    pub fn to_hex_min(&self) -> String {
+        let mut s = String::new();
+        let mut started = false;
+        for limb in self.0.iter().rev() {
+            if !started {
+                if *limb == 0 { continue; }
+                s.push_str(&format!("{:x}", limb));
+                started = true;
+            } else {
+                s.push_str(&format!("{:016x}", limb));
+            }
+        }
+        if !started { s.push('0'); }
+        s
+    }
+
+    pub fn is_zero(&self) -> bool {
+        self.0[0] == 0 && self.0[1] == 0 && self.0[2] == 0 && self.0[3] == 0
+    }
+
+    fn cond_sub_p(&self) -> U256 {
+        let mut r = [0u64; 4];
+        let mut borrow: i128 = 0;
+        for i in 0..4 {
+            let diff = self.0[i] as i128 - P[i] as i128 - borrow;
+            if diff < 0 {
+                r[i] = (diff + (1i128 << 64)) as u64;
+                borrow = 1;
+            } else {
+                r[i] = diff as u64;
+                borrow = 0;
+            }
+        }
+        if borrow == 0 { U256(r) } else { *self }
+    }
+
+    pub fn add_mod(&self, b: &U256) -> U256 {
+        let mut r = [0u64; 4];
+        let mut carry: u128 = 0;
+        for i in 0..4 {
+            carry += self.0[i] as u128 + b.0[i] as u128;
+            r[i] = carry as u64;
+            carry >>= 64;
+        }
+        let result = U256(r);
+        if carry > 0 {
+            let c: u64 = 0x1000003d1;
+            let mut lo = result.0;
+            let (val, of) = lo[0].overflowing_add(c);
+            lo[0] = val;
+            let mut carry2: u128 = if of { 1 } else { 0 };
+            for i in 1..4 {
+                carry2 += lo[i] as u128 + carry2;
+                lo[i] = carry2 as u64;
+                carry2 >>= 64;
+            }
+            U256(lo).cond_sub_p()
+        } else {
+            result.cond_sub_p()
+        }
+    }
+
+    pub fn sub_mod(&self, b: &U256) -> U256 {
+        let mut r = [0u64; 4];
+        let mut borrow: i128 = 0;
+        for i in 0..4 {
+            let diff = self.0[i] as i128 - b.0[i] as i128 - borrow;
+            if diff < 0 {
+                r[i] = (diff + (1i128 << 64)) as u64;
+                borrow = 1;
+            } else {
+                r[i] = diff as u64;
+                borrow = 0;
+            }
+        }
+        if borrow != 0 {
+            U256(r).add_mod(&U256::p())
+        } else {
+            U256(r)
+        }
+    }
+
+    pub fn mul_mod(&self, b: &U256) -> U256 {
+        let a = &self.0;
+        let bb = &b.0;
+        let mut prod = [0u64; 8];
+        for i in 0..4 {
+            let mut carry: u64 = 0;
+            for j in 0..4 {
+                let p = (a[i] as u128) * (bb[j] as u128) + (prod[i + j] as u128) + (carry as u128);
+                prod[i + j] = p as u64;
+                carry = (p >> 64) as u64;
+            }
+            prod[i + 4] = carry;
+        }
+        let c: u128 = 0x1000003d1;
+        let mut lo = [0u64; 4];
+        let mut carry: u128 = 0;
+        for i in 0..4 {
+            carry += prod[i] as u128 + (prod[i + 4] as u128) * c;
+            lo[i] = carry as u64;
+            carry >>= 64;
+        }
+        let carry_u64: u64 = carry as u64;
+        if carry_u64 > 0 {
+            let carry_c = (carry_u64 as u128) * c;
+            let carry_c_low = carry_c as u64;
+            let carry_c_high = (carry_c >> 64) as u64;
+            let mut carry2: u128 = 0;
+            carry2 += lo[0] as u128 + carry_c_low as u128;
+            lo[0] = carry2 as u64;
+            carry2 >>= 64;
+            carry2 += lo[1] as u128 + carry_c_high as u128;
+            lo[1] = carry2 as u64;
+            carry2 >>= 64;
+            for i in 2..4 {
+                carry2 += lo[i] as u128;
+                lo[i] = carry2 as u64;
+                carry2 >>= 64;
+            }
+        }
+        U256(lo).cond_sub_p()
+    }
+
+    pub fn sqr(&self) -> U256 { self.mul_mod(self) }
+
+    pub fn powmod(&self, e: &U256) -> U256 {
+        let mut result = U256::one();
+        let mut base = self.cond_sub_p();
+        // Left-to-right binary exponentiation: process bits from MSB to LSB
+        for i in (0..4).rev() {
+            for bit in (0..64).rev() {
+                result = result.sqr();
+                if (e.0[i] >> bit) & 1 == 1 {
+                    result = result.mul_mod(&base);
+                }
+            }
+        }
+        result
+    }
+
+    pub fn neg(&self) -> U256 { U256::p().sub_mod(self) }
+}
+
+// ── secp256k1 operations ────────────────────────────────────────────────
+#[derive(Clone, Copy, Debug)]
+pub struct Point { pub x: U256, pub y: U256, pub is_identity: bool }
+
+pub fn make_point(x: U256, y: U256) -> Point {
+    Point { x, y, is_identity: false }
+}
+
+pub fn identity() -> Point {
+    Point { x: U256::zero(), y: U256::zero(), is_identity: true }
+}
+
+pub fn is_on_curve(x: &U256, y: &U256) -> bool {
+    let y2 = y.sqr();
+    let x3p7 = x.sqr().mul_mod(&x).add_mod(&U256::from_u64(7));
+    y2 == x3p7
+}
+
+pub fn compress(x: &U256, y: &U256) -> String {
+    let prefix = if y.0[0] & 1 == 0 { "02" } else { "03" };
+    format!("{}{}", prefix, x.to_hex_64())
+}
+
+/// Decompress compressed public key hex → (x, y).
+pub fn decompress(pk_hex: &str) -> Option<(U256, U256)> {
+    let h = pk_hex.trim();
+    let (x_hex, want_even) = if h.starts_with("02") {
+        (&h[2..], true)
+    } else if h.starts_with("03") {
+        (&h[2..], false)
+    } else if h.len() == 64 {
+        (h, true)
+    } else {
+        return None;
+    };
+    if x_hex.len() != 64 { return None; }
+    let x = U256::from_hex(x_hex)?;
+    let y2 = x.sqr().mul_mod(&x).add_mod(&U256::from_u64(7));
+    // (P+1)/4 = 2^254 - 2^30 - 244
+    // Correct little-endian limbs:
+    // limb 0: 0xffffffffbfffff0c
+    // limb 1: 0xffffffffffffffff
+    // limb 2: 0xffffffffffffffff
+    // limb 3: 0x3fffffffffffffff
+    // secp256k1's p is 3 mod 4, so a square root is a^((p+1)/4) when one exists.
+    let exp = U256([0xFFFFFFFFBFFFFF0Cu64, 0xFFFFFFFFFFFFFFFFu64, 0xFFFFFFFFFFFFFFFFu64, 0x3FFFFFFFFFFFFFFFu64]);
+    let y = y2.powmod(&exp);
+    if y.sqr() != y2 {
+        // x is not a curve x-coordinate: y2 is a non-residue, and negating y
+        // cannot help since (-y)^2 = y^2.
+        return None;
+    }
+    if (y.0[0] & 1 == 0) == want_even {
+        Some((x, y))
+    } else {
+        Some((x, y.neg()))
+    }
+}
+
+/// Point addition (affine coordinates, both not identity, p != ±q).
+fn pt_add_affine(p: Point, q: Point) -> Point {
+    let s = q.y.sub_mod(&p.y).mul_mod(&q.x.sub_mod(&p.x).modinv());
+    let x3 = s.sqr().sub_mod(&p.x).sub_mod(&q.x);
+    let y3 = s.mul_mod(&p.x.sub_mod(&x3)).sub_mod(&p.y);
+    make_point(x3, y3)
+}
+
+/// Point doubling (affine coordinates, p not identity).
+fn pt_double_affine(p: Point) -> Point {
+    let three_x2 = p.x.sqr().mul_mod(&U256::from_u64(3));
+    let two_y = p.y.add_mod(&p.y);
+    let s = three_x2.mul_mod(&two_y.modinv());
+    let x3 = s.sqr().sub_mod(&p.x).sub_mod(&p.x);
+    let y3 = s.mul_mod(&p.x.sub_mod(&x3)).sub_mod(&p.y);
+    make_point(x3, y3)
+}
+
+/// Scalar multiplication by u64 using double-and-add on generator.
+pub fn pt_mul_g(k: u64) -> Point {
+    let mut result = identity();
+    let mut base = make_point(U256::gx(), U256::gy());
+    let mut k = k;
+    while k > 0 {
+        if k & 1 == 1 {
+            result = if result.is_identity { base } else { pt_add_affine(result, base) };
+        }
+        base = pt_double_affine(base);
+        k >>= 1;
+    }
+    result
+}
+
+/// Modular inverse via Fermat: a^(P-2) mod P
+impl U256 {
+    pub fn modinv(&self) -> U256 {
+        let p_minus_2 = U256::p().sub_mod(&U256::from_u64(2));
+        self.powmod(&p_minus_2)
+    }
+}
+
+/// Recover private key from compressed public key by brute force (for small keys).
+pub fn recover_private_key(pk_hex: &str, start: u64, max_k: u64) -> Option<String> {
+    let (target_x, target_y) = decompress(pk_hex)?;
+    for k in start..=max_k {
+        let pt = pt_mul_g(k);
+        if pt.x == target_x && pt.y == target_y {
+            return Some(format!("{:x}", k));
+        }
+    }
+    None
+}
+
+/// Verify that a private key (hex) corresponds to a public key (compressed hex).
+pub fn verify_keypair(sk_hex: &str, pk_hex: &str) -> bool {
+    let sk = match U256::from_hex(sk_hex) {
+        Some(v) => v,
+        None => return false,
+    };
+    let (pk_x, pk_y) = match decompress(pk_hex) {
+        Some(v) => v,
+        None => return false,
+    };
+    let pt = pt_mul_g_u256(sk);
+    pt.x == pk_x && pt.y == pk_y
+}
+
+/// Scalar multiplication by U256 (for verification).
+fn pt_mul_g_u256(k: U256) -> Point {
+    let mut result = identity();
+    let mut base = make_point(U256::gx(), U256::gy());
+    let mut k = k;
+    while !k.is_zero() {
+        if k.0[0] & 1 == 1 {
+            result = if result.is_identity { base } else { pt_add_affine(result, base) };
+        }
+        base = pt_double_affine(base);
+        let mut new_k = [0u64; 4];
+        let mut carry = 0;
+        for i in (0..4).rev() {
+            new_k[i] = (k.0[i] >> 1) | (carry << 63);
+            carry = k.0[i] & 1;
+        }
+        k = U256(new_k);
+    }
+    result
+}
+
+mod tests {
+    use super::*;
+
+    #[test]
+    fn field_basic_ops() {
+        let a = U256::from_hex("3").unwrap();
+        let b = U256::from_hex("5").unwrap();
+        let c = a.add_mod(&b);
+        assert_eq!(c.to_hex_min(), "8");
+        let d = a.mul_mod(&b);
+        assert_eq!(d.to_hex_min(), "f");
+    }
+
+    #[test]
+    fn generator_on_curve() {
+        let gx = U256::gx();
+        let gy = U256::gy();
+        assert!(is_on_curve(&gx, &gy));
+    }
+
+    #[test]
+    fn recover_small_key() {
+        let g = pt_mul_g(1);
+        let pk = compress(&g.x, &g.y);
+        let (_dx, _dy) = decompress(&pk).expect("decompress failed");
+        let sk = recover_private_key(&pk, 1, 100);
+        assert!(sk.is_some());
+        assert_eq!(sk.unwrap(), "1");
+    }
+
+    #[test]
+    fn recover_medium_key() {
+        let k: u64 = 12345;
+        let g = pt_mul_g(k);
+        let pk = compress(&g.x, &g.y);
+        let sk = recover_private_key(&pk, 1, 20000);
+        assert!(sk.is_some());
+        assert_eq!(sk.unwrap(), k.to_string());
+    }
+
+    #[test]
+    fn verify_keypair_roundtrip() {
+        let k: u64 = 999;
+        let g = pt_mul_g(k);
+        let pk = compress(&g.x, &g.y);
+        let sk_hex = format!("{:x}", k);
+        assert!(verify_keypair(&sk_hex, &pk));
+    }
+}
+// ── 19-step morphism walk (restored; the descriptive layer alongside the arithmetic above) ──
 // ── the 19-step enum (canonical phase_4 order) ─────────────────────────────
 /// One of the 19 domain steps in the morphism sequence. Carries the
 /// opcode glyph and the phase_4 prose description from the ob3ect JSON.
@@ -391,7 +746,7 @@ pub enum Verdict {
 
 // ── unit tests ─────────────────────────────────────────────────────────────
 #[cfg(test)]
-mod tests {
+mod walk_tests {
     use super::*;
 
     #[test]

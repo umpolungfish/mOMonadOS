@@ -1583,6 +1583,8 @@ pub fn repl(k: &mut Kernel) {
                     sprintln!("  secp256k1_unwinder verdict [k]   print the finalize() verdict for the canonical walk");
                     sprintln!("  secp256k1_unwinder tuple         print the grammar tuple (tier: O_2dag)");
                     sprintln!("  secp256k1_unwinder constants     print P, N, Gx, Gy");
+                    sprintln!("  secp256k1_unwinder recover <pubkey_hex> [start] [max_k]  — key in, private key out");
+                    sprintln!("  secp256k1_unwinder verify <sk_hex> <pk_hex>              — check a keypair");
                 } else {
                     match arg {
                         "word" => sprintln!("{}", crate::secp256k1_unwinder::GLYPH_WORD),
@@ -1630,6 +1632,31 @@ pub fn repl(k: &mut Kernel) {
                             sprintln!("N  = 0x{:016X}{:016X}{:016X}{:016X}", N[3], N[2], N[1], N[0]);
                             sprintln!("Gx = 0x{:016X}{:016X}{:016X}{:016X}", GX[3], GX[2], GX[1], GX[0]);
                             sprintln!("Gy = 0x{:016X}{:016X}{:016X}{:016X}", GY[3], GY[2], GY[1], GY[0]);
+                        }
+                        "recover" => {
+                            let pk = parts.next().unwrap_or("").trim();
+                            let more: alloc::vec::Vec<&str> = parts.next().unwrap_or("").split_whitespace().collect();
+                            let start = more.get(0).and_then(|s| s.parse::<u64>().ok()).unwrap_or(1);
+                            // No artificial ceiling: default runs the full u64 range, the
+                            // structural bound of a scalar brute force, not a chosen cap.
+                            let max_k = more.get(1).and_then(|s| s.parse::<u64>().ok()).unwrap_or(u64::MAX);
+                            if pk.is_empty() {
+                                sprintln!("secp256k1_unwinder recover <pubkey_hex> [start] [max_k]  — key in, private key out");
+                            } else {
+                                match crate::secp256k1_unwinder::recover_private_key(pk, start, max_k) {
+                                    Some(k) => sprintln!("private key: {}", k),
+                                    None => sprintln!("no private key in [{}, {}] for {}", start, max_k, pk),
+                                }
+                            }
+                        }
+                        "verify" => {
+                            let sk = parts.next().unwrap_or("").trim();
+                            let pk = parts.next().unwrap_or("").trim();
+                            if sk.is_empty() || pk.is_empty() {
+                                sprintln!("secp256k1_unwinder verify <sk_hex> <pk_hex>");
+                            } else {
+                                sprintln!("keypair valid: {}", crate::secp256k1_unwinder::verify_keypair(sk, pk));
+                            }
                         }
                         other => {
                             sprintln!("secp256k1_unwinder: unknown subcommand '{}' (try 'secp256k1_unwinder help')", other);
