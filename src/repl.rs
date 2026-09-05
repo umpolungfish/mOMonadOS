@@ -1583,8 +1583,8 @@ pub fn repl(k: &mut Kernel) {
                     sprintln!("  secp256k1_unwinder verdict [k]   print the finalize() verdict for the canonical walk");
                     sprintln!("  secp256k1_unwinder tuple         print the grammar tuple (tier: O_2dag)");
                     sprintln!("  secp256k1_unwinder constants     print P, N, Gx, Gy");
-                    sprintln!("  secp256k1_unwinder recover <pubkey_hex> [start] [max_k]  — key in, private key out");
-                    sprintln!("  secp256k1_unwinder verify <sk_hex> <pk_hex>              — check a keypair");
+                    sprintln!("  secp256k1_unwinder recover <pubkey_hex>       — recover via Shor's ECDLP (GPU period-finding)");
+                    sprintln!("  secp256k1_unwinder verify <sk_hex> <pk_hex>   — check a keypair");
                 } else {
                     match arg {
                         "word" => sprintln!("{}", crate::secp256k1_unwinder::GLYPH_WORD),
@@ -1635,18 +1635,12 @@ pub fn repl(k: &mut Kernel) {
                         }
                         "recover" => {
                             let pk = parts.next().unwrap_or("").trim();
-                            let more: alloc::vec::Vec<&str> = parts.next().unwrap_or("").split_whitespace().collect();
-                            let start = more.get(0).and_then(|s| s.parse::<u64>().ok()).unwrap_or(1);
-                            // No artificial ceiling: default runs the full u64 range, the
-                            // structural bound of a scalar brute force, not a chosen cap.
-                            let max_k = more.get(1).and_then(|s| s.parse::<u64>().ok()).unwrap_or(u64::MAX);
                             if pk.is_empty() {
-                                sprintln!("secp256k1_unwinder recover <pubkey_hex> [start] [max_k]  — key in, private key out");
+                                sprintln!("secp256k1_unwinder recover <pubkey_hex>  — recover via Shor's ECDLP (period-finding on the GPU)");
                             } else {
-                                match crate::secp256k1_unwinder::recover_private_key(pk, start, max_k) {
-                                    Some(k) => sprintln!("private key: {}", k),
-                                    None => sprintln!("no private key in [{}, {}] for {}", start, max_k, pk),
-                                }
+                                // Recovery is Shor's, not a scalar scan. The period-finding
+                                // underneath runs on the GPU (gpu_shor::order).
+                                crate::shors_btc_2::run_shors_btc_2_from_hex(pk).print_report();
                             }
                         }
                         "verify" => {

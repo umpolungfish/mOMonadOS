@@ -1,8 +1,10 @@
-Accept uncompressed (04) public keys in decompress
+Recover via Shor's, not brute force; remove the scalar scan
 
-decompress handled compressed 02/03 and a bare 64-hex x, but a 04-prefixed
-uncompressed key (04 || x || y) fell through to None, so recover reported no
-key when the real issue was an unparsed input. Added the uncompressed branch:
-both coordinates are given, so it reads x and y straight off with no square
-root. Verified: the uncompressed k=2 key recovers 2, and the compressed 02/03
-keys still recover correctly.
+The unwinder's recover was a linear k=1,2,3... scan, the exponential ECDLP
+brute force. Recovery is Shor's: the recover subcommand now delegates to
+shors_btc_2, whose period-finding runs on the GPU through gpu_shor::order.
+Removed recover_private_key and its two brute-force tests. verify stays as a
+keypair check.
+
+Verified: secp256k1_unwinder recover on the k=2 pubkey returns private key 2
+through the Shor pipeline, identical in both repos.

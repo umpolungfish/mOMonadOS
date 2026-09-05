@@ -339,17 +339,6 @@ impl U256 {
     }
 }
 
-/// Recover private key from compressed public key by brute force (for small keys).
-pub fn recover_private_key(pk_hex: &str, start: u64, max_k: u64) -> Option<String> {
-    let (target_x, target_y) = decompress(pk_hex)?;
-    for k in start..=max_k {
-        let pt = pt_mul_g(k);
-        if pt.x == target_x && pt.y == target_y {
-            return Some(format!("{:x}", k));
-        }
-    }
-    None
-}
 
 /// Verify that a private key (hex) corresponds to a public key (compressed hex).
 pub fn verify_keypair(sk_hex: &str, pk_hex: &str) -> bool {
@@ -404,26 +393,6 @@ mod tests {
         let gx = U256::gx();
         let gy = U256::gy();
         assert!(is_on_curve(&gx, &gy));
-    }
-
-    #[test]
-    fn recover_small_key() {
-        let g = pt_mul_g(1);
-        let pk = compress(&g.x, &g.y);
-        let (_dx, _dy) = decompress(&pk).expect("decompress failed");
-        let sk = recover_private_key(&pk, 1, 100);
-        assert!(sk.is_some());
-        assert_eq!(sk.unwrap(), "1");
-    }
-
-    #[test]
-    fn recover_medium_key() {
-        let k: u64 = 12345;
-        let g = pt_mul_g(k);
-        let pk = compress(&g.x, &g.y);
-        let sk = recover_private_key(&pk, 1, 20000);
-        assert!(sk.is_some());
-        assert_eq!(sk.unwrap(), k.to_string());
     }
 
     #[test]
