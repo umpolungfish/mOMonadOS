@@ -68,6 +68,43 @@ impl History {
 
 // ─── REPL ─────────────────────────────────────────────────────
 
+/// Same threshold as `join_digit_continuations.awk`: only chunks this long
+/// are treated as wrapped-N continuations; shorter digit lines stay B1/counts.
+const BIGINT_CONTINUATION_DIGITS: usize = 16;
+
+fn digits_only(s: &str) -> bool {
+    !s.is_empty() && s.bytes().all(|b| b.is_ascii_digit())
+}
+
+/// Verb forms that take a big integer next and are often pasted with N on the
+/// following line(s). Incomplete → hold; digit-only lines then extend the hold.
+/// Keep in lockstep with join_digit_continuations.awk::awaiting.
+fn awaiting_bigint_arg(line: &str) -> bool {
+    let t: Vec<&str> = line.split_whitespace().collect();
+    match t.as_slice() {
+        ["gpu_ecm"] | ["gpu_ecm", "bsgs"] => true,
+        ["gpu_factor"] => true,
+        ["gpu_rho", "factor"] => true,
+        ["nested_oneshot", "factor"] | ["nested", "factor"] | ["nos", "factor"] => true,
+        ["doubly_nested_oneshot", "factor"] | ["dnos", "factor"] => true,
+        ["prime_winding", "factor"] => true,
+        ["trilattice_factor", "factor"] | ["tfactor", "factor"] => true,
+        ["winding", "factor"] => true,
+        _ => false,
+    }
+}
+
+fn join_digit_chunk(buf: &mut String, chunk: &str) {
+    if chunk.len() >= BIGINT_CONTINUATION_DIGITS
+        && buf.as_bytes().last().map(|b| b.is_ascii_digit()).unwrap_or(false)
+    {
+        buf.push_str(chunk);
+    } else {
+        if !buf.is_empty() { buf.push(' '); }
+        buf.push_str(chunk);
+    }
+}
+
 pub fn repl(k: &mut Kernel) {
     let mut cfs = CrystalStore::new();
     // 2 MiB on the stack overflowed under Windows' default ~1 MiB thread
@@ -77,6 +114,9 @@ pub fn repl(k: &mut Kernel) {
     let mut history = History::new();
     let mut ctx_stack = ContextStack::new();
     let mut ask_paste = crate::ask::AskPaste::new();
+    // Held incomplete bigint verb (`prime_winding factor`, …); digit-only lines extend it.
+    let mut bigint_cont: Option<String> = None;
+    let mut pending_lines: alloc::collections::VecDeque<String> = alloc::collections::VecDeque::new();
 
     sprintln!("   {}ask{} runs a structural dry-run here; the full wet-run is on the host:",
         crate::style::key(), crate::style::reset());
@@ -85,9 +125,37 @@ pub fn repl(k: &mut Kernel) {
     sprintln!();
 
     loop {
-        render_prompt(&ctx_stack);
-        let line = read_line(&mut line_buf, &mut history, &ctx_stack);
-        if line.is_empty() { continue; }
+        let line_owned: String = if let Some(p) = pending_lines.pop_front() {
+            p
+        } else {
+            render_prompt(&ctx_stack);
+            let raw = read_line(&mut line_buf, &mut history, &ctx_stack);
+            let t = raw.trim();
+            if t.is_empty() {
+                if let Some(c) = bigint_cont.take() {
+                    c
+                } else {
+                    continue;
+                }
+            } else if digits_only(t) {
+                if let Some(ref mut c) = bigint_cont {
+                    join_digit_chunk(c, t);
+                    continue;
+                }
+                t.to_string()
+            } else {
+                if let Some(c) = bigint_cont.take() {
+                    pending_lines.push_back(t.to_string());
+                    c
+                } else if awaiting_bigint_arg(t) {
+                    bigint_cont = Some(t.to_string());
+                    continue;
+                } else {
+                    t.to_string()
+                }
+            }
+        };
+        let line = line_owned.as_str();
 
         // Multi-line ask paste: accumulate until a lone `.`
         if ask_paste.active {
