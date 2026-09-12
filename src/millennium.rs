@@ -62,6 +62,12 @@ const PROBLEMS: &[(&str, &str, &str)] = &[
 /// pipeline as repair.rs's `crystal_address_of`, called directly on the
 /// underlying functions rather than through the CLI path law 17 flags.
 fn executed_tuple(word: &str) -> Option<crate::imas_ig::IgTuple> {
+    // GPU: the static self-imscription analysis runs on the device; the host
+    // rebuilds the same Snapshot. CPU self_imscribe is the bare-metal fallback.
+    #[cfg(feature = "hosted")]
+    if let Some(snap) = crate::gpu_millennium::snapshot(word) {
+        return Some(crate::imas_ig::IgTuple::from_snapshot(&snap));
+    }
     let prog = crate::belnap_ring_shor::program_from_glyphs(word).ok()?;
     let snap = crate::kernel::self_imscribe(&prog);
     Some(crate::imas_ig::IgTuple::from_snapshot(&snap))

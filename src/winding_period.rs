@@ -60,7 +60,7 @@ fn powmod(a: u64, mut e: u64, m: u64) -> u64 {
     r
 }
 
-fn gcd(mut a: u64, mut b: u64) -> u64 {
+pub(crate) fn gcd(mut a: u64, mut b: u64) -> u64 {
     while b != 0 { let t = a % b; a = b; b = t; }
     a
 }
@@ -79,13 +79,13 @@ fn egcd(a: u64, b: u64) -> (i128, i128, u64) {
     (old_s, old_t, old_r as u64)
 }
 
-fn modinv(a: u64, m: u64) -> u64 {
+pub(crate) fn modinv(a: u64, m: u64) -> u64 {
     let (x, _, g) = egcd(a % m, m);
     debug_assert_eq!(g, 1);
     ((x % m as i128 + m as i128) % m as i128) as u64
 }
 
-fn isqrt(n: u64) -> u64 {
+pub(crate) fn isqrt(n: u64) -> u64 {
     if n < 2 { return n; }
     let mut x = n;
     let mut y = (x + 1) / 2;
@@ -177,6 +177,41 @@ pub fn closure_gcd(N: u64, B: u64) -> Option<u64> {
     }
     let g = gcd(x.wrapping_sub(1), N);
     if g > 1 && g < N { Some(g) } else { None }
+}
+
+/// Same Pollard p-1 closure as closure_gcd, BigUint instead of native u64 —
+/// closure_gcd silently caps out at 64 bits (the REPL's own u64 parse fails
+/// past that and defaults to N=0, reporting a fabricated "open" verdict
+/// rather than an error). Real algorithm, unchanged: x=2, raise to the
+/// largest p^e <= B for every prime p <= B, then gcd(x-1, N).
+pub fn closure_gcd_big(n: &BigUint, b: u64) -> Option<BigUint> {
+    let three = BigUint::from(3u32);
+    if *n < three || b < 2 { return None; }
+    let mut x = BigUint::from(2u32);
+    for p in 2..=b {
+        if !is_prime(p) { continue; }
+        let mut e = p;
+        while e <= b / p { e *= p; }
+        x = crate::native_numeral::mod_pow_walk(&x, &crate::native_numeral::to_bits_low_first(&BigUint::from(e)), n);
+    }
+    let one = BigUint::from(1u32);
+    if x.is_zero() { return None; }
+    let g = gcd_big(crate::native_numeral::subtract_via_word(&x, &one).unwrap(), n.clone());
+    if g > one && &g < n { Some(g) } else { None }
+}
+
+pub fn repl_closure_big(n_str: &str, b: u64) -> String {
+    let n: BigUint = match n_str.trim().parse() {
+        Ok(v) => v,
+        Err(_) => return format!("winding closure: '{}' is not a valid non-negative integer", n_str),
+    };
+    match closure_gcd_big(&n, b) {
+        Some(p) => {
+            let q = crate::native_numeral::divmod_via_word(&n, &p).unwrap().0;
+            format!("closure_gcd({}, {}) = {}  (p × q = N: {})", n_str, b, p, crate::native_numeral::multiply_via_word(&p, &q) == n)
+        }
+        None => format!("closure_gcd({}, {}): open (no p with p-1 exactly {}-smooth)", n_str, b, b),
+    }
 }
 
 fn is_prime(n: u64) -> bool {
@@ -313,7 +348,7 @@ pub fn repl_factorgen(bits: u32, tries: u32, seed: u64) {
 /// a mod N, N mod a, gcd -- same Euclid as the u64 `gcd` above, BigUint.
 fn gcd_big(mut a: BigUint, mut b: BigUint) -> BigUint {
     while !b.is_zero() {
-        let t = &a % &b;
+        let t = crate::native_numeral::modulo_via_word(&a, &b).unwrap();
         a = b;
         b = t;
     }
@@ -322,13 +357,15 @@ fn gcd_big(mut a: BigUint, mut b: BigUint) -> BigUint {
 
 /// Integer square root by Newton's method, BigUint -- same shape as `isqrt`.
 fn isqrt_big(n: &BigUint) -> BigUint {
+    use crate::native_numeral::{add_via_word, divmod_via_word};
     if n.is_zero() { return BigUint::zero(); }
     let two = BigUint::from(2u32);
     let mut x = n.clone();
-    let mut y = (&x + BigUint::one()) / &two;
+    let mut y = divmod_via_word(&add_via_word(&x, &BigUint::one()), &two).unwrap().0;
     while y < x {
         x = y;
-        y = (&x + n / &x) / &two;
+        let (q, _) = divmod_via_word(n, &x).unwrap();
+        y = divmod_via_word(&add_via_word(&x, &q), &two).unwrap().0;
     }
     x
 }
@@ -336,18 +373,33 @@ fn isqrt_big(n: &BigUint) -> BigUint {
 /// Modular inverse via extended Euclid on BigInt -- same shape as `egcd`
 /// + `modinv`, promoted to signed arbitrary precision for the subtraction.
 fn modinv_big(a: &BigUint, m: &BigUint) -> Option<BigUint> {
+    use crate::native_numeral::{
+        signed_add_via_word_general, signed_divmod_via_word, signed_multiply_via_word,
+        signed_subtract_via_word_general,
+    };
     let a_i = BigInt::from_biguint(Sign::Plus, a.clone());
     let m_i = BigInt::from_biguint(Sign::Plus, m.clone());
     let (mut old_r, mut r) = (a_i, m_i.clone());
     let (mut old_s, mut s) = (BigInt::from(1), BigInt::from(0));
     while !r.is_zero() {
-        let q = &old_r / &r;
-        let t_r = &old_r - &q * &r; old_r = r; r = t_r;
-        let t_s = &old_s - &q * &s; old_s = s; s = t_s;
+        let (q, _) = signed_divmod_via_word(&old_r, &r).unwrap();
+        let t_r = signed_subtract_via_word_general(&old_r, &signed_multiply_via_word(&q, &r)); old_r = r; r = t_r;
+        let t_s = signed_subtract_via_word_general(&old_s, &signed_multiply_via_word(&q, &s)); old_s = s; s = t_s;
     }
     if old_r != BigInt::from(1) { return None; }
-    let inv = ((old_s % &m_i) + &m_i) % &m_i;
-    inv.to_biguint()
+    let (_, r1) = signed_divmod_via_word(&old_s, &m_i).unwrap();
+    let (_, inv_signed) = signed_divmod_via_word(&signed_add_via_word_general(&r1, &m_i), &m_i).unwrap();
+    let inv = inv_signed.to_biguint()?;
+    // Defense in depth, the same standard hensel_unbraid's own base case
+    // now holds to: a real modular inverse satisfies a*inv == 1 mod m
+    // directly, checked here rather than trusted from the recursion alone.
+    if crate::native_numeral::modulo_via_word(&crate::native_numeral::multiply_via_word(a, &inv), m).unwrap()
+        == BigUint::one()
+    {
+        Some(inv)
+    } else {
+        None
+    }
 }
 
 /// Three outcomes for a BigUint order search: found (always u64, per the
@@ -380,7 +432,7 @@ fn minimal_winding_big(a: &BigUint, n: &BigUint, mut r: u64) -> u64 {
     while changed {
         changed = false;
         for &p in &factors {
-            if r % p == 0 && a.modpow(&BigUint::from(r / p), n) == one {
+            if r % p == 0 && crate::native_numeral::mod_pow_walk(a, &crate::native_numeral::to_bits_low_first(&BigUint::from(r / p)), n) == one {
                 r /= p;
                 changed = true;
             }
@@ -393,13 +445,14 @@ fn minimal_winding_big(a: &BigUint, n: &BigUint, mut r: u64) -> u64 {
 /// size, and so the range of orders this can see: step_cap*(step_cap+1).
 /// An order past that range is OutOfReach, reported plainly as itself.
 pub fn winding_order_big(a: &BigUint, n: &BigUint, step_cap: u64) -> WindingBig {
+    use crate::native_numeral::{add_via_word, divmod_via_word, mod_pow_walk, modulo_via_word, multiply_via_word, to_bits_low_first};
     let one = BigUint::one();
     if *n <= one { return WindingBig::NotInGroup; }
-    let a_mod = a % n;
+    let a_mod = divmod_via_word(a, n).unwrap().1;
     if gcd_big(a_mod.clone(), n.clone()) != one { return WindingBig::NotInGroup; }
     if a_mod == one { return WindingBig::Order(1); }
 
-    let m_big = isqrt_big(n) + &one;
+    let m_big = add_via_word(&isqrt_big(n), &one);
     if m_big > BigUint::from(step_cap) { return WindingBig::OutOfReach; }
     let m = match m_big.to_u64() { Some(v) => v, None => return WindingBig::OutOfReach };
 
@@ -407,20 +460,20 @@ pub fn winding_order_big(a: &BigUint, n: &BigUint, step_cap: u64) -> WindingBig 
     let mut cur = one.clone();
     for j in 0..m {
         baby.push((cur.clone(), j));
-        cur = (&cur * &a_mod) % n;
+        cur = modulo_via_word(&multiply_via_word(&cur, &a_mod), n).unwrap();
     }
     baby.sort_unstable_by(|x, y| x.0.cmp(&y.0));
     baby.dedup_by(|x, y| x.0 == y.0);
 
     let a_inv = match modinv_big(&a_mod, n) { Some(v) => v, None => return WindingBig::NotInGroup };
-    let giant_step = a_inv.modpow(&BigUint::from(m), n);
+    let giant_step = mod_pow_walk(&a_inv, &to_bits_low_first(&BigUint::from(m)), n);
     let mut gamma = one.clone();
     for i in 1..=m {
-        gamma = (&gamma * &giant_step) % n;
+        gamma = modulo_via_word(&multiply_via_word(&gamma, &giant_step), n).unwrap();
         if let Ok(k) = baby.binary_search_by(|probe| probe.0.cmp(&gamma)) {
             let j = baby[k].1;
             let cand = i.saturating_mul(m) + j;
-            if cand > 0 && a_mod.modpow(&BigUint::from(cand), n) == one {
+            if cand > 0 && mod_pow_walk(&a_mod, &to_bits_low_first(&BigUint::from(cand)), n) == one {
                 return WindingBig::Order(minimal_winding_big(&a_mod, n, cand));
             }
         }
@@ -444,28 +497,29 @@ pub enum FactorBig {
 /// a^(r/2) not ±1 gives gcd(a^(r/2) - 1, N) as a non-trivial factor.
 /// Same retry shape as `factor`, promoted to arbitrary precision.
 pub fn factor_big(n: &BigUint, max_tries: u32, step_cap: u64, mut seed: u64) -> FactorBig {
+    use crate::native_numeral::{add_via_word, divmod_via_word, mod_pow_walk, modulo_via_word, subtract_via_word, to_bits_low_first};
     let one = BigUint::one();
     let three = BigUint::from(3u32);
     if *n <= three { return FactorBig::NoFactorInTries; }
-    let n_minus_1 = n - &one;
-    let range = n - &three;
+    let n_minus_1 = subtract_via_word(n, &one).unwrap();
+    let range = subtract_via_word(n, &three).unwrap();
     let mut saw_out_of_reach = false;
     for _ in 0..max_tries {
         seed = xorshift64(seed);
-        let a = &BigUint::from(seed) % &range + &three;
+        let a = add_via_word(&modulo_via_word(&BigUint::from(seed), &range).unwrap(), &three);
         let g0 = gcd_big(a.clone(), n.clone());
         if g0 != one && &g0 != n {
-            let q = n / &g0;
+            let q = divmod_via_word(n, &g0).unwrap().0;
             return FactorBig::Found { a, r: 0, p: g0, q };
         }
         match winding_order_big(&a, n, step_cap) {
             WindingBig::Order(r) => {
                 if r == 0 || r % 2 != 0 { continue; }
-                let x = a.modpow(&BigUint::from(r / 2), n);
+                let x = mod_pow_walk(&a, &to_bits_low_first(&BigUint::from(r / 2)), n);
                 if x == one || x == n_minus_1 { continue; }
-                let g = gcd_big(&x - &one, n.clone());
+                let g = gcd_big(subtract_via_word(&x, &one).unwrap(), n.clone());
                 if g != one && &g != n {
-                    let q = n / &g;
+                    let q = divmod_via_word(n, &g).unwrap().0;
                     return FactorBig::Found { a, r, p: g, q };
                 }
             }
@@ -474,4 +528,89 @@ pub fn factor_big(n: &BigUint, max_tries: u32, step_cap: u64, mut seed: u64) -> 
         }
     }
     if saw_out_of_reach { FactorBig::OutOfReach } else { FactorBig::NoFactorInTries }
+}
+
+#[cfg(test)]
+mod big_tests {
+    // modinv_big, winding_order_big, and factor_big have no REPL path at
+    // all right now -- only closure_gcd_big does, via `winding closure`
+    // when N exceeds u64. These are the only checks that exercise the
+    // three unreachable ones, each against an independent brute-force
+    // oracle rather than the function's own internal check.
+    use super::*;
+
+    #[test]
+    fn modinv_big_matches_known_inverses() {
+        // 3 * 4 = 12 = 1 mod 11; 7 * 15 = 105 = 4*26 + 1 mod 26.
+        assert_eq!(modinv_big(&BigUint::from(3u32), &BigUint::from(11u32)), Some(BigUint::from(4u32)));
+        assert_eq!(modinv_big(&BigUint::from(7u32), &BigUint::from(26u32)), Some(BigUint::from(15u32)));
+    }
+
+    #[test]
+    fn modinv_big_satisfies_a_times_inv_is_one_mod_m() {
+        let pairs: [(u64, u64); 6] = [(3, 11), (7, 26), (17, 97), (999983, 1000003), (2, 1009), (1009, 999999999989)];
+        for (a, m) in pairs {
+            let a = BigUint::from(a);
+            let m = BigUint::from(m);
+            let inv = modinv_big(&a, &m).expect("coprime pair should have an inverse");
+            assert_eq!(
+                crate::native_numeral::modulo_via_word(&crate::native_numeral::multiply_via_word(&a, &inv), &m).unwrap(),
+                BigUint::one(),
+                "a={} m={} inv={}", a, m, inv
+            );
+        }
+    }
+
+    #[test]
+    fn modinv_big_is_none_when_not_coprime() {
+        // gcd(6, 9) = 3, no inverse exists.
+        assert_eq!(modinv_big(&BigUint::from(6u32), &BigUint::from(9u32)), None);
+    }
+
+    /// Independent oracle: the order of a mod n by direct repeated
+    /// multiplication, no BSGS, no word-native primitives -- the ground
+    /// truth winding_order_big is checked against.
+    fn brute_order(a: u64, n: u64) -> Option<u64> {
+        if gcd(a, n) != 1 { return None; }
+        let mut x = a % n;
+        let mut r = 1u64;
+        while x != 1 {
+            x = (x * a) % n;
+            r += 1;
+            if r > n { return None; }
+        }
+        Some(r)
+    }
+
+    #[test]
+    fn winding_order_big_matches_brute_force_on_many_small_cases() {
+        for n in 2u64..60 {
+            for a in 1u64..n {
+                let expected = brute_order(a, n);
+                let got = winding_order_big(&BigUint::from(a), &BigUint::from(n), 1000);
+                match (expected, got) {
+                    (Some(r), WindingBig::Order(g)) => assert_eq!(r, g, "a={} n={}", a, n),
+                    (None, WindingBig::NotInGroup) => {}
+                    (e, g) => panic!("a={} n={} expected={:?} got={:?}", a, n, e, g),
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn factor_big_never_reports_a_false_positive() {
+        // 1009 x 1013, well within a small step_cap's reach, tried with a
+        // fixed seed and enough retries that a Found result is expected --
+        // whatever it returns, a Found must survive an exact
+        // multiply_via_word check against N.
+        let n = BigUint::from(1009u32) * BigUint::from(1013u32);
+        for seed in [1u64, 42, 0x9E37_79B9_7F4A_7C15, 12345] {
+            if let FactorBig::Found { p, q, .. } = factor_big(&n, 200, 2000, seed) {
+                assert_eq!(
+                    crate::native_numeral::multiply_via_word(&p, &q), n,
+                    "false positive: seed={} p={} q={}", seed, p, q
+                );
+            }
+        }
+    }
 }

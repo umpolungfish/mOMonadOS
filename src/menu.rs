@@ -23,7 +23,7 @@ pub static MAIN_MENU: &[MenuItem] = &[
     MenuItem { name: "Programs", cmd: "programs",  desc: "Program loading (list, canonical, continuous, novel, shunt)", example: "", submenu: Some(PROGRAMS_MENU) },
     MenuItem { name: "Crystal",  cmd: "crystal",  desc: "Crystal FS (decode, store, find, name)", example: "", submenu: Some(CRYSTAL_MENU) },
     MenuItem { name: "Grammar",  cmd: "grammar",  desc: "Grammar bridges (ig, classify, frob, aleph, shor, rh, ym, fde)", example: "", submenu: Some(GRAMMAR_MENU) },
-    MenuItem { name: "Quantum",  cmd: "quantum",  desc: "Quantum computation (fibqc, jones, braids, shor, shors_btc_2, btc_oneshot, qft, iuft, sic, d12, d2048, dqi)", example: "help quantum", submenu: Some(QUANTUM_MENU) },
+    MenuItem { name: "Quantum",  cmd: "quantum",  desc: "Quantum computation (fibqc, jones, braids, shor, shors_btc_2, btc_oneshot, secp256k1_unwinder, baryon_asymmetry, qft, iuft, sic, d12, d2048, dqi)", example: "help quantum", submenu: Some(QUANTUM_MENU) },
     MenuItem { name: "IMASM",    cmd: "imasm",    desc: "IMASM word walks (cycle, weight, banked, insert, trans, arev)", example: "", submenu: Some(IMASM_MENU) },
     MenuItem { name: "Kernel",   cmd: "kernel",   desc: "Kernel utilities (ask, spine, vessel, vita, whoami, ruleset)", example: "", submenu: Some(KERNEL_MENU) },
     MenuItem { name: "Rebis",    cmd: "rebis",    desc: "Red-Hot Rebis (codon, translate, genetics, materials, bio, tx)", example: "", submenu: Some(REBIS_MENU) },
@@ -46,6 +46,8 @@ pub static MAIN_MENU: &[MenuItem] = &[
 pub static TOOLS_MENU: &[MenuItem] = &[
     MenuItem { name: "opi",                       cmd: "opi",                       desc: "DQI's Optimal Polynomial Intersection: exact Lemma 9.2 eigenvalue + m to p asymptotic, settable wall-clock budget", example: "opi run 10007 4954 10s", submenu: None },
     MenuItem { name: "weight_ladder",              cmd: "weight_ladder",             desc: "The general reduction behind opi's eigenvalue, for any m-exchangeable-trial Hamming-weight ladder, not just OPI", example: "weight_ladder 10006 2477 0.0", submenu: None },
+    MenuItem { name: "nested_prime_factorization", cmd: "nested_prime_factorization", desc: "16-morphism factorization tower, IFIX banks the complete factor record at the END (non-vacuous) (alias: npf)", example: "nested_prime_factorization factor 91", submenu: None },
+    MenuItem { name: "factor_membrane", cmd: "factor_membrane", desc: "Factor-Separating Imscription Membrane: D2 lane split, N_lane DEFINED as P_lane*Q_lane (aliases: membrane, fmembrane)", example: "factor_membrane factor 91", submenu: None },
     MenuItem { name: "doubly_nested_oneshot",      cmd: "doubly_nested_oneshot",     desc: "Winding-order factoring, nested two levels deep (alias: dnos)", example: "doubly_nested_oneshot factor 91", submenu: None },
     MenuItem { name: "nested_oneshot",             cmd: "nested_oneshot",            desc: "Winding-order factoring, nested one level (aliases: nested, nos)", example: "nested_oneshot factor 91", submenu: None },
     MenuItem { name: "multilattice",               cmd: "multilattice",              desc: "The FDE/QM boundary as real code: the corrected Pauli-algebra WH action, orbit 4^n, zero axioms", example: "multilattice help", submenu: None },
@@ -66,6 +68,33 @@ pub static TOOLS_MENU: &[MenuItem] = &[
     MenuItem { name: "shor-qft",                   cmd: "shor-qft",                  desc: "Shor's algorithm's QFT step, run directly", example: "shor-qft help", submenu: None },
     MenuItem { name: "gpu_native",                 cmd: "gpu_native",                desc: "The literal GPU-native build protocol, run for real, not simulated", example: "gpu_native run 1024", submenu: None },
     MenuItem { name: "gpu16_3",                    cmd: "gpu16_3",                   desc: "Batch SIXTEEN_3 register gates on GPU: many registers at once, verified against the scalar path", example: "gpu16_3 verify", submenu: None },
+    MenuItem { name: "gpu_gnfs",                   cmd: "gpu_gnfs",                  desc: "Grammar-native GNFS on GPU — FB + sieve + GF(2) + φ-congruence (multi-limb) on device", example: "gpu_gnfs soak 15", submenu: None },
+    MenuItem { name: "gpu_rho",                    cmd: "gpu_rho",                   desc: "GPU Pollard's rho, fixed 256-bit Montgomery width, verified against BigUint (verify | prims | factor)", example: "gpu_rho factor 8051", submenu: None },
+    MenuItem { name: "gpu_rho_ml",                 cmd: "gpu_rho_ml",                desc: "Multi-limb GPU Pollard's rho beyond gpu_rho's 256-bit cap, any width up to 2048 bits", example: "gpu_rho_ml factor 8051", submenu: None },
+    MenuItem { name: "gpu_ecm",                    cmd: "gpu_ecm",                   desc: "Lenstra elliptic-curve factorization on GPU at any width, one Montgomery curve per thread across every device", example: "gpu_ecm 8051 50000", submenu: None },
+    MenuItem { name: "gpu_factor",                 cmd: "gpu_factor",                desc: "Full GPU factorization: parallel trial division first, then ECM/rho/Pollard-Brent on whatever cofactor remains", example: "gpu_factor 8051", submenu: None },
+    MenuItem { name: "gpu_shor",                   cmd: "gpu_shor",                  desc: "Shor's algorithm order-finding on GPU: brute-force verify, direct order lookup, or real baby-step/giant-step", example: "gpu_shor bsgs 7 143", submenu: None },
+    MenuItem { name: "gpu_dqi",                    cmd: "gpu_dqi",                   desc: "DQI min-weight coset search on GPU, checked against the CPU path", example: "gpu_dqi verify 128 20", submenu: None },
+    MenuItem { name: "gpu_fde",                    cmd: "gpu_fde",                   desc: "FDE tower theorems checked on GPU against the CPU functions", example: "gpu_fde verify 16", submenu: None },
+    MenuItem { name: "gpu_kernel",                 cmd: "gpu_kernel",                desc: "Execute or verify an IMASM program on GPU, checked against kernel::self_imscribe", example: "gpu_kernel verify 256 1", submenu: None },
+    MenuItem { name: "gpu_millennium",             cmd: "gpu_millennium",            desc: "Static self-imscription of the Millennium-conjecture ob3ects on GPU, checked against the CPU kernel", example: "gpu_millennium verify", submenu: None },
+    MenuItem { name: "gpu_opi",                    cmd: "gpu_opi",                   desc: "OPI Prange trial arithmetic on GPU, checked against the CPU path", example: "gpu_opi verify 101 10", submenu: None },
+    MenuItem { name: "gpu_vox",                    cmd: "gpu_vox",                   desc: "vox's control-flow closure verdict run on GPU, checked against the CPU auditor", example: "gpu_vox verify 4096 1", submenu: None },
+    MenuItem { name: "gaussian_extract",           cmd: "gaussian_extract",          desc: "Fermat two-square extraction: a real root of -1 mod p, then Cornacchia descent to p=a²+b² (alias: gaussian)", example: "gaussian_extract 97", submenu: None },
+    MenuItem { name: "abc",                        cmd: "abc",                       desc: "Real arithmetic from the ABC/IUTT Lean proofs: radical, discrepancy, quality, window maximum, and a real scale-link check between window sizes", example: "abc window 0.1 9 32", submenu: None },
+    MenuItem { name: "trilattice_factor",          cmd: "trilattice_factor",         desc: "Trilattice factoring toolkit — read/sieve/factor/dialect-probe/gpu-verify, with the number's own crystal address (alias: tfactor)", example: "trilattice_factor read 8051", submenu: None },
+    MenuItem { name: "native_numeral",             cmd: "native_numeral",            desc: "The word-native numeral toolkit itself: encode/factor/decompose/redstep/cycle and the rest (alias: numeral)", example: "native_numeral factor 8051", submenu: None },
+    MenuItem { name: "dyn_nest",                   cmd: "dyn_nest",                  desc: "Optimal oneshot nesting depth: the least depth at which the Brent cycle closes on a factor (aliases: dyn, dynamic_nest)", example: "dyn_nest 91", submenu: None },
+    MenuItem { name: "yz",                         cmd: "yz",                        desc: "Yamakawa-Zhandry verifiable-quantum-advantage retranslation (r/c/Inc) run as real code, not read as a document", example: "yz report", submenu: None },
+    MenuItem { name: "yz_list",                    cmd: "yz_list",                   desc: "Theorem 11.1's L-list mechanism from the YZ-retranslation, run for real rather than left open", example: "yz_list help", submenu: None },
+    MenuItem { name: "anyon-sync",                 cmd: "anyon-sync",                desc: "Dialetheic FOUR-valued Carrier16 register walked over THE_WORD, showing where the T/F/t/f lanes sync (alias: anyon_sync)", example: "anyon-sync", submenu: None },
+    MenuItem { name: "grounded_add",               cmd: "prime_winding grounded_add", desc: "a+b plus every operand's own real Grammar-native type, sourced from imscribe generate grounding through digit_type_tensor, not read off the arithmetic", example: "prime_winding grounded_add 8051 8052", submenu: None },
+    MenuItem { name: "grounded_mul",               cmd: "prime_winding grounded_mul", desc: "a*b plus every operand's own real Grammar-native type, same grounding as grounded_add", example: "prime_winding grounded_mul 8051 8052", submenu: None },
+    MenuItem { name: "grounded_sub",               cmd: "prime_winding grounded_sub", desc: "a-b plus every operand's own real Grammar-native type, same grounding as grounded_add", example: "prime_winding grounded_sub 8052 8051", submenu: None },
+    MenuItem { name: "grounded_mod",               cmd: "prime_winding grounded_mod", desc: "a mod b plus every operand's own real Grammar-native type, same grounding as grounded_add", example: "prime_winding grounded_mod 8052 8051", submenu: None },
+    MenuItem { name: "grounded_divmod",            cmd: "prime_winding grounded_divmod", desc: "a=q*b+r plus all four numbers' own real Grammar-native type, same grounding as grounded_add", example: "prime_winding grounded_divmod 8052 8051", submenu: None },
+    MenuItem { name: "grounded_gcd",               cmd: "prime_winding grounded_gcd", desc: "gcd(a,b) plus every operand's own real Grammar-native type, same grounding as grounded_add", example: "prime_winding grounded_gcd 8052 8051", submenu: None },
+    MenuItem { name: "grounded_factor",            cmd: "prime_winding grounded_factor", desc: "N's real prime factorization plus N's and every distinct factor's own real Grammar-native type", example: "prime_winding grounded_factor 8051", submenu: None },
     MenuItem { name: "gpu_catalog_crystal",        cmd: "gpu_catalog_crystal",       desc: "Batch the real catalog's crystal addresses on GPU: fixed-width crystal encode over every live entry", example: "gpu_catalog_crystal", submenu: None },
     MenuItem { name: "gpu_crystal_full_space",     cmd: "gpu_crystal_full_space",    desc: "Checks phase_5's 17.28-million-entry Crystal type-space claim at its actual scale, not just the live catalog", example: "gpu_crystal_full_space", submenu: None },
     MenuItem { name: "gpu_imasm_cycle",            cmd: "gpu_imasm_cycle",           desc: "The full imasm-cycle round trip, forward and reverse legs, batched on GPU", example: "gpu_imasm_cycle", submenu: None },
@@ -202,6 +231,7 @@ pub static QUANTUM_MENU: &[MenuItem] = &[
         MenuItem { name: "qft",        cmd: "qft",        desc: "Quantum Fourier Transform: circuit | phases | iqft | iqft braid | braid, on n qubits", example: "qft circuit 3", submenu: None },
     MenuItem { name: "btc_oneshot",  cmd: "btc_oneshot",  desc: "BTC Secret Key Oneshot Operator — structural verification & phase steps", example: "btc_oneshot verify", submenu: None },
     MenuItem { name: "secp256k1_unwinder", cmd: "secp256k1_unwinder", desc: "19-glyph morphism sequence for secp256k1 scalar recovery: word | steps | mapping | walk [k] | verdict [k] | tuple | constants", example: "secp256k1_unwinder walk 0", submenu: None },
+    MenuItem { name: "baryon_asymmetry", cmd: "baryon_asymmetry", desc: "baryon asymmetry as a banked survival: the word run through the live weight + banked instruments (report | word | mapping | reading)", example: "baryon_asymmetry report", submenu: None },
     MenuItem { name: "theta-link", cmd: "theta-link", desc: "IUTT housed in the paraconsistent ambient: the Θ-link closes yet holds register A (four-valued B, the Inclosure), unreachable by the Boolean adjoints (alias iutt)", example: "theta-link", submenu: None },
     MenuItem { name: "winding",    cmd: "winding",    desc: "Period as a torus winding: order | factor | closure | factorgen (alias wperiod)", example: "winding order 2 101", submenu: None },
     MenuItem { name: "iuft",       cmd: "iuft",       desc: "IUFT QC gates — the 12->3 Euler-angle SU(2) encoding of an IG tuple", example: "iuft list", submenu: None },
@@ -405,12 +435,19 @@ pub fn render_prompt(ctx: &ContextStack) {
 
 /// Render the top-level menu bar (F-key shortcuts).
 pub fn render_menu_bar() {
-    // Minimal stub — full menu bar rendering is historical.
+    use crate::style as S;
+    crate::sprintln!("{}mOMonadOS — menu{}", S::key(), S::reset());
+    for item in MAIN_MENU.iter() {
+        crate::sprintln!("  {}{:<10}{} {}", S::key(), item.cmd, S::reset(), item.desc);
+    }
 }
 
 /// Show the menu hint line below the prompt.
 pub fn menu_hint() {
-    // Minimal stub.
+    use crate::style as S;
+    crate::sprintln!("");
+    crate::sprintln!("  {}help <topic>{} details on one command · {}? <keyword>{} search all commands",
+        S::key(), S::reset(), S::key(), S::reset());
 }
 
 /// Tab-complete the current line against the context stack.

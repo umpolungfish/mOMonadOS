@@ -177,6 +177,7 @@ pub fn rx_ready() -> bool { true }
 
 #[cfg(feature = "hosted")]
 pub fn write_byte(b: u8) {
+    if crate::runtime_nesting::capture_byte(b) { return; }
     use std::io::Write;
     let out = std::io::stdout();
     let mut h = out.lock();

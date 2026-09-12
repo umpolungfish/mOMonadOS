@@ -117,7 +117,11 @@ impl BelnapModExp {
             while v > 0 { bits += 1; v >>= 1; }
             bits.max(1)
         };
-        let table_size = 1usize << input_bits;
+        // The table is a cache for compact registers.  A phase register may
+        // carry more bits than a host word, where enumerating 2^input_bits is
+        // neither an addressable allocation nor the modular-exponentiation
+        // operation itself.  The fallback below walks the full bit word.
+        let table_size = if input_bits <= 16 { 1usize << input_bits } else { 0 };
         let mut table = Vec::with_capacity(table_size);
         for x in 0..table_size {
             table.push(mod_pow(a, x as u64, n_val));
@@ -130,14 +134,14 @@ impl BelnapModExp {
         if word.iter().all(|w| *w == B4::B) {
             return vec![B4::B; self.mod_bits];
         }
-        let mut x: u64 = 0;
-        for (i, w) in word.iter().enumerate() {
-            if *w == B4::T { x |= 1 << i; }
-        }
-        let result = if (x as usize) < self.table.len() {
-            self.table[x as usize]
+        let result = if word.len() <= 16 {
+            let mut x = 0usize;
+            for (i, w) in word.iter().enumerate() {
+                if *w == B4::T { x |= 1usize << i; }
+            }
+            if x < self.table.len() { self.table[x] } else { mod_pow(self.a, x as u64, self.n_val) }
         } else {
-            mod_pow(self.a, x, self.n_val)
+            mod_pow_word(self.a, word, self.n_val)
         };
         let mut out = Vec::with_capacity(self.mod_bits);
         for i in 0..self.mod_bits {
@@ -146,8 +150,10 @@ impl BelnapModExp {
         out
     }
 
-    /// Classical period finding.
+    /// Classical period finding (the multiplicative order of a mod n).
     pub fn find_period(&self) -> u64 {
+        #[cfg(feature = "hosted")]
+        if let Some(r) = crate::gpu_shor::order(self.a, self.n_val) { return r; }
         let mut val: u64 = 1;
         for r in 1..=self.n_val {
             val = (val * self.a) % self.n_val;
@@ -155,6 +161,20 @@ impl BelnapModExp {
         }
         0
     }
+}
+
+/// Exponentiation over the complete input register.  Each input position is
+/// consumed once, so a wide phase register remains a register rather than an
+/// attempted host-sized lookup address.
+fn mod_pow_word(mut base: u64, word: &[B4], modulus: u64) -> u64 {
+    if modulus <= 1 { return 0; }
+    let mut result = 1u64;
+    base %= modulus;
+    for bit in word {
+        if *bit == B4::T { result = (result * base) % modulus; }
+        base = (base * base) % modulus;
+    }
+    result
 }
 
 fn mod_pow(mut base: u64, mut exp: u64, modulus: u64) -> u64 {
@@ -316,6 +336,8 @@ fn count_distinct_outputs(a: u64, n_val: u64) -> u32 {
 
 fn classical_period(a: u64, n: u64) -> u64 {
     if n <= 1 { return 0; }
+    #[cfg(feature = "hosted")]
+    if let Some(r) = crate::gpu_shor::order(a, n) { return r; }
     let mut val: u64 = 1;
     for r in 1..=n {
         val = (val * a) % n;
@@ -377,6 +399,23 @@ mod tests {
         let input = vec![B4::B; 4];
         let out = me.evaluate(&input);
         assert!(out.iter().all(|&q| q == B4::B));
+    }
+
+    #[test]
+    fn wide_phase_register_uses_the_word_morphism() {
+        let me = BelnapModExp::new(65, 7, 15);
+        assert!(me.table.is_empty());
+        let mut input = vec![B4::F; 65];
+        input[64] = B4::T;
+        let out = me.evaluate(&input);
+        assert_eq!(out, vec![B4::T, B4::F, B4::F, B4::F]);
+    }
+
+    #[test]
+    fn full_phase_register_keeps_the_b_register_without_enumeration() {
+        let me = BelnapModExp::new(512, 2, 256);
+        assert!(me.table.is_empty());
+        assert_eq!(me.evaluate(&vec![B4::B; 512]), vec![B4::B; 8]);
     }
 
     #[test]

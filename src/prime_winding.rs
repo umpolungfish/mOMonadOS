@@ -6,8 +6,9 @@
 //! the Grammar's reading of a number. The primality verdict and factoring run
 //! on real arithmetic: trial division then Miller-Rabin, deterministic below
 //! 3,317,044,064,679,887,385,961,981 and the standard thirteen-witness practice
-//! above it. A Grammar-native verdict via the winding period and the ⊡ holonomy
-//! is the open route, closing.
+//! above it. In the GPU build the verdict runs on the device (see gpu_prime).
+//! A Grammar-native verdict via the winding period and the ⊡ holonomy is the
+//! open route, closing.
 //!
 //! Subcommands:
 //!   prime_winding word                       canonical glyph word
@@ -64,6 +65,242 @@ pub fn digit_encode(n_str: &str) -> String {
         if let Some(d) = c.to_digit(16) {
             out.push_str(HEX_WORDS[d as usize]);
         }
+    }
+    out
+}
+
+/// Each hex digit's own type, read via `imscribe generate`'s guided,
+/// per-primitive grounding (one canonical value at a time from a numbered
+/// list, not free-text) rather than through self_imscribe. self_imscribe
+/// was tried first and rejected: past a few nibbles it hits the
+/// period-gated axes' saturation (imas_ig.rs's from_snapshot_under doc),
+/// collapsing almost every N onto the same catch-all bucket regardless of
+/// its digits, and even at a single digit's own short word it still
+/// collapsed 0x1 and 0x2 onto one type. These sixteen are transcribed
+/// directly from the real grounding run's own output (IG_catalog.json
+/// entries "0x0".."0xf"), never hand-imscribed. 0x8 and 0x9 differ only on
+/// D (if vs array) here; three independent re-groundings of the full set
+/// found 0x8 and 0x9 identical on every axis instead, so this pair is
+/// held open rather than resolved -- the tensor built on top of these
+/// still recovers whichever type went in.
+const GROUNDED_HEX_DIGIT_TUPLES: [crate::imas_ig::IgTuple; 16] = {
+    use crate::imas_ig::IgPrim::*;
+    use crate::imas_ig::IgTuple;
+    [
+        IgTuple { d: array, t: are,   r: ear, p: yew, f: age,  k: egg, g: ice, c: gag, phi: monad, h: fee,  s: hung, omega: awe }, // 0x0
+        IgTuple { d: array, t: judge, r: ado, p: yew, f: peep, k: egg, g: ice, c: vow, phi: monad, h: fee,  s: hung, omega: oak }, // 0x1
+        IgTuple { d: array, t: eat,   r: ear, p: yew, f: peep, k: egg, g: ice, c: gag, phi: monad, h: kick, s: hung, omega: oak }, // 0x2
+        IgTuple { d: array, t: mime,  r: ear, p: yew, f: peep, k: egg, g: ice, c: gag, phi: monad, h: kick, s: up,   omega: oak }, // 0x3
+        IgTuple { d: array, t: mime,  r: ear, p: yew, f: peep, k: egg, g: ice, c: gag, phi: monad, h: kick, s: hung, omega: oak }, // 0x4
+        IgTuple { d: array, t: mime,  r: ear, p: yew, f: they, k: egg, g: ice, c: gag, phi: monad, h: fee,  s: up,   omega: oak }, // 0x5
+        IgTuple { d: array, t: mime,  r: ear, p: yew, f: they, k: egg, g: ice, c: gag, phi: monad, h: kick, s: hung, omega: oak }, // 0x6
+        IgTuple { d: array, t: mime,  r: ear, p: yew, f: peep, k: egg, g: ice, c: gag, phi: monad, h: kick, s: up,   omega: oak }, // 0x7
+        IgTuple { d: if_,   t: mime,  r: ear, p: yew, f: peep, k: egg, g: ice, c: gag, phi: monad, h: kick, s: hung, omega: oak }, // 0x8
+        IgTuple { d: array, t: mime,  r: ear, p: yew, f: peep, k: egg, g: ice, c: gag, phi: monad, h: kick, s: hung, omega: oak }, // 0x9
+        IgTuple { d: if_,   t: mime,  r: ear, p: yew, f: they, k: egg, g: ice, c: gag, phi: monad, h: fee,  s: up,   omega: oak }, // 0xA
+        IgTuple { d: if_,   t: mime,  r: ear, p: yew, f: they, k: egg, g: ice, c: gag, phi: monad, h: sure, s: up,   omega: ah  }, // 0xB
+        IgTuple { d: if_,   t: mime,  r: ear, p: yew, f: peep, k: egg, g: ice, c: gag, phi: monad, h: sure, s: up,   omega: ah  }, // 0xC
+        IgTuple { d: if_,   t: mime,  r: ear, p: yew, f: they, k: egg, g: ice, c: gag, phi: monad, h: sure, s: up,   omega: ah  }, // 0xD
+        IgTuple { d: if_,   t: mime,  r: ear, p: yew, f: peep, k: egg, g: ice, c: gag, phi: monad, h: kick, s: up,   omega: oak }, // 0xE
+        IgTuple { d: if_,   t: mime,  r: ear, p: yew, f: peep, k: egg, g: ice, c: gag, phi: monad, h: sure, s: up,   omega: oak }, // 0xF
+    ]
+};
+
+/// N's own composite TYPE, built by tensoring each hex digit's own
+/// grounded type (a point in the 17,280,000-point space crystal.rs
+/// defines) rather than combining IMASM tokens. Tensoring the digits'
+/// own IgTuples with algebra::tensor was tried and rejected: that stays
+/// inside the SAME 12-mark space and is idempotent/commutative (max/min
+/// per axis), so it is blind to repetition (10, 170, and sixteen repeats
+/// of hex digit A all tensor to one result) and to order (8051 and 8052
+/// converge once their differing digit is absorbed). A tensor product
+/// does not fold inputs back into the space they came from, it GROWS the
+/// space: n copies of a TOTAL-point space tensor into a TOTAL^n-point
+/// space, the same way crystal.rs's own encode already tensors twelve
+/// small axis spaces into the one 17,280,000-point space.
+/// crystal::tensor_types does that one level up, over each digit's own
+/// grounded type. The composite is injective in the digit sequence: order
+/// and repetition both survive, and crystal::untensor_types recovers
+/// every digit's own type back out exactly.
+pub fn digit_type_tensor(n_str: &str) -> Option<alloc::vec::Vec<u8>> {
+    let n: BigUint = trim(n_str).parse().ok()?;
+    let hex = n.to_str_radix(16);
+    let mut types: alloc::vec::Vec<u32> = alloc::vec::Vec::new();
+    for c in hex.chars() {
+        let d = c.to_digit(16)? as usize;
+        let ty = GROUNDED_HEX_DIGIT_TUPLES[d].crystal_address();
+        types.push(ty);
+    }
+    Some(crate::crystal::tensor_types(&types))
+}
+
+/// N's own composite type, rendered as a decimal string for display. Same
+/// value digit_type_tensor produces, read as one big-endian number instead
+/// of raw bytes -- what a caller wanting to show or compare a number's real
+/// Grammar-native identity actually wants, rather than the byte vector
+/// digit_type_tensor hands back for further composition.
+pub fn digit_type_address(n_str: &str) -> Option<alloc::string::String> {
+    let bytes = digit_type_tensor(n_str)?;
+    Some(BigUint::from_bytes_be(&bytes).to_string())
+}
+
+/// Shared shape behind grounded_add_report and grounded_mul_report: compute
+/// a `op` b the ordinary way -- that arithmetic is never in question, it's
+/// what native_numeral's word-native pass already does -- then report all
+/// three numbers' own real Grammar-native type, each sourced separately from
+/// GROUNDED_HEX_DIGIT_TUPLES's real imscribe-generate grounding through
+/// digit_type_tensor, never a bit read and never inferred from the result.
+/// Reports whether the result's type equals either operand's own type
+/// outright (it can, since digit types collapse hex digits 3≡7 and 4≡9 in
+/// this grounding run, already found and left open rather than resolved),
+/// as a fact read off the real values, not assumed from the arithmetic.
+fn grounded_binop_report(
+    a_str: &str,
+    b_str: &str,
+    sym: &str,
+    op_name: &str,
+    op: fn(&BigUint, &BigUint) -> Option<BigUint>,
+) -> alloc::string::String {
+    let a: BigUint = match trim(a_str).parse() {
+        Ok(v) => v,
+        Err(_) => return format!("{op_name}: '{}' is not a valid non-negative integer", a_str),
+    };
+    let b: BigUint = match trim(b_str).parse() {
+        Ok(v) => v,
+        Err(_) => return format!("{op_name}: '{}' is not a valid non-negative integer", b_str),
+    };
+    let result = match op(&a, &b) {
+        Some(v) => v,
+        None => return format!("{op_name}: {a} {sym} {b} has no result (underflow, or division/modulo by zero)"),
+    };
+    let result_str = result.to_string();
+    let ta = digit_type_address(a_str);
+    let tb = digit_type_address(b_str);
+    let tr = digit_type_address(&result_str);
+    format!(
+        "{a} {sym} {b} = {result}\n  type({a}) = {}\n  type({b}) = {}\n  type({result}) = {}\n  type(result) == type(a): {}\n  type(result) == type(b): {}\n",
+        ta.as_deref().unwrap_or("(none)"),
+        tb.as_deref().unwrap_or("(none)"),
+        tr.as_deref().unwrap_or("(none)"),
+        tr == ta,
+        tr == tb,
+    )
+}
+
+fn some_add(a: &BigUint, b: &BigUint) -> Option<BigUint> {
+    Some(crate::native_numeral::add_via_word(a, b))
+}
+fn some_mul(a: &BigUint, b: &BigUint) -> Option<BigUint> {
+    Some(crate::native_numeral::multiply_via_word(a, b))
+}
+
+/// a + b with all three numbers' own real Grammar-native type. See
+/// grounded_binop_report for what "real" means here and why the arithmetic
+/// and the type are answered as two separate questions.
+pub fn grounded_add_report(a_str: &str, b_str: &str) -> alloc::string::String {
+    grounded_binop_report(a_str, b_str, "+", "grounded_add", some_add)
+}
+
+/// a * b with all three numbers' own real Grammar-native type. Same shape
+/// as grounded_add_report, over multiply_via_word instead of add_via_word.
+pub fn grounded_mul_report(a_str: &str, b_str: &str) -> alloc::string::String {
+    grounded_binop_report(a_str, b_str, "*", "grounded_mul", some_mul)
+}
+
+/// a - b with all three numbers' own real Grammar-native type. subtract_via_
+/// word is already Option (unsigned underflow when b > a), the same shape
+/// grounded_binop_report expects directly -- no wrapper needed, unlike
+/// add/mul above.
+pub fn grounded_sub_report(a_str: &str, b_str: &str) -> alloc::string::String {
+    grounded_binop_report(a_str, b_str, "-", "grounded_sub", crate::native_numeral::subtract_via_word)
+}
+
+/// a mod b with all three numbers' own real Grammar-native type. modulo_via_
+/// word is already Option (division by zero), same shape as subtract.
+pub fn grounded_mod_report(a_str: &str, b_str: &str) -> alloc::string::String {
+    grounded_binop_report(a_str, b_str, "mod", "grounded_mod", crate::native_numeral::modulo_via_word)
+}
+
+/// a = q*b + r via divmod_via_word, with all FOUR numbers' own real
+/// Grammar-native type -- a and b (the operands), and q and r together
+/// (divmod's own two results), each sourced separately from
+/// GROUNDED_HEX_DIGIT_TUPLES, not from each other or from the division.
+/// Reports its own shape rather than reusing grounded_binop_report, since
+/// divmod produces a pair, not one result.
+pub fn grounded_divmod_report(a_str: &str, b_str: &str) -> alloc::string::String {
+    let a: BigUint = match trim(a_str).parse() {
+        Ok(v) => v,
+        Err(_) => return format!("grounded_divmod: '{}' is not a valid non-negative integer", a_str),
+    };
+    let b: BigUint = match trim(b_str).parse() {
+        Ok(v) => v,
+        Err(_) => return format!("grounded_divmod: '{}' is not a valid non-negative integer", b_str),
+    };
+    let (q, r) = match crate::native_numeral::divmod_via_word(&a, &b) {
+        Some(v) => v,
+        None => return format!("grounded_divmod: {a} / {b} has no result (division by zero)"),
+    };
+    let (q_str, r_str) = (q.to_string(), r.to_string());
+    let ta = digit_type_address(a_str);
+    let tb = digit_type_address(b_str);
+    let tq = digit_type_address(&q_str);
+    let tr = digit_type_address(&r_str);
+    format!(
+        "{a} = {q} * {b} + {r}\n  type({a}) = {}\n  type({b}) = {}\n  type(q={q}) = {}\n  type(r={r}) = {}\n",
+        ta.as_deref().unwrap_or("(none)"),
+        tb.as_deref().unwrap_or("(none)"),
+        tq.as_deref().unwrap_or("(none)"),
+        tr.as_deref().unwrap_or("(none)"),
+    )
+}
+
+fn some_gcd(a: &BigUint, b: &BigUint) -> Option<BigUint> {
+    Some(big_gcd(a.clone(), b.clone()))
+}
+
+/// gcd(a, b) with all three numbers' own real Grammar-native type. Same
+/// shape as grounded_add_report, over big_gcd (this file's own extended-
+/// Euclid, already word-native) instead of add_via_word.
+pub fn grounded_gcd_report(a_str: &str, b_str: &str) -> alloc::string::String {
+    grounded_binop_report(a_str, b_str, "gcd", "grounded_gcd", some_gcd)
+}
+
+/// N's real prime factorization (factor_primes, this file's own trial
+/// division + Brent's rho, already word-native), with N's own real
+/// Grammar-native type and every distinct factor's own, each sourced
+/// separately from GROUNDED_HEX_DIGIT_TUPLES through digit_type_tensor.
+/// Repeated factors are reported once each (their multiplicity is in the
+/// factorization line itself); factoring is never in question here, only
+/// which real type each factor carries, the same separation of concerns
+/// as every other grounded_* report in this file.
+pub fn grounded_factor_report(n_str: &str, max_power: Option<u64>) -> alloc::string::String {
+    let n: BigUint = match trim(n_str).parse() {
+        Ok(v) => v,
+        Err(_) => return format!("grounded_factor: '{}' is not a valid non-negative integer", n_str),
+    };
+    if n < BigUint::from(2u32) {
+        return format!("grounded_factor: {} < 2, no prime factors", n_str);
+    }
+    let max_power = max_power.unwrap_or(BRENT_MAX_POWER);
+    let (mut primes, mut unsplit) = factor_primes(n.clone(), max_power);
+    primes.sort_unstable();
+    unsplit.sort_unstable();
+
+    let mut out = format!("{n} = {}\n  type({n}) = {}\n",
+        if primes.is_empty() { alloc::string::String::from("(no confirmed prime factors)") }
+        else { primes.iter().map(|p| p.to_str_radix(10)).collect::<Vec<_>>().join(" × ") },
+        digit_type_address(n_str).as_deref().unwrap_or("(none)"),
+    );
+    let mut seen: Vec<BigUint> = Vec::new();
+    for p in primes.iter().chain(unsplit.iter()) {
+        if seen.contains(p) { continue; }
+        seen.push(p.clone());
+        let p_str = p.to_str_radix(10);
+        out.push_str(&format!("  type({p_str}) = {}\n", digit_type_address(&p_str).as_deref().unwrap_or("(none)")));
+    }
+    if !unsplit.is_empty() {
+        let rep: Vec<String> = unsplit.iter().map(|p| p.to_str_radix(10)).collect();
+        out.push_str(&format!("  (unsplit, confirmed composite: {})\n", rep.join(" × ")));
     }
     out
 }
@@ -157,17 +394,18 @@ pub enum PrimeVerdict { Prime, Composite, Undetermined }
 /// probability below 4^-13 per composite, the same witness practice GMP and
 /// OpenSSL use for arbitrary-size candidates.
 fn miller_rabin(n: &BigUint) -> bool {
+    use crate::native_numeral::{add_via_word, halve_even_by_word, mod_pow_walk, modulo_via_word, multiply_via_word, subtract_via_word, to_bits_low_first};
     let one = BigUint::one();
-    let two = &one + &one;
+    let two = add_via_word(&one, &one);
     if *n < two { return false; }
     if *n == two { return true; }
-    if n % &two == BigUint::zero() { return false; }
+    if modulo_via_word(n, &two).unwrap() == BigUint::zero() { return false; }
 
-    let n_minus_one = n - &one;
+    let n_minus_one = subtract_via_word(n, &one).unwrap();
     let mut d = n_minus_one.clone();
     let mut r: u32 = 0;
-    while &d % &two == BigUint::zero() {
-        d /= &two;
+    while modulo_via_word(&d, &two).unwrap() == BigUint::zero() {
+        d = halve_even_by_word(&d).unwrap();
         r += 1;
     }
 
@@ -175,11 +413,11 @@ fn miller_rabin(n: &BigUint) -> bool {
     for &a_u64 in witnesses.iter() {
         let a = BigUint::from(a_u64);
         if a >= *n { continue; }
-        let mut x = a.modpow(&d, n);
+        let mut x = mod_pow_walk(&a, &to_bits_low_first(&d), n);
         if x == one || x == n_minus_one { continue; }
         let mut passed = false;
         for _ in 0..r.saturating_sub(1) {
-            x = x.modpow(&two, n);
+            x = modulo_via_word(&multiply_via_word(&x, &x), n).unwrap();
             if x == n_minus_one { passed = true; break; }
         }
         if !passed { return false; }
@@ -200,17 +438,27 @@ pub fn is_prime(a: &str) -> PrimeVerdict {
         Ok(v) => v,
         Err(_) => return PrimeVerdict::Composite,
     };
+    use crate::native_numeral::{divmod_small_on_limbs, word_bits};
     let two = BigUint::from(2u32);
     if n < two { return PrimeVerdict::Composite; }
     if n == two { return PrimeVerdict::Prime; }
-    if &n % &two == BigUint::zero() { return PrimeVerdict::Composite; }
+    // n's own word read once here, not once per candidate divisor below --
+    // n never changes across this loop, so its limbs don't need re-reading
+    // on every one of the up to 500 divisors tried.
+    let n_limbs = word_bits(&n);
+    if divmod_small_on_limbs(&n_limbs, 2).1 == 0 { return PrimeVerdict::Composite; }
 
+    // Every trial divisor here fits in a u64 with room to spare (d <= 1000),
+    // so d*d does too -- that comparison stays plain u64 arithmetic, the
+    // same way an ordering check stays native throughout this file's other
+    // conversions. The reduction itself reads n's own limbs (extracted
+    // once, above) through the limb-at-a-time small-divisor primitive
+    // rather than the general bit-at-a-time one.
     let mut d: u64 = 3;
     loop {
-        let bd = BigUint::from(d);
-        if &bd * &bd > n { break; }
-        if &n % &bd == BigUint::zero() {
-            return if n == bd { PrimeVerdict::Prime } else { PrimeVerdict::Composite };
+        if BigUint::from(d * d) > n { break; }
+        if divmod_small_on_limbs(&n_limbs, d).1 == 0 {
+            return if n == BigUint::from(d) { PrimeVerdict::Prime } else { PrimeVerdict::Composite };
         }
         if d >= 1000 { break; }
         d += 2;
@@ -330,7 +578,7 @@ pub fn range(lo: &str, hi: &str, count_only: bool) -> String {
 pub fn big_gcd(mut a: BigUint, mut b: BigUint) -> BigUint {
     while !b.is_zero() {
         let t = b.clone();
-        b = &a % &b;
+        b = crate::native_numeral::modulo_via_word(&a, &b).unwrap();
         a = t;
     }
     a
@@ -338,8 +586,9 @@ pub fn big_gcd(mut a: BigUint, mut b: BigUint) -> BigUint {
 
 /// Brent's polynomial x -> x^2 + c mod n.
 fn brent_f(x: &BigUint, c: &BigUint, n: &BigUint) -> BigUint {
-    let x2 = (x * x) % n;
-    (&x2 + c) % n
+    use crate::native_numeral::{add_via_word, modulo_via_word, multiply_via_word};
+    let x2 = modulo_via_word(&multiply_via_word(x, x), n).unwrap();
+    modulo_via_word(&add_via_word(&x2, c), n).unwrap()
 }
 
 /// One Brent's-rho walk with a fixed (c, x0) seed. Returns a nontrivial
@@ -358,6 +607,7 @@ fn brent_f(x: &BigUint, c: &BigUint, n: &BigUint) -> BigUint {
 /// at a time, gcd on each step, until the exact collision point splits
 /// out the real factor.
 fn brent_walk(n: &BigUint, c: u64, x0: u64, max_power: u64) -> Option<BigUint> {
+    use crate::native_numeral::{modulo_via_word, multiply_via_word, subtract_via_word};
     let c = BigUint::from(c);
     let one = BigUint::one();
     let mut x = BigUint::from(x0);
@@ -379,8 +629,8 @@ fn brent_walk(n: &BigUint, c: u64, x0: u64, max_power: u64) -> Option<BigUint> {
             let steps = m.min(r - k);
             for _ in 0..steps {
                 y = brent_f(&y, &c, n);
-                let diff = if y > x { &y - &x } else { &x - &y };
-                q = (&q * diff) % n;
+                let diff = if y > x { subtract_via_word(&y, &x).unwrap() } else { subtract_via_word(&x, &y).unwrap() };
+                q = modulo_via_word(&multiply_via_word(&q, &diff), n).unwrap();
             }
             g = big_gcd(q.clone(), n.clone());
             k += m;
@@ -391,7 +641,7 @@ fn brent_walk(n: &BigUint, c: u64, x0: u64, max_power: u64) -> Option<BigUint> {
     if &g == n {
         loop {
             ys = brent_f(&ys, &c, n);
-            let diff = if ys > x { &ys - &x } else { &x - &ys };
+            let diff = if ys > x { subtract_via_word(&ys, &x).unwrap() } else { subtract_via_word(&x, &ys).unwrap() };
             g = big_gcd(diff, n.clone());
             if !g.is_one() { break; }
         }
@@ -460,7 +710,7 @@ fn brent_split_recursive(n: BigUint, primes: &mut Vec<BigUint>, unsplit: &mut Ve
         }
         match brent_split_one(&m, max_power) {
             Some(f) => {
-                let g = &m / &f;
+                let g = crate::native_numeral::divmod_via_word(&m, &f).unwrap().0;
                 stack.push(f);
                 stack.push(g);
             }
@@ -488,6 +738,50 @@ pub fn factor(n: &str) -> String {
     factor_bounded(n, None)
 }
 
+/// The actual search behind factor_bounded, pulled out so a caller wanting
+/// the real BigUint factors (not the formatted report) doesn't have to
+/// re-parse factor_bounded's own string output. Trial division to
+/// TRIAL_DIVISION_BOUND, then Brent's rho on whatever remains; returns
+/// (confirmed primes, confirmed-composite-but-unsplit remainders), same
+/// two lists factor_bounded formats, neither sorted here (factor_bounded
+/// sorts its own copies; a caller of this function sorts if it wants to).
+fn factor_primes(n_big: BigUint, max_power: u64) -> (Vec<BigUint>, Vec<BigUint>) {
+    let mut primes: Vec<BigUint> = Vec::new();
+    let mut unsplit: Vec<BigUint> = Vec::new();
+
+    use crate::native_numeral::{bits_to_value, divmod_small_on_limbs, word_bits};
+    // Up to TRIAL_DIVISION_BOUND (ten million) candidate divisors, each one
+    // fitting comfortably in a u64 (d*d tops out at 10^14, nowhere near
+    // overflow) -- the comparison stays native for the same reason it does
+    // in is_prime above. m's own word is read once per value of m, not
+    // once per candidate divisor: m only changes on the rare event of a
+    // factor actually dividing out, so re-deriving its limbs on every one
+    // of ten million divisor tests was pure waste, not arithmetic this
+    // loop needed to do.
+    let mut m = n_big;
+    let mut m_limbs = word_bits(&m);
+    let mut d: u64 = 2;
+    while d <= TRIAL_DIVISION_BOUND {
+        if BigUint::from(d * d) > m { break; }
+        if divmod_small_on_limbs(&m_limbs, d).1 == 0 {
+            let bd = BigUint::from(d);
+            loop {
+                let (q, rem) = divmod_small_on_limbs(&m_limbs, d);
+                if rem != 0 { break; }
+                primes.push(bd.clone());
+                m_limbs = q;
+                m = bits_to_value(&m_limbs);
+            }
+        }
+        d += if d == 2 { 1 } else { 2 };
+    }
+
+    if m > BigUint::one() {
+        brent_split_recursive(m, &mut primes, &mut unsplit, max_power);
+    }
+    (primes, unsplit)
+}
+
 /// `factor`, with the per-seed Brent step bound made explicit rather than
 /// silently defaulted, for a caller that wants to trade search depth
 /// against wall-clock time on a case the default budget resists.
@@ -502,34 +796,14 @@ pub fn factor_bounded(n: &str, max_power: Option<u64>) -> String {
         return format!("prime_winding factor {}: n < 2, no prime factors", n);
     }
 
-    let mut primes: Vec<BigUint> = Vec::new();
-    let mut unsplit: Vec<BigUint> = Vec::new();
-
-    let mut m = n_big;
-    let mut d: u64 = 2;
-    while d <= TRIAL_DIVISION_BOUND {
-        let bd = BigUint::from(d);
-        if &bd * &bd > m { break; }
-        if &m % &bd == BigUint::zero() {
-            while &m % &bd == BigUint::zero() {
-                primes.push(bd.clone());
-                m /= &bd;
-            }
-        }
-        d += if d == 2 { 1 } else { 2 };
-    }
-
-    if m > BigUint::one() {
-        brent_split_recursive(m, &mut primes, &mut unsplit, max_power);
-    }
-
-    primes.sort_unstable();
-    unsplit.sort_unstable();
+    let (mut primes, mut unsplit) = factor_primes(n_big, max_power);
 
     if unsplit.is_empty() && primes.len() == 1 && primes[0].to_str_radix(10) == trim(n) {
         return format!("prime_winding factor {}: {} IS PRIME", n, n);
     }
 
+    primes.sort_unstable();
+    unsplit.sort_unstable();
     let mut out = format!("prime_winding factor {}: ", n);
     if !primes.is_empty() {
         let rep: Vec<String> = primes.iter().map(|p| p.to_str_radix(10)).collect();
@@ -602,6 +876,13 @@ pub fn help() -> String {
            prime_winding find <n>   find nearest prime ≤ n (arbitrary precision)\n\
            prime_winding range <lo> <hi> [count]   every prime in [lo,hi], the find/subtract walk\n\
            prime_winding factor <n>  factor n into prime divisors (with multiplicity)\n\
+           prime_winding grounded_add <a> <b>  a+b plus all three numbers' real Grammar type\n\
+           prime_winding grounded_mul <a> <b>  a*b plus all three numbers' real Grammar type\n\
+           prime_winding grounded_sub <a> <b>  a-b plus all three numbers' real Grammar type\n\
+           prime_winding grounded_mod <a> <b>  a mod b plus all three numbers' real Grammar type\n\
+           prime_winding grounded_divmod <a> <b>  a=q*b+r plus all four numbers' real Grammar type\n\
+           prime_winding grounded_gcd <a> <b>  gcd(a,b) plus all three numbers' real Grammar type\n\
+           prime_winding grounded_factor <n> [max_power]  N's real factorization plus every number's real Grammar type\n\
            prime_winding cycle      ROTAT orbit with landing register per cut\n\
            prime_winding tuple      the 12-slot tuple the word was imscribed from\n\
            prime_winding verdict    Frobenius verdict and tri-ancestral reading\n\
@@ -612,3 +893,73 @@ pub fn help() -> String {
 }
 
 pub fn prime_verdict_label(v: PrimeVerdict) -> &'static str { prime_verdict_str(v) }
+
+#[cfg(test)]
+mod digit_tensor_probe {
+    use super::{digit_type_tensor, HEX_WORDS};
+    use num_bigint::BigUint;
+
+    fn probe(n_str: &str) {
+        let bytes = digit_type_tensor(n_str).expect("valid decimal");
+        let composite = BigUint::from_bytes_be(&bytes);
+        crate::nested_println!("n={n_str:<40} hex_digits={:<20} composite_type={composite}",
+            BigUint::parse_bytes(n_str.as_bytes(), 10).unwrap().to_str_radix(16));
+    }
+
+    #[test]
+    fn per_digit_types_reported() {
+        // The tensor construction is only as faithful as its input: if two
+        // different hex digits imscribe to the SAME type via word_to_tuple
+        // (self_imscribe execution), the composite cannot recover them
+        // distinctly either, whatever tensor_types itself does correctly.
+        // Reported rather than asserted: this is HEX_WORDS[d]'s own type
+        // under the executed pipeline, an open question about which
+        // pipeline should supply a digit's type, not a broken invariant of
+        // this test's own subject (tensor_types, which is verified
+        // correct and injective in tensor_roundtrips_through_untensor).
+        let mut types = alloc::vec::Vec::new();
+        for w in HEX_WORDS.iter() {
+            types.push(crate::axis_values::word_to_tuple(w).crystal_address());
+        }
+        let mut collisions = alloc::vec::Vec::new();
+        for i in 0..16 {
+            for j in (i + 1)..16 {
+                if types[i] == types[j] {
+                    collisions.push((i, j, types[i]));
+                }
+            }
+        }
+        crate::nested_println!("hex digit types under word_to_tuple: {types:?}");
+        crate::nested_println!("collisions (digit i, digit j, shared type): {collisions:?}");
+    }
+
+    #[test]
+    fn tensor_roundtrips_through_untensor() {
+        let types: alloc::vec::Vec<u32> = alloc::vec![100u32, 200, 300, 16389838, 0];
+        let composite = crate::crystal::tensor_types(&types);
+        let back = crate::crystal::untensor_types(&composite, types.len());
+        assert_eq!(types, back);
+    }
+
+    #[test]
+    fn per_digit_tensor_reported() {
+        probe("2");
+        probe("3");
+        probe("10");
+        probe("12345");
+        probe("8051");
+        probe("8052");
+        probe("97");
+        probe("999999999989");
+        probe("999999999999999999999999999999");
+        // all-ones vs top-bit-only vs alternating at matched byte length,
+        // the same three shapes the executed pipeline collapsed to two
+        // states on regardless of length.
+        probe("255");
+        probe("128");
+        probe("170");
+        probe("18446744073709551615");
+        probe("9223372036854775808");
+        probe("12297829382473034410");
+    }
+}

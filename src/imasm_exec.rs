@@ -49,6 +49,7 @@ impl Host for StdHost {
     fn write(&mut self, fd: i32, buf: &[u8]) -> i64 {
         use std::io::Write;
         match fd {
+            1 | 2 if crate::runtime_nesting::capture_bytes(buf) => buf.len() as i64,
             1 => std::io::stdout().write_all(buf).map(|_| buf.len() as i64).unwrap_or(-5),
             2 => std::io::stderr().write_all(buf).map(|_| buf.len() as i64).unwrap_or(-5),
             _ => match self.files.get_mut(&fd) { Some(f) => f.write(buf).map(|n| n as i64).unwrap_or(-5), None => -9 },

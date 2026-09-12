@@ -180,6 +180,19 @@ pub fn dialect_gates(u: u8) -> String {
     if is_out_of_range(u) {
         return "Unknown gates".to_string();
     }
+    // 8-11's real gates are the hand-crafted ordinal thresholds in
+    // dialect_gates_pass, not all_dialects()[u]'s g1/g2/g3 — that array
+    // holds a second, unrelated dialect family colliding with these same
+    // three numbers (see the SINGLE SOURCE OF TRUTH section below). 0-7
+    // read all_dialects() directly in dialect_gates_pass too, so no
+    // collision is possible there and the existing path is already right.
+    match u {
+        8 => return "G1:⊥≥𐑖  G2:⊙≥⊙  G3:⊡≥𐑭  [seq]  T:dynamic".to_string(),
+        9 => return "G1:∈≥𐑲  G2:⊙≥⊙  G3:⊡≥𐑭  [seq]  T:dynamic".to_string(),
+        10 => return "G1:⊙≥𐑢  G2:⊙≥⊙  G3:⊙≥𐑣  [seq]  T:dynamic".to_string(),
+        11 => return "G1:⊙≥𐑢  G2:⊙≥⊙  G3:⊙≥𐑣  [seq]  T:dynamic (gapped)".to_string(),
+        _ => {}
+    }
     let unis = all_dialects();
     let uni = &unis[u as usize];
     format!(
@@ -229,6 +242,40 @@ pub fn prim_from_name(name: &str, ig: &IgTuple) -> Option<IgPrim> {
     }
 }
 
+/// Setter mirror of `prim_from_name`, for applying an absorption rule's
+/// forced value back onto a result tuple. Unrecognized names are a no-op.
+pub fn set_prim_by_name(name: &str, ig: &mut IgTuple, val: IgPrim) {
+    match name {
+        "≺" => ig.p = val,
+        "⊙" => ig.phi = val,
+        "⊡" => ig.omega = val,
+        "⊥" => ig.h = val,
+        "∈" => ig.g = val,
+        "⊣" => ig.t = val,
+        "≻" => ig.r = val,
+        "⋈" => ig.f = val,
+        "⊤" => ig.k = val,
+        "⊢" => ig.d = val,
+        "⊞" => ig.s = val,
+        "∋" => ig.c = val,
+        _ => {}
+    }
+}
+
+/// Reverse of `IgPrim::glyph()`: which value a GateSpec/AbsorptionRule's
+/// glyph string names, searched over the real per-axis value lists
+/// (`axis_values`), not a second hand-written table.
+pub fn igprim_from_glyph(glyph: &str) -> Option<IgPrim> {
+    for i in 0..12 {
+        for &v in crate::axis_values::axis_values(i) {
+            if v.glyph() == glyph {
+                return Some(v);
+            }
+        }
+    }
+    None
+}
+
 /// Evaluate a single gate spec against an IG tuple.
 /// Returns (pass, prim_value_ordinal, prim_name).
 pub fn eval_gate_spec(
@@ -253,4 +300,122 @@ pub fn is_hand_crafted(u: u8) -> bool {
 /// The maximum valid dialect index (inclusive).
 pub fn max_dialect() -> u8 {
     (DIALECT_COUNT - 1) as u8
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SINGLE SOURCE OF TRUTH FOR DIALECTS 0-11
+// ═══════════════════════════════════════════════════════════════
+//
+// dialect_expansion.rs's all_dialects()[9..=11] are NOT this file's
+// scope_dialect/triple_criticality/triple_criticality_gapped — they are a
+// second, real dialect family ("HAND-CRAFTED EXPANSION (8-28)": topology_
+// universe, scope_universe, dimensional_gate) that happens to share the
+// same three numbers. Index 8 is silent about the collision because both
+// families agree there (chirality_first, deliberately); 9-11 do not.
+// Anything that read all_dialects()[u] directly for u<12 — dialect_gates()
+// display, witness_vessel's gates_closed/t_seal/dialect_verdict, and so the
+// real Clay-witness closer checks touching indices 8/10 — was silently
+// reading the WRONG family for 9/10/11. dialect_all_pass here always used
+// the RIGHT one; this section is that same logic, split into a gates-only
+// and a T-only half so witness_vessel can compose them the way it already
+// composes gates_closed/t_seal for the dynamic dialects, instead of
+// re-deriving a third copy.
+
+/// Canonical's actual T-constitution: exact-equality on four primitives,
+/// ceiling on ⊤ only. Matches Python's _T_CANONICAL exactly.
+pub fn t_canonical_check_silent(ig: &IgTuple) -> bool {
+    ig.p.ordinal()     == IgPrim::or_.ordinal()
+    && ig.f.ordinal()   == IgPrim::peep.ordinal()
+    && ig.k.ordinal()   <= IgPrim::egg.ordinal()
+    && ig.h.ordinal()   == IgPrim::wool.ordinal()
+    && ig.omega.ordinal() == IgPrim::ah.ordinal()
+}
+
+/// T_CEILING: canonical's ⊤-only ceiling generalized to all five dynamics
+/// primitives, same anchors — the shared T-constitution for U8/U9/U10.
+pub fn t_ceiling_check_silent(ig: &IgTuple) -> bool {
+    let t_phi = ig.p.ordinal()     <= IgPrim::or_.ordinal();
+    let t_f   = ig.f.ordinal()     <= IgPrim::peep.ordinal();
+    let t_k   = ig.k.ordinal()     <= IgPrim::egg.ordinal();
+    let t_h   = ig.h.ordinal()     <= IgPrim::wool.ordinal();
+    let t_om  = ig.omega.ordinal() <= IgPrim::ah.ordinal();
+    t_phi && t_f && t_k && t_h && t_om
+}
+
+/// U11 only: T_CEILING with ⊤'s ceiling raised from egg (ord 3) to on
+/// (ord 4) — a gapped/trapped spectrum, not just a slow one.
+pub fn t_ceiling_gapped_check_silent(ig: &IgTuple) -> bool {
+    let t_phi = ig.p.ordinal()     <= IgPrim::or_.ordinal();
+    let t_f   = ig.f.ordinal()     <= IgPrim::peep.ordinal();
+    let t_k   = ig.k.ordinal()     <= IgPrim::on.ordinal();
+    let t_h   = ig.h.ordinal()     <= IgPrim::wool.ordinal();
+    let t_om  = ig.omega.ordinal() <= IgPrim::ah.ordinal();
+    t_phi && t_f && t_k && t_h && t_om
+}
+
+/// G1/G2/G3 alone, no T-condition — dialects 0-7 and 12-87 via the dynamic
+/// GateSpec table (all_dialects() is the single, uncollided definition for
+/// those indices), 8-11 via their own hand-crafted ordinal thresholds.
+pub fn dialect_gates_pass(u: u8, ig: &IgTuple) -> bool {
+    match u {
+        0..=7 => {
+            let unis = crate::dialect_expansion::all_dialects();
+            let uni = &unis[u as usize];
+            let (g1, _, _) = eval_gate_spec(&uni.g1, ig);
+            let (g2, _, _) = eval_gate_spec(&uni.g2, ig);
+            let (g3, _, _) = eval_gate_spec(&uni.g3, ig);
+            g1 && g2 && g3
+        }
+        8 => {
+            ig.h.ordinal() >= IgPrim::sure.ordinal()
+                && ig.phi.ordinal() >= IgPrim::monad.ordinal()
+                && ig.omega.ordinal() >= IgPrim::ah.ordinal()
+        }
+        9 => {
+            ig.g.ordinal() >= IgPrim::ice.ordinal()
+                && ig.phi.ordinal() >= IgPrim::monad.ordinal()
+                && ig.omega.ordinal() >= IgPrim::ah.ordinal()
+        }
+        10 | 11 => {
+            ig.phi.ordinal() >= IgPrim::woe.ordinal()
+                && ig.phi.ordinal() >= IgPrim::monad.ordinal()
+                && ig.phi.ordinal() >= IgPrim::haha.ordinal()
+        }
+        _ => {
+            if is_hand_crafted(u) {
+                false
+            } else {
+                let unis = crate::dialect_expansion::all_dialects();
+                let uni = &unis[u as usize];
+                let (g1, _, _) = eval_gate_spec(&uni.g1, ig);
+                let (g2, _, _) = eval_gate_spec(&uni.g2, ig);
+                let (g3, _, _) = eval_gate_spec(&uni.g3, ig);
+                g1 && g2 && g3
+            }
+        }
+    }
+}
+
+/// The T-condition alone. u==7's extra check (⊙-composition equals
+/// measure) isn't a T-constitution in the T_CEILING/T_CANONICAL sense, but
+/// it plays the same role for that one dialect, so it lives here rather
+/// than being silently absent. Indices with no separate T-check
+/// implemented (0-6, 12-87) return true — gates alone are the real check
+/// for those, same as dialect_all_pass has always treated them.
+pub fn dialect_t_pass(u: u8, ig: &IgTuple) -> bool {
+    match u {
+        7 => ig.c == IgPrim::measure,
+        8 | 9 | 10 => t_ceiling_check_silent(ig),
+        11 => t_ceiling_gapped_check_silent(ig),
+        _ => true,
+    }
+}
+
+/// All-gates-pass verdict for dialect u against tuple ig — the single
+/// source of truth every consumer (this file's own gate sweeps, repl.rs's
+/// ruleset verify/sweep/sweep-word, witness_vessel's Clay-witness checks)
+/// now reads, so a hand-crafted index can never again silently diverge
+/// from an unrelated, colliding entry at the same index in all_dialects().
+pub fn dialect_all_pass(u: u8, ig: &IgTuple) -> bool {
+    dialect_gates_pass(u, ig) && dialect_t_pass(u, ig)
 }

@@ -29,7 +29,10 @@ extern crate alloc;
 
 use crate::sprintln;
 use super::prime_winding::{is_prime, factor, PrimeVerdict};
+use super::dynamic_nesting_prime_finder::find_optimal_depth;
 use alloc::string::String;
+use num_bigint::BigUint;
+use core::str::FromStr;
 
 /// The canonical glyph word for the Nested Prime Number Placement Operator.
 pub const WORD: &str = "⊢∈≻⊤≺⊥⋈⊙⊞∋⊡⊣";
@@ -151,7 +154,25 @@ pub fn repl_nested_oneshot(args: &[&str]) {
                 B4Verdict::T => sprintln!("nested_oneshot factor {}: T — prime (no non-trivial factors)", n),
                 B4Verdict::F => {
                     sprintln!("nested_oneshot factor {}: F — composite (winding-order search)", n);
-                    sprintln!("{}", factor(n));
+                    match BigUint::from_str(n) {
+                        Ok(nb) => {
+                            let (depth, found) = find_optimal_depth(n, 8);
+                            match found {
+                                Some(p) => {
+                                    let q = &nb / &p;
+                                    sprintln!(
+                                        "closure at nesting depth {}: {} = {} × {} (Brent cycle, Grammar-derived seed c=period_at_depth({})+n mod 256)",
+                                        depth, n, p, q, depth
+                                    );
+                                }
+                                None => {
+                                    sprintln!("no closure within max nesting depth 8; falling back to prime_winding's trial-divisor walk:");
+                                    sprintln!("{}", factor(n));
+                                }
+                            }
+                        }
+                        Err(_) => sprintln!("{}", factor(n)),
+                    }
                 }
             }
         }

@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+extern crate alloc;
 use crate::tokens::{period as tok_period, signature, Program, Token};
 /// Crystal of Types — 17,280,000-address type space.
 ///
@@ -42,6 +43,77 @@ pub fn decode(mut addr: u32) -> [u8; 12] {
         addr %= STRIDES[i];
     }
     idx
+}
+
+/// Tensor a sequence of TYPES (crystal addresses, each already an element of
+/// the 0..TOTAL space) into one composite type, the way `encode` above
+/// tensors 12 axis-indices into one type: that Σ indices[i] × STRIDE[i] is
+/// itself the tensor of the twelve axis spaces (cardinalities [4,5,4,...])
+/// into the one 17,280,000-point space. This is the same construction one
+/// level up, over n copies of that whole space rather than over its twelve
+/// factors: composite = Σⱼ types[j] × TOTAL^(n-1-j), types[0] most
+/// significant. The composite lives in TOTAL^n, not TOTAL — a tensor product
+/// grows the space, it never folds distinct inputs back into the same one.
+/// Unlike algebra::tensor (max/min per axis, idempotent, collapses repeats
+/// and discards order), this is injective: two type sequences differing
+/// anywhere, including only in length or in the order of a repeated value,
+/// give different composites, and `untensor_types` inverts it exactly.
+pub fn tensor_types(types: &[u32]) -> alloc::vec::Vec<u8> {
+    // Big-endian base-256 digits of Σ types[j] * TOTAL^(n-1-j), built
+    // directly in that base rather than through a BigUint dependency this
+    // module has no other reason to take.
+    let mut acc: alloc::vec::Vec<u32> = alloc::vec![0]; // little-endian base-2^32 limbs
+    for &ty in types {
+        // acc = acc * TOTAL + ty
+        let mut carry: u64 = ty as u64;
+        for limb in acc.iter_mut() {
+            let v = (*limb as u64) * (TOTAL as u64) + carry;
+            *limb = v as u32;
+            carry = v >> 32;
+        }
+        while carry > 0 {
+            acc.push(carry as u32);
+            carry = 0;
+        }
+    }
+    let mut bytes = alloc::vec::Vec::with_capacity(acc.len() * 4);
+    for &limb in acc.iter().rev() {
+        bytes.extend_from_slice(&limb.to_be_bytes());
+    }
+    while bytes.len() > 1 && bytes[0] == 0 {
+        bytes.remove(0);
+    }
+    bytes
+}
+
+/// Inverse of `tensor_types` given how many types went in: recovers the
+/// exact sequence of per-digit types from the composite's big-endian bytes.
+pub fn untensor_types(bytes: &[u8], count: usize) -> alloc::vec::Vec<u32> {
+    let mut limbs: alloc::vec::Vec<u32> = alloc::vec![0];
+    for &b in bytes {
+        let mut carry: u64 = b as u64;
+        for limb in limbs.iter_mut() {
+            let v = (*limb as u64) * 256 + carry;
+            *limb = v as u32;
+            carry = v >> 32;
+        }
+        while carry > 0 {
+            limbs.push(carry as u32);
+            carry = 0;
+        }
+    }
+    let mut out = alloc::vec![0u32; count];
+    for i in (0..count).rev() {
+        // divmod limbs by TOTAL, remainder is out[i]
+        let mut rem: u64 = 0;
+        for limb in limbs.iter_mut().rev() {
+            let cur = (rem << 32) | (*limb as u64);
+            *limb = (cur / TOTAL as u64) as u32;
+            rem = cur % TOTAL as u64;
+        }
+        out[i] = rem as u32;
+    }
+    out
 }
 
 /// Imscribe a running program into the crystal — the operational witness of each

@@ -148,7 +148,7 @@ pub fn qm_born_prob_0_after_hadamard() -> f64 {
 /// assumed.
 pub fn equiangularity_ratio_is_perfect_square(d: u64) -> (u64, u64, bool) {
     let denom = d + 1;
-    let root = libm::round(libm::sqrt(denom as f64)) as u64;
+    let root = libm::sqrt(denom as f64).round() as u64;
     let is_square = root * root == denom;
     (d * d, denom, is_square)
 }

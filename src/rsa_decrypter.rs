@@ -58,9 +58,10 @@ fn parse_big(s: &str) -> Option<BigUint> {
 
 /// BigUint GCD
 fn big_gcd(mut a: BigUint, mut b: BigUint) -> BigUint {
+    use crate::native_numeral::modulo_via_word;
     while !b.is_zero() {
         let t = b.clone();
-        b = &a % &b;
+        b = modulo_via_word(&a, &b).unwrap();
         a = t;
     }
     a
@@ -68,15 +69,16 @@ fn big_gcd(mut a: BigUint, mut b: BigUint) -> BigUint {
 
 /// Modular exponentiation: base^exp mod modulus
 fn mod_pow(base: &BigUint, exp: &BigUint, modulus: &BigUint) -> BigUint {
+    use crate::native_numeral::{divmod_small_via_word, modulo_small_via_word, modulo_via_word, multiply_via_word};
     let mut result = BigUint::one();
-    let mut base = base % modulus;
+    let mut base = modulo_via_word(base, modulus).unwrap();
     let mut exp = exp.clone();
     while !exp.is_zero() {
-        if &exp & BigUint::one() == BigUint::one() {
-            result = (result * &base) % modulus;
+        if modulo_small_via_word(&exp, 2).unwrap() == 1 {
+            result = modulo_via_word(&multiply_via_word(&result, &base), modulus).unwrap();
         }
-        base = (&base * &base) % modulus;
-        exp >>= 1;
+        base = modulo_via_word(&multiply_via_word(&base, &base), modulus).unwrap();
+        exp = divmod_small_via_word(&exp, 2).unwrap().0;
     }
     result
 }
@@ -84,28 +86,29 @@ fn mod_pow(base: &BigUint, exp: &BigUint, modulus: &BigUint) -> BigUint {
 /// Baby-Step Giant-Step to find the minimal period r such that base^r ≡ 1 (mod n)
 /// Returns the period r, or None if not found within sqrt(n) steps
 fn bsgs_period(base: &BigUint, n: &BigUint) -> Option<BigUint> {
+    use crate::native_numeral::{modulo_via_word, multiply_via_word, pow2};
     if n <= &BigUint::one() { return None; }
-    if base % n == BigUint::zero() { return None; }
-    
+    if modulo_via_word(base, n).unwrap() == BigUint::zero() { return None; }
+
     // m = ceil(sqrt(n))
     let n_bits = n.bits();
     let m_bits = (n_bits + 1) / 2;
-    let m = BigUint::one() << m_bits;
+    let m = pow2(m_bits as usize);
     let m_usize: usize = m.to_usize().unwrap_or(1000000).min(1000000); // cap for memory
-    
+
     // Baby steps: base^j for j = 0..m
     let mut baby_steps = BTreeMap::new();
     let mut cur = BigUint::one();
     for j in 0..m_usize {
         baby_steps.insert(cur.clone(), j);
-        cur = (&cur * base) % n;
+        cur = modulo_via_word(&multiply_via_word(&cur, base), n).unwrap();
     }
-    
+
     // Giant step factor: base^(-m) mod n
     // Compute base^m first, then its modular inverse
     let base_m = mod_pow(base, &BigUint::from(m_usize), n);
     let inv_base_m = mod_inverse(&base_m, n)?;
-    
+
     // Giant steps: search for collision
     cur = BigUint::one();
     for i in 0..m_usize {
@@ -115,7 +118,7 @@ fn bsgs_period(base: &BigUint, n: &BigUint) -> Option<BigUint> {
                 return Some(r);
             }
         }
-        cur = (&cur * &inv_base_m) % n;
+        cur = modulo_via_word(&multiply_via_word(&cur, &inv_base_m), n).unwrap();
     }
     None
 }
@@ -129,22 +132,25 @@ fn bsgs_period(base: &BigUint, n: &BigUint) -> Option<BigUint> {
 /// edge case for this algorithm: `rsa period 2 3233` (the textbook RSA
 /// N=61*53 example) hit it immediately.
 fn egcd(a: &BigInt, b: &BigInt) -> (BigInt, BigInt, BigInt) {
+    use crate::native_numeral::{signed_divmod_via_word, signed_multiply_via_word, signed_subtract_via_word_general};
     if b.is_zero() {
         return (a.clone(), BigInt::one(), BigInt::zero());
     }
-    let (g, x1, y1) = egcd(b, &(a % b));
+    let (q, r) = signed_divmod_via_word(a, b).unwrap();
+    let (g, x1, y1) = egcd(b, &r);
     let x = y1.clone();
-    let y = &x1 - &(a / b) * &y1;
+    let y = signed_subtract_via_word_general(&x1, &signed_multiply_via_word(&q, &y1));
     (g, x, y)
 }
 
 fn mod_inverse(a: &BigUint, n: &BigUint) -> Option<BigUint> {
+    use crate::native_numeral::{signed_add_via_word_general, signed_divmod_via_word};
     let a_i = BigInt::from(a.clone());
     let n_i = BigInt::from(n.clone());
     let (g, x, _) = egcd(&a_i, &n_i);
     if g != BigInt::one() { return None; }
-    let mut inv = &x % &n_i;
-    if inv < BigInt::zero() { inv += &n_i; }
+    let mut inv = signed_divmod_via_word(&x, &n_i).unwrap().1;
+    if inv < BigInt::zero() { inv = signed_add_via_word_general(&inv, &n_i); }
     if inv.is_zero() { inv = n_i; }
     inv.to_biguint()
 }

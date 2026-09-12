@@ -19,7 +19,7 @@ use alloc::{vec, vec::Vec};
 macro_rules! hostprintln {
     ($($arg:tt)*) => {
         #[cfg(feature = "hosted")]
-        println!($($arg)*);
+        crate::nested_println!($($arg)*);
     };
 }
 

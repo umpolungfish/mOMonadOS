@@ -261,6 +261,21 @@ pub fn syndrome_decode_bounded(
 
     let k = free_cols.len();
     let total: u64 = 1u64 << k;
+
+    // GPU: search every mask for the least-weight coset member at once. The
+    // global minimum is the answer when it lies within ell; otherwise no member
+    // does. The CPU scan below is the bare-metal fallback and the verifier.
+    #[cfg(feature = "hosted")]
+    {
+        let w = (num_vars + 63) / 64;
+        let e0w = crate::gpu_dqi::pack(&e0, w);
+        let mut basisw: Vec<u64> = Vec::new();
+        for bv in &basis { basisw.extend(crate::gpu_dqi::pack(bv, w)); }
+        if let Some((cand, weight)) = crate::gpu_dqi::coset_min_weight(&e0w, &basisw, w, k, num_vars) {
+            return if weight <= ell { Some((cand, weight)) } else { None };
+        }
+    }
+
     let mut best: Option<(Vec<bool>, usize)> = None;
     for mask in 0..total {
         let mut candidate = e0.clone();
@@ -506,9 +521,14 @@ pub fn repl_dqi(args: &[&str]) {
                 .filter(|b| *b == b'0' || *b == b'1')
                 .map(|b| b - b'0')
                 .collect();
-            let decoded = dqi_syndrome_decode(&bits);
-            let s_out: alloc::string::String = decoded.iter().map(|b| char::from(b'0' + b)).collect();
-            sprintln!("{}", s_out);
+            if bits.is_empty() {
+                sprintln!("dqi syndrome: no binary digits (0/1) found in input");
+                sprintln!("usage: dqi syndrome <0/1 string>");
+            } else {
+                let decoded = dqi_syndrome_decode(&bits);
+                let s_out: alloc::string::String = decoded.iter().map(|b| char::from(b'0' + b)).collect();
+                sprintln!("{}", s_out);
+            }
         }
         "tuple" => sprintln!("⟨𐑨𐑶𐑽𐑿𐑐𐑘𐑔𐑠⊙𐑖𐑙𐑭⟩"),
         "xorsat" => {

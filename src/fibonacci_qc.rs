@@ -1042,6 +1042,52 @@ fn quantum_trace(n: usize, word: &[i32]) -> Complex {
     t1 + Complex::new(PHI, 0.0) * t2
 }
 
+/// Real, computable question (not a scalar formula): does the Temperley-Lieb
+/// representation turn word_for(p), word_for(q), word_for(N) — three
+/// INDEPENDENT words, none built from the others by concatenation — into
+/// matrices related by real matrix multiplication, U(p)*U(q) =? U(N), in
+/// either factor order, in each fusion sector separately? Reports the exact
+/// max entrywise difference for both orders in both sectors; 0.0 (to float
+/// precision) means the relation holds exactly, not close.
+pub fn rep_multiply_check(n: usize, word_p: &[i32], word_q: &[i32], word_n: &[i32]) -> String {
+    for (label, w) in [("p", word_p), ("q", word_q), ("N", word_n)] {
+        if let Err(bad) = validate_braid_word(n, w) {
+            return format!("rep_multiply_check: word {} needs more strands (generator {})", label, bad);
+        }
+    }
+    let (s1, s2) = sector_reps(n);
+    let d1 = if s1.is_empty() { 0 } else { s1[0].len() };
+    let d2 = if s2.is_empty() { 0 } else { s2[0].len() };
+
+    let mat_diff = |a: &[Vec<Complex>], b: &[Vec<Complex>]| -> f64 {
+        if a.len() != b.len() || a.is_empty() { return f64::INFINITY; }
+        let mut worst = 0.0f64;
+        for i in 0..a.len() {
+            for j in 0..a[i].len() {
+                let d = a[i][j] - b[i][j];
+                let m = (d.re * d.re + d.im * d.im).sqrt();
+                if m > worst { worst = m; }
+            }
+        }
+        worst
+    };
+
+    let mut out = format!("rep_multiply_check: n={} strands, sector dims d1={} d2={}\n", n, d1, d2);
+    for (sname, sig, d) in [("sector1", &s1, d1), ("sector2(tau)", &s2, d2)] {
+        if d == 0 { out.push_str(&format!("  {}: empty, skipped\n", sname)); continue; }
+        let up = apply_word_to_sigmas(sig, word_p, d);
+        let uq = apply_word_to_sigmas(sig, word_q, d);
+        let un = apply_word_to_sigmas(sig, word_n, d);
+        let pq = multiply_matrices(&up, &uq);
+        let qp = multiply_matrices(&uq, &up);
+        out.push_str(&format!(
+            "  {}: max|U(p)U(q) - U(N)| = {:.6}, max|U(q)U(p) - U(N)| = {:.6}\n",
+            sname, mat_diff(&pq, &un), mat_diff(&qp, &un)
+        ));
+    }
+    out
+}
+
 /// Is every generator in `word` a braid generator on `n` strands?
 ///
 /// The braid group B_n has generators sigma_1 .. sigma_{n-1}, so on 3 strands

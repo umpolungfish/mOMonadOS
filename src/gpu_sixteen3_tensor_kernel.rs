@@ -28,7 +28,7 @@ use alloc::format;
 use alloc::string::String;
 use alloc::vec::Vec;
 use cudarc::driver::{CudaContext, LaunchConfig, PushKernelArg};
-use cudarc::nvrtc::compile_ptx;
+use cudarc::nvrtc::{compile_ptx_with_opts, CompileOptions};
 use imasm_core::imasm16_3::{meet_t, Reg16_3};
 use std::time::Instant;
 
@@ -52,6 +52,8 @@ use std::time::Instant;
 /// sample against the real CPU `imasm_core` functions as the ground-truth
 /// control that a GPU-only self-consistency check cannot be.
 const TENSOR_SRC: &str = r#"
+#include <nv/target>
+#include <mma.h>
 // MurmurHash3 finalizer, a counter-based generator: same (seed, counter)
 // always produces the same value, no state carried between threads, no
 // host-side loop -- each thread derives its own x, y, z from its own
@@ -153,6 +155,60 @@ extern "C" __global__ void tensor_chain_verify(
     // GPU global memory, whether or not a host ever reads them back. ⊣
     // close happens host-side on stream sync.
 }
+
+// One warp is one tensor-core IMASM vessel.  The 16x16 matrix is the exact
+// truth_swap morphism on the full SIXTEEN_3 carrier and the input is a one-hot
+// mark tensor.  mma_sync performs the morphism; the resulting mark is carried
+// from tensor tile to warp, block, and grid storage before a second kernel
+// fixes the complete family.
+extern "C" __global__ void tensor_core_morphism(
+    unsigned int depth, unsigned char *grid_marks)
+{
+    using namespace nvcuda;
+    if (threadIdx.x >= 32 || blockIdx.x >= 16) return;
+    __shared__ half transition[16*16];
+    __shared__ half input[16*16];
+    __shared__ float product[16*16];
+    __shared__ unsigned int live;
+    unsigned int lane=threadIdx.x&31u;
+    if(lane==0) live=blockIdx.x;
+    __syncwarp();
+    for(unsigned int level=0;level<depth;level++) {
+        for(unsigned int i=lane;i<256;i+=32) {
+            unsigned int row=i>>4,col=i&15u;
+            unsigned int swapped=((col&1u)<<1)|((col&2u)>>1)|(col&12u);
+            transition[i]=__float2half(row==swapped?1.0f:0.0f);
+            input[i]=__float2half(row==live?1.0f:0.0f);
+        }
+        __syncwarp();
+        wmma::fragment<wmma::matrix_a,16,16,16,half,wmma::row_major> a;
+        wmma::fragment<wmma::matrix_b,16,16,16,half,wmma::row_major> b;
+        wmma::fragment<wmma::accumulator,16,16,16,float> c;
+        wmma::load_matrix_sync(a,transition,16);
+        wmma::load_matrix_sync(b,input,16);
+        wmma::fill_fragment(c,0.0f);
+        wmma::mma_sync(c,a,b,c);
+        wmma::store_matrix_sync(product,c,16,wmma::mem_row_major);
+        __syncwarp();
+        if(lane==0) {
+            unsigned int next=0;
+            for(unsigned int row=0;row<16;row++) if(product[row*16]>0.5f) next=row;
+            live=next;
+        }
+        __syncwarp();
+    }
+    if(lane==0) grid_marks[blockIdx.x]=(unsigned char)live;
+}
+
+extern "C" __global__ void tensor_grid_fix(
+    const unsigned char *grid_marks,unsigned int depth,unsigned long long *fail)
+{
+    unsigned int i=threadIdx.x;
+    if(blockIdx.x||i>=16) return;
+    unsigned int expected=i;
+    if(depth&1u) expected=((i&1u)<<1)|((i&2u)>>1)|(i&12u);
+    if(grid_marks[i]!=(unsigned char)expected) atomicAdd(fail,1ULL);
+}
 "#;
 
 fn pack(r: Reg16_3) -> u8 {
@@ -172,7 +228,11 @@ pub fn run(n: u64) -> String {
     let device_name = ctx.name().unwrap_or_else(|_| String::from("unknown device"));
     out.push_str(&format!("  device: {device_name}\n"));
 
-    let ptx = match compile_ptx(TENSOR_SRC) {
+    let ptx = match compile_ptx_with_opts(TENSOR_SRC, CompileOptions {
+        include_paths: vec![String::from("/usr/local/cuda-12.4/targets/x86_64-linux/include")],
+        arch: Some("compute_86"),
+        ..Default::default()
+    }) {
         Ok(p) => p,
         Err(e) => return format!("{out}  NVRTC compile failed: {e}\n"),
     };
@@ -183,6 +243,14 @@ pub fn run(n: u64) -> String {
     let f = match module.load_function("tensor_chain_verify") {
         Ok(f) => f,
         Err(e) => return format!("{out}  load tensor_chain_verify failed: {e}\n"),
+    };
+    let tensor_f = match module.load_function("tensor_core_morphism") {
+        Ok(f) => f,
+        Err(e) => return format!("{out}  load tensor_core_morphism failed: {e}\n"),
+    };
+    let grid_fix = match module.load_function("tensor_grid_fix") {
+        Ok(f) => f,
+        Err(e) => return format!("{out}  load tensor_grid_fix failed: {e}\n"),
     };
 
     // No host RNG loop, no htod copy of input triples -- each thread
@@ -211,6 +279,8 @@ pub fn run(n: u64) -> String {
     let mut d_y = match unsafe { stream.alloc::<u8>(k) } { Ok(d) => d, Err(e) => return format!("{out}  alloc y: {e}") };
     let mut d_z = match unsafe { stream.alloc::<u8>(k) } { Ok(d) => d, Err(e) => return format!("{out}  alloc z: {e}") };
     let mut d_counters = match stream.alloc_zeros::<u64>(7) { Ok(d) => d, Err(e) => return format!("{out}  alloc counters: {e}") };
+    let mut d_grid_marks = match stream.alloc_zeros::<u8>(16) { Ok(d) => d, Err(e) => return format!("{out}  alloc hierarchy marks: {e}") };
+    let mut d_tensor_fail = match stream.alloc_zeros::<u64>(1) { Ok(d) => d, Err(e) => return format!("{out}  alloc hierarchy check: {e}") };
 
     {
         let mut builder = stream.launch_builder(&f);
@@ -229,6 +299,19 @@ pub fn run(n: u64) -> String {
             return format!("{out}  launch tensor_chain_verify failed: {e}");
         }
     }
+    let tensor_depth=12u32;
+    {
+        let mut builder=stream.launch_builder(&tensor_f);
+        builder.arg(&tensor_depth).arg(&mut d_grid_marks);
+        if let Err(e)=unsafe {builder.launch(LaunchConfig {grid_dim:(16,1,1),block_dim:(32,1,1),shared_mem_bytes:0})} {
+            return format!("{out}  launch tensor-core hierarchy failed: {e}");
+        }
+        let mut fixer=stream.launch_builder(&grid_fix);
+        fixer.arg(&d_grid_marks).arg(&tensor_depth).arg(&mut d_tensor_fail);
+        if let Err(e)=unsafe {fixer.launch(LaunchConfig {grid_dim:(1,1,1),block_dim:(32,1,1),shared_mem_bytes:0})} {
+            return format!("{out}  launch grid fixation failed: {e}");
+        }
+    }
     // ⊣ close the kernel boundary, synchronize before reading anything back.
     if let Err(e) = stream.synchronize() {
         return format!("{out}  synchronize failed: {e}");
@@ -237,11 +320,13 @@ pub fn run(n: u64) -> String {
 
     let t_dtoh = Instant::now();
     let counters: Vec<u64> = match stream.clone_dtoh(&d_counters) { Ok(v) => v, Err(e) => return format!("{out}  dtoh counters: {e}") };
+    let tensor_fail: Vec<u64> = match stream.clone_dtoh(&d_tensor_fail) { Ok(v) => v, Err(e) => return format!("{out}  dtoh hierarchy check: {e}") };
     let dtoh_elapsed = t_dtoh.elapsed();
     let (mismatch_s1, mismatch_s2, mismatch_s3, both1, both2, both3, self_ref_fail) =
         (counters[0], counters[1], counters[2], counters[3], counters[4], counters[5], counters[6]);
 
     out.push_str("  ⊢∈⊤≻⊥≺∋⊞ per gate, ⋈ chaining -- cross-checked against an independently-written flat GPU kernel, entirely on-device (O(N) work never leaves the GPU)\n\n");
+    out.push_str(&format!("  tensor hierarchy: 16 carrier states x {tensor_depth} nested WMMA morphisms; tensor tile -> warp -> block -> grid -> fixation; {} mismatch(es)\n",tensor_fail[0]));
 
     out.push_str(&format!(
         "  stage 1 union(x,y):        {n} checked on-GPU, {mismatch_s1} mismatch(es) vs independent flat kernel\n"
@@ -287,7 +372,7 @@ pub fn run(n: u64) -> String {
         "  control: {k} of {n} entries checked directly against CPU imasm_core (union/meet_t/truth_swap), {control_mismatch} mismatch(es)\n"
     ));
 
-    let total_mismatch = mismatch_s1 + mismatch_s2 + mismatch_s3 + self_ref_fail + control_mismatch;
+    let total_mismatch = mismatch_s1 + mismatch_s2 + mismatch_s3 + self_ref_fail + control_mismatch + tensor_fail[0];
     out.push_str(&format!(
         "\n  {}\n",
         if total_mismatch == 0 {

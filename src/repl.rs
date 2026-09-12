@@ -78,14 +78,17 @@ fn digits_only(s: &str) -> bool {
 
 /// Verb forms that take a big integer next and are often pasted with N on the
 /// following line(s). Incomplete → hold; digit-only lines then extend the hold.
-/// Keep in lockstep with join_digit_continuations.awk::awaiting.
 fn awaiting_bigint_arg(line: &str) -> bool {
+    // Keep in lockstep with join_digit_continuations.awk::awaiting.
     let t: Vec<&str> = line.split_whitespace().collect();
     match t.as_slice() {
         ["gpu_ecm"] | ["gpu_ecm", "bsgs"] => true,
+        ["gpu_gnfs"] => true,
         ["gpu_factor"] => true,
         ["gpu_rho", "factor"] => true,
         ["nested_oneshot", "factor"] | ["nested", "factor"] | ["nos", "factor"] => true,
+        ["nested_prime_factorization", "factor"] | ["npf", "factor"] => true,
+        ["factor_membrane", "cross"] | ["membrane", "cross"] => true,
         ["doubly_nested_oneshot", "factor"] | ["dnos", "factor"] => true,
         ["prime_winding", "factor"] => true,
         ["trilattice_factor", "factor"] | ["tfactor", "factor"] => true,
@@ -114,7 +117,7 @@ pub fn repl(k: &mut Kernel) {
     let mut history = History::new();
     let mut ctx_stack = ContextStack::new();
     let mut ask_paste = crate::ask::AskPaste::new();
-    // Held incomplete bigint verb (`prime_winding factor`, …); digit-only lines extend it.
+    // Held incomplete bigint verb (`gpu_ecm bsgs`, …); digit-only lines extend it.
     let mut bigint_cont: Option<String> = None;
     let mut pending_lines: alloc::collections::VecDeque<String> = alloc::collections::VecDeque::new();
 
@@ -156,6 +159,7 @@ pub fn repl(k: &mut Kernel) {
             }
         };
         let line = line_owned.as_str();
+        let _vessel = crate::runtime_nesting::CommandVessel::admit(line);
 
         // Multi-line ask paste: accumulate until a lone `.`
         if ask_paste.active {
@@ -269,20 +273,61 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("  winding factorgen <bits> [tries] [seed]   native semiprime + factor (the push)");
                     }
                     "order" => {
-                        let a = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
-                        let N = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
-                        crate::winding_period::repl_order(a, N);
+                        let a_str = parts.next().unwrap_or("");
+                        let n_str = parts.next().unwrap_or("");
+                        match (a_str.parse::<u64>(), n_str.parse::<u64>()) {
+                            (Ok(a), Ok(N)) => {
+                                crate::winding_period::repl_order(a, N);
+                                // The found order r has no word of its own — the
+                                // winding search produces a number, not a program —
+                                // so the same bridge `read`/`nested_oneshot` use
+                                // applies: r's native-numeral word, checked under
+                                // whichever dialect is active, same as any other
+                                // number's own register.
+                                if let Some(r) = crate::winding_period::winding_order(a, N) {
+                                    let word = crate::native_numeral::encode(&r.to_string());
+                                    sprintln!("  order r={}'s own register: {}", r, active_dialect_register_line(k, &word));
+                                }
+                            }
+                            _ => sprintln!(
+                                "winding order: '{}' or '{}' does not fit u64 (BSGS needs a sqrt(N)-sized table in memory, so this is a real ceiling around 50-55 bits, not an input-format limit worth widening)",
+                                a_str, n_str
+                            ),
+                        }
                     }
                     "factor" => {
-                        let N = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        let n_str = parts.next().unwrap_or("");
                         let tries = parts.next().and_then(|s| s.parse::<u32>().ok()).unwrap_or(12);
                         let seed = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0x9E37_79B9_7F4A_7C15);
-                        crate::winding_period::repl_factor(N, tries, seed);
+                        match n_str.parse::<u64>() {
+                            Ok(N) => {
+                                crate::winding_period::repl_factor(N, tries, seed);
+                                if let Some((_, r, _, _)) = crate::winding_period::factor(N, tries, seed) {
+                                    if r > 0 {
+                                        let word = crate::native_numeral::encode(&r.to_string());
+                                        sprintln!("  order r={}'s own register: {}", r, active_dialect_register_line(k, &word));
+                                    }
+                                }
+                            }
+                            Err(_) => sprintln!(
+                                "winding factor: '{}' does not fit u64 (the BSGS winding step underneath is sqrt(N)-memory-bound, a real ceiling around 50-55 bits, not an input-format limit worth widening)",
+                                n_str
+                            ),
+                        }
                     }
                     "closure" => {
-                        let N = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+                        let n_str = parts.next().unwrap_or("0");
                         let B = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(11);
-                        crate::winding_period::repl_closure(N, B);
+                        match n_str.parse::<u64>() {
+                            Ok(N) => {
+                                crate::winding_period::repl_closure(N, B);
+                                if let Some(f) = crate::winding_period::closure_gcd(N, B) {
+                                    let word = crate::native_numeral::encode(&f.to_string());
+                                    sprintln!("  factor {}'s own register: {}", f, active_dialect_register_line(k, &word));
+                                }
+                            }
+                            Err(_) => sprintln!("{}", crate::winding_period::repl_closure_big(n_str, B)),
+                        }
                     }
                     "factorgen" => {
                         // `parts` is splitn(4,' '): bits is its own field, but tries and
@@ -398,6 +443,41 @@ pub fn repl(k: &mut Kernel) {
                     sprintln!("which values were touched and nothing else. This counts.");
                 } else {
                     crate::lattice_flow::weight_report(w);
+                }
+            }
+            // `imrun` closes the loop from inside the kernel: it lifts a real
+            // binary to the executable IMASM module and runs it in the payload
+            // machine (vox_core::imasm_vm), with the kernel's own std host in
+            // front of it for real syscalls. The kernel runs a program as the
+            // twelve marks without leaving the kernel.
+            "imrun" => {
+                let rest: alloc::vec::Vec<&str> = parts.collect();
+                if rest.is_empty() {
+                    sprintln!("imrun <file> [argv...]  — lift a binary to IMASM and run it in the machine");
+                } else {
+                    let file = rest[0];
+                    match std::fs::read(file) {
+                        Ok(raw) => {
+                            let module = if file.ends_with(".imasm") {
+                                String::from_utf8_lossy(&raw).into_owned()
+                            } else {
+                                crate::imasm_exec::emit(&raw)
+                            };
+                            let mut m = crate::imasm_exec::Machine::new(&module);
+                            m.set_host(alloc::boxed::Box::new(crate::imasm_exec::StdHost::new()));
+                            let mut argv: alloc::vec::Vec<alloc::string::String> =
+                                alloc::vec![file.to_string()];
+                            for a in &rest[1..] { argv.push(a.to_string()); }
+                            match m.run_process(&argv, &[], 5_000_000_000) {
+                                Ok(()) => sprintln!("[imrun] ran off the end   [{} steps]", m.steps),
+                                Err(crate::imasm_exec::Stop::SysExit(c)) =>
+                                    sprintln!("[imrun] exited({})   [{} steps in the twelve]", c, m.steps),
+                                Err(crate::imasm_exec::Stop::Halt(e)) =>
+                                    sprintln!("[imrun] halted: {}   [{} steps]", e, m.steps),
+                            }
+                        }
+                        Err(e) => sprintln!("[imrun] cannot read {}: {}", file, e),
+                    }
                 }
             }
             // `vox` reads control flow the way `weight` reads value flow: it takes
@@ -538,12 +618,1485 @@ pub fn repl(k: &mut Kernel) {
                                 sprintln!("vox classify <mnemonic> [operands]");
                             }
                         }
-                        "compile" => vox_compile(&rest[1..]),
                         "run" => vox_run_symbol(&rest[1..]),
+                        "compile" => {
+                            use crate::rebis::codon::{Codon, CodeTable};
+                            use crate::rebis::AminoAcid;
+                            use crate::belnap::B4;
+                            fn b4_to_nucleotide(b: B4) -> u8 {
+                                match b { B4::N => b'A', B4::T => b'C', B4::F => b'G', B4::B => b'U' }
+                            }
+                            // First pass: sequence tokens (skip flags and their values)
+                            let mut i = 1;
+                            let mut table = CodeTable::Standard;
+                            let mut pdb_path: Option<String> = None;
+                            let mut coords_mode = false;
+                            let mut seq_parts: Vec<String> = Vec::new();
+                            while i < rest.len() {
+                                let t = rest[i].as_str();
+                                if t == "--code" { i += 2; continue; }
+                                if t == "--pdb" { i += 2; continue; }
+                                if t == "--coords" { i += 1; continue; }
+                                if t.starts_with("--") { i += 1; continue; }
+                                seq_parts.push(rest[i].clone());
+                                i += 1;
+                            }
+                            // Second pass: parse flag values into the locals
+                            i = 1;
+                            while i < rest.len() {
+                                let t = rest[i].as_str();
+                                if t == "--code" && i + 1 < rest.len() {
+                                    table = if rest[i+1] == "mitochondrial" || rest[i+1] == "mito" {
+                                        CodeTable::Mitochondrial
+                                    } else { CodeTable::Standard };
+                                    i += 2; continue;
+                                }
+                                if t == "--pdb" && i + 1 < rest.len() {
+                                    pdb_path = Some(rest[i+1].clone()); i += 2; continue;
+                                }
+                                if t == "--coords" { coords_mode = true; i += 1; continue; }
+                                i += 1;
+                            }
+                            if seq_parts.is_empty() {
+                                sprintln!("vox compile <seq> [--code standard|mitochondrial] [--pdb <path>] [--coords]");
+                                sprintln!("  RNA/DNA in  -> protein out, with real fold info");
+                                sprintln!("  protein in  -> RNA/DNA out (Frobenius-preferred codon per residue)");
+                            } else {
+                                let seq = seq_parts.join(" ");
+                                let compact: String = seq.chars()
+                                    .filter(|c| !c.is_whitespace() && *c != '-' && *c != ',')
+                                    .collect();
+                                let is_nucleic = !compact.is_empty()
+                                    && compact.chars().all(|c| matches!(c.to_ascii_uppercase(), 'A' | 'C' | 'G' | 'T' | 'U'));
+
+                                let table_name = match table { CodeTable::Standard => "standard", CodeTable::Mitochondrial => "mitochondrial" };
+
+                                fn report_fold(chain: &[AminoAcid], b4_path: &[B4], pdb_path: Option<&str>, coords_mode: bool) {
+                                    let fold = crate::rebis::fold::fold_sequence(chain);
+                                    let n_h = fold.residues.iter().filter(|r| r.secondary == crate::rebis::fold::SecondaryLabel::Helix).count();
+                                    let n_s = fold.residues.iter().filter(|r| r.secondary == crate::rebis::fold::SecondaryLabel::Sheet).count();
+                                    let n_c = fold.residues.len() - n_h - n_s;
+                                    sprintln!();
+                                    sprintln!("Fold: helix {}  sheet {}  coil {}   ({} contacts, SerpentRod invariant {})",
+                                        n_h, n_s, n_c, fold.contacts.len(), if fold.frobenius_ok { "PASS" } else { "FAIL" });
+                                    sprintln!("IG primitives activated: {}/12  Tier: {}", fold.unique_primitives, fold.ouroboricity_tier);
+                                    let all = crate::rebis::fold3d::build_all(chain, b4_path);
+                                    let backbone_refs: Vec<crate::rebis::fold3d::BackboneAtom> = all.iter().map(|(bb, _)| *bb).collect();
+                                    let sidechains: Vec<Vec<crate::rebis::fold3d::SidechainAtom>> =
+                                        all.iter().map(|(_, sc)| sc.clone()).collect();
+                                    sprintln!("3D backbone: {} residues placed (B4-Ramachandran-NeRF)", backbone_refs.len());
+                                    let n_sc: usize = sidechains.iter().map(|s| s.len()).sum();
+                                    sprintln!("Sidechain atoms: {} total (Grammar-derived from each AA's own 12-tuple)", n_sc);
+                                    if coords_mode {
+                                        sprintln!();
+                                        sprintln!("== Per-residue coordinates (A) ==");
+                                        sprintln!("{:>4} {:<4} {:<5} {:>9} {:>9} {:>9} {:>9}", "i", "AA", "atom", "x", "y", "z", "bond");
+                                        for (iidx, (bb, sc)) in all.iter().enumerate() {
+                                            let aa1 = chain.get(iidx).map(|a| a.code1()).unwrap_or("X");
+                                            let prev = if iidx > 0 { all[iidx-1].0.c } else { (0.0, 0.0, 0.0) };
+                                            let b_n = ((bb.n.0-prev.0).powi(2)+(bb.n.1-prev.1).powi(2)+(bb.n.2-prev.2).powi(2)).sqrt();
+                                            sprintln!("{:>4} {:<4} {:<5} {:>9.3} {:>9.3} {:>9.3} {:>9.3}", iidx+1, aa1, "N", bb.n.0, bb.n.1, bb.n.2, b_n);
+                                            let b_ca = ((bb.ca.0-bb.n.0).powi(2)+(bb.ca.1-bb.n.1).powi(2)+(bb.ca.2-bb.n.2).powi(2)).sqrt();
+                                            sprintln!("{:>4} {:<4} {:<5} {:>9.3} {:>9.3} {:>9.3} {:>9.3}", iidx+1, aa1, "CA", bb.ca.0, bb.ca.1, bb.ca.2, b_ca);
+                                            let b_c = ((bb.c.0-bb.ca.0).powi(2)+(bb.c.1-bb.ca.1).powi(2)+(bb.c.2-bb.ca.2).powi(2)).sqrt();
+                                            sprintln!("{:>4} {:<4} {:<5} {:>9.3} {:>9.3} {:>9.3} {:>9.3}", iidx+1, aa1, "C", bb.c.0, bb.c.1, bb.c.2, b_c);
+                                            let b_o = ((bb.o.0-bb.c.0).powi(2)+(bb.o.1-bb.c.1).powi(2)+(bb.o.2-bb.c.2).powi(2)).sqrt();
+                                            sprintln!("{:>4} {:<4} {:<5} {:>9.3} {:>9.3} {:>9.3} {:>9.3}", iidx+1, aa1, "O", bb.o.0, bb.o.1, bb.o.2, b_o);
+                                            for sa in sc {
+                                                let b_sc = ((sa.xyz.0-bb.ca.0).powi(2)+(sa.xyz.1-bb.ca.1).powi(2)+(sa.xyz.2-bb.ca.2).powi(2)).sqrt();
+                                                sprintln!("{:>4} {:<4} {:<5} {:>9.3} {:>9.3} {:>9.3} {:>9.3}", iidx+1, aa1, sa.name.trim(), sa.xyz.0, sa.xyz.1, sa.xyz.2, b_sc);
+                                            }
+                                        }
+                                    }
+                                    if let Some(path) = pdb_path {
+                                        let steps = crate::rebis::fold3d::rama_steps(b4_path);
+                                        let elements = crate::rebis::fold3d::group_ss_elements(&steps);
+                                        let winding = fold.residues.iter().map(|r| r.winding_number).max().unwrap_or(0);
+                                        let _pdb = crate::rebis::fold3d::write_pdb(
+                                            chain, &backbone_refs, &sidechains, &elements,
+                                            fold.frobenius_ok, fold.unique_primitives, winding,
+                                            "COMPILED THROUGH VOX", 'A',
+                                        );
+                                        sprintln!("PDB written to: {}", path);
+                                    }
+                                }
+
+                                if is_nucleic {
+                                    let result = crate::rebis::translate::run_pipeline_table(compact.as_bytes(), table);
+                                    let chain: Vec<AminoAcid> = result.protein.iter()
+                                        .filter(|&&aa| aa != AminoAcid::Stop).copied().collect();
+                                    if chain.is_empty() {
+                                        sprintln!("No protein translated from '{}'. Needs an ATG/AUG start codon.", seq);
+                                    } else {
+                                        let mut b4_path: Vec<B4> = Vec::with_capacity(chain.len());
+                                        for k in 0..chain.len() {
+                                            let p = result.start_codon_pos + k * 3;
+                                            let step = if p + 2 < result.mrna.len() {
+                                                Codon::from_bytes(result.mrna[p], result.mrna[p + 1], result.mrna[p + 2]).ok()
+                                            } else { None };
+                                            b4_path.push(step.map(|c| c.p1).unwrap_or(B4::N));
+                                        }
+                                        sprintln!("== vox compile: RNA/DNA -> protein ({}) ==", table_name);
+                                        sprintln!("Input:      {}", seq);
+                                        sprintln!("Protein:    {}", crate::rebis::translate::format_chain_1letter(&chain));
+                                        sprintln!("Frobenius round-trip verified: {}", if result.frobenius_verified { "YES" } else { "NO" });
+                                        report_fold(&chain, &b4_path, pdb_path.as_deref(), coords_mode);
+                                    }
+                                } else {
+                                    let chain = match crate::rebis::translate::parse_chain(&seq) {
+                                        Some(c) if !c.is_empty() => c,
+                                        _ => {
+                                            sprintln!("Could not parse '{}' as protein or nucleic acid.", seq);
+                                            sprintln!("Use 3-letter (Met-Ala) or 1-letter (MA) amino acid codes, or A/C/G/T/U.");
+                                            return;
+                                        }
+                                    };
+                                    let mut mrna: Vec<u8> = Vec::with_capacity(chain.len() * 3);
+                                    let mut b4_path: Vec<B4> = Vec::with_capacity(chain.len());
+                                    let mut degeneracies: Vec<usize> = Vec::new();
+                                    for &aa in &chain {
+                                        degeneracies.push(crate::rebis::genetics::codons_for_aa_table(aa, table).len());
+                                        match crate::rebis::genetics::preferred_codon_for_aa(aa, table) {
+                                            Some(c) => {
+                                                b4_path.push(c.p1);
+                                                mrna.push(b4_to_nucleotide(c.p1));
+                                                mrna.push(b4_to_nucleotide(c.p2));
+                                                mrna.push(b4_to_nucleotide(c.p3));
+                                            }
+                                            None => { sprintln!("No codon for {} under {} table.", aa.name(), table_name); return; }
+                                        }
+                                    }
+                                    let dna = crate::rebis::translate::reverse_transcribe(&mrna);
+                                    let mut total: u64 = 1;
+                                    for &d in &degeneracies { total = total.saturating_mul(d as u64); }
+                                    sprintln!("== vox compile: protein -> RNA/DNA ({}) ==", table_name);
+                                    sprintln!("Input:      {}", crate::rebis::translate::format_chain_1letter(&chain));
+                                    sprintln!("mRNA:       {}", core::str::from_utf8(&mrna).unwrap_or("???"));
+                                    sprintln!("DNA:        {}", core::str::from_utf8(&dna).unwrap_or("???"));
+                                    sprintln!("Degeneracy: {} total possible mRNA sequences", total);
+                                    report_fold(&chain, &b4_path, pdb_path.as_deref(), coords_mode);
+                                }
+                            }
+                        }
                         other => sprintln!("vox has no `{}`; try `vox help`", other),
                     }
                 }
             }
+            "combo" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                crate::combo::repl_combo(&args);
+            }
+            "combo2" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                crate::combo::repl_combo2(&args);
+            }
+            "gpu16_3" => {
+                let sub = parts.next().unwrap_or("help");
+                match sub {
+                    "verify" => {
+                        let rest: Vec<&str> = parts.collect();
+                        let n: usize = rest.get(0).and_then(|s| s.parse().ok()).unwrap_or(16);
+                        let device: usize = rest.get(1).and_then(|s| s.parse().ok()).unwrap_or(0);
+                        sprintln!("{}", crate::gpu_sixteen3::verify(n, device));
+                    }
+                    _ => sprintln!("gpu16_3 verify [n] [device]  -- batch SIXTEEN_3 register gates on GPU, verified against scalar path"),
+                }
+            }
+            "gpu_ecm" => {
+                let arg = parts.next().unwrap_or("").trim();
+                if arg == "verify" {
+                    let rest: Vec<&str> = parts.collect();
+                    let limbs: usize = rest.get(0).and_then(|s| s.parse().ok()).unwrap_or(8);
+                    let cnt: usize = rest.get(1).and_then(|s| s.parse().ok()).unwrap_or(4096);
+                    sprintln!("{}", crate::gpu_ecm::verify_width(limbs, cnt, 1, 0));
+                } else if arg == "bsgs" {
+                    let n = parts.next().unwrap_or("").trim();
+                    let b1: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(250000);
+                    if n.is_empty() {
+                        sprintln!("gpu_ecm bsgs <n> [B1]  -- per-block BSGS stage-2 ECM (deep stage 2)");
+                    } else {
+                        sprintln!("{}", crate::gpu_ecm::run_bsgs(n, b1));
+                    }
+                } else if arg.is_empty() {
+                    sprintln!("gpu_ecm <n> [B1] | bsgs <n> [B1] | verify <limbs> [cnt]  -- elliptic-curve factorization on GPU");
+                } else {
+                    let b1: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(50000);
+                    sprintln!("{}", crate::gpu_ecm::run_factor(arg, b1, 0));
+                }
+            }
+            "gpu_gnfs" => {
+                let arg = parts.next().unwrap_or("").trim();
+                if arg.is_empty() || arg == "help" {
+                    sprintln!("{}", crate::gpu_gnfs::help());
+                } else if arg == "blueprint" {
+                    sprintln!("{}", crate::gpu_gnfs::blueprint());
+                } else if arg == "soak" {
+                    let secs: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(10);
+                    let b: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(2000);
+                    sprintln!("{}", crate::gpu_gnfs::run_soak(secs, b));
+                } else if arg == "poly" {
+                    let n = parts.next().unwrap_or("").trim();
+                    let d: Option<u32> = parts.next().and_then(|s| s.parse().ok());
+                    if n.is_empty() {
+                        sprintln!("gpu_gnfs poly <n> [d]  -- ⊙ base-m polynomial pair only");
+                    } else {
+                        sprintln!("{}", crate::gpu_gnfs::run_poly(n, d));
+                    }
+                } else {
+                    let b: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(0);
+                    sprintln!("{}", crate::gpu_gnfs::run_factor(arg, b));
+                }
+            }
+            "anyon-sync" | "anyon_sync" => {
+                use crate::dialetheic_fib_shor::{Op, Carrier16, THE_WORD};
+                let lanes = |c: Carrier16| -> alloc::string::String {
+                    alloc::format!("[T {} F {} t {} f {}]",
+                        if c.has_t() {1} else {0}, if c.has_f() {1} else {0},
+                        if c.has_t_atom() {1} else {0}, if c.has_f_atom() {1} else {0})
+                };
+                let run = |word: &[Op]| {
+                    let mut reg = Carrier16::N;
+                    let mut sync_at: Option<usize> = None;
+                    for (i, op) in word.iter().enumerate() {
+                        reg = op.apply(reg);
+                        let all4 = reg.has_t() && reg.has_f() && reg.has_t_atom() && reg.has_f_atom();
+                        sprintln!("  {:>2} {}  {:<4} {}{}", i+1, op.glyph(), reg.label(), lanes(reg),
+                            if all4 { "   <-- all four lanes synced (A): anyon formed" } else { "" });
+                        if all4 && sync_at.is_none() { sync_at = Some(i+1); }
+                    }
+                    sync_at
+                };
+                let parse = |w: &str| -> Option<alloc::vec::Vec<Op>> {
+                    let mut v = alloc::vec::Vec::new();
+                    for c in w.chars().filter(|c| !c.is_whitespace()) {
+                        v.push(match c {
+                            '⊢' => Op::VINIT, '∈' => Op::FSPLIT3, '≻' => Op::AFWD, '⋈' => Op::CLINK,
+                            '⊞' => Op::ENGAGR, '⊤' => Op::EVALT, '⊥' => Op::EVALF, '≺' => Op::AREV,
+                            '∋' => Op::FFUSE3, '⊙' => Op::IMSCRIB, '⊡' => Op::IFIX, '⊣' => Op::TANCH,
+                            _ => return None,
+                        });
+                    }
+                    Some(v)
+                };
+                let arg = parts.next().unwrap_or("").trim();
+                if !arg.is_empty() {
+                    match parse(arg) {
+                        Some(w) => {
+                            sprintln!("word {} :", arg);
+                            match run(&w) {
+                                Some(k) => sprintln!("all four lanes synced at step {} (A formed)", k),
+                                None => sprintln!("never synced (no engagement, or F never lands on the engaged state)"),
+                            }
+                        }
+                        None => sprintln!("anyon-sync <glyph-word>  — use the twelve marks; unknown glyph in input"),
+                    }
+                } else {
+                    sprintln!("ENGAGED word (carries ⊞, the braid engagement):");
+                    let s1 = run(&THE_WORD);
+                    // Control: a flat word that deposits T and F but never engages (no ⊞),
+                    // so the t/f atom lanes can never light and the four never sync.
+                    let control = [Op::VINIT, Op::AFWD, Op::EVALT, Op::CLINK, Op::AFWD,
+                                   Op::EVALF, Op::EVALT, Op::CLINK, Op::EVALF, Op::AFWD,
+                                   Op::IMSCRIB, Op::CLINK, Op::IFIX, Op::TANCH];
+                    sprintln!("CONTROL word (no ⊞, never engages):");
+                    let s2 = run(&control);
+                    sprintln!("");
+                    match s1 { Some(k) => sprintln!("engaged: all four lanes synced at step {} (A formed)", k),
+                               None => sprintln!("engaged: never synced") }
+                    match s2 { Some(k) => sprintln!("control: synced at step {} (unexpected)", k),
+                               None => sprintln!("control: never synced — the flat word cannot light the t/f atom lanes") }
+                    sprintln!("(pass a glyph-word to compute any sequence live: anyon-sync ⊢⊞⊥)");
+                }
+            }
+            "theta-link" | "theta_link" | "iutt" => {
+                // Inter-Universal Teichmüller Theory housed in the paraconsistent
+                // ambient. The full-theory word is the ob3ect at
+                // ob3ect/digital/inter_universal_teichmuller_theory/; the Θ-link
+                // edge is the frobenioid coupling from iutt_imasm_verification.md.
+                let iutt_full = "⊢⊢⊢⊢∈≻⊤⋈⊙≺⊥⊞⋈∋⊡⊣";
+                let theta = "⊢⊙≻∈⊤≺⊥∋⋈⊞⊡⊣";
+                let control = "⊢∈≻⊤∋⊣";
+                let reg_line = |word: &str| -> alloc::string::String {
+                    let out = imasm_core::imasm16_3::run(&["check".into(), word.into()]);
+                    out.lines().find(|l| l.contains("Final register"))
+                        .map(|l| l.trim().into())
+                        .unwrap_or_else(|| "Final register: ?".into())
+                };
+                let read = |label: &str, word: &str| {
+                    let vch: alloc::vec::Vec<char> = word.chars().collect();
+                    sprintln!("  {}: {}", label, word);
+                    sprintln!("    vox closure verdict {}  (it closes, μ∘δ = id) ; sixteen3 {}",
+                        crate::vox::verdict(&vch), reg_line(word));
+                };
+                sprintln!("Inter-Universal Teichmüller Theory, housed in the paraconsistent ambient (Inclosure-B)");
+                read("full IUTT (ob3ect)", iutt_full);
+                read("Θ-link edge", theta);
+                sprintln!("  both close (verdict T) yet land on register A = {{T,F,t,f}}, which");
+                sprintln!("  projects to the four-valued core as B (both):");
+                sprintln!("    the paradox held, the alien ring structure carried across the link.");
+                sprintln!("  B is the Inclosure — unreachable by the Boolean core's adjoints:");
+                sprint!("{}", crate::belnap::corollary_11_2_report());
+                sprintln!("    r sends B up to T, c sends B down to F; neither recovers B.");
+                sprintln!("    classical (Boolean) mathematics can only collapse the Θ-link, erasing it.");
+                sprintln!("  control {}: sixteen3 {}", control, reg_line(control));
+                sprintln!("    the control closes on register T, not A — no ⊞ engagement, no paradox held.");
+                sprintln!("  see also: teich path <a> <b> (Teichmuller deformation), iuft report <name>");
+                sprintln!("            anyon-sync (conjugate synchronization = all-lane syzygy)");
+            }
+            "gpu_millennium" => {
+                let sub = parts.next().unwrap_or("");
+                if sub == "verify" {
+                    sprintln!("{}", crate::gpu_millennium::verify());
+                } else {
+                    sprintln!("gpu_millennium verify  -- static self-imscription on GPU (checked vs kernel::self_imscribe)");
+                }
+            }
+            "gpu_shor" => {
+                let sub = parts.next().unwrap_or("");
+                if sub == "verify" {
+                    sprintln!("{}", crate::gpu_shor::verify());
+                } else if sub == "order" {
+                    let a: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(0);
+                    let n: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(0);
+                    match crate::gpu_shor::order(a, n) {
+                        Some(r) => sprintln!("gpu_shor order: order of {} mod {} = {}", a, n, r),
+                        None => sprintln!("gpu_shor order: no CUDA device"),
+                    }
+                } else if sub == "bsgs" {
+                    let a: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(0);
+                    let n: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(0);
+                    let step_cap: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(u64::MAX);
+                    match crate::gpu_shor::order_bsgs(a, n, step_cap) {
+                        Some(r) => sprintln!("gpu_shor bsgs: order of {} mod {} = {}", a, n, r),
+                        None => sprintln!("gpu_shor bsgs: no CUDA device, a not coprime to n, or order out of reach"),
+                    }
+                } else {
+                    sprintln!("gpu_shor order <a> <n> | bsgs <a> <n> [step_cap] | verify  -- multiplicative order (Shor period) on GPU");
+                }
+            }
+            "gpu_opi" => {
+                let sub = parts.next().unwrap_or("");
+                if sub == "verify" {
+                    let rest: Vec<&str> = parts.collect();
+                    let p: u64 = rest.get(0).and_then(|s| s.parse().ok()).unwrap_or(101);
+                    let n: usize = rest.get(1).and_then(|s| s.parse().ok()).unwrap_or(10);
+                    sprintln!("{}", crate::gpu_opi::verify(p, n, 1));
+                } else {
+                    sprintln!("gpu_opi verify [p] [n]  -- OPI Prange trial arithmetic on GPU (checked vs CPU)");
+                }
+            }
+            "gpu_dqi" => {
+                let sub = parts.next().unwrap_or("");
+                if sub == "verify" {
+                    let rest: Vec<&str> = parts.collect();
+                    let nv: usize = rest.get(0).and_then(|s| s.parse().ok()).unwrap_or(128);
+                    let k: usize = rest.get(1).and_then(|s| s.parse().ok()).unwrap_or(20);
+                    sprintln!("{}", crate::gpu_dqi::verify(nv, k, 1));
+                } else {
+                    sprintln!("gpu_dqi verify [num_vars] [k]  -- DQI min-weight coset search on GPU (checked vs CPU)");
+                }
+            }
+            "gpu_rho" => {
+                let sub = parts.next().unwrap_or("help");
+                match sub {
+                    "verify" => {
+                        let rest: Vec<&str> = parts.collect();
+                        let n: usize = rest.get(0).and_then(|s| s.parse().ok()).unwrap_or(4096);
+                        let seed: u64 = rest.get(1).and_then(|s| s.parse().ok()).unwrap_or(1);
+                        sprintln!("{}", crate::gpu_rho::verify(n, seed, 0));
+                    }
+                    "prims" => {
+                        let rest: Vec<&str> = parts.collect();
+                        let n: usize = rest.get(0).and_then(|s| s.parse().ok()).unwrap_or(4096);
+                        sprintln!("{}", crate::gpu_rho::verify_prims(n, 1, 0));
+                    }
+                    "factor" => {
+                        let arg = parts.next().unwrap_or("").trim();
+                        if arg.is_empty() { sprintln!("gpu_rho factor <n>"); }
+                        else { sprintln!("{}", crate::gpu_rho::run_factor(arg, 0)); }
+                    }
+                    _ => sprintln!("gpu_rho verify [n] [seed] | prims [n] | factor <n>  -- Montgomery + rho on GPU"),
+                }
+            }
+            "gpu_rho_ml" => {
+                let sub = parts.next().unwrap_or("help");
+                match sub {
+                    "factor" => {
+                        let arg = parts.next().unwrap_or("").trim();
+                        if arg.is_empty() { sprintln!("gpu_rho_ml factor <n>"); }
+                        else { sprintln!("{}", crate::gpu_rho_ml::run_factor(arg, 0)); }
+                    }
+                    "verify" => {
+                        let rest: Vec<&str> = parts.collect();
+                        let limbs: usize = rest.get(0).and_then(|s| s.parse().ok()).unwrap_or(2);
+                        let count: usize = rest.get(1).and_then(|s| s.parse().ok()).unwrap_or(4096);
+                        sprintln!("{}", crate::gpu_rho_ml::verify_mont(limbs, count, 0));
+                    }
+                    _ => sprintln!("gpu_rho_ml factor <n> | verify [limbs] [count]  -- GPU-parallel Pollard's rho at any width up to 2048 bits, not capped at gpu_rho's 256"),
+                }
+            }
+            "gpu_fde" => {
+                let sub = parts.next().unwrap_or("help");
+                match sub {
+                    "verify" => {
+                        let max_n: usize = parts.next().and_then(|s| s.parse().ok()).unwrap_or(16);
+                        sprintln!("{}", crate::gpu_fde::verify(max_n, 0));
+                    }
+                    _ => sprintln!("gpu_fde verify [max_n]  -- FDE tower theorems checked on GPU vs the CPU functions"),
+                }
+            }
+            "gpu_vox" => {
+                let sub = parts.next().unwrap_or("help");
+                match sub {
+                    "verify" => {
+                        let rest: Vec<&str> = parts.collect();
+                        let n: usize = rest.get(0).and_then(|s| s.parse().ok()).unwrap_or(4096);
+                        let seed: u64 = rest.get(1).and_then(|s| s.parse().ok()).unwrap_or(1);
+                        sprintln!("{}", crate::gpu_vox::verify(n, seed, 0));
+                    }
+                    "verdict" => {
+                        let word: String = parts.collect::<Vec<&str>>().join("");
+                        if word.is_empty() { sprintln!("gpu_vox verdict <glyph-word>"); }
+                        else { sprintln!("{}", crate::gpu_vox::run(&word, 0)); }
+                    }
+                    _ => sprintln!("gpu_vox verify [n] [seed] | verdict <glyph-word>  -- vox closure verdict on GPU, checked against the CPU auditor"),
+                }
+            }
+            "gpu_factor" => {
+                let arg = parts.next().unwrap_or("").trim();
+                if arg.is_empty() {
+                    sprintln!("gpu_factor <n>  -- factor n on the GPU by parallel trial division (arbitrary precision)");
+                } else {
+                    sprintln!("{}", crate::gpu_factor::run(arg, 0));
+                }
+            }
+            "gpu_kernel" => {
+                let sub = parts.next().unwrap_or("help");
+                match sub {
+                    "flow" => {
+                        let tail=parts.collect::<Vec<_>>().join(" ");
+                        let mut parts=tail.split_whitespace();
+                        let arity=parts.next().and_then(|s|s.parse::<usize>().ok());
+                        let depth=parts.next().and_then(|s|s.parse::<usize>().ok());
+                        let word=parts.collect::<Vec<_>>().join("");
+                        match (arity,depth) {
+                            (Some(a),Some(d)) if !word.is_empty()=>sprintln!("{}",crate::gpu_graph::run(&word,a,d,0)),
+                            _=>sprintln!("gpu_kernel flow <2|3> <enclosure_depth 0..8> <glyph-word>  -- execute protocol graph on CUDA, all SIXTEEN_3 seeds; per-dyad recovery and core parity"),
+                        }
+                    }
+                    "verify" | "verify_nested" => {
+                        let rest: Vec<&str> = parts.collect();
+                        match (rest.get(0), rest.get(1)) {
+                            (Some(a), Some(b)) => match (a.parse::<usize>(), b.parse::<u64>()) {
+                                (Ok(n), Ok(seed)) => sprintln!("{}", if sub == "verify_nested" {
+                                    crate::gpu_kernel::verify_nested(n, seed, 0)
+                                } else { crate::gpu_kernel::verify(n, seed, 0) }),
+                                _ => sprintln!("gpu_kernel verify <count> <seed>  -- count and seed must be integers"),
+                            },
+                            _ => sprintln!("gpu_kernel verify <count> <seed>"),
+                        }
+                    }
+                    "run_nested" => {
+                        let word = parts.collect::<Vec<_>>().join("");
+                        sprintln!("{}", crate::gpu_kernel::run_nested(&word, 0));
+                    }
+                    "ob3ect" => {
+                        let path = parts.collect::<Vec<_>>().join(" ");
+                        if path.is_empty() {
+                            sprintln!("gpu_kernel ob3ect <json-path>  -- load phase_4 word and execute in the nested interpreter");
+                        } else {
+                            sprintln!("{}", crate::gpu_kernel::run_ob3ect(&path, 0));
+                        }
+                    }
+                    "apply" => {
+                        let tail = parts.collect::<Vec<_>>().join(" ");
+                        match tail.split_once(' ') {
+                            Some((path, payload)) => {
+                                let word = if payload.trim().starts_with('⊢') {
+                                    payload.trim().to_owned()
+                                } else {
+                                    crate::native_numeral::encode(payload.trim())
+                                };
+                                sprintln!("{}", crate::gpu_kernel::apply_ob3ect(path, &word, 0));
+                            }
+                            None => sprintln!("gpu_kernel apply <ob3ect-json> <bounded-word|numeral>  -- nest the input process inside the operator's dyad and execute run_nested"),
+                        }
+                    }
+                    "run" => {
+                        let word: String = parts.collect::<Vec<&str>>().join("");
+                        if word.is_empty() {
+                            sprintln!("gpu_kernel run <glyph-word>  -- execute a program on the GPU");
+                        } else {
+                            sprintln!("{}", crate::gpu_kernel::run(&word, 0));
+                        }
+                    }
+                    "bench" => {
+                        let rest: Vec<&str> = parts.collect();
+                        match (rest.get(0), rest.get(1)) {
+                            (Some(a), Some(b)) => match (a.parse::<usize>(), b.parse::<u64>()) {
+                                (Ok(n), Ok(seed)) => sprintln!("{}", crate::gpu_kernel::bench(n, seed, 0)),
+                                _ => sprintln!("gpu_kernel bench <words> <seed>  -- words and seed must be integers"),
+                            },
+                            _ => sprintln!("gpu_kernel bench <words> <seed>"),
+                        }
+                    }
+                    "deep" => {
+                        let rest: Vec<&str> = parts.collect();
+                        match rest.get(0) {
+                            Some(a) => match a.parse::<u32>() {
+                                Ok(depth) => sprintln!("{}", crate::gpu_kernel::bench_deep(depth, 0)),
+                                Err(_) => sprintln!("gpu_kernel deep <depth>  -- depth must be an integer"),
+                            },
+                            None => sprintln!("gpu_kernel deep <depth>"),
+                        }
+                    }
+                    "search" => {
+                        let rest: Vec<&str> = parts.collect();
+                        match (rest.get(0), rest.get(1)) {
+                            (Some(a), Some(b)) => match (a.parse::<u32>(), b.parse::<u32>()) {
+                                (Ok(depth), Ok(target)) => sprintln!("{}", crate::gpu_kernel::bench_search(depth, target, 0)),
+                                _ => sprintln!("gpu_kernel search <depth> <target>  -- depth and target must be integers"),
+                            },
+                            _ => sprintln!("gpu_kernel search <depth> <target>"),
+                        }
+                    }
+                    "interleave" => {
+                        let rest: Vec<&str> = parts.collect();
+                        match rest.get(0) {
+                            Some(a) => match a.parse::<u32>() {
+                                Ok(depth) => sprintln!("{}", crate::gpu_kernel::bench_interleave(depth, 0)),
+                                Err(_) => sprintln!("gpu_kernel interleave <depth>  -- depth must be an integer"),
+                            },
+                            None => sprintln!("gpu_kernel interleave <depth>"),
+                        }
+                    }
+                    "search_deep" => {
+                        let tail = parts.collect::<Vec<_>>().join(" ");
+                        let rest: Vec<&str> = tail.split_whitespace().collect();
+                        match (rest.get(0), rest.get(1), rest.get(2)) {
+                            (Some(a), Some(b), Some(c)) => match (a.parse::<u32>(), b.parse::<u32>(), c.parse::<u32>()) {
+                                (Ok(depth), Ok(nest_depth), Ok(target)) =>
+                                    sprintln!("{}", crate::gpu_kernel::bench_search_deep(depth, nest_depth, target, 0)),
+                                _ => sprintln!("gpu_kernel search_deep <depth> <nest_depth> <target>  -- all three must be integers"),
+                            },
+                            _ => sprintln!("gpu_kernel search_deep <depth> <nest_depth> <target>"),
+                        }
+                    }
+                    "interleave_deep" => {
+                        let tail = parts.collect::<Vec<_>>().join(" ");
+                        let rest: Vec<&str> = tail.split_whitespace().collect();
+                        // depth  lane0_nest:lane0_target  lane1_nest:lane1_target  ...
+                        if rest.len() < 2 {
+                            sprintln!("gpu_kernel interleave_deep <depth> <nest:target> [nest:target ...]  -- up to 4 lanes, each its own nesting depth");
+                        } else {
+                            match rest[0].parse::<u32>() {
+                                Err(_) => sprintln!("gpu_kernel interleave_deep: depth must be an integer"),
+                                Ok(depth) => {
+                                    let lane_specs = &rest[1..];
+                                    if lane_specs.len() > 4 {
+                                        sprintln!("gpu_kernel interleave_deep: at most 4 lanes");
+                                    } else {
+                                        let mut depths = [0u32; 4];
+                                        let mut targets = [0u32; 4];
+                                        let mut bad = false;
+                                        for (i, spec) in lane_specs.iter().enumerate() {
+                                            match spec.split_once(':') {
+                                                Some((nd, tg)) => match (nd.parse::<u32>(), tg.parse::<u32>()) {
+                                                    (Ok(n), Ok(t)) => { depths[i] = n; targets[i] = t; }
+                                                    _ => bad = true,
+                                                },
+                                                None => bad = true,
+                                            }
+                                        }
+                                        if bad {
+                                            sprintln!("gpu_kernel interleave_deep: each lane is <nest_depth>:<target>, both integers");
+                                        } else {
+                                            sprintln!("{}", crate::gpu_kernel::bench_interleave_deep(depth, depths, targets, lane_specs.len() as u32, 0));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    "factor" => {
+                        let toks: Vec<String> = parts.collect::<Vec<&str>>().join(" ")
+                            .split_whitespace().map(|s| s.to_string()).collect();
+                        if toks.is_empty() { sprintln!("gpu_kernel factor <n> [n ...]  -- each n a u64 (< 2^64)"); }
+                        else {
+                            let mut nums: Vec<u64> = Vec::new();
+                            let mut bad: Option<String> = None;
+                            for s in &toks { match s.parse::<u64>() { Ok(v) => nums.push(v), Err(_) => { bad = Some(s.clone()); break; } } }
+                            match bad {
+                                Some(s) => sprintln!("gpu_kernel factor: '{}' is not a u64 (< 2^64); this kernel is 64-bit", s),
+                                None => sprintln!("{}", crate::gpu_kernel::bench_factor(&nums, 0)),
+                            }
+                        }
+                    }
+                    "rho" => {
+                        let rest: Vec<&str> = parts.collect();
+                        match rest.get(0) {
+                            Some(a) => match a.parse::<u64>() {
+                                Ok(n) => sprintln!("{}", crate::gpu_kernel::bench_rho(n, 0)),
+                                Err(_) => sprintln!("gpu_kernel rho <n>  -- n must be a u64 (< 2^64); this kernel is 64-bit"),
+                            },
+                            None => sprintln!("gpu_kernel rho <n>"),
+                        }
+                    }
+                    "selector" | "selector_relation" | "selector_bdd_relation" => {
+                        let tail=parts.collect::<Vec<_>>().join(" ");
+                        let rest: Vec<&str> = tail.split_whitespace().collect();
+                        match (rest.get(0).copied(),
+                               rest.get(1).and_then(|v|v.parse::<u32>().ok()),
+                               rest.get(2).map(|v|v.parse::<u32>()).transpose(),
+                               rest.get(3).map(|v|v.parse::<u32>()).transpose()) {
+                            (Some(n),Some(m),Ok(cap),Ok(depth)) if rest.len()<=4 => sprintln!("{}",if sub=="selector_bdd_relation" {
+                                crate::gpu_kernel::select_bdd_relation(n,m,cap.unwrap_or(1024),depth.unwrap_or(0),0)
+                            } else {crate::gpu_kernel::select_relation(n,m,cap.unwrap_or(1024),depth.unwrap_or(0),0)}),
+                            _=>sprintln!("gpu_kernel selector_relation <n> <m> [initial-node-allocation] [IMASM-nest-depth]"),
+                        }
+                    }
+                    "phase" | "selector_phase" | "selector_joint" => {
+                        let rest: Vec<&str> = parts.collect();
+                        match (rest.get(0), rest.get(1)) {
+                            (Some(a), Some(b)) => match (a.parse::<u64>(), b.parse::<u32>()) {
+                                (Ok(n), Ok(m)) => sprintln!("{}", if sub!="phase" {
+                                    crate::gpu_kernel::bench_selector(n,m,0,sub=="selector_joint")
+                                } else { crate::gpu_kernel::bench_phase(n,m,0) }),
+                                _ => sprintln!("gpu_kernel phase <n> <m>  -- n a u64, m the factor bit width"),
+                            },
+                            _ => sprintln!("gpu_kernel phase <n> <m>  -- n a u64, m the factor bit width"),
+                        }
+                    }
+                    "codebook" => {
+                        let rest: Vec<&str> = parts.collect();
+                        match (rest.get(0), rest.get(1)) {
+                            (Some(a), Some(b)) => match (a.parse::<u64>(), b.parse::<u32>()) {
+                                (Ok(n), Ok(m)) => sprintln!("{}", crate::gpu_kernel::bench_codebook(n, m, 0)),
+                                _ => sprintln!("gpu_kernel codebook <n> <m>  -- n a u64, m the factor bit width"),
+                            },
+                            _ => sprintln!("gpu_kernel codebook <n> <m>  -- n a u64, m the factor bit width"),
+                        }
+                    }
+                    "closure" => {
+                        let rest: Vec<&str> = parts.collect();
+                        match (rest.get(0), rest.get(1)) {
+                            (Some(a), Some(b)) => {
+                                let m: u32 = b.parse().unwrap_or(0);
+                                if let Ok(n) = a.parse::<u128>() {
+                                    sprintln!("{}", crate::gpu_kernel::bench_closure(n, m, 0));
+                                } else if let Ok(nb) = a.parse::<num_bigint::BigUint>() {
+                                    // N past u128: the tower's floorless arbitrary-precision walk.
+                                    let steps = 1usize << core::cmp::min((m as usize).saturating_sub(3), 40);
+                                    match crate::closure_nested::closure_height_walk(&nb, m as usize, steps) {
+                                        Some(f) => {
+                                            let cof = &nb / &f;
+                                            let ok = if &f * &cof == nb { "verified" } else { "MISMATCH" };
+                                            sprintln!("closure (floorless, N past u128): N = {} x {} ({})  [m={}, {} steps]", f, cof, ok, m, steps);
+                                        }
+                                        None => sprintln!("closure (floorless): no factor at m={} within {} steps (O(2^m) position count, no width floor)", m, steps),
+                                    }
+                                } else {
+                                    sprintln!("gpu_kernel closure <n> <m>  -- n a u128 (or wider BigUint) N, m the factor bit width (u64 up to 60; wider routes to arbitrary-precision closure-height walk, no width floor)");
+                                }
+                            }
+                            _ => sprintln!("gpu_kernel closure <n> <m>  -- n a u128 (or wider BigUint) N, m the factor bit width (u64 up to 60; wider routes to arbitrary-precision closure-height walk, no width floor)"),
+                        }
+                    }
+                    "bdd" => {
+                        let toks: Vec<String> = parts.collect::<Vec<&str>>().join(" ")
+                            .split_whitespace().map(|s| s.to_string()).collect();
+                        match (toks.get(0), toks.get(1), toks.get(2)) {
+                            (Some(a), Some(b), Some(c)) => match (a.parse::<u128>(), b.parse::<u32>(), c.parse::<u32>()) {
+                                (Ok(n), Ok(m), Ok(r)) => sprintln!("{}", crate::gpu_kernel::bdd_size(n, m, r)),
+                                _ => sprintln!("gpu_kernel bdd <n> <m> <r>  -- n a u128, m width, r overflow bits"),
+                            },
+                            _ => sprintln!("gpu_kernel bdd <n> <m> <r>  -- n a u128, m width, r overflow bits"),
+                        }
+                    }
+                    "bddsift" => {
+                        let toks: Vec<String> = parts.collect::<Vec<&str>>().join(" ")
+                            .split_whitespace().map(|s| s.to_string()).collect();
+                        match (toks.get(0), toks.get(1), toks.get(2)) {
+                            (Some(a), Some(b), Some(c)) => {
+                                let passes: u32 = toks.get(3).and_then(|s| s.parse().ok()).unwrap_or(3);
+                                match (a.parse::<u128>(), b.parse::<u32>(), c.parse::<u32>()) {
+                                    (Ok(n), Ok(m), Ok(r)) => sprintln!("{}", crate::gpu_kernel::bdd_sift(n, m, r, passes)),
+                                    _ => sprintln!("gpu_kernel bddsift <n> <m> <r> [passes]"),
+                                }
+                            }
+                            _ => sprintln!("gpu_kernel bddsift <n> <m> <r> [passes]  -- sift the variable order from high-to-low"),
+                        }
+                    }
+                    "bddord" => {
+                        let toks: Vec<String> = parts.collect::<Vec<&str>>().join(" ")
+                            .split_whitespace().map(|s| s.to_string()).collect();
+                        match (toks.get(0), toks.get(1), toks.get(2)) {
+                            (Some(a), Some(b), Some(c)) => {
+                                let tries: u32 = toks.get(3).and_then(|s| s.parse().ok()).unwrap_or(64);
+                                match (a.parse::<u128>(), b.parse::<u32>(), c.parse::<u32>()) {
+                                    (Ok(n), Ok(m), Ok(r)) => sprintln!("{}", crate::gpu_kernel::bdd_orders(n, m, r, tries)),
+                                    _ => sprintln!("gpu_kernel bddord <n> <m> <r> [rand_tries]"),
+                                }
+                            }
+                            _ => sprintln!("gpu_kernel bddord <n> <m> <r> [rand_tries]  -- diagram size across variable orderings"),
+                        }
+                    }
+                    _ => sprintln!("gpu_kernel verify <count> <seed> | run <glyph-word> | bench <words> <seed> | deep <depth> | search <depth> <target> | interleave <depth> | factor <n>... | rho <n> | phase <n> <m> | codebook <n> <m> | closure <n> <m> | bdd <n> <m> <r>  -- token-graph executor and factoring floor on GPU; no defaults, every operand explicit"),
+                }
+            }
+            "shor-qft" => {
+                let tail: Vec<&str> = parts.collect();
+                crate::shor_qft::repl_shor_qft(&tail);
+            }
+            "rsa" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                crate::rsa_decrypter::repl_rsa(&args);
+            }
+
+
+            // === PREVIOUSLY UNWIRED COMMANDS ===
+            "dyn" | "dyn_nest" | "dynamic_nest" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                crate::dynamic_nesting_prime_finder::repl_dyn(&args);
+            }
+            "closure_nested" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                sprintln!("{}", crate::closure_nested::repl_closure_nested(&args));
+            }
+            "weight_ladder" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                crate::weight_ladder::repl_weight_ladder(&args);
+            }
+            "multilattice" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                crate::multilattice::repl_multilattice(&args);
+            }
+            "yz" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                crate::yz::repl_yz(&args);
+            }
+            "yz_list" | "yz-list" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                crate::yz_list::repl_yz_list(&args);
+            }
+            "opi" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                crate::opi::repl_opi(&args);
+            }
+            "fde" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                crate::fde::repl_fde(&args);
+            }
+            "shor_qft" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                crate::shor_qft::repl_shor_qft(&args);
+            }
+            "dqi" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                crate::dqi::repl_dqi(&args);
+            }
+            "dqi_ambient" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                crate::dqi_ambient::repl_dqi_ambient(&args);
+            }
+
+            "tower_vox" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                sprintln!("{}", crate::tower_vox::repl_tower_vox(&args));
+            }
+            "factor_operator" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                sprintln!("{}", crate::factor_operator::repl_factor_operator(&args));
+            }
+            "factor_membrane" | "membrane" | "fmembrane" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                sprintln!("{}", crate::factor_membrane::repl_factor_membrane(&args));
+            }
+            "nested_oneshot" | "nested" | "nos" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                crate::nested_oneshot::repl_nested_oneshot(&args);
+                sprintln!("{}", active_dialect_register_line(k, crate::nested_oneshot::WORD));
+            }
+            "nested_prime_factorization" | "npf" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                crate::nested_prime_factorization::repl_nested_prime_factorization(&args);
+                sprintln!("{}", active_dialect_register_line(k, crate::nested_prime_factorization::WORD));
+            }
+            "doubly_nested_oneshot" | "dnos" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                crate::doubly_nested_oneshot::repl_doubly_nested_oneshot(&args);
+                sprintln!("{}", active_dialect_register_line(k, crate::doubly_nested_oneshot::WORD));
+            }
+            "millennium" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                crate::millennium::repl_millennium(&args);
+            }
+            "oneshot_prime_winder" => {
+                let tail: Vec<&str> = parts.collect();
+                let rest: Vec<String> = tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
+                let args: Vec<&str> = rest.iter().map(|x| x.as_str()).collect();
+                crate::oneshot_prime_winder::repl_oneshot_prime_winder(&args);
+            }
+            "prime_winding" => {
+                use crate::prime_winding::*;
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "help" => sprintln!("{}", help()),
+                    "word" => sprintln!("{}", word()),
+                    "find" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("prime_winding find: usage: prime_winding find <n>");
+                        } else {
+                            // GPU build: decide on the device when it fits 128-bit.
+                            match n_str.trim().parse::<u128>() {
+                                Ok(n) if n <= crate::gpu_prime::GPU_PRIME_MAX => {
+                                    sprintln!("{}", crate::gpu_prime::find_gpu(n, 0));
+                                }
+                                _ => sprintln!("{}", find(n_str)),
+                            }
+                        }
+                    },
+                    "factor" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("prime_winding factor: usage: prime_winding factor <n> [max_power]");
+                        } else {
+                            let max_power = parts.next().and_then(|s| s.parse::<u64>().ok());
+                            sprintln!("{}", factor_bounded(n_str, max_power));
+                        }
+                    },
+                    "range" => {
+                        // `parts` is splitn(4,' '), so the fourth field holds "hi [count]"
+                        // unsplit; parse it here rather than relying on more fields.
+                        let lo = parts.next().unwrap_or("");
+                        let rest = parts.next().unwrap_or("");
+                        let mut rp = rest.split_whitespace();
+                        let hi = rp.next().unwrap_or("");
+                        let count_only = rp.next() == Some("count");
+                        if lo.is_empty() || hi.is_empty() {
+                            sprintln!("prime_winding range: usage: prime_winding range <lo> <hi> [count]");
+                        } else {
+                            // GPU build: enumerate on the device when the span fits 128-bit.
+                            match (lo.trim().parse::<u128>(), hi.trim().parse::<u128>()) {
+                                (Ok(l), Ok(h)) if h <= crate::gpu_prime::GPU_PRIME_MAX => {
+                                    sprintln!("{}", crate::gpu_prime::range_gpu(l, h, count_only, 0));
+                                }
+                                _ => sprintln!("{}", range(lo, hi, count_only)),
+                            }
+                        }
+                    },
+                    "grounded_add" => {
+                        let a_str = parts.next().unwrap_or("");
+                        let b_str = parts.next().unwrap_or("");
+                        if a_str.is_empty() || b_str.is_empty() {
+                            sprintln!("prime_winding grounded_add: usage: prime_winding grounded_add <a> <b>");
+                        } else {
+                            sprintln!("{}", grounded_add_report(a_str, b_str));
+                        }
+                    },
+                    "grounded_mul" => {
+                        let a_str = parts.next().unwrap_or("");
+                        let b_str = parts.next().unwrap_or("");
+                        if a_str.is_empty() || b_str.is_empty() {
+                            sprintln!("prime_winding grounded_mul: usage: prime_winding grounded_mul <a> <b>");
+                        } else {
+                            sprintln!("{}", grounded_mul_report(a_str, b_str));
+                        }
+                    },
+                    "grounded_sub" => {
+                        let a_str = parts.next().unwrap_or("");
+                        let b_str = parts.next().unwrap_or("");
+                        if a_str.is_empty() || b_str.is_empty() {
+                            sprintln!("prime_winding grounded_sub: usage: prime_winding grounded_sub <a> <b>");
+                        } else {
+                            sprintln!("{}", grounded_sub_report(a_str, b_str));
+                        }
+                    },
+                    "grounded_mod" => {
+                        let a_str = parts.next().unwrap_or("");
+                        let b_str = parts.next().unwrap_or("");
+                        if a_str.is_empty() || b_str.is_empty() {
+                            sprintln!("prime_winding grounded_mod: usage: prime_winding grounded_mod <a> <b>");
+                        } else {
+                            sprintln!("{}", grounded_mod_report(a_str, b_str));
+                        }
+                    },
+                    "grounded_divmod" => {
+                        let a_str = parts.next().unwrap_or("");
+                        let b_str = parts.next().unwrap_or("");
+                        if a_str.is_empty() || b_str.is_empty() {
+                            sprintln!("prime_winding grounded_divmod: usage: prime_winding grounded_divmod <a> <b>");
+                        } else {
+                            sprintln!("{}", grounded_divmod_report(a_str, b_str));
+                        }
+                    },
+                    "grounded_gcd" => {
+                        let a_str = parts.next().unwrap_or("");
+                        let b_str = parts.next().unwrap_or("");
+                        if a_str.is_empty() || b_str.is_empty() {
+                            sprintln!("prime_winding grounded_gcd: usage: prime_winding grounded_gcd <a> <b>");
+                        } else {
+                            sprintln!("{}", grounded_gcd_report(a_str, b_str));
+                        }
+                    },
+                    "grounded_factor" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("prime_winding grounded_factor: usage: prime_winding grounded_factor <n> [max_power]");
+                        } else {
+                            let max_power = parts.next().and_then(|s| s.parse::<u64>().ok());
+                            sprintln!("{}", grounded_factor_report(n_str, max_power));
+                        }
+                    },
+                    "cycle" => sprintln!("{}", cycle()),
+                    "tuple" => sprintln!("{}", tuple()),
+                    "verdict" => sprintln!("{}", verdict()),
+                    "artifact" => sprintln!("{}", artifact()),
+                    other => {
+                        sprintln!("prime_winding: unknown subcommand '{}'", other);
+                        sprintln!("{}", help());
+                    }
+                }
+            }
+            "native_numeral" | "numeral" => {
+                use crate::native_numeral as nn;
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "help" => sprintln!("{}", nn::help()),
+                    "word" => {
+                        sprintln!("{}", nn::word());
+                        sprintln!("{}", active_dialect_register_line(k, nn::WORD));
+                    }
+                    "encode" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("native_numeral encode: usage: native_numeral encode <n>");
+                        } else {
+                            sprintln!("{}", nn::encode_report(n_str));
+                        }
+                    }
+                    "factor" => {
+                        let arg = parts.next().unwrap_or("");
+                        if arg.is_empty() {
+                            sprintln!("native_numeral factor: usage: native_numeral factor <n> | <word>");
+                        } else if arg.starts_with("⊢") || arg.starts_with("≻") || arg.starts_with("⋈") {
+                            // Looks like a glyph word - use deinterlace
+                            sprintln!("{}", nn::factor_report(arg));
+                        } else {
+                            // Looks like a decimal - use Grammar-native factor
+                            sprintln!("{}", nn::factor_decimal(arg));
+                        }
+                    }
+                    "deinterlace" => {
+                        let word = parts.next().unwrap_or("");
+                        if word.is_empty() {
+                            sprintln!("native_numeral deinterlace: usage: native_numeral deinterlace <direct-numeral-word>");
+                        } else {
+                            sprintln!("{}", nn::factor_report(word));
+                        }
+                    }
+                    "interlace" => {
+                        let p_str = parts.next().unwrap_or("");
+                        let q_str = parts.next().unwrap_or("");
+                        if p_str.is_empty() || q_str.is_empty() {
+                            sprintln!("native_numeral interlace: usage: native_numeral interlace <p> <q>");
+                        } else {
+                            sprintln!("{}", nn::interlace_report(p_str, q_str));
+                        }
+                    }
+                    "primetest" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("native_numeral primetest: usage: native_numeral primetest <n>");
+                        } else {
+                            sprintln!("{}", nn::primetest_report(n_str));
+                        }
+                    }
+                    "halve" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("native_numeral halve: usage: native_numeral halve <even n>");
+                        } else {
+                            sprintln!("{}", nn::halve_report(n_str));
+                        }
+                    }
+                    "subtract" => {
+                        let a_str = parts.next().unwrap_or("");
+                        let b_str = parts.next().unwrap_or("");
+                        if a_str.is_empty() || b_str.is_empty() {
+                            sprintln!("native_numeral subtract: usage: native_numeral subtract <a> <b>");
+                        } else {
+                            sprintln!("{}", nn::subtract_report(a_str, b_str));
+                        }
+                    }
+                    "double" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("native_numeral double: usage: native_numeral double <n>");
+                        } else {
+                            sprintln!("{}", nn::double_report(n_str));
+                        }
+                    }
+                    "add" => {
+                        let a_str = parts.next().unwrap_or("");
+                        let b_str = parts.next().unwrap_or("");
+                        if a_str.is_empty() || b_str.is_empty() {
+                            sprintln!("native_numeral add: usage: native_numeral add <a> <b>");
+                        } else {
+                            sprintln!("{}", nn::add_report(a_str, b_str));
+                        }
+                    }
+                    "multiply" => {
+                        let a_str = parts.next().unwrap_or("");
+                        let b_str = parts.next().unwrap_or("");
+                        if a_str.is_empty() || b_str.is_empty() {
+                            sprintln!("native_numeral multiply: usage: native_numeral multiply <a> <b>");
+                        } else {
+                            sprintln!("{}", nn::multiply_report(a_str, b_str));
+                        }
+                    }
+                    "divmod" => {
+                        let a_str = parts.next().unwrap_or("");
+                        let m_str = parts.next().unwrap_or("");
+                        if a_str.is_empty() || m_str.is_empty() {
+                            sprintln!("native_numeral divmod: usage: native_numeral divmod <a> <m>");
+                        } else {
+                            sprintln!("{}", nn::divmod_report(a_str, m_str));
+                        }
+                    }
+                    "gcd" => {
+                        let a_str = parts.next().unwrap_or("");
+                        let b_str = parts.next().unwrap_or("");
+                        if a_str.is_empty() || b_str.is_empty() {
+                            sprintln!("native_numeral gcd: usage: native_numeral gcd <a> <b>");
+                        } else {
+                            sprintln!("{}", nn::gcd_report(a_str, b_str));
+                        }
+                    }
+                    "unbraid" => {
+                        let n_str = parts.next().unwrap_or("");
+                        let cap: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(5_000_000);
+                        if n_str.is_empty() {
+                            sprintln!("native_numeral unbraid: usage: native_numeral unbraid <n> [node_cap]");
+                        } else {
+                            sprintln!("{}", nn::unbraid_report(n_str, cap));
+                        }
+                    }
+                    "leadrun" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("native_numeral leadrun: usage: native_numeral leadrun <n>");
+                        } else {
+                            sprintln!("{}", nn::leadrun_report(n_str));
+                        }
+                    }
+                    "compose" => {
+                        let p_str = parts.next().unwrap_or("");
+                        let q_str = parts.next().unwrap_or("");
+                        if p_str.is_empty() || q_str.is_empty() {
+                            sprintln!("native_numeral compose: usage: native_numeral compose <p> <q>");
+                        } else {
+                            sprintln!("{}", nn::compose_report(p_str, q_str));
+                        }
+                    }
+                    "decompose" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("native_numeral decompose: usage: native_numeral decompose <n>");
+                        } else {
+                            sprintln!("{}", nn::decompose_report(n_str));
+                        }
+                    }
+                    "redstep" => {
+                        let a_str = parts.next().unwrap_or("");
+                        let n_str = parts.next().unwrap_or("");
+                        if a_str.is_empty() || n_str.is_empty() {
+                            sprintln!("native_numeral redstep: usage: native_numeral redstep <a> <n>");
+                        } else {
+                            sprintln!("{}", nn::redstep_report(a_str, n_str));
+                        }
+                    }
+                    other => {
+                        sprintln!("native_numeral: unknown subcommand '{}'", other);
+                        sprintln!("{}", nn::help());
+                    }
+                }
+            }
+            "trilattice_factor" | "tfactor" => {
+                use crate::trilattice_factor as tf;
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "help" => sprintln!("{}", tf::help()),
+                    "word" => {
+                        sprintln!("{}", tf::word());
+                        sprintln!("{}", active_dialect_register_line(k, tf::WORD));
+                    }
+                    "cert" => sprintln!("{}", tf::cert()),
+                    "read" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("trilattice_factor read: usage: trilattice_factor read <n>");
+                        } else {
+                            sprintln!("{}", tf::read(n_str));
+                        }
+                    }
+                    "winding" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("trilattice_factor winding: usage: trilattice_factor winding <n> [a]");
+                        } else {
+                            let a_opt = parts.next().and_then(|s| s.parse::<u64>().ok());
+                            sprintln!("{}", tf::winding(n_str, a_opt));
+                        }
+                    }
+                    "bridge" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("trilattice_factor bridge: usage: trilattice_factor bridge <n> [B]");
+                        } else {
+                            let b_opt = parts.next().and_then(|s| s.parse::<u64>().ok());
+                            sprintln!("{}", tf::bridge(n_str, b_opt));
+                        }
+                    }
+                    "squares" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("trilattice_factor squares: usage: trilattice_factor squares <n>");
+                        } else {
+                            sprintln!("{}", tf::squares(n_str));
+                        }
+                    }
+                    "sieve" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("trilattice_factor sieve: usage: trilattice_factor sieve <n> [B]");
+                        } else {
+                            let b_opt = parts.next().and_then(|s| s.parse::<u64>().ok());
+                            sprintln!("{}", tf::sieve(n_str, b_opt));
+                        }
+                    }
+                    "factor" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("trilattice_factor factor: usage: trilattice_factor factor <n> [max_power]");
+                        } else {
+                            let max_power = parts.next().and_then(|s| s.parse::<u64>().ok());
+                            sprintln!("{}", tf::factor(n_str, max_power));
+                        }
+                    }
+                    "dialect-probe" => {
+                        // splitn(4, ' ') at the top level leaves at most one piece by the
+                        // time we get here, so re-split it ourselves instead of chaining
+                        // more parts.next() calls — same fix "jump" already needed for
+                        // more than two space-separated arguments.
+                        let rest: alloc::string::String = parts.collect::<alloc::vec::Vec<&str>>().join(" ");
+                        let mut rp = rest.trim().split_whitespace();
+                        let n_str = rp.next().unwrap_or("");
+                        let a_str = rp.next().unwrap_or("");
+                        if n_str.is_empty() || a_str.is_empty() {
+                            sprintln!("trilattice_factor dialect-probe: usage: trilattice_factor dialect-probe <n> <a> [max_k]");
+                        } else {
+                            let max_k = rp.next().and_then(|s| s.parse::<u64>().ok());
+                            sprintln!("{}", trilattice_dialect_probe(n_str, a_str, max_k));
+                        }
+                    }
+                    #[cfg(feature = "hosted")]
+                    "gpu-verify" => {
+                        let bound = parts.next().and_then(|s| s.parse::<u64>().ok()).unwrap_or(500);
+                        sprintln!("{}", crate::gpu_trilattice::verify_tuple_from_bitlen(bound));
+                    }
+                    other => {
+                        sprintln!("trilattice_factor: unknown subcommand '{}'", other);
+                        sprintln!("{}", tf::help());
+                    }
+                }
+            }
+            "abc" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "help" => {
+                        sprintln!("abc window [eps] <cutoff...>  — window maximum discrepancy at each cutoff, plus scale-link checks between consecutive ones");
+                        sprintln!("abc triple <a> <b>          — radical, discrepancy(eps=0.1), and quality for the triple (a, b, a+b)");
+                        sprintln!("abc radical <n>              — rad(n), the product of n's distinct prime factors");
+                        sprintln!("abc closure [eps] <cutoff...> — attained triple, IUTT packet, and calibration checks at each scale");
+                        sprintln!("abc stream [eps] <cutoff...>  — finite prefix of the all-scales measurement stream");
+                        sprintln!("abc stream --json [eps] <cutoff...>  — machine-readable measurement artifact");
+                        sprintln!("abc certificate [eps] <cutoff...>  — native Rust manifest for Lean certificate generation");
+                        sprintln!("abc champions [eps] <max_c>  — enumerate displacement events only, in order");
+                        sprintln!("abc champions --json [eps] <max_c>  — machine-readable displacement events");
+                        sprintln!("abc champions --gpu [eps] <max_c> [device]  — CUDA batched trilattice scan");
+                        sprintln!("abc champions --gpu-many <max_c> <eps...> [device]  — reuse one scan for many ε");
+                        sprintln!("abc growth [eps] <cutoff...>  — window maximum growth across cutoffs, finite evidence only");
+                    }
+                    "window" => {
+                        // First field is ε only when it contains a '.'; a
+                        // bare integer first field is a cutoff and ε
+                        // defaults to 1/10, the value every certificate in
+                        // ABC_WindowCertificates.md/ABC_ScaleClosure.lean uses.
+                        let rest: Vec<&str> = parts.collect();
+                        let joined = rest.join(" ");
+                        let fields: Vec<&str> = joined.split_whitespace().collect();
+                        let (eps, cutoff_fields): (f64, &[&str]) = match fields.first() {
+                            Some(f) if f.contains('.') => (f.parse().unwrap_or(0.1), &fields[1..]),
+                            _ => (0.1, &fields[..]),
+                        };
+                        let cutoffs: Vec<u64> = cutoff_fields.iter().filter_map(|s| s.parse::<u64>().ok()).collect();
+                        if cutoffs.is_empty() {
+                            sprintln!("abc window [eps] <cutoff...>  — e.g. abc window 0.1 9 32");
+                        } else {
+                            sprintln!("{}", crate::abc_iutt::window_report(eps, &cutoffs));
+                        }
+                    }
+                    "triple" => {
+                        let a: Option<u64> = parts.next().and_then(|s| s.parse().ok());
+                        let b: Option<u64> = parts.next().and_then(|s| s.parse().ok());
+                        match (a, b) {
+                            (Some(a), Some(b)) => match crate::abc_iutt::Triple::new(a, b) {
+                                Some(t) => sprintln!(
+                                    "({a}, {b}, {}): rad(abc)={}  discrepancy(ε=0.1)={:.6}  quality={:.6}",
+                                    t.c,
+                                    crate::abc_iutt::triple_radical(t),
+                                    crate::abc_iutt::discrepancy(t, 0.1),
+                                    crate::abc_iutt::quality(t),
+                                ),
+                                None => sprintln!("abc triple: {a} and {b} are not a valid positive coprime pair"),
+                            },
+                            _ => sprintln!("abc triple <a> <b>  — e.g. abc triple 1 8"),
+                        }
+                    }
+                    "radical" => {
+                        match parts.next().and_then(|s| s.parse::<u64>().ok()) {
+                            Some(n) => sprintln!("rad({n}) = {}", crate::abc_iutt::radical(n)),
+                            None => sprintln!("abc radical <n>  — e.g. abc radical 216"),
+                        }
+                    }
+                    "closure" => {
+                        let rest: Vec<&str> = parts.collect();
+                        let joined = rest.join(" ");
+                        let fields: Vec<&str> = joined.split_whitespace().collect();
+                        let (eps, cutoff_fields): (f64, &[&str]) = match fields.first() {
+                            Some(f) if f.contains('.') => (f.parse().unwrap_or(0.1), &fields[1..]),
+                            _ => (0.1, &fields[..]),
+                        };
+                        let cutoffs: Vec<u64> = cutoff_fields.iter().filter_map(|s| s.parse::<u64>().ok()).collect();
+                        if cutoffs.is_empty() {
+                            sprintln!("abc closure [eps] <cutoff...>  — attained triple, IUTT packet, and calibration checks at each scale, e.g. abc closure 0.1 9 32");
+                        } else {
+                            sprintln!("{}", crate::abc_iutt::tail_closure_report(eps, &cutoffs));
+                        }
+                    }
+                    "stream" => {
+                        let rest: Vec<&str> = parts.collect();
+                        let joined = rest.join(" ");
+                        let fields: Vec<&str> = joined.split_whitespace().collect();
+                        let json = fields.first() == Some(&"--json");
+                        let fields = if json { &fields[1..] } else { &fields[..] };
+                        let (eps, cutoff_fields): (f64, &[&str]) = match fields.first() {
+                            Some(f) if f.contains('.') => (f.parse().unwrap_or(0.1), &fields[1..]),
+                            _ => (0.1, fields),
+                        };
+                        let cutoffs: Vec<u64> = cutoff_fields.iter().filter_map(|s| s.parse::<u64>().ok()).collect();
+                        if cutoffs.is_empty() {
+                            sprintln!("abc stream [eps] <cutoff...>  — e.g. abc stream 0.1 9 32 70");
+                        } else {
+                            if json {
+                                sprintln!("{}", crate::abc_iutt::stream_json_report(eps, &cutoffs));
+                            } else {
+                                sprintln!("ABC certified measurement stream prefix — ε={eps}");
+                                sprintln!("{}", crate::abc_iutt::tail_closure_report(eps, &cutoffs));
+                                sprintln!("stream links checked directly over each requested prefix");
+                            }
+                        }
+                    }
+                    "certificate" => {
+                        let rest: Vec<&str> = parts.collect();
+                        let joined = rest.join(" ");
+                        let fields: Vec<&str> = joined.split_whitespace().collect();
+                        let (eps, cutoff_fields): (f64, &[&str]) = match fields.first() {
+                            Some(f) if f.contains('.') => (f.parse().unwrap_or(0.1), &fields[1..]),
+                            _ => (0.1, &fields[..]),
+                        };
+                        let cutoffs: Vec<u64> = cutoff_fields.iter().filter_map(|s| s.parse().ok()).collect();
+                        if cutoffs.is_empty() {
+                            sprintln!("abc certificate [eps] <cutoff...>  — e.g. abc certificate 0.1 9 32 70");
+                        } else {
+                            sprintln!("{}", crate::abc_certificate::manifest(eps, &cutoffs));
+                        }
+                    }
+                    "champions" => {
+                        let rest: Vec<&str> = parts.collect();
+                        let fields: Vec<String> = rest.join(" ").split_whitespace().map(str::to_owned).collect();
+                        if fields.first().map(String::as_str) == Some("--gpu-many") {
+                            let vals: Vec<f64> = fields[1..].iter().filter_map(|s| s.parse().ok()).collect();
+                            if vals.len() >= 2 {
+                                let max_c = vals[0] as u64;
+                                let eps = &vals[1..vals.len() - 1];
+                                let device = vals.last().copied().unwrap_or(0.0) as usize;
+                                match crate::abc_certificate::gpu_champion_reports_many(eps, max_c, device) {
+                                    Ok(reports) => for report in reports { sprintln!("{}", report); },
+                                    Err(error) => sprintln!("abc gpu: {error}"),
+                                }
+                            } else { sprintln!("abc champions --gpu-many <max_c> <eps...> [device]"); }
+                            continue;
+                        }
+                        let json = fields.first().map(String::as_str) == Some("--json");
+                        let gpu = fields.first().map(String::as_str) == Some("--gpu");
+                        let fields = if json || gpu { &fields[1..] } else { &fields[..] };
+                        let (eps, max_field) = match fields.first() {
+                            Some(f) if f.contains('.') => (f.parse().unwrap_or(0.1), fields.get(1)),
+                            _ => (0.1, fields.first()),
+                        };
+                        match max_field.and_then(|s| s.parse::<u64>().ok()) {
+                            Some(max_c) if max_c >= 2 => {
+                                if gpu {
+                                    let device = fields.get(2).and_then(|s| s.parse().ok()).unwrap_or(0);
+                                    match crate::abc_certificate::gpu_champion_report(eps, max_c, device) {
+                                        Ok(report) => sprintln!("{}", report),
+                                        Err(error) => sprintln!("abc gpu: {error}"),
+                                    }
+                                } else if json { sprintln!("{}", crate::abc_certificate::champion_json_report(eps, max_c)); }
+                                else { sprintln!("{}", crate::abc_certificate::champion_report(eps, max_c)); }
+                            }
+                            _ => sprintln!("abc champions [eps] <max_c>  — e.g. abc champions 0.1 1000"),
+                        }
+                    }
+                    "growth" => {
+                        let rest: Vec<&str> = parts.collect();
+                        let joined = rest.join(" ");
+                        let fields: Vec<&str> = joined.split_whitespace().collect();
+                        let (eps, cutoff_fields): (f64, &[&str]) = match fields.first() {
+                            Some(f) if f.contains('.') => (f.parse().unwrap_or(0.01), &fields[1..]),
+                            _ => (0.01, &fields[..]),
+                        };
+                        let cutoffs: Vec<u64> = cutoff_fields.iter().filter_map(|s| s.parse::<u64>().ok()).collect();
+                        if cutoffs.is_empty() {
+                            sprintln!("abc growth [eps] <cutoff...>  — finite-evidence-only growth of the window maximum, e.g. abc growth 0.01 100 1000 5000");
+                        } else {
+                            sprintln!("{}", crate::abc_iutt::growth_report(eps, &cutoffs));
+                        }
+                    }
+                    other => sprintln!("abc: unknown subcommand '{other}' (try 'abc help')"),
+                }
+            }
+            "gaussian_extract" | "gaussian" => {
+                let n_str = parts.next().unwrap_or("");
+                if n_str.is_empty() {
+                    sprintln!("Usage: gaussian_extract <n>  — \"prime extraction via imaginary numbers\": find i (sqrt(-1) mod n), descend by Cornacchia, check a^2+b^2=n");
+                } else {
+                    sprintln!("{}", crate::gaussian_extract::extract_report(n_str));
+                }
+            }
+            #[cfg(feature = "hosted")]
+            "gpu_native" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "run" => {
+                        let n: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(1024);
+                        sprintln!("{}", crate::gpu_native_protocol::run(n));
+                    }
+                    "run_real" => {
+                        let n: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(1_000_000);
+                        sprintln!("{}", crate::gpu_native_protocol::run_real(n));
+                    }
+                    "run_chained" => {
+                        let n: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(1_000_000);
+                        sprintln!("{}", crate::gpu_native_protocol::run_chained(n));
+                    }
+                    "run_cycle" => {
+                        let n: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(1024);
+                        sprintln!("{}", crate::gpu_native_cycle::run(n));
+                    }
+                    _ => {
+                        sprintln!("gpu_native run [n]        — run the repaired GPU-native-build ob3ect");
+                        sprintln!("                             protocol word: checks it against the");
+                        sprintln!("                             Grammar's own instruments, then executes");
+                        sprintln!("                             its two divergence/sync/winding passes as");
+                        sprintln!("                             real GPU kernel launches, n threads each.");
+                        sprintln!("                             n defaults to 1024.");
+                        sprintln!("gpu_native run_real [n]   — the same protocol word, driven by n real");
+                        sprintln!("                             Reg16_3 register pairs through meet_t/join_t");
+                        sprintln!("                             on the GPU, checked against the CPU, with");
+                        sprintln!("                             the reverse-blocked step measured as an");
+                        sprintln!("                             actual per-lane count, not asserted.");
+                        sprintln!("                             n defaults to 1000000.");
+                        sprintln!("gpu_native run_chained [n] — all 11 gates from gpu_sixteen3.rs, chained");
+                        sprintln!("                             into ONE kernel launch instead of 11, over");
+                        sprintln!("                             n register pairs, each checked against the");
+                        sprintln!("                             CPU. n defaults to 1000000.");
+                        sprintln!("gpu_native run_cycle [n]   — phase_6's perpetual THINK/ACT/OBSERVE/UPDATE");
+                        sprintln!("                             cycle: one glyph of the protocol word per");
+                        sprintln!("                             tick, each a real device action. Reports");
+                        sprintln!("                             both check::word_verdict and the tri-");
+                        sprintln!("                             ancestral reading before running. n threads");
+                        sprintln!("                             per device-touching tick, defaults to 1024.");
+                    }
+                }
+            }
+            #[cfg(feature = "hosted")]
+            "gpu_catalog_crystal" => {
+                sprintln!("{}", crate::gpu_catalog_crystal::run());
+            }
+            #[cfg(feature = "hosted")]
+            "gpu_imasm_cycle" => {
+                sprintln!("{}", crate::gpu_imasm_cycle::run());
+            }
+            #[cfg(feature = "hosted")]
+            "gpu_crystal_full_space" => {
+                sprintln!("{}", crate::gpu_crystal_full_space::run());
+            }
+            #[cfg(feature = "hosted")]
+            "gpu_ipc_no_serialization" => {
+                sprintln!("{}", crate::gpu_ipc_no_serialization::run());
+            }
+            #[cfg(feature = "hosted")]
+            "gpu_sixteen3_tensor_kernel" => {
+                let n: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(1_000_000);
+                sprintln!("{}", crate::gpu_sixteen3_tensor_kernel::run(n));
+            }
+
             // `circuit` runs the substrate round trips. The word is the invariant;
             // every substrate leg is many-to-one, so what is being checked is
             // that each leg is a retraction and that the detour changes nothing.
@@ -844,100 +2397,6 @@ pub fn repl(k: &mut Kernel) {
                     crate::fibonacci_qc::repl_jones(n, &word);
                 }
             }
-            "theta-link" | "theta_link" | "iutt" => {
-                // Inter-Universal Teichmüller Theory housed in the paraconsistent
-                // ambient. The full-theory word is the ob3ect at
-                // ob3ect/digital/inter_universal_teichmuller_theory/; the Θ-link
-                // edge is the frobenioid coupling from iutt_imasm_verification.md.
-                let iutt_full = "⊢⊢⊢⊢∈≻⊤⋈⊙≺⊥⊞⋈∋⊡⊣";
-                let theta = "⊢⊙≻∈⊤≺⊥∋⋈⊞⊡⊣";
-                let control = "⊢∈≻⊤∋⊣";
-                let reg_line = |word: &str| -> alloc::string::String {
-                    let out = imasm_core::imasm16_3::run(&["check".into(), word.into()]);
-                    out.lines().find(|l| l.contains("Final register"))
-                        .map(|l| l.trim().into())
-                        .unwrap_or_else(|| "Final register: ?".into())
-                };
-                let read = |label: &str, word: &str| {
-                    let vch: alloc::vec::Vec<char> = word.chars().collect();
-                    sprintln!("  {}: {}", label, word);
-                    sprintln!("    vox closure verdict {}  (it closes, μ∘δ = id) ; sixteen3 {}",
-                        crate::vox::verdict(&vch), reg_line(word));
-                };
-                sprintln!("Inter-Universal Teichmüller Theory, housed in the paraconsistent ambient (Inclosure-B)");
-                read("full IUTT (ob3ect)", iutt_full);
-                read("Θ-link edge", theta);
-                sprintln!("  both close (verdict T) yet land on register A = {{T,F,t,f}}, which");
-                sprintln!("  projects to the four-valued core as B (both):");
-                sprintln!("    the paradox held, the alien ring structure carried across the link.");
-                sprintln!("  B is the Inclosure — unreachable by the Boolean core's adjoints:");
-                sprint!("{}", crate::belnap::corollary_11_2_report());
-                sprintln!("    r sends B up to T, c sends B down to F; neither recovers B.");
-                sprintln!("    classical (Boolean) mathematics can only collapse the Θ-link, erasing it.");
-                sprintln!("  control {}: sixteen3 {}", control, reg_line(control));
-                sprintln!("    the control closes on register T, not A — no ⊞ engagement, no paradox held.");
-                sprintln!("  see also: teich path <a> <b> (Teichmuller deformation), iuft report <name>");
-                sprintln!("            anyon-sync (conjugate synchronization = all-lane syzygy)");
-            }
-            "anyon-sync" | "anyon_sync" => {
-                use crate::dialetheic_fib_shor::{Op, Carrier16, THE_WORD};
-                let lanes = |c: Carrier16| -> alloc::string::String {
-                    alloc::format!("[T {} F {} t {} f {}]",
-                        if c.has_t() {1} else {0}, if c.has_f() {1} else {0},
-                        if c.has_t_atom() {1} else {0}, if c.has_f_atom() {1} else {0})
-                };
-                let run = |word: &[Op]| {
-                    let mut reg = Carrier16::N;
-                    let mut sync_at: Option<usize> = None;
-                    for (i, op) in word.iter().enumerate() {
-                        reg = op.apply(reg);
-                        let all4 = reg.has_t() && reg.has_f() && reg.has_t_atom() && reg.has_f_atom();
-                        sprintln!("  {:>2} {}  {:<4} {}{}", i+1, op.glyph(), reg.label(), lanes(reg),
-                            if all4 { "   <-- all four lanes synced (A): anyon formed" } else { "" });
-                        if all4 && sync_at.is_none() { sync_at = Some(i+1); }
-                    }
-                    sync_at
-                };
-                let parse = |w: &str| -> Option<alloc::vec::Vec<Op>> {
-                    let mut v = alloc::vec::Vec::new();
-                    for c in w.chars().filter(|c| !c.is_whitespace()) {
-                        v.push(match c {
-                            '⊢' => Op::VINIT, '∈' => Op::FSPLIT3, '≻' => Op::AFWD, '⋈' => Op::CLINK,
-                            '⊞' => Op::ENGAGR, '⊤' => Op::EVALT, '⊥' => Op::EVALF, '≺' => Op::AREV,
-                            '∋' => Op::FFUSE3, '⊙' => Op::IMSCRIB, '⊡' => Op::IFIX, '⊣' => Op::TANCH,
-                            _ => return None,
-                        });
-                    }
-                    Some(v)
-                };
-                let arg = parts.next().unwrap_or("").trim();
-                if !arg.is_empty() {
-                    match parse(arg) {
-                        Some(w) => {
-                            sprintln!("word {} :", arg);
-                            match run(&w) {
-                                Some(k) => sprintln!("all four lanes synced at step {} (A formed)", k),
-                                None => sprintln!("never synced (no engagement, or F never lands on the engaged state)"),
-                            }
-                        }
-                        None => sprintln!("anyon-sync <glyph-word>  — use the twelve marks; unknown glyph in input"),
-                    }
-                } else {
-                    sprintln!("ENGAGED word (carries ⊞, the braid engagement):");
-                    let s1 = run(&THE_WORD);
-                    let control = [Op::VINIT, Op::AFWD, Op::EVALT, Op::CLINK, Op::AFWD,
-                                   Op::EVALF, Op::EVALT, Op::CLINK, Op::EVALF, Op::AFWD,
-                                   Op::IMSCRIB, Op::CLINK, Op::IFIX, Op::TANCH];
-                    sprintln!("CONTROL word (no ⊞, never engages):");
-                    let s2 = run(&control);
-                    sprintln!("");
-                    match s1 { Some(k) => sprintln!("engaged: all four lanes synced at step {} (A formed)", k),
-                               None => sprintln!("engaged: never synced") }
-                    match s2 { Some(k) => sprintln!("control: synced at step {} (unexpected)", k),
-                               None => sprintln!("control: never synced — the flat word cannot light the t/f atom lanes") }
-                    sprintln!("(pass a glyph-word to compute any sequence live: anyon-sync ⊢⊞⊥)");
-                }
-            }
             "fibqc" => {
                 match parts.next().unwrap_or("") {
                     "" | "help" => {
@@ -1028,6 +2487,22 @@ pub fn repl(k: &mut Kernel) {
                             let n = word.iter().map(|g| g.unsigned_abs() as usize).max()
                                         .unwrap_or(0) + 1;
                             crate::fibonacci_qc::repl_jones(n, &word);
+                        }
+                    }
+                    "repcheck" => {
+                        let n: usize = parts.next().and_then(|s| s.parse().ok()).unwrap_or(0);
+                        let tail: Vec<&str> = parts.collect();
+                        let joined = tail.join(" ");
+                        let groups: Vec<&str> = joined.split('|').collect();
+                        if n == 0 || groups.len() != 3 {
+                            sprintln!("fibqc repcheck <strands> <p gens...> | <q gens...> | <N gens...>");
+                            sprintln!("  e.g. fibqc repcheck 6 1 2 4 4 | 1 3 3 4 | 1 2 3 4 1 2 3 3");
+                        } else {
+                            let parse_w = |s: &str| -> Vec<i32> { s.split_whitespace().filter_map(|t| t.parse::<i32>().ok()).collect() };
+                            let wp = parse_w(groups[0]);
+                            let wq = parse_w(groups[1]);
+                            let wn = parse_w(groups[2]);
+                            sprintln!("{}", crate::fibonacci_qc::rep_multiply_check(n, &wp, &wq, &wn));
                         }
                     }
                     "knot" => {
@@ -1385,239 +2860,6 @@ pub fn repl(k: &mut Kernel) {
                     }
                 }
             }
-            "prime_winding" => {
-                use crate::prime_winding::*;
-                let sub = parts.next().unwrap_or("");
-                match sub {
-                    "" | "help" => sprintln!("{}", help()),
-                    "word" => sprintln!("{}", word()),
-                    "find" => {
-                        let n_str = parts.next().unwrap_or("");
-                        if n_str.is_empty() {
-                            sprintln!("prime_winding find: usage: prime_winding find <n>");
-                        } else {
-                            sprintln!("{}", find(n_str));
-                        }
-                    },
-                    "factor" => {
-                        let n_str = parts.next().unwrap_or("");
-                        if n_str.is_empty() {
-                            sprintln!("prime_winding factor: usage: prime_winding factor <n> [max_power]");
-                        } else {
-                            let max_power = parts.next().and_then(|s| s.parse::<u64>().ok());
-                            sprintln!("{}", factor_bounded(n_str, max_power));
-                        }
-                    },
-                    "range" => {
-                        // `parts` is splitn(4,' '), so the fourth field holds "hi [count]"
-                        // unsplit; parse it here rather than relying on more fields.
-                        let lo = parts.next().unwrap_or("");
-                        let rest = parts.next().unwrap_or("");
-                        let mut rp = rest.split_whitespace();
-                        let hi = rp.next().unwrap_or("");
-                        let count_only = rp.next() == Some("count");
-                        if lo.is_empty() || hi.is_empty() {
-                            sprintln!("prime_winding range: usage: prime_winding range <lo> <hi> [count]");
-                        } else {
-                            sprintln!("{}", range(lo, hi, count_only));
-                        }
-                    },
-                    "cycle" => sprintln!("{}", cycle()),
-                    "tuple" => sprintln!("{}", tuple()),
-                    "verdict" => sprintln!("{}", verdict()),
-                    "artifact" => sprintln!("{}", artifact()),
-                    other => {
-                        sprintln!("prime_winding: unknown subcommand '{}'", other);
-                        sprintln!("{}", help());
-                    }
-                }
-            }
-            "native_numeral" | "numeral" => {
-                use crate::native_numeral as nn;
-                let sub = parts.next().unwrap_or("");
-                match sub {
-                    "" | "help" => sprintln!("{}", nn::help()),
-                    "word" => sprintln!("{}", nn::word()),
-                    "encode" => {
-                        let n_str = parts.next().unwrap_or("");
-                        if n_str.is_empty() {
-                            sprintln!("native_numeral encode: usage: native_numeral encode <n>");
-                        } else {
-                            sprintln!("{}", nn::encode_report(n_str));
-                        }
-                    }
-                    other => {
-                        sprintln!("native_numeral: unknown subcommand '{}'", other);
-                        sprintln!("{}", nn::help());
-                    }
-                }
-            }
-            "trilattice_factor" | "tfactor" => {
-                use crate::trilattice_factor as tf;
-                let sub = parts.next().unwrap_or("");
-                match sub {
-                    "" | "help" => sprintln!("{}", tf::help()),
-                    "word" => sprintln!("{}", tf::word()),
-                    "cert" => sprintln!("{}", tf::cert()),
-                    "read" => {
-                        let n_str = parts.next().unwrap_or("");
-                        if n_str.is_empty() {
-                            sprintln!("trilattice_factor read: usage: trilattice_factor read <n>");
-                        } else {
-                            sprintln!("{}", tf::read(n_str));
-                        }
-                    }
-                    "winding" => {
-                        let n_str = parts.next().unwrap_or("");
-                        if n_str.is_empty() {
-                            sprintln!("trilattice_factor winding: usage: trilattice_factor winding <n> [a]");
-                        } else {
-                            let a_opt = parts.next().and_then(|s| s.parse::<u64>().ok());
-                            sprintln!("{}", tf::winding(n_str, a_opt));
-                        }
-                    }
-                    "bridge" => {
-                        let n_str = parts.next().unwrap_or("");
-                        if n_str.is_empty() {
-                            sprintln!("trilattice_factor bridge: usage: trilattice_factor bridge <n> [B]");
-                        } else {
-                            let b_opt = parts.next().and_then(|s| s.parse::<u64>().ok());
-                            sprintln!("{}", tf::bridge(n_str, b_opt));
-                        }
-                    }
-                    "squares" => {
-                        let n_str = parts.next().unwrap_or("");
-                        if n_str.is_empty() {
-                            sprintln!("trilattice_factor squares: usage: trilattice_factor squares <n>");
-                        } else {
-                            sprintln!("{}", tf::squares(n_str));
-                        }
-                    }
-                    "sieve" => {
-                        let n_str = parts.next().unwrap_or("");
-                        if n_str.is_empty() {
-                            sprintln!("trilattice_factor sieve: usage: trilattice_factor sieve <n> [B]");
-                        } else {
-                            let b_opt = parts.next().and_then(|s| s.parse::<u64>().ok());
-                            sprintln!("{}", tf::sieve(n_str, b_opt));
-                        }
-                    }
-                    "factor" => {
-                        let n_str = parts.next().unwrap_or("");
-                        if n_str.is_empty() {
-                            sprintln!("trilattice_factor factor: usage: trilattice_factor factor <n> [max_power]");
-                        } else {
-                            let max_power = parts.next().and_then(|s| s.parse::<u64>().ok());
-                            sprintln!("{}", tf::factor(n_str, max_power));
-                        }
-                    }
-                    other => {
-                        sprintln!("trilattice_factor: unknown subcommand '{}'", other);
-                        sprintln!("{}", tf::help());
-                    }
-                }
-            }
-            #[cfg(feature = "hosted")]
-            "gpu_native" => {
-                let sub = parts.next().unwrap_or("");
-                match sub {
-                    "run" => {
-                        let n: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(1024);
-                        sprintln!("{}", crate::gpu_native_protocol::run(n));
-                    }
-                    "run_real" => {
-                        let n: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(1_000_000);
-                        sprintln!("{}", crate::gpu_native_protocol::run_real(n));
-                    }
-                    "run_chained" => {
-                        let n: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(1_000_000);
-                        sprintln!("{}", crate::gpu_native_protocol::run_chained(n));
-                    }
-                    "run_cycle" => {
-                        let n: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(1024);
-                        sprintln!("{}", crate::gpu_native_cycle::run(n));
-                    }
-                    _ => {
-                        sprintln!("gpu_native run [n]        — run the repaired GPU-native-build ob3ect");
-                        sprintln!("                             protocol word: checks it against the");
-                        sprintln!("                             Grammar's own instruments, then executes");
-                        sprintln!("                             its two divergence/sync/winding passes as");
-                        sprintln!("                             real GPU kernel launches, n threads each.");
-                        sprintln!("                             n defaults to 1024.");
-                        sprintln!("gpu_native run_real [n]   — the same protocol word, driven by n real");
-                        sprintln!("                             Reg16_3 register pairs through meet_t/join_t");
-                        sprintln!("                             on the GPU, checked against the CPU, with");
-                        sprintln!("                             the reverse-blocked step measured as an");
-                        sprintln!("                             actual per-lane count, not asserted.");
-                        sprintln!("                             n defaults to 1000000.");
-                        sprintln!("gpu_native run_chained [n] — all 11 gates from gpu_sixteen3.rs, chained");
-                        sprintln!("                             into ONE kernel launch instead of 11, over");
-                        sprintln!("                             n register pairs, each checked against the");
-                        sprintln!("                             CPU. n defaults to 1000000.");
-                        sprintln!("gpu_native run_cycle [n]   — phase_6's perpetual THINK/ACT/OBSERVE/UPDATE");
-                        sprintln!("                             cycle: one glyph of the protocol word per");
-                        sprintln!("                             tick, each a real device action. Reports");
-                        sprintln!("                             both check::word_verdict and the tri-");
-                        sprintln!("                             ancestral reading before running. n threads");
-                        sprintln!("                             per device-touching tick, defaults to 1024.");
-                    }
-                }
-            }
-            #[cfg(feature = "hosted")]
-            "gpu_catalog_crystal" => {
-                sprintln!("{}", crate::gpu_catalog_crystal::run());
-            }
-            #[cfg(feature = "hosted")]
-            "gpu_imasm_cycle" => {
-                sprintln!("{}", crate::gpu_imasm_cycle::run());
-            }
-            #[cfg(feature = "hosted")]
-            "gpu_crystal_full_space" => {
-                sprintln!("{}", crate::gpu_crystal_full_space::run());
-            }
-            #[cfg(feature = "hosted")]
-            "gpu_ipc_no_serialization" => {
-                sprintln!("{}", crate::gpu_ipc_no_serialization::run());
-            }
-            #[cfg(feature = "hosted")]
-            "gpu_sixteen3_tensor_kernel" => {
-                let n: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(1_000_000);
-                sprintln!("{}", crate::gpu_sixteen3_tensor_kernel::run(n));
-            }
-            #[cfg(feature = "hosted")]
-            "gpu16_3" => {
-                let sub = parts.next().unwrap_or("");
-                match sub {
-                    "verify" => {
-                        let n: usize = parts.next().and_then(|s| s.parse().ok()).unwrap_or(100_000);
-                        let device: usize = parts.next().and_then(|s| s.parse().ok()).unwrap_or(0);
-                        sprintln!("{}", crate::gpu_sixteen3::verify(n, device));
-                    }
-                    _ => {
-                        sprintln!("gpu16_3 verify [n] [device]   — batch n random SIXTEEN_3 register");
-                        sprintln!("                        pairs through all 12 Reg16_3 gates on the");
-                        sprintln!("                        GPU, checked bit-for-bit against the CPU");
-                        sprintln!("                        scalar implementation (imasm_core::imasm16_3).");
-                        sprintln!("                        n defaults to 100000, device to 0.");
-                    }
-                }
-            }
-            "oneshot_prime_winder" => {
-                let arg = parts.next().unwrap_or("");
-                crate::oneshot_prime_winder::repl_oneshot_prime_winder(&[arg]);
-            }
-            "nested_oneshot" | "nested" | "nos" => {
-                let tail: Vec<&str> = parts.collect();
-                crate::nested_oneshot::repl_nested_oneshot(&tail);
-            }
-            "doubly_nested_oneshot" | "dnos" => {
-                let tail: Vec<&str> = parts.collect();
-                crate::doubly_nested_oneshot::repl_doubly_nested_oneshot(&tail);
-            }
-            "dyn_nest" | "dynamic_nest" | "dyn" => {
-                let tail: Vec<&str> = parts.collect();
-                crate::dynamic_nesting_prime_finder::repl_dyn(&tail);
-            }
             "qft" => {
                 let sub = parts.next().unwrap_or("");
                 match sub {
@@ -1689,6 +2931,15 @@ pub fn repl(k: &mut Kernel) {
                             for chunk in braid.chunks(24) {
                                 sprintln!("  {}", chunk.iter().map(|g: &i32| g.to_string()).collect::<alloc::vec::Vec<_>>().join(" "));
                             }
+                            // A Fibonacci anyon braid word is its own alphabet
+                            // (generator indices, not the 12 IMASM marks) — there
+                            // is no direct translation into a Grammar word. What
+                            // is real and worth reading is the compiled length
+                            // itself, a genuine structural fact about this
+                            // circuit, checked the same way any other number's
+                            // own register is checked.
+                            let word = crate::native_numeral::encode(&braid.len().to_string());
+                            sprintln!("  compiled length {}'s own register: {}", braid.len(), active_dialect_register_line(k, &word));
                         }
                     }
                     "verify" => {
@@ -1707,6 +2958,8 @@ pub fn repl(k: &mut Kernel) {
                         } else {
                             let est = crate::qft::estimate_qft_braid_length(n);
                             sprintln!("QFT braid length estimate for {} qubits: ~{} generators", n, est);
+                            let word = crate::native_numeral::encode(&est.to_string());
+                            sprintln!("  estimate {}'s own register: {}", est, active_dialect_register_line(k, &word));
                         }
                     }
                     other => {
@@ -1820,6 +3073,42 @@ pub fn repl(k: &mut Kernel) {
                     }
                 }
             }
+            "baryon_asymmetry" | "baryon" => {
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "report" => sprintln!("{}", crate::baryon_asymmetry::report()),
+                    "word" => sprintln!("{}", crate::baryon_asymmetry::GLYPH_WORD),
+                    "mapping" => sprintln!("{}", crate::baryon_asymmetry::mapping()),
+                    "reading" => sprintln!("{}", crate::baryon_asymmetry::reading()),
+                    "help" => {
+                        sprintln!("baryon_asymmetry — the baryon-asymmetry ob3ect as a live readout");
+                        sprintln!("  baryon_asymmetry report    word run through the live weight + banked instruments");
+                        sprintln!("  baryon_asymmetry word      the 15-glyph ob3ect word");
+                        sprintln!("  baryon_asymmetry mapping   the 12 mark→physics mappings");
+                        sprintln!("  baryon_asymmetry reading   the banked-survival reading in prose");
+                    }
+                    other => sprintln!("baryon_asymmetry: unknown subcommand '{}' (try 'baryon_asymmetry help')", other),
+                }
+            }
+            "btc_oneshot" => {
+                let sub = parts.next().unwrap_or("");
+                let pk_hex = parts.next().unwrap_or("");
+                if sub.is_empty() || sub == "help" {
+                    sprintln!("btc_oneshot — BTC Secret Key Oneshot Operator");
+                    sprintln!("  btc_oneshot verify    — full structural verification suite");
+                    sprintln!("  btc_oneshot steps     — 12 operational phase steps");
+                    sprintln!("  btc_oneshot tuple     — print grammar tuple");
+                    sprintln!("  btc_oneshot word      — print IMASM word");
+                    sprintln!("  btc_oneshot extract   — extract private key from compressed pubkey");
+                } else {
+                    let args: Vec<&str> = if pk_hex.is_empty() {
+                        vec![sub]
+                    } else {
+                        vec![sub, pk_hex]
+                    };
+                    sprintln!("{}", crate::btc_secret_key_oneshot::btc_oneshot_repl(&args));
+                }
+            }
             "pk2sk" => {
                 let sub = parts.next().unwrap_or("");
                 match sub {
@@ -1840,25 +3129,6 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("pk2sk: unknown subcommand '{}'", other);
                         sprintln!("{}", crate::pk2sk::help());
                     }
-                }
-            }
-            "btc_oneshot" => {
-                let sub = parts.next().unwrap_or("");
-                let pk_hex = parts.next().unwrap_or("");
-                if sub.is_empty() || sub == "help" {
-                    sprintln!("btc_oneshot — BTC Secret Key Oneshot Operator");
-                    sprintln!("  btc_oneshot verify    — full structural verification suite");
-                    sprintln!("  btc_oneshot steps     — 12 operational phase steps");
-                    sprintln!("  btc_oneshot tuple     — print grammar tuple");
-                    sprintln!("  btc_oneshot word      — print IMASM word");
-                    sprintln!("  btc_oneshot extract   — extract private key from compressed pubkey");
-                } else {
-                    let args: Vec<&str> = if pk_hex.is_empty() {
-                        vec![sub]
-                    } else {
-                        vec![sub, pk_hex]
-                    };
-                    sprintln!("{}", crate::btc_secret_key_oneshot::btc_oneshot_repl(&args));
                 }
             }
             "rh" => print_rh(),
@@ -2496,114 +3766,6 @@ pub fn repl(k: &mut Kernel) {
                     _ => sprintln!("vessel [run] — witness-vessel transport protocol"),
                 }
             }
-            "dqi" => {
-                // Same splitn(4) gluing collatz already hit: re-split the tail
-                // so `dqi syndrome 10101010` doesn't drop its own argument.
-                let tail: Vec<&str> = parts.collect();
-                let joined = tail.join(" ");
-                let rest: Vec<&str> = joined.split_whitespace().collect();
-                #[cfg(feature = "hosted")]
-                let handled_gpu = if rest.first().copied() == Some("gpu-benchmark") {
-                    let m: usize = rest.get(1).and_then(|s| s.parse().ok()).unwrap_or(24);
-                    let force_unsat = rest.iter().any(|a| *a == "unsat");
-                    let device: usize = rest
-                        .iter()
-                        .skip(2)
-                        .filter(|a| **a != "unsat")
-                        .find_map(|a| a.parse().ok())
-                        .unwrap_or(0);
-                    let (mut clauses, _planted) = crate::dqi::random_xorsat_instance(m, m as u64);
-                    if force_unsat {
-                        // Same trick dqi::benchmark_report uses on the CPU
-                        // side: one 0=1 clause makes the whole system
-                        // unsatisfiable, so no thread can exit early and
-                        // the full 2^m space must be swept -- the actual
-                        // worst case, not the lucky-early-hit common case.
-                        clauses.push((alloc::vec::Vec::new(), true));
-                    }
-                    sprintln!("{}", crate::gpu_dqi_xorsat::verify_against_cpu(&clauses, m, device));
-                    true
-                } else {
-                    false
-                };
-                #[cfg(not(feature = "hosted"))]
-                let handled_gpu = false;
-                if !handled_gpu {
-                    crate::dqi::repl_dqi(&rest);
-                }
-            }
-            "yz" => {
-                let tail: Vec<&str> = parts.collect();
-                let joined = tail.join(" ");
-                let rest: Vec<&str> = joined.split_whitespace().collect();
-                crate::yz::repl_yz(&rest);
-            }
-            "yz-list" => {
-                let tail: Vec<&str> = parts.collect();
-                let joined = tail.join(" ");
-                let rest: Vec<&str> = joined.split_whitespace().collect();
-                crate::yz_list::repl_yz_list(&rest);
-            }
-            "shor-qft" => {
-                let tail: Vec<&str> = parts.collect();
-                let joined = tail.join(" ");
-                let rest: Vec<&str> = joined.split_whitespace().collect();
-                crate::shor_qft::repl_shor_qft(&rest);
-            }
-            "opi" => {
-                let tail: Vec<&str> = parts.collect();
-                let joined = tail.join(" ");
-                let rest: Vec<&str> = joined.split_whitespace().collect();
-                crate::opi::repl_opi(&rest);
-            }
-            "weight_ladder" => {
-                let args: Vec<&str> = parts.collect();
-                sprintln!("{}", crate::weight_ladder::repl_weight_ladder(&args));
-            }
-            "multilattice" => {
-                let tail: Vec<&str> = parts.collect();
-                let joined = tail.join(" ");
-                let rest: Vec<&str> = joined.split_whitespace().collect();
-                crate::multilattice::repl_multilattice(&rest);
-            }
-            "fde" => {
-                // Same splitn(4) gluing: `fde walk` and `fde trans` both take
-                // more than three arguments after the subcommand.
-                let tail: Vec<&str> = parts.collect();
-                let joined = tail.join(" ");
-                let rest: Vec<&str> = joined.split_whitespace().collect();
-                crate::fde::repl_fde(&rest);
-            }
-            "rsa" => {
-                // Same splitn(4) gluing: `rsa <C> <N> <e>` and `rsa verify
-                // <M> <e> <N>` both take more than two arguments.
-                let tail: Vec<&str> = parts.collect();
-                let joined = tail.join(" ");
-                let rest: Vec<&str> = joined.split_whitespace().collect();
-                crate::rsa_decrypter::repl_rsa(&rest);
-            }
-            "combo" => {
-                // `combo <word> brief` -- same splitn(4) gluing as elsewhere.
-                let tail: Vec<&str> = parts.collect();
-                let joined = tail.join(" ");
-                let rest: Vec<&str> = joined.split_whitespace().collect();
-                crate::combo::repl_combo(&rest);
-            }
-            "combo2" => {
-                let word = parts.next().unwrap_or("");
-                crate::combo::repl_combo2(&[word]);
-            }
-            "millennium" => {
-                let arg = parts.next().unwrap_or("");
-                if arg == "raw" {
-                    let word = parts.next().unwrap_or("");
-                    crate::millennium::repl_millennium(&["raw", word]);
-                } else if arg.is_empty() {
-                    crate::millennium::repl_millennium(&[]);
-                } else {
-                    crate::millennium::repl_millennium(&[arg]);
-                }
-            }
             // Manuscript spine: PROVE→UNIFY→PORT ledger + vessel runtime half.
             // No Python. Formal pack in p4ramill VAE_Vita_ManuscriptSpine.
             "spine" => {
@@ -2722,18 +3884,9 @@ pub fn repl(k: &mut Kernel) {
                             Ok(t) => {
                                 let prog = crate::sequence::build_via_substrate(
                                     &t, 12, t.t == crate::imas_ig::IgPrim::are, 3);
-                                let word = crate::belnap_ring_shor::glyphs_from_program(&prog);
                                 sprintln!("tuple: {}", t.display());
-                                sprintln!("word:  {}", word);
-                                // Every word a tool hands back gets the same standing audit a
-                                // proof-in-progress gets: cycled, weighed, banked, and checked
-                                // for a repair — served here rather than left for whoever reads
-                                // the word to remember to ask for separately.
-                                sprintln!("\n-- word instruments, run on the above --");
-                                crate::lattice_flow::weight_report(&word);
-                                crate::lattice_flow::banked_report(&word);
-                                crate::lattice_flow::cycle_report(&word);
-                                crate::lattice_flow::insert_report(&word);
+                                sprintln!("word:  {}",
+                                    crate::belnap_ring_shor::glyphs_from_program(&prog));
                             }
                             Err((i, g)) => sprintln!("imasm write: {} at slot {}", g, i),
                         }
@@ -2744,17 +3897,10 @@ pub fn repl(k: &mut Kernel) {
                             Ok(prog) => {
                                 let t = IgTuple::from_snapshot(
                                     &crate::kernel::self_imscribe(&prog));
-                                let word = crate::belnap_ring_shor::glyphs_from_program(&prog);
-                                sprintln!("word:  {}", word);
+                                sprintln!("word:  {}",
+                                    crate::belnap_ring_shor::glyphs_from_program(&prog));
                                 sprintln!("tuple: {}", t.display());
                                 sprintln!("crystal: {}", t.crystal_address());
-                                // Same standing audit as `imasm write`: served automatically,
-                                // not gated on the crystal address looking fine.
-                                sprintln!("\n-- word instruments, run on the above --");
-                                crate::lattice_flow::weight_report(&word);
-                                crate::lattice_flow::banked_report(&word);
-                                crate::lattice_flow::cycle_report(&word);
-                                crate::lattice_flow::insert_report(&word);
                             }
                             Err((i, c)) => {
                                 if crate::belnap_ring_shor::Glyph::from_char(c).is_some() {
@@ -3503,9 +4649,6 @@ Stopped after {} ticks.", ran);
                     sprint!("R{}:{} ", i, k.registers.read(i).name());
                 }
                 sprintln!();
-                if let Some(r) = k.last_reg16_3 {
-                    sprintln!("SIXTEEN_3 (last FSPLIT3/FFUSE3/EVALI): {}", r.name());
-                }
             }
             "stack" => {
                 sprintln!("Depth: {}", k.stack.depth());
@@ -3753,9 +4896,169 @@ Stopped after {} ticks.", ran);
                                 sprintln!("  Result: VIOLATION — fails ruleset gate(s).");
                                 sprintln!("  Tip: load a different program/entry or jump to a compatible dialect.");
                             }
+                            // compute_tier (kernel.rs) is canonical-only and never
+                            // reads active_dialect; this is the live snapshot's
+                            // tier under THIS dialect's own gates and T-seal
+                            // instead, real for any dialect, not just U0.
+                            if name_arg.is_empty() {
+                                if let Some(snap) = k.snapshot {
+                                    let dt = crate::witness_vessel::compute_tier_under(u, &snap);
+                                    sprintln!("  Tier under {} (canonical tier: {}): {}", dialect_display(u), snap.tier, dt);
+                                }
+                            }
                         } else if name_arg.is_empty() {
                             sprintln!("No snapshot — tick first to generate a self-imscription.");
                             sprintln!("  (or: 'ruleset verify <catalog_name>' to check a named entry instead)");
+                        }
+                    }
+                    "sweep" => {
+                        // Every one of the kernel's own 29 built-in programs
+                        // (canonical + continuous + novel + shunted), checked
+                        // against all 88 dialects, not just the active one —
+                        // "what happens when we run our other programs under
+                        // other rulesets," answered directly rather than one
+                        // manual jump/seal/verify cycle at a time.
+                        use crate::dialect_expansion::DIALECT_COUNT;
+                        let total = canonical_count() + continuous_count() + novel_count() + shunted_count();
+                        head!("ruleset sweep — 29 programs x 88 dialects");
+                        let mut widened: alloc::vec::Vec<(alloc::string::String, bool, usize)> = alloc::vec::Vec::new();
+                        for idx in 0..total {
+                            let roman = idx_to_roman(idx);
+                            let name: &str = if idx < canonical_count() {
+                                canonical_name(idx)
+                            } else if idx < canonical_count() + continuous_count() {
+                                continuous_name(idx - canonical_count())
+                            } else if idx < canonical_count() + continuous_count() + novel_count() {
+                                novel_name(idx - canonical_count() - continuous_count())
+                            } else {
+                                shunted_name(idx - canonical_count() - continuous_count() - novel_count())
+                            };
+                            if !load_by_roman(k, roman) { continue; }
+                            let snap = crate::kernel::self_imscribe(&k.program);
+                            let ig = IgTuple::from_snapshot(&snap);
+                            let canon_pass = dialect_all_pass(0, &ig);
+                            let passing: alloc::vec::Vec<u8> = (0..DIALECT_COUNT as u8).filter(|&u| dialect_all_pass(u, &ig)).collect();
+                            let pass_count = passing.len();
+                            if pass_count > 0 && pass_count <= 5 {
+                                sprintln!("  {:>5} {:<32} canon(U0)={:<4} passes {}/{}  {:?}",
+                                    roman, name, if canon_pass {"PASS"} else {"FAIL"}, pass_count, DIALECT_COUNT, passing);
+                            } else {
+                                sprintln!("  {:>5} {:<32} canon(U0)={:<4} passes {}/{}",
+                                    roman, name, if canon_pass {"PASS"} else {"FAIL"}, pass_count, DIALECT_COUNT);
+                            }
+                            if !canon_pass && pass_count > 0 {
+                                widened.push((alloc::format!("{} {}", roman, name), canon_pass, pass_count));
+                            }
+                        }
+                        divider!();
+                        if widened.is_empty() {
+                            sprintln!("  No program fails canonical (U0) yet passes elsewhere — no dialect opens a door canonical keeps shut, for any of these 29.");
+                        } else {
+                            sprintln!("  Fails canonical but passes under other dialects (opened by a ruleset swap, not by canonical):");
+                            for (label, _, n) in &widened {
+                                sprintln!("    {}  ({} dialect(s))", label, n);
+                            }
+                        }
+                        foot!();
+                    }
+                    "sweep-word-dynamic" => {
+                        // word_to_tuple (and plain "sweep-word") only ever calls
+                        // self_imscribe, the STATIC scan — b_live_ticks,
+                        // gate_discriminations, value_period and winding_count
+                        // are hardcoded to 0 there, so any real distinction
+                        // those runtime fields carry (the razor census's
+                        // vacuous/T-lost outliers, found by tools that actually
+                        // execute the register) is invisible to that path by
+                        // construction. This runs the word as a real program on
+                        // a fresh kernel, ticks it, and reads the genuinely
+                        // dynamic snapshot (dynamic_imscribe, the same one
+                        // `tick` itself uses) instead.
+                        let rest: alloc::string::String = parts.collect::<alloc::vec::Vec<&str>>().join(" ");
+                        let mut rp = rest.trim().split_whitespace();
+                        let word = rp.next().unwrap_or("");
+                        let ticks: usize = rp.next().and_then(|s| s.parse().ok()).unwrap_or(word.chars().count() * 5);
+                        if word.is_empty() {
+                            sprintln!("Usage: ruleset sweep-word-dynamic <glyph word> [ticks]");
+                        } else {
+                            match crate::belnap_ring_shor::program_from_glyphs(word) {
+                                Ok(prog) => {
+                                    use crate::dialect_expansion::DIALECT_COUNT;
+                                    let mut k2 = Kernel::new();
+                                    k2.program = prog;
+                                    for _ in 0..ticks {
+                                        if !k2.tick() { break; }
+                                    }
+                                    match k2.snapshot {
+                                        Some(snap) => {
+                                            let ig = IgTuple::from_snapshot(&snap);
+                                            let canon_pass = dialect_all_pass(0, &ig);
+                                            let passing: alloc::vec::Vec<u8> = (0..DIALECT_COUNT as u8).filter(|&u| dialect_all_pass(u, &ig)).collect();
+                                            sprintln!("ruleset sweep-word-dynamic: {} (ticks={})", word, ticks);
+                                            sprintln!("  b_live_ticks={} gate_discriminations={} value_period={} winding_count={} dialetheia_complete={}",
+                                                snap.b_live_ticks, snap.gate_discriminations, snap.value_period, snap.winding_count, snap.dialetheia_complete);
+                                            sprintln!("  canon(U0)={}  passes {}/{}", if canon_pass {"PASS"} else {"FAIL"}, passing.len(), DIALECT_COUNT);
+                                            sprintln!("  passing dialects: {:?}", passing);
+                                        }
+                                        None => sprintln!("no snapshot after {} ticks (halted before first tick?)", ticks),
+                                    }
+                                }
+                                Err((pos, ch)) => sprintln!("program_from_glyphs: bad glyph '{}' at position {}", ch, pos),
+                            }
+                        }
+                    }
+                    "sweep-word" => {
+                        // Same 88-dialect check, on an arbitrary glyph word
+                        // (a razor-census word, an ob3ect's glyph_word) rather
+                        // than one of the kernel's 29 built-ins.
+                        let word: alloc::string::String = parts.collect::<alloc::vec::Vec<&str>>().join(" ");
+                        let word = word.trim();
+                        if word.is_empty() {
+                            sprintln!("Usage: ruleset sweep-word <glyph word>");
+                        } else {
+                            use crate::dialect_expansion::DIALECT_COUNT;
+                            // Composed once PER dialect now — from_snapshot_under
+                            // reads period at that dialect's own scale, so the
+                            // tuple itself, not just the gate verdict, can differ
+                            // dialect to dialect.
+                            let canon_ig = crate::axis_values::word_to_tuple_under(0, word);
+                            let canon_pass = dialect_all_pass(0, &canon_ig);
+                            let mut passing: alloc::vec::Vec<u8> = alloc::vec::Vec::new();
+                            let mut distinct_tuples: alloc::vec::Vec<IgTuple> = alloc::vec::Vec::new();
+                            for u in 0..(DIALECT_COUNT as u8) {
+                                let ig_u = crate::axis_values::word_to_tuple_under(u, word);
+                                if dialect_all_pass(u, &ig_u) { passing.push(u); }
+                                if !distinct_tuples.contains(&ig_u) { distinct_tuples.push(ig_u); }
+                            }
+                            sprintln!("ruleset sweep-word: {}", word);
+                            sprintln!("  tuple under U0: {}", canon_ig.display());
+                            sprintln!("  canon(U0)={}  passes {}/{}", if canon_pass {"PASS"} else {"FAIL"}, passing.len(), DIALECT_COUNT);
+                            sprintln!("  passing dialects: {:?}", passing);
+                            sprintln!("  distinct tuples composed across all {} dialects: {}", DIALECT_COUNT, distinct_tuples.len());
+                        }
+                    }
+                    "sweep-word-tier" => {
+                        // Real test: does the gate-closed-but-ceiling-blocked
+                        // paradox (tier 3) split real factor pairs from random
+                        // ones, across all 88 dialects — a signal this session
+                        // never tried, on top of the plain pass/fail sweep.
+                        let word: alloc::string::String = parts.collect::<alloc::vec::Vec<&str>>().join(" ");
+                        let word = word.trim();
+                        if word.is_empty() {
+                            sprintln!("Usage: ruleset sweep-word-tier <glyph word>");
+                        } else {
+                            match crate::belnap_ring_shor::program_from_glyphs(word) {
+                                Ok(prog) => {
+                                    use crate::dialect_expansion::DIALECT_COUNT;
+                                    let snap = crate::kernel::self_imscribe(&prog);
+                                    let tiers: alloc::vec::Vec<u8> = (0..DIALECT_COUNT as u8)
+                                        .map(|u| crate::witness_vessel::compute_tier_under(u, &snap))
+                                        .collect();
+                                    let paradox: alloc::vec::Vec<u8> = (0..DIALECT_COUNT as u8).filter(|&u| tiers[u as usize] == 3).collect();
+                                    sprintln!("ruleset sweep-word-tier: {}", word);
+                                    sprintln!("  tier-3 (paradox) dialects: {:?} ({} of {})", paradox, paradox.len(), DIALECT_COUNT);
+                                }
+                                Err((pos, ch)) => sprintln!("program_from_glyphs: bad glyph '{}' at position {}", ch, pos),
+                            }
                         }
                     }
                     "dialetheic" => {
@@ -4036,8 +5339,6 @@ Stopped after {} ticks.", ran);
                 }
             },
         }
-        // Update live HUD (hosted build) - inside the main loop
-        #[cfg(feature = "hosted")] { let _ = { /* HUD disabled */ }; }
     }
 }
 
@@ -4214,32 +5515,173 @@ fn redraw_input(old_len: usize, src: &[u8], src_len: usize, buf: &mut [u8]) {
 // real canonical T-verdict, distinct from T_CEILING (which only applies
 // to U8/U9/U10/U11).
 fn t_canonical_check_silent(ig: &IgTuple) -> bool {
-    ig.p.ordinal()     == IgPrim::or_.ordinal()
-    && ig.f.ordinal()   == IgPrim::peep.ordinal()
-    && ig.k.ordinal()   <= IgPrim::egg.ordinal()
-    && ig.h.ordinal()   == IgPrim::wool.ordinal()
-    && ig.omega.ordinal() == IgPrim::ah.ordinal()
+    crate::dialect::t_canonical_check_silent(ig)
 }
 
 fn t_ceiling_check_silent(ig: &IgTuple) -> bool {
-    let t_phi = ig.p.ordinal()     <= IgPrim::or_.ordinal();
-    let t_f   = ig.f.ordinal()     <= IgPrim::peep.ordinal();
-    let t_k   = ig.k.ordinal()     <= IgPrim::egg.ordinal();
-    let t_h   = ig.h.ordinal()     <= IgPrim::wool.ordinal();
-    let t_om  = ig.omega.ordinal() <= IgPrim::ah.ordinal();
-    t_phi && t_f && t_k && t_h && t_om
+    crate::dialect::t_ceiling_check_silent(ig)
 }
 
 // U11 only: same as T_CEILING, but ⊤'s ceiling is raised from 𐑧 (egg,
 // ord 3) to 𐑪 (on, ord 4) — a gapped/trapped spectrum, not just a slow
 // one. Motivated, not tailored: see dialect.rs's U11 comment block.
 fn t_ceiling_gapped_check_silent(ig: &IgTuple) -> bool {
-    let t_phi = ig.p.ordinal()     <= IgPrim::or_.ordinal();
-    let t_f   = ig.f.ordinal()     <= IgPrim::peep.ordinal();
-    let t_k   = ig.k.ordinal()     <= IgPrim::on.ordinal();
-    let t_h   = ig.h.ordinal()     <= IgPrim::wool.ordinal();
-    let t_om  = ig.omega.ordinal() <= IgPrim::ah.ordinal();
-    t_phi && t_f && t_k && t_h && t_om
+    crate::dialect::t_ceiling_gapped_check_silent(ig)
+}
+
+/// A tool's own fixed defining word (nested_oneshot::WORD and the like),
+/// checked against whichever dialect is actually sealed rather than always
+/// canonical — the structural reading of the word, never the tool's real
+/// arithmetic verdict, which stays whatever the real math says regardless
+/// of ruleset (a number's primality is not dialect-relative; the word's own
+/// gate-pass is).
+pub(crate) fn active_dialect_register_line(k: &Kernel, word: &str) -> String {
+    let u = k.active_dialect;
+    // Composed under this dialect's own period scale, not canonical's fixed
+    // one — from_snapshot_under, not the dialect-blind word_to_tuple.
+    let ig = crate::axis_values::word_to_tuple_under(u, word);
+    let pass = dialect_all_pass(u, &ig);
+    format!("  under {} ({}): {}", dialect_display(u), dialect_name(u), if pass { "PASS" } else { "FAIL" })
+}
+
+/// All-gates-pass verdict for dialect u against tuple ig. Moved to
+/// dialect.rs as the single source of truth for hand-crafted dialects 0-11
+/// — witness_vessel.rs's gates_closed/t_seal/dialect_verdict were reading
+/// all_dialects()[u] directly for these same indices, and that array holds
+/// a SECOND, differently-authored dialect family at 9/10/11 (topology_
+/// universe/scope_universe/dimensional_gate, from dialect_expansion.rs's
+/// own "HAND-CRAFTED EXPANSION (8-28)" block) that collided with this
+/// one's numbering without either side knowing. Kept here as a thin
+/// delegation so every existing call site in this file needs no change.
+pub(crate) fn dialect_all_pass(u: u8, ig: &IgTuple) -> bool {
+    crate::dialect::dialect_all_pass(u, ig)
+}
+
+/// Smallest T in 1..seq.len() with seq[k]==seq[k+T] for every k the overlap
+/// allows, checked against the whole sequence given (not just one window) so
+/// a false short period from a coincidental partial match doesn't survive.
+/// Returns seq.len() if the sequence never repeats within what's given.
+fn min_period(seq: &[u8]) -> usize {
+    let n = seq.len();
+    if n == 0 { return 0; }
+    for t in 1..n {
+        if seq.iter().zip(seq.iter().skip(t)).all(|(x, y)| x == y) {
+            return t;
+        }
+    }
+    n
+}
+
+/// The open rung trilattice_factor.rs names directly: the native-numeral word
+/// of a value only carries that value's Z2 parity grade, which cannot report
+/// a multiplicative order r (a fact about the full residue) except by
+/// coincidence. This probes whether any of the 88 dialects' gate-pass verdict
+/// on that same word carries more of the residue than parity does — sweeping
+/// a^0..a^(max_k-1) mod n, ticking each residue's own native-numeral word to
+/// a fresh IgTuple, and checking every dialect's gate verdict on it. Each
+/// dialect's gate-pass sequence is periodic with a period dividing the true
+/// order r (it is a deterministic function of a sequence that is itself
+/// exactly r-periodic); this reports which dialects, if any, actually reach
+/// the full r rather than collapsing to a shorter divisor the way parity does.
+fn trilattice_dialect_probe(n_str: &str, a_str: &str, max_k: Option<u64>) -> String {
+    use num_bigint::BigUint;
+    use num_traits::One;
+    use crate::prime_winding::big_gcd;
+    use crate::dialect_expansion::DIALECT_COUNT;
+
+    let n = match BigUint::parse_bytes(n_str.as_bytes(), 10) {
+        Some(v) => v,
+        None => return format!("bad n: '{}'", n_str),
+    };
+    let a_in = match BigUint::parse_bytes(a_str.as_bytes(), 10) {
+        Some(v) => v,
+        None => return format!("bad a: '{}'", a_str),
+    };
+    if n < BigUint::from(2u32) {
+        return "n must be >= 2".to_string();
+    }
+    let a = &a_in % &n;
+    let g = big_gcd(a.clone(), n.clone());
+    if g != BigUint::one() {
+        return format!("gcd({}, {}) = {} != 1 — a shares a factor with n directly; no order to probe.", a_str, n_str, g);
+    }
+
+    // Default sweep length: comfortably past twice the largest order could be
+    // (order divides at most n-1), so a real period gets confirmed against a
+    // second repetition, not just a first coincidental match.
+    let max_k = max_k.unwrap_or_else(|| {
+        n.to_string().parse::<u64>().map(|v| 2 * v + 8).unwrap_or(400)
+    }).max(4);
+
+    let mut residues: Vec<BigUint> = Vec::with_capacity(max_k as usize);
+    let mut true_order: Option<u64> = None;
+    {
+        let mut cur = BigUint::one();
+        for k in 0..max_k {
+            residues.push(cur.clone());
+            cur = crate::native_numeral::modulo_via_word(&crate::native_numeral::multiply_via_word(&cur, &a), &n).unwrap();
+            if k > 0 && cur == BigUint::one() && true_order.is_none() {
+                true_order = Some(k + 1);
+            }
+        }
+    }
+
+    // GPU-native path: the residue sweep a^0..a^(max_k-1) mod n is the one
+    // naturally-parallel, per-k-independent part of this probe, so it runs on
+    // the GPU when n is odd (the Montgomery arithmetic gpu_trilattice.rs uses
+    // requires it, same constraint every other multi-limb kernel here
+    // carries) — falling back to the literal CPU word_to_tuple path
+    // otherwise, or if no device answers.
+    #[cfg(feature = "hosted")]
+    let gpu_facts: Option<Vec<(u64, bool, bool)>> = if crate::native_numeral::modulo_small_via_word(&n, 2).unwrap() == 1 {
+        crate::gpu_trilattice::gpu_residue_facts(&n, &a, max_k, 0).ok()
+    } else {
+        None
+    };
+    #[cfg(not(feature = "hosted"))]
+    let gpu_facts: Option<Vec<(u64, bool, bool)>> = None;
+
+    let (tuples, engine): (Vec<IgTuple>, &str) = match &gpu_facts {
+        #[cfg(feature = "hosted")]
+        Some(facts) => (
+            facts.iter().map(|&(bl, iz, ao)| crate::gpu_trilattice::tuple_from_bitlen(bl, iz, ao)).collect(),
+            "GPU (gpu_trilattice::gpu_residue_facts)",
+        ),
+        _ => (
+            residues.iter()
+                .map(|r| crate::axis_values::word_to_tuple(&crate::native_numeral::encode(&r.to_string())))
+                .collect(),
+            "CPU (word_to_tuple, n even or no device)",
+        ),
+    };
+
+    let parity: Vec<u8> = residues.iter()
+        .map(|r| (r % BigUint::from(2u32) == BigUint::one()) as u8)
+        .collect();
+    let parity_period = min_period(&parity);
+
+    let mut out = String::new();
+    out.push_str(&format!("trilattice_factor dialect-probe: n={} a={} (a mod n = {}) max_k={}\n", n_str, a_str, a, max_k));
+    out.push_str(&format!("engine: {}\n", engine));
+    match true_order {
+        Some(r) => out.push_str(&format!("true multiplicative order r = {}\n", r)),
+        None => out.push_str(&format!("true order not found within max_k={} — raise max_k\n", max_k)),
+    }
+    out.push_str(&format!("parity (Z2 grade) gate-pass period: {}\n", parity_period));
+
+    let mut hits: Vec<u8> = Vec::new();
+    for u in 0..(DIALECT_COUNT as u8) {
+        let seq: Vec<u8> = tuples.iter().map(|ig| dialect_all_pass(u, ig) as u8).collect();
+        let p = min_period(&seq);
+        if let Some(r) = true_order {
+            if p as u64 == r { hits.push(u); }
+        }
+    }
+    match true_order {
+        Some(r) => out.push_str(&format!("dialects whose gate-pass period equals the true order {}: {:?} (of {} checked)\n", r, hits, DIALECT_COUNT)),
+        None => {}
+    }
+    out
 }
 
 fn t_ceiling_check(ig: &IgTuple) -> bool {
@@ -5138,11 +6580,12 @@ fn print_psm(arg: &str) {
 // ─── Phase 2 Handlers ─────────────────────────────────────────
 
 fn print_algebra(k: &Kernel, arg: &str) {
-    use crate::algebra::{primitive_mismatches, tuple_distance, meet, join, tensor};
+    use crate::algebra::{primitive_mismatches, tuple_distance, meet_under, join_under, tensor_under};
     use crate::imas_ig::IgTuple;
 
     if let Some(snap) = k.snapshot {
         let ig = IgTuple::from_snapshot(&snap);
+        let u = k.active_dialect;
         match arg {
             "distance" | "dist" => {
                 let zfc = catalog::zfc_baseline_tuple();
@@ -5151,22 +6594,25 @@ fn print_algebra(k: &Kernel, arg: &str) {
             }
             "meet" => {
                 let zfc = catalog::zfc_baseline_tuple();
-                let r = meet(&ig, &zfc);
+                let r = meet_under(u, &ig, &zfc);
+                sprintln!("under {}:", dialect_display(u));
                 sprintln!("{}", r);
             }
             "join" => {
                 let zfc = catalog::zfc_baseline_tuple();
-                let r = join(&ig, &zfc);
+                let r = join_under(u, &ig, &zfc);
+                sprintln!("under {}:", dialect_display(u));
                 sprintln!("{}", r);
             }
             "tensor" => {
                 let zfc = catalog::zfc_baseline_tuple();
-                let t = tensor(&ig, &zfc);
-                sprintln!("tensor: {}", t.display_shavian());
+                let t = tensor_under(u, &ig, &zfc);
+                sprintln!("tensor under {}: {}", dialect_display(u), t.display_shavian());
             }
             _ => {
                 sprintln!("algebra <distance|meet|join|tensor>");
                 sprintln!("  Current: {}", ig.display());
+                sprintln!("  meet/join/tensor run under the active ruleset ({}); jump+seal to change it.", dialect_display(u));
             }
         }
     } else {
@@ -6517,6 +7963,36 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
 }
 
 
+/// Lift a raw hex value stream: decode the hex to bytes, load them as a flat
+/// code image at a conventional base, walk the control flow, recompile each
+/// function to its glyph word, and read the closure verdict of each. The delta
+/// half of the vox pair pointed at inline hex.
+fn vox_hex_lift(hexstr: &str) {
+    let bytes = vox_core::lanes::from_hex(hexstr);
+    if bytes.is_empty() {
+        sprintln!("vox hex: no hex bytes in input");
+        return;
+    }
+    let entry: u64 = 0x1000;
+    let segments: alloc::vec::Vec<(u64, alloc::vec::Vec<u8>)> = alloc::vec![(entry, bytes.clone())];
+    let image = crate::vox_decode::Image { segments };
+    let w = crate::vox_decode::walk(&image, entry, &[entry]);
+    sprintln!("HEX  {} byte(s)  raw  {} function(s) by descent", bytes.len(), w.functions.len());
+    if w.functions.is_empty() {
+        sprintln!("  no function reachable from entry 0x{:x}", entry);
+        return;
+    }
+    let mut tally = [0usize; 4];   // T, B, N, F
+    for (start, f) in &w.functions {
+        let word = crate::vox::recompile_function(f);
+        let v = crate::vox::verdict(&word);
+        match v { 'T' => tally[0]+=1, 'B' => tally[1]+=1, 'N' => tally[2]+=1, _ => tally[3]+=1 }
+        let mark = if v == 'B' { "   <-- FINDING (fork open across commit)" } else { "" };
+        sprintln!("  0x{:08x}  {}  {}{}", start, v, crate::vox::glyphs(&word), mark);
+    }
+    sprintln!("  verdicts  T {}   B {}   N {}   F {}", tally[0], tally[1], tally[2], tally[3]);
+}
+
 /// Lift an ELF's executable sections to IMASM words.
 ///
 /// The decoder stops at the first opcode it does not know rather than guessing
@@ -6580,10 +8056,7 @@ fn vox_lift_file(path: &str) {
         }
         // The word itself is what `insert` and `weight` can act on, so print the
         // shortest open function's word: a repair is found on a word, not on a
-        // tally. Run the same standing audit `imasm derive`/`imasm write` serve
-        // automatically, on this one representative word rather than on every
-        // function in the file — that would be one full report per function,
-        // most of them redundant with each other.
+        // tally.
         if let Some((addr, _)) = open_arms.iter().min_by_key(|(_, l)| *l) {
             for (start, f) in funcs {
                 if start == addr {
@@ -6592,11 +8065,6 @@ fn vox_lift_file(path: &str) {
                     sprintln!("");
                     sprintln!("  shortest open arm, 0x{:x}:", addr);
                     sprintln!("  {}", g);
-                    sprintln!("\n  -- word instruments, run on the above --");
-                    crate::lattice_flow::weight_report(&g);
-                    crate::lattice_flow::banked_report(&g);
-                    crate::lattice_flow::cycle_report(&g);
-                    crate::lattice_flow::insert_report(&g);
                 }
             }
         }
@@ -6614,42 +8082,6 @@ fn vox_lift_file(path: &str) {
 #[cfg(not(feature = "hosted"))]
 fn vox_lift_file(_path: &str) {
     sprintln!("vox lift needs a host filesystem; not available in the kernel build");
-}
-
-/// Lift a raw hex value stream: decode the hex to bytes, load them as a flat
-/// code image at a conventional base, walk the control flow, recompile each
-/// function to its glyph word, and read the closure verdict of each. The delta
-/// half of the vox pair pointed at inline hex.
-#[cfg(feature = "hosted")]
-fn vox_hex_lift(hexstr: &str) {
-    let bytes = vox_core::lanes::from_hex(hexstr);
-    if bytes.is_empty() {
-        sprintln!("vox hex: no hex bytes in input");
-        return;
-    }
-    let entry: u64 = 0x1000;
-    let segments: alloc::vec::Vec<(u64, alloc::vec::Vec<u8>)> = alloc::vec![(entry, bytes.clone())];
-    let image = crate::vox_decode::Image { segments };
-    let w = crate::vox_decode::walk(&image, entry, &[entry]);
-    sprintln!("HEX  {} byte(s)  raw  {} function(s) by descent", bytes.len(), w.functions.len());
-    if w.functions.is_empty() {
-        sprintln!("  no function reachable from entry 0x{:x}", entry);
-        return;
-    }
-    let mut tally = [0usize; 4];   // T, B, N, F
-    for (start, f) in &w.functions {
-        let word = crate::vox::recompile_function(f);
-        let v = crate::vox::verdict(&word);
-        match v { 'T' => tally[0]+=1, 'B' => tally[1]+=1, 'N' => tally[2]+=1, _ => tally[3]+=1 }
-        let mark = if v == 'B' { "   <-- FINDING (fork open across commit)" } else { "" };
-        sprintln!("  0x{:08x}  {}  {}{}", start, v, crate::vox::glyphs(&word), mark);
-    }
-    sprintln!("  verdicts  T {}   B {}   N {}   F {}", tally[0], tally[1], tally[2], tally[3]);
-}
-
-#[cfg(not(feature = "hosted"))]
-fn vox_hex_lift(_hexstr: &str) {
-    sprintln!("vox hex needs the host decoder; not available in the kernel build");
 }
 
 /// `vox run <symbol> --args a,b <file>` — order-tolerant, mirroring the
@@ -6791,167 +8223,4 @@ fn vox_run_symbol(args: &[alloc::string::String]) {
 #[cfg(not(feature = "hosted"))]
 fn vox_run_symbol(_args: &[alloc::string::String]) {
     sprintln!("vox run needs a host filesystem; not available in the kernel build");
-}
-
-#[cfg(feature = "hosted")]
-fn vox_write_pdb_file(path: &str, contents: &str) {
-    match std::fs::write(path, contents.as_bytes()) {
-        Ok(()) => sprintln!("PDB written to {}", path),
-        Err(e) => sprintln!("Could not write PDB to {}: {}", path, e),
-    }
-}
-
-#[cfg(not(feature = "hosted"))]
-fn vox_write_pdb_file(_path: &str, _contents: &str) {
-    sprintln!("--pdb needs a host filesystem; not available in the kernel build");
-}
-
-/// `vox compile <seq> [--code standard|mitochondrial] [--pdb <path>]`
-///
-/// One entry point, both directions of the same pipeline. RNA/DNA in:
-/// translate (rebis::translate::run_pipeline_table) then fold (rebis::fold::
-/// fold_sequence for secondary/tertiary, rebis::fold3d for the real 3D
-/// backbone). Protein in: reverse-translate with the Frobenius-preferred
-/// codon per residue (rebis::genetics::preferred_codon_for_aa, not the
-/// arbitrary first-in-enumeration pick `rebis reverse` uses) and run the
-/// SAME fold on the input protein, so the "vice versa" direction carries
-/// fold info too. Direction is auto-detected from the input alphabet: pure
-/// A/C/G/T/U reads as nucleic acid, anything else as protein codes.
-fn vox_compile(args: &[alloc::string::String]) {
-    use crate::belnap::B4;
-    use crate::rebis::codon::{Codon, CodeTable, b4_to_nucleotide};
-    use crate::rebis::AminoAcid;
-
-    if args.is_empty() {
-        sprintln!("vox compile <seq> [--code standard|mitochondrial] [--pdb <path>]");
-        sprintln!("  RNA/DNA in  -> protein out, with real fold info: Chou-Fasman");
-        sprintln!("                 secondary structure, heuristic tertiary contacts,");
-        sprintln!("                 and a real 3D backbone (B4-Ramachandran-NeRF).");
-        sprintln!("  protein in  -> RNA/DNA out (Frobenius-preferred codon per");
-        sprintln!("                 residue, full degeneracy reported), with the");
-        sprintln!("                 SAME fold computed on the input protein.");
-        sprintln!("  A/C/G/T/U-only input reads as nucleic acid; anything else,");
-        sprintln!("  as protein 1- or 3-letter codes. --pdb writes a real PDB");
-        sprintln!("  file, readable back by `rebis pdb`.");
-        return;
-    }
-
-    let mut table = CodeTable::Standard;
-    let mut pdb_path: Option<alloc::string::String> = None;
-    let mut seq_parts: Vec<alloc::string::String> = Vec::new();
-    let mut i = 0;
-    while i < args.len() {
-        match args[i].as_str() {
-            "--code" if i + 1 < args.len() => {
-                table = if args[i + 1] == "mitochondrial" || args[i + 1] == "mito" {
-                    CodeTable::Mitochondrial
-                } else {
-                    CodeTable::Standard
-                };
-                i += 2;
-            }
-            "--pdb" if i + 1 < args.len() => {
-                pdb_path = Some(args[i + 1].clone());
-                i += 2;
-            }
-            other => { seq_parts.push(alloc::string::String::from(other)); i += 1; }
-        }
-    }
-    let seq = seq_parts.join(" ");
-    let table_name = match table { CodeTable::Standard => "standard", CodeTable::Mitochondrial => "mitochondrial" };
-
-    let compact: alloc::string::String = seq.chars()
-        .filter(|c| !c.is_whitespace() && *c != '-' && *c != ',')
-        .collect();
-    let is_nucleic = !compact.is_empty()
-        && compact.chars().all(|c| matches!(c.to_ascii_uppercase(), 'A' | 'C' | 'G' | 'T' | 'U'));
-
-    // Shared tail: fold whatever protein chain either direction produced,
-    // build the real 3D backbone from its own B4 path, print, optionally write.
-    fn report_fold(chain: &[AminoAcid], b4_path: &[B4], pdb_path: Option<&str>) {
-        let fold = crate::rebis::fold::fold_sequence(chain);
-        let n_h = fold.residues.iter().filter(|r| r.secondary == crate::rebis::fold::SecondaryLabel::Helix).count();
-        let n_s = fold.residues.iter().filter(|r| r.secondary == crate::rebis::fold::SecondaryLabel::Sheet).count();
-        let n_c = fold.residues.len() - n_h - n_s;
-        sprintln!();
-        sprintln!("Fold: helix {}  sheet {}  coil {}   ({} contacts, SerpentRod invariant {})",
-            n_h, n_s, n_c, fold.contacts.len(), if fold.frobenius_ok { "PASS" } else { "FAIL" });
-        sprintln!("IG primitives activated: {}/12  Tier: {}", fold.unique_primitives, fold.ouroboricity_tier);
-
-        let steps = crate::rebis::fold3d::rama_steps(b4_path);
-        let backbone = crate::rebis::fold3d::build_backbone(&steps);
-        sprintln!("3D backbone: {} residues placed (B4-Ramachandran-NeRF)", backbone.len());
-
-        if let Some(path) = pdb_path {
-            let elements = crate::rebis::fold3d::group_ss_elements(&steps);
-            let winding = fold.residues.iter().map(|r| r.winding_number).max().unwrap_or(0);
-            let pdb = crate::rebis::fold3d::write_pdb(
-                chain, &backbone, &elements, fold.frobenius_ok, fold.unique_primitives, winding,
-                "COMPILED THROUGH VOX", 'A',
-            );
-            vox_write_pdb_file(path, &pdb);
-        }
-    }
-
-    if is_nucleic {
-        let result = crate::rebis::translate::run_pipeline_table(compact.as_bytes(), table);
-        let chain: Vec<AminoAcid> = result.protein.iter()
-            .filter(|&&aa| aa != AminoAcid::Stop).copied().collect();
-        if chain.is_empty() {
-            sprintln!("No protein translated from '{}'. Needs an ATG/AUG start codon.", seq);
-            return;
-        }
-        let mut b4_path: Vec<B4> = Vec::with_capacity(chain.len());
-        for k in 0..chain.len() {
-            let p = result.start_codon_pos + k * 3;
-            let step = if p + 2 < result.mrna.len() {
-                Codon::from_bytes(result.mrna[p], result.mrna[p + 1], result.mrna[p + 2]).ok()
-            } else { None };
-            b4_path.push(step.map(|c| c.p1).unwrap_or(B4::N));
-        }
-
-        sprintln!("== vox compile: RNA/DNA -> protein ({}) ==", table_name);
-        sprintln!("Input:      {}", seq);
-        sprintln!("mRNA:       {}", core::str::from_utf8(&result.mrna).unwrap_or("???"));
-        sprintln!("Protein:    {}", crate::rebis::translate::format_chain_1letter(&chain));
-        sprintln!("            {}", crate::rebis::translate::format_chain(&chain));
-        sprintln!("Frobenius round-trip verified: {}", if result.frobenius_verified { "YES" } else { "NO" });
-        report_fold(&chain, &b4_path, pdb_path.as_deref());
-    } else {
-        let chain = match crate::rebis::translate::parse_chain(&seq) {
-            Some(c) if !c.is_empty() => c,
-            _ => {
-                sprintln!("Could not parse '{}' as protein or nucleic acid.", seq);
-                sprintln!("Use 3-letter (Met-Ala) or 1-letter (MA) amino acid codes, or A/C/G/T/U.");
-                return;
-            }
-        };
-
-        let mut mrna: Vec<u8> = Vec::with_capacity(chain.len() * 3);
-        let mut b4_path: Vec<B4> = Vec::with_capacity(chain.len());
-        let mut degeneracies: Vec<usize> = Vec::with_capacity(chain.len());
-        for &aa in &chain {
-            degeneracies.push(crate::rebis::genetics::codons_for_aa_table(aa, table).len());
-            match crate::rebis::genetics::preferred_codon_for_aa(aa, table) {
-                Some(c) => {
-                    b4_path.push(c.p1);
-                    mrna.push(b4_to_nucleotide(c.p1));
-                    mrna.push(b4_to_nucleotide(c.p2));
-                    mrna.push(b4_to_nucleotide(c.p3));
-                }
-                None => { sprintln!("No codon exists for {} under the {} table.", aa.name(), table_name); return; }
-            }
-        }
-        let dna = crate::rebis::translate::reverse_transcribe(&mrna);
-        let mut total: u64 = 1;
-        for &d in &degeneracies { if d == 0 { total = 0; break; } total = total.saturating_mul(d as u64); }
-
-        sprintln!("== vox compile: protein -> RNA/DNA ({}) ==", table_name);
-        sprintln!("Input:      {}", crate::rebis::translate::format_chain(&chain));
-        sprintln!("            {}", crate::rebis::translate::format_chain_1letter(&chain));
-        sprintln!("mRNA (Frobenius-preferred codon per residue): {}", core::str::from_utf8(&mrna).unwrap_or("???"));
-        sprintln!("DNA:        {}", core::str::from_utf8(&dna).unwrap_or("???"));
-        sprintln!("Degeneracy: {} total possible mRNA sequences (product of per-residue codon counts)", total);
-        report_fold(&chain, &b4_path, pdb_path.as_deref());
-    }
 }

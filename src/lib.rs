@@ -23,10 +23,18 @@
 
 extern crate alloc;
 
+#[cfg(feature = "hosted")]
+pub mod runtime_nesting;
 pub mod tokens;
+pub mod word_nesting;
+pub mod token_refinement;
+pub mod factor_relation;
+#[cfg(feature = "hosted")]
+pub mod gpu_graph;
 pub mod braid_protocol;
 pub mod vox;
 pub mod period_finding_ecdlp;
+pub mod secp256k1_unwinder;
 
 
 // The gate runs on a host; there is no test harness on bare metal.

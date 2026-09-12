@@ -20,6 +20,16 @@
 // this resolves against the std-provided alloc, which is why build-std must be
 // off for the hosted target -- rebuilding alloc there duplicates its lang items.
 extern crate alloc;
+
+// Hosted diagnostics are terminal surfaces of the active IMASM vessel.  The
+// local stderr macro routes unqualified diagnostics; qualified calls use the
+// explicit runtime writer.
+macro_rules! eprintln {
+    ($($arg:tt)*) => {{
+        crate::nested_eprintln!($($arg)*);
+    }};
+}
+
 #[cfg(not(feature = "hosted"))]
 use core::panic::PanicInfo;
 #[cfg(not(feature = "hosted"))]
@@ -27,6 +37,7 @@ use core::sync::atomic::{AtomicUsize, Ordering};
 #[cfg(not(feature = "hosted"))]
 use core::alloc::Layout;
 
+mod runtime_nesting;
 mod serial;
 #[macro_use]
 mod style;
@@ -45,6 +56,52 @@ mod interrupts;
 mod interrupts;
 #[cfg(feature = "hosted")]
 mod gpu_sixteen3;
+#[cfg(feature = "hosted")]
+mod gpu_prime;
+#[cfg(feature = "hosted")]
+mod gpu_kernel;
+#[cfg(feature = "hosted")]
+mod gpu_graph;
+mod word_nesting;
+mod token_refinement;
+mod factor_relation;
+#[cfg(feature = "hosted")]
+mod gpu_factor;
+#[cfg(feature = "hosted")]
+mod gpu_vox;
+#[cfg(feature = "hosted")]
+mod gpu_fde;
+#[cfg(feature = "hosted")]
+mod gpu_rho;
+mod gpu_rho_ml;
+#[cfg(feature = "hosted")]
+mod gpu_ecm;
+#[cfg(feature = "hosted")]
+mod gpu_trilattice;
+#[cfg(feature = "hosted")]
+mod gpu_abc;
+#[cfg(feature = "hosted")]
+mod gpu_gnfs_poly;
+#[cfg(feature = "hosted")]
+mod gpu_gnfs_sieve;
+#[cfg(feature = "hosted")]
+mod gpu_gnfs_linalg;
+#[cfg(feature = "hosted")]
+mod gpu_gnfs_linalg_gpu;
+#[cfg(feature = "hosted")]
+mod gpu_gnfs_cong_ml;
+#[cfg(feature = "hosted")]
+mod gpu_gnfs_fb;
+#[cfg(feature = "hosted")]
+mod gpu_gnfs;
+#[cfg(feature = "hosted")]
+mod gpu_dqi;
+#[cfg(feature = "hosted")]
+mod gpu_opi;
+#[cfg(feature = "hosted")]
+mod gpu_shor;
+#[cfg(feature = "hosted")]
+mod gpu_millennium;
 #[cfg(feature = "hosted")]
 mod gpu_native_protocol;
 #[cfg(feature = "hosted")]
@@ -88,6 +145,7 @@ mod pk2sk;
 mod qft;
 mod shors_btc_2;
 mod secp256k1_unwinder;
+mod baryon_asymmetry;
 mod btc_secret_key_oneshot;
 mod moDOT_alchemy;
 mod pari_integration;
@@ -97,6 +155,10 @@ mod belnap_shor;
 pub mod prime_winding;
 pub mod trilattice_factor;
 pub mod native_numeral;
+pub mod word_tape;
+pub mod gaussian_extract;
+pub mod abc_iutt;
+pub mod abc_certificate;
 mod belnap_shor_factors;
 mod fibonacci_shor;
 mod belnap_ring_shor;
@@ -141,6 +203,7 @@ mod d2048_sieve;
 mod provenance;
 mod quadratic;
 mod dqi;
+mod dqi_ambient;
 mod yz;
 mod yz_list;
 mod shor_qft;
@@ -166,7 +229,12 @@ mod winding_period;
 mod oneshot_prime_winder;
 mod nested_oneshot;
 mod doubly_nested_oneshot;
+mod nested_prime_factorization;
 mod dynamic_nesting_prime_finder;
+mod closure_nested;
+mod factor_operator;
+mod factor_membrane;
+mod tower_vox;
 mod lattice_flow;
 mod triple_frame;
 mod iuft_qc;
@@ -488,10 +556,10 @@ pub fn heap_used() -> (usize, usize) {
 
 #[cfg(feature = "hosted")]
 fn main() {
-    kmain()
+    gpu_kernel::run_hosted_executable()
 }
 
-fn kmain() -> ! {
+fn kmain() {
     serial::init();
 
     // Hosted: the host owns the IDT, so there is no PIT and no PIC remap. The
@@ -589,7 +657,7 @@ fn kmain() -> ! {
     loop { unsafe { core::arch::asm!("hlt", options(nostack, nomem, preserves_flags)); } }
 
     #[cfg(feature = "hosted")]
-    std::process::exit(0);
+    return;
 }
 
 fn print_banner() {
@@ -597,12 +665,12 @@ fn print_banner() {
     // reader has no context yet, so it leads with the object and not the
     // feature list.
     sprintln!();
-    sprintln!("   {}⊙{}   {}mOMonadOS{}", style::glyph(), style::reset(),
+    sprintln!("   {}⊙{}   {}G-mOMonadOS{}", style::glyph(), style::reset(),
               style::heading(), style::reset());
     #[cfg(not(feature = "hosted"))]
     sprintln!("   {}the self-imscribing bare-metal kernel{}", style::muted(), style::reset());
     #[cfg(feature = "hosted")]
-    sprintln!("   {}hosted build, on the host's runtime{}", style::muted(), style::reset());
+    sprintln!("   {}GPU-native build, mOMonadOS ported to run via CUDA{}", style::muted(), style::reset());
     sprintln!("   {}μ∘δ = id{}", style::accent(), style::reset());
     sprintln!();
     sprintln!("   {}Frobenius core · Belnap FOUR · crystal FS · graph execution{}",
@@ -651,4 +719,3 @@ fn alloc_error(layout: Layout) -> ! {
     serial::write_str("\n");
     loop { unsafe { core::arch::asm!("hlt", options(nostack, nomem, preserves_flags)); } }
 }
-

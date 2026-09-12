@@ -83,29 +83,67 @@ impl LatticeResult {
 
 // ─── Meet ──────────────────────────────────────────────────────────────────
 
-/// Greatest lower bound of two tuples.
-/// Ordered primitives (F,K,G,Omega,H): min over ordinal.
-/// Categorical primitives (D,T,R,P,C,Phi,S): exact match required, else CONFLICT.
-/// ⊙ (⊙) is absorbing: any meet involving ⊙ yields ⊙.
+/// Greatest lower bound of two tuples, under canonical's (dialect 0)
+/// absorption rules. Ordered primitives (F,K,G,Omega,H): min over ordinal.
+/// Categorical primitives (D,T,R,P,C,Phi,S): exact match required, else
+/// CONFLICT. ⊙ (⊙) is absorbing: any meet involving ⊙ yields ⊙.
 pub fn meet(a: &IgTuple, b: &IgTuple) -> LatticeResult {
-    lattice_op(a, b, true)
+    lattice_op(0, a, b, true)
 }
 
-/// Least upper bound of two tuples.
-/// Ordered primitives (F,K,G,Omega,H): max over ordinal.
-/// Categorical primitives: exact match required, else CONFLICT.
-/// ⊙ (⊙) is absorbing under join as well.
+/// `meet` under an arbitrary dialect's own abs_rules table instead of
+/// canonical's — the active ruleset actually shaping the operation, not
+/// just describing it.
+pub fn meet_under(dialect: u8, a: &IgTuple, b: &IgTuple) -> LatticeResult {
+    lattice_op(dialect, a, b, true)
+}
+
+/// Least upper bound of two tuples, under canonical's absorption rules.
+/// Ordered primitives (F,K,G,Omega,H): max over ordinal. Categorical
+/// primitives: exact match required, else CONFLICT. ⊙ (⊙) is absorbing
+/// under join as well.
 pub fn join(a: &IgTuple, b: &IgTuple) -> LatticeResult {
-    lattice_op(a, b, false)
+    lattice_op(0, a, b, false)
 }
 
-fn lattice_op(a: &IgTuple, b: &IgTuple, is_meet: bool) -> LatticeResult {
-    let op_name = if is_meet { "meet" } else { "join" };
+/// `join` under an arbitrary dialect's own abs_rules table.
+pub fn join_under(dialect: u8, a: &IgTuple, b: &IgTuple) -> LatticeResult {
+    lattice_op(dialect, a, b, false)
+}
 
-    // ⊙ absorption: ⊙ is absorbing under both meet and join
-    let phi = if a.phi == IgPrim::monad || b.phi == IgPrim::monad {
-        IgPrim::monad
-    } else if is_meet {
+/// Apply a dialect's declared absorption rules (ops_mask bit 1=meet,
+/// 2=join, 4=tensor; direction 0=either operand, 1=left only, 2=right
+/// only) onto an already-computed result tuple. Reads real per-dialect
+/// data (dialect_expansion::all_dialects) through the real glyph<->IgPrim
+/// mappings (prim_from_name / set_prim_by_name / igprim_from_glyph) —
+/// never a second hand-written rule table living beside the declared one.
+fn apply_dialect_absorption(dialect: u8, op_bit: u8, a: &IgTuple, b: &IgTuple, result: &mut IgTuple) {
+    if (dialect as usize) >= crate::dialect_expansion::DIALECT_COUNT { return; }
+    let unis = crate::dialect_expansion::all_dialects();
+    for rule in unis[dialect as usize].abs_rules {
+        if rule.ops_mask & op_bit == 0 { continue; }
+        let target = match crate::dialect::igprim_from_glyph(rule.value) {
+            Some(v) => v,
+            None => continue,
+        };
+        let left_hits = crate::dialect::prim_from_name(rule.prim, a) == Some(target);
+        let right_hits = crate::dialect::prim_from_name(rule.prim, b) == Some(target);
+        let triggered = match rule.direction {
+            1 => left_hits,
+            2 => right_hits,
+            _ => left_hits || right_hits,
+        };
+        if triggered {
+            crate::dialect::set_prim_by_name(rule.prim, result, target);
+        }
+    }
+}
+
+fn lattice_op(dialect: u8, a: &IgTuple, b: &IgTuple, is_meet: bool) -> LatticeResult {
+    let op_name = if is_meet { "meet" } else { "join" };
+    let op_bit: u8 = if is_meet { 1 } else { 2 };
+
+    let phi = if is_meet {
         catalog::ord_min(a.phi, b.phi, &catalog::PHI_ORD)
     } else {
         catalog::ord_max(a.phi, b.phi, &catalog::PHI_ORD)
@@ -139,9 +177,12 @@ fn lattice_op(a: &IgTuple, b: &IgTuple, is_meet: bool) -> LatticeResult {
     conflicts[9] = false;
     conflicts[10] = sc; conflicts[11] = false;
 
+    let mut tuple = IgTuple { d, t, r, p, f, k, g, c, phi, h, s, omega };
+    apply_dialect_absorption(dialect, op_bit, a, b, &mut tuple);
+
     LatticeResult {
         op: op_name,
-        tuple: IgTuple { d, t, r, p, f, k, g, c, phi, h, s, omega },
+        tuple,
         conflicts,
         notes: [0u8; 8],
         note_count: 0,
@@ -150,39 +191,70 @@ fn lattice_op(a: &IgTuple, b: &IgTuple, is_meet: bool) -> LatticeResult {
 
 // ─── Tensor product ────────────────────────────────────────────────────────
 
-/// Tensor (composite) product: max on union primitives, min on P and F.
-/// Represents coupling two systems together.
-/// The 𐑻 absorption rule: tensor(⊙, EP) = EP.
+/// Tensor (composite) product under canonical's (dialect 0) absorption
+/// rules: max on union primitives, min on P and F. Represents coupling two
+/// systems together.
 pub fn tensor(a: &IgTuple, b: &IgTuple) -> IgTuple {
-    // P and F: min (bottleneck — the weaker link dominates)
-    let p = catalog::ord_min(a.p, b.p, &catalog::P_ORD);
-    let f = catalog::ord_min(a.f, b.f, &catalog::F_ORD);
+    tensor_under(0, a, b)
+}
 
-    // D, K, Omega, H: max
+/// Phi (Criticality) bottleneck, per SNS_PRIME.md's Tensor Composition
+/// Rules: err absorbs everything; monad absorbs everything weaker than
+/// err; a sub-critical (woe) value tensored with a super-critical one
+/// (roar or haha) collapses to monad ("sub + super collapse to ⊙").
+/// Those three rules are the spec's own words. The remaining case it
+/// names only as "the tensor sits at the geometric mean of the two
+/// criticalities" without pinning down a formula: two values on the same
+/// side of monad that never invoke the three rules above (woe with woe,
+/// or any pair drawn from {roar, haha}). Read literally as a mean pulling
+/// toward the center, that resolves to the value ordinally nearer monad.
+fn tensor_phi(a: IgPrim, b: IgPrim) -> IgPrim {
+    use crate::catalog::PHI_ORD;
+    if a == IgPrim::err || b == IgPrim::err { return IgPrim::err; }
+    if a == IgPrim::monad || b == IgPrim::monad { return IgPrim::monad; }
+    let ia = catalog::ord_index(&PHI_ORD, a).unwrap_or(0);
+    let ib = catalog::ord_index(&PHI_ORD, b).unwrap_or(0);
+    let sub = |i: usize| i == 0;   // woe only (monad already excluded)
+    let sup = |i: usize| i > 1;    // roar or haha (err already excluded)
+    if (sub(ia) && sup(ib)) || (sub(ib) && sup(ia)) {
+        return IgPrim::monad;
+    }
+    if ia.abs_diff(1) <= ib.abs_diff(1) { a } else { b }
+}
+
+/// `tensor` under an arbitrary dialect's own abs_rules table — real per-
+/// dialect absorption instead of canonical's own two rules hardcoded in
+/// place of whichever dialect is actually active.
+///
+/// Follows SNS_PRIME.md's Tensor Composition Rules exactly: seven
+/// bottleneck slots (R, P, K, Phi, H, S, Omega) and five pass-through
+/// slots (D, T, F, G, C) that join rather than constrain. This replaced
+/// an earlier version that had R and F in the wrong category (R run as
+/// pass-through when the spec bottlenecks it at the weaker coupling; F
+/// run as a min-bottleneck when the spec passes it through) and Phi
+/// collapsed to a plain ordinal max instead of the spec's own absorption
+/// rule — caught by reading the spec directly against this function
+/// field by field, not by symptom.
+pub fn tensor_under(dialect: u8, a: &IgTuple, b: &IgTuple) -> IgTuple {
+    // Bottlenecks — the constraint-bearing slots.
+    let r = catalog::ord_min(a.r, b.r, &catalog::R_ORD);       // weaker coupling wins
+    let p = catalog::ord_min(a.p, b.p, &catalog::P_ORD);       // weaker parity wins
+    let k = catalog::ord_max(a.k, b.k, &catalog::K_ORD);       // slower kinetics wins
+    let phi = tensor_phi(a.phi, b.phi);                        // criticality absorption
+    let h = catalog::ord_max(a.h, b.h, &catalog::H_ORD);       // more memory wins
+    let s = catalog::ord_max(a.s, b.s, &catalog::S_ORD);       // heterogeneous absorbs
+    let omega = catalog::ord_max(a.omega, b.omega, &catalog::OMEGA_ORD); // non-Abelian absorbs
+
+    // Pass-through — structure-bearing slots, lattice join.
     let d = catalog::ord_max(a.d, b.d, &catalog::D_ORD);
-    let k = catalog::ord_max(a.k, b.k, &catalog::K_ORD);
-    let omega = catalog::ord_max(a.omega, b.omega, &catalog::OMEGA_ORD);
-    let h = catalog::ord_max(a.h, b.h, &catalog::H_ORD);
-
-    // G: max (union of interaction ranges)
+    let f = catalog::ord_max(a.f, b.f, &catalog::F_ORD);
     let g = catalog::ord_max(a.g, b.g, &catalog::G_ORD);
-
-    // Phi: ⊙ absorption rule — tensor(⊙, EP) = EP
-    let phi = if a.phi == IgPrim::err || b.phi == IgPrim::err {
-        IgPrim::err
-    } else if a.phi == IgPrim::monad || b.phi == IgPrim::monad {
-        IgPrim::monad
-    } else {
-        catalog::ord_max(a.phi, b.phi, &catalog::PHI_ORD)
-    };
-
-    // Categorical: prefer the more structured
     let t = if a.t == b.t { a.t } else { catalog::ord_max(a.t, b.t, &catalog::T_ORD) };
-    let r = if a.r == b.r { a.r } else { catalog::ord_max(a.r, b.r, &catalog::R_ORD) };
     let c = if a.c == b.c { a.c } else { catalog::ord_max(a.c, b.c, &catalog::C_ORD) };
-    let s = if a.s == b.s { a.s } else { catalog::ord_max(a.s, b.s, &catalog::S_ORD) };
 
-    IgTuple { d, t, r, p, f, k, g, c, phi, h, s, omega }
+    let mut tuple = IgTuple { d, t, r, p, f, k, g, c, phi, h, s, omega };
+    apply_dialect_absorption(dialect, 4, a, b, &mut tuple);
+    tuple
 }
 
 // ─── Display helpers ───────────────────────────────────────────────────────
@@ -245,6 +317,32 @@ mod tests {
     fn oinf() -> IgTuple { catalog::o_inf_tuple() }
     fn o0() -> IgTuple { catalog::o_0_tuple() }
 
+    /// Real check, not assumed: does tensoring two numbers' own self-imscribed
+    /// types (word_to_tuple runs each number's native_numeral glyph word
+    /// through the real kernel's self_imscribe, the actual Grammar-applied-to-
+    /// the-Grammar closure, not a bit read) with algebra::tensor (now fixed
+    /// against SNS_PRIME.md's own spec) land anywhere near tracking a+b?
+    /// Kept inside the un-saturated small-n regime (native_numeral words
+    /// longer than a few bits hit self_imscribe's period-gated axis
+    /// saturation, already found and reported earlier this session).
+    #[test]
+    fn tensor_of_self_imscribed_small_numbers_reported() {
+        for a in 1u32..8 {
+            for b in 1u32..8 {
+                let ta = crate::axis_values::word_to_tuple(&crate::native_numeral::encode(&a.to_string()));
+                let tb = crate::axis_values::word_to_tuple(&crate::native_numeral::encode(&b.to_string()));
+                let composite = tensor(&ta, &tb);
+                crate::nested_println!(
+                    "a={a} b={b} sum={:<3} addr(a)={:<9} addr(b)={:<9} addr(a⊗b)={}",
+                    a + b,
+                    ta.crystal_address(),
+                    tb.crystal_address(),
+                    composite.crystal_address(),
+                );
+            }
+        }
+    }
+
     #[test]
     fn test_primitive_mismatches_self() {
         let a = oinf();
@@ -287,17 +385,66 @@ mod tests {
         let a = oinf();
         let b = o0();
         let t = tensor(&a, &b);
+        // P (Parity, ≻): bottleneck, weaker wins — min(or', church) = church.
         assert_eq!(t.p, IgPrim::church);
-        assert_eq!(t.f, IgPrim::age);
+        // F (Fidelity, ⋈): pass-through per SNS_PRIME's Tensor Composition
+        // Rules, join not bottleneck — max(peep, age) = peep, not age.
+        assert_eq!(t.f, IgPrim::peep);
         assert_eq!(t.d, IgPrim::if_);
     }
 
     #[test]
     fn test_tensor_phi_absorption() {
+        // ⊙ (monad) is ABS_CANONICAL's declared absorbing value on Phi under
+        // tensor, not err — err absorption was never in the table.
         let mut ep = oinf();
         ep.phi = IgPrim::err;
         let o = oinf();
         let t = tensor(&o, &ep);
-        assert_eq!(t.phi, IgPrim::err);
+        assert_eq!(t.phi, IgPrim::monad);
+    }
+
+    #[test]
+    fn test_tensor_stoichiometry_absorption() {
+        // ABS_CANONICAL declares up (𐑳) absorbing on S under tensor.
+        let mut hung = oinf();
+        hung.s = IgPrim::hung;
+        let mut up = oinf();
+        up.s = IgPrim::up;
+        let t = tensor(&hung, &up);
+        assert_eq!(t.s, IgPrim::up);
+    }
+
+    #[test]
+    fn test_tensor_phi_err_absorbs_under_canonical_too() {
+        // SNS_PRIME.md's own Tensor Composition Rules put err absorption
+        // (and monad absorption) IN the base Phi bottleneck formula, not
+        // behind a per-dialect opt-in — so canonical tensor (dialect 0)
+        // must already give err for (err, haha), with no dialect-specific
+        // rule needed to get there.
+        let mut a = oinf();
+        a.phi = IgPrim::err;
+        let mut b = oinf();
+        b.phi = IgPrim::haha;
+        assert_eq!(tensor_under(0, &a, &b).phi, IgPrim::err);
+    }
+
+    #[test]
+    fn test_join_under_dialect_differs_from_canonical() {
+        // join/meet have no per-primitive absorption formula of their own
+        // (lattice_op runs plain ord_min/ord_max on Phi for both), so this
+        // pair only diverges between dialects if a dialect's own abs_rules
+        // table is actually being read: U67 declares ABS_EP, err (𐑻)
+        // absorbs on Phi under meet/join/tensor alike (ops_mask 7).
+        let mut a = oinf();
+        a.phi = IgPrim::err;
+        let mut b = oinf();
+        b.phi = IgPrim::haha;
+
+        let canonical = join_under(0, &a, &b);
+        assert_eq!(canonical.tuple.phi, IgPrim::haha);
+
+        let under_ep = join_under(67, &a, &b);
+        assert_eq!(under_ep.tuple.phi, IgPrim::err);
     }
 }

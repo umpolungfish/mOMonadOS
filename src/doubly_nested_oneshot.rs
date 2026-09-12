@@ -2,12 +2,12 @@
 //
 // One level deeper than nested_oneshot. The word is the nested_oneshot word wrapped
 // in an outer frame layer:
-//   ⊢∈⊢∈≻⊤≺⊥⋈⊙⊞∋⊡⊣∋⊣
-//   └── inner ──┘└────── outer ──────────┘
+//   ⊢∈⊤⊢∈≻⊤≺⊥⋈⊙⊞∋⊡⊣∋⊣
+//   └── inner compute ──┘└─ outer hold (⊤ seed) ─┘
 //
-// Period: 16 (kernel-verified via imasm cycle; the ROTAT orbit under the
-// frame open/close rules has period 16 — closing ∋ coincides with prior landing).
-// Phase-bearing: true, 5 distinct landings
+// Period: 17 (kernel-verified via imasm cycle; the ROTAT orbit under the
+// frame open/close rules has period 17 — the outer hold frame deposits ⊤ first).
+// Phase-bearing: true, 5 distinct landings; outer hold deposits before inner computes
 //
 // B4 verdicts (same as nested_oneshot):
 //   T = "one-shot closure" — inner object is at fixed point → N is prime
@@ -18,8 +18,8 @@
 // Primality and factorization both run on `prime_winding`'s BSGS
 // winding-order engine, the same one the inner nested_oneshot word and the
 // artifact `winding_period_of_the_primes_on_the_number_line` share. The
-// outer frame here is a display/verdict wrapper only; it was never a
-// second, independently-run Brent's rho, and no longer contains one.
+// outer frame now HOLDS a ⊤ deposit before the inner word computes, so the
+// inner VINIT clear fires against a live register and inherits the work (2 live clears).
 //
 // Tuple: ⟨𐑦𐑰𐑾𐑿𐑐𐑧𐑲𐑠⊙𐑓𐑳𐑴⟩ (same tuple as nested_oneshot, but word has depth 2)
 
@@ -29,33 +29,37 @@ extern crate alloc;
 
 use crate::sprintln;
 use super::prime_winding::{is_prime, factor, PrimeVerdict};
+use super::dynamic_nesting_prime_finder::find_optimal_depth;
 use alloc::string::String;
+use num_bigint::BigUint;
+use core::str::FromStr;
 
 /// The doubly-nested glyph word (inner word wrapped in outer frame).
-pub const WORD: &str = "⊢∈⊢∈≻⊤≺⊥⋈⊙⊞∋⊡⊣∋⊣";
-pub const PERIOD: usize = 16;
+pub const WORD: &str = "⊢∈⊤⊢∈≻⊤≺⊥⋈⊙⊞∋⊡⊣∋⊣";
+pub const PERIOD: usize = 17;
 pub const PHASE_BEARING: bool = true;
 
-/// Landing register states at each ROTAT cut k=0..15.
+/// Landing register states at each ROTAT cut k=0..16.
 /// 5 distinct states: A, Ftf, Ttf, tf, T
-/// (kernel-verified: period=16, 5 distinct, final=A, banked=OK)
-pub const LANDINGS: [&str; 16] = [
+/// (kernel-verified: period=17, 5 distinct, final=A, banked=OK, 2 live clears)
+pub const LANDINGS: [&str; 17] = [
     "A",   // k=0
     "A",   // k=1
-    "A",   // k=2  <- kernel: k=2 is A (prior LANDINGS had Ftf)
-    "Ftf", // k=3
-    "Ftf", // k=4
+    "A",   // k=2
+    "A",   // k=3
+    "A",   // k=4
     "Ftf", // k=5
     "Ftf", // k=6
     "Ftf", // k=7
-    "Ttf", // k=8
+    "Ftf", // k=8
     "Ttf", // k=9
-    "tf",  // k=10
-    "T",   // k=11
+    "Ttf", // k=10
+    "tf",  // k=11
     "T",   // k=12
-    "A",   // k=13
+    "T",   // k=13
     "A",   // k=14
     "A",   // k=15
+    "A",   // k=16
 ];
 
 pub enum B4Verdict { T, F, B, N }
@@ -109,7 +113,7 @@ pub fn verdict_for(n_str: &str) -> B4Verdict {
 pub fn repl_doubly_nested_oneshot(args: &[&str]) {
     if args.is_empty() || args[0] == "help" {
         sprintln!("doubly_nested_oneshot <N> — one level deeper than nested_oneshot");
-        sprintln!("  Word: ⊢∈⊢∈≻⊤≺⊥⋈⊙⊞∋⊡⊣∋⊣  (period 16, 5 distinct landings)");
+        sprintln!("  Word: ⊢∈⊤⊢∈≻⊤≺⊥⋈⊙⊞∋⊡⊣∋⊣  (period 17, 5 distinct landings)");
         sprintln!("  N has ARBITRARY LENGTH (BigUint, no fixed digit limit).");
         sprintln!("  Returns B4 verdict: T (prime), F (composite), B (paradice),");
         sprintln!("  N (undetermined — order search exceeded its step budget).");
@@ -157,7 +161,7 @@ pub fn repl_doubly_nested_oneshot(args: &[&str]) {
         }
         "winding" => { sprintln!("winding: {}", winding_number()); }
         "landings" => {
-            sprintln!("landing register by ROTAT cut (k=0..15):");
+            sprintln!("landing register by ROTAT cut (k=0..16):");
             for k in 0..PERIOD { sprintln!("  k={:2}: {}", k, landing_at(k)); }
         }
         "factor" => {
@@ -171,7 +175,25 @@ pub fn repl_doubly_nested_oneshot(args: &[&str]) {
                 B4Verdict::T => sprintln!("doubly_nested_oneshot factor {}: T — prime (no non-trivial factors)", n),
                 B4Verdict::F => {
                     sprintln!("doubly_nested_oneshot factor {}: F — composite (winding-order search)", n);
-                    sprintln!("{}", factor(n));
+                    match BigUint::from_str(n) {
+                        Ok(nb) => {
+                            let (depth, found) = find_optimal_depth(n, 10);
+                            match found {
+                                Some(p) => {
+                                    let q = &nb / &p;
+                                    sprintln!(
+                                        "closure at nesting depth {}: {} = {} × {} (Brent cycle, Grammar-derived seed c=period_at_depth({})+n mod 256)",
+                                        depth, n, p, q, depth
+                                    );
+                                }
+                                None => {
+                                    sprintln!("no closure within max nesting depth 10; falling back to prime_winding's trial-divisor walk:");
+                                    sprintln!("{}", factor(n));
+                                }
+                            }
+                        }
+                        Err(_) => sprintln!("{}", factor(n)),
+                    }
                 }
             }
         }

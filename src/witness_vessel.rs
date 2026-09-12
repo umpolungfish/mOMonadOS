@@ -101,13 +101,25 @@ pub fn gate_pass(spec: &GateSpec, ig: &IgTuple) -> bool {
     }
 }
 
-/// All three gates of a dialect.
+/// All three gates of a dialect, read from `u` directly. Reverted from a
+/// dispatch through dialect.rs for idx<12 — that was wrong for this file
+/// specifically. Checked against Clay_WitnessedClosure.lean's own
+/// manuscript-table comment: BSD's real closer set is chirality_first,
+/// scope_universe, kinetics_trap, absorption_chirality_first,
+/// absorption_scope_empire — every one of those names, at indices 8, 10,
+/// 12, 24, 25, belongs to all_dialects()'s own "HAND-CRAFTED EXPANSION
+/// (8-28)" family, not dialect.rs's scope_dialect/triple_criticality. The
+/// two families really do collide at 9/10/11, but this file's closer sets
+/// were built around all_dialects()'s family the whole time; dialect.rs's
+/// hand-crafted definitions are correct for the interactive dialect-
+/// hopping REPL (jump/seal/ruleset verify) that names dialects by index
+/// directly, not for the Clay-witness closer checks here.
 pub fn gates_closed(u: &Dialect, ig: &IgTuple) -> bool {
     gate_pass(&u.g1, ig) && gate_pass(&u.g2, ig) && gate_pass(&u.g3, ig)
 }
 
-/// The dialect's OWN T-constitution: ceiling entries compare ordinals,
-/// exact entries compare value glyphs.
+/// The dialect's OWN T-constitution, read from `u` directly. Same
+/// reversion, same reason as gates_closed.
 pub fn t_seal(u: &Dialect, ig: &IgTuple) -> bool {
     for te in u.t_entries {
         let ok = match tuple_prim(ig, te.prim) {
@@ -211,6 +223,51 @@ pub fn witness_verdict(unis: &[Dialect; DIALECT_COUNT], closers: &[usize], ig: &
 /// dialect's OWN gates and OWN T-constitution.
 pub fn dialect_verdict(u: &Dialect, ig: &IgTuple) -> B4 {
     layer_verdict(gates_closed(u, ig), t_seal(u, ig))
+}
+
+/// compute_tier (kernel.rs) is canonical-only — it never reads
+/// active_dialect. This is that generalization, for the interactive
+/// dialect-hopping REPL specifically (jump/seal/ruleset verify, which name
+/// dialects 0-11 by dialect.rs's hand-crafted definitions, confirmed by
+/// dialect_name()/the jump banner/every "ruleset verify" gate line this
+/// session) — NOT for the Clay-witness closer checks above, which read
+/// all_dialects() directly and are correct doing so (see gates_closed's
+/// comment). So this dispatches on its own: dialect.rs's
+/// dialect_gates_pass/dialect_t_pass for idx<12, the generic
+/// all_dialects()-based dialect_verdict for 12-87 where there is no
+/// collision and both readings agree. dialect 0 returns snap.tier
+/// unchanged — compute_tier already computed it, nothing to recompute. A
+/// live paradox (gate closed, ceiling blocked) is not a failure here, it's
+/// the richest reading, the same way canonical's own Path A only reaches
+/// its top tier through effective_dialetheia; clean closure ranks below
+/// that, an open gate with a consistent ceiling carries some structure,
+/// and neither is nothing.
+pub fn compute_tier_under(dialect: u8, snap: &crate::kernel::Snapshot) -> u8 {
+    if dialect == 0 {
+        return snap.tier;
+    }
+    if (dialect as usize) >= DIALECT_COUNT {
+        return 0;
+    }
+    // Composed under this dialect's own period scale (from_snapshot_under),
+    // not canonical's fixed one — the tuple itself now varies by dialect,
+    // not only the gate/T check run on it afterward.
+    let ig = IgTuple::from_snapshot_under(dialect, snap);
+    let verdict = if dialect < 12 {
+        layer_verdict(
+            crate::dialect::dialect_gates_pass(dialect, &ig),
+            crate::dialect::dialect_t_pass(dialect, &ig),
+        )
+    } else {
+        let unis = all_dialects();
+        dialect_verdict(&unis[dialect as usize], &ig)
+    };
+    match verdict {
+        B4::B => 3,
+        B4::T => 2,
+        B4::N => 1,
+        B4::F => 0,
+    }
 }
 
 /// The full verdict matrix: WITNESSES.len() witnesses × 88 dialects, row-major.

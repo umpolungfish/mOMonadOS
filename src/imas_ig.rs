@@ -207,9 +207,39 @@ impl IgTuple {
         })
     }
 
+    /// Canonical's own composition, unchanged: from_snapshot_under(0, snap).
     pub fn from_snapshot(snap: &Snapshot) -> Self {
+        Self::from_snapshot_under(0, snap)
+    }
+
+    /// Composition itself, not just the gate/T/absorption check run on its
+    /// result afterward, under a given dialect. Every other consumer of
+    /// dialects this session (gates, T-constitution, absorption, tier) reads
+    /// ONE fixed tuple that from_snapshot alone produces — composition never
+    /// took a dialect as input, so no dialect could ever compose the same
+    /// Snapshot into a different tuple; it could only vote on the one
+    /// tuple it was handed. That's why every native-numeral word past a few
+    /// bits (period >= 24) reads identically everywhere: six of the twelve
+    /// axes (T, F, K, C, Phi, H) classify period against fixed thresholds of
+    /// 1, 2, 3, 4 — real numbers, but numbers no realistic word's period
+    /// ever reaches, so every one of them always lands on the same
+    /// catch-all branch, for every dialect, because it was the same
+    /// catch-all branch before any dialect entered the picture.
+    ///
+    /// Wired real per-dialect composition into exactly those six axes: each
+    /// dialect reads period through its own scale (its own index; canonical
+    /// is scale 1, reproducing today's raw thresholds exactly since bucket
+    /// = period / 1 = period) instead of the one fixed scale everyone used
+    /// to share. bucket = period / scale, then the same four-way
+    /// classification runs on bucket that used to run on period directly.
+    /// D, R, P, G, S, Omega are untouched — diversity/frobenius_order/
+    /// dialetheia/signature-driven, not period-gated, so period's scale has
+    /// nothing to do with their saturation, a separate question.
+    pub fn from_snapshot_under(dialect: u8, snap: &Snapshot) -> Self {
         let d = snap.token_diversity;
         let p = snap.period;
+        let scale = if dialect == 0 { 1 } else { dialect as usize };
+        let bucket = p / scale;
         let fo = snap.frobenius_order as usize;
         let sr = snap.self_ref;
         let dc = snap.dialetheia_complete || snap.b_live_ticks > 0;
@@ -235,8 +265,8 @@ impl IgTuple {
         // specific than self-reference alone, which it implies
         let t_val = if br { IgPrim::mime }
             else if sr { IgPrim::are }
-            else if p == 1 { IgPrim::judge }
-            else if p == 2 { IgPrim::mime }
+            else if bucket == 1 { IgPrim::judge }
+            else if bucket == 2 { IgPrim::mime }
             else if fo > 0 { IgPrim::oil }
             else { IgPrim::eat };
 
@@ -258,7 +288,7 @@ impl IgTuple {
 
         // F — Fidelity from dialetheia + period
         let f_val = if dc { IgPrim::peep }
-            else if p == 1 { IgPrim::age }
+            else if bucket == 1 { IgPrim::age }
             else { IgPrim::they };
 
         // K — Kinetics from period + IFIX count
@@ -268,8 +298,8 @@ impl IgTuple {
         //   184 catalog entries carry it.
         let k_val = if sx == 8 { IgPrim::on }
             else if sx > 8 { IgPrim::air }
-            else if p == 1 { IgPrim::egg }
-            else if p <= 4 { IgPrim::loll }
+            else if bucket == 1 { IgPrim::egg }
+            else if bucket <= 4 { IgPrim::loll }
             else { IgPrim::yea };
 
         // G — Cardinality from IFIX + diversity
@@ -290,19 +320,27 @@ impl IgTuple {
         //   sequential fuse gets right. So fo == 3 composes simultaneously.
         let c_val = if fo == 3 { IgPrim::vow }
             else if fo > 0 { IgPrim::measure }
-            else if p == 1 { IgPrim::vow }
-            else if p == 2 { IgPrim::gag }
+            else if bucket == 1 { IgPrim::vow }
+            else if bucket == 2 { IgPrim::gag }
             else { IgPrim::ooze };
 
-        // Phi — Criticality from self_ref + dialetheia + period
+        // Phi — Criticality from self_ref + dialetheia + period, escalated to
+        // haha (ordinal 3.0, this axis's top — checked against ordinal(),
+        // NOT the raw discriminant: roar sits at 2.33, BELOW err's 2.67, so
+        // promoting to roar here would have been a real demotion) when a
+        // paradox didn't just structurally qualify but was actually live on
+        // the stack when a gate fired (b_live_ticks > 0). Static snapshots
+        // hardcode b_live_ticks to 0, so this branch is unreachable there and
+        // every existing static reading of err is unchanged; it only fires
+        // on a genuinely ticked dynamic_imscribe snapshot.
         let phi_val = if sr && dc { IgPrim::monad }
             else if sr { IgPrim::roar }
-            else if dc { IgPrim::err }
-            else if p == 1 { IgPrim::woe }
+            else if dc { if snap.b_live_ticks > 0 { IgPrim::haha } else { IgPrim::err } }
+            else if bucket == 1 { IgPrim::woe }
             else { IgPrim::haha };
 
-        // H — Chirality from period
-        let h_val = match p {
+        // H — Chirality from period, read at this dialect's own scale
+        let h_val = match bucket {
             1 => IgPrim::fee,
             2 => IgPrim::kick,
             3 => IgPrim::sure,
@@ -318,13 +356,24 @@ impl IgTuple {
             else if nz == 2 { IgPrim::so }
             else { IgPrim::up };
 
-        // Omega — Winding from frobenius_order + self_ref + period
-        let omega_val = match fo {
-            1 => IgPrim::ah,
-            2 => IgPrim::oak,
-            _ => if sr { IgPrim::ah }
-                else if p == 2 { IgPrim::oak }
-                else { IgPrim::awe },
+        // Omega — Winding from frobenius_order + self_ref + period, or from a
+        // real protected winding when one has actually occurred. zoo sits
+        // above ah on this axis (ordinal 4, ah is 3) and was never assigned
+        // anywhere here — winding_count is 0 on every static snapshot
+        // (self_imscribe hardcodes it), so this branch only ever fires on a
+        // genuinely ticked dynamic_imscribe snapshot where a full program
+        // wrap actually happened, and every existing static case is
+        // unchanged.
+        let omega_val = if snap.winding_count > 0 {
+            IgPrim::zoo
+        } else {
+            match fo {
+                1 => IgPrim::ah,
+                2 => IgPrim::oak,
+                _ => if sr { IgPrim::ah }
+                    else if p == 2 { IgPrim::oak }
+                    else { IgPrim::awe },
+            }
         };
 
         IgTuple {
