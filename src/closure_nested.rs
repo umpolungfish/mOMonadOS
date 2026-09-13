@@ -23,7 +23,7 @@ use alloc::format;
 use alloc::string::String;
 use alloc::vec::Vec;
 use num_bigint::{BigUint, BigInt, Sign};
-use num_traits::{Zero, One};
+use num_traits::{Zero, One, ToPrimitive};
 
 use crate::word_tape::WordTape;
 use imasm_core::lattice_flow;
@@ -72,7 +72,13 @@ fn inv_mod_pow2(a: &WordTape, m: usize) -> WordTape {
 /// multiply, and P·Q == N (exactly, not mod 2^m) is the closure test. Length
 /// 2^(m-1) total, independent of the prime gap.
 pub fn factor(n: &BigUint, m: usize) -> Option<BigUint> {
-    if m < 4 { return None; }
+    // The register (WordTape) is width-free — that stands unchanged, and is
+    // already how `factor_symbolic` handles any m including m=431. This walk
+    // is a different thing: an EXHAUSTIVE search of all 2^(m-3) positions per
+    // coset, so its cost is inherent to the search, not the register. Past
+    // the walk floor it is not a search worth starting; `factor_symbolic`'s
+    // own tests already name this threshold as "the m<=26 walk floor."
+    if m < 4 || m > 26 { return None; }
     let n_wt = WordTape::from_biguint(n);
     let nine = WordTape::from_small(9);
     let inv9 = inv_mod_pow2(&nine, m);
@@ -86,7 +92,7 @@ pub fn factor(n: &BigUint, m: usize) -> Option<BigUint> {
         mask,
         m3,
     ];
-    let positions = 1usize.checked_shl((m - 3) as u32).unwrap_or(usize::MAX);
+    let positions = 1usize << (m - 3);
     for s in reps.iter() {
         let mut p: WordTape = s.truncate(m);
         let mut q: WordTape = nm.mul(&inv_mod_pow2(&p, m)).truncate(m);
@@ -116,7 +122,10 @@ pub fn repl_closure_nested(args: &[&str]) -> String {
         };
         let ms: usize = match args.get(3).and_then(|s| s.parse().ok()) {
             Some(x) => x,
-            None => 1usize.checked_shl((m.saturating_sub(3)) as u32).unwrap_or(usize::MAX),
+            None => {
+                let full = BigUint::one() << m.saturating_sub(3);
+                full.to_usize().unwrap_or(usize::MAX)
+            }
         };
         return match closure_height_walk(&n, m, ms) {
             Some(f) => {
@@ -395,8 +404,13 @@ pub fn closure_height_walk(n: &BigUint, m: usize, max_steps: usize) -> Option<Bi
         &two_m - BigUint::one(),
         &two_m - BigUint::from(3u32),
     ];
-    let positions = 1usize.checked_shl((m - 3) as u32).unwrap_or(usize::MAX);
-    let steps = core::cmp::min(positions, max_steps);
+    // Same torus principle as `factor`: 2^(m-3) held in BigUint, uncapped by
+    // register width. `max_steps` is the caller's real, explicit budget — the
+    // only legitimate bound on the walk — not a silent 64-bit ceiling. The
+    // min always fits back in `usize` because `max_steps` already does.
+    let positions = BigUint::one() << (m - 3);
+    let max_steps_big = BigUint::from(max_steps);
+    let steps = if positions < max_steps_big { positions.to_usize().unwrap() } else { max_steps };
     for rep in &reps {
         let mut p = rep % &two_m;
         let mut q = (&nm * big_inv_pow2(&p, m)) & &mask;
