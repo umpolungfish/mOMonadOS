@@ -1,5 +1,14 @@
-Clear two secp256k1_unwinder warnings
+I stop treating the platform word width as the register's own limit in closure_nested
 
-Drop the redundant mut on base in powmod (it is never reassigned), and gate the
-arithmetic mod tests with #[cfg(test)] so it no longer compiles into the release
-build, which is what flagged its use super::* as unused. Both repos identical.
+Mirrors the same fix in G-mOMonadOS: factor's position count used checked_shl
+on a usize, so past m-3>=64 it either bailed out entirely or fell back to
+usize::MAX and looped forever. The register (WordTape) is already
+width-free, same as factor_symbolic's search-free path handles any m. What
+factor actually runs is an EXHAUSTIVE search of all 2^(m-3) positions per
+coset, with a real, inherent floor on when it's worth starting at all — the
+same m<=26 walk floor factor_symbolic's own tests already name. Past that
+floor factor now reports no factor immediately, gated on m itself.
+
+closure_height_walk's own residual checked_shl overflow is fixed the same
+way, keeping its position count in BigUint with max_steps as the caller's
+real, explicit search budget.
