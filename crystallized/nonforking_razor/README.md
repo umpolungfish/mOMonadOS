@@ -1,4 +1,4 @@
-# Non-Forking Razor — crystallized census
+# Non-Forking Razor - crystallized census
 
 Kernel-branch proof for the manuscript `ig-docs/nonforking_razor.tex`.
 
@@ -10,7 +10,7 @@ only at the ⊢ mark (0 vs 3).
 
 Run: `./crystallized/nonforking_razor/census.sh` (exit 0 = PASS).
 
-Result: RH, Collatz, BSD, Hodge, NS — every negation reconnects to the descent
+Result: RH, Collatz, BSD, Hodge, NS - every negation reconnects to the descent
 crystal 3444190 (parity or', Frobenius self-dual), holds, μ∘δ=id. Four of the five
 negations are the byte-identical word ⊢∈≻⊤≺⊥⋈⊙⊞∋⊡⊣. Only Collatz's affirmation
 lands on the fork (16404190), drawing the ⊢ distinction the others leave implicit.

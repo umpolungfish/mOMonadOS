@@ -1,4 +1,4 @@
-# The Millennium problems as operator-valued measures — crystallized proof
+# The Millennium problems as operator-valued measures - crystallized proof
 
 Kernel-branch data and proof for the manuscript on the Millennium problems read
 as operator-valued measures.
@@ -11,9 +11,9 @@ it from the repository root; exit 0 is a pass.
 
 The reproducer reports two measurements and never compares their addresses:
 
-- **kernel** — `imasm derive <word>` runs the word as a program and reports the
+- **kernel** - `imasm derive <word>` runs the word as a program and reports the
   structural witness of its control flow.
-- **design** — the ob3ect's grounded tuple reads the *description* against the
+- **design** - the ob3ect's grounded tuple reads the *description* against the
   twelve axes.
 
 These are different measurements of different things. Their crystal addresses
@@ -31,7 +31,7 @@ Four promotion words close the parity to or': the Riemann positivity promotion,
 the BSD and Hodge parity promotions, and the Collatz or'-closure. All four land
 on the descent crystal 3444190.
 
-The fifth is the same Collatz promotion asked for differently — as a named move
+The fifth is the same Collatz promotion asked for differently - as a named move
 from nun to or' rather than as a structure. Its word still closes the parity to
 or' at kernel level, but lands on the fork 16404190, which differs from the
 descent crystal only at the ⊢ mark (0 against 3); and its design grounding gives

@@ -1,4 +1,4 @@
-# measurements — the inputs that produced a reported number
+# measurements - the inputs that produced a reported number
 
 Kept because a measurement whose inputs are gone is a claim, not a measurement.
 
@@ -10,7 +10,7 @@ Kept because a measurement whose inputs are gone is a claim, not a measurement.
   The sixty words that came back.
 
 `banked_60_words.cmds`
-  Those words as `banked` lines. Result: 42 VACUOUS, 18 fired — the `banked`
+  Those words as `banked` lines. Result: 42 VACUOUS, 18 fired - the `banked`
   check fires on 30% of key-type words, which is the base rate the 10,000-key
   survey's §5 never took before calling one firing in four an outlier.
 

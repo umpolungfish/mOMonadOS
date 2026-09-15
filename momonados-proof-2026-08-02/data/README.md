@@ -1,4 +1,4 @@
-# d=2048 moduli field — the data behind the claims
+# d=2048 moduli field - the data behind the claims
 
 Everything here backs a specific statement in
 `ig-docs/manuscripts3/sic_moduli_conductor.tex`. The working repository is
@@ -29,7 +29,7 @@ That is the ramification structure of 2: two ramified primes with (e,f) = (16,8)
 and (8,16), and 768 unramified.
 
 The valuations were taken from `tower_ramified_4.poly` directly. Computing the
-hull needs no algebra system — the file is the input and the hull is a scan.
+hull needs no algebra system - the file is the input and the hull is a scan.
 
 ## What this data does not settle
 

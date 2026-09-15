@@ -1,4 +1,4 @@
-# mOMonadOS — proof vehicle
+# mOMonadOS - proof vehicle
 
 A bare-metal kernel that boots to a prompt, carries the quantum-computation
 surfaces, and runs the proofs. No installation, no dependencies beyond QEMU.
