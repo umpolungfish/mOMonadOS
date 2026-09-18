@@ -225,7 +225,7 @@ pub fn repl_factor_membrane(args: &[&str]) -> String {
                 (Some(a), Some(b)) => (a, b), _ => return String::from("bad P/Q"),
             };
             // LANES THAT FACTOR: zero-pad lanes to equal width so D2 recovers (p,q).
-            let (mut pe, mut qo) = (bits_msb(&p), bits_msb(&q));
+            let (pe, qo) = (bits_msb(&p), bits_msb(&q));
             let l = pe.len().max(qo.len());
             let mut pe2 = alloc::vec::Vec::new(); for _ in 0..l - pe.len() { pe2.push(0); } pe2.extend(pe);
             let mut qo2 = alloc::vec::Vec::new(); for _ in 0..l - qo.len() { qo2.push(0); } qo2.extend(qo);

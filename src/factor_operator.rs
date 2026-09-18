@@ -65,12 +65,12 @@ pub fn lane_from_biguint(x: &BigUint, m: usize) -> Vec<B4> {
 // ── MulAmbient: the four-valued schoolbook product over ambient cells ──────
 //
 // This is the circuit's reconstruction primitive. Every column k of the
-// product is a B4 state whose (is_true, is_false) pair is (digit, carry_flag):
-// a column with no contribution is N, a lone 1 is T, a saturated column with
-// digit 0 is F, and a saturated column with digit 1 is B. Reading the digit
-// channel (is_true) recovers the Boolean product; the carry channel is where
-// the two retractions r and c disagree, so the ambient cells are exactly the
-// coupling structure a Boolean reading destroys. P, Q stay 𝟒-valued the whole
+// product is a B4 state whose (is_true, is_false) pair is (digit, carry_parity):
+// a column with no contribution and no carry is N, a lone 1 without carry is T,
+// an even sum with carry parity 1 is F, and an odd sum with carry parity 1 is B.
+// Reading the digit channel (is_true) recovers the Boolean product; the carry parity
+// channel preserves Γ(x) = c_k mod 2 without saturation collapse, so the ambient cells
+// retain the balanced four-valued coupling structure. P, Q stay 𝟒-valued the whole
 // time — no r/c retraction happens inside the product.
 
 pub fn mul_ambient(p: &[B4], q: &[B4]) -> Vec<B4> {

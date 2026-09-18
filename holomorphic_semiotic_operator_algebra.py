@@ -189,7 +189,7 @@ def winding_number(H: SemioticOperator,
         M = H.M - z_vals[i] * np.eye(12)
         d_log_det += dz * np.trace(np.linalg.inv(M))
 
-    W = round(d_log_det.real / (2 * np.pi))
+    W = round(-d_log_det.imag / (2 * np.pi))
     return int(W)
 
 

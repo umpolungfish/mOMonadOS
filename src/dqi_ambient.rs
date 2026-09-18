@@ -320,14 +320,13 @@ mod tests {
 /// Four-valued schoolbook multiplication — the ambient composition μ(Φ_P,Φ_Q).
 ///
 /// Each output column k is a B4 state whose (is_true, is_false) pair is
-/// (digit, carry_flag): the digit is Σ_{i+j=k} P_i·Q_j + carry, mod 2, and the
-/// carry flag is whether the column saturated (Σ ≥ 2). So a column with no
-/// contribution is N, a lone 1 is T, a saturated column with digit 0 is F, and
-/// a saturated column with digit 1 is B. The carry channel is exactly where
-/// the two retractions r and c disagree if retraction happens before
-/// de-interlacing — this is the genuine ambient structure a Boolean product
-/// destroys. Checked against P=32779, Q=65521: N at one column, B at ten,
-/// and the is_true (digit) channel recovers N=2147712859 exactly.
+/// (digit, carry_parity): the digit is Σ_{i+j=k} P_i·Q_j + carry, mod 2, and the
+/// carry parity is the exact incoming carry mod 2 (γ_k = c_k mod 2).
+/// This prevents saturation collapse: N is (0,0), T is (1,0), F is (0,1),
+/// and B is (1,1). The parity channel retains the full Γ(x) polynomial
+/// where P(x)Q(x) = N(x) + Γ(x) in F2[x], keeping the Belnap ambient carrier
+/// balanced across all 4 values. Checked against P=32779, Q=65521: digit channel
+/// recovers N=2147712859 exactly.
 pub fn b4_schoolbook_mul(a: &[B4], b: &[B4]) -> Vec<B4> {
     let n = a.len() + b.len();
     let mut out = Vec::with_capacity(n);
@@ -347,8 +346,8 @@ pub fn b4_schoolbook_mul(a: &[B4], b: &[B4]) -> Vec<B4> {
             }
         }
         let digit = sum & 1;
-        let carry_flag = sum >= 2;
-        out.push(B4::from_wh2(digit == 1, carry_flag));
+        let carry_parity = (carry & 1) == 1;
+        out.push(B4::from_wh2(digit == 1, carry_parity));
         carry = sum >> 1;
     }
     out
