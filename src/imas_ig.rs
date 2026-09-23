@@ -637,4 +637,16 @@ mod discriminant_gate_tests {
         // ⊡ ≥ 𐑟 (zoo): dialect 5's G3 admits every value — a vacuous gate.
         assert_eq!(disagreements(zoo), alloc::vec![ah, oak, awe]);
     }
+
+    /// Compute the theorem phases count from this tuple.
+    /// Phases = sum of all 12 ordinal values, rounded to usize.
+    /// This is the ONE-AND-ONLY source of the phases count —
+    /// never hardcoded, always derived from the tuple.
+    pub fn phases(&self) -> usize {
+        (self.d.ordinal() + self.t.ordinal() + self.r.ordinal() + self.p.ordinal() +
+         self.f.ordinal() + self.k.ordinal() + self.g.ordinal() + self.c.ordinal() +
+         self.phi.ordinal() + self.h.ordinal() + self.s.ordinal() + self.omega.ordinal())
+        .round() as usize
+    }
+}
 }

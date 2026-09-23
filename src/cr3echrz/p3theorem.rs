@@ -702,6 +702,79 @@ pub fn verify_tuple_frobenius(v: &mut FrobeniusVerifier, tuple: &IgTuple) {
     }
 }
 
+
+// ═══════════════════════════════════════════════════════════════════════
+// COMPUTE-FROM-TUPLE HELPERS — single source of truth, never hardcoded
+// ═══════════════════════════════════════════════════════════════════════
+
+use crate::imas_ig::IgTuple;
+
+/// Compute B4 status from tuple properties.
+/// ⊙=critical + ⊡=non-Abelian → B4::B (dialetheic barrier)
+/// <=Frobenius-special → B4::T (closed)
+/// ⊙=sub-critical → B4::T (determined)
+/// Default → B4::B (open)
+pub fn compute_status_from_tuple(tuple: &IgTuple) -> B4 {
+    use crate::imas_ig::IgPrim;
+    if tuple.phi == IgPrim::Phi_crit && tuple.omega == IgPrim::Omega_na {
+        B4::B  // O_inf: both closed and open (dialetheic barrier)
+    } else if tuple.p == IgPrim::P_pmsym {
+        B4::T  // Frobenius-special: closed
+    } else if tuple.phi == IgPrim::𐑢 {
+        B4::T  // Sub-critical: determined
+    } else {
+        B4::B  // Default: open question / barrier
+    }
+}
+
+/// Compute status name from B4 status and tuple.
+pub fn compute_status_name(status: B4, tuple: &IgTuple) -> &'static str {
+    use crate::imas_ig::IgPrim;
+    match status {
+        B4::B if tuple.phi == IgPrim::Phi_crit && tuple.omega == IgPrim::Omega_na =>
+            "BOTH (O_inf barrier)",
+        B4::B => "BOTH (barrier)",
+        B4::T if tuple.p == IgPrim::P_pmsym => "TRUE (Frobenius-closed)",
+        B4::T => "TRUE (proved)",
+        B4::F => "FALSE",
+        B4::N => "UNKNOWN",
+    }
+}
+
+/// Real Frobenius verification on a catalog tuple.
+/// Verifies: μ∘δ structural closure — each primitive's ordinal is
+/// self-consistent within the tuple lattice.
+pub fn verify_tuple_frobenius(v: &mut FrobeniusVerifier, tuple: &IgTuple) {
+    use crate::imas_ig::IgPrim;
+    // Verify criticality + parity consistency: if ⊙=critical, < must be ≥ partial
+    if tuple.phi == IgPrim::Phi_crit || tuple.phi == IgPrim::𐑮 || tuple.phi == IgPrim::Phi_ep {
+        // At criticality, parity must be at least partial
+        let ok = tuple.p.ordinal() >= IgPrim::P_pm.ordinal();
+        v.verify_usize(if ok { 1 } else { 0 }, 1);
+    }
+    // Verify winding + topology consistency
+    if tuple.omega == IgPrim::Omega_na {
+        // Non-Abelian winding requires odot topology or bowtie
+        let ok = tuple.t == IgPrim::T_odot || tuple.t == IgPrim::T_bowtie;
+        v.verify_usize(if ok { 1 } else { 0 }, 1);
+    }
+    // Verify Frobenius-special: <=𐑹 implies ⊡ ≥ Z
+    if tuple.p == IgPrim::P_pmsym {
+        let ok = tuple.omega.ordinal() >= IgPrim::Omega_z.ordinal();
+        v.verify_usize(if ok { 1 } else { 0 }, 1);
+    }
+    // Verify self-referential closure: ⊙=critical implies ⊥=eternal
+    if tuple.phi == IgPrim::Phi_crit {
+        let ok = tuple.h == IgPrim::H_inf;
+        v.verify_usize(if ok { 1 } else { 0 }, 1);
+    }
+    // Verify holographic bound: ⊢=imscriptive implies ⊣=odot
+    if tuple.d == IgPrim::D_odot {
+        let ok = tuple.t == IgPrim::T_odot;
+        v.verify_usize(if ok { 1 } else { 0 }, 1);
+    }
+}
+
 // ─── Theorem runner wrappers (parse params, call implementation) ─────
 
 fn collatz_runner(params: &str) -> TheoremResult {
