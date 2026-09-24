@@ -10,3 +10,4 @@ circt.txt
 tools/_hex256_combo_out.txt
 .lake/packages/
 .lake/
+momonados-proof-*/lean/.lake/
